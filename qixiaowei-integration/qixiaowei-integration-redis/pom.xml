@@ -1,0 +1,30 @@
+<project>
+    <parent>
+        <artifactId>qixiaowei-integration</artifactId>
+        <groupId>net.qixiaowei</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>qixiaowei-integration-redis</artifactId>
+
+    <description>
+        qixiaowei-integration-redis缓存服务
+    </description>
+
+    <dependencies>
+
+        <!-- SpringBoot Boot Redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- qixiaowei integration common -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-common</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>
