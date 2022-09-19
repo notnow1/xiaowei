@@ -1,0 +1,2 @@
+net.qixiaowei.integration.log.service.AsyncLogService
+net.qixiaowei.integration.log.aspect.LogAspect

@@ -1,0 +1,4 @@
+JDK = 1.8
+Mysql = 5.7.38
+Redis = 6.2.4
+nacos = 2.0.4
