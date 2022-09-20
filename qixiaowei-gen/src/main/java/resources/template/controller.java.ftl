@@ -44,7 +44,7 @@ private I${entity}Service ${entity?uncap_first}Service;
 /**
 * 分页查询${table.comment!}列表
 */
-@RequiresPermissions("permissionPrefix:pageList")
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:pageList")
 @GetMapping("/pageList")
 public TableDataInfo pageList(${entity} ${entity?uncap_first}){
 startPage();
@@ -55,7 +55,7 @@ return getDataTable(list);
 /**
 * 查询${table.comment!}列表
 */
-@RequiresPermissions("permissionPrefix:list")
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:list")
 @GetMapping("/list")
 public AjaxResult list(${entity} ${entity?uncap_first}){
 List<${entity}> list = ${entity?uncap_first}Service.select${entity}List(${entity?uncap_first});
@@ -67,7 +67,7 @@ return AjaxResult.success(list);
 /**
 * 导出${table.comment!}列表
 */
-@RequiresPermissions(":export")
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:export")
 @Log(title = "${table.comment!}", businessType = BusinessType.EXPORT)
 @PostMapping("/export")
 @ResponseBody
@@ -82,7 +82,7 @@ return util.exportExcel(list, "${table.comment!}数据");
 /**
 * 获取${table.comment!}详细信息
 */
-@RequiresPermissions("permissionPrefix:query")
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:query")
 @GetMapping(value = "/{<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>}")
 public AjaxResult getInfo(@PathVariable("<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>")<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>  <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>){
 return AjaxResult.success(${entity?uncap_first}Service.select${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>));
@@ -92,7 +92,7 @@ return AjaxResult.success(${entity?uncap_first}Service.select${entity}By<#list t
 /**
 * 新增${table.comment!}
 */
-@RequiresPermissions("permissionPrefix:add")
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:add")
 @Log(title = "${table.comment!}", businessType = BusinessType.INSERT)
 @PostMapping("/add")
 @ResponseBody
@@ -105,7 +105,7 @@ return toAjax(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}
 /**
 * 修改${table.comment!}
 */
-@RequiresPermissions("permissionPrefix:edit")
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:edit")
 @Log(title = "${table.comment!}", businessType = BusinessType.UPDATE)
 @PostMapping("/edit")
 @ResponseBody
@@ -117,13 +117,13 @@ return toAjax(${entity?uncap_first}Service.update${entity}(${entity?uncap_first}
 /**
 * 删除${table.comment!}
 */
-@RequiresPermissions("permissionPrefix:remove")
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:remove")
 @Log(title = "${table.comment!}", businessType = BusinessType.UPDATE)
 @PostMapping("/edit")
 @ResponseBody
 public AjaxResult remove(${entity} ${entity?uncap_first}s)
 {
-  return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}s.get<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>()));
+return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}s.get<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>()));
 }
 
 }

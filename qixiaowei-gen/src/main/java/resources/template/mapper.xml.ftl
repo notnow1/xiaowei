@@ -20,7 +20,12 @@
         </#list>
         ${table.fieldNames}
         FROM ${table.name}
-        WHERE  <#list table.fields as field><#if field.keyFlag> ${field.name}=#${leftBrace}${entity?uncap_first}${rightBrace}</#if></#list>
+        WHERE 1=1
+        <#list table.fields as field>
+            <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+            </if>
+        </#list>
     </select>
     <!--新增${table.comment!}-->
     <insert id="insert${entity}">
@@ -31,12 +36,22 @@
     <update id="update${entity}">
         UPDATE ${table.name}
         SET <#list table.commonFields as field>${field.name}="",</#list>${table.fieldNames}
-        WHERE  <#list table.fields as field><#if field.keyFlag> ${field.name}=#${leftBrace}${entity?uncap_first}${rightBrace}</#if></#list>
+        WHERE 1=1
+        <#list table.fields as field>
+            <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+            </if>
+        </#list>
     </update>
     <!--删除${table.comment!}-->
     <delete id="delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>">
         DELETE FROM ${table.name}
-        WHERE  <#list table.fields as field><#if field.keyFlag> ${field.name}=#${leftBrace}${entity?uncap_first}${rightBrace}</#if></#list>
+        WHERE 1=1
+        <#list table.fields as field>
+            <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+            </if>
+        </#list>
     </delete>
     <!--批量删除${table.comment!}-->
     <delete id="delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s">
