@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="${mapperPackage}.${table.mapperName}">
     <!--    查询${table.comment!}-->
-    <select id="select${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>" resultType="net.qixiaowei.gen.main.domain.ApplyUrl">
+    <select id="select${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>" resultType="${entityPackage}.${entity}">
         SELECT
         <#list table.commonFields as field>
             ${field.name},
@@ -13,7 +13,7 @@
     </select>
 
     <!--    查询${table.comment!}列表-->
-    <select id="select${entity}List" resultType="net.qixiaowei.gen.main.domain.${entity}">
+    <select id="select${entity}List" resultType="${entityPackage}.${entity}">
         SELECT
         <#list table.commonFields as field>
             ${field.name},
