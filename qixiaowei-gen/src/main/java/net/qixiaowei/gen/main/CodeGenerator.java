@@ -58,6 +58,7 @@ public class CodeGenerator {
 
         @Override
         protected void outputCustomFile(@NotNull Map<String, String> customFile, @NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
+            String substring = packagePath.substring(packagePath.lastIndexOf("//")).replaceAll("//","");
             //对包名做处理
             String s = packagePath.replaceAll("//", ".");
             //表名
@@ -77,6 +78,8 @@ public class CodeGenerator {
             objectMap.put("responsePackage", s + tableInfo.getEntityName().toLowerCase() + ".response");
             objectMap.put("leftBrace", "{");
             objectMap.put("rightBrace", "}");
+            //@RequiresPermissions("") 注解所需参数
+            objectMap.put("packageClass",substring);
 
             //设置要生成的文件名以及FreeMark模板文件路径
             customFile = new HashMap<>();
