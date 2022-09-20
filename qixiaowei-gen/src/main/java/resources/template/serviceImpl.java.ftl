@@ -88,9 +88,7 @@ return ${entity?uncap_first}Mapper.update${entity}(${entity?uncap_first});
 
 @Transactional
 @Override
-public int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>> <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s)
-{
-
+public int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>> <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s){
 return ${entity?uncap_first}Mapper.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s);
 }
 
@@ -112,17 +110,35 @@ return ${entity?uncap_first}Mapper.delete${entity}By<#list table.fields as field
 /**
 * 批量新增${table.comment!}信息
 *
-* @param ${entity?uncap_first}List ${table.comment!}对象
+* @param ${entity?uncap_first}s ${table.comment!}对象
 */
 @Transactional
-public void insert${entity}(List<${entity}> ${entity?uncap_first}List){
-for (${entity} ${entity?uncap_first} : ${entity?uncap_first}List) {
+public int insert${entity}s(List<${entity}> ${entity?uncap_first}s){
+for (${entity} ${entity?uncap_first} : ${entity?uncap_first}s) {
 ${entity?uncap_first}.setCreateBy(${entity?uncap_first}.getCreateBy());
 ${entity?uncap_first}.setUpdateBy(${entity?uncap_first}.getUpdateBy());
 ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
 ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
 }
-${entity?uncap_first}Mapper.batch${entity}(${entity?uncap_first}List);
+return ${entity?uncap_first}Mapper.batch${entity}(${entity?uncap_first}s);
+}
+
+/**
+* 批量修改${table.comment!}信息
+*
+* @param ${entity?uncap_first}s ${table.comment!}对象
+*/
+@Transactional
+public int update${entity}s(List<${entity}> ${entity?uncap_first}s){
+int num = 0;
+for (${entity} ${entity?uncap_first} : ${entity?uncap_first}s) {
+${entity?uncap_first}.setCreateBy(${entity?uncap_first}.getCreateBy());
+${entity?uncap_first}.setUpdateBy(${entity?uncap_first}.getUpdateBy());
+${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
+${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+ num=num+${entity?uncap_first}Mapper.update${entity}(${entity?uncap_first});
+}
+return num;
 }
 }
 

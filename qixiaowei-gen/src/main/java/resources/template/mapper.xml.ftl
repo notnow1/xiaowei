@@ -37,10 +37,10 @@
         UPDATE ${table.name}
         SET <#list table.commonFields as field>${field.name}="",</#list>${table.fieldNames}
         WHERE 1=1
-        <#list table.fields as field>
-            <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
-                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
-            </if>
+        <#list table.fields as field >
+            <#if field.keyFlag><#--生成普通字段 -->
+               and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+            </#if>
         </#list>
     </update>
     <!--删除${table.comment!}-->
@@ -67,7 +67,7 @@
         INSERT INTO ${table.name} (<#list table.commonFields as field>${field.name},</#list>${table.fieldNames})
         VALUES (
         <foreach item="item" index="index" collection="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s" separator=",">
-            <#list table.fields as field><#if !field_has_next>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}<#else>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},</#if></#list>
+            <#list table.fields as field><#if !field_has_next>#${leftBrace}item.${field.propertyName}${rightBrace}<#else>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},</#if></#list>
         </foreach>)
     </insert>
 </mapper>

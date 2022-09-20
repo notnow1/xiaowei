@@ -44,6 +44,22 @@ public int insert${entity}(${entity} ${entity?uncap_first});
 public int update${entity}(${entity} ${entity?uncap_first});
 
 /**
+* 批量修改${table.comment!}
+*
+* @param ${entity?uncap_first}s ${table.comment!}
+* @return 结果
+*/
+public int update${entity}s(List<${entity}> ${entity?uncap_first}s);
+
+/**
+* 批量新增${table.comment!}
+*
+* @param ${entity?uncap_first}s ${table.comment!}
+* @return 结果
+*/
+public int insert${entity}s(List<${entity}> ${entity?uncap_first}s);
+
+/**
 * 批量删除${table.comment!}
 *
 * @param <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s 需要删除的${table.comment!}主键集合

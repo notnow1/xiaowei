@@ -65,8 +65,8 @@ public int delete${entity}By<#list table.fields as field><#if field.keyFlag><#as
 /**
 * 批量新增${table.comment!}
 *
-* @param ${entity}List ${table.comment!}列表
+* @param ${entity}s ${table.comment!}列表
 * @return 结果
 */
-public int batch${entity}(@Param("<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s")List<${entity}> ${entity}List);
+public int batch${entity}(@Param("<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s")List<${entity}> ${entity}s);
 }

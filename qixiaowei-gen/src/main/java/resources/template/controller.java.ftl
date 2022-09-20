@@ -68,7 +68,7 @@ return AjaxResult.success(list);
 * 导出${table.comment!}列表
 */
 @RequiresPermissions("${packageClass}:${entity?uncap_first}:export")
-@Log(title = "${table.comment!}", businessType = BusinessType.EXPORT)
+@Log(title = "导出${table.comment!}", businessType = BusinessType.EXPORT)
 @PostMapping("/export")
 @ResponseBody
 public AjaxResult export(${entity} ${entity?uncap_first})
@@ -93,7 +93,7 @@ return AjaxResult.success(${entity?uncap_first}Service.select${entity}By<#list t
 * 新增${table.comment!}
 */
 @RequiresPermissions("${packageClass}:${entity?uncap_first}:add")
-@Log(title = "${table.comment!}", businessType = BusinessType.INSERT)
+@Log(title = "新增${table.comment!}", businessType = BusinessType.INSERT)
 @PostMapping("/add")
 @ResponseBody
 public AjaxResult addSave(${entity} ${entity?uncap_first})
@@ -106,7 +106,7 @@ return toAjax(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}
 * 修改${table.comment!}
 */
 @RequiresPermissions("${packageClass}:${entity?uncap_first}:edit")
-@Log(title = "${table.comment!}", businessType = BusinessType.UPDATE)
+@Log(title = "修改${table.comment!}", businessType = BusinessType.UPDATE)
 @PostMapping("/edit")
 @ResponseBody
 public AjaxResult editSave(${entity} ${entity?uncap_first})
@@ -118,12 +118,46 @@ return toAjax(${entity?uncap_first}Service.update${entity}(${entity?uncap_first}
 * 删除${table.comment!}
 */
 @RequiresPermissions("${packageClass}:${entity?uncap_first}:remove")
-@Log(title = "${table.comment!}", businessType = BusinessType.UPDATE)
-@PostMapping("/edit")
+@Log(title = "删除${table.comment!}", businessType = BusinessType.DELETE)
+@PostMapping("/remove")
 @ResponseBody
 public AjaxResult remove(${entity} ${entity?uncap_first}s)
 {
 return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}s.get<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>()));
 }
+/**
+* 批量修改${table.comment!}
+*/
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:edits")
+@Log(title = "批量修改${table.comment!}", businessType = BusinessType.UPDATE)
+@PostMapping("/edits")
+@ResponseBody
+public AjaxResult editSaves(List<${entity}> ${entity?uncap_first}s)
+{
+return toAjax(${entity?uncap_first}Service.update${entity}s(${entity?uncap_first}s));
+}
 
+/**
+* 批量新增${table.comment!}
+*/
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:insert${entity}s")
+@Log(title = "批量新增${table.comment!}", businessType = BusinessType.INSERT)
+@PostMapping("/insert${entity}s")
+@ResponseBody
+public AjaxResult insert${entity}s(List<${entity}> ${entity?uncap_first}s)
+{
+return toAjax(${entity?uncap_first}Service.insert${entity}s(${entity?uncap_first}s));
+}
+
+/**
+* 批量删除${table.comment!}
+*/
+@RequiresPermissions("${packageClass}:${entity?uncap_first}:removes")
+@Log(title = "批量删除${table.comment!}", businessType = BusinessType.DELETE)
+@PostMapping("/removes")
+@ResponseBody
+public AjaxResult removes(List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>> <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s)
+{
+return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s));
+}
 }
