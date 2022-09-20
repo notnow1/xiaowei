@@ -40,6 +40,7 @@ public class LocalFileServiceImpl implements IFileService {
      */
     @Override
     public String uploadFile(MultipartFile file) throws Exception {
+        //todo 前面用租户id区分，区分不同租户的文件上传
         String name = FileUploadUtils.upload(localFilePath, file);
         String url = domain + localFilePrefix + name;
         return url;

@@ -31,6 +31,7 @@ public class MinioFileServiceImpl implements IFileService {
      */
     @Override
     public String uploadFile(MultipartFile file) throws Exception {
+        //todo 前面用租户id区分，区分不同租户的文件上传
         String fileName = FileUploadUtils.extractFilename(file);
         PutObjectArgs args = PutObjectArgs.builder()
                 .bucket(minioConfig.getBucketName())
@@ -39,6 +40,6 @@ public class MinioFileServiceImpl implements IFileService {
                 .contentType(file.getContentType())
                 .build();
         client.putObject(args);
-        return minioConfig.getUrl() + "/" + minioConfig.getBucketName() + "/" + fileName;
+        return "/" + fileName;
     }
 }
