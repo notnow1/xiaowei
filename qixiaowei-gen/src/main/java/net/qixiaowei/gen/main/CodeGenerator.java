@@ -5,30 +5,63 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import com.google.common.collect.Lists;
 import com.sun.istack.internal.NotNull;
 import net.qixiaowei.gen.main.utils.ExcelDiskUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CodeGenerator {
 
+    // 实体类 出参 入参 输出目录 因固定实体类和dto生成路径 不需要修改！！！！
+    private static final String entityAndDtoPath = "D://projects//qixiaowei-cloud//qixiaowei-api//qixiaowei-api-system//src//main//java//net//qixiaowei//system//api";
     //数据库配置
-    private static final String url = "jdbc:mysql://127.0.0.1:3306/test" ;
-    private static final String username = "root" ;
-    private static final String password = "123456" ;
+    private static final String url = "jdbc:mysql://127.0.0.1:3306/test";
+    private static final String username = "root";
+    private static final String password = "123456";
     //表名
-    private static final String tables = "apply_url,avail_data_source" ;
-    //输出目录
-    private static final String generatePath = "D://projectstest//qixiaowei-cloud-backend//qixiaowei-modules//qixiaowei-system//src//main//java//net//qixiaowei//system" ;
+    private static final String tables = "apply_url,avail_data_source";
+    //controller输出目录
+    private static final String generatePath = "D://projects//qixiaowei-cloud//qixiaowei-modules//qixiaowei-system//src//main//java//net//qixiaowei//system";
     //导入包名 如net.qixiaowei.system
-    private static final String packagePath = "net//qixiaowei//system" ;
+    private static final String packagePath = "net//qixiaowei//system";
+
+    //实体类package
+    private static final String entityPackage = "domain";
+    //dto package
+    private static final String dtoPackage = "dto";
+    //dto controller
+    private static final String controllerPackage = "controller";
+    //service package
+    private static final String servicePackage = "service";
+    //serviceImpl package
+    private static final String serviceImplPackage = "service/impl";
+    //mapper package
+    private static final String mapperPackage = "mapper";
+/*       //实体类package
+        private static final String entityPackage = "domain/system";
+        //dto package
+        private static final String dtoPackage = "dto/system";
+        //dto controller
+        private static final String controllerPackage = "controller/system";
+        //service package
+        private static final String servicePackage = "service/system";
+        //serviceImpl package
+        private static final String serviceImplPackage = "service/impl/system";
+        //mapper package
+        private static final String mapperPackage = "mapper/system";*/
+    //mapperXml路径
+    private static final String mapperXmlPath = "D://projects//qixiaowei-cloud//qixiaowei-modules//qixiaowei-system//src//main//resources";
 
     public static void main(String[] args) {
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
-                    builder.author("tangdagui") // 设置作者
+                    builder.author("TMC") // 设置作者
                             .outputDir(generatePath); // 指定输出目录
                 })
                 .strategyConfig(builder -> {
@@ -58,20 +91,20 @@ public class CodeGenerator {
 
         @Override
         protected void outputCustomFile(@NotNull Map<String, String> customFile, @NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-            String substring = packagePath.substring(packagePath.lastIndexOf("//")).replaceAll("//","");
+            String substring = packagePath.substring(packagePath.lastIndexOf("//")).replaceAll("//", "");
             //对包名做处理
             String s = packagePath.replaceAll("//", ".");
             //表名
             String entityName = tableInfo.getEntityName();
             //自定义模板参数（定义的这些参数可以在我们的Freemark模板中使用&{}语法取到该值，比如 &{requestMapping}）
             objectMap.put("requestMapping", StringUtils.firstToLowerCase(entityName));
-            objectMap.put("entityPackage", s + ".domain");
+            objectMap.put("entityPackage", s + ".api." + entityPackage.replaceAll("/", "."));
             objectMap.put("packageName", s);
-            objectMap.put("daoPackage", s + ".dao");
-            objectMap.put("controllerPackage", s + ".controller");
-            objectMap.put("servicePackage", s + ".service");
-            objectMap.put("servicePackageImpl", s + ".service.impl");
-            objectMap.put("mapperPackage", s + ".mapper");
+            objectMap.put("dtoPackage", s + ".api." + dtoPackage.replaceAll("/", "."));
+            objectMap.put("controllerPackage", s + "." + controllerPackage.replaceAll("/", "."));
+            objectMap.put("servicePackage", s + "." + servicePackage.replaceAll("/", "."));
+            objectMap.put("servicePackageImpl", s + "." + serviceImplPackage.replaceAll("/", "."));
+            objectMap.put("mapperPackage", s + "." + mapperPackage.replaceAll("/", "."));
             objectMap.put("facadePackage", s + tableInfo.getEntityName().toLowerCase() + ".facade");
             objectMap.put("facadeImplPackage", s + tableInfo.getEntityName().toLowerCase() + ".facade.impl");
             objectMap.put("requestPackage", s + tableInfo.getEntityName().toLowerCase() + ".request");
@@ -79,17 +112,17 @@ public class CodeGenerator {
             objectMap.put("leftBrace", "{");
             objectMap.put("rightBrace", "}");
             //@RequiresPermissions("") 注解所需参数
-            objectMap.put("packageClass",substring);
+            objectMap.put("packageClass", substring);
 
             //设置要生成的文件名以及FreeMark模板文件路径
             customFile = new HashMap<>();
             // todo 不想生成那个注释那个
             // 实体类
             customFile.put(entityName + StringPool.DOT_JAVA, "/template/domain.java.ftl");
+            // dto类
+            customFile.put(entityName + "Dto" + StringPool.DOT_JAVA, "/template/dto.java.ftl");
             // Controller类
             customFile.put(entityName + "Controller" + StringPool.DOT_JAVA, "/template/controller.java.ftl");
-            // Dao类
-            //  customFile.put(entityName + "Dao" + StringPool.DOT_JAVA, "/template/dao.java.ftl");
             // Service接口类
             customFile.put("I" + entityName + "Service" + StringPool.DOT_JAVA, "/template/service.java.ftl");
             // Service实现类
@@ -102,36 +135,36 @@ public class CodeGenerator {
             customFile.forEach((key, value) -> {
                 String fileName = null;
                 if (StringUtils.equals(key, entityName + StringPool.DOT_JAVA)) {
-                    fileName = generatePath + "/" + "domain" + "/" + key;
+                    fileName = entityAndDtoPath + "/" + entityPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
                 else if (StringUtils.equals(key, entityName + "Controller" + StringPool.DOT_JAVA)) {
-                    fileName = generatePath + "/" + "controller" + "/" + key;
+                    fileName = generatePath + "/" + controllerPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
-                else if (StringUtils.equals(key, entityName + "Dao" + StringPool.DOT_JAVA)) {
-                    fileName = generatePath + "/" + "dao" + "/" + key;
+                else if (StringUtils.equals(key, entityName + "Dto" + StringPool.DOT_JAVA)) {
+                    fileName = entityAndDtoPath + "/" + dtoPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
                 else if (StringUtils.equals(key, "I" + entityName + "Service" + StringPool.DOT_JAVA)) {
-                    fileName = generatePath + "/" + "service" + "/" + key;
+                    fileName = generatePath + "/" + servicePackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
                 else if (StringUtils.equals(key, entityName + "ServiceImpl" + StringPool.DOT_JAVA)) {
-                    fileName = generatePath + "/" + "service" + "//impl" + "/" + key;
+                    fileName = generatePath + "/" + serviceImplPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
                 else if (StringUtils.equals(key, entityName + "Mapper" + StringPool.DOT_JAVA)) {
-                    fileName = generatePath + "/" + "mapper" + "/" + key;
+                    fileName = generatePath + "/" + mapperPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 } else if (StringUtils.equals(key, entityName + "Mapper" + StringPool.DOT_XML)) {
-                    fileName = "D://projectstest//qixiaowei-cloud-backend//qixiaowei-modules//qixiaowei-system//src//main//resources" + "/" + "mapper" + "/" + key;
+                    fileName = mapperXmlPath + "/" + mapperPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 } else {

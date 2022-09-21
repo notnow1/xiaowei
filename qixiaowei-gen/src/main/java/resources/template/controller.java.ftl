@@ -1,4 +1,4 @@
-package ${packageName}.controller;
+package ${controllerPackage};
 
 import java.util.List;
 import java.io.IOException;
@@ -17,8 +17,9 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import org.springframework.stereotype.Controller;
 import net.qixiaowei.integration.log.enums.BusinessType;
-import ${packageName}.domain.${entity};
-import ${packageName}.service.${table.serviceName};
+import ${entityPackage}.${entity};
+import ${dtoPackage}.${entity}Dto;
+import ${servicePackage}.${table.serviceName};
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
@@ -46,9 +47,9 @@ private I${entity}Service ${entity?uncap_first}Service;
 */
 @RequiresPermissions("${packageClass}:${entity?uncap_first}:pageList")
 @GetMapping("/pageList")
-public TableDataInfo pageList(${entity} ${entity?uncap_first}){
+public TableDataInfo pageList(${entity}Dto ${entity?uncap_first}Dto){
 startPage();
-List<${entity}> list = ${entity?uncap_first}Service.select${entity}List(${entity?uncap_first});
+List<${entity}Dto> list = ${entity?uncap_first}Service.select${entity}List(${entity?uncap_first}Dto);
 return getDataTable(list);
 }
 
@@ -57,8 +58,8 @@ return getDataTable(list);
 */
 @RequiresPermissions("${packageClass}:${entity?uncap_first}:list")
 @GetMapping("/list")
-public AjaxResult list(${entity} ${entity?uncap_first}){
-List<${entity}> list = ${entity?uncap_first}Service.select${entity}List(${entity?uncap_first});
+public AjaxResult list(${entity}Dto ${entity?uncap_first}Dto){
+List<${entity}Dto> list = ${entity?uncap_first}Service.select${entity}List(${entity?uncap_first}Dto);
 return AjaxResult.success(list);
 }
 
@@ -71,22 +72,14 @@ return AjaxResult.success(list);
 @Log(title = "导出${table.comment!}", businessType = BusinessType.EXPORT)
 @PostMapping("/export")
 @ResponseBody
-public AjaxResult export(${entity} ${entity?uncap_first})
+public AjaxResult export(${entity}Dto ${entity?uncap_first}Dto)
 {
-List<${entity}> list = ${entity?uncap_first}Service.select${entity}List(${entity?uncap_first});
-ExcelUtil<${entity}> util = new ExcelUtil<${entity}>(${entity}.class);
+List<${entity}Dto> list = ${entity?uncap_first}Service.select${entity}List(${entity?uncap_first}Dto);
+ExcelUtil<${entity}Dto> util = new ExcelUtil<${entity}Dto>(${entity}Dto.class);
 return util.exportExcel(list, "${table.comment!}数据");
 }
 
 
-/**
-* 获取${table.comment!}详细信息
-*/
-@RequiresPermissions("${packageClass}:${entity?uncap_first}:query")
-@GetMapping(value = "/{<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>}")
-public AjaxResult getInfo(@PathVariable("<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>")<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>  <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>){
-return AjaxResult.success(${entity?uncap_first}Service.select${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>));
-}
 
 
 /**
@@ -96,9 +89,8 @@ return AjaxResult.success(${entity?uncap_first}Service.select${entity}By<#list t
 @Log(title = "新增${table.comment!}", businessType = BusinessType.INSERT)
 @PostMapping("/add")
 @ResponseBody
-public AjaxResult addSave(${entity} ${entity?uncap_first})
-{
-return toAjax(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}));
+public AjaxResult addSave(${entity}Dto ${entity?uncap_first}Dto) {
+return toAjax(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}Dto));
 }
 
 
@@ -109,9 +101,9 @@ return toAjax(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}
 @Log(title = "修改${table.comment!}", businessType = BusinessType.UPDATE)
 @PostMapping("/edit")
 @ResponseBody
-public AjaxResult editSave(${entity} ${entity?uncap_first})
+public AjaxResult editSave(${entity}Dto ${entity?uncap_first}Dto)
 {
-return toAjax(${entity?uncap_first}Service.update${entity}(${entity?uncap_first}));
+return toAjax(${entity?uncap_first}Service.update${entity}(${entity?uncap_first}Dto));
 }
 
 /**
@@ -121,9 +113,9 @@ return toAjax(${entity?uncap_first}Service.update${entity}(${entity?uncap_first}
 @Log(title = "删除${table.comment!}", businessType = BusinessType.DELETE)
 @PostMapping("/remove")
 @ResponseBody
-public AjaxResult remove(${entity} ${entity?uncap_first}s)
+public AjaxResult remove(${entity}Dto ${entity?uncap_first}Dto)
 {
-return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}s.get<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>()));
+return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}Dto));
 }
 /**
 * 批量修改${table.comment!}
@@ -132,9 +124,9 @@ return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields 
 @Log(title = "批量修改${table.comment!}", businessType = BusinessType.UPDATE)
 @PostMapping("/edits")
 @ResponseBody
-public AjaxResult editSaves(List<${entity}> ${entity?uncap_first}s)
+public AjaxResult editSaves(List<${entity}Dto> ${entity?uncap_first}Dtos)
 {
-return toAjax(${entity?uncap_first}Service.update${entity}s(${entity?uncap_first}s));
+return toAjax(${entity?uncap_first}Service.update${entity}s(${entity?uncap_first}Dtos));
 }
 
 /**
@@ -144,9 +136,9 @@ return toAjax(${entity?uncap_first}Service.update${entity}s(${entity?uncap_first
 @Log(title = "批量新增${table.comment!}", businessType = BusinessType.INSERT)
 @PostMapping("/insert${entity}s")
 @ResponseBody
-public AjaxResult insert${entity}s(List<${entity}> ${entity?uncap_first}s)
+public AjaxResult insert${entity}s(List<${entity}Dto> ${entity?uncap_first}Dtos)
 {
-return toAjax(${entity?uncap_first}Service.insert${entity}s(${entity?uncap_first}s));
+return toAjax(${entity?uncap_first}Service.insert${entity}s(${entity?uncap_first}Dtos));
 }
 
 /**
@@ -156,8 +148,8 @@ return toAjax(${entity?uncap_first}Service.insert${entity}s(${entity?uncap_first
 @Log(title = "批量删除${table.comment!}", businessType = BusinessType.DELETE)
 @PostMapping("/removes")
 @ResponseBody
-public AjaxResult removes(List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>> <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s)
+public AjaxResult removes(List<${entity}Dto>  ${entity}Dtos)
 {
-return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s));
+return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(${entity}Dtos));
 }
 }
