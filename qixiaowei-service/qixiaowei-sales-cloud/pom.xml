@@ -42,6 +42,13 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+
         <!-- qixiaowei integration DataSource -->
         <dependency>
             <groupId>net.qixiaowei</groupId>

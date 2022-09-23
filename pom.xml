@@ -241,6 +241,55 @@
                 <version>${qixiaowei.version}</version>
             </dependency>
 
+            <!-- 文件接口 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-file-api</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
+            <!-- 定时任务接口 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-job-api</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
+            <!-- 经营云接口 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-operate-cloud-api</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
+            <!-- 销售云接口 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixaiowei-sales-cloud-api</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
+            <!-- 战略云接口 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-strategy-cloud-api</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
+            <!-- 人才云接口 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-talents-cloud-api</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
+            <!-- 智慧云接口 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-wisdom-cloud-api</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
             <!-- hutool 辅助工具包 -->
             <dependency>
                 <groupId>cn.hutool</groupId>

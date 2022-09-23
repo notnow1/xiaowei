@@ -56,8 +56,12 @@
         <dependency>
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-file-api</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
+        </dependency>
+
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
     </dependencies>
