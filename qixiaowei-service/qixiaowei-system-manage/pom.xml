@@ -81,6 +81,11 @@
             <artifactId>qixiaowei-integration-log</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-system-manage-api</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
