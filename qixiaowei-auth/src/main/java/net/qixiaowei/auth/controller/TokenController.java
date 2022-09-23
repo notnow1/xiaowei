@@ -16,7 +16,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.auth.AuthUtil;
 import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.model.LoginUser;
 
 /**
  * token 控制

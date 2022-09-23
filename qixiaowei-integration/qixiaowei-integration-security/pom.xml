@@ -28,7 +28,7 @@
         <!-- qixiaowei Api System -->
         <dependency>
             <groupId>net.qixiaowei</groupId>
-            <artifactId>qixiaowei-api-system</artifactId>
+            <artifactId>qixiaowei-system-manage-api</artifactId>
         </dependency>
 
     </dependencies>

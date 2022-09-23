@@ -7,7 +7,7 @@ import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.utils.SpringUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.redis.service.RedisService;
-import net.qixiaowei.system.api.domain.SysDictData;
+import net.qixiaowei.system.manage.api.domain.SysDictData;
 
 /**
  * 字典工具类

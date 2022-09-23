@@ -1,0 +1,2 @@
+net.qixiaowei.system.manage.api.factory.RemoteUserFallbackFactory
+net.qixiaowei.system.manage.api.factory.RemoteLogFallbackFactory

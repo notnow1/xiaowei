@@ -13,9 +13,8 @@ import java.time.LocalDateTime;
 * @since ${date}
 */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class ${entity}Dto {
+public class ${entity}DTO {
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
     /**

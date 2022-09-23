@@ -10,9 +10,9 @@ import net.qixiaowei.integration.common.enums.UserStatus;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.api.RemoteUserService;
-import net.qixiaowei.system.api.domain.SysUser;
-import net.qixiaowei.system.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.RemoteUserService;
+import net.qixiaowei.system.manage.api.domain.SysUser;
+import net.qixiaowei.system.manage.api.model.LoginUser;
 
 /**
  * 登录校验方法

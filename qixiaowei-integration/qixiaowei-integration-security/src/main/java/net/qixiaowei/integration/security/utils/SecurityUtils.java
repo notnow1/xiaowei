@@ -7,7 +7,7 @@ import net.qixiaowei.integration.common.constant.TokenConstants;
 import net.qixiaowei.integration.common.context.SecurityContextHolder;
 import net.qixiaowei.integration.common.utils.ServletUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.system.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.model.LoginUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**

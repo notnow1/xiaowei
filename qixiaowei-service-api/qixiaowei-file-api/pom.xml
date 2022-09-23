@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>qixiaowei-service-api</artifactId>
+        <groupId>net.qixiaowei</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>qixiaowei-file-api</artifactId>
+
+    <description>
+        qixiaowei-file-api文件接口模块
+    </description>
+
+    <dependencies>
+
+        <!-- qixiaowei integration common-->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-common</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

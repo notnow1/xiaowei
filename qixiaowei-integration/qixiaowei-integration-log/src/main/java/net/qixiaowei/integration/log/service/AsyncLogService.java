@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
-import net.qixiaowei.system.api.RemoteLogService;
-import net.qixiaowei.system.api.domain.SysOperLog;
+import net.qixiaowei.system.manage.api.RemoteLogService;
+import net.qixiaowei.system.manage.api.domain.SysOperLog;
 
 /**
  * 异步调用日志服务

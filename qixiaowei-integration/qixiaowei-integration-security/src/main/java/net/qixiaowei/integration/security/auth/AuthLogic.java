@@ -16,7 +16,7 @@ import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.annotation.RequiresRoles;
 import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.model.LoginUser;
 
 /**
  * Token 权限验证，逻辑实现类

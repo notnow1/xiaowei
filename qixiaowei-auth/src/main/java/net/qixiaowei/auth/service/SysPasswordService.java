@@ -9,7 +9,7 @@ import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.api.domain.SysUser;
+import net.qixiaowei.system.manage.api.domain.SysUser;
 
 /**
  * 登录密码方法

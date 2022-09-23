@@ -7,8 +7,8 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.utils.ServletUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.ip.IpUtils;
-import net.qixiaowei.system.api.RemoteLogService;
-import net.qixiaowei.system.api.domain.SysLoginInfo;
+import net.qixiaowei.system.manage.api.RemoteLogService;
+import net.qixiaowei.system.manage.api.domain.SysLoginInfo;
 
 /**
  * 记录日志方法

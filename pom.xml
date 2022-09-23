@@ -12,8 +12,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>qixiaowei-modules</module>
-        <module>qixiaowei-api</module>
+        <module>qixiaowei-service</module>
+        <module>qixiaowei-service-api</module>
         <module>qixiaowei-gateway</module>
         <module>qixiaowei-auth</module>
         <module>qixiaowei-gen</module>
@@ -237,7 +237,7 @@
             <!-- 系统接口 -->
             <dependency>
                 <groupId>net.qixiaowei</groupId>
-                <artifactId>qixiaowei-api-system</artifactId>
+                <artifactId>qixiaowei-system-manage-api</artifactId>
                 <version>${qixiaowei.version}</version>
             </dependency>
 

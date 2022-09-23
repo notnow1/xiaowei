@@ -16,7 +16,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.ip.IpUtils;
 import net.qixiaowei.integration.common.utils.uuid.IdUtils;
 import net.qixiaowei.integration.redis.service.RedisService;
-import net.qixiaowei.system.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.model.LoginUser;
 
 /**
  * token验证处理

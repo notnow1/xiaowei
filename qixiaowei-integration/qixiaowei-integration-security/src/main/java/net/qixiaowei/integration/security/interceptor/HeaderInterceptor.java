@@ -11,7 +11,7 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.context.SecurityContextHolder;
 import net.qixiaowei.integration.common.utils.ServletUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.system.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.model.LoginUser;
 
 /**
  * 自定义请求头拦截器，将Header数据封装到线程变量中方便获取

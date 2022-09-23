@@ -1,11 +1,9 @@
 package ${entityPackage};
 
 
-import java.util.Date;
+
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
-import java.io.Serializable;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 import lombok.experimental.Accessors;
 
@@ -15,7 +13,6 @@ import lombok.experimental.Accessors;
 * @since ${date}
 */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 public class ${entity} extends BaseEntity {
 

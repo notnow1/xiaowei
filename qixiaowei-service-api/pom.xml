@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>qixiaowei-cloud</artifactId>
+        <groupId>net.qixiaowei</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>qixiaowei-service-api</artifactId>
+    <description>qixiaowei-service-api模块接口</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>qixiaowei-system-manage-api</module>
+        <module>qixiaowei-file-api</module>
+        <module>qixiaowei-job-api</module>
+        <module>qixiaowei-message-api</module>
+        <module>qixiaowei-strategy-cloud-api</module>
+        <module>qixaiowei-sales-cloud-api</module>
+        <module>qixiaowei-talents-cloud-api</module>
+        <module>qixiaowei-wisdom-cloud-api</module>
+        <module>qixiaowei-operate-cloud-api</module>
+    </modules>
+
+</project>

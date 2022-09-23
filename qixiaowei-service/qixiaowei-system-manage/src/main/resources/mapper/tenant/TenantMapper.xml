@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.tenant.TenantMapper">
+    <!--    查询租户表-->
+    <select id="selectTenantByTenantId" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
+        SELECT
+        tenant_id, tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account, admin_password, support_staff, login_background, tenant_logo, tenant_status, create_by, create_time, update_by, update_time
+        FROM tenant
+        WHERE   tenant_id=#{tenant}
+    </select>
+
+    <!--    查询租户表列表-->
+    <select id="selectTenantList" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
+        SELECT
+        tenant_id, tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account, admin_password, support_staff, login_background, tenant_logo, tenant_status, create_by, create_time, update_by, update_time
+        FROM tenant
+        WHERE 1=1
+            <if test="tenant.tenantId != null and tenant.tenantId != ''">
+                tenant_id=#{tenant.tenantId}
+            </if>
+            <if test="tenant.tenantCode != null and tenant.tenantCode != ''">
+                tenant_code=#{tenant.tenantCode}
+            </if>
+            <if test="tenant.tenantName != null and tenant.tenantName != ''">
+                tenant_name=#{tenant.tenantName}
+            </if>
+            <if test="tenant.tenantAddress != null and tenant.tenantAddress != ''">
+                tenant_address=#{tenant.tenantAddress}
+            </if>
+            <if test="tenant.tenantIndustry != null and tenant.tenantIndustry != ''">
+                tenant_industry=#{tenant.tenantIndustry}
+            </if>
+            <if test="tenant.domain != null and tenant.domain != ''">
+                domain=#{tenant.domain}
+            </if>
+            <if test="tenant.adminAccount != null and tenant.adminAccount != ''">
+                admin_account=#{tenant.adminAccount}
+            </if>
+            <if test="tenant.adminPassword != null and tenant.adminPassword != ''">
+                admin_password=#{tenant.adminPassword}
+            </if>
+            <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
+                support_staff=#{tenant.supportStaff}
+            </if>
+            <if test="tenant.loginBackground != null and tenant.loginBackground != ''">
+                login_background=#{tenant.loginBackground}
+            </if>
+            <if test="tenant.tenantLogo != null and tenant.tenantLogo != ''">
+                tenant_logo=#{tenant.tenantLogo}
+            </if>
+            <if test="tenant.tenantStatus != null and tenant.tenantStatus != ''">
+                tenant_status=#{tenant.tenantStatus}
+            </if>
+            <if test="tenant.createBy != null and tenant.createBy != ''">
+                create_by=#{tenant.createBy}
+            </if>
+            <if test="tenant.createTime != null and tenant.createTime != ''">
+                create_time=#{tenant.createTime}
+            </if>
+            <if test="tenant.updateBy != null and tenant.updateBy != ''">
+                update_by=#{tenant.updateBy}
+            </if>
+            <if test="tenant.updateTime != null and tenant.updateTime != ''">
+                update_time=#{tenant.updateTime}
+            </if>
+    </select>
+    <!--新增租户表-->
+    <insert id="insertTenant">
+        INSERT INTO tenant (tenant_id, tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account, admin_password, support_staff, login_background, tenant_logo, tenant_status, create_by, create_time, update_by, update_time)
+        VALUES (#{tenant.tenantId},#{tenant.tenantCode},#{tenant.tenantName},#{tenant.tenantAddress},#{tenant.tenantIndustry},#{tenant.domain},#{tenant.adminAccount},#{tenant.adminPassword},#{tenant.supportStaff},#{tenant.loginBackground},#{tenant.tenantLogo},#{tenant.tenantStatus},#{tenant.createBy},#{tenant.createTime},#{tenant.updateBy},#{tenant.updateTime})
+    </insert>
+    <!--修改租户表-->
+    <update id="updateTenant">
+        UPDATE tenant
+        SET tenant_id, tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account, admin_password, support_staff, login_background, tenant_logo, tenant_status, create_by, create_time, update_by, update_time
+        WHERE 1=1
+               and tenant_id=#{tenant.tenantId}
+    </update>
+    <!--删除租户表-->
+    <delete id="deleteTenantByTenantId">
+        DELETE FROM tenant
+        WHERE 1=1
+            <if test="tenant.tenantId != null and tenant.tenantId != ''">
+                and tenant_id=#{tenant.tenantId}
+            </if>
+            <if test="tenant.tenantCode != null and tenant.tenantCode != ''">
+                and tenant_code=#{tenant.tenantCode}
+            </if>
+            <if test="tenant.tenantName != null and tenant.tenantName != ''">
+                and tenant_name=#{tenant.tenantName}
+            </if>
+            <if test="tenant.tenantAddress != null and tenant.tenantAddress != ''">
+                and tenant_address=#{tenant.tenantAddress}
+            </if>
+            <if test="tenant.tenantIndustry != null and tenant.tenantIndustry != ''">
+                and tenant_industry=#{tenant.tenantIndustry}
+            </if>
+            <if test="tenant.domain != null and tenant.domain != ''">
+                and domain=#{tenant.domain}
+            </if>
+            <if test="tenant.adminAccount != null and tenant.adminAccount != ''">
+                and admin_account=#{tenant.adminAccount}
+            </if>
+            <if test="tenant.adminPassword != null and tenant.adminPassword != ''">
+                and admin_password=#{tenant.adminPassword}
+            </if>
+            <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
+                and support_staff=#{tenant.supportStaff}
+            </if>
+            <if test="tenant.loginBackground != null and tenant.loginBackground != ''">
+                and login_background=#{tenant.loginBackground}
+            </if>
+            <if test="tenant.tenantLogo != null and tenant.tenantLogo != ''">
+                and tenant_logo=#{tenant.tenantLogo}
+            </if>
+            <if test="tenant.tenantStatus != null and tenant.tenantStatus != ''">
+                and tenant_status=#{tenant.tenantStatus}
+            </if>
+            <if test="tenant.createBy != null and tenant.createBy != ''">
+                and create_by=#{tenant.createBy}
+            </if>
+            <if test="tenant.createTime != null and tenant.createTime != ''">
+                and create_time=#{tenant.createTime}
+            </if>
+            <if test="tenant.updateBy != null and tenant.updateBy != ''">
+                and update_by=#{tenant.updateBy}
+            </if>
+            <if test="tenant.updateTime != null and tenant.updateTime != ''">
+                and update_time=#{tenant.updateTime}
+            </if>
+    </delete>
+    <!--批量删除租户表-->
+    <delete id="deleteTenantByTenantIds">
+        DELETE FROM tenant
+        WHERE   tenant_id IN
+        <foreach  item="item" collection="tenantIds" index="index"  open="(" separator="," close=")">
+                #{item.tenantId}
+        </foreach>
+    </delete>
+    <!--批量新增租户表-->
+    <insert id="batchTenant">
+        INSERT INTO tenant (tenant_id, tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account, admin_password, support_staff, login_background, tenant_logo, tenant_status, create_by, create_time, update_by, update_time)
+        VALUES (
+        <foreach item="item" index="index" collection="tenantIds" separator=",">
+            #{tenant.tenantId},#{tenant.tenantCode},#{tenant.tenantName},#{tenant.tenantAddress},#{tenant.tenantIndustry},#{tenant.domain},#{tenant.adminAccount},#{tenant.adminPassword},#{tenant.supportStaff},#{tenant.loginBackground},#{tenant.tenantLogo},#{tenant.tenantStatus},#{tenant.createBy},#{tenant.createTime},#{tenant.updateBy},#{item.updateTime}
+        </foreach>)
+    </insert>
+</mapper>
+
+

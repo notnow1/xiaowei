@@ -18,45 +18,53 @@ import java.util.Map;
 
 public class CodeGenerator {
 
-    // 实体类 出参 入参 输出目录 因固定实体类和dto生成路径 不需要修改！！！！
-    private static final String entityAndDtoPath = "D://projects//qixiaowei-cloud//qixiaowei-api//qixiaowei-api-system//src//main//java//net//qixiaowei//system//api";
-    //数据库配置
-    private static final String url = "jdbc:mysql://127.0.0.1:3306/test";
-    private static final String username = "root";
-    private static final String password = "123456";
+    private static final String projectPath = "D:\\Project\\qixiaowei-cloud";
+
+    private static final String module_name = "system-manage";
+
+    private static final String module_path = "system/manage";
+
+    private static final String extend_Package = "/tenant";
+
+    private static final String api_default = "/qixiaowei-service-api";
+
+    private static final String service_default = "/qixiaowei-service";
     //表名
-    private static final String tables = "apply_url,avail_data_source";
-    //controller输出目录
-    private static final String generatePath = "D://projects//qixiaowei-cloud//qixiaowei-modules//qixiaowei-system//src//main//java//net//qixiaowei//system";
+    private static final String tables = "tenant";
+
+
+    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/system-manage";
+    private static final String username = "qxwdev";
+    private static final String password = "xN03eQzR";
+
+    private static final String common_default_path = "/src/main/java/net/qixiaowei/";
+
     //导入包名 如net.qixiaowei.system
-    private static final String packagePath = "net//qixiaowei//system";
+    private static final String packagePath = "net/qixiaowei/" + module_path;
+    private static final String qixiaowei_name = "/qixiaowei-";
+
+    // 实体类 出参 入参 输出目录 因固定实体类和dto生成路径 不需要修改！！！！
+    private static final String entityAndDtoPath = projectPath + api_default + qixiaowei_name + module_name + "-api" + common_default_path + module_path + "/api";
+    //数据库配置
+
+    //controller输出目录
+    private static final String generatePath = projectPath + service_default + qixiaowei_name + module_name + common_default_path + module_path;
 
     //实体类package
-    private static final String entityPackage = "domain";
+    private static final String entityPackage = "domain" + extend_Package;
     //dto package
-    private static final String dtoPackage = "dto";
+    private static final String dtoPackage = "dto" + extend_Package;
     //dto controller
-    private static final String controllerPackage = "controller";
+    private static final String controllerPackage = "controller" + extend_Package;
     //service package
-    private static final String servicePackage = "service";
+    private static final String servicePackage = "service" + extend_Package;
     //serviceImpl package
-    private static final String serviceImplPackage = "service/impl";
+    private static final String serviceImplPackage = "service/impl" + extend_Package;
     //mapper package
-    private static final String mapperPackage = "mapper";
-/*       //实体类package
-        private static final String entityPackage = "domain/system";
-        //dto package
-        private static final String dtoPackage = "dto/system";
-        //dto controller
-        private static final String controllerPackage = "controller/system";
-        //service package
-        private static final String servicePackage = "service/system";
-        //serviceImpl package
-        private static final String serviceImplPackage = "service/impl/system";
-        //mapper package
-        private static final String mapperPackage = "mapper/system";*/
+    private static final String mapperPackage = "mapper" + extend_Package;
     //mapperXml路径
-    private static final String mapperXmlPath = "D://projects//qixiaowei-cloud//qixiaowei-modules//qixiaowei-system//src//main//resources";
+    private static final String mapperXmlPath = projectPath + service_default + qixiaowei_name + module_name + "/src/main/resources";
+
 
     public static void main(String[] args) {
         FastAutoGenerator.create(url, username, password)
@@ -91,9 +99,9 @@ public class CodeGenerator {
 
         @Override
         protected void outputCustomFile(@NotNull Map<String, String> customFile, @NotNull TableInfo tableInfo, @NotNull Map<String, Object> objectMap) {
-            String substring = packagePath.substring(packagePath.lastIndexOf("//")).replaceAll("//", "");
+            String substring = packagePath.substring(packagePath.lastIndexOf("/")).replaceAll("/", "");
             //对包名做处理
-            String s = packagePath.replaceAll("//", ".");
+            String s = packagePath.replaceAll("/", ".");
             //表名
             String entityName = tableInfo.getEntityName();
             //自定义模板参数（定义的这些参数可以在我们的Freemark模板中使用&{}语法取到该值，比如 &{requestMapping}）
@@ -112,7 +120,7 @@ public class CodeGenerator {
             objectMap.put("leftBrace", "{");
             objectMap.put("rightBrace", "}");
             //@RequiresPermissions("") 注解所需参数
-            objectMap.put("packageClass", substring);
+            objectMap.put("packageClass", module_path.replaceAll("/", ":"));
 
             //设置要生成的文件名以及FreeMark模板文件路径
             customFile = new HashMap<>();
@@ -120,7 +128,7 @@ public class CodeGenerator {
             // 实体类
             customFile.put(entityName + StringPool.DOT_JAVA, "/template/domain.java.ftl");
             // dto类
-            customFile.put(entityName + "Dto" + StringPool.DOT_JAVA, "/template/dto.java.ftl");
+            customFile.put(entityName + "DTO" + StringPool.DOT_JAVA, "/template/dto.java.ftl");
             // Controller类
             customFile.put(entityName + "Controller" + StringPool.DOT_JAVA, "/template/controller.java.ftl");
             // Service接口类
@@ -144,7 +152,7 @@ public class CodeGenerator {
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
-                else if (StringUtils.equals(key, entityName + "Dto" + StringPool.DOT_JAVA)) {
+                else if (StringUtils.equals(key, entityName + "DTO" + StringPool.DOT_JAVA)) {
                     fileName = entityAndDtoPath + "/" + dtoPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));

@@ -2,7 +2,7 @@ package net.qixiaowei.integration.security.auth;
 
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.annotation.RequiresRoles;
-import net.qixiaowei.system.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.model.LoginUser;
 
 /**
  * Token 权限验证工具类

@@ -23,12 +23,9 @@ import com.alibaba.fastjson2.JSON;
 import net.qixiaowei.integration.common.utils.ServletUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.ip.IpUtils;
-import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessStatus;
-import net.qixiaowei.integration.log.filter.PropertyPreExcludeFilter;
-import net.qixiaowei.integration.log.service.AsyncLogService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.api.domain.SysOperLog;
+import net.qixiaowei.system.manage.api.domain.SysOperLog;
 
 /**
  * 操作日志记录处理
