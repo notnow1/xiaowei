@@ -1,28 +1,19 @@
 package ${controllerPackage};
 
 import java.util.List;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import org.springframework.stereotype.Controller;
 import net.qixiaowei.integration.log.enums.BusinessType;
-import ${entityPackage}.${entity};
 import ${dtoPackage}.${entity}DTO;
 import ${servicePackage}.${table.serviceName};
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.common.web.controller.BaseController;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import org.springframework.web.bind.annotation.*;
 
 

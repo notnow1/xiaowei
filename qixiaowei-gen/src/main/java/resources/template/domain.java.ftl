@@ -4,8 +4,8 @@ package ${entityPackage};
 
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
-import java.time.LocalDateTime;
 import lombok.experimental.Accessors;
+import java.util.Date;
 
 /**
 * ${table.comment!}
@@ -20,13 +20,16 @@ public class ${entity} extends BaseEntity {
 
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
-
     <#if field.comment!?length gt 0>
-    /**
-    * ${field.comment}
-    */
+        <#if "${field.comment}"!="创建人"&&"${field.comment}"!="创建时间" &&"${field.comment}"!="修改人" &&"${field.comment}"!="修改时间">
+     /**
+     * ${field.comment}
+     */
+        </#if>
     </#if>
-    private ${field.propertyType} ${field.propertyName};
+    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime">
+     private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if>  ${field.propertyName};
+    </#if>
 </#list>
 
 }

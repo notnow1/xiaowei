@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import net.qixiaowei.integration.common.utils.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import ${entityPackage}.${entity};
 import ${dtoPackage}.${entity}DTO;

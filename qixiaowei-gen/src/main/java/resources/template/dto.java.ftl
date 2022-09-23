@@ -1,11 +1,9 @@
 package ${dtoPackage};
 
 import java.util.Date;
-import java.io.Serializable;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
 * ${table.comment!}
@@ -20,7 +18,7 @@ public class ${entity}DTO {
     /**
     * ${field.comment}
     */
-    private ${field.propertyType} ${field.propertyName};
+    private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if> ${field.propertyName};
 </#list>
 
 }

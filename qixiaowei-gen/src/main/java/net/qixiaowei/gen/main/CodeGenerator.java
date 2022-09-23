@@ -18,34 +18,34 @@ import java.util.Map;
 
 public class CodeGenerator {
 
-    private static final String projectPath = "D:\\Project\\qixiaowei-cloud";
-
+    private static final String projectPath = System.getProperties().getProperty("user.dir");
+    //项目名称
     private static final String module_name = "system-manage";
-
+    //项目路径
     private static final String module_path = "system/manage";
-
+    //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
     private static final String extend_Package = "/tenant";
+    //表名
+    private static final String tables = "apply_url";
+
+    //数据库配置
+    private static final String url = "jdbc:mysql://43.139.7.31:3306/test";
+    private static final String username = "root";
+    private static final String password = "qixiaowei2022";
+
+
+
 
     private static final String api_default = "/qixiaowei-service-api";
-
     private static final String service_default = "/qixiaowei-service";
-    //表名
-    private static final String tables = "tenant";
-
-
-    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/system-manage";
-    private static final String username = "qxwdev";
-    private static final String password = "xN03eQzR";
-
     private static final String common_default_path = "/src/main/java/net/qixiaowei/";
-
     //导入包名 如net.qixiaowei.system
     private static final String packagePath = "net/qixiaowei/" + module_path;
     private static final String qixiaowei_name = "/qixiaowei-";
 
     // 实体类 出参 入参 输出目录 因固定实体类和dto生成路径 不需要修改！！！！
     private static final String entityAndDtoPath = projectPath + api_default + qixiaowei_name + module_name + "-api" + common_default_path + module_path + "/api";
-    //数据库配置
+
 
     //controller输出目录
     private static final String generatePath = projectPath + service_default + qixiaowei_name + module_name + common_default_path + module_path;
