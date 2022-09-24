@@ -37,9 +37,9 @@
     </select>
     <!--新增${table.comment!}-->
     <insert id="insert${entity}">
-        INSERT INTO ${table.name} (<#list table.commonFields as field>${field.name},</#list>${table.fieldNames})
+        INSERT INTO ${table.name} (<#list table.commonFields as field><#if !field.keyFlag>${field.name},</#if></#list>${table.fieldNames})
         VALUES
-        (<#list table.fields as field><#if !field_has_next>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}<#else>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},</#if></#list>)
+        (<#list table.fields as field><#if !field.keyFlag><#if !field_has_next>#${leftBrace}item.${field.propertyName}${rightBrace}<#else>#${leftBrace}item.${field.propertyName}${rightBrace},</#if></#if></#list>)
     </insert>
     <!--修改${table.comment!}-->
     <update id="update${entity}">
@@ -117,12 +117,12 @@
     </update>
     <!--批量新增${table.comment!}-->
     <insert id="batch${entity}">
-        INSERT INTO ${table.name} (<#list table.commonFields as field>${field.name},</#list>${table.fieldNames})
+        INSERT INTO ${table.name} (<#list table.commonFields as field><#if !field.keyFlag>${field.name},</#if></#list>${table.fieldNames})
         VALUES
         <foreach item="item" index="index"
                  collection="${entity?uncap_first}s"
                  separator=",">
-            (<#list table.fields as field><#if !field_has_next>#${leftBrace}item.${field.propertyName}${rightBrace}<#else>#${leftBrace}item.${field.propertyName}${rightBrace},</#if></#list>)
+            (<#list table.fields as field><#if !field.keyFlag><#--生成普通字段 --><#if !field_has_next>#${leftBrace}item.${field.propertyName}${rightBrace}<#else>#${leftBrace}item.${field.propertyName}${rightBrace},</#if></#if></#list>)
         </foreach>
     </insert>
 
