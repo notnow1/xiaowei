@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 * @author ${author}
 * @since ${date}
 */
-@Controller
+@RestController
 @RequestMapping("${requestMapping}")
 public class ${table.controllerName} extends BaseController
 {
@@ -61,7 +61,6 @@ public class ${table.controllerName} extends BaseController
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:add")
     @Log(title = "新增${table.comment!}", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    @ResponseBody
     public AjaxResult addSave(${entity}DTO ${entity?uncap_first}DTO) {
     return toAjax(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}DTO));
     }
@@ -73,7 +72,6 @@ public class ${table.controllerName} extends BaseController
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:edit")
     @Log(title = "修改${table.comment!}", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    @ResponseBody
     public AjaxResult editSave(${entity}DTO ${entity?uncap_first}DTO)
     {
     return toAjax(${entity?uncap_first}Service.update${entity}(${entity?uncap_first}DTO));
@@ -85,7 +83,6 @@ public class ${table.controllerName} extends BaseController
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:remove")
     @Log(title = "删除${table.comment!}", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    @ResponseBody
     public AjaxResult remove(${entity}DTO ${entity?uncap_first}DTO)
     {
     return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}DTO));
@@ -96,7 +93,6 @@ public class ${table.controllerName} extends BaseController
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:edits")
     @Log(title = "批量修改${table.comment!}", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
-    @ResponseBody
     public AjaxResult editSaves(List<${entity}DTO> ${entity?uncap_first}Dtos)
     {
     return toAjax(${entity?uncap_first}Service.update${entity}s(${entity?uncap_first}Dtos));
@@ -108,7 +104,6 @@ public class ${table.controllerName} extends BaseController
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:insert${entity}s")
     @Log(title = "批量新增${table.comment!}", businessType = BusinessType.INSERT)
     @PostMapping("/insert${entity}s")
-    @ResponseBody
     public AjaxResult insert${entity}s(List<${entity}DTO> ${entity?uncap_first}Dtos)
     {
     return toAjax(${entity?uncap_first}Service.insert${entity}s(${entity?uncap_first}Dtos));
@@ -120,7 +115,6 @@ public class ${table.controllerName} extends BaseController
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:removes")
     @Log(title = "批量删除${table.comment!}", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    @ResponseBody
     public AjaxResult removes(List<${entity}DTO>  ${entity}Dtos)
     {
     return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(${entity}Dtos));

@@ -21,7 +21,7 @@ public class ${entity} extends BaseEntity {
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
     <#if field.comment!?length gt 0>
-        <#if "${field.comment}"!="创建人"&&"${field.comment}"!="创建时间" &&"${field.comment}"!="修改人" &&"${field.comment}"!="修改时间">
+        <#if "${field.comment}"!="创建人"&&"${field.comment}"!="创建时间" &&"${field.comment}"!="更新人" &&"${field.comment}"!="更新时间">
      /**
      * ${field.comment}
      */
