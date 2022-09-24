@@ -68,5 +68,5 @@ public interface ${entity}Mapper{
     * @param ${entity}s ${table.comment!}列表
     * @return 结果
     */
-    int batch${entity}(@Param("<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s")List<${entity}> ${entity}s);
+    int batch${entity}(@Param("${entity?uncap_first}s")List<${entity}> ${entity}s);
 }

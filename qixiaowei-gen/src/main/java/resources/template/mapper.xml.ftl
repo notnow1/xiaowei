@@ -11,6 +11,7 @@
         ${table.fieldNames}
         FROM ${table.name}
         WHERE <#list table.fields as field><#if field.keyFlag> ${field.name}=#${leftBrace}${entity?uncap_first}${rightBrace}</#if></#list>
+        and delete_flag=0
     </select>
 
     <!--    查询${table.comment!}列表-->
@@ -21,15 +22,15 @@
         </#list>
         ${table.fieldNames}
         FROM ${table.name}
-        WHERE 1=1
+        WHERE delete_flag=0
         <#list table.fields as field>
             <#if "${field.propertyType}"!="LocalDateTime">
                 <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
-                    ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                    and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
                 </if>
             <#else>
                 <if test="${entity?uncap_first}.${field.propertyName} != null">
-                    ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                    and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
                 </if>
             </#if>
         </#list>
@@ -38,58 +39,90 @@
     <insert id="insert${entity}">
         INSERT INTO ${table.name} (<#list table.commonFields as field>${field.name},</#list>${table.fieldNames})
         VALUES
-        (<#list table.fields as field><#if !field_has_next>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}<#else>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},</#if></#list>
-        )
+        (<#list table.fields as field><#if !field_has_next>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}<#else>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},</#if></#list>)
     </insert>
     <!--修改${table.comment!}-->
     <update id="update${entity}">
         UPDATE ${table.name}
-        SET <#list table.commonFields as field>${field.name}="",</#list>${table.fieldNames}
-        WHERE 1=1
+        SET
+        <#list table.fields as field>
+            <#if !field_has_next>
+                <#if "${field.propertyType}"!="LocalDateTime">
+                    <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                        ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                    </if>
+                <#else>
+                    <if test="${entity?uncap_first}.${field.propertyName} != null">
+                        ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                    </if>
+                </#if>
+            <#else>
+                <#if "${field.propertyType}"!="LocalDateTime">
+                    <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                        ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
+                    </if>
+                <#else>
+                    <if test="${entity?uncap_first}.${field.propertyName} != null">
+                        ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
+                    </if>
+                </#if>
+            </#if>
+        </#list>
+        WHERE
         <#list table.fields as field >
             <#if field.keyFlag><#--生成普通字段 -->
-                and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                 ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
             </#if>
         </#list>
     </update>
     <!--删除${table.comment!}-->
-    <delete id="delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>">
-        DELETE FROM ${table.name}
-        WHERE 1=1
-        <#list table.fields as field>
-            <#if "${field.propertyType}"!="LocalDateTime">
-                <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
-                    ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
-                </if>
-            <#else>
-                <if test="${entity?uncap_first}.${field.propertyName} != null">
-                    ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
-                </if>
+    <update id="delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>">
+        UPDATE ${table.name}
+        SET delete_flag= 1,
+        <#list table.fields as field >
+            <#if field.name=="update_by"><#--生成普通字段 -->
+                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
+            </#if>
+            <#if field.name=="update_by"><#--生成普通字段 -->
+                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
             </#if>
         </#list>
-    </delete>
+        WHERE
+        <#list table.fields as field >
+            <#if field.keyFlag><#--生成普通字段 -->
+                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+            </#if>
+        </#list>
+    </update>
     <!--批量删除${table.comment!}-->
-    <delete id="delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s">
-        DELETE FROM ${table.name}
+    <update id="delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s">
+        UPDATE ${table.name}
+        SET delete_flag= 1,
+        <#list table.fields as field >
+            <#if field.name=="update_by"><#--生成普通字段 -->
+                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
+            </#if>
+            <#if field.name=="update_by"><#--生成普通字段 -->
+                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+            </#if>
+        </#list>
         WHERE <#list table.fields as field><#if field.keyFlag> ${field.name} IN
             <foreach item="item"
                      collection="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s"
                      index="index" open="(" separator="," close=")">
-                #${leftBrace}
-                item.<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>${rightBrace}
+                #${leftBrace}item.<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>${rightBrace}
             </foreach>
         </#if></#list>
-    </delete>
+    </update>
     <!--批量新增${table.comment!}-->
     <insert id="batch${entity}">
         INSERT INTO ${table.name} (<#list table.commonFields as field>${field.name},</#list>${table.fieldNames})
-        VALUES (
+        VALUES
         <foreach item="item" index="index"
-                 collection="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s"
+                 collection="${entity?uncap_first}s"
                  separator=",">
-            <#list table.fields as field><#if !field_has_next>#${leftBrace}item.${field.propertyName}${rightBrace}<#else>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},</#if></#list>
+            (<#list table.fields as field><#if !field_has_next>#${leftBrace}item.${field.propertyName}${rightBrace}<#else>#${leftBrace}item.${field.propertyName}${rightBrace},</#if></#list>)
         </foreach>
-        )
     </insert>
 </mapper>
 

@@ -5,46 +5,57 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
-import com.google.common.collect.Lists;
 import com.sun.istack.internal.NotNull;
 import net.qixiaowei.gen.main.utils.ExcelDiskUtils;
-import org.springframework.beans.BeanUtils;
+
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CodeGenerator {
 
     private static final String projectPath = System.getProperties().getProperty("user.dir");
     //项目名称
-    private static final String module_name = "system-manage";
+    private static final String module_name = "system-manage" ;
     //项目路径
-    private static final String module_path = "system/manage";
+    private static final String module_path = "system/manage" ;
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
-    private static final String extend_Package = "/tenant";
+    private static final String extend_Package = "/tenant" ;
     //表名
-    private static final String tables = "apply_url";
+    private static final String tables = "apply_url" ;
 
     //数据库配置
-    private static final String url = "jdbc:mysql://43.139.7.31:3306/test";
-    private static final String username = "root";
-    private static final String password = "qixiaowei2022";
+    private static final String url = "jdbc:mysql://43.139.7.31:3306/test" ;
+    private static final String username = "root" ;
+    private static final String password = "qixiaowei2022" ;
 
 
+    //实体类 默认生成 不生成改为false
+    private static final boolean default_entity = false;
+    //DTO类
+    private static final boolean default_DTO = true;
+    //DTO类
+    private static final boolean default_controller = true;
+    //service类
+    private static final boolean default_service = true;
+    //service实现类
+    private static final boolean default_serviceImpl = true;
+    //mapper类
+    private static final boolean default_mapper = true;
+    //mapperxml类
+    private static final boolean default_mapper_xml = true;
 
 
-    private static final String api_default = "/qixiaowei-service-api";
-    private static final String service_default = "/qixiaowei-service";
-    private static final String common_default_path = "/src/main/java/net/qixiaowei/";
+    private static final String api_default = "/qixiaowei-service-api" ;
+    private static final String service_default = "/qixiaowei-service" ;
+    private static final String common_default_path = "/src/main/java/net/qixiaowei/" ;
     //导入包名 如net.qixiaowei.system
     private static final String packagePath = "net/qixiaowei/" + module_path;
-    private static final String qixiaowei_name = "/qixiaowei-";
+    private static final String qixiaowei_name = "/qixiaowei-" ;
 
     // 实体类 出参 入参 输出目录 因固定实体类和dto生成路径 不需要修改！！！！
-    private static final String entityAndDtoPath = projectPath + api_default + qixiaowei_name + module_name + "-api" + common_default_path + module_path + "/api";
+    private static final String entityAndDtoPath = projectPath + api_default + qixiaowei_name + module_name + "-api" + common_default_path + module_path + "/api" ;
 
 
     //controller输出目录
@@ -63,13 +74,13 @@ public class CodeGenerator {
     //mapper package
     private static final String mapperPackage = "mapper" + extend_Package;
     //mapperXml路径
-    private static final String mapperXmlPath = projectPath + service_default + qixiaowei_name + module_name + "/src/main/resources";
+    private static final String mapperXmlPath = projectPath + service_default + qixiaowei_name + module_name + "/src/main/resources" ;
 
 
     public static void main(String[] args) {
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
-                    builder.author("TMC") // 设置作者
+                    builder.author("TANGMICHI") // 设置作者
                             .outputDir(generatePath); // 指定输出目录
                 })
                 .strategyConfig(builder -> {
@@ -124,21 +135,31 @@ public class CodeGenerator {
 
             //设置要生成的文件名以及FreeMark模板文件路径
             customFile = new HashMap<>();
-            // todo 不想生成那个注释那个
-            // 实体类
-            customFile.put(entityName + StringPool.DOT_JAVA, "/template/domain.java.ftl");
-            // dto类
-            customFile.put(entityName + "DTO" + StringPool.DOT_JAVA, "/template/dto.java.ftl");
-            // Controller类
-            customFile.put(entityName + "Controller" + StringPool.DOT_JAVA, "/template/controller.java.ftl");
-            // Service接口类
-            customFile.put("I" + entityName + "Service" + StringPool.DOT_JAVA, "/template/service.java.ftl");
-            // Service实现类
-            customFile.put(entityName + "ServiceImpl" + StringPool.DOT_JAVA, "/template/serviceImpl.java.ftl");
-            // mapper类
-            customFile.put(entityName + "Mapper" + StringPool.DOT_JAVA, "/template/mapper.java.ftl");
-            // mapperXml类
-            customFile.put(entityName + "Mapper" + StringPool.DOT_XML, "/template/mapper.xml.ftl");
+            if (default_entity) {
+                // 实体类
+                customFile.put(entityName + StringPool.DOT_JAVA, "/template/domain.java.ftl");
+            }
+            if (default_DTO) {          // dto类
+                customFile.put(entityName + "DTO" + StringPool.DOT_JAVA, "/template/dto.java.ftl");
+            }
+            if (default_controller) {            // Controller类
+                customFile.put(entityName + "Controller" + StringPool.DOT_JAVA, "/template/controller.java.ftl");
+            }
+            if (default_service) {          // Service接口类
+                customFile.put("I" + entityName + "Service" + StringPool.DOT_JAVA, "/template/service.java.ftl");
+            }
+            if (default_serviceImpl) {         // Service实现类
+                customFile.put(entityName + "ServiceImpl" + StringPool.DOT_JAVA, "/template/serviceImpl.java.ftl");
+            }
+            if (default_mapper) {
+                // mapper类
+                customFile.put(entityName + "Mapper" + StringPool.DOT_JAVA, "/template/mapper.java.ftl");
+            }
+            if (default_mapper_xml) {
+                // mapperXml类
+                customFile.put(entityName + "Mapper" + StringPool.DOT_XML, "/template/mapper.xml.ftl");
+            }
+
 
             customFile.forEach((key, value) -> {
                 String fileName = null;
