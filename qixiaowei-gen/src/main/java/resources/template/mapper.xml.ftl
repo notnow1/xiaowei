@@ -106,7 +106,8 @@
                 ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
             </#if>
         </#list>
-        WHERE <#list table.fields as field><#if field.keyFlag> ${field.name} IN
+        WHERE
+        <#list table.fields as field><#if field.keyFlag> ${field.name} IN
             <foreach item="item"
                      collection="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s"
                      index="index" open="(" separator="," close=")">
