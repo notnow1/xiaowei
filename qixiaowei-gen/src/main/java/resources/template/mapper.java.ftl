@@ -45,6 +45,13 @@ public interface ${entity}Mapper{
     int update${entity}(@Param("${entity?uncap_first}")${entity} ${entity?uncap_first});
 
     /**
+    * 批量修改${table.comment!}
+    *
+    * @param ${entity?uncap_first}List ${table.comment!}
+    * @return 结果
+    */
+    int update${entity}s(@Param("${entity?uncap_first}List")List<${entity}> ${entity?uncap_first}List);
+    /**
     * 逻辑删除${table.comment!}
     *
     * @param ${entity?uncap_first}

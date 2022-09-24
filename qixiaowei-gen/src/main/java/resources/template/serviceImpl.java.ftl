@@ -184,17 +184,16 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     */
     @Transactional
     public int update${entity}s(List<${entity}DTO> ${entity?uncap_first}Dtos){
-    int num = 0;
-    List<${entity}> ${entity?uncap_first}List = new ArrayList();
-    for (${entity}DTO ${entity?uncap_first}DTO : ${entity?uncap_first}Dtos) {
-       ${entity} ${entity?uncap_first} =new ${entity}();
-       BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
-    ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
-    ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
-       ${entity?uncap_first}List.add(${entity?uncap_first});
-       num=num+${entity?uncap_first}Mapper.update${entity}(${entity?uncap_first});
-    }
-    return num;
+     List<${entity}> ${entity?uncap_first}List = new ArrayList();
+
+     for (${entity}DTO ${entity?uncap_first}DTO : ${entity?uncap_first}Dtos) {
+     ${entity} ${entity?uncap_first} =new ${entity}();
+     BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
+     ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
+     ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+     ${entity?uncap_first}List.add(${entity?uncap_first});
+     }
+     return ${entity?uncap_first}Mapper.update${entity}s(${entity?uncap_first}List);
     }
 }
 
