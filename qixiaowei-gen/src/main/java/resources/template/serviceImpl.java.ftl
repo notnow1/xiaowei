@@ -83,7 +83,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     }
 
     /**
-    * 批量删除${table.comment!}
+    * 逻辑批量删除${table.comment!}
     *
     * @param ${entity?uncap_first}Dtos 需要删除的${table.comment!}主键
     * @return 结果
@@ -91,16 +91,16 @@ public class ${entity}ServiceImpl implements I${entity}Service{
 
     @Transactional
     @Override
-    public int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<${entity}DTO> ${entity?uncap_first}Dtos){
+    public int logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<${entity}DTO> ${entity?uncap_first}Dtos){
             List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>> stringList = new ArrayList();
             for (${entity}DTO ${entity?uncap_first}DTO : ${entity?uncap_first}Dtos) {
                 stringList.add(${entity?uncap_first}DTO.get<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>());
             }
-    return ${entity?uncap_first}Mapper.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(stringList);
+    return ${entity?uncap_first}Mapper.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(stringList);
     }
 
     /**
-    * 删除${table.comment!}信息
+    * 物理删除${table.comment!}信息
     *
     * @param <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list> ${table.comment!}主键
     * @return 结果
@@ -114,7 +114,22 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     }
 
      /**
-     * 删除${table.comment!}信息
+     * 逻辑删除${table.comment!}信息
+     *
+     * @param  ${entity?uncap_first}DTO ${table.comment!}
+     * @return 结果
+     */
+     @Transactional
+     @Override
+     public int logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity}DTO ${entity?uncap_first}DTO)
+     {
+     ${entity} ${entity?uncap_first}=new ${entity}();
+     BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
+     return ${entity?uncap_first}Mapper.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first});
+     }
+
+     /**
+     * 物理删除${table.comment!}信息
      *
      * @param  ${entity?uncap_first}DTO ${table.comment!}
      * @return 结果
@@ -126,6 +141,21 @@ public class ${entity}ServiceImpl implements I${entity}Service{
      ${entity} ${entity?uncap_first}=new ${entity}();
      BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
      return ${entity?uncap_first}Mapper.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}.get<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>());
+     }
+     /**
+     * 物理批量删除${table.comment!}
+     *
+     * @param ${entity?uncap_first}Dtos 需要删除的${table.comment!}主键
+     * @return 结果
+     */
+     @Transactional
+     @Override
+     public int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<${entity}DTO> ${entity?uncap_first}Dtos){
+     List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>> stringList = new ArrayList();
+     for (${entity}DTO ${entity?uncap_first}DTO : ${entity?uncap_first}Dtos) {
+     stringList.add(${entity?uncap_first}DTO.get<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>());
+     }
+     return ${entity?uncap_first}Mapper.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(stringList);
      }
 
     /**

@@ -59,7 +59,22 @@ public interface I${entity}Service{
     int insert${entity}s(List<${entity}DTO> ${entity?uncap_first}Dtos);
 
     /**
-    * 批量删除${table.comment!}
+    * 逻辑批量删除${table.comment!}
+    *
+    * @param ${entity}Dtos 需要删除的${table.comment!}集合
+    * @return 结果
+    */
+    int logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<${entity}DTO> ${entity}Dtos);
+
+    /**
+    * 逻辑删除${table.comment!}信息
+    *
+    * @param ${entity?uncap_first}DTO
+    * @return 结果
+    */
+    int logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity}DTO ${entity?uncap_first}DTO);
+    /**
+    * 逻辑批量删除${table.comment!}
     *
     * @param ${entity}Dtos 需要删除的${table.comment!}集合
     * @return 结果
@@ -67,12 +82,13 @@ public interface I${entity}Service{
     int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<${entity}DTO> ${entity}Dtos);
 
     /**
-    * 删除${table.comment!}信息
+    * 逻辑删除${table.comment!}信息
     *
     * @param ${entity?uncap_first}DTO
     * @return 结果
     */
     int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity}DTO ${entity?uncap_first}DTO);
+
 
     /**
     * 删除${table.comment!}信息

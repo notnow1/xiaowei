@@ -78,14 +78,14 @@ public class ${table.controllerName} extends BaseController
     }
 
     /**
-    * 删除${table.comment!}
+    * 逻辑删除${table.comment!}
     */
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:remove")
     @Log(title = "删除${table.comment!}", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody ${entity}DTO ${entity?uncap_first}DTO)
     {
-    return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}DTO));
+    return toAjax(${entity?uncap_first}Service.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}DTO));
     }
     /**
     * 批量修改${table.comment!}
@@ -110,13 +110,13 @@ public class ${table.controllerName} extends BaseController
     }
 
     /**
-    * 批量删除${table.comment!}
+    * 逻辑批量删除${table.comment!}
     */
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:removes")
     @Log(title = "批量删除${table.comment!}", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<${entity}DTO>  ${entity}Dtos)
     {
-    return toAjax(${entity?uncap_first}Service.delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(${entity}Dtos));
+    return toAjax(${entity?uncap_first}Service.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(${entity}Dtos));
     }
 }
