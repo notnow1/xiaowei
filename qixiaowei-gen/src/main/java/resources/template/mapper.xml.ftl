@@ -149,19 +149,19 @@
         <trim prefix="set" suffixOverrides=",">
         <#list table.fields as field >
             <trim prefix="${field.name}=case" suffix="end,">
+                <#if !field.keyFlag>
                 <foreach collection="${entity?uncap_first}List" item="item" index="index">
-                     <#if !field.keyFlag>
                          <#if "${field.propertyType}"!="LocalDateTime">
                              <if test="item.${field.propertyName} != null and item.${field.propertyName} != ''">
-                                 when <#list table.fields as field><#if field.keyFlag>${field.name}</#if></#list>=<#list table.fields as field><#if field.keyFlag>#${leftBrace}item.${field.propertyName}${rightBrace}</#if></#list> then #${leftBrace}item.${field.name}${rightBrace}
+                                 when <#list table.fields as field><#if field.keyFlag>${field.name}</#if></#list>=<#list table.fields as field><#if field.keyFlag>#${leftBrace}item.${field.propertyName}${rightBrace}</#if></#list> then #${leftBrace}item.${field.propertyName}${rightBrace}
                              </if>
                          <#else>
                              <if test="item.${field.propertyName} != null">
-                                 when <#list table.fields as field><#if field.keyFlag>${field.name}</#if></#list>=<#list table.fields as field><#if field.keyFlag>#${leftBrace}item.${field.propertyName}${rightBrace}</#if></#list> then #${leftBrace}item.${field.name}${rightBrace}
+                                 when <#list table.fields as field><#if field.keyFlag>${field.name}</#if></#list>=<#list table.fields as field><#if field.keyFlag>#${leftBrace}item.${field.propertyName}${rightBrace}</#if></#list> then #${leftBrace}item.${field.propertyName}${rightBrace}
                              </if>
                          </#if>
-                     </#if>
                 </foreach>
+                </#if>
             </trim>
         </#list>
         </trim>
