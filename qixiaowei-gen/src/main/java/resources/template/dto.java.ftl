@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import javax.validation.groups.Default;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
 * ${table.comment!}
@@ -37,6 +38,9 @@ public class ${entity}DTO {
     /**
     * ${field.comment}
     */
+    <#if "${field.propertyType}"=="LocalDateTime">
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    </#if>
     private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if> ${field.propertyName};
 </#list>
 

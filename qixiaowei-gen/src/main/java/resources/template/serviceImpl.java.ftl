@@ -130,7 +130,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
      {
      ${entity} ${entity?uncap_first}=new ${entity}();
      BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
-     return ${entity?uncap_first}Mapper.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first});
+     return ${entity?uncap_first}Mapper.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first},SecurityUtils.getUserId(),DateUtils.getNowDate());
      }
 
      /**
