@@ -21,13 +21,13 @@ public class ${entity} extends BaseEntity {
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
     <#if field.comment!?length gt 0>
-        <#if "${field.comment}"!="创建人"&&"${field.comment}"!="创建时间" &&"${field.comment}"!="更新人" &&"${field.comment}"!="更新时间">
+        <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime" &&"${field.propertyName}"!="remark">
      /**
      * ${field.comment}
      */
         </#if>
     </#if>
-    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime">
+    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark">
      private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if>  ${field.propertyName};
     </#if>
 </#list>

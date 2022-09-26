@@ -18,9 +18,6 @@ public class ${entity}DTO {
     /**
     * ${field.comment}
     */
-    <#if "${field.propertyType}"=="LocalDateTime">
-        @
-    </#if>
     private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if> ${field.propertyName};
 </#list>
 

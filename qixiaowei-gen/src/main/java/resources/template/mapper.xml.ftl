@@ -36,7 +36,7 @@
         </#list>
     </select>
     <!--新增${table.comment!}-->
-    <insert id="insert${entity}">
+    <insert id="insert${entity}" useGeneratedKeys="true" keyProperty="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>">
         INSERT INTO ${table.name} (<#list table.commonFields as field><#if !field.keyFlag>${field.name},</#if></#list>${table.fieldNames})
         VALUES
         (<#list table.fields as field><#if !field_has_next>#${leftBrace}item.${field.propertyName}${rightBrace}<#else>#${leftBrace}item.${field.propertyName}${rightBrace},</#if></#list>)
@@ -111,7 +111,7 @@
             <foreach item="item"
                      collection="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s"
                      index="index" open="(" separator="," close=")">
-                #${leftBrace}item.<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>${rightBrace}
+                #${leftBrace}item${rightBrace}
             </foreach>
         </#if></#list>
     </update>
@@ -139,8 +139,7 @@
             <foreach item="item"
                      collection="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s"
                      index="index" open="(" separator="," close=")">
-                #${leftBrace}
-                item.<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>${rightBrace}
+                #${leftBrace}item${rightBrace}
             </foreach>
         </#if></#list>
     </delete>
