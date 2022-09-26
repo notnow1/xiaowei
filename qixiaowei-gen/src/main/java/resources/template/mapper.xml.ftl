@@ -10,7 +10,7 @@
         </#list>
         ${table.fieldNames}
         FROM ${table.name}
-        WHERE <#list table.fields as field><#if field.keyFlag> ${field.name}=#${leftBrace}${entity?uncap_first}${rightBrace}</#if></#list>
+        WHERE <#list table.fields as field><#if field.keyFlag> ${field.name}=#${leftBrace}${field.propertyName}${rightBrace}</#if></#list>
         and delete_flag=0
     </select>
 
@@ -46,7 +46,8 @@
         UPDATE ${table.name}
         SET
         <#list table.fields as field>
-            <#if !field_has_next>
+            <#if !field.keyFlag>
+               <#if !field_has_next>
                 <#if "${field.propertyType}"!="LocalDateTime">
                     <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
                         ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
@@ -66,6 +67,7 @@
                         ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
                     </if>
                 </#if>
+            </#if>
             </#if>
         </#list>
         WHERE

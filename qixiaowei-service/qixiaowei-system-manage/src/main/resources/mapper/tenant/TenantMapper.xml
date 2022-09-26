@@ -4,22 +4,17 @@
     <!--    查询租户表-->
     <select id="selectTenantByTenantId"
             resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
-        SELECT tenant_id,
-               tenant_code,
-               tenant_name,
-               tenant_address,
-               tenant_industry, domain, admin_account, admin_password, support_staff, login_background, tenant_logo, tenant_status, delete_flag, create_by, create_time, update_by, update_time
+        SELECT
+        tenant_id, tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account, admin_password, support_staff, login_background, tenant_logo, tenant_status, delete_flag, create_by, create_time, update_by, update_time
         FROM tenant
-        WHERE tenant_id=#{tenant}
-          and delete_flag=0
+        WHERE  tenant_id=#{tenantId}
+        and delete_flag=0
     </select>
 
     <!--    查询租户表列表-->
     <select id="selectTenantList" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
         SELECT
-        tenant_id, tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account, admin_password,
-        support_staff, login_background, tenant_logo, tenant_status, delete_flag, create_by, create_time, update_by,
-        update_time
+        tenant_id, tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account, admin_password, support_staff, login_background, tenant_logo, tenant_status, delete_flag, create_by, create_time, update_by, update_time
         FROM tenant
         WHERE find_in_set(#{tenant.supportStaff},support_staff) and delete_flag=0
         <if test="tenant.tenantId != null and tenant.tenantId != ''">
@@ -70,98 +65,91 @@
     </select>
     <!--新增租户表-->
     <insert id="insertTenant" useGeneratedKeys="true" keyProperty="tenantId">
-        INSERT INTO tenant (tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account,
-                            admin_password, support_staff, login_background, tenant_logo, tenant_status, delete_flag,
-                            create_by, create_time, update_by, update_time)
-        VALUES (#{tenant.tenantCode}, #{tenant.tenantName}, #{tenant.tenantAddress}, #{tenant.tenantIndustry},
-                #{tenant.domain}, #{tenant.adminAccount}, #{tenant.adminPassword}, #{tenant.supportStaff},
-                #{tenant.loginBackground}, #{tenant.tenantLogo}, #{tenant.tenantStatus}, #{tenant.deleteFlag},
-                #{tenant.createBy}, #{tenant.createTime}, #{tenant.updateBy}, #{tenant.updateTime})
+        INSERT INTO tenant (tenant_code,tenant_name,tenant_address,tenant_industry,domain,admin_account,admin_password,support_staff,login_background,tenant_logo,tenant_status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{tenant.tenantCode},#{tenant.tenantName},#{tenant.tenantAddress},#{tenant.tenantIndustry},#{tenant.domain},#{tenant.adminAccount},#{tenant.adminPassword},#{tenant.supportStaff},#{tenant.loginBackground},#{tenant.tenantLogo},#{tenant.tenantStatus},#{tenant.deleteFlag},#{tenant.createBy},#{tenant.createTime},#{tenant.updateBy},#{tenant.updateTime})
     </insert>
     <!--修改租户表-->
     <update id="updateTenant">
         UPDATE tenant
         SET
-        <if test="tenant.tenantId != null and tenant.tenantId != ''">
-            tenant_id=#{tenant.tenantId},
-        </if>
-        <if test="tenant.tenantCode != null and tenant.tenantCode != ''">
-            tenant_code=#{tenant.tenantCode},
-        </if>
-        <if test="tenant.tenantName != null and tenant.tenantName != ''">
-            tenant_name=#{tenant.tenantName},
-        </if>
-        <if test="tenant.tenantAddress != null and tenant.tenantAddress != ''">
-            tenant_address=#{tenant.tenantAddress},
-        </if>
-        <if test="tenant.tenantIndustry != null and tenant.tenantIndustry != ''">
-            tenant_industry=#{tenant.tenantIndustry},
-        </if>
-        <if test="tenant.domain != null and tenant.domain != ''">
-            domain=#{tenant.domain},
-        </if>
-        <if test="tenant.adminAccount != null and tenant.adminAccount != ''">
-            admin_account=#{tenant.adminAccount},
-        </if>
-        <if test="tenant.adminPassword != null and tenant.adminPassword != ''">
-            admin_password=#{tenant.adminPassword},
-        </if>
-        <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
-            support_staff=#{tenant.supportStaff},
-        </if>
-        <if test="tenant.loginBackground != null and tenant.loginBackground != ''">
-            login_background=#{tenant.loginBackground},
-        </if>
-        <if test="tenant.tenantLogo != null and tenant.tenantLogo != ''">
-            tenant_logo=#{tenant.tenantLogo},
-        </if>
-        <if test="tenant.tenantStatus != null and tenant.tenantStatus != ''">
-            tenant_status=#{tenant.tenantStatus},
-        </if>
-        <if test="tenant.deleteFlag != null and tenant.deleteFlag != ''">
-            delete_flag=#{tenant.deleteFlag},
-        </if>
-        <if test="tenant.createBy != null and tenant.createBy != ''">
-            create_by=#{tenant.createBy},
-        </if>
-        <if test="tenant.createTime != null">
-            create_time=#{tenant.createTime},
-        </if>
-        <if test="tenant.updateBy != null and tenant.updateBy != ''">
-            update_by=#{tenant.updateBy},
-        </if>
-        <if test="tenant.updateTime != null">
-            update_time=#{tenant.updateTime}
-        </if>
+                    <if test="tenant.tenantCode != null and tenant.tenantCode != ''">
+                        tenant_code=#{tenant.tenantCode},
+                    </if>
+                    <if test="tenant.tenantName != null and tenant.tenantName != ''">
+                        tenant_name=#{tenant.tenantName},
+                    </if>
+                    <if test="tenant.tenantAddress != null and tenant.tenantAddress != ''">
+                        tenant_address=#{tenant.tenantAddress},
+                    </if>
+                    <if test="tenant.tenantIndustry != null and tenant.tenantIndustry != ''">
+                        tenant_industry=#{tenant.tenantIndustry},
+                    </if>
+                    <if test="tenant.domain != null and tenant.domain != ''">
+                        domain=#{tenant.domain},
+                    </if>
+                    <if test="tenant.adminAccount != null and tenant.adminAccount != ''">
+                        admin_account=#{tenant.adminAccount},
+                    </if>
+                    <if test="tenant.adminPassword != null and tenant.adminPassword != ''">
+                        admin_password=#{tenant.adminPassword},
+                    </if>
+                    <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
+                        support_staff=#{tenant.supportStaff},
+                    </if>
+                    <if test="tenant.loginBackground != null and tenant.loginBackground != ''">
+                        login_background=#{tenant.loginBackground},
+                    </if>
+                    <if test="tenant.tenantLogo != null and tenant.tenantLogo != ''">
+                        tenant_logo=#{tenant.tenantLogo},
+                    </if>
+                    <if test="tenant.tenantStatus != null and tenant.tenantStatus != ''">
+                        tenant_status=#{tenant.tenantStatus},
+                    </if>
+                    <if test="tenant.deleteFlag != null and tenant.deleteFlag != ''">
+                        delete_flag=#{tenant.deleteFlag},
+                    </if>
+                    <if test="tenant.createBy != null and tenant.createBy != ''">
+                        create_by=#{tenant.createBy},
+                    </if>
+                    <if test="tenant.createTime != null">
+                        create_time=#{tenant.createTime},
+                    </if>
+                    <if test="tenant.updateBy != null and tenant.updateBy != ''">
+                        update_by=#{tenant.updateBy},
+                    </if>
+                    <if test="tenant.updateTime != null">
+                        update_time=#{tenant.updateTime}
+                    </if>
         WHERE
-        tenant_id=#{tenant.tenantId}
+                 tenant_id=#{tenant.tenantId}
     </update>
     <!--逻辑删除租户表-->
     <update id="logicDeleteTenantByTenantId">
         UPDATE tenant
-        SET delete_flag= 1,
-            update_by=#{tenant.updateBy},
-            update_time=#{tenant.updateTime}
-        WHERE tenant_id = #{tenant.tenantId}
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+                tenant_id=#{tenant.tenantId}
     </update>
     <!--逻辑批量删除租户表-->
     <update id="logicDeleteTenantByTenantIds">
         UPDATE tenant
-        SET delete_flag= 1,
-        update_by=#{updateBy},
-        update_time=#{updateTime}
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
         WHERE
-        tenant_id IN
-        <foreach item="item"
-                 collection="tenantIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+         tenant_id IN
+            <foreach item="item"
+                     collection="tenantIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
     </update>
     <!--批量新增租户表-->
     <insert id="batchTenant">
-        INSERT INTO tenant
-        (tenant_code,tenant_name,tenant_address,tenant_industry,domain,admin_account,admin_password,support_staff,login_background,tenant_logo,tenant_status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO tenant (tenant_code,tenant_name,tenant_address,tenant_industry,domain,admin_account,admin_password,support_staff,login_background,tenant_logo,tenant_status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="tenants"
@@ -172,145 +160,142 @@
 
     <!--物理删除租户表-->
     <delete id="deleteTenantByTenantId">
-        DELETE
-        FROM tenant
-        WHERE tenant_id = #{tenant}
+        DELETE FROM tenant
+        WHERE  tenant_id=#{tenant}
 
     </delete>
     <!--物理批量删除租户表-->
     <delete id="deleteTenantByTenantIds">
         DELETE FROM tenant
-        WHERE tenant_id IN
-        <foreach item="item"
-                 collection="tenantIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        WHERE  tenant_id IN
+            <foreach item="item"
+                     collection="tenantIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
     </delete>
     <!--批量修改租户表-->
     <update id="updateTenants">
         update tenant
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="tenant_id=case" suffix="end,">
-                <foreach collection="tenantList" item="item" index="index">
-                </foreach>
             </trim>
             <trim prefix="tenant_code=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.tenantCode != null and item.tenantCode != ''">
-                        when tenant_id=#{item.tenantId} then #{item.tenant_code}
-                    </if>
+                             <if test="item.tenantCode != null and item.tenantCode != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.tenantCode}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="tenant_name=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.tenantName != null and item.tenantName != ''">
-                        when tenant_id=#{item.tenantId} then #{item.tenant_name}
-                    </if>
+                             <if test="item.tenantName != null and item.tenantName != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.tenantName}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="tenant_address=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.tenantAddress != null and item.tenantAddress != ''">
-                        when tenant_id=#{item.tenantId} then #{item.tenant_address}
-                    </if>
+                             <if test="item.tenantAddress != null and item.tenantAddress != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.tenantAddress}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="tenant_industry=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.tenantIndustry != null and item.tenantIndustry != ''">
-                        when tenant_id=#{item.tenantId} then #{item.tenant_industry}
-                    </if>
+                             <if test="item.tenantIndustry != null and item.tenantIndustry != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.tenantIndustry}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="domain=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.domain != null and item.domain != ''">
-                        when tenant_id=#{item.tenantId} then #{item.domain}
-                    </if>
+                             <if test="item.domain != null and item.domain != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.domain}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="admin_account=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.adminAccount != null and item.adminAccount != ''">
-                        when tenant_id=#{item.tenantId} then #{item.admin_account}
-                    </if>
+                             <if test="item.adminAccount != null and item.adminAccount != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.adminAccount}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="admin_password=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.adminPassword != null and item.adminPassword != ''">
-                        when tenant_id=#{item.tenantId} then #{item.admin_password}
-                    </if>
+                             <if test="item.adminPassword != null and item.adminPassword != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.adminPassword}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="support_staff=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.supportStaff != null and item.supportStaff != ''">
-                        when tenant_id=#{item.tenantId} then #{item.support_staff}
-                    </if>
+                             <if test="item.supportStaff != null and item.supportStaff != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.supportStaff}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="login_background=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.loginBackground != null and item.loginBackground != ''">
-                        when tenant_id=#{item.tenantId} then #{item.login_background}
-                    </if>
+                             <if test="item.loginBackground != null and item.loginBackground != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.loginBackground}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="tenant_logo=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.tenantLogo != null and item.tenantLogo != ''">
-                        when tenant_id=#{item.tenantId} then #{item.tenant_logo}
-                    </if>
+                             <if test="item.tenantLogo != null and item.tenantLogo != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.tenantLogo}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="tenant_status=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.tenantStatus != null and item.tenantStatus != ''">
-                        when tenant_id=#{item.tenantId} then #{item.tenant_status}
-                    </if>
+                             <if test="item.tenantStatus != null and item.tenantStatus != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.tenantStatus}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.deleteFlag != null and item.deleteFlag != ''">
-                        when tenant_id=#{item.tenantId} then #{item.delete_flag}
-                    </if>
+                             <if test="item.deleteFlag != null and item.deleteFlag != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.deleteFlag}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.createBy != null and item.createBy != ''">
-                        when tenant_id=#{item.tenantId} then #{item.create_by}
-                    </if>
+                             <if test="item.createBy != null and item.createBy != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.createBy}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.createTime != null">
-                        when tenant_id=#{item.tenantId} then #{item.create_time}
-                    </if>
+                             <if test="item.createTime != null">
+                                 when tenant_id=#{item.tenantId} then #{item.createTime}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.updateBy != null and item.updateBy != ''">
-                        when tenant_id=#{item.tenantId} then #{item.update_by}
-                    </if>
+                             <if test="item.updateBy != null and item.updateBy != ''">
+                                 when tenant_id=#{item.tenantId} then #{item.updateBy}
+                             </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                    <if test="item.updateTime != null">
-                        when tenant_id=#{item.tenantId} then #{item.update_time}
-                    </if>
+                             <if test="item.updateTime != null">
+                                 when tenant_id=#{item.tenantId} then #{item.updateTime}
+                             </if>
                 </foreach>
             </trim>
         </trim>
         where
         <foreach collection="tenantList" separator="or" item="item" index="index">
-            tenant_id=#{item.tenantId}
+                    tenant_id=#{item.tenantId}
         </foreach>
     </update>
 </mapper>

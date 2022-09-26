@@ -35,6 +35,24 @@ public class TenantController extends BaseController
     private ITenantService tenantService;
 
     /**
+     * 查询单个租户
+     */
+    //@RequiresPermissions("system:manage:tenant:pageList")
+    @GetMapping("/queryTenantDTO")
+    public AjaxResult queryTenantDTO(TenantDTO tenantDTO){
+        return AjaxResult.success(tenantService.selectTenantByTenantId(tenantDTO.getTenantId()));
+    }
+
+    /**
+     * 修改单个租户
+     */
+    //@RequiresPermissions("system:manage:tenant:pageList")
+    @PostMapping("/updateMyTenantDTO")
+    public AjaxResult updateMyTenantDTO(@RequestBody  TenantDTO tenantDTO){
+        return AjaxResult.success(tenantService.updateMyTenantDTO(tenantDTO));
+    }
+
+    /**
     * 分页查询租户表列表
     */
     //@RequiresPermissions("system:manage:tenant:pageList")

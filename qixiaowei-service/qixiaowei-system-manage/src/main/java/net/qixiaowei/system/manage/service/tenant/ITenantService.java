@@ -97,4 +97,11 @@ public interface ITenantService{
     * @return 结果
     */
     int deleteTenantByTenantId(Long tenantId);
+
+    /**
+     * 修改单个租户
+     * @param tenantDTO
+     * @return
+     */
+    int updateMyTenantDTO(TenantDTO tenantDTO);
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
@@ -231,6 +232,42 @@ public class TenantServiceImpl implements ITenantService {
     @Override
     public int deleteTenantByTenantId(Long tenantId) {
         return tenantMapper.deleteTenantByTenantId(tenantId);
+    }
+
+    @Override
+    public int updateMyTenantDTO(TenantDTO tenantDTO) {
+        //租户表
+        Tenant tenant = new Tenant();
+        //
+        TenantDomainApproval tenantDomainApproval =  new TenantDomainApproval();
+        BeanUtils.copyProperties(tenantDTO,tenant);
+        //查询租户数据
+        TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
+        //对比域名是否修改 修改需要保存到域名申请表中
+        if (!StringUtils.equals(tenantDTO1.getDomain(),tenant.getDomain())){
+            //租户id
+            tenantDomainApproval.setTenantId(tenant.getTenantId());
+            //申请域名
+            tenantDomainApproval.setApprovalDomain(tenant.getDomain());
+            //申请人用户id
+            tenantDomainApproval.setApprovalUserId(SecurityUtils.getUserId());
+            //申请人账号
+            tenantDomainApproval.setApplicantUserAccount(SecurityUtils.getUsername());
+            //提交时间
+            tenantDomainApproval.setSubmissionTime(DateUtils.getNowDate());
+            //申请状态
+            tenantDomainApproval.setApprovalStatus(0);
+            //删除标记
+            tenantDomainApproval.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            tenantDomainApproval.setCreateBy(SecurityUtils.getUserId().toString());
+            tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId().toString());
+            tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
+            tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+            tenantDomainApprovalMapper.insertTenantDomainApproval(tenantDomainApproval);
+        }
+        tenant.setUpdateBy(SecurityUtils.getUserId().toString());
+        tenant.setUpdateTime(DateUtils.getNowDate());
+        return tenantMapper.updateTenant(tenant);
     }
 
     /**
