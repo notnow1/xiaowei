@@ -12,6 +12,7 @@ import ${entityPackage}.${entity};
 import ${dtoPackage}.${entity}DTO;
 import ${mapperPackage}.${entity}Mapper;
 import ${servicePackage}.I${entity}Service;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 
 
 /**
@@ -65,6 +66,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
     ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
     ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
+    ${entity?uncap_first}.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
     return ${entity?uncap_first}Mapper.insert${entity}(${entity?uncap_first});
     }
 
@@ -177,6 +179,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
        ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
        ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
        ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
+       ${entity?uncap_first}.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
       ${entity?uncap_first}List.add(${entity?uncap_first});
     }
     return ${entity?uncap_first}Mapper.batch${entity}(${entity?uncap_first}List);
