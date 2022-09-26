@@ -100,10 +100,10 @@
         SET     delete_flag= 1,
         <#list table.fields as field >
             <#if field.name=="update_by"><#--生成普通字段 -->
-                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
+                ${field.name}=#${leftBrace}${field.propertyName}${rightBrace},
             </#if>
             <#if field.name=="update_time"><#--生成普通字段 -->
-                ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                ${field.name}=#${leftBrace}${field.propertyName}${rightBrace}
             </#if>
         </#list>
         WHERE
