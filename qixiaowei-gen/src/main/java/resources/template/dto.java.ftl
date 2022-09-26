@@ -4,6 +4,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import javax.validation.groups.Default;
 
 /**
 * ${table.comment!}

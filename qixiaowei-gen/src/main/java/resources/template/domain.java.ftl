@@ -5,7 +5,6 @@ package ${entityPackage};
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import javax.validation.groups.Default;
 import java.util.Date;
 
 /**
