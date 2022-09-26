@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
 import ${entityPackage}.${entity};
 import ${dtoPackage}.${entity}DTO;
 import ${mapperPackage}.${entity}Mapper;
@@ -60,8 +61,10 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     public int insert${entity}(${entity}DTO ${entity?uncap_first}DTO){
     ${entity} ${entity?uncap_first}=new ${entity}();
     BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
+    ${entity?uncap_first}.setCreateBy(SecurityUtils.getUserId());
     ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
     ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+    ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
     return ${entity?uncap_first}Mapper.insert${entity}(${entity?uncap_first});
     }
 
@@ -77,8 +80,8 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     {
     ${entity} ${entity?uncap_first}=new ${entity}();
     BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
-    ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
     ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+    ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
     return ${entity?uncap_first}Mapper.update${entity}(${entity?uncap_first});
     }
 
@@ -170,8 +173,10 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     for (${entity}DTO ${entity?uncap_first}DTO : ${entity?uncap_first}Dtos) {
       ${entity} ${entity?uncap_first} =new ${entity}();
       BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
-    ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
-    ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+       ${entity?uncap_first}.setCreateBy(SecurityUtils.getUserId());
+       ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
+       ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+       ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
       ${entity?uncap_first}List.add(${entity?uncap_first});
     }
     return ${entity?uncap_first}Mapper.batch${entity}(${entity?uncap_first}List);
@@ -189,8 +194,10 @@ public class ${entity}ServiceImpl implements I${entity}Service{
      for (${entity}DTO ${entity?uncap_first}DTO : ${entity?uncap_first}Dtos) {
      ${entity} ${entity?uncap_first} =new ${entity}();
      BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
-     ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
-     ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+        ${entity?uncap_first}.setCreateBy(SecurityUtils.getUserId());
+        ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
+        ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+        ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
      ${entity?uncap_first}List.add(${entity?uncap_first});
      }
      return ${entity?uncap_first}Mapper.update${entity}s(${entity?uncap_first}List);
