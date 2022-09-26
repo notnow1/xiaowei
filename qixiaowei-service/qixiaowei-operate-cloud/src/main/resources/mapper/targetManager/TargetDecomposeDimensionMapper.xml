@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDimensionMapper">
+    <!--    查询目标分解维度配置-->
+    <select id="selectTargetDecomposeDimensionByTargetDecomposeDimensionId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO">
+        SELECT
+        target_decompose_dimension_id, decomposition_dimension, sort, delete_flag, create_by, create_time, update_by,
+        update_time
+        FROM target_decompose_dimension
+        WHERE target_decompose_dimension_id=#{targetDecomposeDimension}
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标分解维度配置列表-->
+    <select id="selectTargetDecomposeDimensionList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO">
+        SELECT
+        target_decompose_dimension_id, decomposition_dimension, sort, delete_flag, create_by, create_time, update_by,
+        update_time
+        FROM target_decompose_dimension
+        WHERE delete_flag=0
+        <if test="targetDecomposeDimension.targetDecomposeDimensionId != null and targetDecomposeDimension.targetDecomposeDimensionId != ''">
+            and target_decompose_dimension_id=#{targetDecomposeDimension.targetDecomposeDimensionId}
+        </if>
+        <if test="targetDecomposeDimension.decompositionDimension != null and targetDecomposeDimension.decompositionDimension != ''">
+            and decomposition_dimension=#{targetDecomposeDimension.decompositionDimension}
+        </if>
+        <if test="targetDecomposeDimension.sort != null and targetDecomposeDimension.sort != ''">
+            and sort=#{targetDecomposeDimension.sort}
+        </if>
+        <if test="targetDecomposeDimension.deleteFlag != null and targetDecomposeDimension.deleteFlag != ''">
+            and delete_flag=#{targetDecomposeDimension.deleteFlag}
+        </if>
+        <if test="targetDecomposeDimension.createBy != null and targetDecomposeDimension.createBy != ''">
+            and create_by=#{targetDecomposeDimension.createBy}
+        </if>
+        <if test="targetDecomposeDimension.createTime != null">
+            and create_time=#{targetDecomposeDimension.createTime}
+        </if>
+        <if test="targetDecomposeDimension.updateBy != null and targetDecomposeDimension.updateBy != ''">
+            and update_by=#{targetDecomposeDimension.updateBy}
+        </if>
+        <if test="targetDecomposeDimension.updateTime != null">
+            and update_time=#{targetDecomposeDimension.updateTime}
+        </if>
+    </select>
+    <!--新增目标分解维度配置-->
+    <insert id="insertTargetDecomposeDimension" useGeneratedKeys="true" keyProperty="targetDecomposeDimensionId">
+        INSERT INTO target_decompose_dimension
+        (decomposition_dimension,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetDecomposeDimension.decompositionDimension},#{targetDecomposeDimension.sort},#{targetDecomposeDimension.deleteFlag},#{targetDecomposeDimension.createBy},#{targetDecomposeDimension.createTime},#{targetDecomposeDimension.updateBy},#{targetDecomposeDimension.updateTime})
+    </insert>
+    <!--修改目标分解维度配置-->
+    <update id="updateTargetDecomposeDimension">
+        UPDATE target_decompose_dimension
+        SET
+        <if test="targetDecomposeDimension.targetDecomposeDimensionId != null and targetDecomposeDimension.targetDecomposeDimensionId != ''">
+            target_decompose_dimension_id=#{targetDecomposeDimension.targetDecomposeDimensionId},
+        </if>
+        <if test="targetDecomposeDimension.decompositionDimension != null and targetDecomposeDimension.decompositionDimension != ''">
+            decomposition_dimension=#{targetDecomposeDimension.decompositionDimension},
+        </if>
+        <if test="targetDecomposeDimension.sort != null and targetDecomposeDimension.sort != ''">
+            sort=#{targetDecomposeDimension.sort},
+        </if>
+        <if test="targetDecomposeDimension.deleteFlag != null and targetDecomposeDimension.deleteFlag != ''">
+            delete_flag=#{targetDecomposeDimension.deleteFlag},
+        </if>
+        <if test="targetDecomposeDimension.createBy != null and targetDecomposeDimension.createBy != ''">
+            create_by=#{targetDecomposeDimension.createBy},
+        </if>
+        <if test="targetDecomposeDimension.createTime != null">
+            create_time=#{targetDecomposeDimension.createTime},
+        </if>
+        <if test="targetDecomposeDimension.updateBy != null and targetDecomposeDimension.updateBy != ''">
+            update_by=#{targetDecomposeDimension.updateBy},
+        </if>
+        <if test="targetDecomposeDimension.updateTime != null">
+            update_time=#{targetDecomposeDimension.updateTime}
+        </if>
+        WHERE
+        target_decompose_dimension_id=#{targetDecomposeDimension.targetDecomposeDimensionId}
+    </update>
+    <!--逻辑删除目标分解维度配置-->
+    <update id="logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionId">
+        UPDATE target_decompose_dimension
+        SET delete_flag= 1,
+        update_by=#{targetDecomposeDimension.updateBy},
+        update_time=#{targetDecomposeDimension.updateTime}
+        WHERE
+        target_decompose_dimension_id=#{targetDecomposeDimension.targetDecomposeDimensionId}
+    </update>
+    <!--逻辑批量删除目标分解维度配置-->
+    <update id="logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds">
+        UPDATE target_decompose_dimension
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        target_decompose_dimension_id IN
+        <foreach item="item"
+                 collection="targetDecomposeDimensionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增目标分解维度配置-->
+    <insert id="batchTargetDecomposeDimension">
+        INSERT INTO target_decompose_dimension
+        (decomposition_dimension,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetDecomposeDimensions"
+                 separator=",">
+            (#{item.decompositionDimension},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标分解维度配置-->
+    <delete id="deleteTargetDecomposeDimensionByTargetDecomposeDimensionId">
+        DELETE FROM target_decompose_dimension
+        WHERE target_decompose_dimension_id=#{targetDecomposeDimension}
+
+    </delete>
+    <!--物理批量删除目标分解维度配置-->
+    <delete id="deleteTargetDecomposeDimensionByTargetDecomposeDimensionIds">
+        DELETE FROM target_decompose_dimension
+        WHERE target_decompose_dimension_id IN
+        <foreach item="item"
+                 collection="targetDecomposeDimensionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改目标分解维度配置-->
+    <update id="updateTargetDecomposeDimensions">
+        update target_decompose_dimension
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="target_decompose_dimension_id=case" suffix="end,">
+            </trim>
+            <trim prefix="decomposition_dimension=case" suffix="end,">
+                <foreach collection="targetDecomposeDimensionList" item="item" index="index">
+                    <if test="item.decompositionDimension != null and item.decompositionDimension != ''">
+                        when target_decompose_dimension_id=#{item.targetDecomposeDimensionId} then
+                        #{item.decompositionDimension}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="targetDecomposeDimensionList" item="item" index="index">
+                    <if test="item.sort != null and item.sort != ''">
+                        when target_decompose_dimension_id=#{item.targetDecomposeDimensionId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="targetDecomposeDimensionList" item="item" index="index">
+                    <if test="item.updateBy != null and item.updateBy != ''">
+                        when target_decompose_dimension_id=#{item.targetDecomposeDimensionId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="targetDecomposeDimensionList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when target_decompose_dimension_id=#{item.targetDecomposeDimensionId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="targetDecomposeDimensionList" separator="or" item="item" index="index">
+            target_decompose_dimension_id=#{item.targetDecomposeDimensionId}
+        </foreach>
+    </update>
+    <!--获取当前最大sort值-->
+    <select id="getMaxTargetDimensionConfigSort" resultType="java.lang.Integer">
+        SELECT MAX(sort) as maxSort FROM target_decompose_dimension
+    </select>
+</mapper>
+
+
