@@ -149,7 +149,7 @@
         <trim prefix="set" suffixOverrides=",">
         <#list table.fields as field >
             <trim prefix="${field.name}=case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
+                <foreach collection="${entity?uncap_first}List" item="item" index="index">
                     <#if "${field.propertyType}"!="LocalDateTime">
                         <if test="item.${field.propertyName} != null and item.${field.propertyName} != ''">
                             when '<#list table.fields as field><#if field.keyFlag>${field.name}</#if></#list>'=<#list table.fields as field><#if field.keyFlag>${field.name}=#${leftBrace}item.${field.propertyName}${rightBrace}</#if></#list> then #${leftBrace}item.${field.name}${rightBrace}
@@ -164,7 +164,7 @@
         </#list>
         </trim>
         where
-        <foreach collection="${entity}List" separator="or" item="item" index="index">
+        <foreach collection="${entity?uncap_first}List" separator="or" item="item" index="index">
             <#list table.fields as field >
                 <#if field.keyFlag><#--生成普通字段 -->
                     ${field.name}=#${leftBrace}item.${field.propertyName}${rightBrace}
