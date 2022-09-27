@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.tenant.TenantContactsMapper">
+    <!--    查询租户联系人表-->
+    <select id="selectTenantContactsByTenantContactsId"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO">
+        SELECT
+        tenant_contacts_id, tenant_id, contact_name, contact_tel, contact_email, contact_duty, remark, delete_flag, create_by, create_time, update_by, update_time
+        FROM tenant_contacts
+        WHERE  tenant_contacts_id=#{tenantContacts}
+        and delete_flag=0
+    </select>
+
+    <!--    查询租户联系人表列表-->
+    <select id="selectTenantContactsList" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO">
+        SELECT
+        tenant_contacts_id, tenant_id, contact_name, contact_tel, contact_email, contact_duty, remark, delete_flag, create_by, create_time, update_by, update_time
+        FROM tenant_contacts
+        WHERE delete_flag=0
+                <if test="tenantContacts.tenantContactsId != null and tenantContacts.tenantContactsId != ''">
+                    and tenant_contacts_id=#{tenantContacts.tenantContactsId}
+                </if>
+                <if test="tenantContacts.tenantId != null and tenantContacts.tenantId != ''">
+                    and tenant_id=#{tenantContacts.tenantId}
+                </if>
+                <if test="tenantContacts.contactName != null and tenantContacts.contactName != ''">
+                    and contact_name=#{tenantContacts.contactName}
+                </if>
+                <if test="tenantContacts.contactTel != null and tenantContacts.contactTel != ''">
+                    and contact_tel=#{tenantContacts.contactTel}
+                </if>
+                <if test="tenantContacts.contactEmail != null and tenantContacts.contactEmail != ''">
+                    and contact_email=#{tenantContacts.contactEmail}
+                </if>
+                <if test="tenantContacts.contactDuty != null and tenantContacts.contactDuty != ''">
+                    and contact_duty=#{tenantContacts.contactDuty}
+                </if>
+                <if test="tenantContacts.remark != null and tenantContacts.remark != ''">
+                    and remark=#{tenantContacts.remark}
+                </if>
+                <if test="tenantContacts.deleteFlag != null and tenantContacts.deleteFlag != ''">
+                    and delete_flag=#{tenantContacts.deleteFlag}
+                </if>
+                <if test="tenantContacts.createBy != null and tenantContacts.createBy != ''">
+                    and create_by=#{tenantContacts.createBy}
+                </if>
+                <if test="tenantContacts.createTime != null">
+                    and create_time=#{tenantContacts.createTime}
+                </if>
+                <if test="tenantContacts.updateBy != null and tenantContacts.updateBy != ''">
+                    and update_by=#{tenantContacts.updateBy}
+                </if>
+                <if test="tenantContacts.updateTime != null">
+                    and update_time=#{tenantContacts.updateTime}
+                </if>
+    </select>
+    <!--新增租户联系人表-->
+    <insert id="insertTenantContacts" useGeneratedKeys="true" keyProperty="tenantContactsId">
+        INSERT INTO tenant_contacts (tenant_id,contact_name,contact_tel,contact_email,contact_duty,remark,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{tenantContacts.tenantId},#{tenantContacts.contactName},#{tenantContacts.contactTel},#{tenantContacts.contactEmail},#{tenantContacts.contactDuty},#{tenantContacts.remark},#{tenantContacts.deleteFlag},#{tenantContacts.createBy},#{tenantContacts.createTime},#{tenantContacts.updateBy},#{tenantContacts.updateTime})
+    </insert>
+    <!--修改租户联系人表-->
+    <update id="updateTenantContacts">
+        UPDATE tenant_contacts
+        SET
+                    <if test="tenantContacts.tenantContactsId != null and tenantContacts.tenantContactsId != ''">
+                        tenant_contacts_id=#{tenantContacts.tenantContactsId},
+                    </if>
+                    <if test="tenantContacts.tenantId != null and tenantContacts.tenantId != ''">
+                        tenant_id=#{tenantContacts.tenantId},
+                    </if>
+                    <if test="tenantContacts.contactName != null and tenantContacts.contactName != ''">
+                        contact_name=#{tenantContacts.contactName},
+                    </if>
+                    <if test="tenantContacts.contactTel != null and tenantContacts.contactTel != ''">
+                        contact_tel=#{tenantContacts.contactTel},
+                    </if>
+                    <if test="tenantContacts.contactEmail != null and tenantContacts.contactEmail != ''">
+                        contact_email=#{tenantContacts.contactEmail},
+                    </if>
+                    <if test="tenantContacts.contactDuty != null and tenantContacts.contactDuty != ''">
+                        contact_duty=#{tenantContacts.contactDuty},
+                    </if>
+                    <if test="tenantContacts.remark != null and tenantContacts.remark != ''">
+                        remark=#{tenantContacts.remark},
+                    </if>
+                    <if test="tenantContacts.deleteFlag != null and tenantContacts.deleteFlag != ''">
+                        delete_flag=#{tenantContacts.deleteFlag},
+                    </if>
+                    <if test="tenantContacts.createBy != null and tenantContacts.createBy != ''">
+                        create_by=#{tenantContacts.createBy},
+                    </if>
+                    <if test="tenantContacts.createTime != null">
+                        create_time=#{tenantContacts.createTime},
+                    </if>
+                    <if test="tenantContacts.updateBy != null and tenantContacts.updateBy != ''">
+                        update_by=#{tenantContacts.updateBy},
+                    </if>
+                    <if test="tenantContacts.updateTime != null">
+                        update_time=#{tenantContacts.updateTime}
+                    </if>
+        WHERE
+                 tenant_contacts_id=#{tenantContacts.tenantContactsId}
+    </update>
+    <!--逻辑删除租户联系人表-->
+    <update id="logicDeleteTenantContactsByTenantContactsId">
+        UPDATE tenant_contacts
+        SET     delete_flag= 1,
+                update_by=#{tenantContacts.updateBy},
+                update_time=#{tenantContacts.updateTime}
+        WHERE
+                tenant_contacts_id=#{tenantContacts.tenantContactsId}
+    </update>
+    <!--逻辑批量删除租户联系人表-->
+    <update id="logicDeleteTenantContactsByTenantContactsIds">
+        UPDATE tenant_contacts
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         tenant_contacts_id IN
+            <foreach item="item"
+                     collection="tenantContactsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增租户联系人表-->
+    <insert id="batchTenantContacts">
+        INSERT INTO tenant_contacts (tenant_id,contact_name,contact_tel,contact_email,contact_duty,remark,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="tenantContactss"
+                 separator=",">
+            (#{item.tenantId},#{item.contactName},#{item.contactTel},#{item.contactEmail},#{item.contactDuty},#{item.remark},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除租户联系人表-->
+    <delete id="deleteTenantContactsByTenantContactsId">
+        DELETE FROM tenant_contacts
+        WHERE  tenant_contacts_id=#{tenantContacts}
+
+    </delete>
+    <!--物理批量删除租户联系人表-->
+    <delete id="deleteTenantContactsByTenantContactsIds">
+        DELETE FROM tenant_contacts
+        WHERE  tenant_contacts_id IN
+            <foreach item="item"
+                     collection="tenantContactsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改租户联系人表-->
+    <update id="updateTenantContactss">
+        update tenant_contacts
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="tenant_contacts_id=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                </foreach>
+            </trim>
+            <trim prefix="tenant_id=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.tenantId != null and item.tenantId != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.tenant_id}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_name=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.contactName != null and item.contactName != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.contact_name}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_tel=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.contactTel != null and item.contactTel != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.contact_tel}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_email=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.contactEmail != null and item.contactEmail != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.contact_email}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_duty=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.contactDuty != null and item.contactDuty != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.contact_duty}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.remark != null and item.remark != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.remark}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.deleteFlag != null and item.deleteFlag != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.delete_flag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.createBy != null and item.createBy != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.create_by}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.createTime != null">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.create_time}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.updateBy != null and item.updateBy != ''">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.update_by}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="tenantContactsList" item="item" index="index">
+                             <if test="item.updateTime != null">
+                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.update_time}
+                             </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="tenantContactsList" separator="or" item="item" index="index">
+                    tenant_contacts_id=#{item.tenantContactsId}
+        </foreach>
+    </update>
+<!--    根据tenantId逻辑批量删除租户联系人表-->
+    <update id="deleteTenantContactsByTenantIds">
+        UPDATE tenant_contacts
+        SET     delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        tenant_id IN
+        <foreach item="item"
+                 collection="tenantIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>
+
+

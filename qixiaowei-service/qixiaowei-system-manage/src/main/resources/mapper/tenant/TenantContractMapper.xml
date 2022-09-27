@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.tenant.TenantContractMapper">
+    <!--    查询租户合同信息-->
+    <select id="selectTenantContractByTenantContractId"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO">
+        SELECT
+        tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time, contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
+        FROM tenant_contract
+        WHERE  tenant_contract_id=#{tenantContract}
+        and delete_flag=0
+    </select>
+
+    <!--    查询租户合同信息列表-->
+    <select id="selectTenantContractList" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO">
+        SELECT
+        tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time, contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
+        FROM tenant_contract
+        WHERE delete_flag=0
+                <if test="tenantContract.tenantContractId != null and tenantContract.tenantContractId != ''">
+                    and tenant_contract_id=#{tenantContract.tenantContractId}
+                </if>
+                <if test="tenantContract.tenantId != null and tenantContract.tenantId != ''">
+                    and tenant_id=#{tenantContract.tenantId}
+                </if>
+                <if test="tenantContract.salesContractNo != null and tenantContract.salesContractNo != ''">
+                    and sales_contract_no=#{tenantContract.salesContractNo}
+                </if>
+                <if test="tenantContract.salesPersonnel != null and tenantContract.salesPersonnel != ''">
+                    and sales_personnel=#{tenantContract.salesPersonnel}
+                </if>
+                <if test="tenantContract.contractAmount != null and tenantContract.contractAmount != ''">
+                    and contract_amount=#{tenantContract.contractAmount}
+                </if>
+                <if test="tenantContract.contractStartTime != null">
+                    and contract_start_time=#{tenantContract.contractStartTime}
+                </if>
+                <if test="tenantContract.contractEndTime != null">
+                    and contract_end_time=#{tenantContract.contractEndTime}
+                </if>
+                <if test="tenantContract.productPackage != null and tenantContract.productPackage != ''">
+                    and product_package=#{tenantContract.productPackage}
+                </if>
+                <if test="tenantContract.deleteFlag != null and tenantContract.deleteFlag != ''">
+                    and delete_flag=#{tenantContract.deleteFlag}
+                </if>
+                <if test="tenantContract.createBy != null and tenantContract.createBy != ''">
+                    and create_by=#{tenantContract.createBy}
+                </if>
+                <if test="tenantContract.createTime != null">
+                    and create_time=#{tenantContract.createTime}
+                </if>
+                <if test="tenantContract.updateBy != null and tenantContract.updateBy != ''">
+                    and update_by=#{tenantContract.updateBy}
+                </if>
+                <if test="tenantContract.updateTime != null">
+                    and update_time=#{tenantContract.updateTime}
+                </if>
+    </select>
+    <!--新增租户合同信息-->
+    <insert id="insertTenantContract" useGeneratedKeys="true" keyProperty="tenantContractId">
+        INSERT INTO tenant_contract (tenant_id,sales_contract_no,sales_personnel,contract_amount,contract_start_time,contract_end_time,product_package,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{tenantContract.tenantId},#{tenantContract.salesContractNo},#{tenantContract.salesPersonnel},#{tenantContract.contractAmount},#{tenantContract.contractStartTime},#{tenantContract.contractEndTime},#{tenantContract.productPackage},#{tenantContract.deleteFlag},#{tenantContract.createBy},#{tenantContract.createTime},#{tenantContract.updateBy},#{tenantContract.updateTime})
+    </insert>
+    <!--修改租户合同信息-->
+    <update id="updateTenantContract">
+        UPDATE tenant_contract
+        SET
+                    <if test="tenantContract.tenantContractId != null and tenantContract.tenantContractId != ''">
+                        tenant_contract_id=#{tenantContract.tenantContractId},
+                    </if>
+                    <if test="tenantContract.tenantId != null and tenantContract.tenantId != ''">
+                        tenant_id=#{tenantContract.tenantId},
+                    </if>
+                    <if test="tenantContract.salesContractNo != null and tenantContract.salesContractNo != ''">
+                        sales_contract_no=#{tenantContract.salesContractNo},
+                    </if>
+                    <if test="tenantContract.salesPersonnel != null and tenantContract.salesPersonnel != ''">
+                        sales_personnel=#{tenantContract.salesPersonnel},
+                    </if>
+                    <if test="tenantContract.contractAmount != null and tenantContract.contractAmount != ''">
+                        contract_amount=#{tenantContract.contractAmount},
+                    </if>
+                    <if test="tenantContract.contractStartTime != null">
+                        contract_start_time=#{tenantContract.contractStartTime},
+                    </if>
+                    <if test="tenantContract.contractEndTime != null">
+                        contract_end_time=#{tenantContract.contractEndTime},
+                    </if>
+                    <if test="tenantContract.productPackage != null and tenantContract.productPackage != ''">
+                        product_package=#{tenantContract.productPackage},
+                    </if>
+                    <if test="tenantContract.deleteFlag != null and tenantContract.deleteFlag != ''">
+                        delete_flag=#{tenantContract.deleteFlag},
+                    </if>
+                    <if test="tenantContract.createBy != null and tenantContract.createBy != ''">
+                        create_by=#{tenantContract.createBy},
+                    </if>
+                    <if test="tenantContract.createTime != null">
+                        create_time=#{tenantContract.createTime},
+                    </if>
+                    <if test="tenantContract.updateBy != null and tenantContract.updateBy != ''">
+                        update_by=#{tenantContract.updateBy},
+                    </if>
+                    <if test="tenantContract.updateTime != null">
+                        update_time=#{tenantContract.updateTime}
+                    </if>
+        WHERE
+                 tenant_contract_id=#{tenantContract.tenantContractId}
+    </update>
+    <!--逻辑删除租户合同信息-->
+    <update id="logicDeleteTenantContractByTenantContractId">
+        UPDATE tenant_contract
+        SET     delete_flag= 1,
+                update_by=#{tenantContract.updateBy},
+                update_time=#{tenantContract.updateTime}
+        WHERE
+                tenant_contract_id=#{tenantContract.tenantContractId}
+    </update>
+    <!--逻辑批量删除租户合同信息-->
+    <update id="logicDeleteTenantContractByTenantContractIds">
+        UPDATE tenant_contract
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         tenant_contract_id IN
+            <foreach item="item"
+                     collection="tenantContractIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增租户合同信息-->
+    <insert id="batchTenantContract">
+        INSERT INTO tenant_contract (tenant_id,sales_contract_no,sales_personnel,contract_amount,contract_start_time,contract_end_time,product_package,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="tenantContracts"
+                 separator=",">
+            (#{item.tenantId},#{item.salesContractNo},#{item.salesPersonnel},#{item.contractAmount},#{item.contractStartTime},#{item.contractEndTime},#{item.productPackage},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除租户合同信息-->
+    <delete id="deleteTenantContractByTenantContractId">
+        DELETE FROM tenant_contract
+        WHERE  tenant_contract_id=#{tenantContract}
+
+    </delete>
+    <!--物理批量删除租户合同信息-->
+    <delete id="deleteTenantContractByTenantContractIds">
+        DELETE FROM tenant_contract
+        WHERE  tenant_contract_id IN
+            <foreach item="item"
+                     collection="tenantContractIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改租户合同信息-->
+    <update id="updateTenantContracts">
+        update tenant_contract
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="tenant_contract_id=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                </foreach>
+            </trim>
+            <trim prefix="tenant_id=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.tenantId != null and item.tenantId != ''">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.tenant_id}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="sales_contract_no=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.salesContractNo != null and item.salesContractNo != ''">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.sales_contract_no}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="sales_personnel=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.salesPersonnel != null and item.salesPersonnel != ''">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.sales_personnel}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contract_amount=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.contractAmount != null and item.contractAmount != ''">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contract_amount}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contract_start_time=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.contractStartTime != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contract_start_time}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contract_end_time=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.contractEndTime != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contract_end_time}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_package=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.productPackage != null and item.productPackage != ''">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.product_package}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.deleteFlag != null and item.deleteFlag != ''">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.delete_flag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.createBy != null and item.createBy != ''">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.create_by}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.createTime != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.create_time}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.updateBy != null and item.updateBy != ''">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.update_by}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="tenantContractList" item="item" index="index">
+                             <if test="item.updateTime != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.update_time}
+                             </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="tenantContractList" separator="or" item="item" index="index">
+                    tenant_contract_id=#{item.tenantContractId}
+        </foreach>
+    </update>
+</mapper>
+
+
