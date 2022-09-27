@@ -29,6 +29,16 @@ public interface UserConstants
     /** 部门停用状态 */
     String DEPT_DISABLE = "1";
 
+    /**
+     * 行业生效状态
+     */
+    String INDUSTRY_NORMAL = "0";
+
+    /**
+     * 行业失效状态
+     */
+    String INDUSTRY_DISABLE = "1";
+
     /** 字典正常状态 */
     String DICT_NORMAL = "0";
 
