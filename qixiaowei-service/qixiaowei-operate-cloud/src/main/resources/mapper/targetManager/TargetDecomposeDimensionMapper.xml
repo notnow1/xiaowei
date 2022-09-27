@@ -8,7 +8,7 @@
         target_decompose_dimension_id, decomposition_dimension, sort, delete_flag, create_by, create_time, update_by,
         update_time
         FROM target_decompose_dimension
-        WHERE target_decompose_dimension_id=#{targetDecomposeDimension}
+        WHERE target_decompose_dimension_id=#{targetDecomposeDimensionId}
         and delete_flag=0
     </select>
 
@@ -177,7 +177,7 @@
     </update>
     <!--获取当前最大sort值-->
     <select id="getMaxTargetDimensionConfigSort" resultType="java.lang.Integer">
-        SELECT MAX(sort) as maxSort FROM target_decompose_dimension
+        SELECT MAX(sort) as maxSort FROM target_decompose_dimension and delete_flag=0
     </select>
 </mapper>
 
