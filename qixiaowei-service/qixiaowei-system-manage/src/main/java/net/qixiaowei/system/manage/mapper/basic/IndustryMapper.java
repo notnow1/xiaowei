@@ -57,6 +57,14 @@ public interface IndustryMapper {
     int updateIndustry(@Param("industry") Industry industry);
 
     /**
+     * 修改行业祖级列表ID
+     *
+     * @param industry 行业
+     * @return 结果
+     */
+    int updateAncestors(@Param("industry") Industry industry);
+
+    /**
      * 批量修改行业
      *
      * @param industryList 行业
@@ -73,13 +81,19 @@ public interface IndustryMapper {
     int logicDeleteIndustryByIndustryId(@Param("industry") Industry industry, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
 
     /**
+     * 查找子级
+     * @param industryId
+     * @return
+     */
+    List<Long> selectSon(@Param("industryId") Long industryId);
+
+    /**
      * 逻辑批量删除行业
      *
      * @param industryIds 需要删除的数据主键集合
      * @return 结果
      */
     int logicDeleteIndustryByIndustryIds(@Param("industryIds") List<Long> industryIds, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
-
 
     /**
      * 物理删除行业
@@ -105,4 +119,6 @@ public interface IndustryMapper {
      */
     int batchIndustry(@Param("industrys") List<Industry> Industrys);
 
+
+    int updateStatus(@Param("status") Integer status, @Param("industrysId") Long industrysId);
 }

@@ -11,65 +11,89 @@ public interface UserConstants
      */
     String SYS_USER = "SYS_USER";
 
-    /** 正常状态 */
+    /**
+     * 正常状态
+     */
     String NORMAL = "0";
 
-    /** 异常状态 */
+    /**
+     * 异常状态
+     */
     String EXCEPTION = "1";
 
-    /** 用户封禁状态 */
+    /**
+     * 用户封禁状态
+     */
     String USER_DISABLE = "1";
 
-    /** 角色封禁状态 */
+    /**
+     * 角色封禁状态
+     */
     String ROLE_DISABLE = "1";
 
-    /** 部门正常状态 */
+    /**
+     * 部门正常状态
+     */
     String DEPT_NORMAL = "0";
 
-    /** 部门停用状态 */
+    /**
+     * 部门停用状态
+     */
     String DEPT_DISABLE = "1";
 
     /**
-     * 行业生效状态
+     * 字典正常状态
      */
-    String INDUSTRY_NORMAL = "0";
-
-    /**
-     * 行业失效状态
-     */
-    String INDUSTRY_DISABLE = "1";
-
-    /** 字典正常状态 */
     String DICT_NORMAL = "0";
 
-    /** 是否为系统默认（是） */
+    /**
+     * 是否为系统默认（是）
+     */
     String YES = "Y";
 
-    /** 是否菜单外链（是） */
+    /**
+     * 是否菜单外链（是）
+     */
     String YES_FRAME = "0";
 
-    /** 是否菜单外链（否） */
+    /**
+     * 是否菜单外链（否）
+     */
     String NO_FRAME = "1";
 
-    /** 菜单类型（目录） */
+    /**
+     * 菜单类型（目录）
+     */
     String TYPE_DIR = "M";
 
-    /** 菜单类型（菜单） */
+    /**
+     * 菜单类型（菜单）
+     */
     String TYPE_MENU = "C";
 
-    /** 菜单类型（按钮） */
+    /**
+     * 菜单类型（按钮）
+     */
     String TYPE_BUTTON = "F";
 
-    /** Layout组件标识 */
+    /**
+     * Layout组件标识
+     */
     public final static String LAYOUT = "Layout";
 
-    /** ParentView组件标识 */
+    /**
+     * ParentView组件标识
+     */
     public final static String PARENT_VIEW = "ParentView";
 
-    /** InnerLink组件标识 */
+    /**
+     * InnerLink组件标识
+     */
     public final static String INNER_LINK = "InnerLink";
 
-    /** 校验返回结果码 */
+    /**
+     * 校验返回结果码
+     */
     public final static String UNIQUE = "0";
 
     public final static String NOT_UNIQUE = "1";

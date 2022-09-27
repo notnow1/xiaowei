@@ -33,7 +33,7 @@ public class IndustryController extends BaseController {
     /**
      * 分页查询行业列表
      */
-    @RequiresPermissions("system:manage:industry:pageList")
+//    @RequiresPermissions("system:manage:industry:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(IndustryDTO industryDTO) {
         startPage();
@@ -44,7 +44,7 @@ public class IndustryController extends BaseController {
     /**
      * 查询行业列表
      */
-    @RequiresPermissions("system:manage:industry:list")
+//    @RequiresPermissions("system:manage:industry:list")
     @GetMapping("/list")
     public AjaxResult list(IndustryDTO industryDTO) {
         List<IndustryDTO> list = industryService.selectIndustryList(industryDTO);
@@ -55,7 +55,7 @@ public class IndustryController extends BaseController {
     /**
      * 新增行业
      */
-    @RequiresPermissions("system:manage:industry:add")
+//    @RequiresPermissions("system:manage:industry:add")
     @Log(title = "新增行业", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndustryDTO industryDTO) {
@@ -66,7 +66,7 @@ public class IndustryController extends BaseController {
     /**
      * 修改行业
      */
-    @RequiresPermissions("system:manage:industry:edit")
+//    @RequiresPermissions("system:manage:industry:edit")
     @Log(title = "修改行业", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody IndustryDTO industryDTO) {
@@ -76,7 +76,7 @@ public class IndustryController extends BaseController {
     /**
      * 逻辑删除行业
      */
-    @RequiresPermissions("system:manage:industry:remove")
+//    @RequiresPermissions("system:manage:industry:remove")
     @Log(title = "删除行业", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody IndustryDTO industryDTO) {
@@ -86,7 +86,7 @@ public class IndustryController extends BaseController {
     /**
      * 批量修改行业
      */
-    @RequiresPermissions("system:manage:industry:edits")
+//    @RequiresPermissions("system:manage:industry:edits")
     @Log(title = "批量修改行业", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<IndustryDTO> industryDtos) {
@@ -96,7 +96,7 @@ public class IndustryController extends BaseController {
     /**
      * 批量新增行业
      */
-    @RequiresPermissions("system:manage:industry:insertIndustrys")
+//    @RequiresPermissions("system:manage:industry:insertIndustrys")
     @Log(title = "批量新增行业", businessType = BusinessType.INSERT)
     @PostMapping("/insertIndustrys")
     public AjaxResult insertIndustrys(@RequestBody List<IndustryDTO> industryDtos) {
@@ -106,7 +106,7 @@ public class IndustryController extends BaseController {
     /**
      * 逻辑批量删除行业
      */
-    @RequiresPermissions("system:manage:industry:removes")
+//    @RequiresPermissions("system:manage:industry:removes")
     @Log(title = "批量删除行业", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<IndustryDTO> IndustryDtos) {

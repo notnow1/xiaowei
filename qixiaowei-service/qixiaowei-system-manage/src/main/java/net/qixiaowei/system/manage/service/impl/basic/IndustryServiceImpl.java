@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.impl.basic;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.UserConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.exception.auth.NotLoginException;
@@ -82,21 +83,42 @@ public class IndustryServiceImpl implements IIndustryService {
                 throw new ServiceException("行业编码重复");
             }
         }
-        IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(industryDTO.getParentIndustryId());
-        // 如果父节点不为正常状态,则不允许新增子节点
-        Integer status = parentIndustry.getStatus();
-        if (!UserConstants.INDUSTRY_NORMAL.equals(status)) {
-            throw new ServiceException("该行业停用，不允许新增");
+        String parentAncestors = "";//仅在非一级行业时有用
+        int parentLevel = 0;
+        if (industryDTO.getParentIndustryId() != 0) {// 一级行业
+            IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(industryDTO.getParentIndustryId());
+            parentAncestors = parentIndustry.getAncestors();
+            parentLevel = parentIndustry.getLevel();
+            Integer status = parentIndustry.getStatus();
+            if (BusinessConstants.DISABLE == status) {
+                throw new ServiceException("上级行业失效，不允许新增");
+            }
         }
-        industry.setAncestors(parentIndustry.getAncestors() + "," + industry.getIndustryId());
-        industry.setLevel(parentIndustry.getLevel() + 1);
+        // 如果父节点不为正常状态,则不允许新增子节点
         industry.setIndustryCode(industryCode);
         industry.setCreateTime(DateUtils.getNowDate());
         industry.setUpdateTime(DateUtils.getNowDate());
         industry.setCreateBy(SecurityUtils.getUserId());
         industry.setUpdateBy(SecurityUtils.getUserId());
         industry.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        return industryMapper.insertIndustry(industry);
+        try {
+            industryMapper.insertIndustry(industry);
+        } catch (Exception e) {
+            return 0;
+        }
+        Long industryId = industry.getIndustryId();
+        if (industryDTO.getParentIndustryId() == 0) {// 一级行业
+            industry.setAncestors(industryId.toString());
+            industry.setLevel(1);
+        } else {
+            industry.setAncestors(parentAncestors + "," + industry.getIndustryId());
+            industry.setLevel(parentLevel + 1);
+        }
+        try {
+            return industryMapper.updateAncestors(industry);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     /**
@@ -113,14 +135,17 @@ public class IndustryServiceImpl implements IIndustryService {
         IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(industryDTO.getParentIndustryId());
         // 如果父节点不为正常状态,则不允许编辑子节点
         Integer status = parentIndustry.getStatus();
-        if (!UserConstants.INDUSTRY_NORMAL.equals(status)) {
-            throw new ServiceException("该行业停用，不允许新增");
-        }
         industry.setAncestors(parentIndustry.getAncestors() + "," + industry.getIndustryId());
         industry.setLevel(parentIndustry.getLevel() + 1);
         industry.setUpdateTime(DateUtils.getNowDate());
         industry.setUpdateBy(SecurityUtils.getUserId());
-        return industryMapper.updateIndustry(industry);
+        try {
+            industryMapper.updateIndustry(industry);
+            industryMapper.updateStatus(status,industry.getIndustryId());
+        } catch (Exception e) {
+            return 0;
+        }
+        return 1;
     }
 
     /**
@@ -135,7 +160,7 @@ public class IndustryServiceImpl implements IIndustryService {
         List<Long> stringList = new ArrayList<>();
         for (IndustryDTO industryDTO : industryDtos) {
             if (isQuote(industryDTO.getIndustryId())) {
-                throw new NotLoginException("该分解维度已被引用");
+                throw new ServiceException("该行业配置已被引用");
             }
             stringList.add(industryDTO.getIndustryId());
         }
@@ -168,7 +193,6 @@ public class IndustryServiceImpl implements IIndustryService {
         BeanUtils.copyProperties(industryDTO, industry);
         return industryMapper.logicDeleteIndustryByIndustryId(industry, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
-
     /**
      * 物理删除行业信息
      *

@@ -12,7 +12,6 @@
         and delete_flag=0
     </select>
 
-
     <!--    查询行业列表-->
     <select id="selectIndustryList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
         SELECT
@@ -23,7 +22,7 @@
         <if test="industry.industryId != null and industry.industryId != ''">
             and industry_id=#{industry.industryId}
         </if>
-        <if test="industry.parentIndustryId != null and industry.parentIndustryId != ''">
+        <if test="industry.parentIndustryId != null">
             and parent_industry_id=#{industry.parentIndustryId}
         </if>
         <if test="industry.ancestors != null and industry.ancestors != ''">
@@ -60,7 +59,6 @@
 
     <!--    唯一性校验-->
     <select id="checkUnique" resultType="java.lang.Integer">
-        resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
         SELECT
         count(industry_code)
         FROM industry
@@ -119,6 +117,25 @@
         WHERE
         industry_id=#{industry.industryId}
     </update>
+    <!--修改行业祖级列表ID-->
+    <update id="updateAncestors">
+        UPDATE industry
+        SET
+        <if test="industry.ancestors != null and industry.ancestors != ''">
+            ancestors=#{industry.ancestors},
+        </if>
+        <if test="industry.level != null and industry.level != ''">
+            level=#{industry.level},
+        </if>
+        <if test="industry.updateBy != null and industry.updateBy != ''">
+            update_by=#{industry.updateBy},
+        </if>
+        <if test="industry.updateTime != null">
+            update_time=#{industry.updateTime}
+        </if>
+        WHERE
+        industry_id=#{industry.industryId}
+    </update>
     <!--逻辑删除行业-->
     <update id="logicDeleteIndustryByIndustryId">
         UPDATE industry
@@ -135,15 +152,29 @@
         update_by=#{updateBy},
         update_time=#{updateTime}
         WHERE
-        FIND_IN_SET(#{industryId},industry_id)
+        industry_id IN
+        <foreach item="item"
+                 collection="industryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
+
+    <!--    查找子级-->
+    <select id="selectSon" resultType="java.lang.Long">
+        SELECT
+        (parent_industry_id,ancestors,industry_code,industry_name,level,status,delete_flag,create_by,create_time,update_by,update_time)
+        WHERE
+        FIND_IN_SET(#{industryId},ancestors)
+    </select>
+
     <!--批量新增行业-->
     <insert id="batchIndustry">
         INSERT INTO industry
         (parent_industry_id,ancestors,industry_code,industry_name,level,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
-                 collection="industrys"
+                 collection="industryIds"
                  separator=",">
             (#{item.parentIndustryId},#{item.ancestors},#{item.industryCode},#{item.industryName},#{item.level},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
@@ -252,6 +283,14 @@
         <foreach collection="industryList" separator="or" item="item" index="index">
             industry_id=#{item.industryId}
         </foreach>
+    </update>
+    <update id="updateStatus">
+        UPDATE industry
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        FIND_IN_SET(#{industryId},industry_id)
     </update>
 
 
