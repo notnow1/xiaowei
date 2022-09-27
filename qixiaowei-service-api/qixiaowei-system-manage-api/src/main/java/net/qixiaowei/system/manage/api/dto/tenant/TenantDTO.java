@@ -135,5 +135,9 @@ public class TenantDTO {
      */
     private List<TenantDomainApprovalDTO> tenantDomainApprovalDTOList;
 
+    /**
+     * 申请状态:0待审核;1审核通过;2审核驳回
+     */
+    private  Integer approvalStatus;
 }
 

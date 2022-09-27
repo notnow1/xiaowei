@@ -62,10 +62,10 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     public int insertProductPackage(ProductPackageDTO productPackageDTO){
     ProductPackage productPackage=new ProductPackage();
     BeanUtils.copyProperties(productPackageDTO,productPackage);
-    productPackage.setCreateBy(SecurityUtils.getUserId().toString());
+    productPackage.setCreateBy(SecurityUtils.getUserId());
     productPackage.setCreateTime(DateUtils.getNowDate());
     productPackage.setUpdateTime(DateUtils.getNowDate());
-    productPackage.setUpdateBy(SecurityUtils.getUserId().toString());
+    productPackage.setUpdateBy(SecurityUtils.getUserId());
     productPackage.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
     return productPackageMapper.insertProductPackage(productPackage);
     }
@@ -83,7 +83,7 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     ProductPackage productPackage=new ProductPackage();
     BeanUtils.copyProperties(productPackageDTO,productPackage);
     productPackage.setUpdateTime(DateUtils.getNowDate());
-    productPackage.setUpdateBy(SecurityUtils.getUserId().toString());
+    productPackage.setUpdateBy(SecurityUtils.getUserId());
     return productPackageMapper.updateProductPackage(productPackage);
     }
 
@@ -175,10 +175,10 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     for (ProductPackageDTO productPackageDTO : productPackageDtos) {
       ProductPackage productPackage =new ProductPackage();
       BeanUtils.copyProperties(productPackageDTO,productPackage);
-       productPackage.setCreateBy(SecurityUtils.getUserId().toString());
+       productPackage.setCreateBy(SecurityUtils.getUserId());
        productPackage.setCreateTime(DateUtils.getNowDate());
        productPackage.setUpdateTime(DateUtils.getNowDate());
-       productPackage.setUpdateBy(SecurityUtils.getUserId().toString());
+       productPackage.setUpdateBy(SecurityUtils.getUserId());
        productPackage.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
       productPackageList.add(productPackage);
     }
@@ -197,10 +197,10 @@ public class ProductPackageServiceImpl implements IProductPackageService{
      for (ProductPackageDTO productPackageDTO : productPackageDtos) {
      ProductPackage productPackage =new ProductPackage();
      BeanUtils.copyProperties(productPackageDTO,productPackage);
-        productPackage.setCreateBy(SecurityUtils.getUserId().toString());
+        productPackage.setCreateBy(SecurityUtils.getUserId());
         productPackage.setCreateTime(DateUtils.getNowDate());
         productPackage.setUpdateTime(DateUtils.getNowDate());
-        productPackage.setUpdateBy(SecurityUtils.getUserId().toString());
+        productPackage.setUpdateBy(SecurityUtils.getUserId());
      productPackageList.add(productPackage);
      }
      return productPackageMapper.updateProductPackages(productPackageList);

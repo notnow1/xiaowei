@@ -200,7 +200,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
             BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
             targetDecomposeDimension.setUpdateTime(DateUtils.getNowDate());
 //            targetDecomposeDimension.setCreateBy(SecurityUtils.getUserId());
-            targetDecomposeDimension.setUpdateBy(SecurityUtils.getUserId().toString());
+            targetDecomposeDimension.setUpdateBy(SecurityUtils.getUserId());
             targetDecomposeDimensionList.add(targetDecomposeDimension);
         }
         return targetDecomposeDimensionMapper.updateTargetDecomposeDimensions(targetDecomposeDimensionList);

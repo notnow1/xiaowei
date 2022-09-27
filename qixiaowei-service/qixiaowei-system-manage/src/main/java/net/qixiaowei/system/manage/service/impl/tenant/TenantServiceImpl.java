@@ -90,8 +90,8 @@ public class TenantServiceImpl implements ITenantService {
         TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
         //copy
         BeanUtils.copyProperties(tenantDTO, tenant);
-        tenant.setCreateBy(SecurityUtils.getUserId().toString());
-        tenant.setUpdateBy(SecurityUtils.getUserId().toString());
+        tenant.setCreateBy(SecurityUtils.getUserId());
+        tenant.setUpdateBy(SecurityUtils.getUserId());
         tenant.setCreateTime(DateUtils.getNowDate());
         tenant.setUpdateTime(DateUtils.getNowDate());
         tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
@@ -109,8 +109,8 @@ public class TenantServiceImpl implements ITenantService {
             tenantContacts.setTenantId(tenant.getTenantId());
             tenantContacts.setCreateTime(DateUtils.getNowDate());
             tenantContacts.setUpdateTime(DateUtils.getNowDate());
-            tenantContacts.setCreateBy(SecurityUtils.getUserId().toString());
-            tenantContacts.setUpdateBy(SecurityUtils.getUserId().toString());
+            tenantContacts.setCreateBy(SecurityUtils.getUserId());
+            tenantContacts.setUpdateBy(SecurityUtils.getUserId());
             tenantContacts.setDeleteFlag(0);
             return tenantContacts;
         }).collect(Collectors.toList());
@@ -129,8 +129,8 @@ public class TenantServiceImpl implements ITenantService {
             tenantContract.setTenantId(tenant.getTenantId());
             tenantContract.setCreateTime(DateUtils.getNowDate());
             tenantContract.setUpdateTime(DateUtils.getNowDate());
-            tenantContract.setCreateBy(SecurityUtils.getUserId().toString());
-            tenantContract.setUpdateBy(SecurityUtils.getUserId().toString());
+            tenantContract.setCreateBy(SecurityUtils.getUserId());
+            tenantContract.setUpdateBy(SecurityUtils.getUserId());
             tenantContract.setDeleteFlag(0);
             return tenantContract;
         }).collect(Collectors.toList());
@@ -179,9 +179,9 @@ public class TenantServiceImpl implements ITenantService {
             BeanUtils.copyProperties(info, tenantContacts);
             //租户id
             tenantContacts.setTenantId(tenant.getTenantId());
-            tenantContacts.setCreateBy(tenantContactsDTOList.get(0).getCreateBy().toString());
+            tenantContacts.setCreateBy(tenantContactsDTOList.get(0).getCreateBy());
             tenantContacts.setCreateTime(tenantContactsDTOList.get(0).getCreateTime());
-            tenantContacts.setUpdateBy(SecurityUtils.getUserId().toString());
+            tenantContacts.setUpdateBy(SecurityUtils.getUserId());
             tenantContacts.setUpdateTime(DateUtils.getNowDate());
             tenantContacts.setDeleteFlag(0);
             return tenantContacts;
@@ -233,6 +233,11 @@ public class TenantServiceImpl implements ITenantService {
         return tenantMapper.deleteTenantByTenantId(tenantId);
     }
 
+    /**
+     * 修改单个租户
+     * @param tenantDTO
+     * @return
+     */
     @Override
     public int updateMyTenantDTO(TenantDTO tenantDTO) {
         //租户表
@@ -258,13 +263,14 @@ public class TenantServiceImpl implements ITenantService {
             tenantDomainApproval.setApprovalStatus(0);
             //删除标记
             tenantDomainApproval.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            tenantDomainApproval.setCreateBy(SecurityUtils.getUserId().toString());
-            tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId().toString());
+            tenantDomainApproval.setCreateBy(SecurityUtils.getUserId());
+            tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId());
             tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
             tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
             tenantDomainApprovalMapper.insertTenantDomainApproval(tenantDomainApproval);
+            // todo 开启工作流
         }
-        tenant.setUpdateBy(SecurityUtils.getUserId().toString());
+        tenant.setUpdateBy(SecurityUtils.getUserId());
         tenant.setUpdateTime(DateUtils.getNowDate());
         return tenantMapper.updateTenant(tenant);
     }
