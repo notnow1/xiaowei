@@ -12,6 +12,7 @@ import net.qixiaowei.gen.main.utils.ExcelDiskUtils;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class CodeGenerator {
 
@@ -23,16 +24,16 @@ public class CodeGenerator {
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
     private static final String extend_Package = "/tenant" ;
     //表名
-    private static final String tables = "apply_url" ;
+    private static final String tables = "product_package" ;
 
     //数据库配置
-    private static final String url = "jdbc:mysql://43.139.7.31:3306/test" ;
+    private static final String url = "jdbc:mysql://43.139.7.31:3306/system-manage" ;
     private static final String username = "root" ;
     private static final String password = "qixiaowei2022" ;
 
 
     //实体类 默认生成 不生成改为false
-    private static final boolean default_entity = false;
+    private static final boolean default_entity = true;
     //DTO类
     private static final boolean default_DTO = true;
     //DTO类
@@ -78,6 +79,18 @@ public class CodeGenerator {
 
 
     public static void main(String[] args) {
+        if (StringUtils.isNotBlank(tables)){
+            System.out.println("你确定要生成:"+tables+"吗？"+"Y:生成 N:不生成");
+            Scanner scanner = new Scanner(System.in);
+            String generateFalg = scanner.nextLine();
+            if (generateFalg.equals("N")){
+                return;
+            }
+        }else {
+            System.out.println("请输入表名!!!");
+            return;
+        }
+
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
                     builder.author("TANGMICHI") // 设置作者

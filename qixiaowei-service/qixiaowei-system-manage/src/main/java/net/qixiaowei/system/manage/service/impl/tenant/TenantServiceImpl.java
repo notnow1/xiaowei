@@ -95,7 +95,6 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setCreateTime(DateUtils.getNowDate());
         tenant.setUpdateTime(DateUtils.getNowDate());
         tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-
         //插入租户表
         try {
             i = tenantMapper.insertTenant(tenant);
@@ -242,7 +241,7 @@ public class TenantServiceImpl implements ITenantService {
         TenantDomainApproval tenantDomainApproval =  new TenantDomainApproval();
         BeanUtils.copyProperties(tenantDTO,tenant);
         //查询租户数据
-        TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
+         TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
         //对比域名是否修改 修改需要保存到域名申请表中
         if (!StringUtils.equals(tenantDTO1.getDomain(),tenant.getDomain())){
             //租户id

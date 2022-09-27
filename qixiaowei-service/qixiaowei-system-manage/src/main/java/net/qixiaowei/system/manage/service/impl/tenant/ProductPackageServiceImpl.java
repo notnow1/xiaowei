@@ -18,7 +18,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 /**
 * ProductPackageService业务层处理
 * @author TANGMICHI
-* @since 2022-09-26
+* @since 2022-09-27
 */
 @Service
 public class ProductPackageServiceImpl implements IProductPackageService{

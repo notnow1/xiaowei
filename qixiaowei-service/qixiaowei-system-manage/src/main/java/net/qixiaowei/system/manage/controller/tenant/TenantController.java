@@ -1,7 +1,11 @@
 package net.qixiaowei.system.manage.controller.tenant;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,14 +25,12 @@ import javax.validation.Valid;
 
 
 /**
-*
-* @author TANGMICHI
-* @since 2022-09-24
-*/
+ * @author TANGMICHI
+ * @since 2022-09-24
+ */
 @RestController
 @RequestMapping("tenant")
-public class TenantController extends BaseController
-{
+public class TenantController extends BaseController {
 
 
     @Autowired
@@ -39,7 +41,7 @@ public class TenantController extends BaseController
      */
     //@RequiresPermissions("system:manage:tenant:pageList")
     @GetMapping("/queryTenantDTO")
-    public AjaxResult queryTenantDTO(TenantDTO tenantDTO){
+    public AjaxResult queryTenantDTO(TenantDTO tenantDTO) {
         return AjaxResult.success(tenantService.selectTenantByTenantId(tenantDTO.getTenantId()));
     }
 
@@ -48,96 +50,91 @@ public class TenantController extends BaseController
      */
     //@RequiresPermissions("system:manage:tenant:pageList")
     @PostMapping("/updateMyTenantDTO")
-    public AjaxResult updateMyTenantDTO(@RequestBody  TenantDTO tenantDTO){
+    public AjaxResult updateMyTenantDTO(@RequestBody TenantDTO tenantDTO) {
         return AjaxResult.success(tenantService.updateMyTenantDTO(tenantDTO));
     }
 
     /**
-    * 分页查询租户表列表
-    */
+     * 分页查询租户表列表
+     */
     //@RequiresPermissions("system:manage:tenant:pageList")
     @GetMapping("/pageList")
-    public TableDataInfo pageList(TenantDTO tenantDTO){
-    startPage();
-    List<TenantDTO> list = tenantService.selectTenantList(tenantDTO);
-    return getDataTable(list);
+    public TableDataInfo pageList(TenantDTO tenantDTO) {
+        startPage();
+        List<TenantDTO> list = tenantService.selectTenantList(tenantDTO);
+        return getDataTable(list);
     }
 
     /**
-    * 查询租户表列表
-    */
+     * 查询租户表列表
+     */
     //@RequiresPermissions("system:manage:tenant:list")
     @GetMapping("/list")
-    public AjaxResult list(TenantDTO tenantDTO){
-    List<TenantDTO> list = tenantService.selectTenantList(tenantDTO);
-    return AjaxResult.success(list);
+    public AjaxResult list(TenantDTO tenantDTO) {
+        List<TenantDTO>  list = tenantService.selectTenantList(tenantDTO);
+        return AjaxResult.success(list);
     }
 
 
     /**
-    * 新增租户表
-    */
+     * 新增租户表
+     */
     //@RequiresPermissions("system:manage:tenant:add")
     // @Log(title = "新增租户表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@Validated(TenantDTO.AddTenantDTO.class) @RequestBody  TenantDTO tenantDTO) {
+    public AjaxResult addSave(@Validated(TenantDTO.AddTenantDTO.class) @RequestBody TenantDTO tenantDTO) {
         AjaxResult ajaxResult = toAjax(tenantService.insertTenant(tenantDTO));
         return ajaxResult;
     }
 
 
-
     /**
-    * 修改租户表
-    */
+     * 修改租户表
+     */
     //@RequiresPermissions("system:manage:tenant:edit")
 //    @Log(title = "修改租户表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@Validated(TenantDTO.UpdateTenantDTO.class) @RequestBody TenantDTO tenantDTO)
-    {
-    return toAjax(tenantService.updateTenant(tenantDTO));
+    public AjaxResult editSave(@Validated(TenantDTO.UpdateTenantDTO.class) @RequestBody TenantDTO tenantDTO) {
+        return toAjax(tenantService.updateTenant(tenantDTO));
     }
 
     /**
-    * 逻辑删除租户表
-    */
+     * 逻辑删除租户表
+     */
     //@RequiresPermissions("system:manage:tenant:remove")
     @Log(title = "删除租户表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody TenantDTO tenantDTO)
-    {
-    return toAjax(tenantService.logicDeleteTenantByTenantId(tenantDTO));
+    public AjaxResult remove(@RequestBody TenantDTO tenantDTO) {
+        return toAjax(tenantService.logicDeleteTenantByTenantId(tenantDTO));
     }
+
     /**
-    * 批量修改租户表
-    */
+     * 批量修改租户表
+     */
     //@RequiresPermissions("system:manage:tenant:edits")
     @Log(title = "批量修改租户表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<TenantDTO> tenantDtos)
-    {
-    return toAjax(tenantService.updateTenants(tenantDtos));
+    public AjaxResult editSaves(@RequestBody List<TenantDTO> tenantDtos) {
+        return toAjax(tenantService.updateTenants(tenantDtos));
     }
 
     /**
-    * 批量新增租户表
-    */
+     * 批量新增租户表
+     */
     //@RequiresPermissions("system:manage:tenant:insertTenants")
     @Log(title = "批量新增租户表", businessType = BusinessType.INSERT)
     @PostMapping("/insertTenants")
-    public AjaxResult insertTenants(@RequestBody List<TenantDTO> tenantDtos)
-    {
-    return toAjax(tenantService.insertTenants(tenantDtos));
+    public AjaxResult insertTenants(@RequestBody List<TenantDTO> tenantDtos) {
+        return toAjax(tenantService.insertTenants(tenantDtos));
     }
 
     /**
-    * 逻辑批量删除租户表
-    */
+     * 逻辑批量删除租户表
+     */
     //@RequiresPermissions("system:manage:tenant:removes")
     @Log(title = "批量删除租户表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<TenantDTO>  TenantDtos)
-    {
-    return toAjax(tenantService.logicDeleteTenantByTenantIds(TenantDtos));
+    public AjaxResult removes(@RequestBody List<TenantDTO> TenantDtos) {
+        return toAjax(tenantService.logicDeleteTenantByTenantIds(TenantDtos));
     }
 }
