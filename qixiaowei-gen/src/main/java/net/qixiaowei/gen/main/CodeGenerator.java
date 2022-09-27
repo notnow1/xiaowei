@@ -22,9 +22,9 @@ public class CodeGenerator {
     //项目路径
     private static final String module_path = "system/manage" ;
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
-    private static final String extend_Package = "/tenant" ;
+    private static final String extend_Package = "/basic" ;
     //表名
-    private static final String tables = "product_package" ;
+    private static final String tables = "department,department_post" ;
 
     //数据库配置
     private static final String url = "jdbc:mysql://43.139.7.31:3306/system-manage" ;
@@ -74,6 +74,7 @@ public class CodeGenerator {
     private static final String serviceImplPackage = "service/impl" + extend_Package;
     //mapper package
     private static final String mapperPackage = "mapper" + extend_Package;
+    private static final String mapperXmlPackage = "mapper" +"/"+module_path+extend_Package;
     //mapperXml路径
     private static final String mapperXmlPath = projectPath + service_default + qixiaowei_name + module_name + "/src/main/resources" ;
 
@@ -137,6 +138,7 @@ public class CodeGenerator {
             objectMap.put("servicePackage", s + "." + servicePackage.replaceAll("/", "."));
             objectMap.put("servicePackageImpl", s + "." + serviceImplPackage.replaceAll("/", "."));
             objectMap.put("mapperPackage", s + "." + mapperPackage.replaceAll("/", "."));
+            objectMap.put("mapperXmlPackage", s + "." + mapperXmlPackage.replaceAll("/", "."));
             objectMap.put("facadePackage", s + tableInfo.getEntityName().toLowerCase() + ".facade");
             objectMap.put("facadeImplPackage", s + tableInfo.getEntityName().toLowerCase() + ".facade.impl");
             objectMap.put("requestPackage", s + tableInfo.getEntityName().toLowerCase() + ".request");
@@ -206,7 +208,7 @@ public class CodeGenerator {
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 } else if (StringUtils.equals(key, entityName + "Mapper" + StringPool.DOT_XML)) {
-                    fileName = mapperXmlPath + "/" + mapperPackage + "/" + key;
+                    fileName = mapperXmlPath + "/" + mapperXmlPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 } else {
