@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.productPackage.ProductPackageMapper">
+    <!--    查询产品包-->
+    <select id="selectProductPackageByProductPackageId"
+            resultType="net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO">
+        SELECT
+        product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_package
+        WHERE  product_package_id=#{productPackageId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询产品包列表-->
+    <select id="selectProductPackageList" resultType="net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO">
+        SELECT
+        product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_package
+        WHERE delete_flag=0
+                <if test="productPackage.productPackageId != null">
+                    and product_package_id=#{productPackage.productPackageId}
+                </if>
+                <if test="productPackage.productPackageName != null and productPackage.productPackageName != ''">
+                    and product_package_name=#{productPackage.productPackageName}
+                </if>
+                <if test="productPackage.productPackageDescription != null and productPackage.productPackageDescription != ''">
+                    and product_package_description=#{productPackage.productPackageDescription}
+                </if>
+                <if test="productPackage.remark != null and productPackage.remark != ''">
+                    and remark=#{productPackage.remark}
+                </if>
+                <if test="productPackage.sort != null">
+                    and sort=#{productPackage.sort}
+                </if>
+                <if test="productPackage.deleteFlag != null">
+                    and delete_flag=#{productPackage.deleteFlag}
+                </if>
+                <if test="productPackage.createBy != null">
+                    and create_by=#{productPackage.createBy}
+                </if>
+                <if test="productPackage.createTime != null">
+                    and create_time=#{productPackage.createTime}
+                </if>
+                <if test="productPackage.updateBy != null">
+                    and update_by=#{productPackage.updateBy}
+                </if>
+                <if test="productPackage.updateTime != null">
+                    and update_time=#{productPackage.updateTime}
+                </if>
+    </select>
+    <!--新增产品包-->
+    <insert id="insertProductPackage" useGeneratedKeys="true" keyProperty="productPackageId">
+        INSERT INTO product_package (product_package_name,product_package_description,remark,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{productPackage.productPackageName},#{productPackage.productPackageDescription},#{productPackage.remark},#{productPackage.sort},#{productPackage.deleteFlag},#{productPackage.createBy},#{productPackage.createTime},#{productPackage.updateBy},#{productPackage.updateTime})
+    </insert>
+    <!--修改产品包-->
+    <update id="updateProductPackage">
+        UPDATE product_package
+        SET
+                    <if test="productPackage.productPackageName != null and productPackage.productPackageName != ''">
+                        product_package_name=#{productPackage.productPackageName},
+                    </if>
+                    <if test="productPackage.productPackageDescription != null and productPackage.productPackageDescription != ''">
+                        product_package_description=#{productPackage.productPackageDescription},
+                    </if>
+                    <if test="productPackage.remark != null and productPackage.remark != ''">
+                        remark=#{productPackage.remark},
+                    </if>
+                    <if test="productPackage.sort != null">
+                        sort=#{productPackage.sort},
+                    </if>
+                    <if test="productPackage.deleteFlag != null">
+                        delete_flag=#{productPackage.deleteFlag},
+                    </if>
+                    <if test="productPackage.createBy != null">
+                        create_by=#{productPackage.createBy},
+                    </if>
+                    <if test="productPackage.createTime != null">
+                        create_time=#{productPackage.createTime},
+                    </if>
+                    <if test="productPackage.updateBy != null">
+                        update_by=#{productPackage.updateBy},
+                    </if>
+                    <if test="productPackage.updateTime != null">
+                        update_time=#{productPackage.updateTime}
+                    </if>
+        WHERE
+                 product_package_id=#{productPackage.productPackageId}
+    </update>
+    <!--逻辑删除产品包-->
+    <update id="logicDeleteProductPackageByProductPackageId">
+        UPDATE product_package
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+                product_package_id=#{productPackage.productPackageId}
+    </update>
+    <!--逻辑批量删除产品包-->
+    <update id="logicDeleteProductPackageByProductPackageIds">
+        UPDATE product_package
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         product_package_id IN
+            <foreach item="item"
+                     collection="productPackageIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增产品包-->
+    <insert id="batchProductPackage">
+        INSERT INTO product_package (product_package_name,product_package_description,remark,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="productPackages"
+                 separator=",">
+            (#{item.productPackageName},#{item.productPackageDescription},#{item.remark},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除产品包-->
+    <delete id="deleteProductPackageByProductPackageId">
+        DELETE FROM product_package
+        WHERE  product_package_id=#{productPackage}
+
+    </delete>
+    <!--物理批量删除产品包-->
+    <delete id="deleteProductPackageByProductPackageIds">
+        DELETE FROM product_package
+        WHERE  product_package_id IN
+            <foreach item="item"
+                     collection="productPackageIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改产品包-->
+    <update id="updateProductPackages">
+        update product_package
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="product_package_id=case" suffix="end,">
+            </trim>
+            <trim prefix="product_package_name=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.productPackageName != null and item.productPackageName != ''">
+                                 when product_package_id=#{item.productPackageId} then #{item.productPackageName}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_package_description=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.productPackageDescription != null and item.productPackageDescription != ''">
+                                 when product_package_id=#{item.productPackageId} then #{item.productPackageDescription}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.remark != null and item.remark != ''">
+                                 when product_package_id=#{item.productPackageId} then #{item.remark}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.sort != null">
+                                 when product_package_id=#{item.productPackageId} then #{item.sort}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.deleteFlag != null">
+                                 when product_package_id=#{item.productPackageId} then #{item.deleteFlag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.createBy != null">
+                                 when product_package_id=#{item.productPackageId} then #{item.createBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.createTime != null">
+                                 when product_package_id=#{item.productPackageId} then #{item.createTime}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.updateBy != null">
+                                 when product_package_id=#{item.productPackageId} then #{item.updateBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="productPackageList" item="item" index="index">
+                             <if test="item.updateTime != null">
+                                 when product_package_id=#{item.productPackageId} then #{item.updateTime}
+                             </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="productPackageList" separator="or" item="item" index="index">
+                    product_package_id=#{item.productPackageId}
+        </foreach>
+    </update>
+</mapper>
+
+
