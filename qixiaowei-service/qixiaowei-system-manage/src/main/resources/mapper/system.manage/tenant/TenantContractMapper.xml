@@ -7,7 +7,7 @@
         SELECT
         tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time, contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
         FROM tenant_contract
-        WHERE  tenant_contract_id=#{tenantContract}
+        WHERE  tenant_contract_id=#{tenantContractId}
         and delete_flag=0
     </select>
 
@@ -17,10 +17,10 @@
         tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time, contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
         FROM tenant_contract
         WHERE delete_flag=0
-                <if test="tenantContract.tenantContractId != null and tenantContract.tenantContractId != ''">
+                <if test="tenantContract.tenantContractId != null">
                     and tenant_contract_id=#{tenantContract.tenantContractId}
                 </if>
-                <if test="tenantContract.tenantId != null and tenantContract.tenantId != ''">
+                <if test="tenantContract.tenantId != null">
                     and tenant_id=#{tenantContract.tenantId}
                 </if>
                 <if test="tenantContract.salesContractNo != null and tenantContract.salesContractNo != ''">
@@ -29,7 +29,7 @@
                 <if test="tenantContract.salesPersonnel != null and tenantContract.salesPersonnel != ''">
                     and sales_personnel=#{tenantContract.salesPersonnel}
                 </if>
-                <if test="tenantContract.contractAmount != null and tenantContract.contractAmount != ''">
+                <if test="tenantContract.contractAmount != null">
                     and contract_amount=#{tenantContract.contractAmount}
                 </if>
                 <if test="tenantContract.contractStartTime != null">
@@ -41,16 +41,16 @@
                 <if test="tenantContract.productPackage != null and tenantContract.productPackage != ''">
                     and product_package=#{tenantContract.productPackage}
                 </if>
-                <if test="tenantContract.deleteFlag != null and tenantContract.deleteFlag != ''">
+                <if test="tenantContract.deleteFlag != null">
                     and delete_flag=#{tenantContract.deleteFlag}
                 </if>
-                <if test="tenantContract.createBy != null and tenantContract.createBy != ''">
+                <if test="tenantContract.createBy != null">
                     and create_by=#{tenantContract.createBy}
                 </if>
                 <if test="tenantContract.createTime != null">
                     and create_time=#{tenantContract.createTime}
                 </if>
-                <if test="tenantContract.updateBy != null and tenantContract.updateBy != ''">
+                <if test="tenantContract.updateBy != null">
                     and update_by=#{tenantContract.updateBy}
                 </if>
                 <if test="tenantContract.updateTime != null">
@@ -67,10 +67,7 @@
     <update id="updateTenantContract">
         UPDATE tenant_contract
         SET
-                    <if test="tenantContract.tenantContractId != null and tenantContract.tenantContractId != ''">
-                        tenant_contract_id=#{tenantContract.tenantContractId},
-                    </if>
-                    <if test="tenantContract.tenantId != null and tenantContract.tenantId != ''">
+                    <if test="tenantContract.tenantId != null">
                         tenant_id=#{tenantContract.tenantId},
                     </if>
                     <if test="tenantContract.salesContractNo != null and tenantContract.salesContractNo != ''">
@@ -79,7 +76,7 @@
                     <if test="tenantContract.salesPersonnel != null and tenantContract.salesPersonnel != ''">
                         sales_personnel=#{tenantContract.salesPersonnel},
                     </if>
-                    <if test="tenantContract.contractAmount != null and tenantContract.contractAmount != ''">
+                    <if test="tenantContract.contractAmount != null">
                         contract_amount=#{tenantContract.contractAmount},
                     </if>
                     <if test="tenantContract.contractStartTime != null">
@@ -91,16 +88,16 @@
                     <if test="tenantContract.productPackage != null and tenantContract.productPackage != ''">
                         product_package=#{tenantContract.productPackage},
                     </if>
-                    <if test="tenantContract.deleteFlag != null and tenantContract.deleteFlag != ''">
+                    <if test="tenantContract.deleteFlag != null">
                         delete_flag=#{tenantContract.deleteFlag},
                     </if>
-                    <if test="tenantContract.createBy != null and tenantContract.createBy != ''">
+                    <if test="tenantContract.createBy != null">
                         create_by=#{tenantContract.createBy},
                     </if>
                     <if test="tenantContract.createTime != null">
                         create_time=#{tenantContract.createTime},
                     </if>
-                    <if test="tenantContract.updateBy != null and tenantContract.updateBy != ''">
+                    <if test="tenantContract.updateBy != null">
                         update_by=#{tenantContract.updateBy},
                     </if>
                     <if test="tenantContract.updateTime != null">
@@ -113,8 +110,8 @@
     <update id="logicDeleteTenantContractByTenantContractId">
         UPDATE tenant_contract
         SET     delete_flag= 1,
-                update_by=#{tenantContract.updateBy},
-                update_time=#{tenantContract.updateTime}
+                update_by=#{updateBy},
+                update_time=#{updateTime}
         WHERE
                 tenant_contract_id=#{tenantContract.tenantContractId}
     </update>
@@ -164,90 +161,88 @@
         update tenant_contract
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="tenant_contract_id=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                </foreach>
             </trim>
             <trim prefix="tenant_id=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.tenantId != null and item.tenantId != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.tenant_id}
+                             <if test="item.tenantId != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.tenantId}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="sales_contract_no=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
                              <if test="item.salesContractNo != null and item.salesContractNo != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.sales_contract_no}
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.salesContractNo}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="sales_personnel=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
                              <if test="item.salesPersonnel != null and item.salesPersonnel != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.sales_personnel}
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.salesPersonnel}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="contract_amount=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.contractAmount != null and item.contractAmount != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contract_amount}
+                             <if test="item.contractAmount != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contractAmount}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="contract_start_time=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
                              <if test="item.contractStartTime != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contract_start_time}
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contractStartTime}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="contract_end_time=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
                              <if test="item.contractEndTime != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contract_end_time}
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contractEndTime}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="product_package=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
                              <if test="item.productPackage != null and item.productPackage != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.product_package}
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.productPackage}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.deleteFlag != null and item.deleteFlag != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.delete_flag}
+                             <if test="item.deleteFlag != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.deleteFlag}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.createBy != null and item.createBy != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.create_by}
+                             <if test="item.createBy != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.createBy}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
                              <if test="item.createTime != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.create_time}
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.createTime}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.updateBy != null and item.updateBy != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.update_by}
+                             <if test="item.updateBy != null">
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.updateBy}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="tenantContractList" item="item" index="index">
                              <if test="item.updateTime != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.update_time}
+                                 when tenant_contract_id=#{item.tenantContractId} then #{item.updateTime}
                              </if>
                 </foreach>
             </trim>

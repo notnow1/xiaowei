@@ -7,7 +7,7 @@
         SELECT
         tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account, submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time, update_by, update_time
         FROM tenant_domain_approval
-        WHERE  tenant_domain_approval_id=#{tenantDomainApproval}
+        WHERE  tenant_domain_approval_id=#{tenantDomainApprovalId}
         and delete_flag=0
     </select>
 
@@ -17,16 +17,16 @@
         tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account, submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time, update_by, update_time
         FROM tenant_domain_approval
         WHERE delete_flag=0
-                <if test="tenantDomainApproval.tenantDomainApprovalId != null and tenantDomainApproval.tenantDomainApprovalId != ''">
+                <if test="tenantDomainApproval.tenantDomainApprovalId != null">
                     and tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
                 </if>
-                <if test="tenantDomainApproval.tenantId != null and tenantDomainApproval.tenantId != ''">
+                <if test="tenantDomainApproval.tenantId != null">
                     and tenant_id=#{tenantDomainApproval.tenantId}
                 </if>
                 <if test="tenantDomainApproval.approvalDomain != null and tenantDomainApproval.approvalDomain != ''">
                     and approval_domain=#{tenantDomainApproval.approvalDomain}
                 </if>
-                <if test="tenantDomainApproval.applicantUserId != null and tenantDomainApproval.applicantUserId != ''">
+                <if test="tenantDomainApproval.applicantUserId != null">
                     and applicant_user_id=#{tenantDomainApproval.applicantUserId}
                 </if>
                 <if test="tenantDomainApproval.applicantUserAccount != null and tenantDomainApproval.applicantUserAccount != ''">
@@ -38,25 +38,25 @@
                 <if test="tenantDomainApproval.approvalTime != null">
                     and approval_time=#{tenantDomainApproval.approvalTime}
                 </if>
-                <if test="tenantDomainApproval.approvalUserId != null and tenantDomainApproval.approvalUserId != ''">
+                <if test="tenantDomainApproval.approvalUserId != null">
                     and approval_user_id=#{tenantDomainApproval.approvalUserId}
                 </if>
-                <if test="tenantDomainApproval.approvalStatus != null and tenantDomainApproval.approvalStatus != ''">
+                <if test="tenantDomainApproval.approvalStatus != null">
                     and approval_status=#{tenantDomainApproval.approvalStatus}
                 </if>
                 <if test="tenantDomainApproval.remark != null and tenantDomainApproval.remark != ''">
                     and remark=#{tenantDomainApproval.remark}
                 </if>
-                <if test="tenantDomainApproval.deleteFlag != null and tenantDomainApproval.deleteFlag != ''">
+                <if test="tenantDomainApproval.deleteFlag != null">
                     and delete_flag=#{tenantDomainApproval.deleteFlag}
                 </if>
-                <if test="tenantDomainApproval.createBy != null and tenantDomainApproval.createBy != ''">
+                <if test="tenantDomainApproval.createBy != null">
                     and create_by=#{tenantDomainApproval.createBy}
                 </if>
                 <if test="tenantDomainApproval.createTime != null">
                     and create_time=#{tenantDomainApproval.createTime}
                 </if>
-                <if test="tenantDomainApproval.updateBy != null and tenantDomainApproval.updateBy != ''">
+                <if test="tenantDomainApproval.updateBy != null">
                     and update_by=#{tenantDomainApproval.updateBy}
                 </if>
                 <if test="tenantDomainApproval.updateTime != null">
@@ -73,16 +73,13 @@
     <update id="updateTenantDomainApproval">
         UPDATE tenant_domain_approval
         SET
-                    <if test="tenantDomainApproval.tenantDomainApprovalId != null and tenantDomainApproval.tenantDomainApprovalId != ''">
-                        tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId},
-                    </if>
-                    <if test="tenantDomainApproval.tenantId != null and tenantDomainApproval.tenantId != ''">
+                    <if test="tenantDomainApproval.tenantId != null">
                         tenant_id=#{tenantDomainApproval.tenantId},
                     </if>
                     <if test="tenantDomainApproval.approvalDomain != null and tenantDomainApproval.approvalDomain != ''">
                         approval_domain=#{tenantDomainApproval.approvalDomain},
                     </if>
-                    <if test="tenantDomainApproval.applicantUserId != null and tenantDomainApproval.applicantUserId != ''">
+                    <if test="tenantDomainApproval.applicantUserId != null">
                         applicant_user_id=#{tenantDomainApproval.applicantUserId},
                     </if>
                     <if test="tenantDomainApproval.applicantUserAccount != null and tenantDomainApproval.applicantUserAccount != ''">
@@ -94,25 +91,25 @@
                     <if test="tenantDomainApproval.approvalTime != null">
                         approval_time=#{tenantDomainApproval.approvalTime},
                     </if>
-                    <if test="tenantDomainApproval.approvalUserId != null and tenantDomainApproval.approvalUserId != ''">
+                    <if test="tenantDomainApproval.approvalUserId != null">
                         approval_user_id=#{tenantDomainApproval.approvalUserId},
                     </if>
-                    <if test="tenantDomainApproval.approvalStatus != null and tenantDomainApproval.approvalStatus != ''">
+                    <if test="tenantDomainApproval.approvalStatus != null">
                         approval_status=#{tenantDomainApproval.approvalStatus},
                     </if>
                     <if test="tenantDomainApproval.remark != null and tenantDomainApproval.remark != ''">
                         remark=#{tenantDomainApproval.remark},
                     </if>
-                    <if test="tenantDomainApproval.deleteFlag != null and tenantDomainApproval.deleteFlag != ''">
+                    <if test="tenantDomainApproval.deleteFlag != null">
                         delete_flag=#{tenantDomainApproval.deleteFlag},
                     </if>
-                    <if test="tenantDomainApproval.createBy != null and tenantDomainApproval.createBy != ''">
+                    <if test="tenantDomainApproval.createBy != null">
                         create_by=#{tenantDomainApproval.createBy},
                     </if>
                     <if test="tenantDomainApproval.createTime != null">
                         create_time=#{tenantDomainApproval.createTime},
                     </if>
-                    <if test="tenantDomainApproval.updateBy != null and tenantDomainApproval.updateBy != ''">
+                    <if test="tenantDomainApproval.updateBy != null">
                         update_by=#{tenantDomainApproval.updateBy},
                     </if>
                     <if test="tenantDomainApproval.updateTime != null">
@@ -125,8 +122,8 @@
     <update id="logicDeleteTenantDomainApprovalByTenantDomainApprovalId">
         UPDATE tenant_domain_approval
         SET     delete_flag= 1,
-                update_by=#{tenantDomainApproval.updateBy},
-                update_time=#{tenantDomainApproval.updateTime}
+                update_by=#{updateBy},
+                update_time=#{updateTime}
         WHERE
                 tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
     </update>
@@ -176,62 +173,60 @@
         update tenant_domain_approval
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="tenant_domain_approval_id=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                </foreach>
             </trim>
             <trim prefix="tenant_id=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.tenantId != null and item.tenantId != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.tenant_id}
+                             <if test="item.tenantId != null">
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.tenantId}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="approval_domain=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
                              <if test="item.approvalDomain != null and item.approvalDomain != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approval_domain}
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalDomain}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="applicant_user_id=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.applicantUserId != null and item.applicantUserId != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicant_user_id}
+                             <if test="item.applicantUserId != null">
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserId}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="applicant_user_account=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
                              <if test="item.applicantUserAccount != null and item.applicantUserAccount != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicant_user_account}
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserAccount}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="submission_time=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
                              <if test="item.submissionTime != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.submission_time}
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.submissionTime}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="approval_time=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
                              <if test="item.approvalTime != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approval_time}
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalTime}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="approval_user_id=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.approvalUserId != null and item.approvalUserId != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approval_user_id}
+                             <if test="item.approvalUserId != null">
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalUserId}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="approval_status=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.approvalStatus != null and item.approvalStatus != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approval_status}
+                             <if test="item.approvalStatus != null">
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalStatus}
                              </if>
                 </foreach>
             </trim>
@@ -244,36 +239,36 @@
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.deleteFlag != null and item.deleteFlag != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.delete_flag}
+                             <if test="item.deleteFlag != null">
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.deleteFlag}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.createBy != null and item.createBy != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.create_by}
+                             <if test="item.createBy != null">
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createBy}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
                              <if test="item.createTime != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.create_time}
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createTime}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.updateBy != null and item.updateBy != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.update_by}
+                             <if test="item.updateBy != null">
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateBy}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
                              <if test="item.updateTime != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.update_time}
+                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateTime}
                              </if>
                 </foreach>
             </trim>

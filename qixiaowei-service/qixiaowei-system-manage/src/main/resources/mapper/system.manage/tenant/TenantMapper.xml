@@ -84,7 +84,7 @@
                     <if test="tenant.tenantAddress != null and tenant.tenantAddress != ''">
                         tenant_address=#{tenant.tenantAddress},
                     </if>
-                    <if test="tenant.tenantIndustry != null and tenant.tenantIndustry != ''">
+                    <if test="tenant.tenantIndustry != null">
                         tenant_industry=#{tenant.tenantIndustry},
                     </if>
                     <if test="tenant.domain != null and tenant.domain != ''">
@@ -105,19 +105,19 @@
                     <if test="tenant.tenantLogo != null and tenant.tenantLogo != ''">
                         tenant_logo=#{tenant.tenantLogo},
                     </if>
-                    <if test="tenant.tenantStatus != null and tenant.tenantStatus != ''">
+                    <if test="tenant.tenantStatus != null">
                         tenant_status=#{tenant.tenantStatus},
                     </if>
-                    <if test="tenant.deleteFlag != null and tenant.deleteFlag != ''">
+                    <if test="tenant.deleteFlag != null">
                         delete_flag=#{tenant.deleteFlag},
                     </if>
-                    <if test="tenant.createBy != null and tenant.createBy != ''">
+                    <if test="tenant.createBy != null">
                         create_by=#{tenant.createBy},
                     </if>
                     <if test="tenant.createTime != null">
                         create_time=#{tenant.createTime},
                     </if>
-                    <if test="tenant.updateBy != null and tenant.updateBy != ''">
+                    <if test="tenant.updateBy != null">
                         update_by=#{tenant.updateBy},
                     </if>
                     <if test="tenant.updateTime != null">
@@ -205,7 +205,7 @@
             </trim>
             <trim prefix="tenant_industry=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                             <if test="item.tenantIndustry != null and item.tenantIndustry != ''">
+                             <if test="item.tenantIndustry != null">
                                  when tenant_id=#{item.tenantId} then #{item.tenantIndustry}
                              </if>
                 </foreach>
@@ -254,21 +254,21 @@
             </trim>
             <trim prefix="tenant_status=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                             <if test="item.tenantStatus != null and item.tenantStatus != ''">
+                             <if test="item.tenantStatus != null">
                                  when tenant_id=#{item.tenantId} then #{item.tenantStatus}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                             <if test="item.deleteFlag != null and item.deleteFlag != ''">
+                             <if test="item.deleteFlag != null">
                                  when tenant_id=#{item.tenantId} then #{item.deleteFlag}
                              </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                             <if test="item.createBy != null and item.createBy != ''">
+                             <if test="item.createBy != null">
                                  when tenant_id=#{item.tenantId} then #{item.createBy}
                              </if>
                 </foreach>
@@ -282,7 +282,7 @@
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
-                             <if test="item.updateBy != null and item.updateBy != ''">
+                             <if test="item.updateBy != null">
                                  when tenant_id=#{item.tenantId} then #{item.updateBy}
                              </if>
                 </foreach>

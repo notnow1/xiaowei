@@ -24,12 +24,12 @@
         FROM ${table.name}
         WHERE delete_flag=0
         <#list table.fields as field>
-            <#if "${field.propertyType}"!="LocalDateTime">
-                <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+            <#if "${field.propertyType}"!="String">
+                <if test="${entity?uncap_first}.${field.propertyName} != null">
                     and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
                 </if>
             <#else>
-                <if test="${entity?uncap_first}.${field.propertyName} != null">
+                <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
                     and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
                 </if>
             </#if>
@@ -48,22 +48,22 @@
         <#list table.fields as field>
             <#if !field.keyFlag>
                <#if !field_has_next>
-                <#if "${field.propertyType}"!="LocalDateTime">
-                    <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                <#if "${field.propertyType}"!="String">
+                    <if test="${entity?uncap_first}.${field.propertyName} != null">
                         ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
                     </if>
                 <#else>
-                    <if test="${entity?uncap_first}.${field.propertyName} != null">
+                    <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
                         ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
                     </if>
                 </#if>
             <#else>
-                <#if "${field.propertyType}"!="LocalDateTime">
-                    <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                <#if "${field.propertyType}"!="String">
+                    <if test="${entity?uncap_first}.${field.propertyName} != null">
                         ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
                     </if>
                 <#else>
-                    <if test="${entity?uncap_first}.${field.propertyName} != null">
+                    <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
                         ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
                     </if>
                 </#if>
@@ -153,12 +153,12 @@
             <trim prefix="${field.name}=case" suffix="end,">
                 <#if !field.keyFlag>
                 <foreach collection="${entity?uncap_first}List" item="item" index="index">
-                         <#if "${field.propertyType}"!="LocalDateTime">
-                             <if test="item.${field.propertyName} != null and item.${field.propertyName} != ''">
+                         <#if "${field.propertyType}"!="String">
+                             <if test="item.${field.propertyName} != null">
                                  when <#list table.fields as field><#if field.keyFlag>${field.name}</#if></#list>=<#list table.fields as field><#if field.keyFlag>#${leftBrace}item.${field.propertyName}${rightBrace}</#if></#list> then #${leftBrace}item.${field.propertyName}${rightBrace}
                              </if>
                          <#else>
-                             <if test="item.${field.propertyName} != null">
+                             <if test="item.${field.propertyName} != null and item.${field.propertyName} != ''">
                                  when <#list table.fields as field><#if field.keyFlag>${field.name}</#if></#list>=<#list table.fields as field><#if field.keyFlag>#${leftBrace}item.${field.propertyName}${rightBrace}</#if></#list> then #${leftBrace}item.${field.propertyName}${rightBrace}
                              </if>
                          </#if>
