@@ -92,8 +92,8 @@
     <update id="logicDeleteProductPackageByProductPackageId">
         UPDATE product_package
         SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+                update_by=#{productPackage.updateBy},
+                update_time=#{productPackage.updateTime}
         WHERE
                 product_package_id=#{productPackage.productPackageId}
     </update>

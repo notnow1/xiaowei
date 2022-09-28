@@ -107,8 +107,8 @@
     <update id="logicDeleteIndustryDefaultByIndustryId">
         UPDATE industry_default
         SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+                update_by=#{industryDefault.updateBy},
+                update_time=#{industryDefault.updateTime}
         WHERE
                 industry_id=#{industryDefault.industryId}
     </update>

@@ -122,8 +122,8 @@
     <update id="logicDeleteTenantDomainApprovalByTenantDomainApprovalId">
         UPDATE tenant_domain_approval
         SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+                update_by=#{tenantDomainApproval.updateBy},
+                update_time=#{tenantDomainApproval.updateTime}
         WHERE
                 tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
     </update>
