@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.impl.tenant;
 
 import java.util.List;
 
+import com.alibaba.nacos.common.utils.CollectionUtils;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
@@ -66,6 +68,7 @@ public class TenantServiceImpl implements ITenantService {
     public List<TenantDTO> selectTenantList(TenantDTO tenantDTO) {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
+        tenant.setSupportStaff(SecurityUtils.getUserId().toString());
         return tenantMapper.selectTenantList(tenant);
     }
 
@@ -90,6 +93,8 @@ public class TenantServiceImpl implements ITenantService {
         TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
         //copy
         BeanUtils.copyProperties(tenantDTO, tenant);
+        //拼接本人用户id
+        tenant.setSupportStaff(tenant.getSupportStaff() + "," + SecurityUtils.getUserId().toString());
         tenant.setCreateBy(SecurityUtils.getUserId());
         tenant.setUpdateBy(SecurityUtils.getUserId());
         tenant.setCreateTime(DateUtils.getNowDate());
@@ -99,7 +104,7 @@ public class TenantServiceImpl implements ITenantService {
         try {
             i = tenantMapper.insertTenant(tenant);
         } catch (Exception e) {
-            throw new ServiceException("插入租户表失败"+e);
+            throw new ServiceException("插入租户表失败" + e);
         }
         //copy租户联系人
         tenantContactsList = tenantDTO.getTenantContactsDTOList().stream().distinct().map(info -> {
@@ -115,11 +120,13 @@ public class TenantServiceImpl implements ITenantService {
             return tenantContacts;
         }).collect(Collectors.toList());
 
+
         try {
             tenantContactsMapper.batchTenantContacts(tenantContactsList);
         } catch (Exception e) {
-            throw new ServiceException("插入租户联系人失败"+e);
+            throw new ServiceException("插入租户联系人失败" + e);
         }
+
 
         //copy租户合同人
         tenantContractList = tenantDTO.getTenantContractDTOList().stream().distinct().map(info -> {
@@ -138,7 +145,7 @@ public class TenantServiceImpl implements ITenantService {
         try {
             tenantContractMapper.batchTenantContract(tenantContractList);
         } catch (Exception e) {
-            throw new ServiceException("插入租户合同人失败"+e);
+            throw new ServiceException("插入租户合同人失败" + e);
         }
         //返回条数
         return i;
@@ -158,8 +165,11 @@ public class TenantServiceImpl implements ITenantService {
         Tenant tenant = new Tenant();
         //租户联系人
         TenantContacts tenantContactsQuery = new TenantContacts();
-        List<TenantContacts> tenantContactsList = new ArrayList<>();
-        //租户联系人主键
+        //数据库原本数据
+        List<TenantContactsDTO> tenantContactsDTOList = new ArrayList<>();
+        //接收数据
+        List<TenantContactsDTO> tenantContactsDTOList1 = tenantDTO.getTenantContactsDTOList();
+        //要删除的差集
         List<Long> tenantContactsIds = new ArrayList<>();
         BeanUtils.copyProperties(tenantDTO, tenant);
         tenant.setCreateTime(DateUtils.getNowDate());
@@ -167,38 +177,52 @@ public class TenantServiceImpl implements ITenantService {
         try {
             i = tenantMapper.updateTenant(tenant);
         } catch (Exception e) {
-            throw new ServiceException("修改租户失败"+e);
+            throw new ServiceException("修改租户失败" + e);
         }
         //查询租户联系人
         tenantContactsQuery.setTenantId(tenant.getTenantId());
         //拿到租户联系人信息 可以赋值创建人创建时间
-        List<TenantContactsDTO> tenantContactsDTOList = tenantContactsMapper.selectTenantContactsList(tenantContactsQuery);
+        tenantContactsDTOList = tenantContactsMapper.selectTenantContactsList(tenantContactsQuery);
+        //sterm流求差集
+        tenantContactsIds = tenantContactsDTOList.stream().filter(a ->
+                !tenantContactsDTOList1.stream().map(TenantContactsDTO::getTenantContactsId).collect(Collectors.toList()).contains(a.getTenantContactsId())
+        ).collect(Collectors.toList()).stream().map(TenantContactsDTO::getTenantContactsId).collect(Collectors.toList());
+
+        if (!CollectionUtils.isEmpty(tenantContactsIds)) {
+            //逻辑删除
+            try {
+                tenantContactsMapper.logicDeleteTenantContactsByTenantContactsIds(tenantContactsIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除租户联系人失败" + e);
+            }
+        }
         //copy租户联系人
-        tenantContactsList = tenantDTO.getTenantContactsDTOList().stream().map(info -> {
+        for (TenantContactsDTO tenantContactsDTO : tenantContactsDTOList1) {
             TenantContacts tenantContacts = new TenantContacts();
-            BeanUtils.copyProperties(info, tenantContacts);
+            BeanUtils.copyProperties(tenantContactsDTO, tenantContacts);
             //租户id
             tenantContacts.setTenantId(tenant.getTenantId());
             tenantContacts.setCreateBy(tenantContactsDTOList.get(0).getCreateBy());
             tenantContacts.setCreateTime(tenantContactsDTOList.get(0).getCreateTime());
             tenantContacts.setUpdateBy(SecurityUtils.getUserId());
             tenantContacts.setUpdateTime(DateUtils.getNowDate());
-            tenantContacts.setDeleteFlag(0);
-            return tenantContacts;
-        }).collect(Collectors.toList());
-
-        //主键
-        tenantContactsIds = tenantContactsList.stream().map(TenantContacts::getTenantId).collect(Collectors.toList());
-        //先删除后插入
-        try {
-            tenantContactsMapper.deleteTenantContactsByTenantIds(tenantContactsIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
-        } catch (Exception e) {
-            throw new ServiceException("删除租户联系人失败"+e);
-        }
-        try {
-            tenantContactsMapper.batchTenantContacts(tenantContactsList);
-        } catch (Exception e) {
-            throw new ServiceException("修改租户联系人失败"+e);
+            tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            //没有id回显 表示为新增数据
+            if (null == tenantContactsDTO.getTenantContactsId()) {
+                try {
+                    tenantContactsMapper.insertTenantContacts(tenantContacts);
+                } catch (Exception e) {
+                    throw new ServiceException("新增租户联系人失败" + e);
+                }
+            } else {
+                try {
+                    //修改
+                    tenantContacts.setTenantContactsId(tenantContactsDTO.getTenantContactsId());
+                    tenantContactsMapper.updateTenantContacts(tenantContacts);
+                } catch (Exception e) {
+                    throw new ServiceException("修改租户联系人失败" + e);
+                }
+            }
         }
         return i;
     }
@@ -217,7 +241,7 @@ public class TenantServiceImpl implements ITenantService {
         for (TenantDTO tenantDTO : tenantDtos) {
             stringList.add(tenantDTO.getTenantId());
         }
-        return tenantMapper.logicDeleteTenantByTenantIds(stringList,tenantDtos.get(0).getUpdateBy(),DateUtils.getNowDate());
+        return tenantMapper.logicDeleteTenantByTenantIds(stringList, tenantDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
     }
 
     /**
@@ -235,6 +259,7 @@ public class TenantServiceImpl implements ITenantService {
 
     /**
      * 修改单个租户
+     *
      * @param tenantDTO
      * @return
      */
@@ -243,12 +268,12 @@ public class TenantServiceImpl implements ITenantService {
         //租户表
         Tenant tenant = new Tenant();
         //
-        TenantDomainApproval tenantDomainApproval =  new TenantDomainApproval();
-        BeanUtils.copyProperties(tenantDTO,tenant);
+        TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
+        BeanUtils.copyProperties(tenantDTO, tenant);
         //查询租户数据
-         TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
+        TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
         //对比域名是否修改 修改需要保存到域名申请表中
-        if (!StringUtils.equals(tenantDTO1.getDomain(),tenant.getDomain())){
+        if (!StringUtils.equals(tenantDTO1.getDomain(), tenant.getDomain())) {
             //租户id
             tenantDomainApproval.setTenantId(tenant.getTenantId());
             //申请域名
@@ -316,7 +341,7 @@ public class TenantServiceImpl implements ITenantService {
         for (TenantDTO tenantDTO : tenantDtos) {
             stringList.add(tenantDTO.getTenantId());
         }
-        return tenantMapper.deleteTenantByTenantIds(stringList,tenantDtos.get(0).getUpdateBy(),DateUtils.getNowDate());
+        return tenantMapper.deleteTenantByTenantIds(stringList, tenantDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
     }
 
     /**

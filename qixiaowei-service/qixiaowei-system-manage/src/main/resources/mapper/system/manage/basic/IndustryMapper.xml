@@ -140,8 +140,8 @@
     <update id="logicDeleteIndustryByIndustryId">
         UPDATE industry
         SET delete_flag= 1,
-        update_by=#{updateBy},
-        update_time=#{updateTime}
+        update_by=#{industry.updateBy},
+        update_time=#{industry.updateTime}
         WHERE
         industry_id=#{industry.industryId}
     </update>

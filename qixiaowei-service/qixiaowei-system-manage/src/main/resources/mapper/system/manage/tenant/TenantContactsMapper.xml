@@ -104,8 +104,8 @@
     <update id="logicDeleteTenantContactsByTenantContactsId">
         UPDATE tenant_contacts
         SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+                update_by=#{tenantContacts.updateBy},
+                update_time=#{tenantContacts.updateTime}
         WHERE
                 tenant_contacts_id=#{tenantContacts.tenantContactsId}
     </update>

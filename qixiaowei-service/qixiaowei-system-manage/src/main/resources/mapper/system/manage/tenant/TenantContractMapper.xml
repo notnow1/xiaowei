@@ -110,8 +110,8 @@
     <update id="logicDeleteTenantContractByTenantContractId">
         UPDATE tenant_contract
         SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+                update_by=#{tenantContract.updateBy},
+                update_time=#{tenantContract.updateTime}
         WHERE
                 tenant_contract_id=#{tenantContract.tenantContractId}
     </update>
