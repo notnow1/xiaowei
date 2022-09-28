@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.IndicatorMapper">
+    <!--    查询指标表-->
+    <select id="selectIndicatorByIndicatorId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">
+        SELECT
+        indicator_id, parent_indicator_id, ancestors, indicator_type, indicator_code, indicator_name, sort, level,
+        indicator_category_id, indicator_value_type, choice_flag, examine_direction, indicator_definition,
+        indicator_formula, driving_factor_flag, remark, delete_flag, create_by, create_time, update_by, update_time
+        FROM indicator
+        WHERE indicator_id=#{indicatorId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询指标表列表-->
+    <select id="selectIndicatorList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">
+        SELECT
+        indicator_id, parent_indicator_id, ancestors, indicator_type, indicator_code, indicator_name, sort, level,
+        indicator_category_id, indicator_value_type, choice_flag, examine_direction, indicator_definition,
+        indicator_formula, driving_factor_flag, remark, delete_flag, create_by, create_time, update_by, update_time
+        FROM indicator
+        WHERE delete_flag=0
+        <if test="indicator.indicatorId != null">
+            and indicator_id=#{indicator.indicatorId}
+        </if>
+        <if test="indicator.parentIndicatorId != null">
+            and parent_indicator_id=#{indicator.parentIndicatorId}
+        </if>
+        <if test="indicator.ancestors != null and indicator.ancestors != ''">
+            and ancestors=#{indicator.ancestors}
+        </if>
+        <if test="indicator.indicatorType != null">
+            and indicator_type=#{indicator.indicatorType}
+        </if>
+        <if test="indicator.indicatorCode != null and indicator.indicatorCode != ''">
+            and indicator_code=#{indicator.indicatorCode}
+        </if>
+        <if test="indicator.indicatorName != null and indicator.indicatorName != ''">
+            and indicator_name=#{indicator.indicatorName}
+        </if>
+        <if test="indicator.sort != null">
+            and sort=#{indicator.sort}
+        </if>
+        <if test="indicator.level != null">
+            and level=#{indicator.level}
+        </if>
+        <if test="indicator.indicatorCategoryId != null">
+            and indicator_category_id=#{indicator.indicatorCategoryId}
+        </if>
+        <if test="indicator.indicatorValueType != null">
+            and indicator_value_type=#{indicator.indicatorValueType}
+        </if>
+        <if test="indicator.choiceFlag != null">
+            and choice_flag=#{indicator.choiceFlag}
+        </if>
+        <if test="indicator.examineDirection != null">
+            and examine_direction=#{indicator.examineDirection}
+        </if>
+        <if test="indicator.indicatorDefinition != null and indicator.indicatorDefinition != ''">
+            and indicator_definition=#{indicator.indicatorDefinition}
+        </if>
+        <if test="indicator.indicatorFormula != null and indicator.indicatorFormula != ''">
+            and indicator_formula=#{indicator.indicatorFormula}
+        </if>
+        <if test="indicator.drivingFactorFlag != null">
+            and driving_factor_flag=#{indicator.drivingFactorFlag}
+        </if>
+        <if test="indicator.remark != null and indicator.remark != ''">
+            and remark=#{indicator.remark}
+        </if>
+        <if test="indicator.deleteFlag != null">
+            and delete_flag=#{indicator.deleteFlag}
+        </if>
+        <if test="indicator.createBy != null">
+            and create_by=#{indicator.createBy}
+        </if>
+        <if test="indicator.createTime != null">
+            and create_time=#{indicator.createTime}
+        </if>
+        <if test="indicator.updateBy != null">
+            and update_by=#{indicator.updateBy}
+        </if>
+        <if test="indicator.updateTime != null">
+            and update_time=#{indicator.updateTime}
+        </if>
+    </select>
+    <!--级联查询父菜单-->
+    <select id="selectIndicatorTree" resultMap="treeVoMap">
+        SELECT
+        indicator_id, parent_indicator_id, ancestors, indicator_type, indicator_code, indicator_name, sort, level,
+        indicator_category_id, indicator_value_type, choice_flag, examine_direction, indicator_definition,
+        indicator_formula, driving_factor_flag, remark, delete_flag, create_by, create_time, update_by, update_time
+        FROM indicator
+        WHERE parent_id = 0 and delete_flag = 0
+    </select>
+    <!--级联查询子菜单-->
+    <select id="findIndicatorTreeByPid" resultMap="treeVoMap">
+        SELECT
+        indicator_id, parent_indicator_id, ancestors, indicator_type, indicator_code, indicator_name, sort, level,
+        indicator_category_id, indicator_value_type, choice_flag, examine_direction, indicator_definition,
+        indicator_formula, driving_factor_flag, remark, delete_flag, create_by, create_time, update_by, update_time
+        FROM indicator
+        where parent_indicator_id = #{parentIndicatorId} and delete_flag = 0
+    </select>
+    <!--返回类型-->
+    <resultMap id="treeVoMap" type="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">
+        <id column="indicator_id" property="indicatorId" jdbcType="BIGINT"/>
+        <result column="parent_indicator_id" property="parentIndicatorId" jdbcType="BIGINT"/>
+        <result column="ancestors" property="ancestors" jdbcType="VARCHAR"/>
+        <result column="indicator_type" property="indicatorType" jdbcType="TINYINT"/>
+        <result column="indicator_code" property="indicatorCode" jdbcType="VARCHAR"/>
+        <result column="indicator_name" property="indicatorName" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+        <result column="level" property="level" jdbcType="TINYINT"/>
+        <result column="indicator_category_id" property="indicatorCategoryId" jdbcType="BIGINT"/>
+        <result column="indicator_value_type" property="indicatorValueType" jdbcType="TINYINT"/>
+        <result column="choice_flag" property="choiceFlag" jdbcType="TINYINT"/>
+        <result column="examine_direction" property="examineDirection" jdbcType="TINYINT"/>
+        <result column="indicator_definition" property="indicatorDefinition" jdbcType="VARCHAR"/>
+        <result column="indicator_formula" property="indicatorFormula" jdbcType="VARCHAR"/>
+        <result column="driving_factor_flag" property="drivingFactorFlag" jdbcType="TINYINT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="delete_flag" property="deleteFlag" jdbcType="TINYINT"/>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_by" property="updateBy" jdbcType="BIGINT"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <collection property="childMenu" ofType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO"
+                    column="id" select="findIndicatorTreeByPid"/>
+    </resultMap>
+    <!-- 根据父级查找子级-->
+    <select id="selectSon" resultType="java.lang.Long">
+        SELECT
+        indicator_id
+        FROM indicator
+        WHERE
+        FIND_IN_SET(#{industryId},ancestors)
+    </select>
+    <!-- 根据父级list批量查找子级-->
+    <select id="selectSons" resultType="java.lang.Long">
+        SELECT
+        indicator_id
+        FROM indicator
+        WHERE
+        <foreach item="item" index="index"
+                 collection="indicatorIds"
+                 separator="or">
+            FIND_IN_SET(#{item},ancestors)
+        </foreach>
+    </select>
+    <!--新增指标表-->
+    <insert id="insertIndicator" useGeneratedKeys="true" keyProperty="indicatorId">
+        INSERT INTO indicator
+        (parent_indicator_id,ancestors,indicator_type,indicator_code,indicator_name,sort,level,indicator_category_id,indicator_value_type,choice_flag,examine_direction,indicator_definition,indicator_formula,driving_factor_flag,remark,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{indicator.parentIndicatorId},#{indicator.ancestors},#{indicator.indicatorType},#{indicator.indicatorCode},#{indicator.indicatorName},#{indicator.sort},#{indicator.level},#{indicator.indicatorCategoryId},#{indicator.indicatorValueType},#{indicator.choiceFlag},#{indicator.examineDirection},#{indicator.indicatorDefinition},#{indicator.indicatorFormula},#{indicator.drivingFactorFlag},#{indicator.remark},#{indicator.deleteFlag},#{indicator.createBy},#{indicator.createTime},#{indicator.updateBy},#{indicator.updateTime})
+    </insert>
+    <!--修改指标表-->
+    <update id="updateIndicator">
+        UPDATE indicator
+        SET
+        <if test="indicator.parentIndicatorId != null">
+            parent_indicator_id=#{indicator.parentIndicatorId},
+        </if>
+        <if test="indicator.ancestors != null and indicator.ancestors != ''">
+            ancestors=#{indicator.ancestors},
+        </if>
+        <if test="indicator.indicatorType != null">
+            indicator_type=#{indicator.indicatorType},
+        </if>
+        <if test="indicator.indicatorCode != null and indicator.indicatorCode != ''">
+            indicator_code=#{indicator.indicatorCode},
+        </if>
+        <if test="indicator.indicatorName != null and indicator.indicatorName != ''">
+            indicator_name=#{indicator.indicatorName},
+        </if>
+        <if test="indicator.sort != null">
+            sort=#{indicator.sort},
+        </if>
+        <if test="indicator.level != null">
+            level=#{indicator.level},
+        </if>
+        <if test="indicator.indicatorCategoryId != null">
+            indicator_category_id=#{indicator.indicatorCategoryId},
+        </if>
+        <if test="indicator.indicatorValueType != null">
+            indicator_value_type=#{indicator.indicatorValueType},
+        </if>
+        <if test="indicator.choiceFlag != null">
+            choice_flag=#{indicator.choiceFlag},
+        </if>
+        <if test="indicator.examineDirection != null">
+            examine_direction=#{indicator.examineDirection},
+        </if>
+        <if test="indicator.indicatorDefinition != null and indicator.indicatorDefinition != ''">
+            indicator_definition=#{indicator.indicatorDefinition},
+        </if>
+        <if test="indicator.indicatorFormula != null and indicator.indicatorFormula != ''">
+            indicator_formula=#{indicator.indicatorFormula},
+        </if>
+        <if test="indicator.drivingFactorFlag != null">
+            driving_factor_flag=#{indicator.drivingFactorFlag},
+        </if>
+        <if test="indicator.remark != null and indicator.remark != ''">
+            remark=#{indicator.remark},
+        </if>
+        <if test="indicator.deleteFlag != null">
+            delete_flag=#{indicator.deleteFlag},
+        </if>
+        <if test="indicator.createBy != null">
+            create_by=#{indicator.createBy},
+        </if>
+        <if test="indicator.createTime != null">
+            create_time=#{indicator.createTime},
+        </if>
+        <if test="indicator.updateBy != null">
+            update_by=#{indicator.updateBy},
+        </if>
+        <if test="indicator.updateTime != null">
+            update_time=#{indicator.updateTime}
+        </if>
+        WHERE
+        indicator_id=#{indicator.indicatorId}
+    </update>
+    <!--逻辑删除指标表-->
+    <update id="logicDeleteIndicatorByIndicatorId">
+        UPDATE indicator
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        indicator_id=#{indicator.indicatorId}
+    </update>
+    <!--逻辑批量删除指标表-->
+    <update id="logicDeleteIndicatorByIndicatorIds">
+        UPDATE indicator
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        indicator_id IN
+        <foreach item="item"
+                 collection="indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增指标表-->
+    <insert id="batchIndicator">
+        INSERT INTO indicator
+        (parent_indicator_id,ancestors,indicator_type,indicator_code,indicator_name,sort,level,indicator_category_id,indicator_value_type,choice_flag,examine_direction,indicator_definition,indicator_formula,driving_factor_flag,remark,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="indicators"
+                 separator=",">
+            (#{item.parentIndicatorId},#{item.ancestors},#{item.indicatorType},#{item.indicatorCode},#{item.indicatorName},#{item.sort},#{item.level},#{item.indicatorCategoryId},#{item.indicatorValueType},#{item.choiceFlag},#{item.examineDirection},#{item.indicatorDefinition},#{item.indicatorFormula},#{item.drivingFactorFlag},#{item.remark},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除指标表-->
+    <delete id="deleteIndicatorByIndicatorId">
+        DELETE FROM indicator
+        WHERE indicator_id=#{indicator}
+
+    </delete>
+    <!--物理批量删除指标表-->
+    <delete id="deleteIndicatorByIndicatorIds">
+        DELETE FROM indicator
+        WHERE indicator_id IN
+        <foreach item="item"
+                 collection="indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改指标表-->
+    <update id="updateIndicators">
+        update indicator
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="indicator_id=case" suffix="end,">
+            </trim>
+            <trim prefix="parent_indicator_id=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.parentIndicatorId != null">
+                        when indicator_id=#{item.indicatorId} then #{item.parentIndicatorId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="ancestors=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.ancestors != null and item.ancestors != ''">
+                        when indicator_id=#{item.indicatorId} then #{item.ancestors}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_type=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.indicatorType != null">
+                        when indicator_id=#{item.indicatorId} then #{item.indicatorType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_code=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.indicatorCode != null and item.indicatorCode != ''">
+                        when indicator_id=#{item.indicatorId} then #{item.indicatorCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_name=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.indicatorName != null and item.indicatorName != ''">
+                        when indicator_id=#{item.indicatorId} then #{item.indicatorName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when indicator_id=#{item.indicatorId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="level=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.level != null">
+                        when indicator_id=#{item.indicatorId} then #{item.level}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_category_id=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.indicatorCategoryId != null">
+                        when indicator_id=#{item.indicatorId} then #{item.indicatorCategoryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_value_type=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.indicatorValueType != null">
+                        when indicator_id=#{item.indicatorId} then #{item.indicatorValueType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="choice_flag=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.choiceFlag != null">
+                        when indicator_id=#{item.indicatorId} then #{item.choiceFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="examine_direction=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.examineDirection != null">
+                        when indicator_id=#{item.indicatorId} then #{item.examineDirection}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_definition=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.indicatorDefinition != null and item.indicatorDefinition != ''">
+                        when indicator_id=#{item.indicatorId} then #{item.indicatorDefinition}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_formula=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.indicatorFormula != null and item.indicatorFormula != ''">
+                        when indicator_id=#{item.indicatorId} then #{item.indicatorFormula}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="driving_factor_flag=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.drivingFactorFlag != null">
+                        when indicator_id=#{item.indicatorId} then #{item.drivingFactorFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.remark != null and item.remark != ''">
+                        when indicator_id=#{item.indicatorId} then #{item.remark}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when indicator_id=#{item.indicatorId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when indicator_id=#{item.indicatorId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when indicator_id=#{item.indicatorId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when indicator_id=#{item.indicatorId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="indicatorList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when indicator_id=#{item.indicatorId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="indicatorList" separator="or" item="item" index="index">
+            indicator_id=#{item.indicatorId}
+        </foreach>
+    </update>
+    <!--指标编码唯一性校验-->
+    <select id="checkUnique" resultType="java.lang.Integer">
+        SELECT
+        count(indicator_code)
+        FROM indicator
+        WHERE indicator_code=#{indicatorCode}
+        and delete_flag=0
+    </select>
+    <!--新增时修改指标祖级列表ID-->
+    <update id="updateAncestors">
+        UPDATE indicator
+        SET
+        <if test="indicator.ancestors != null and indicator.ancestors != ''">
+            ancestors=#{indicator.ancestors},
+        </if>
+        <if test="indicator.level != null and indicator.level != ''">
+            level=#{indicator.level},
+        </if>
+        <if test="indicator.updateBy != null and indicator.updateBy != ''">
+            update_by=#{indicator.updateBy},
+        </if>
+        <if test="indicator.updateTime != null">
+            update_time=#{indicator.updateTime}
+        </if>
+        WHERE
+        indicator_id=#{indicator.indicatorId}
+    </update>
+</mapper>
+
+

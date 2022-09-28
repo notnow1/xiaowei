@@ -57,7 +57,7 @@ public interface IndustryMapper {
     int updateIndustry(@Param("industry") Industry industry);
 
     /**
-     * 修改行业祖级列表ID
+     * 新增时修改行业祖级列表ID
      *
      * @param industry 行业
      * @return 结果
@@ -81,11 +81,20 @@ public interface IndustryMapper {
     int logicDeleteIndustryByIndustryId(@Param("industry") Industry industry, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
 
     /**
-     * 查找子级
+     * 根据父级id查找子级
+     *
      * @param industryId
      * @return
      */
     List<Long> selectSon(@Param("industryId") Long industryId);
+
+    /**
+     * 根据父级id批量查找子级
+     *
+     * @param industryIds
+     * @return
+     */
+    List<Long> selectSons(@Param("industryIds") List<Long> industryIds);
 
     /**
      * 逻辑批量删除行业
@@ -119,6 +128,19 @@ public interface IndustryMapper {
      */
     int batchIndustry(@Param("industrys") List<Industry> Industrys);
 
+    /**
+     * 根据ids批量修改子级
+     *
+     * @param status
+     * @param industryIds
+     * @return
+     */
+    int updateStatus(@Param("status") Integer status, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime, @Param("industryIds") List<Long> industryIds);
 
-    int updateStatus(@Param("status") Integer status, @Param("industrysId") Long industrysId);
+    /**
+     * todo 获取启用行业类型
+     *
+     * @return
+     */
+    int getEnableType();
 }

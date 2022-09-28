@@ -87,6 +87,9 @@ public class IndustryServiceImpl implements IIndustryService {
         int parentLevel = 0;
         if (industryDTO.getParentIndustryId() != 0) {// 一级行业
             IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(industryDTO.getParentIndustryId());
+            if (parentIndustry == null) {
+                throw new ServiceException("该上级行业不存在");
+            }
             parentAncestors = parentIndustry.getAncestors();
             parentLevel = parentIndustry.getLevel();
             Integer status = parentIndustry.getStatus();
@@ -132,39 +135,38 @@ public class IndustryServiceImpl implements IIndustryService {
     public int updateIndustry(IndustryDTO industryDTO) {
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
-        IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(industryDTO.getParentIndustryId());
-        // 如果父节点不为正常状态,则不允许编辑子节点
-        Integer status = parentIndustry.getStatus();
-        industry.setAncestors(parentIndustry.getAncestors() + "," + industry.getIndustryId());
-        industry.setLevel(parentIndustry.getLevel() + 1);
+        Integer status = industry.getStatus();
         industry.setUpdateTime(DateUtils.getNowDate());
         industry.setUpdateBy(SecurityUtils.getUserId());
-        try {
-            industryMapper.updateIndustry(industry);
-            industryMapper.updateStatus(status,industry.getIndustryId());
-        } catch (Exception e) {
-            return 0;
+        if (BusinessConstants.DISABLE.equals(status)) {//失效会影响子级
+            //先查再批量更新
+            List<Long> industryIds = industryMapper.selectSon(industry.getIndustryId());
+            industryMapper.updateStatus(status, industry.getUpdateBy(), industry.getUpdateTime(), industryIds);
         }
-        return 1;
+        return industryMapper.updateIndustry(industry);
     }
 
     /**
      * 逻辑批量删除行业
      *
-     * @param industryDtos 需要删除的行业主键
+     * @param industryDTOS 需要删除的行业主键
      * @return 结果
      */
     @Transactional
     @Override
-    public int logicDeleteIndustryByIndustryIds(List<IndustryDTO> industryDtos) {
+    public int logicDeleteIndustryByIndustryIds(List<IndustryDTO> industryDTOS) {
         List<Long> stringList = new ArrayList<>();
-        for (IndustryDTO industryDTO : industryDtos) {
-            if (isQuote(industryDTO.getIndustryId())) {
-                throw new ServiceException("该行业配置已被引用");
-            }
+        for (IndustryDTO industryDTO : industryDTOS) {
             stringList.add(industryDTO.getIndustryId());
         }
-        return industryMapper.logicDeleteIndustryByIndustryIds(stringList, industryDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+        List<Long> industryIds = industryMapper.selectSons(stringList);//获取子级
+        for (Long industryId : industryIds) {
+            // todo 引用校验
+            if (isQuote(industryId)) {
+                throw new ServiceException("存在被引用的行业");
+            }
+        }
+        return industryMapper.logicDeleteIndustryByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**
@@ -193,6 +195,7 @@ public class IndustryServiceImpl implements IIndustryService {
         BeanUtils.copyProperties(industryDTO, industry);
         return industryMapper.logicDeleteIndustryByIndustryId(industry, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
+
     /**
      * 物理删除行业信息
      *
@@ -231,7 +234,6 @@ public class IndustryServiceImpl implements IIndustryService {
     @Transactional
     public int insertIndustrys(List<IndustryDTO> industryDtos) {
         List<Industry> industryList = new ArrayList();
-
         for (IndustryDTO industryDTO : industryDtos) {
             Industry industry = new Industry();
             BeanUtils.copyProperties(industryDTO, industry);
@@ -274,6 +276,28 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     private boolean isQuote(Long industryId) {
         return false;
+    }
+
+    /**
+     * todo 获取启用行业类型
+     *
+     * @return
+     */
+    @Override
+    public int getEnableType() {
+//        industryMapper.getEnableType();
+        return 1;
+    }
+
+    /**
+     * todo 修改启用行业类型
+     *
+     * @return
+     */
+    @Override
+    public int updateEnableType(IndustryDTO industryDTO) {
+//        industryMapper.setEnableType();
+        return 1;
     }
 }
 

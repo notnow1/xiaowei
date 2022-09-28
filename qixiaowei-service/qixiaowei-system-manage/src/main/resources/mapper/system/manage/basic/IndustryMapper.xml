@@ -117,7 +117,7 @@
         WHERE
         industry_id=#{industry.industryId}
     </update>
-    <!--修改行业祖级列表ID-->
+    <!--新增时修改行业祖级列表ID-->
     <update id="updateAncestors">
         UPDATE industry
         SET
@@ -143,7 +143,7 @@
         update_by=#{updateBy},
         update_time=#{updateTime}
         WHERE
-        industry_id=#{industry.industryId}
+        FIND_IN_SET(#{industryId},ancestors)
     </update>
     <!--逻辑批量删除行业-->
     <update id="logicDeleteIndustryByIndustryIds">
@@ -160,12 +160,31 @@
         </foreach>
     </update>
 
-    <!--    查找子级-->
+    <!-- 根据父级查找子级-->
     <select id="selectSon" resultType="java.lang.Long">
         SELECT
-        (parent_industry_id,ancestors,industry_code,industry_name,level,status,delete_flag,create_by,create_time,update_by,update_time)
+        industry_id
+        FROM industry
         WHERE
         FIND_IN_SET(#{industryId},ancestors)
+    </select>
+
+    <!-- 根据父级list批量查找子级-->
+    <select id="selectSons" resultType="java.lang.Long">
+        SELECT
+        industry_id
+        FROM industry
+        WHERE
+        <foreach item="item" index="index"
+                 collection="industryIds"
+                 separator="or">
+            FIND_IN_SET(#{item},ancestors)
+        </foreach>
+    </select>
+
+    <!--获取启用行业类型-->
+    <select id="getEnableType" resultType="java.lang.Integer">
+        
     </select>
 
     <!--批量新增行业-->
@@ -284,13 +303,20 @@
             industry_id=#{item.industryId}
         </foreach>
     </update>
+    <!--根据ids更新子级状态-->
     <update id="updateStatus">
         UPDATE industry
-        SET delete_flag= 1,
-        update_by=#{updateBy},
-        update_time=#{updateTime}
-        WHERE
-        FIND_IN_SET(#{industryId},industry_id)
+        SET
+        status = #{status},
+        update_by = #{updateBy},
+        update_time = #{updateTime}
+        WHERE industry_id IN
+        <foreach item="item"
+                 collection="industryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND delete_flag = 0
     </update>
 
 

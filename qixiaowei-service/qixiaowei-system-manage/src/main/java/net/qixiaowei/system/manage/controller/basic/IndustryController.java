@@ -1,21 +1,19 @@
 package net.qixiaowei.system.manage.controller.basic;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
+import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
 import net.qixiaowei.system.manage.service.basic.IIndustryService;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.integration.common.web.controller.BaseController;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -29,6 +27,9 @@ public class IndustryController extends BaseController {
 
     @Autowired
     private IIndustryService industryService;
+
+    @Autowired
+    private IIndustryDefaultService industryDefaultService;
 
     /**
      * 分页查询行业列表
@@ -51,6 +52,32 @@ public class IndustryController extends BaseController {
         return AjaxResult.success(list);
     }
 
+    /**
+     * 获取启用行业列表
+     */
+//    @RequiresPermissions("system:manage:industry:list")
+    @GetMapping("/enableList")
+    public AjaxResult enableList(IndustryDTO industryDTO) {
+        // todo 0-默认,1-自定义
+        int enableType = industryService.getEnableType();
+        if (enableType == 1) {
+            return AjaxResult.success(industryService.selectIndustryList(industryDTO));
+        } else {
+            IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
+            BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
+            return AjaxResult.success(industryDefaultService.selectIndustryDefaultList(industryDefaultDTO));
+        }
+    }
+
+    /**
+     * 修改启用行业类型
+     */
+//    @RequiresPermissions("system:manage:industry:list")
+    @PostMapping("/enableEdit")
+    public AjaxResult enableEdit(IndustryDTO industryDTO) {
+        int enableType = industryService.updateEnableType(industryDTO);
+        return AjaxResult.success(enableType);
+    }
 
     /**
      * 新增行业
@@ -61,7 +88,6 @@ public class IndustryController extends BaseController {
     public AjaxResult addSave(@RequestBody IndustryDTO industryDTO) {
         return toAjax(industryService.insertIndustry(industryDTO));
     }
-
 
     /**
      * 修改行业
@@ -81,16 +107,6 @@ public class IndustryController extends BaseController {
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody IndustryDTO industryDTO) {
         return toAjax(industryService.logicDeleteIndustryByIndustryId(industryDTO));
-    }
-
-    /**
-     * 批量修改行业
-     */
-//    @RequiresPermissions("system:manage:industry:edits")
-    @Log(title = "批量修改行业", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<IndustryDTO> industryDtos) {
-        return toAjax(industryService.updateIndustrys(industryDtos));
     }
 
     /**

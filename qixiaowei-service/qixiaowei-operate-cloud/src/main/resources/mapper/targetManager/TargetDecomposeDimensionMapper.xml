@@ -44,6 +44,7 @@
         <if test="targetDecomposeDimension.updateTime != null">
             and update_time=#{targetDecomposeDimension.updateTime}
         </if>
+        ORDER BY sort ASC
     </select>
     <!--新增目标分解维度配置-->
     <insert id="insertTargetDecomposeDimension" useGeneratedKeys="true" keyProperty="targetDecomposeDimensionId">

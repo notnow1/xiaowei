@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper">
+    <!--    查询指标分类表-->
+    <select id="selectIndicatorCategoryByIndicatorCategoryId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO">
+        SELECT
+        indicator_category_id, indicator_type, indicator_category_code, indicator_category_name, delete_flag, create_by, create_time, update_by, update_time
+        FROM indicator_category
+        WHERE  indicator_category_id=#{indicatorCategoryId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询指标分类表列表-->
+    <select id="selectIndicatorCategoryList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO">
+        SELECT
+        indicator_category_id, indicator_type, indicator_category_code, indicator_category_name, delete_flag, create_by, create_time, update_by, update_time
+        FROM indicator_category
+        WHERE delete_flag=0
+                <if test="indicatorCategory.indicatorCategoryId != null">
+                    and indicator_category_id=#{indicatorCategory.indicatorCategoryId}
+                </if>
+                <if test="indicatorCategory.indicatorType != null">
+                    and indicator_type=#{indicatorCategory.indicatorType}
+                </if>
+                <if test="indicatorCategory.indicatorCategoryCode != null and indicatorCategory.indicatorCategoryCode != ''">
+                    and indicator_category_code=#{indicatorCategory.indicatorCategoryCode}
+                </if>
+                <if test="indicatorCategory.indicatorCategoryName != null and indicatorCategory.indicatorCategoryName != ''">
+                    and indicator_category_name=#{indicatorCategory.indicatorCategoryName}
+                </if>
+                <if test="indicatorCategory.deleteFlag != null">
+                    and delete_flag=#{indicatorCategory.deleteFlag}
+                </if>
+                <if test="indicatorCategory.createBy != null">
+                    and create_by=#{indicatorCategory.createBy}
+                </if>
+                <if test="indicatorCategory.createTime != null">
+                    and create_time=#{indicatorCategory.createTime}
+                </if>
+                <if test="indicatorCategory.updateBy != null">
+                    and update_by=#{indicatorCategory.updateBy}
+                </if>
+                <if test="indicatorCategory.updateTime != null">
+                    and update_time=#{indicatorCategory.updateTime}
+                </if>
+    </select>
+    <!--新增指标分类表-->
+    <insert id="insertIndicatorCategory" useGeneratedKeys="true" keyProperty="indicatorCategoryId">
+        INSERT INTO indicator_category (indicator_type,indicator_category_code,indicator_category_name,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{indicatorCategory.indicatorType},#{indicatorCategory.indicatorCategoryCode},#{indicatorCategory.indicatorCategoryName},#{indicatorCategory.deleteFlag},#{indicatorCategory.createBy},#{indicatorCategory.createTime},#{indicatorCategory.updateBy},#{indicatorCategory.updateTime})
+    </insert>
+    <!--修改指标分类表-->
+    <update id="updateIndicatorCategory">
+        UPDATE indicator_category
+        SET
+                    <if test="indicatorCategory.indicatorType != null">
+                        indicator_type=#{indicatorCategory.indicatorType},
+                    </if>
+                    <if test="indicatorCategory.indicatorCategoryCode != null and indicatorCategory.indicatorCategoryCode != ''">
+                        indicator_category_code=#{indicatorCategory.indicatorCategoryCode},
+                    </if>
+                    <if test="indicatorCategory.indicatorCategoryName != null and indicatorCategory.indicatorCategoryName != ''">
+                        indicator_category_name=#{indicatorCategory.indicatorCategoryName},
+                    </if>
+                    <if test="indicatorCategory.deleteFlag != null">
+                        delete_flag=#{indicatorCategory.deleteFlag},
+                    </if>
+                    <if test="indicatorCategory.createBy != null">
+                        create_by=#{indicatorCategory.createBy},
+                    </if>
+                    <if test="indicatorCategory.createTime != null">
+                        create_time=#{indicatorCategory.createTime},
+                    </if>
+                    <if test="indicatorCategory.updateBy != null">
+                        update_by=#{indicatorCategory.updateBy},
+                    </if>
+                    <if test="indicatorCategory.updateTime != null">
+                        update_time=#{indicatorCategory.updateTime}
+                    </if>
+        WHERE
+                 indicator_category_id=#{indicatorCategory.indicatorCategoryId}
+    </update>
+    <!--逻辑删除指标分类表-->
+    <update id="logicDeleteIndicatorCategoryByIndicatorCategoryId">
+        UPDATE indicator_category
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+                indicator_category_id=#{indicatorCategory.indicatorCategoryId}
+    </update>
+    <!--逻辑批量删除指标分类表-->
+    <update id="logicDeleteIndicatorCategoryByIndicatorCategoryIds">
+        UPDATE indicator_category
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         indicator_category_id IN
+            <foreach item="item"
+                     collection="indicatorCategoryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增指标分类表-->
+    <insert id="batchIndicatorCategory">
+        INSERT INTO indicator_category (indicator_type,indicator_category_code,indicator_category_name,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="indicatorCategorys"
+                 separator=",">
+            (#{item.indicatorType},#{item.indicatorCategoryCode},#{item.indicatorCategoryName},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除指标分类表-->
+    <delete id="deleteIndicatorCategoryByIndicatorCategoryId">
+        DELETE FROM indicator_category
+        WHERE  indicator_category_id=#{indicatorCategory}
+
+    </delete>
+    <!--物理批量删除指标分类表-->
+    <delete id="deleteIndicatorCategoryByIndicatorCategoryIds">
+        DELETE FROM indicator_category
+        WHERE  indicator_category_id IN
+            <foreach item="item"
+                     collection="indicatorCategoryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改指标分类表-->
+    <update id="updateIndicatorCategorys">
+        update indicator_category
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="indicator_category_id=case" suffix="end,">
+            </trim>
+            <trim prefix="indicator_type=case" suffix="end,">
+                <foreach collection="indicatorCategoryList" item="item" index="index">
+                             <if test="item.indicatorType != null">
+                                 when indicator_category_id=#{item.indicatorCategoryId} then #{item.indicatorType}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_category_code=case" suffix="end,">
+                <foreach collection="indicatorCategoryList" item="item" index="index">
+                             <if test="item.indicatorCategoryCode != null and item.indicatorCategoryCode != ''">
+                                 when indicator_category_id=#{item.indicatorCategoryId} then #{item.indicatorCategoryCode}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_category_name=case" suffix="end,">
+                <foreach collection="indicatorCategoryList" item="item" index="index">
+                             <if test="item.indicatorCategoryName != null and item.indicatorCategoryName != ''">
+                                 when indicator_category_id=#{item.indicatorCategoryId} then #{item.indicatorCategoryName}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="indicatorCategoryList" item="item" index="index">
+                             <if test="item.deleteFlag != null">
+                                 when indicator_category_id=#{item.indicatorCategoryId} then #{item.deleteFlag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="indicatorCategoryList" item="item" index="index">
+                             <if test="item.createBy != null">
+                                 when indicator_category_id=#{item.indicatorCategoryId} then #{item.createBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="indicatorCategoryList" item="item" index="index">
+                             <if test="item.createTime != null">
+                                 when indicator_category_id=#{item.indicatorCategoryId} then #{item.createTime}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="indicatorCategoryList" item="item" index="index">
+                             <if test="item.updateBy != null">
+                                 when indicator_category_id=#{item.indicatorCategoryId} then #{item.updateBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="indicatorCategoryList" item="item" index="index">
+                             <if test="item.updateTime != null">
+                                 when indicator_category_id=#{item.indicatorCategoryId} then #{item.updateTime}
+                             </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="indicatorCategoryList" separator="or" item="item" index="index">
+                    indicator_category_id=#{item.indicatorCategoryId}
+        </foreach>
+    </update>
+</mapper>
+
+
