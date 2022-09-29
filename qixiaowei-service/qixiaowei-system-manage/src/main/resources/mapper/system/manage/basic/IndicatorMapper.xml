@@ -429,10 +429,18 @@
     <!--指标编码唯一性校验-->
     <select id="checkUnique" resultType="java.lang.Integer">
         SELECT
-        count(indicator_code)
+        COUNT(indicator_code)
         FROM indicator
         WHERE indicator_code=#{indicatorCode}
-        and delete_flag=0
+        AND delete_flag = 0
+    </select>
+    <!--被引用校验-->
+    <select id="selectIndicatorCountByIndicatorCategoryId" resultType="java.lang.Integer">
+        SELECT
+        COUNT(indicator_category_id)
+        FROM indicator
+        WHERE indicator_category_id = ${indicatorCategoryId}
+        AND delete_flag = 0
     </select>
     <!--新增时修改指标祖级列表ID-->
     <update id="updateAncestors">

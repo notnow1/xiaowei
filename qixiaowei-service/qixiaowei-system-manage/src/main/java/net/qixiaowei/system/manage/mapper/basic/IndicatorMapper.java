@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * IndicatorMapper接口
  *
- * @author TANGMICHI
+ * @author Graves
  * @since 2022-09-28
  */
 public interface IndicatorMapper {
@@ -135,4 +135,13 @@ public interface IndicatorMapper {
      * @return 结果
      */
     int updateAncestors(@Param("indicator") Indicator indicator);
+
+    /**
+     * 被引用校验
+     * @param indicatorCategoryId
+     * @return
+     */
+    int selectIndicatorCountByIndicatorCategoryId(@Param("indicatorCategoryId")Long indicatorCategoryId);
+
+
 }

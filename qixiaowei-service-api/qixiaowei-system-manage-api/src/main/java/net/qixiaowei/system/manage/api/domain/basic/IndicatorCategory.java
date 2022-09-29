@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
 * 指标分类表
-* @author TANGMICHI
+* @author Graves
 * @since 2022-09-28
 */
 @Data

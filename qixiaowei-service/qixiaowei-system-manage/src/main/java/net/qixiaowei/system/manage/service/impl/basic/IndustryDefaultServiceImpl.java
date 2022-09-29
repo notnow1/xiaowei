@@ -1,23 +1,24 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.BusinessConstants;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Random;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -64,14 +65,60 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     @Transactional
     @Override
     public int insertIndustryDefault(IndustryDefaultDTO industryDefaultDTO) {
+        String industryCode = industryDefaultDTO.getIndustryCode();
+        if (StringUtils.isEmpty(industryCode)) {
+            throw new ServiceException("行业编码不能为空");
+        }
+        if (industryDefaultMapper.checkUnique(industryCode) > 0) {
+            throw new ServiceException("行业编码重复");
+        }
+        String parentAncestors = "";//仅在非一级行业时有用
+        Integer parentLevel = 1;
+        Long parentIndustryId = industryDefaultDTO.getParentIndustryId();
+        if (StringUtils.isNotNull(parentIndustryId)) {// 一级行业
+            IndustryDefaultDTO parentIndustry = industryDefaultMapper.selectIndustryDefaultByIndustryId(parentIndustryId);
+            if (parentIndustry == null) {
+                throw new ServiceException("该上级行业不存在");
+            }
+            parentAncestors = parentIndustry.getAncestors();
+            parentLevel = parentIndustry.getLevel();
+            Integer status = parentIndustry.getStatus();
+            // 如果父节点不为正常状态,则不允许新增子节点
+            if (BusinessConstants.DISABLE.equals(status)) {
+                throw new ServiceException("上级行业失效，不允许新增子节点");
+            }
+        }
         IndustryDefault industryDefault = new IndustryDefault();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
-        industryDefault.setCreateBy(SecurityUtils.getUserId());
+        if (StringUtils.isNotNull(parentIndustryId)) {
+            String ancestors = parentAncestors;
+            if (StringUtils.isNotEmpty(ancestors)) {
+                ancestors = ancestors + ",";
+            }
+            ancestors = ancestors + parentIndustryId;
+            industryDefault.setAncestors(ancestors);
+            industryDefault.setLevel(parentLevel + 1);
+        } else {
+            industryDefault.setParentIndustryId(0L);
+            industryDefault.setAncestors(parentAncestors);
+            industryDefault.setLevel(parentLevel);
+        }
         industryDefault.setCreateTime(DateUtils.getNowDate());
         industryDefault.setUpdateTime(DateUtils.getNowDate());
+        industryDefault.setCreateBy(SecurityUtils.getUserId());
         industryDefault.setUpdateBy(SecurityUtils.getUserId());
         industryDefault.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         return industryDefaultMapper.insertIndustryDefault(industryDefault);
+    }
+
+    /**
+     * 默认行业唯一性校验
+     *
+     * @param IndustryCode
+     * @return
+     */
+    private int checkUnique(String IndustryCode) {
+        return industryDefaultMapper.checkUnique(IndustryCode);
     }
 
     /**
@@ -84,6 +131,9 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     @Override
     public int updateIndustryDefault(IndustryDefaultDTO industryDefaultDTO) {
         IndustryDefault industryDefault = new IndustryDefault();
+        if (checkUnique(industryDefaultDTO.getIndustryCode()) > 0) {
+            throw new ServiceException("该默认行业已存在");
+        }
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
         industryDefault.setUpdateTime(DateUtils.getNowDate());
         industryDefault.setUpdateBy(SecurityUtils.getUserId());
@@ -100,8 +150,11 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     @Transactional
     @Override
     public int logicDeleteIndustryDefaultByIndustryIds(List<IndustryDefaultDTO> industryDefaultDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (IndustryDefaultDTO industryDefaultDTO : industryDefaultDtos) {
+            if (industryDefaultMapper.selectIndustryDefaultByIndustryId(industryDefaultDTO.getIndustryId()) == null) {
+                throw new ServiceException("该默认行业不存在");
+            }
             stringList.add(industryDefaultDTO.getIndustryId());
         }
         return industryDefaultMapper.logicDeleteIndustryDefaultByIndustryIds(stringList, industryDefaultDtos.get(0).getUpdateBy(), DateUtils.getNowDate());

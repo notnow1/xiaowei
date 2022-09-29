@@ -143,4 +143,11 @@ public interface IndustryMapper {
      * @return
      */
     int getEnableType();
+
+    /**
+     * 根据id集合判断是否存在
+     *
+     * @return
+     */
+    List<Long> isExist(@Param("industryIds") List<Long> industryIds);
 }

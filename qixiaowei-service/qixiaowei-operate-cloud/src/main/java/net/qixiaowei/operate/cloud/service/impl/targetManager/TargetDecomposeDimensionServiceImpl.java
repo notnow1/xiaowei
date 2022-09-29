@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +102,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     @Transactional
     @Override
     public int logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
             stringList.add(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
         }
@@ -158,7 +159,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     @Transactional
     @Override
     public int deleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
             stringList.add(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
         }
@@ -172,7 +173,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
      */
     @Transactional
     public int insertTargetDecomposeDimensions(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
-        List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList();
+        List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList<>();
 
         for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
             TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
@@ -193,9 +194,12 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
      */
     @Transactional
     public int updateTargetDecomposeDimensions(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
-        List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList();
-
+        List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList<>();
         for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
+            TargetDecomposeDimensionDTO dto = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
+            if (dto == null) {
+                throw new ServiceException("数据已经不存在");
+            }
             TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
             BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
             targetDecomposeDimension.setUpdateTime(DateUtils.getNowDate());

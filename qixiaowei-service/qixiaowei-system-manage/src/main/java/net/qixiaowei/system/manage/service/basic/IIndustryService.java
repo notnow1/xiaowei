@@ -63,10 +63,10 @@ public interface IIndustryService {
     /**
      * 逻辑批量删除行业
      *
-     * @param IndustryDtos 需要删除的行业集合
+     * @param industryIds 需要删除的行业集合
      * @return 结果
      */
-    int logicDeleteIndustryByIndustryIds(List<IndustryDTO> IndustryDtos);
+    int logicDeleteIndustryByIndustryIds(List<Long> industryIds);
 
     /**
      * 逻辑删除行业信息

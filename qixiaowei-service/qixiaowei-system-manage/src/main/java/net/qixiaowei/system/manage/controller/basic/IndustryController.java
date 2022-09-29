@@ -75,8 +75,7 @@ public class IndustryController extends BaseController {
 //    @RequiresPermissions("system:manage:industry:list")
     @PostMapping("/enableEdit")
     public AjaxResult enableEdit(IndustryDTO industryDTO) {
-        int enableType = industryService.updateEnableType(industryDTO);
-        return AjaxResult.success(enableType);
+        return AjaxResult.success(industryService.updateEnableType(industryDTO));
     }
 
     /**
@@ -125,7 +124,7 @@ public class IndustryController extends BaseController {
 //    @RequiresPermissions("system:manage:industry:removes")
     @Log(title = "批量删除行业", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<IndustryDTO> IndustryDtos) {
-        return toAjax(industryService.logicDeleteIndustryByIndustryIds(IndustryDtos));
+    public AjaxResult removes(@RequestBody List<Long> industryIds) {
+        return toAjax(industryService.logicDeleteIndustryByIndustryIds(industryIds));
     }
 }

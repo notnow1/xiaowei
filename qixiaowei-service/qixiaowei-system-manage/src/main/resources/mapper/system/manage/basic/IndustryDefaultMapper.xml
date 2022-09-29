@@ -5,58 +5,65 @@
     <select id="selectIndustryDefaultByIndustryId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO">
         SELECT
-        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by, create_time, update_by, update_time
+        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM industry_default
-        WHERE  industry_id=#{industryId}
+        WHERE industry_id=#{industryId}
         and delete_flag=0
     </select>
 
     <!--    查询默认行业列表-->
     <select id="selectIndustryDefaultList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO">
         SELECT
-        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by, create_time, update_by, update_time
+        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM industry_default
         WHERE delete_flag=0
-                <if test="industryDefault.industryId != null and industryDefault.industryId != ''">
-                    and industry_id=#{industryDefault.industryId}
-                </if>
-                <if test="industryDefault.parentIndustryId != null and industryDefault.parentIndustryId != ''">
-                    and parent_industry_id=#{industryDefault.parentIndustryId}
-                </if>
-                <if test="industryDefault.ancestors != null and industryDefault.ancestors != ''">
-                    and ancestors=#{industryDefault.ancestors}
-                </if>
-                <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">
-                    and industry_code=#{industryDefault.industryCode}
-                </if>
-                <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
-                    and industry_name=#{industryDefault.industryName}
-                </if>
-                <if test="industryDefault.level != null and industryDefault.level != ''">
-                    and level=#{industryDefault.level}
-                </if>
-                <if test="industryDefault.status != null and industryDefault.status != ''">
-                    and status=#{industryDefault.status}
-                </if>
-                <if test="industryDefault.deleteFlag != null and industryDefault.deleteFlag != ''">
-                    and delete_flag=#{industryDefault.deleteFlag}
-                </if>
-                <if test="industryDefault.createBy != null and industryDefault.createBy != ''">
-                    and create_by=#{industryDefault.createBy}
-                </if>
-                <if test="industryDefault.createTime != null">
-                    and create_time=#{industryDefault.createTime}
-                </if>
-                <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">
-                    and update_by=#{industryDefault.updateBy}
-                </if>
-                <if test="industryDefault.updateTime != null">
-                    and update_time=#{industryDefault.updateTime}
-                </if>
+        <if test="industryDefault.industryId != null and industryDefault.industryId != ''">
+            and industry_id=#{industryDefault.industryId}
+        </if>
+        <if test="industryDefault.parentIndustryId != null and industryDefault.parentIndustryId != ''">
+            and parent_industry_id=#{industryDefault.parentIndustryId}
+        </if>
+        <if test="industryDefault.ancestors != null and industryDefault.ancestors != ''">
+            and ancestors=#{industryDefault.ancestors}
+        </if>
+        <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">
+            and industry_code=#{industryDefault.industryCode}
+        </if>
+        <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
+            and industry_name=#{industryDefault.industryName}
+        </if>
+        <if test="industryDefault.level != null and industryDefault.level != ''">
+            and level=#{industryDefault.level}
+        </if>
+        <if test="industryDefault.status != null and industryDefault.status != ''">
+            and status=#{industryDefault.status}
+        </if>
+        <if test="industryDefault.deleteFlag != null and industryDefault.deleteFlag != ''">
+            and delete_flag=#{industryDefault.deleteFlag}
+        </if>
+        <if test="industryDefault.createBy != null and industryDefault.createBy != ''">
+            and create_by=#{industryDefault.createBy}
+        </if>
+        <if test="industryDefault.createTime != null">
+            and create_time=#{industryDefault.createTime}
+        </if>
+        <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">
+            and update_by=#{industryDefault.updateBy}
+        </if>
+        <if test="industryDefault.updateTime != null">
+            and update_time=#{industryDefault.updateTime}
+        </if>
+    </select>
+    <!--默认行业唯一性校验-->
+    <select id="checkUnique" resultType="java.lang.Integer">
+        select count(industry_code) from industry where industry_code = #{industryCode}
     </select>
     <!--新增默认行业-->
     <insert id="insertIndustryDefault" useGeneratedKeys="true" keyProperty="industryId">
-        INSERT INTO industry_default (parent_industry_id,ancestors,industry_code,industry_name,level,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO industry_default
+        (parent_industry_id,ancestors,industry_code,industry_name,level,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{industryDefault.parentIndustryId},#{industryDefault.ancestors},#{industryDefault.industryCode},#{industryDefault.industryName},#{industryDefault.level},#{industryDefault.status},#{industryDefault.deleteFlag},#{industryDefault.createBy},#{industryDefault.createTime},#{industryDefault.updateBy},#{industryDefault.updateTime})
     </insert>
@@ -64,71 +71,72 @@
     <update id="updateIndustryDefault">
         UPDATE industry_default
         SET
-                    <if test="industryDefault.industryId != null and industryDefault.industryId != ''">
-                        industry_id=#{industryDefault.industryId},
-                    </if>
-                    <if test="industryDefault.parentIndustryId != null and industryDefault.parentIndustryId != ''">
-                        parent_industry_id=#{industryDefault.parentIndustryId},
-                    </if>
-                    <if test="industryDefault.ancestors != null and industryDefault.ancestors != ''">
-                        ancestors=#{industryDefault.ancestors},
-                    </if>
-                    <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">
-                        industry_code=#{industryDefault.industryCode},
-                    </if>
-                    <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
-                        industry_name=#{industryDefault.industryName},
-                    </if>
-                    <if test="industryDefault.level != null and industryDefault.level != ''">
-                        level=#{industryDefault.level},
-                    </if>
-                    <if test="industryDefault.status != null and industryDefault.status != ''">
-                        status=#{industryDefault.status},
-                    </if>
-                    <if test="industryDefault.deleteFlag != null and industryDefault.deleteFlag != ''">
-                        delete_flag=#{industryDefault.deleteFlag},
-                    </if>
-                    <if test="industryDefault.createBy != null and industryDefault.createBy != ''">
-                        create_by=#{industryDefault.createBy},
-                    </if>
-                    <if test="industryDefault.createTime != null">
-                        create_time=#{industryDefault.createTime},
-                    </if>
-                    <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">
-                        update_by=#{industryDefault.updateBy},
-                    </if>
-                    <if test="industryDefault.updateTime != null">
-                        update_time=#{industryDefault.updateTime}
-                    </if>
+        <if test="industryDefault.industryId != null and industryDefault.industryId != ''">
+            industry_id=#{industryDefault.industryId},
+        </if>
+        <if test="industryDefault.parentIndustryId != null and industryDefault.parentIndustryId != ''">
+            parent_industry_id=#{industryDefault.parentIndustryId},
+        </if>
+        <if test="industryDefault.ancestors != null and industryDefault.ancestors != ''">
+            ancestors=#{industryDefault.ancestors},
+        </if>
+        <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">
+            industry_code=#{industryDefault.industryCode},
+        </if>
+        <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
+            industry_name=#{industryDefault.industryName},
+        </if>
+        <if test="industryDefault.level != null and industryDefault.level != ''">
+            level=#{industryDefault.level},
+        </if>
+        <if test="industryDefault.status != null and industryDefault.status != ''">
+            status=#{industryDefault.status},
+        </if>
+        <if test="industryDefault.deleteFlag != null and industryDefault.deleteFlag != ''">
+            delete_flag=#{industryDefault.deleteFlag},
+        </if>
+        <if test="industryDefault.createBy != null and industryDefault.createBy != ''">
+            create_by=#{industryDefault.createBy},
+        </if>
+        <if test="industryDefault.createTime != null">
+            create_time=#{industryDefault.createTime},
+        </if>
+        <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">
+            update_by=#{industryDefault.updateBy},
+        </if>
+        <if test="industryDefault.updateTime != null">
+            update_time=#{industryDefault.updateTime}
+        </if>
         WHERE
-                 industry_id=#{industryDefault.industryId}
+        industry_id=#{industryDefault.industryId}
     </update>
     <!--逻辑删除默认行业-->
     <update id="logicDeleteIndustryDefaultByIndustryId">
         UPDATE industry_default
-        SET     delete_flag= 1,
-                update_by=#{industryDefault.updateBy},
-                update_time=#{industryDefault.updateTime}
+        SET delete_flag= 1,
+        update_by=#{industryDefault.updateBy},
+        update_time=#{industryDefault.updateTime}
         WHERE
-                industry_id=#{industryDefault.industryId}
+        industry_id=#{industryDefault.industryId}
     </update>
     <!--逻辑批量删除默认行业-->
     <update id="logicDeleteIndustryDefaultByIndustryIds">
         UPDATE industry_default
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         industry_id IN
-            <foreach item="item"
-                     collection="industryIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        industry_id IN
+        <foreach item="item"
+                 collection="industryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增默认行业-->
     <insert id="batchIndustryDefault">
-        INSERT INTO industry_default (parent_industry_id,ancestors,industry_code,industry_name,level,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO industry_default
+        (parent_industry_id,ancestors,industry_code,industry_name,level,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="industryDefaults"
@@ -140,18 +148,18 @@
     <!--物理删除默认行业-->
     <delete id="deleteIndustryDefaultByIndustryId">
         DELETE FROM industry_default
-        WHERE  industry_id=#{industryDefault}
+        WHERE industry_id=#{industryDefault}
 
     </delete>
     <!--物理批量删除默认行业-->
     <delete id="deleteIndustryDefaultByIndustryIds">
         DELETE FROM industry_default
-        WHERE  industry_id IN
-            <foreach item="item"
-                     collection="industryIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE industry_id IN
+        <foreach item="item"
+                 collection="industryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改默认行业-->
     <update id="updateIndustryDefaults">
@@ -161,85 +169,85 @@
             </trim>
             <trim prefix="parent_industry_id=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.parentIndustryId != null and item.parentIndustryId != ''">
-                                 when industry_id=#{item.industryId} then #{item.parentIndustryId}
-                             </if>
+                    <if test="item.parentIndustryId != null and item.parentIndustryId != ''">
+                        when industry_id=#{item.industryId} then #{item.parentIndustryId}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="ancestors=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.ancestors != null and item.ancestors != ''">
-                                 when industry_id=#{item.industryId} then #{item.ancestors}
-                             </if>
+                    <if test="item.ancestors != null and item.ancestors != ''">
+                        when industry_id=#{item.industryId} then #{item.ancestors}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="industry_code=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.industryCode != null and item.industryCode != ''">
-                                 when industry_id=#{item.industryId} then #{item.industryCode}
-                             </if>
+                    <if test="item.industryCode != null and item.industryCode != ''">
+                        when industry_id=#{item.industryId} then #{item.industryCode}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="industry_name=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.industryName != null and item.industryName != ''">
-                                 when industry_id=#{item.industryId} then #{item.industryName}
-                             </if>
+                    <if test="item.industryName != null and item.industryName != ''">
+                        when industry_id=#{item.industryId} then #{item.industryName}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="level=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.level != null and item.level != ''">
-                                 when industry_id=#{item.industryId} then #{item.level}
-                             </if>
+                    <if test="item.level != null and item.level != ''">
+                        when industry_id=#{item.industryId} then #{item.level}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="status=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.status != null and item.status != ''">
-                                 when industry_id=#{item.industryId} then #{item.status}
-                             </if>
+                    <if test="item.status != null and item.status != ''">
+                        when industry_id=#{item.industryId} then #{item.status}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.deleteFlag != null and item.deleteFlag != ''">
-                                 when industry_id=#{item.industryId} then #{item.deleteFlag}
-                             </if>
+                    <if test="item.deleteFlag != null and item.deleteFlag != ''">
+                        when industry_id=#{item.industryId} then #{item.deleteFlag}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.createBy != null and item.createBy != ''">
-                                 when industry_id=#{item.industryId} then #{item.createBy}
-                             </if>
+                    <if test="item.createBy != null and item.createBy != ''">
+                        when industry_id=#{item.industryId} then #{item.createBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when industry_id=#{item.industryId} then #{item.createTime}
-                             </if>
+                    <if test="item.createTime != null">
+                        when industry_id=#{item.industryId} then #{item.createTime}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.updateBy != null and item.updateBy != ''">
-                                 when industry_id=#{item.industryId} then #{item.updateBy}
-                             </if>
+                    <if test="item.updateBy != null and item.updateBy != ''">
+                        when industry_id=#{item.industryId} then #{item.updateBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="industryDefaultList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when industry_id=#{item.industryId} then #{item.updateTime}
-                             </if>
+                    <if test="item.updateTime != null">
+                        when industry_id=#{item.industryId} then #{item.updateTime}
+                    </if>
                 </foreach>
             </trim>
         </trim>
         where
         <foreach collection="industryDefaultList" separator="or" item="item" index="index">
-                    industry_id=#{item.industryId}
+            industry_id=#{item.industryId}
         </foreach>
     </update>
 </mapper>
