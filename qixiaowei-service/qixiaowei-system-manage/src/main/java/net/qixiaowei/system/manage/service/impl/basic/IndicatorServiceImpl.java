@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -7,7 +8,10 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +25,16 @@ import java.util.List;
 /**
  * IndicatorService业务层处理
  *
- * @author TANGMICHI
+ * @author Graves
  * @since 2022-09-28
  */
 @Service
 public class IndicatorServiceImpl implements IIndicatorService {
     @Autowired
     private IndicatorMapper indicatorMapper;
+
+    @Autowired
+    private IndicatorCategoryMapper indicatorCategoryMapper;
 
     /**
      * 查询指标表
@@ -37,7 +44,11 @@ public class IndicatorServiceImpl implements IIndicatorService {
      */
     @Override
     public IndicatorDTO selectIndicatorByIndicatorId(Long indicatorId) {
-        return indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
+        IndicatorDTO indicatorDTO = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
+        Long indicatorCategoryId = indicatorDTO.getIndicatorCategoryId();
+        IndicatorCategoryDTO indicatorCategoryDTO = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId);
+        indicatorDTO.setIndicatorCategory(indicatorCategoryDTO.getIndicatorCategoryName());
+        return indicatorDTO;
     }
 
     /**
@@ -50,7 +61,13 @@ public class IndicatorServiceImpl implements IIndicatorService {
     public List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO) {
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
-        return indicatorMapper.selectIndicatorList(indicator);
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicator);
+        for (IndicatorDTO dto : indicatorDTOS) {
+            Long indicatorCategoryId = dto.getIndicatorCategoryId();
+            IndicatorCategoryDTO indicatorCategoryDTO = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId);
+            dto.setIndicatorCategory(indicatorCategoryDTO.getIndicatorCategoryName());
+        }
+        return indicatorDTOS;
     }
 
     /**
@@ -75,57 +92,47 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     @Override
     public int insertIndicator(IndicatorDTO indicatorDTO) {
-        Indicator indicator = new Indicator();
-        BeanUtils.copyProperties(indicatorDTO, indicator);
-        String indicatorCode = "";
-        if (StringUtils.isEmpty(indicator.getIndicatorCode())) {
-            // todo 指标编码生成规律
-            indicatorCode = "industryCode";
-            indicatorDTO.setIndicatorCode(indicatorCode);
-        } else {
-            indicatorCode = indicatorDTO.getIndicatorCode();
-            if (indicatorMapper.checkUnique(indicatorCode) > 0) {
-                throw new ServiceException("指标编码重复");
-            }
+        String indicatorCode = indicatorDTO.getIndicatorCode();
+        if (StringUtils.isEmpty(indicatorCode)) {
+            throw new ServiceException("指标编码不能为空");
         }
-
+        if (indicatorMapper.checkUnique(indicatorCode) > 0) {
+            throw new ServiceException("指标编码重复");
+        }
+        Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
         String parentAncestors = "";//仅在非一级行业时有用
-        int parentLevel = 0;
-        if (indicatorDTO.getParentIndicatorId() != 0) {// 一级行业
-            IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(indicatorDTO.getParentIndicatorId());
+        Integer parentLevel = 1;
+        if (StringUtils.isNotNull(parentIndicatorId)) {// 一级行业
+            IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
             if (parentIndicator == null) {
-                throw new ServiceException("该上级行业不存在");
+                throw new ServiceException("上级指标不存在");
             }
             parentAncestors = parentIndicator.getAncestors();
             parentLevel = parentIndicator.getLevel();
         }
+        Indicator indicator = new Indicator();
+        BeanUtils.copyProperties(indicatorDTO, indicator);
+        if (StringUtils.isNotNull(parentIndicatorId)) {
+            String ancestors = parentAncestors;
+            if (StringUtils.isNotEmpty(ancestors)) {
+                ancestors = ancestors + ",";
+            }
+            ancestors = ancestors + parentIndicatorId;
+            indicator.setAncestors(ancestors);
+            indicator.setLevel(parentLevel + 1);
+        } else {
+            indicator.setParentIndicatorId(0L);
+            indicator.setAncestors(parentAncestors);
+            indicator.setLevel(parentLevel);
+        }
         //todo 指标排序
         indicator.setSort(0);
-        indicator.setIndicatorCode(indicatorCode);
         indicator.setCreateBy(SecurityUtils.getUserId());
         indicator.setCreateTime(DateUtils.getNowDate());
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
         indicator.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        try {
-            indicatorMapper.insertIndicator(indicator);
-        } catch (Exception e) {
-            return 0;
-        }
-        Long indicatorId = indicator.getIndicatorId();
-        if (indicatorDTO.getParentIndicatorId() == 0) {// 一级行业
-            indicator.setAncestors(indicatorId.toString());
-            indicator.setLevel(1);
-        } else {
-            indicator.setAncestors(parentAncestors + "," + indicator.getIndicatorId());
-            indicator.setLevel(parentLevel + 1);
-        }
-        try {
-            return indicatorMapper.updateAncestors(indicator);
-        } catch (Exception e) {
-            return 0;
-        }
-
+        return indicatorMapper.insertIndicator(indicator);
     }
 
     /**
@@ -153,14 +160,17 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     @Override
     public int logicDeleteIndicatorByIndicatorIds(List<IndicatorDTO> indicatorDTOs) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (IndicatorDTO indicatorDTO : indicatorDTOs) {
+            if (indicatorMapper.selectIndicatorByIndicatorId(indicatorDTO.getIndicatorId()) == null) {
+                throw new ServiceException("指标分类不存在");
+            }
             stringList.add(indicatorDTO.getIndicatorId());
         }
         List<Long> indicatorIds = indicatorMapper.selectSons(stringList);//获取子级
-        for (Long indcator : indicatorIds) {
+        for (Long indicator : indicatorIds) {
             // todo 引用校验
-            if (isQuote(indcator)) {
+            if (isQuote(indicator)) {
                 throw new ServiceException("存在被引用的行业");
             }
         }

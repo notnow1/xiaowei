@@ -169,7 +169,7 @@
         FIND_IN_SET(#{industryId},ancestors)
     </select>
 
-    <!-- 根据父级list批量查找子级-->
+    <!-- 根据list批量查找子级-->
     <select id="selectSons" resultType="java.lang.Long">
         SELECT
         industry_id
@@ -184,7 +184,16 @@
 
     <!--获取启用行业类型-->
     <select id="getEnableType" resultType="java.lang.Integer">
-        
+
+    </select>
+    <!--根据id集合判断是否存在-->
+    <select id="isExist" resultType="Long">
+        SELECT industry_id FROM industry WHERE industry_id IN
+        <foreach item="item"
+                 collection="industryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 
     <!--批量新增行业-->

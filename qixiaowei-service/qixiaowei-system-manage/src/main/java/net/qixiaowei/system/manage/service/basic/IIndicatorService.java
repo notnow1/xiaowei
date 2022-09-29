@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * IndicatorService接口
  *
- * @author TANGMICHI
+ * @author Graves
  * @since 2022-09-28
  */
 public interface IIndicatorService {
@@ -69,7 +69,7 @@ public interface IIndicatorService {
     int insertIndicators(List<IndicatorDTO> indicatorDtos);
 
     /**
-     * 逻辑批量删除指标表
+     * 逻辑批量删除指标表-
      *
      * @param IndicatorDtos 需要删除的指标表集合
      * @return 结果

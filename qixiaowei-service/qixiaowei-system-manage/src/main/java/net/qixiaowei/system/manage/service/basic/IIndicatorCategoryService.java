@@ -6,7 +6,7 @@ import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 
 /**
 * IndicatorCategoryService接口
-* @author TANGMICHI
+* @author Graves
 * @since 2022-09-28
 */
 public interface IIndicatorCategoryService{

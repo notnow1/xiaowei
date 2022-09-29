@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * 指标表
  *
- * @author TANGMICHI
+ * @author Graves
  * @since 2022-09-28
  */
 @Data
@@ -74,6 +74,10 @@ public class IndicatorDTO {
      * 指标分类ID
      */
     private Long indicatorCategoryId;
+    /**
+     * 指标分类
+     */
+    private String indicatorCategory;
     /**
      * 指标值类型:1金额;2比率
      */

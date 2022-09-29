@@ -97,6 +97,11 @@ public interface IndustryDefaultMapper {
      */
     int batchIndustryDefault(@Param("industryDefaults") List<IndustryDefault> IndustryDefaults);
 
-
-
+    /**
+     * 默认行业唯一性校验
+     *
+     * @param IndustryCode
+     * @return
+     */
+    int checkUnique(@Param("IndustryCode") String IndustryCode);
 }

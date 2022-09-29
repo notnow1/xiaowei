@@ -78,6 +78,9 @@ public class TargetDecomposeDimensionController extends BaseController {
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
         //校验
+        if (targetDecomposeDimensionDTO.getTargetDecomposeDimensionId() == null) {
+            return AjaxResult.error("该数据已不存在");
+        }
         if (StringUtils.isEmpty(targetDecomposeDimensionDTO.getDecompositionDimension())) {
             return AjaxResult.error("分解维度不能为空");
         }
@@ -101,7 +104,7 @@ public class TargetDecomposeDimensionController extends BaseController {
         }
         Long targetDecomposeDimensionId = targetDecomposeDimensionDTO.getTargetDecomposeDimensionId();
         if (targetDecomposeDimensionService.isQuote(targetDecomposeDimensionId)) {
-            return AjaxResult.error(400, "该分解维度已被引用");
+            return AjaxResult.error("该分解维度已被引用");
         }
         return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimensionDTO));
     }
