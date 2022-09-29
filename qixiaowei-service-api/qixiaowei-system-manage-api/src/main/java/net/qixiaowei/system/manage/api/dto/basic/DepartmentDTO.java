@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -38,6 +39,11 @@ public class DepartmentDTO {
     * 部门ID
     */
     private  Long departmentId;
+
+    /**
+     * 部门ID集合查询子集
+     */
+    private  List<String> departmentIdList;
     /**
     * 父级部门ID
     */
@@ -50,10 +56,20 @@ public class DepartmentDTO {
     * 部门编码
     */
     private  String departmentCode;
+
+    /**
+     * 部门编码集合
+     */
+    private  List<String> departmentCodeList;
     /**
     * 部门名称
     */
     private  String departmentName;
+
+    /**
+     * 组织名称集合
+     */
+    private List<String> departmentNamelList;
     /**
     * 部门层级
     */
@@ -108,6 +124,14 @@ public class DepartmentDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
+    /**
+     * 部门岗位关联表
+     */
+    private List<DepartmentPostDTO>  departmentPostDTOList;
 
+    /**
+     * 组织子节点信息
+     */
+    private List<DepartmentDTO> childList;
 }
 

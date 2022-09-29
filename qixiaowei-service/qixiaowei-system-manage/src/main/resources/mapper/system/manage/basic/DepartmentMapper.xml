@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.DepartmentMapper">
+    <!--    查询部门表-->
+    <select id="selectDepartmentByDepartmentId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        SELECT department_id,
+               parent_department_id,
+               ancestors,
+               department_code,
+               department_name,
+               level,
+               department_leader_id,
+               department_leader_post_id,
+               examination_leader_id,
+               department_importance_factor,
+               department_description,
+               sort,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM department
+        WHERE department_id = #{departmentId}
+          and delete_flag = 0
+    </select>
+
+    <!--    查询部门表列表-->
+    <select id="selectDepartmentList" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+
+        SELECT
+        department_id,
+        parent_department_id,
+        ancestors,
+        department_code,
+        department_name,
+        level,
+        department_leader_id,
+        department_leader_post_id,
+        examination_leader_id,
+        department_importance_factor,
+        department_description,
+        sort,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        department
+        WHERE
+        delete_flag=0
+        <if test="department.departmentId != null">
+            and department_id=#{department.departmentId}
+        </if>
+        union
+
+        SELECT
+        department_id, parent_department_id, ancestors, department_code, department_name, level, department_leader_id,
+        department_leader_post_id, examination_leader_id, department_importance_factor, department_description, sort,
+        status, delete_flag, create_by, create_time, update_by, update_time
+        FROM department
+        WHERE delete_flag=0
+        <if test="department.departmentIdList != null">
+            and
+            <foreach item="item" index="index"
+                     collection="department.departmentIdList"
+                     separator="or">
+                FIND_IN_SET(#{item},ancestors)
+            </foreach>
+        </if>
+        <if test="department.departmentLeaderId != null">
+            and department_leader_id=#{department.departmentLeaderId}
+        </if>
+        <if test="department.examinationLeaderId != null">
+            and examination_leader_id=#{department.examinationLeaderId}
+        </if>
+    </select>
+    <!--    根据父级id查询数据-->
+    <select id="selectDepartmentCode" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        SELECT department_id,
+        parent_department_id,
+        ancestors,
+        department_code,
+        department_name,
+        level,
+        department_leader_id,
+        department_leader_post_id,
+        examination_leader_id,
+        department_importance_factor,
+        department_description,
+        sort,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM department
+        <if test="department.departmentId != null">
+            WHERE department_id = #{departmentId}
+        </if>
+        and delete_flag = 0
+    </select>
+    <!--    根据id查询所有子级数据-->
+    <select id="selectAncestors" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        SELECT department_id,
+        parent_department_id,
+        ancestors,
+        department_code,
+        department_name,
+        level,
+        department_leader_id,
+        department_leader_post_id,
+        examination_leader_id,
+        department_importance_factor,
+        department_description,
+        sort,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM department
+        <if test="department.departmentId != null">
+            WHERE find_in_set(#{departmentId}, ancestors)
+        </if>
+        and delete_flag = 0
+    </select>
+    <select id="getParentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        SELECT
+        department_id, parent_department_id, ancestors, department_code, department_name, level, department_leader_id,
+        department_leader_post_id, examination_leader_id, department_importance_factor, department_description, sort,
+        status, delete_flag, create_by, create_time, update_by, update_time
+        FROM department
+        WHERE delete_flag=0
+        <if test="department.departmentId != null">
+            and department_id=#{department.departmentId}
+        </if>
+        <if test="department.parentDepartmentId != null">
+            and parent_department_id=#{department.parentDepartmentId}
+        </if>
+        <if test="department.ancestors != null and department.ancestors != ''">
+            and ancestors=#{department.ancestors}
+        </if>
+        <if test="department.departmentCode != null and department.departmentCode != ''">
+            and department_code=#{department.departmentCode}
+        </if>
+        <if test="department.departmentCodeList != null and department.departmentCodeList != ''">
+            and (<foreach item="item" index="index"
+                          collection="department.departmentCodeList"
+                          separator="or">
+            department_code=#{item}
+        </foreach>)
+        </if>
+        <if test="department.departmentName != null and department.departmentName != ''">
+            and department_name=#{department.departmentName}
+        </if>
+        <if test="department.level != null">
+            and level=#{department.level}
+        </if>
+        <if test="department.departmentLeaderId != null">
+            and department_leader_id=#{department.departmentLeaderId}
+        </if>
+        <if test="department.departmentLeaderPostId != null">
+            and department_leader_post_id=#{department.departmentLeaderPostId}
+        </if>
+        <if test="department.examinationLeaderId != null">
+            and examination_leader_id=#{department.examinationLeaderId}
+        </if>
+        <if test="department.departmentImportanceFactor != null">
+            and department_importance_factor=#{department.departmentImportanceFactor}
+        </if>
+        <if test="department.departmentDescription != null and department.departmentDescription != ''">
+            and department_description=#{department.departmentDescription}
+        </if>
+        <if test="department.sort != null">
+            and sort=#{department.sort}
+        </if>
+        <if test="department.status != null">
+            and status=#{department.status}
+        </if>
+        <if test="department.deleteFlag != null">
+            and delete_flag=#{department.deleteFlag}
+        </if>
+        <if test="department.createBy != null">
+            and create_by=#{department.createBy}
+        </if>
+        <if test="department.createTime != null">
+            and create_time=#{department.createTime}
+        </if>
+        <if test="department.updateBy != null">
+            and update_by=#{department.updateBy}
+        </if>
+        <if test="department.updateTime != null">
+            and update_time=#{department.updateTime}
+        </if>
+    </select>
+    <!--新增部门表-->
+    <insert id="insertDepartment" useGeneratedKeys="true" keyProperty="departmentId">
+        INSERT INTO department (parent_department_id, ancestors, department_code, department_name, level,
+                                department_leader_id, department_leader_post_id, examination_leader_id,
+                                department_importance_factor, department_description, sort, status, delete_flag,
+                                create_by, create_time, update_by, update_time)
+        VALUES (#{department.parentDepartmentId}, #{department.ancestors}, #{department.departmentCode},
+                #{department.departmentName}, #{department.level}, #{department.departmentLeaderId},
+                #{department.departmentLeaderPostId}, #{department.examinationLeaderId},
+                #{department.departmentImportanceFactor}, #{department.departmentDescription}, #{department.sort},
+                #{department.status}, #{department.deleteFlag}, #{department.createBy}, #{department.createTime},
+                #{department.updateBy}, #{department.updateTime})
+    </insert>
+    <!--修改部门表-->
+    <update id="updateDepartment">
+        UPDATE department
+        SET
+        <if test="department.parentDepartmentId != null">
+            parent_department_id=#{department.parentDepartmentId},
+        </if>
+        <if test="department.ancestors != null and department.ancestors != ''">
+            ancestors=#{department.ancestors},
+        </if>
+        <if test="department.departmentCode != null and department.departmentCode != ''">
+            department_code=#{department.departmentCode},
+        </if>
+        <if test="department.departmentName != null and department.departmentName != ''">
+            department_name=#{department.departmentName},
+        </if>
+        <if test="department.level != null">
+            level=#{department.level},
+        </if>
+        <if test="department.departmentLeaderId != null">
+            department_leader_id=#{department.departmentLeaderId},
+        </if>
+        <if test="department.departmentLeaderPostId != null">
+            department_leader_post_id=#{department.departmentLeaderPostId},
+        </if>
+        <if test="department.examinationLeaderId != null">
+            examination_leader_id=#{department.examinationLeaderId},
+        </if>
+        <if test="department.departmentImportanceFactor != null">
+            department_importance_factor=#{department.departmentImportanceFactor},
+        </if>
+        <if test="department.departmentDescription != null and department.departmentDescription != ''">
+            department_description=#{department.departmentDescription},
+        </if>
+        <if test="department.sort != null">
+            sort=#{department.sort},
+        </if>
+        <if test="department.status != null">
+            status=#{department.status},
+        </if>
+        <if test="department.deleteFlag != null">
+            delete_flag=#{department.deleteFlag},
+        </if>
+        <if test="department.createBy != null">
+            create_by=#{department.createBy},
+        </if>
+        <if test="department.createTime != null">
+            create_time=#{department.createTime},
+        </if>
+        <if test="department.updateBy != null">
+            update_by=#{department.updateBy},
+        </if>
+        <if test="department.updateTime != null">
+            update_time=#{department.updateTime}
+        </if>
+        WHERE
+        department_id=#{department.departmentId}
+    </update>
+    <!--逻辑删除部门表-->
+    <update id="logicDeleteDepartmentByDepartmentId">
+        UPDATE department
+        SET delete_flag= 1,
+            update_by=#{department.updateBy},
+            update_time=#{department.updateTime}
+        WHERE department_id = #{department.departmentId}
+    </update>
+    <!--逻辑批量删除部门表-->
+    <update id="logicDeleteDepartmentByDepartmentIds">
+        UPDATE department
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        department_id IN
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增部门表-->
+    <insert id="batchDepartment">
+        INSERT INTO department
+        (parent_department_id,ancestors,department_code,department_name,level,department_leader_id,department_leader_post_id,examination_leader_id,department_importance_factor,department_description,sort,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="departments"
+                 separator=",">
+            (#{item.parentDepartmentId},#{item.ancestors},#{item.departmentCode},#{item.departmentName},#{item.level},#{item.departmentLeaderId},#{item.departmentLeaderPostId},#{item.examinationLeaderId},#{item.departmentImportanceFactor},#{item.departmentDescription},#{item.sort},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除部门表-->
+    <delete id="deleteDepartmentByDepartmentId">
+        DELETE
+        FROM department
+        WHERE department_id = #{department}
+
+    </delete>
+    <!--物理批量删除部门表-->
+    <delete id="deleteDepartmentByDepartmentIds">
+        DELETE FROM department
+        WHERE department_id IN
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改部门表-->
+    <update id="updateDepartments">
+        update department
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="department_id=case" suffix="end,">
+            </trim>
+            <trim prefix="parent_department_id=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.parentDepartmentId != null">
+                        when department_id=#{item.departmentId} then #{item.parentDepartmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="ancestors=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.ancestors != null and item.ancestors != ''">
+                        when department_id=#{item.departmentId} then #{item.ancestors}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_code=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.departmentCode != null and item.departmentCode != ''">
+                        when department_id=#{item.departmentId} then #{item.departmentCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_name=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.departmentName != null and item.departmentName != ''">
+                        when department_id=#{item.departmentId} then #{item.departmentName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="level=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.level != null">
+                        when department_id=#{item.departmentId} then #{item.level}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_leader_id=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.departmentLeaderId != null">
+                        when department_id=#{item.departmentId} then #{item.departmentLeaderId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_leader_post_id=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.departmentLeaderPostId != null">
+                        when department_id=#{item.departmentId} then #{item.departmentLeaderPostId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="examination_leader_id=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.examinationLeaderId != null">
+                        when department_id=#{item.departmentId} then #{item.examinationLeaderId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_importance_factor=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.departmentImportanceFactor != null">
+                        when department_id=#{item.departmentId} then #{item.departmentImportanceFactor}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_description=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.departmentDescription != null and item.departmentDescription != ''">
+                        when department_id=#{item.departmentId} then #{item.departmentDescription}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when department_id=#{item.departmentId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.status != null">
+                        when department_id=#{item.departmentId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when department_id=#{item.departmentId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when department_id=#{item.departmentId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when department_id=#{item.departmentId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when department_id=#{item.departmentId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="departmentList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when department_id=#{item.departmentId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="departmentList" separator="or" item="item" index="index">
+            department_id=#{item.departmentId}
+        </foreach>
+    </update>
+</mapper>
+
+
