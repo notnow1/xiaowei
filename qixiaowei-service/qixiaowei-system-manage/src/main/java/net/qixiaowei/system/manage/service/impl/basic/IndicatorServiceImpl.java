@@ -8,7 +8,6 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +51,19 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
         return indicatorMapper.selectIndicatorList(indicator);
+    }
+
+    /**
+     * 查询指标表树状图
+     *
+     * @param indicatorDTO
+     * @return
+     */
+    @Override
+    public List<IndicatorDTO> selectTreeList(IndicatorDTO indicatorDTO) {
+        Indicator indicator = new Indicator();
+        BeanUtils.copyProperties(indicatorDTO, indicator);
+        return indicatorMapper.selectIndicatorTree(indicator);
     }
 
     /**
@@ -152,7 +164,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                 throw new ServiceException("存在被引用的行业");
             }
         }
-        return indicatorMapper.logicDeleteIndicatorByIndicatorIds(stringList, indicatorDTOs.get(0).getUpdateBy(), DateUtils.getNowDate());
+        return indicatorMapper.logicDeleteIndicatorByIndicatorIds(indicatorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**

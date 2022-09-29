@@ -1,7 +1,6 @@
 package net.qixiaowei.system.manage.mapper.basic;
 
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
-import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -38,7 +37,7 @@ public interface IndicatorMapper {
      * @param indicator
      * @return
      */
-    List<Indicator> selectIndicatorTree(@Param("indicator") Indicator indicator);
+    List<IndicatorDTO> selectIndicatorTree(@Param("indicator") Indicator indicator);
 
     /**
      * 根据父级id查找子级

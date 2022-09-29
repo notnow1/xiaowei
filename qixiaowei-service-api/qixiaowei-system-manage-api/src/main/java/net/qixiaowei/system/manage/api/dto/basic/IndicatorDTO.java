@@ -1,15 +1,12 @@
 package net.qixiaowei.system.manage.api.dto.basic;
 
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
-import javax.validation.groups.Default;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 指标表
@@ -130,7 +127,7 @@ public class IndicatorDTO {
     /**
      * 子级
      */
-    private List<IndustryDTO> childMenu;
+    private List<IndustryDTO> childIndustry;
 
 }
 
