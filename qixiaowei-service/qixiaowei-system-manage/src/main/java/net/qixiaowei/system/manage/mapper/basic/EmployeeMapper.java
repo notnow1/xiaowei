@@ -20,6 +20,14 @@ public interface EmployeeMapper{
     * @return 员工表
     */
     EmployeeDTO selectEmployeeByEmployeeId(@Param("employeeId")Long employeeId);
+
+    /**
+     * 查询员工表List
+     *
+     * @param employeeIds 员工表主键
+     * @return 员工表
+     */
+    List<EmployeeDTO> selectEmployeeByEmployeeIds(@Param("employeeIds")List<Long> employeeIds);
     /**
      * 查询员工表
      *

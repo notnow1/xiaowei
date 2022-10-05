@@ -32,6 +32,14 @@ public interface DepartmentMapper{
     List<DepartmentDTO> selectDepartmentList(@Param("department")DepartmentDTO departmentDTO);
 
     /**
+     * 查询人员是否被部门引用
+     *
+     * @param departmentDTO 部门表
+     * @return 部门表集合
+     */
+    List<DepartmentDTO> deleteFlagEmployee(@Param("department")DepartmentDTO departmentDTO);
+
+    /**
      * 根据条件筛选树
      *
      * @param department 部门表
@@ -143,4 +151,7 @@ public interface DepartmentMapper{
      * @return
      */
     List<EmployeeDTO> queryDeptEmployee(@Param("departmentDTO")DepartmentDTO departmentDTO);
+
+    List<DepartmentDTO> deleteFlagEmployees(@Param("collect")List<Long> collect);
+
 }

@@ -4,13 +4,17 @@ import java.util.List;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -19,6 +23,7 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.util.CollectionUtils;
 
 
 /**
@@ -33,6 +38,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private EmployeeMapper employeeMapper;
     @Autowired
     private EmployeeInfoMapper employeeInfoMapper;
+    @Autowired
+    private DepartmentMapper departmentMapper;
 
     /**
      * 查询员工表
@@ -159,11 +166,35 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     @Override
     public int logicDeleteEmployeeByEmployeeIds(List<EmployeeDTO> employeeDtos) {
-        List<Long> stringList = new ArrayList();
-        for (EmployeeDTO employeeDTO : employeeDtos) {
-            stringList.add(employeeDTO.getEmployeeId());
+        int i= 0;
+        StringBuffer deptErreo = new StringBuffer();
+        StringBuffer erreoEmp = new StringBuffer();
+        //根据id查询数据
+        List<Long> collect = employeeDtos.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+        //查询数据
+        List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeByEmployeeIds(collect);
+        if (CollectionUtils.isEmpty(employeeDTOS)){
+            throw new ServiceException("数据不存在无法删除！");
         }
-        return employeeMapper.logicDeleteEmployeeByEmployeeIds(stringList, employeeDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+
+
+        List<Long> collect1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+
+        // todo 校检是否被引用 被引用无法删除
+        List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployees(collect1);
+        if (!CollectionUtils.isEmpty(departmentDTOList)){
+            for (DepartmentDTO dto : departmentDTOList) {
+                deptErreo.append("组织"+dto.getDepartmentCode()+" "+dto.getDepartmentName()+"\r\n");
+            }
+        }
+        if (deptErreo.length()>0){
+            deptErreo.append("人员已被以上组织引用");
+        }
+        erreoEmp.append(deptErreo);
+        if (erreoEmp.length()>0){
+            throw new ServiceException(erreoEmp.toString());
+        }
+        return employeeMapper.logicDeleteEmployeeByEmployeeIds(collect, employeeDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
     }
 
     /**
@@ -189,8 +220,34 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public int logicDeleteEmployeeByEmployeeId(EmployeeDTO employeeDTO) {
         int i= 0;
+        StringBuffer deptErreo = new StringBuffer();
+        StringBuffer erreoEmp = new StringBuffer();
+        //员工表
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
+        //查询数据
+        EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeId(employeeDTO.getEmployeeId());
+        if (null == employeeDTO1){
+            throw new ServiceException("数据不存在无法删除！");
+        }
+        //部门表
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setDepartmentLeaderId(employeeDTO1.getEmployeeId());
+        departmentDTO.setExaminationLeaderId(employeeDTO1.getEmployeeId());
+        // todo 校检是否被引用 被引用无法删除
+        List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployee(departmentDTO);
+        if (!CollectionUtils.isEmpty(departmentDTOList)){
+            for (DepartmentDTO dto : departmentDTOList) {
+                deptErreo.append("组织"+dto.getDepartmentCode()+" "+dto.getDepartmentName()+"\r\n");
+            }
+        }
+        if (deptErreo.length()>0){
+            deptErreo.append("人员已被以上组织引用");
+        }
+        erreoEmp.append(deptErreo);
+        if (erreoEmp.length()>0){
+            throw new ServiceException(erreoEmp.toString());
+        }
         try {
             i = employeeMapper.logicDeleteEmployeeByEmployeeId(employee, SecurityUtils.getUserId(), DateUtils.getNowDate());
         } catch (Exception e) {

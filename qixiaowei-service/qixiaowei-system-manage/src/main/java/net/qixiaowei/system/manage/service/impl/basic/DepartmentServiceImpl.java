@@ -58,47 +58,52 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO) {
+        //返回数据
+        List<DepartmentDTO> tree = new ArrayList<>();
         //筛选数据 获取祖级id
         List<DepartmentDTO> filtrateList = departmentMapper.getParentId(departmentDTO);
+        if (CheckObjectIsNullUtils.isNull(departmentDTO)){
+            tree = createTree1(filtrateList, 0);
+        }else {
+            Department department = new Department();
+            BeanUtils.copyProperties(departmentDTO, department);
+            //封装数据 根据code或者查询数据为单条数据时
+            if (!CheckObjectIsNullUtils.isNull(departmentDTO) && filtrateList.size() == 1) {
+                for (DepartmentDTO dto : filtrateList) {
+                    List<String> strings = new ArrayList<>();
+                    if (StringUtils.isNotBlank(dto.getAncestors())) {
+                        strings = Arrays.asList(dto.getAncestors().substring(2).split(","));
+                        departmentDTO.setDepartmentIdList(strings);
+                        departmentDTO.setDepartmentId(Long.parseLong(strings.get(0)));
+                    } else {
+                        departmentDTO.setDepartmentId(dto.getDepartmentId());
+                        strings.add(dto.getDepartmentId().toString());
+                        departmentDTO.setDepartmentIdList(strings);
+                    }
+                }
+            }
 
-        Department department = new Department();
-        BeanUtils.copyProperties(departmentDTO, department);
-        //封装数据 根据code或者查询数据为单条数据时
-        if (!CheckObjectIsNullUtils.isNull(departmentDTO) && filtrateList.size() == 1) {
-            for (DepartmentDTO dto : filtrateList) {
-                List<String> strings = new ArrayList<>();
-                if (StringUtils.isNotBlank(dto.getAncestors())) {
-                    strings = Arrays.asList(dto.getAncestors().substring(2).split(","));
-                    departmentDTO.setDepartmentIdList(strings);
-                    departmentDTO.setDepartmentId(Long.parseLong(strings.get(0)));
-                } else {
-                    departmentDTO.setDepartmentId(dto.getDepartmentId());
-                    strings.add(dto.getDepartmentId().toString());
-                    departmentDTO.setDepartmentIdList(strings);
+            //查询数据
+            List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
+            if (filtrateList.size() == 1) {
+                for (DepartmentDTO dto : filtrateList) {
+                    Integer level = 0;
+                    int departmentId = 0;
+                    //租级为空 赋值顶级为0
+                    if (StringUtils.isEmpty(dto.getAncestors())) {
+                        tree = createTree(departmentDTOList, departmentId, level, dto.getDepartmentCode());
+                    } else {
+                        //层级 只要当前层级
+                        level = dto.getLevel();
+                        List<String> strings = Arrays.asList(dto.getAncestors().split(","));
+                        departmentId = Integer.parseInt(strings.get(0));
+                        tree = createTree(departmentDTOList, departmentId, level, dto.getDepartmentCode());
+                    }
+
                 }
             }
         }
 
-        //查询数据
-        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
-        List<DepartmentDTO> tree = new ArrayList<>();
-        if (filtrateList.size() == 1) {
-            for (DepartmentDTO dto : filtrateList) {
-                Integer level = 0;
-                int departmentId = 0;
-                //租级为空 赋值顶级为0
-                if (StringUtils.isEmpty(dto.getAncestors())) {
-                    tree = createTree(departmentDTOList, departmentId, level, dto.getDepartmentCode());
-                } else {
-                    //层级 只要当前层级
-                    level = dto.getLevel();
-                    List<String> strings = Arrays.asList(dto.getAncestors().split(","));
-                    departmentId = Integer.parseInt(strings.get(0));
-                    tree = createTree(departmentDTOList, departmentId, level, dto.getDepartmentCode());
-                }
-
-            }
-        }
         return tree;
     }
 
