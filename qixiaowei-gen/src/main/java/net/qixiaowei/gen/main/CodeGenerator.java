@@ -22,14 +22,15 @@ public class CodeGenerator {
     //项目路径
     private static final String module_path = "system/manage" ;
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
-    private static final String extend_Package = "/basic" ;
+    private static final String extend_Package = "/user" ;
     //表名
-    private static final String tables = "department,department_post" ;
-
+    private static final String tables = "user" ;
+    //生成文件的作者名
+    private static final String author ="author" ;
     //数据库配置
-    private static final String url = "jdbc:mysql://43.139.7.31:3306/system-manage" ;
-    private static final String username = "root" ;
-    private static final String password = "qixiaowei2022" ;
+    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/system-manage" ;
+    private static final String username = "qxwopr" ;
+    private static final String password = "7fpJR7i2" ;
 
 
     //实体类 默认生成 不生成改为false
@@ -94,7 +95,7 @@ public class CodeGenerator {
 
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
-                    builder.author("TANGMICHI") // 设置作者
+                    builder.author(author) // 设置作者
                             .outputDir(generatePath); // 指定输出目录
                 })
                 .strategyConfig(builder -> {
