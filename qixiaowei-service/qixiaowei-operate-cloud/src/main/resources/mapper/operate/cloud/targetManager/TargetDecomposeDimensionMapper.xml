@@ -178,7 +178,21 @@
     </update>
     <!--获取当前最大sort值-->
     <select id="getMaxTargetDimensionConfigSort" resultType="java.lang.Integer">
-        SELECT MAX(sort) as maxSort FROM target_decompose_dimension and delete_flag=0
+        SELECT MAX(sort) as maxSort FROM target_decompose_dimension where delete_flag=0
+    </select>
+    <!--分解维度重复性校验-->
+    <select id="checkDimension" resultType="java.lang.Integer">
+        SELECT COUNT(decomposition_dimension) FROM target_decompose_dimension WHERE decomposition_dimension =
+        #{dimension} and delete_flag = 0
+    </select>
+    <select id="isExist" resultType="java.lang.Integer">
+        SELECT COUNT(target_decompose_dimension_id) FROM target_decompose_dimension WHERE delete_flag = 0 and
+        target_decompose_dimension_id in
+        <foreach item="item"
+                 collection="targetDecomposeDimensionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 </mapper>
 
