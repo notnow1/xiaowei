@@ -28,7 +28,7 @@ public class ${entity} extends BaseEntity {
         </#if>
     </#if>
     <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark">
-     private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if>  ${field.propertyName};
+     private <#if "${field.propertyType}"=="LocalDateTime" || "${field.propertyType}"=="LocalDate"> Date <#else> ${field.propertyType}</#if>  ${field.propertyName};
     </#if>
 </#list>
 

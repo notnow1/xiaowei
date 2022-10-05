@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.api.dto.basic;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class DepartmentDTO {
     * 部门ID
     */
     private  Long departmentId;
+
 
     /**
      * 部门ID集合查询子集
@@ -129,6 +131,10 @@ public class DepartmentDTO {
      */
     private List<DepartmentPostDTO>  departmentPostDTOList;
 
+    /**
+     * 部门员工表
+     */
+    private List<EmployeeDTO>  employeeDTOList;
     /**
      * 组织子节点信息
      */

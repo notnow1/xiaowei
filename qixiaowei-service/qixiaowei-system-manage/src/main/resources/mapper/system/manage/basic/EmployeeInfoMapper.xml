@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.EmployeeInfoMapper">
+    <!--    查询员工信息-->
+    <select id="selectEmployeeInfoByEmployeeInfoId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeInfoDTO">
+        SELECT
+        employee_info_id, employee_id, marital_status, nationality, nation, resident_city, insured_city, permanent_address, contact_address, contact_address_detail, wechat_code, emergency_contact, emergency_mobile, create_by, create_time, update_by, update_time
+        FROM employee_info
+        WHERE  employee_info_id=#{employeeInfoId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询员工信息列表-->
+    <select id="selectEmployeeInfoList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeInfoDTO">
+        SELECT
+        employee_info_id, employee_id, marital_status, nationality, nation, resident_city, insured_city, permanent_address, contact_address, contact_address_detail, wechat_code, emergency_contact, emergency_mobile, create_by, create_time, update_by, update_time
+        FROM employee_info
+        WHERE delete_flag=0
+                <if test="employeeInfo.employeeInfoId != null">
+                    and employee_info_id=#{employeeInfo.employeeInfoId}
+                </if>
+                <if test="employeeInfo.employeeId != null">
+                    and employee_id=#{employeeInfo.employeeId}
+                </if>
+                <if test="employeeInfo.maritalStatus != null">
+                    and marital_status=#{employeeInfo.maritalStatus}
+                </if>
+                <if test="employeeInfo.nationality != null and employeeInfo.nationality != ''">
+                    and nationality=#{employeeInfo.nationality}
+                </if>
+                <if test="employeeInfo.nation != null and employeeInfo.nation != ''">
+                    and nation=#{employeeInfo.nation}
+                </if>
+                <if test="employeeInfo.residentCity != null and employeeInfo.residentCity != ''">
+                    and resident_city=#{employeeInfo.residentCity}
+                </if>
+                <if test="employeeInfo.insuredCity != null and employeeInfo.insuredCity != ''">
+                    and insured_city=#{employeeInfo.insuredCity}
+                </if>
+                <if test="employeeInfo.permanentAddress != null and employeeInfo.permanentAddress != ''">
+                    and permanent_address=#{employeeInfo.permanentAddress}
+                </if>
+                <if test="employeeInfo.contactAddress != null and employeeInfo.contactAddress != ''">
+                    and contact_address=#{employeeInfo.contactAddress}
+                </if>
+                <if test="employeeInfo.contactAddressDetail != null and employeeInfo.contactAddressDetail != ''">
+                    and contact_address_detail=#{employeeInfo.contactAddressDetail}
+                </if>
+                <if test="employeeInfo.wechatCode != null and employeeInfo.wechatCode != ''">
+                    and wechat_code=#{employeeInfo.wechatCode}
+                </if>
+                <if test="employeeInfo.emergencyContact != null and employeeInfo.emergencyContact != ''">
+                    and emergency_contact=#{employeeInfo.emergencyContact}
+                </if>
+                <if test="employeeInfo.emergencyMobile != null and employeeInfo.emergencyMobile != ''">
+                    and emergency_mobile=#{employeeInfo.emergencyMobile}
+                </if>
+                <if test="employeeInfo.createBy != null">
+                    and create_by=#{employeeInfo.createBy}
+                </if>
+                <if test="employeeInfo.createTime != null">
+                    and create_time=#{employeeInfo.createTime}
+                </if>
+                <if test="employeeInfo.updateBy != null">
+                    and update_by=#{employeeInfo.updateBy}
+                </if>
+                <if test="employeeInfo.updateTime != null">
+                    and update_time=#{employeeInfo.updateTime}
+                </if>
+    </select>
+    <!--新增员工信息-->
+    <insert id="insertEmployeeInfo" useGeneratedKeys="true" keyProperty="employeeInfoId">
+        INSERT INTO employee_info (employee_id,marital_status,nationality,nation,resident_city,insured_city,permanent_address,contact_address,contact_address_detail,wechat_code,emergency_contact,emergency_mobile,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{employeeInfo.employeeId},#{employeeInfo.maritalStatus},#{employeeInfo.nationality},#{employeeInfo.nation},#{employeeInfo.residentCity},#{employeeInfo.insuredCity},#{employeeInfo.permanentAddress},#{employeeInfo.contactAddress},#{employeeInfo.contactAddressDetail},#{employeeInfo.wechatCode},#{employeeInfo.emergencyContact},#{employeeInfo.emergencyMobile},#{employeeInfo.createBy},#{employeeInfo.createTime},#{employeeInfo.updateBy},#{employeeInfo.updateTime})
+    </insert>
+    <!--修改员工信息-->
+    <update id="updateEmployeeInfo">
+        UPDATE employee_info
+        SET
+                    <if test="employeeInfo.employeeId != null">
+                        employee_id=#{employeeInfo.employeeId},
+                    </if>
+                    <if test="employeeInfo.maritalStatus != null">
+                        marital_status=#{employeeInfo.maritalStatus},
+                    </if>
+                    <if test="employeeInfo.nationality != null and employeeInfo.nationality != ''">
+                        nationality=#{employeeInfo.nationality},
+                    </if>
+                    <if test="employeeInfo.nation != null and employeeInfo.nation != ''">
+                        nation=#{employeeInfo.nation},
+                    </if>
+                    <if test="employeeInfo.residentCity != null and employeeInfo.residentCity != ''">
+                        resident_city=#{employeeInfo.residentCity},
+                    </if>
+                    <if test="employeeInfo.insuredCity != null and employeeInfo.insuredCity != ''">
+                        insured_city=#{employeeInfo.insuredCity},
+                    </if>
+                    <if test="employeeInfo.permanentAddress != null and employeeInfo.permanentAddress != ''">
+                        permanent_address=#{employeeInfo.permanentAddress},
+                    </if>
+                    <if test="employeeInfo.contactAddress != null and employeeInfo.contactAddress != ''">
+                        contact_address=#{employeeInfo.contactAddress},
+                    </if>
+                    <if test="employeeInfo.contactAddressDetail != null and employeeInfo.contactAddressDetail != ''">
+                        contact_address_detail=#{employeeInfo.contactAddressDetail},
+                    </if>
+                    <if test="employeeInfo.wechatCode != null and employeeInfo.wechatCode != ''">
+                        wechat_code=#{employeeInfo.wechatCode},
+                    </if>
+                    <if test="employeeInfo.emergencyContact != null and employeeInfo.emergencyContact != ''">
+                        emergency_contact=#{employeeInfo.emergencyContact},
+                    </if>
+                    <if test="employeeInfo.emergencyMobile != null and employeeInfo.emergencyMobile != ''">
+                        emergency_mobile=#{employeeInfo.emergencyMobile},
+                    </if>
+                    <if test="employeeInfo.createBy != null">
+                        create_by=#{employeeInfo.createBy},
+                    </if>
+                    <if test="employeeInfo.createTime != null">
+                        create_time=#{employeeInfo.createTime},
+                    </if>
+                    <if test="employeeInfo.updateBy != null">
+                        update_by=#{employeeInfo.updateBy},
+                    </if>
+                    <if test="employeeInfo.updateTime != null">
+                        update_time=#{employeeInfo.updateTime}
+                    </if>
+        WHERE
+                 employee_info_id=#{employeeInfo.employeeInfoId}
+    </update>
+    <!--逻辑删除员工信息-->
+    <update id="logicDeleteEmployeeInfoByEmployeeInfoId">
+        UPDATE employee_info
+        SET     delete_flag= 1,
+                update_by=#{employeeInfo.updateBy},
+                update_time=#{employeeInfo.updateTime}
+        WHERE
+                employee_info_id=#{employeeInfo.employeeInfoId}
+    </update>
+    <!--逻辑批量删除员工信息-->
+    <update id="logicDeleteEmployeeInfoByEmployeeInfoIds">
+        UPDATE employee_info
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         employee_info_id IN
+            <foreach item="item"
+                     collection="employeeInfoIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增员工信息-->
+    <insert id="batchEmployeeInfo">
+        INSERT INTO employee_info (employee_id,marital_status,nationality,nation,resident_city,insured_city,permanent_address,contact_address,contact_address_detail,wechat_code,emergency_contact,emergency_mobile,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="employeeInfos"
+                 separator=",">
+            (#{item.employeeId},#{item.maritalStatus},#{item.nationality},#{item.nation},#{item.residentCity},#{item.insuredCity},#{item.permanentAddress},#{item.contactAddress},#{item.contactAddressDetail},#{item.wechatCode},#{item.emergencyContact},#{item.emergencyMobile},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除员工信息-->
+    <delete id="deleteEmployeeInfoByEmployeeInfoId">
+        DELETE FROM employee_info
+        WHERE  employee_info_id=#{employeeInfo}
+
+    </delete>
+    <!--物理批量删除员工信息-->
+    <delete id="deleteEmployeeInfoByEmployeeInfoIds">
+        DELETE FROM employee_info
+        WHERE  employee_info_id IN
+            <foreach item="item"
+                     collection="employeeInfoIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改员工信息-->
+    <update id="updateEmployeeInfos">
+        update employee_info
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="employee_info_id=case" suffix="end,">
+            </trim>
+            <trim prefix="employee_id=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.employeeId != null">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.employeeId}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="marital_status=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.maritalStatus != null">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.maritalStatus}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="nationality=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.nationality != null and item.nationality != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.nationality}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="nation=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.nation != null and item.nation != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.nation}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="resident_city=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.residentCity != null and item.residentCity != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.residentCity}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="insured_city=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.insuredCity != null and item.insuredCity != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.insuredCity}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="permanent_address=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.permanentAddress != null and item.permanentAddress != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.permanentAddress}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_address=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.contactAddress != null and item.contactAddress != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.contactAddress}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="contact_address_detail=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.contactAddressDetail != null and item.contactAddressDetail != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.contactAddressDetail}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="wechat_code=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.wechatCode != null and item.wechatCode != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.wechatCode}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="emergency_contact=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.emergencyContact != null and item.emergencyContact != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.emergencyContact}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="emergency_mobile=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.emergencyMobile != null and item.emergencyMobile != ''">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.emergencyMobile}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.createBy != null">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.createBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.createTime != null">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.createTime}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.updateBy != null">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.updateBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="employeeInfoList" item="item" index="index">
+                             <if test="item.updateTime != null">
+                                 when employee_info_id=#{item.employeeInfoId} then #{item.updateTime}
+                             </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="employeeInfoList" separator="or" item="item" index="index">
+                    employee_info_id=#{item.employeeInfoId}
+        </foreach>
+    </update>
+</mapper>
+
+

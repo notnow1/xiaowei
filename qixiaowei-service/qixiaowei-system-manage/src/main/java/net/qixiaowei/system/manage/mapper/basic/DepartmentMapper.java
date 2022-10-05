@@ -3,6 +3,8 @@ package net.qixiaowei.system.manage.mapper.basic;
 import java.util.List;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -106,7 +108,7 @@ public interface DepartmentMapper{
      * @param departmentId
      * @return
      */
-    DepartmentDTO selectDepartmentCode(@Param("departmentId")Long departmentId);
+    DepartmentDTO selectParentDepartmentId(@Param("departmentId")Long departmentId);
 
     /**
      * 根据id查询所有子级数据
@@ -114,4 +116,31 @@ public interface DepartmentMapper{
      * @return
      */
     List<DepartmentDTO> selectAncestors(@Param("departmentId")Long departmentId);
+
+    /**
+     * 查询上级组织
+     * @return
+     */
+    List<DepartmentDTO> queryparent();
+
+    /**
+     * 查询code编码是否已经存在
+     * @param departmentCode
+     * @return
+     */
+    DepartmentDTO selectDepartmentId(@Param("departmentCode")String departmentCode);
+
+    /**
+     * 查询组织关联岗位信息
+     * @param departmentDTO
+     * @return
+     */
+    List<DepartmentPostDTO> selectDeptAndPost(@Param("departmentDTO")DepartmentDTO departmentDTO);
+
+    /**
+     * 分页查询部门人员表列表
+     * @param departmentDTO
+     * @return
+     */
+    List<EmployeeDTO> queryDeptEmployee(@Param("departmentDTO")DepartmentDTO departmentDTO);
 }

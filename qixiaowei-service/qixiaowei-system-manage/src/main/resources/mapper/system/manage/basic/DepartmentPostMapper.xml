@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper">
+    <!--    查询部门岗位关联表-->
+    <select id="selectDepartmentPostByDepartmentPostId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        SELECT
+        department_post_id, department_id, post_id, department_sort, post_sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM department_post
+        WHERE  department_post_id=#{departmentPostId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询部门岗位关联表列表-->
+    <select id="selectDepartmentPostList" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        SELECT
+        department_post_id, department_id, post_id, department_sort, post_sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM department_post
+        WHERE delete_flag=0
+                <if test="departmentPost.departmentPostId != null">
+                    and department_post_id=#{departmentPost.departmentPostId}
+                </if>
+                <if test="departmentPost.departmentId != null">
+                    and department_id=#{departmentPost.departmentId}
+                </if>
+                <if test="departmentPost.postId != null">
+                    and post_id=#{departmentPost.postId}
+                </if>
+                <if test="departmentPost.departmentSort != null">
+                    and department_sort=#{departmentPost.departmentSort}
+                </if>
+                <if test="departmentPost.postSort != null">
+                    and post_sort=#{departmentPost.postSort}
+                </if>
+                <if test="departmentPost.deleteFlag != null">
+                    and delete_flag=#{departmentPost.deleteFlag}
+                </if>
+                <if test="departmentPost.createBy != null">
+                    and create_by=#{departmentPost.createBy}
+                </if>
+                <if test="departmentPost.createTime != null">
+                    and create_time=#{departmentPost.createTime}
+                </if>
+                <if test="departmentPost.updateBy != null">
+                    and update_by=#{departmentPost.updateBy}
+                </if>
+                <if test="departmentPost.updateTime != null">
+                    and update_time=#{departmentPost.updateTime}
+                </if>
+    </select>
+    <select id="selectDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        SELECT
+            department_post_id, department_id, post_id, department_sort, post_sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM department_post
+        WHERE  department_id=#{departmentId}
+          and delete_flag=0
+    </select>
+    <!--新增部门岗位关联表-->
+    <insert id="insertDepartmentPost" useGeneratedKeys="true" keyProperty="departmentPostId">
+        INSERT INTO department_post (department_id,post_id,department_sort,post_sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{departmentPost.departmentId},#{departmentPost.postId},#{departmentPost.departmentSort},#{departmentPost.postSort},#{departmentPost.deleteFlag},#{departmentPost.createBy},#{departmentPost.createTime},#{departmentPost.updateBy},#{departmentPost.updateTime})
+    </insert>
+    <!--修改部门岗位关联表-->
+    <update id="updateDepartmentPost">
+        UPDATE department_post
+        SET
+                    <if test="departmentPost.departmentId != null">
+                        department_id=#{departmentPost.departmentId},
+                    </if>
+                    <if test="departmentPost.postId != null">
+                        post_id=#{departmentPost.postId},
+                    </if>
+                    <if test="departmentPost.departmentSort != null">
+                        department_sort=#{departmentPost.departmentSort},
+                    </if>
+                    <if test="departmentPost.postSort != null">
+                        post_sort=#{departmentPost.postSort},
+                    </if>
+                    <if test="departmentPost.deleteFlag != null">
+                        delete_flag=#{departmentPost.deleteFlag},
+                    </if>
+                    <if test="departmentPost.createBy != null">
+                        create_by=#{departmentPost.createBy},
+                    </if>
+                    <if test="departmentPost.createTime != null">
+                        create_time=#{departmentPost.createTime},
+                    </if>
+                    <if test="departmentPost.updateBy != null">
+                        update_by=#{departmentPost.updateBy},
+                    </if>
+                    <if test="departmentPost.updateTime != null">
+                        update_time=#{departmentPost.updateTime}
+                    </if>
+        WHERE
+                 department_post_id=#{departmentPost.departmentPostId}
+    </update>
+    <!--逻辑删除部门岗位关联表-->
+    <update id="logicDeleteDepartmentPostByDepartmentPostId">
+        UPDATE department_post
+        SET     delete_flag= 1,
+                update_by=#{departmentPost.updateBy},
+                update_time=#{departmentPost.updateTime}
+        WHERE
+                department_post_id=#{departmentPost.departmentPostId}
+    </update>
+    <!--逻辑批量删除部门岗位关联表-->
+    <update id="logicDeleteDepartmentPostByDepartmentPostIds">
+        UPDATE department_post
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         department_post_id IN
+            <foreach item="item"
+                     collection="departmentPostIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增部门岗位关联表-->
+    <insert id="batchDepartmentPost">
+        INSERT INTO department_post (department_id,post_id,department_sort,post_sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="departmentPosts"
+                 separator=",">
+            (#{item.departmentId},#{item.postId},#{item.departmentSort},#{item.postSort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除部门岗位关联表-->
+    <delete id="deleteDepartmentPostByDepartmentPostId">
+        DELETE FROM department_post
+        WHERE  department_post_id=#{departmentPost}
+
+    </delete>
+    <!--物理批量删除部门岗位关联表-->
+    <delete id="deleteDepartmentPostByDepartmentPostIds">
+        DELETE FROM department_post
+        WHERE  department_post_id IN
+            <foreach item="item"
+                     collection="departmentPostIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改部门岗位关联表-->
+    <update id="updateDepartmentPosts">
+        update department_post
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="department_post_id=case" suffix="end,">
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.departmentId != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.departmentId}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="post_id=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.postId != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.postId}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_sort=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.departmentSort != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.departmentSort}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="post_sort=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.postSort != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.postSort}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.deleteFlag != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.deleteFlag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.createBy != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.createBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.createTime != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.createTime}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.updateBy != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.updateBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="departmentPostList" item="item" index="index">
+                             <if test="item.updateTime != null">
+                                 when department_post_id=#{item.departmentPostId} then #{item.updateTime}
+                             </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="departmentPostList" separator="or" item="item" index="index">
+                    department_post_id=#{item.departmentPostId}
+        </foreach>
+    </update>
+</mapper>
+
+
