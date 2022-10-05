@@ -166,14 +166,14 @@ public class IndustryServiceImpl implements IIndustryService {
     public int logicDeleteIndustryByIndustryIds(List<Long> industryIds) {
         List<Long> exist = industryMapper.isExist(industryIds);
         if (StringUtils.isEmpty(exist)) {
-            throw new ServiceException("行业已不存在");
+            throw new ServiceException("该行业已不存在");
         }
         List<Long> longs = industryMapper.selectSons(exist);
-        if (StringUtils.isEmpty(longs)) {
+        if (StringUtils.isNotEmpty(longs)) {
             industryIds.addAll(longs);
         }
         // todo 引用校验
-        if (isQuote(longs)) {
+        if (isQuote(industryIds)) {
             throw new ServiceException("存在被引用的行业");
         }
         return industryMapper.logicDeleteIndustryByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -195,7 +195,6 @@ public class IndustryServiceImpl implements IIndustryService {
      * @param industryId 行业主键
      * @return 结果
      */
-
     @Transactional
     @Override
     public int deleteIndustryByIndustryId(Long industryId) {

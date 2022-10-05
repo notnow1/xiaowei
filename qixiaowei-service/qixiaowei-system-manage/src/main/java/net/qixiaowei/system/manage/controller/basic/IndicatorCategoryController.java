@@ -2,6 +2,9 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,8 +81,12 @@ public class IndicatorCategoryController extends BaseController {
      */
 //    @RequiresPermissions("system:manage:indicatorCategory:remove")
     @Log(title = "删除指标分类表", businessType = BusinessType.DELETE)
-    @GetMapping("/remove")
-    public AjaxResult remove(Long indicatorId) {
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody IndicatorDTO indicatorDTO) {
+        Long indicatorId = indicatorDTO.getIndicatorId();
+        if (StringUtils.isNull(indicatorId)){
+            return AjaxResult.error("指标分类id不能为空！");
+        }
         return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryId(indicatorId));
     }
 

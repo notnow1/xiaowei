@@ -196,7 +196,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     @Transactional
     @Override
     public int deleteIndicatorCategoryByIndicatorCategoryIds(List<IndicatorCategoryDTO> indicatorCategoryDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (IndicatorCategoryDTO indicatorCategoryDTO : indicatorCategoryDtos) {
             stringList.add(indicatorCategoryDTO.getIndicatorCategoryId());
         }
@@ -210,7 +210,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
      */
     @Transactional
     public int insertIndicatorCategorys(List<IndicatorCategoryDTO> indicatorCategoryDtos) {
-        List<IndicatorCategory> indicatorCategoryList = new ArrayList();
+        List<IndicatorCategory> indicatorCategoryList = new ArrayList<>();
         for (IndicatorCategoryDTO indicatorCategoryDTO : indicatorCategoryDtos) {
             IndicatorCategory indicatorCategory = new IndicatorCategory();
             BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);
@@ -231,7 +231,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
      */
     @Transactional
     public int updateIndicatorCategorys(List<IndicatorCategoryDTO> indicatorCategoryDtos) {
-        List<IndicatorCategory> indicatorCategoryList = new ArrayList();
+        List<IndicatorCategory> indicatorCategoryList = new ArrayList<>();
 
         for (IndicatorCategoryDTO indicatorCategoryDTO : indicatorCategoryDtos) {
             IndicatorCategory indicatorCategory = new IndicatorCategory();

@@ -180,7 +180,7 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
             throw new ServiceException("行业已不存在");
         }
         List<Long> longs = industryDefaultMapper.selectSons(exist);
-        if (StringUtils.isEmpty(longs)) {
+        if (StringUtils.isNotEmpty(longs)) {
             industryIds.addAll(longs);
         }
         // todo 引用校验

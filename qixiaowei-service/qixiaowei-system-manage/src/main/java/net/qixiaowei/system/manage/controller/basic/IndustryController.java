@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.controller.basic;
 
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -103,8 +104,12 @@ public class IndustryController extends BaseController {
      */
 //    @RequiresPermissions("system:manage:industry:remove")
     @Log(title = "删除行业", businessType = BusinessType.DELETE)
-    @GetMapping("/remove")
-    public AjaxResult remove(Long industryId) {
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody IndustryDTO industryDTO) {
+        Long industryId = industryDTO.getIndustryId();
+        if (StringUtils.isNull(industryId)) {
+            return AjaxResult.error("行业id不能为空！");
+        }
         return toAjax(industryService.logicDeleteIndustryByIndustryId(industryId));
     }
 

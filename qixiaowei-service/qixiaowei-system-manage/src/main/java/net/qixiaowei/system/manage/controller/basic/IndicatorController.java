@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.controller.basic;
 
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -83,8 +84,12 @@ public class IndicatorController extends BaseController {
      */
 //    @RequiresPermissions("system:manage:indicator:remove")
     @Log(title = "删除指标表", businessType = BusinessType.DELETE)
-    @GetMapping("/remove")
-    public AjaxResult remove(Long indicatorId) {
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody IndicatorDTO indicatorDTO) {
+        Long indicatorId = indicatorDTO.getIndicatorId();
+        if (StringUtils.isNull(indicatorId)){
+            return AjaxResult.error("指标id不能为空！");
+        }
         return toAjax(indicatorService.logicDeleteIndicatorByIndicatorId(indicatorId));
     }
 
