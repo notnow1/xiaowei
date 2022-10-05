@@ -4,6 +4,8 @@ import java.util.List;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -62,16 +64,23 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     @Transactional
     @Override
     public int insertTargetDecomposeDimension(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
+        //校验
+        String decompositionDimension = targetDecomposeDimensionDTO.getDecompositionDimension();
+        if (StringUtils.isEmpty(decompositionDimension)) {
+            throw new ServiceException("分解维度不能为空");
+        }
+        if (checkUnique(decompositionDimension)) {
+            throw new ServiceException("分解维度不能重复");
+        }
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
         BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
-        int maxTargetDimensionConfigSort = targetDecomposeDimensionMapper.getMaxTargetDimensionConfigSort() + 1;
+        int maxSort = targetDecomposeDimensionMapper.getMaxTargetDimensionConfigSort() + 1;
         targetDecomposeDimension.setDeleteFlag(0);
-        targetDecomposeDimension.setSort(maxTargetDimensionConfigSort);
+        targetDecomposeDimension.setSort(maxSort);
         targetDecomposeDimension.setCreateTime(DateUtils.getNowDate());
         targetDecomposeDimension.setUpdateTime(DateUtils.getNowDate());
-        // todo 创建人与更新人
-//        targetDecomposeDimension.setCreateBy(SecurityUtils.getUserId());
-//        targetDecomposeDimension.setUpdateBy(SecurityUtils.getUserId());
+        targetDecomposeDimension.setCreateBy(SecurityUtils.getUserId());
+        targetDecomposeDimension.setUpdateBy(SecurityUtils.getUserId());
         return targetDecomposeDimensionMapper.insertTargetDecomposeDimension(targetDecomposeDimension);
     }
 
@@ -87,26 +96,24 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
         BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
         targetDecomposeDimension.setUpdateTime(DateUtils.getNowDate());
-        // todo 更新人
-//        targetDecomposeDimension.setUpdateBy(SecurityUtils.getUserId());
+        targetDecomposeDimension.setUpdateBy(SecurityUtils.getUserId());
         return targetDecomposeDimensionMapper.updateTargetDecomposeDimension(targetDecomposeDimension);
     }
 
     /**
      * 逻辑批量删除目标分解维度配置
      *
-     * @param targetDecomposeDimensionDtos 需要删除的目标分解维度配置主键
+     * @param targetDecomposeDimensionIds 需要删除的目标分解维度配置主键
      * @return 结果
      */
-
     @Transactional
     @Override
-    public int logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
-        List<Long> stringList = new ArrayList<>();
-        for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
-            stringList.add(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
+    public int logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(List<Long> targetDecomposeDimensionIds) {
+        int exist = targetDecomposeDimensionMapper.isExist(targetDecomposeDimensionIds);
+        if (exist == 0) {
+            throw new ServiceException("目标分解维度配置不存在");
         }
-        return targetDecomposeDimensionMapper.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(stringList, targetDecomposeDimensionDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+        return targetDecomposeDimensionMapper.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(targetDecomposeDimensionIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**
@@ -131,8 +138,17 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     @Transactional
     @Override
     public int logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionId(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
+        Long targetDecomposeDimensionId = targetDecomposeDimensionDTO.getTargetDecomposeDimensionId();
+        if (StringUtils.isNull(targetDecomposeDimensionId)) {
+            throw new ServiceException("分解维度id为空");
+        }
+        if (isQuote(targetDecomposeDimensionId)) {
+            throw new ServiceException("该分解维度已被引用");
+        }
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
         BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
+        targetDecomposeDimension.setUpdateTime(DateUtils.getNowDate());
+        targetDecomposeDimension.setUpdateBy(SecurityUtils.getUserId());
         return targetDecomposeDimensionMapper.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimension);
     }
 
@@ -190,10 +206,23 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     /**
      * 批量修改目标分解维度配置信息
      *
-     * @param targetDecomposeDimensionDtos 目标分解维度配置对象
+     * @param targetDecomposeDimensionDto 目标分解维度配置对象
      */
     @Transactional
     public int updateTargetDecomposeDimensions(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
+//        ArrayList<Integer> sorts = new ArrayList<>();
+//        targetDecomposeDimensionDTO.getTargetDecomposeDimensionId()
+//        for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
+//            //校验
+//            if (targetDecomposeDimensionDTO.getSort() == null &&  == null) {
+//                return AjaxResult.error("sort与id不能为空");
+//            }
+//            if (sorts.contains(targetDecomposeDimensionDTO.getSort())) {
+//                return AjaxResult.error("sort存在重复");
+//            }
+//            sorts.add(targetDecomposeDimensionDTO.getSort());
+//        }
+
         List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList<>();
         for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
             TargetDecomposeDimensionDTO dto = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
@@ -213,17 +242,13 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     /**
      * 校验分解维度的唯一性
      *
-     * @param dimension                分解维度
-     * @param targetDecomposeDimension 分解维度配置
+     * @param dimension 分解维度
      * @return boolean
      */
-    @Override
-    public boolean checkUnique(String dimension, TargetDecomposeDimension targetDecomposeDimension) {
-        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionList = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionList(targetDecomposeDimension);
-        for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionList) {
-            if (dimension.equals(targetDecomposeDimensionDTO.getDecompositionDimension())) {
-                return true;
-            }
+    private boolean checkUnique(String dimension) {
+        int count = targetDecomposeDimensionMapper.checkDimension(dimension);
+        if (count > 0) {
+            return true;
         }
         return false;
     }
@@ -234,8 +259,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
      * @param targetDecomposeDimensionId
      * @return
      */
-    @Override
-    public boolean isQuote(Long targetDecomposeDimensionId) {
+    private boolean isQuote(Long targetDecomposeDimensionId) {
         //todo 引用校验
         return false;
     }

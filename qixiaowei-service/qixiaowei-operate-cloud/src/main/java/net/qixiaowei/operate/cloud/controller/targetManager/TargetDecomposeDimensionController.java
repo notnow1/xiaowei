@@ -58,15 +58,6 @@ public class TargetDecomposeDimensionController extends BaseController {
     @Log(title = "新增目标分解维度配置", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult add(@RequestBody TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
-        //校验
-        if (StringUtils.isEmpty(targetDecomposeDimensionDTO.getDecompositionDimension())) {
-            return AjaxResult.error("分解维度不能为空");
-        }
-        String dimension = targetDecomposeDimensionDTO.getDecompositionDimension();
-        TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
-        if (targetDecomposeDimensionService.checkUnique(dimension, targetDecomposeDimension)) {
-            return AjaxResult.error("分解维度不能重复");
-        }
         return toAjax(targetDecomposeDimensionService.insertTargetDecomposeDimension(targetDecomposeDimensionDTO));
     }
 
@@ -77,18 +68,6 @@ public class TargetDecomposeDimensionController extends BaseController {
     @Log(title = "修改目标分解维度配置", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
-        //校验
-        if (targetDecomposeDimensionDTO.getTargetDecomposeDimensionId() == null) {
-            return AjaxResult.error("该数据已不存在");
-        }
-        if (StringUtils.isEmpty(targetDecomposeDimensionDTO.getDecompositionDimension())) {
-            return AjaxResult.error("分解维度不能为空");
-        }
-        String dimension = targetDecomposeDimensionDTO.getDecompositionDimension();
-        TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
-        if (targetDecomposeDimensionService.checkUnique(dimension, targetDecomposeDimension)) {
-            return AjaxResult.error("分解维度不能重复");
-        }
         return toAjax(targetDecomposeDimensionService.updateTargetDecomposeDimension(targetDecomposeDimensionDTO));
     }
 
@@ -99,13 +78,6 @@ public class TargetDecomposeDimensionController extends BaseController {
     @Log(title = "删除目标分解维度配置", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
-        if (targetDecomposeDimensionDTO.getTargetDecomposeDimensionId() == null) {
-            return AjaxResult.error("分解维度id为空");
-        }
-        Long targetDecomposeDimensionId = targetDecomposeDimensionDTO.getTargetDecomposeDimensionId();
-        if (targetDecomposeDimensionService.isQuote(targetDecomposeDimensionId)) {
-            return AjaxResult.error("该分解维度已被引用");
-        }
         return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimensionDTO));
     }
 
@@ -116,17 +88,6 @@ public class TargetDecomposeDimensionController extends BaseController {
     @Log(title = "批量修改目标分解维度配置", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
-        ArrayList<Integer> sorts = new ArrayList<>();
-        for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
-            //校验
-            if (targetDecomposeDimensionDTO.getSort() == null && targetDecomposeDimensionDTO.getTargetDecomposeDimensionId() == null) {
-                return AjaxResult.error("sort与id不能为空");
-            }
-            if (sorts.contains(targetDecomposeDimensionDTO.getSort())) {
-                return AjaxResult.error("sort存在重复");
-            }
-            sorts.add(targetDecomposeDimensionDTO.getSort());
-        }
         return toAjax(targetDecomposeDimensionService.updateTargetDecomposeDimensions(targetDecomposeDimensionDtos));
     }
 
@@ -146,7 +107,7 @@ public class TargetDecomposeDimensionController extends BaseController {
 //    @RequiresPermissions("operate:cloud:targetDecomposeDimension:removes")
     @Log(title = "批量删除目标分解维度配置", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<TargetDecomposeDimensionDTO> TargetDecomposeDimensionDtos) {
-        return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(TargetDecomposeDimensionDtos));
+    public AjaxResult removes(@RequestBody List<Long> targetDecomposeDimensionIds) {
+        return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(targetDecomposeDimensionIds));
     }
 }

@@ -64,10 +64,10 @@ public interface ITargetDecomposeDimensionService {
     /**
      * 逻辑批量删除目标分解维度配置
      *
-     * @param TargetDecomposeDimensionDtos 需要删除的目标分解维度配置集合
+     * @param targetDecomposeDimensionIds 需要删除的目标分解维度配置集合
      * @return 结果
      */
-    int logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(List<TargetDecomposeDimensionDTO> TargetDecomposeDimensionDtos);
+    int logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(List<Long> targetDecomposeDimensionIds);
 
     /**
      * 逻辑删除目标分解维度配置信息
@@ -102,18 +102,4 @@ public interface ITargetDecomposeDimensionService {
      */
     int deleteTargetDecomposeDimensionByTargetDecomposeDimensionId(Long targetDecomposeDimensionId);
 
-    /**
-     * 校验分解维度的唯一性
-     *
-     * @param dimension
-     * @return
-     */
-    boolean checkUnique(String dimension, TargetDecomposeDimension targetDecomposeDimension);
-
-    /**
-     * todo 引用校验
-     *
-     * @return
-     */
-    boolean isQuote(Long targetDecomposeDimensionId);
 }
