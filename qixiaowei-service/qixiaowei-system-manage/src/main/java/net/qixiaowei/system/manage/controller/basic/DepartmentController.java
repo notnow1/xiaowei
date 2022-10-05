@@ -3,7 +3,9 @@ package net.qixiaowei.system.manage.controller.basic;
 import java.util.List;
 
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,7 +93,7 @@ public class DepartmentController extends BaseController
     //@RequiresPermissions("system:manage:department:add")
     //@Log(title = "新增部门表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody DepartmentDTO departmentDTO) {
+    public AjaxResult addSave(@RequestBody @Validated(DepartmentDTO.AddDepartmentDTO.class)DepartmentDTO departmentDTO) {
     return toAjax(departmentService.insertDepartment(departmentDTO));
     }
 
@@ -102,7 +104,7 @@ public class DepartmentController extends BaseController
     //@RequiresPermissions("system:manage:department:edit")
     //@Log(title = "修改部门表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody DepartmentDTO departmentDTO)
+    public AjaxResult editSave(@RequestBody @Validated(DepartmentDTO.UpdateDepartmentDTO.class)DepartmentDTO departmentDTO)
     {
     return toAjax(departmentService.updateDepartment(departmentDTO));
     }
@@ -113,7 +115,7 @@ public class DepartmentController extends BaseController
     //@RequiresPermissions("system:manage:department:remove")
     //@Log(title = "删除部门表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody DepartmentDTO departmentDTO)
+    public AjaxResult remove(@RequestBody @Validated(DepartmentDTO.DeleteDepartmentDTO.class) DepartmentDTO departmentDTO)
     {
     return toAjax(departmentService.logicDeleteDepartmentByDepartmentIds(departmentDTO));
     }
@@ -146,7 +148,7 @@ public class DepartmentController extends BaseController
     //@RequiresPermissions("system:manage:department:removes")
     //@Log(title = "批量删除部门表", businessType = BusinessType.DELETE)
     @PostMapping("/removesList")
-    public AjaxResult removesList(@RequestBody List<DepartmentDTO>  DepartmentDtos)
+    public AjaxResult removesList(@RequestBody @Validated(DepartmentDTO.DeleteDepartmentDTO.class)List<DepartmentDTO>  DepartmentDtos)
     {
     return toAjax(departmentService.logicDeleteDepartmentByDepartmentIds(DepartmentDtos));
     }
