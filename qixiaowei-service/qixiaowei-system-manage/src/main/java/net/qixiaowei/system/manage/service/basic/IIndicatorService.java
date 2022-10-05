@@ -71,18 +71,18 @@ public interface IIndicatorService {
     /**
      * 逻辑批量删除指标表-
      *
-     * @param IndicatorDtos 需要删除的指标表集合
+     * @param indicatorIds 需要删除的指标表集合
      * @return 结果
      */
-    int logicDeleteIndicatorByIndicatorIds(List<IndicatorDTO> IndicatorDtos);
+    int logicDeleteIndicatorByIndicatorIds(List<Long> indicatorIds);
 
     /**
      * 逻辑删除指标表信息
      *
-     * @param indicatorDTO
+     * @param indicatorId
      * @return 结果
      */
-    int logicDeleteIndicatorByIndicatorId(IndicatorDTO indicatorDTO);
+    int logicDeleteIndicatorByIndicatorId(Long indicatorId);
 
     /**
      * 逻辑批量删除指标表

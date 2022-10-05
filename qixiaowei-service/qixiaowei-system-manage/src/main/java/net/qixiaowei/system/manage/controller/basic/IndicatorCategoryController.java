@@ -78,9 +78,9 @@ public class IndicatorCategoryController extends BaseController {
      */
 //    @RequiresPermissions("system:manage:indicatorCategory:remove")
     @Log(title = "删除指标分类表", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody IndicatorCategoryDTO indicatorCategoryDTO) {
-        return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryId(indicatorCategoryDTO));
+    @GetMapping("/remove")
+    public AjaxResult remove(Long indicatorId) {
+        return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryId(indicatorId));
     }
 
     /**
@@ -109,7 +109,7 @@ public class IndicatorCategoryController extends BaseController {
 //    @RequiresPermissions("system:manage:indicatorCategory:removes")
     @Log(title = "批量删除指标分类表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<IndicatorCategoryDTO> IndicatorCategoryDtos) {
-        return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryIds(IndicatorCategoryDtos));
+    public AjaxResult removes(@RequestBody List<Long> indicatorCategoryIds) {
+        return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryIds));
     }
 }

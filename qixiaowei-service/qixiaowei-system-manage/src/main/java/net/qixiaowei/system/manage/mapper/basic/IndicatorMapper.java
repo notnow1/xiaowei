@@ -4,6 +4,7 @@ import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,10 +27,10 @@ public interface IndicatorMapper {
     /**
      * 查询指标表列表
      *
-     * @param indicator 指标表
+     * @param indicatorDTO 指标表
      * @return 指标表集合
      */
-    List<IndicatorDTO> selectIndicatorList(@Param("indicator") Indicator indicator);
+    List<IndicatorDTO> selectIndicatorList(@Param("indicator") IndicatorDTO indicatorDTO);
 
     /**
      * 查询指标树状表
@@ -138,10 +139,19 @@ public interface IndicatorMapper {
 
     /**
      * 被引用校验
-     * @param indicatorCategoryId
+     *
+     * @param indicatorCategoryIds
      * @return
      */
-    int selectIndicatorCountByIndicatorCategoryId(@Param("indicatorCategoryId")Long indicatorCategoryId);
+    int selectIndicatorCountByIndicatorCategoryId(@Param("indicatorCategoryIds") List<Long> indicatorCategoryIds);
+
+    /**
+     * 根据id集合判断是否存在
+     *
+     * @param indicatorIds
+     * @return
+     */
+    List<Long> isExist(@Param("indicatorIds") List<Long> indicatorIds);
 
 
 }

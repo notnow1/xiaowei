@@ -25,6 +25,14 @@ public interface IndicatorCategoryMapper {
     IndicatorCategoryDTO selectIndicatorCategoryByIndicatorCategoryId(@Param("indicatorCategoryId") Long indicatorCategoryId);
 
     /**
+     * 根据指标分类ids查找指标分类names
+     *
+     * @param indicatorCategoryIds
+     * @return
+     */
+    List<IndicatorCategory> selectIndicatorCategoryByIndicatorCategoryIds(@Param("indicatorCategoryIds") List<Long> indicatorCategoryIds);
+
+    /**
      * 查询指标分类表列表
      *
      * @param indicatorCategory 指标分类表
@@ -104,5 +112,13 @@ public interface IndicatorCategoryMapper {
      * @return
      */
     int checkUnique(@Param("indicatorCategoryCode") String indicatorCategoryCode);
+
+    /**
+     * 根据id集合判断是否存在
+     *
+     * @param indicatorCategoryIds
+     * @return
+     */
+    List<Long> isExist(@Param("indicatorCategoryIds") List<Long> indicatorCategoryIds);
 
 }

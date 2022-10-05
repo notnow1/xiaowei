@@ -22,67 +22,67 @@
         FROM indicator
         WHERE delete_flag=0
         <if test="indicator.indicatorId != null">
-            and indicator_id=#{indicator.indicatorId}
+            and indicator_id=#{indicatorDTO.indicatorId}
         </if>
         <if test="indicator.parentIndicatorId != null">
-            and parent_indicator_id=#{indicator.parentIndicatorId}
+            and parent_indicator_id=#{indicatorDTO.parentIndicatorId}
         </if>
         <if test="indicator.ancestors != null and indicator.ancestors != ''">
-            and ancestors=#{indicator.ancestors}
+            and ancestors=#{indicatorDTO.ancestors}
         </if>
         <if test="indicator.indicatorType != null">
-            and indicator_type=#{indicator.indicatorType}
+            and indicator_type=#{indicatorDTO.indicatorType}
         </if>
         <if test="indicator.indicatorCode != null and indicator.indicatorCode != ''">
-            and indicator_code=#{indicator.indicatorCode}
+            and indicator_code=#{indicatorDTO.indicatorCode}
         </if>
         <if test="indicator.indicatorName != null and indicator.indicatorName != ''">
-            and indicator_name=#{indicator.indicatorName}
+            and indicator_name=#{indicatorDTO.indicatorName}
         </if>
         <if test="indicator.sort != null">
-            and sort=#{indicator.sort}
+            and sort=#{indicatorDTO.sort}
         </if>
         <if test="indicator.level != null">
-            and level=#{indicator.level}
+            and level=#{indicatorDTO.level}
         </if>
         <if test="indicator.indicatorCategoryId != null">
-            and indicator_category_id=#{indicator.indicatorCategoryId}
+            and indicator_category_id=#{indicatorDTO.indicatorCategoryId}
         </if>
         <if test="indicator.indicatorValueType != null">
-            and indicator_value_type=#{indicator.indicatorValueType}
+            and indicator_value_type=#{indicatorDTO.indicatorValueType}
         </if>
         <if test="indicator.choiceFlag != null">
-            and choice_flag=#{indicator.choiceFlag}
+            and choice_flag=#{indicatorDTO.choiceFlag}
         </if>
         <if test="indicator.examineDirection != null">
-            and examine_direction=#{indicator.examineDirection}
+            and examine_direction=#{indicatorDTO.examineDirection}
         </if>
         <if test="indicator.indicatorDefinition != null and indicator.indicatorDefinition != ''">
-            and indicator_definition=#{indicator.indicatorDefinition}
+            and indicator_definition=#{indicatorDTO.indicatorDefinition}
         </if>
         <if test="indicator.indicatorFormula != null and indicator.indicatorFormula != ''">
-            and indicator_formula=#{indicator.indicatorFormula}
+            and indicator_formula=#{indicatorDTO.indicatorFormula}
         </if>
         <if test="indicator.drivingFactorFlag != null">
-            and driving_factor_flag=#{indicator.drivingFactorFlag}
+            and driving_factor_flag=#{indicatorDTO.drivingFactorFlag}
         </if>
         <if test="indicator.remark != null and indicator.remark != ''">
-            and remark=#{indicator.remark}
+            and remark=#{indicatorDTO.remark}
         </if>
         <if test="indicator.deleteFlag != null">
-            and delete_flag=#{indicator.deleteFlag}
+            and delete_flag=#{indicatorDTO.deleteFlag}
         </if>
         <if test="indicator.createBy != null">
-            and create_by=#{indicator.createBy}
+            and create_by=#{indicatorDTO.createBy}
         </if>
         <if test="indicator.createTime != null">
-            and create_time=#{indicator.createTime}
+            and create_time=#{indicatorDTO.createTime}
         </if>
         <if test="indicator.updateBy != null">
-            and update_by=#{indicator.updateBy}
+            and update_by=#{indicatorDTO.updateBy}
         </if>
         <if test="indicator.updateTime != null">
-            and update_time=#{indicator.updateTime}
+            and update_time=#{indicatorDTO.updateTime}
         </if>
     </select>
     <!--级联查询父菜单-->
@@ -439,8 +439,23 @@
         SELECT
         COUNT(indicator_category_id)
         FROM indicator
-        WHERE indicator_category_id = ${indicatorCategoryId}
-        AND delete_flag = 0
+        WHERE delete_flag = 0
+        AND indicator_category_id IN
+        <foreach collection="indicatorCategoryIds"
+                 item="item"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <!--根据id集合判断是否存在-->
+    <select id="isExist" resultType="java.lang.Long">
+        SELECT indicator_id FROM indicator WHERE indicator_id IN
+        <foreach item="item"
+                 collection="indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag = 0
     </select>
     <!--新增时修改指标祖级列表ID-->
     <update id="updateAncestors">

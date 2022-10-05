@@ -1,6 +1,5 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
-import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -8,9 +7,9 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
+import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
@@ -59,13 +58,21 @@ public class IndicatorServiceImpl implements IIndicatorService {
      */
     @Override
     public List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO) {
-        Indicator indicator = new Indicator();
-        BeanUtils.copyProperties(indicatorDTO, indicator);
-        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicator);
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
+        ArrayList<Long> indicatorCategoryList = new ArrayList<>();
         for (IndicatorDTO dto : indicatorDTOS) {
-            Long indicatorCategoryId = dto.getIndicatorCategoryId();
-            IndicatorCategoryDTO indicatorCategoryDTO = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId);
-            dto.setIndicatorCategory(indicatorCategoryDTO.getIndicatorCategoryName());
+            indicatorCategoryList.add(dto.getIndicatorCategoryId());
+        }
+        // 通过categoryId集合查找对应的categoryName
+        List<IndicatorCategory> indicatorCategory = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryList);
+        // 赋值
+        for (int i = 0; i < indicatorCategoryList.size(); i++) {
+            for (IndicatorCategory category : indicatorCategory) {
+                if (category.getIndicatorCategoryId().equals(indicatorCategoryList.get(i))) {
+                    indicatorDTOS.get(i).setIndicatorCategory(category.getIndicatorCategoryName());
+                    break;
+                }
+            }
         }
         return indicatorDTOS;
     }
@@ -144,35 +151,49 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     @Override
     public int updateIndicator(IndicatorDTO indicatorDTO) {
+        String indicatorCode = indicatorDTO.getIndicatorCode();
+        Long indicatorId = indicatorDTO.getIndicatorId();
+        if (StringUtils.isEmpty(indicatorCode)) {
+            throw new ServiceException("指标编码不能为空");
+        }
+        if (StringUtils.isNull(indicatorId)) {
+            throw new ServiceException("指标ID不能为空");
+        }
+        IndicatorDTO isExist = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
+        if (StringUtils.isNull(isExist)) {
+            throw new ServiceException("当前指标不存在");
+        }
+        if (indicatorMapper.checkUnique(indicatorCode) > 0) {
+            throw new ServiceException("指标编码重复");
+        }
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
         return indicatorMapper.updateIndicator(indicator);
+
     }
 
     /**
      * 逻辑批量删除指标表
      *
-     * @param indicatorDTOs 需要删除的指标表主键
+     * @param indicatorIds 需要删除的指标表主键
      * @return 结果
      */
     @Transactional
     @Override
-    public int logicDeleteIndicatorByIndicatorIds(List<IndicatorDTO> indicatorDTOs) {
-        List<Long> stringList = new ArrayList<>();
-        for (IndicatorDTO indicatorDTO : indicatorDTOs) {
-            if (indicatorMapper.selectIndicatorByIndicatorId(indicatorDTO.getIndicatorId()) == null) {
-                throw new ServiceException("指标分类不存在");
-            }
-            stringList.add(indicatorDTO.getIndicatorId());
+    public int logicDeleteIndicatorByIndicatorIds(List<Long> indicatorIds) {
+        List<Long> exist = indicatorMapper.isExist(indicatorIds);
+        if (StringUtils.isEmpty(exist)) {
+            throw new ServiceException("指标不存在");
         }
-        List<Long> indicatorIds = indicatorMapper.selectSons(stringList);//获取子级
-        for (Long indicator : indicatorIds) {
-            // todo 引用校验
-            if (isQuote(indicator)) {
-                throw new ServiceException("存在被引用的行业");
-            }
+        List<Long> sons = indicatorMapper.selectSons(exist);//获取子级
+        if (StringUtils.isNotEmpty(sons)) {
+            indicatorIds.addAll(sons);
+        }
+        // todo 引用校验
+        if (isQuote(indicatorIds)) {
+            throw new ServiceException("存在被引用的指标");
         }
         return indicatorMapper.logicDeleteIndicatorByIndicatorIds(indicatorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
@@ -180,10 +201,10 @@ public class IndicatorServiceImpl implements IIndicatorService {
     /**
      * todo 引用校验
      *
-     * @param indicatorId
+     * @param indicatorIds
      * @return
      */
-    private boolean isQuote(Long indicatorId) {
+    private boolean isQuote(List<Long> indicatorIds) {
         return false;
     }
 
@@ -203,15 +224,15 @@ public class IndicatorServiceImpl implements IIndicatorService {
     /**
      * 逻辑删除指标表信息
      *
-     * @param indicatorDTO 指标表
+     * @param indicatorId 指标表
      * @return 结果
      */
     @Transactional
     @Override
-    public int logicDeleteIndicatorByIndicatorId(IndicatorDTO indicatorDTO) {
-        Indicator indicator = new Indicator();
-        BeanUtils.copyProperties(indicatorDTO, indicator);
-        return indicatorMapper.logicDeleteIndicatorByIndicatorId(indicator, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    public int logicDeleteIndicatorByIndicatorId(Long indicatorId) {
+        ArrayList<Long> indicatorIds = new ArrayList<>();
+        indicatorIds.add(indicatorId);
+        return logicDeleteIndicatorByIndicatorIds(indicatorIds);
     }
 
     /**
@@ -252,7 +273,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     public int insertIndicators(List<IndicatorDTO> indicatorDtos) {
         List<Indicator> indicatorList = new ArrayList();
-
         for (IndicatorDTO indicatorDTO : indicatorDtos) {
             Indicator indicator = new Indicator();
             BeanUtils.copyProperties(indicatorDTO, indicator);
@@ -273,8 +293,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
      */
     @Transactional
     public int updateIndicators(List<IndicatorDTO> indicatorDtos) {
-        List<Indicator> indicatorList = new ArrayList();
-
+        List<Indicator> indicatorList = new ArrayList<>();
         for (IndicatorDTO indicatorDTO : indicatorDtos) {
             Indicator indicator = new Indicator();
             BeanUtils.copyProperties(indicatorDTO, indicator);
@@ -287,4 +306,3 @@ public class IndicatorServiceImpl implements IIndicatorService {
         return indicatorMapper.updateIndicators(indicatorList);
     }
 }
-

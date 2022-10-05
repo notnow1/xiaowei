@@ -58,7 +58,36 @@
     </select>
     <!--默认行业唯一性校验-->
     <select id="checkUnique" resultType="java.lang.Integer">
-        select count(industry_code) from industry where industry_code = #{industryCode}
+        select count(industry_code) from industry_default where industry_code = #{industryCode} and delete_flag=0
+    </select>
+    <!-- 根据父级查找子级-->
+    <select id="selectSon" resultType="java.lang.Long">
+        SELECT
+        industry_id
+        FROM industry_default
+        WHERE
+        FIND_IN_SET(#{industryId},ancestors)
+    </select>
+    <!-- 根据list批量查找子级-->
+    <select id="selectSons" resultType="java.lang.Long">
+        SELECT
+        industry_id
+        FROM industry_default
+        WHERE
+        <foreach item="item" index="index"
+                 collection="industryIds"
+                 separator="or">
+            FIND_IN_SET(#{item},ancestors)
+        </foreach>
+    </select>
+    <!--根据id集合判断是否存在-->
+    <select id="isExist" resultType="Long">
+        SELECT industry_id FROM industry_default WHERE industry_id IN
+        <foreach item="item"
+                 collection="industryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
     <!--新增默认行业-->
     <insert id="insertIndustryDefault" useGeneratedKeys="true" keyProperty="industryId">
@@ -249,6 +278,21 @@
         <foreach collection="industryDefaultList" separator="or" item="item" index="index">
             industry_id=#{item.industryId}
         </foreach>
+    </update>
+    <!--根据ids更新子级状态-->
+    <update id="updateStatus">
+        UPDATE industry_default
+        SET
+        status = #{status},
+        update_by = #{updateBy},
+        update_time = #{updateTime}
+        WHERE industry_id IN
+        <foreach item="item"
+                 collection="industryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND delete_flag = 0
     </update>
 </mapper>
 

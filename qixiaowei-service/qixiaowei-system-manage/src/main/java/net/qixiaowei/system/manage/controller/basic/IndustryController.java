@@ -103,9 +103,9 @@ public class IndustryController extends BaseController {
      */
 //    @RequiresPermissions("system:manage:industry:remove")
     @Log(title = "删除行业", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody IndustryDTO industryDTO) {
-        return toAjax(industryService.logicDeleteIndustryByIndustryId(industryDTO));
+    @GetMapping("/remove")
+    public AjaxResult remove(Long industryId) {
+        return toAjax(industryService.logicDeleteIndustryByIndustryId(industryId));
     }
 
     /**

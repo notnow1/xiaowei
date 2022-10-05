@@ -71,10 +71,10 @@ public interface IIndustryService {
     /**
      * 逻辑删除行业信息
      *
-     * @param industryDTO
+     * @param industryId
      * @return 结果
      */
-    int logicDeleteIndustryByIndustryId(IndustryDTO industryDTO);
+    int logicDeleteIndustryByIndustryId(Long industryId);
 
     /**
      * 逻辑批量删除行业

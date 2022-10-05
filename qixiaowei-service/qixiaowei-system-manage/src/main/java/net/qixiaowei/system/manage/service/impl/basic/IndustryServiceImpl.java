@@ -73,7 +73,7 @@ public class IndustryServiceImpl implements IIndustryService {
         String parentAncestors = "";//仅在非一级行业时有用
         Integer parentLevel = 1;
         Long parentIndustryId = industryDTO.getParentIndustryId();
-        if (StringUtils.isNotNull(parentIndustryId)) {// 一级行业
+        if (StringUtils.isNotNull(parentIndustryId)) {
             IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(parentIndustryId);
             if (parentIndustry == null) {
                 throw new ServiceException("该上级行业不存在");
@@ -134,7 +134,7 @@ public class IndustryServiceImpl implements IIndustryService {
             Integer status = parentIndustry.getStatus();
             // 如果父节点不为正常状态,则不允许新增子节点
             if (BusinessConstants.DISABLE.equals(status)) {
-                throw new ServiceException("上级行业失效，不允许新增子节点");
+                throw new ServiceException("上级行业失效，不允许编辑子节点");
             }
         }
         Integer status = industryDTO.getStatus();
@@ -166,15 +166,27 @@ public class IndustryServiceImpl implements IIndustryService {
     public int logicDeleteIndustryByIndustryIds(List<Long> industryIds) {
         List<Long> exist = industryMapper.isExist(industryIds);
         if (StringUtils.isEmpty(exist)) {
-            throw new ServiceException("该行业已不存在");
+            throw new ServiceException("行业已不存在");
         }
         List<Long> longs = industryMapper.selectSons(exist);
+        if (StringUtils.isEmpty(longs)) {
+            industryIds.addAll(longs);
+        }
         // todo 引用校验
-//        if (false) {
-//            throw new ServiceException("存在被引用的行业");
-//        }
-        industryIds.addAll(longs);
+        if (isQuote(longs)) {
+            throw new ServiceException("存在被引用的行业");
+        }
         return industryMapper.logicDeleteIndustryByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * todo 引用校验
+     *
+     * @param industryIds
+     * @return
+     */
+    private boolean isQuote(List<Long> industryIds) {
+        return false;
     }
 
     /**
@@ -193,15 +205,15 @@ public class IndustryServiceImpl implements IIndustryService {
     /**
      * 逻辑删除行业信息
      *
-     * @param industryDTO 行业
+     * @param industryId 行业
      * @return 结果
      */
     @Transactional
     @Override
-    public int logicDeleteIndustryByIndustryId(IndustryDTO industryDTO) {
-        Industry industry = new Industry();
-        BeanUtils.copyProperties(industryDTO, industry);
-        return industryMapper.logicDeleteIndustryByIndustryId(industry, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    public int logicDeleteIndustryByIndustryId(Long industryId) {
+        ArrayList<Long> industryIds = new ArrayList<>();
+        industryIds.add(industryId);
+        return logicDeleteIndustryByIndustryIds(industryIds);
     }
 
     /**

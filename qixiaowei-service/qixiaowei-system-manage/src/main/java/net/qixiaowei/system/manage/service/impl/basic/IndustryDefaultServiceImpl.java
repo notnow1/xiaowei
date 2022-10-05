@@ -7,9 +7,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
@@ -130,10 +128,37 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     @Transactional
     @Override
     public int updateIndustryDefault(IndustryDefaultDTO industryDefaultDTO) {
-        IndustryDefault industryDefault = new IndustryDefault();
-        if (checkUnique(industryDefaultDTO.getIndustryCode()) > 0) {
-            throw new ServiceException("该默认行业已存在");
+        String industryCode = industryDefaultDTO.getIndustryCode();
+        if (StringUtils.isEmpty(industryCode)) {
+            throw new ServiceException("行业编码不能为空");
         }
+        if (industryDefaultMapper.checkUnique(industryCode) > 0) {
+            throw new ServiceException("行业编码重复");
+        }
+        Long parentIndustryId = industryDefaultDTO.getParentIndustryId();
+        if (StringUtils.isNotNull(parentIndustryId)) {// 一级行业
+            IndustryDefaultDTO parentIndustry = industryDefaultMapper.selectIndustryDefaultByIndustryId(parentIndustryId);
+            if (parentIndustry == null) {
+                throw new ServiceException("该上级行业不存在");
+            }
+            Integer status = parentIndustry.getStatus();
+            // 如果父节点不为正常状态,则不允许新增子节点
+            if (BusinessConstants.DISABLE.equals(status)) {
+                throw new ServiceException("上级行业失效，不允许编辑子节点");
+            }
+        }
+        Integer status = industryDefaultDTO.getStatus();
+        Long industryId = industryDefaultDTO.getIndustryId();
+        if (BusinessConstants.DISABLE.equals(status)) {//失效会影响子级
+            //先查再批量更新
+            List<Long> industryIds = industryDefaultMapper.selectSon(industryId);
+            if (StringUtils.isEmpty(industryIds)) {
+                industryIds = new ArrayList<>();
+            }
+            industryIds.add(industryId);
+            industryDefaultMapper.updateStatus(status, SecurityUtils.getUserId(), DateUtils.getNowDate(), industryIds);
+        }
+        IndustryDefault industryDefault = new IndustryDefault();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
         industryDefault.setUpdateTime(DateUtils.getNowDate());
         industryDefault.setUpdateBy(SecurityUtils.getUserId());
@@ -143,21 +168,30 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     /**
      * 逻辑批量删除默认行业
      *
-     * @param industryDefaultDtos 需要删除的默认行业主键
+     * @param industryIds 需要删除的默认行业主键
      * @return 结果
      */
 
     @Transactional
     @Override
-    public int logicDeleteIndustryDefaultByIndustryIds(List<IndustryDefaultDTO> industryDefaultDtos) {
-        List<Long> stringList = new ArrayList<>();
-        for (IndustryDefaultDTO industryDefaultDTO : industryDefaultDtos) {
-            if (industryDefaultMapper.selectIndustryDefaultByIndustryId(industryDefaultDTO.getIndustryId()) == null) {
-                throw new ServiceException("该默认行业不存在");
-            }
-            stringList.add(industryDefaultDTO.getIndustryId());
+    public int logicDeleteIndustryDefaultByIndustryIds(List<Long> industryIds) {
+        List<Long> exist = industryDefaultMapper.isExist(industryIds);
+        if (StringUtils.isEmpty(exist)) {
+            throw new ServiceException("行业已不存在");
         }
-        return industryDefaultMapper.logicDeleteIndustryDefaultByIndustryIds(stringList, industryDefaultDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+        List<Long> longs = industryDefaultMapper.selectSons(exist);
+        if (StringUtils.isEmpty(longs)) {
+            industryIds.addAll(longs);
+        }
+        // todo 引用校验
+        if (isQuote(longs)) {
+            throw new ServiceException("存在被引用的行业");
+        }
+        return industryDefaultMapper.logicDeleteIndustryDefaultByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    private boolean isQuote(List<Long> longs) {
+        return false;
     }
 
     /**
@@ -176,15 +210,15 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     /**
      * 逻辑删除默认行业信息
      *
-     * @param industryDefaultDTO 默认行业
+     * @param industryId 默认行业
      * @return 结果
      */
     @Transactional
     @Override
-    public int logicDeleteIndustryDefaultByIndustryId(IndustryDefaultDTO industryDefaultDTO) {
-        IndustryDefault industryDefault = new IndustryDefault();
-        BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
-        return industryDefaultMapper.logicDeleteIndustryDefaultByIndustryId(industryDefault, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    public int logicDeleteIndustryDefaultByIndustryId(Long industryId) {
+        ArrayList<Long> industryDefaultIds = new ArrayList<>();
+        industryDefaultIds.add(industryId);
+        return logicDeleteIndustryDefaultByIndustryIds(industryDefaultIds);
     }
 
     /**

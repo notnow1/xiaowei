@@ -100,8 +100,41 @@ public interface IndustryDefaultMapper {
     /**
      * 默认行业唯一性校验
      *
-     * @param IndustryCode
+     * @param industryCode
      * @return
      */
-    int checkUnique(@Param("IndustryCode") String IndustryCode);
+    int checkUnique(@Param("industryCode") String industryCode);
+
+    /**
+     * 根据父级id查找子级
+     *
+     * @param industryId
+     * @return
+     */
+    List<Long> selectSon(@Param("industryId") Long industryId);
+
+    /**
+     * 根据父级id批量查找子级
+     *
+     * @param industryIds
+     * @return
+     */
+    List<Long> selectSons(@Param("industryIds") List<Long> industryIds);
+
+    /**
+     * 根据ids批量修改子级
+     *
+     * @param status
+     * @param industryIds
+     * @return
+     */
+    int updateStatus(@Param("status") Integer status, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime, @Param("industryIds") List<Long> industryIds);
+
+    /**
+     * 根据id集合判断是否存在
+     *
+     * @return
+     */
+    List<Long> isExist(@Param("industryIds") List<Long> industryIds);
+
 }
