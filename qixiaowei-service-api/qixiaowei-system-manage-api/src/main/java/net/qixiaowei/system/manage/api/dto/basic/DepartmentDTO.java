@@ -1,13 +1,17 @@
 package net.qixiaowei.system.manage.api.dto.basic;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 
 /**
 * 部门表
@@ -38,7 +42,9 @@ public class DepartmentDTO {
     /**
     * 部门ID
     */
+    @NotEmpty(message = "id不能为空",groups = {DepartmentDTO.DeleteDepartmentDTO.class})
     private  Long departmentId;
+
 
     /**
      * 部门ID集合查询子集
@@ -55,6 +61,7 @@ public class DepartmentDTO {
     /**
     * 部门编码
     */
+    @NotBlank(message = "组织编码不能为空",groups = {DepartmentDTO.AddDepartmentDTO.class,DepartmentDTO.UpdateDepartmentDTO.class})
     private  String departmentCode;
 
     /**
@@ -64,6 +71,7 @@ public class DepartmentDTO {
     /**
     * 部门名称
     */
+    @NotBlank(message = "组织名称不能为空",groups = {DepartmentDTO.AddDepartmentDTO.class,DepartmentDTO.UpdateDepartmentDTO.class})
     private  String departmentName;
 
     /**
@@ -73,6 +81,7 @@ public class DepartmentDTO {
     /**
     * 部门层级
     */
+    @NotEmpty(message = "组织层级不能为空",groups = {DepartmentDTO.AddDepartmentDTO.class,DepartmentDTO.UpdateDepartmentDTO.class})
     private  Integer level;
     /**
     * 部门负责人ID
@@ -129,6 +138,10 @@ public class DepartmentDTO {
      */
     private List<DepartmentPostDTO>  departmentPostDTOList;
 
+    /**
+     * 部门员工表
+     */
+    private List<EmployeeDTO>  employeeDTOList;
     /**
      * 组织子节点信息
      */
