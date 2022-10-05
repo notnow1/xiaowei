@@ -188,9 +188,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     @Override
     public int logicDeleteEmployeeByEmployeeId(EmployeeDTO employeeDTO) {
+        int i= 0;
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
-        return employeeMapper.logicDeleteEmployeeByEmployeeId(employee, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        try {
+            i = employeeMapper.logicDeleteEmployeeByEmployeeId(employee, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除员工信息失败");
+        }
+        return i;
     }
 
     /**
