@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
@@ -42,7 +43,7 @@ public class DepartmentDTO {
     /**
     * 部门ID
     */
-    @NotEmpty(message = "id不能为空",groups = {DepartmentDTO.DeleteDepartmentDTO.class})
+    @NotNull(message = "id不能为空",groups = {DepartmentDTO.DeleteDepartmentDTO.class,DepartmentDTO.UpdateDepartmentDTO.class})
     private  Long departmentId;
 
 
@@ -81,7 +82,7 @@ public class DepartmentDTO {
     /**
     * 部门层级
     */
-    @NotEmpty(message = "组织层级不能为空",groups = {DepartmentDTO.AddDepartmentDTO.class,DepartmentDTO.UpdateDepartmentDTO.class})
+    @NotNull(message = "组织层级不能为空",groups = {DepartmentDTO.AddDepartmentDTO.class,DepartmentDTO.UpdateDepartmentDTO.class})
     private  Integer level;
     /**
     * 部门负责人ID

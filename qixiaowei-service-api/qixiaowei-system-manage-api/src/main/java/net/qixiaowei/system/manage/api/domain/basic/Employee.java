@@ -85,7 +85,7 @@ public class Employee extends BaseEntity {
      */
      private  Integer  employmentStatus;
      /**
-     * 状态:0失效;1生效
+     * 状态:0暂存;1生效
      */
      private  Integer  status;
      /**

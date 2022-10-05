@@ -11,78 +11,165 @@
         and delete_flag=0
     </select>
 
+    <!--    查询员工表-->
+    <select id="selectEmployeeByEmployeeCode"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT
+            employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee
+        WHERE  employee_code=#{employeeCode}
+          and delete_flag=0
+    </select>
     <!--    查询员工表列表-->
     <select id="selectEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT
-        employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM employee
-        WHERE delete_flag=0
+        select
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        ei.employee_info_id,
+        ei.marital_status,
+        ei.nationality,
+        ei.nation,
+        ei.resident_city,
+        ei.insured_city,
+        ei.permanent_address,
+        ei.contact_address,
+        ei.contact_address_detail,
+        ei.wechat_code,
+        ei.emergency_contact,
+        ei.emergency_mobile
+        from
+        employee e
+        left join employee_info ei
+        on
+        e.employee_id = ei.employee_id
+        where
+        delete_flag = 0
                 <if test="employee.employeeId != null">
-                    and employee_id=#{employee.employeeId}
+                    and e.employee_id=#{employee.employeeId}
                 </if>
                 <if test="employee.employeeCode != null and employee.employeeCode != ''">
-                    and employee_code=#{employee.employeeCode}
+                    and e.employee_code=#{employee.employeeCode}
                 </if>
                 <if test="employee.employeeName != null and employee.employeeName != ''">
-                    and employee_name=#{employee.employeeName}
+                    and e.employee_name=#{employee.employeeName}
                 </if>
                 <if test="employee.employeeGender != null">
-                    and employee_gender=#{employee.employeeGender}
+                    and e.employee_gender=#{employee.employeeGender}
                 </if>
                 <if test="employee.identityType != null">
-                    and identity_type=#{employee.identityType}
+                    and e.identity_type=#{employee.identityType}
                 </if>
                 <if test="employee.identityCard != null and employee.identityCard != ''">
-                    and identity_card=#{employee.identityCard}
+                    and e.identity_card=#{employee.identityCard}
                 </if>
                 <if test="employee.employeeBirthday != null">
-                    and employee_birthday=#{employee.employeeBirthday}
+                    and e.employee_birthday=#{employee.employeeBirthday}
                 </if>
                 <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
-                    and employee_mobile=#{employee.employeeMobile}
+                    and e.employee_mobile=#{employee.employeeMobile}
                 </if>
                 <if test="employee.employeeEmail != null and employee.employeeEmail != ''">
-                    and employee_email=#{employee.employeeEmail}
+                    and e.employee_email=#{employee.employeeEmail}
                 </if>
                 <if test="employee.employeeDepartmentId != null">
-                    and employee_department_id=#{employee.employeeDepartmentId}
+                    and e.employee_department_id=#{employee.employeeDepartmentId}
                 </if>
                 <if test="employee.employeePostId != null">
-                    and employee_post_id=#{employee.employeePostId}
+                    and e.employee_post_id=#{employee.employeePostId}
                 </if>
                 <if test="employee.employeeRank != null">
-                    and employee_rank=#{employee.employeeRank}
+                    and e.employee_rank=#{employee.employeeRank}
                 </if>
                 <if test="employee.employeeBasicWage != null">
-                    and employee_basic_wage=#{employee.employeeBasicWage}
+                    and e.employee_basic_wage=#{employee.employeeBasicWage}
                 </if>
                 <if test="employee.employmentDate != null">
-                    and employment_date=#{employee.employmentDate}
+                    and e.employment_date=#{employee.employmentDate}
                 </if>
                 <if test="employee.departureDate != null">
-                    and departure_date=#{employee.departureDate}
+                    and e.departure_date=#{employee.departureDate}
                 </if>
                 <if test="employee.employmentStatus != null">
-                    and employment_status=#{employee.employmentStatus}
+                    and e.employment_status=#{employee.employmentStatus}
                 </if>
                 <if test="employee.status != null">
-                    and status=#{employee.status}
+                    and e.status=#{employee.status}
                 </if>
                 <if test="employee.deleteFlag != null">
-                    and delete_flag=#{employee.deleteFlag}
+                    and e.delete_flag=#{employee.deleteFlag}
                 </if>
                 <if test="employee.createBy != null">
-                    and create_by=#{employee.createBy}
+                    and e.create_by=#{employee.createBy}
                 </if>
                 <if test="employee.createTime != null">
-                    and create_time=#{employee.createTime}
+                    and e.create_time=#{employee.createTime}
                 </if>
                 <if test="employee.updateBy != null">
-                    and update_by=#{employee.updateBy}
+                    and e.update_by=#{employee.updateBy}
                 </if>
                 <if test="employee.updateTime != null">
-                    and update_time=#{employee.updateTime}
+                    and e.update_time=#{employee.updateTime}
                 </if>
+    </select>
+<!--    查询员工单条信息-->
+    <select id="selectEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        select
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        ei.employee_info_id,
+        ei.marital_status,
+        ei.nationality,
+        ei.nation,
+        ei.resident_city,
+        ei.insured_city,
+        ei.permanent_address,
+        ei.contact_address,
+        ei.contact_address_detail,
+        ei.wechat_code,
+        ei.emergency_contact,
+        ei.emergency_mobile
+        from
+        employee e
+        left join employee_info ei
+        on
+        e.employee_id = ei.employee_id
+        where
+        delete_flag = 0
+        <if test="employee.employeeId != null">
+            and e.employee_id=#{employee.employeeId}
+        </if>
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
