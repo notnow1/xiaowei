@@ -131,11 +131,12 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @param salaryItemId 工资项主键
      * @return 结果
      */
-
     @Transactional
     @Override
     public int deleteSalaryItemBySalaryItemId(Long salaryItemId) {
-        return salaryItemMapper.deleteSalaryItemBySalaryItemId(salaryItemId);
+        List<Long> salaryItemIds = new ArrayList<>();
+        salaryItemIds.add(salaryItemId);
+        return logicDeleteSalaryItemBySalaryItemIds(salaryItemIds);
     }
 
     /**
@@ -212,7 +213,6 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Transactional
     public int updateSalaryItems(List<SalaryItemDTO> salaryItemDtos) {
         List<SalaryItem> salaryItemList = new ArrayList();
-
         for (SalaryItemDTO salaryItemDTO : salaryItemDtos) {
             SalaryItem salaryItem = new SalaryItem();
             BeanUtils.copyProperties(salaryItemDTO, salaryItem);

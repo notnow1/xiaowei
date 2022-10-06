@@ -1,23 +1,20 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
-import java.util.List;
-
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-
-import org.springframework.transaction.annotation.Transactional;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDimensionMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeDimensionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -72,6 +69,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
         if (checkUnique(decompositionDimension)) {
             throw new ServiceException("分解维度不能重复");
         }
+        // todo 分解维度是否正确校验
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
         BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
         int maxSort = targetDecomposeDimensionMapper.getMaxTargetDimensionConfigSort() + 1;
@@ -206,33 +204,39 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     /**
      * 批量修改目标分解维度配置信息
      *
-     * @param targetDecomposeDimensionDto 目标分解维度配置对象
+     * @param targetDecomposeDimensionDtos 目标分解维度配置对象
      */
     @Transactional
     public int updateTargetDecomposeDimensions(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
-//        ArrayList<Integer> sorts = new ArrayList<>();
-//        targetDecomposeDimensionDTO.getTargetDecomposeDimensionId()
-//        for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
-//            //校验
-//            if (targetDecomposeDimensionDTO.getSort() == null &&  == null) {
-//                return AjaxResult.error("sort与id不能为空");
-//            }
-//            if (sorts.contains(targetDecomposeDimensionDTO.getSort())) {
-//                return AjaxResult.error("sort存在重复");
-//            }
-//            sorts.add(targetDecomposeDimensionDTO.getSort());
-//        }
-
-        List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList<>();
+        Long targetDecomposeDimensionId;
+        List<Integer> sorts = new ArrayList<>();
+        List<Long> targetDecomposeDimensionIds = new ArrayList<>();
+        Integer sort;
         for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
-            TargetDecomposeDimensionDTO dto = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
-            if (dto == null) {
-                throw new ServiceException("数据已经不存在");
+            targetDecomposeDimensionId = targetDecomposeDimensionDTO.getTargetDecomposeDimensionId();
+            sort = targetDecomposeDimensionDTO.getSort();
+            if (StringUtils.isNull(targetDecomposeDimensionId)) {
+                throw new ServiceException("id不能为空！");
             }
-            TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
+            if (StringUtils.isNull(sort)) {
+                throw new ServiceException("sort不能为空");
+            }
+            if (sorts.contains(targetDecomposeDimensionDTO.getSort())) {
+                throw new ServiceException("sort存在重复");
+            }
+            targetDecomposeDimensionIds.add(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
+            sorts.add(targetDecomposeDimensionDTO.getSort());
+        }
+        int exist = targetDecomposeDimensionMapper.isExist(targetDecomposeDimensionIds);
+        if (exist < targetDecomposeDimensionIds.size()) {//查询到的数量小于ids的数量
+            throw new ServiceException("数据已经不存在");
+        }
+        List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList<>();
+        TargetDecomposeDimension targetDecomposeDimension;
+        for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
+            targetDecomposeDimension = new TargetDecomposeDimension();
             BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
             targetDecomposeDimension.setUpdateTime(DateUtils.getNowDate());
-//            targetDecomposeDimension.setCreateBy(SecurityUtils.getUserId());
             targetDecomposeDimension.setUpdateBy(SecurityUtils.getUserId());
             targetDecomposeDimensionList.add(targetDecomposeDimension);
         }

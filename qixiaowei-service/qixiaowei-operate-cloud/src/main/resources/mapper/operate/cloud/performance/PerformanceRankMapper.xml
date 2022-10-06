@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.performance.PerformanceRankMapper">
+    <!--    查询绩效等级表-->
+    <select id="selectPerformanceRankByPerformanceRankId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO">
+        SELECT
+        performance_rank_id, performance_rank_category, performance_rank_name, performance_rank_description,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_rank
+        WHERE performance_rank_id=#{performanceRankId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询绩效等级表列表-->
+    <select id="selectPerformanceRankList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO">
+        SELECT
+        performance_rank_id, performance_rank_category, performance_rank_name, performance_rank_description,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_rank
+        WHERE delete_flag=0
+        <if test="performanceRank.performanceRankId != null">
+            and performance_rank_id=#{performanceRank.performanceRankId}
+        </if>
+        <if test="performanceRank.performanceRankCategory != null">
+            and performance_rank_category=#{performanceRank.performanceRankCategory}
+        </if>
+        <if test="performanceRank.performanceRankName != null and performanceRank.performanceRankName != ''">
+            and performance_rank_name=#{performanceRank.performanceRankName}
+        </if>
+        <if test="performanceRank.performanceRankDescription != null and performanceRank.performanceRankDescription != ''">
+            and performance_rank_description=#{performanceRank.performanceRankDescription}
+        </if>
+        <if test="performanceRank.deleteFlag != null">
+            and delete_flag=#{performanceRank.deleteFlag}
+        </if>
+        <if test="performanceRank.createBy != null">
+            and create_by=#{performanceRank.createBy}
+        </if>
+        <if test="performanceRank.createTime != null">
+            and create_time=#{performanceRank.createTime}
+        </if>
+        <if test="performanceRank.updateBy != null">
+            and update_by=#{performanceRank.updateBy}
+        </if>
+        <if test="performanceRank.updateTime != null">
+            and update_time=#{performanceRank.updateTime}
+        </if>
+    </select>
+    <!--绩效等级名称重复校验-->
+    <select id="checkUniqueName" resultType="java.lang.Integer">
+        SELECT COUNT(performance_rank_name) FROM performance_rank
+        WHERE performance_rank_name = #{performanceRankName}
+    </select>
+    <select id="selectPerformanceRankFactorIds" resultType="java.lang.Long">
+
+    </select>
+    <!--新增绩效等级表-->
+    <insert id="insertPerformanceRank" useGeneratedKeys="true" keyProperty="performanceRankId">
+        INSERT INTO performance_rank
+        (performance_rank_category,performance_rank_name,performance_rank_description,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{performanceRank.performanceRankCategory},#{performanceRank.performanceRankName},#{performanceRank.performanceRankDescription},#{performanceRank.deleteFlag},#{performanceRank.createBy},#{performanceRank.createTime},#{performanceRank.updateBy},#{performanceRank.updateTime})
+    </insert>
+    <!--修改绩效等级表-->
+    <update id="updatePerformanceRank">
+        UPDATE performance_rank
+        SET
+        <if test="performanceRank.performanceRankCategory != null">
+            performance_rank_category=#{performanceRank.performanceRankCategory},
+        </if>
+        <if test="performanceRank.performanceRankName != null and performanceRank.performanceRankName != ''">
+            performance_rank_name=#{performanceRank.performanceRankName},
+        </if>
+        <if test="performanceRank.performanceRankDescription != null and performanceRank.performanceRankDescription != ''">
+            performance_rank_description=#{performanceRank.performanceRankDescription},
+        </if>
+        <if test="performanceRank.deleteFlag != null">
+            delete_flag=#{performanceRank.deleteFlag},
+        </if>
+        <if test="performanceRank.createBy != null">
+            create_by=#{performanceRank.createBy},
+        </if>
+        <if test="performanceRank.createTime != null">
+            create_time=#{performanceRank.createTime},
+        </if>
+        <if test="performanceRank.updateBy != null">
+            update_by=#{performanceRank.updateBy},
+        </if>
+        <if test="performanceRank.updateTime != null">
+            update_time=#{performanceRank.updateTime}
+        </if>
+        WHERE
+        performance_rank_id=#{performanceRank.performanceRankId}
+    </update>
+    <!--逻辑删除绩效等级表-->
+    <update id="logicDeletePerformanceRankByPerformanceRankId">
+        UPDATE performance_rank
+        SET delete_flag= 1,
+        update_by=#{performanceRank.updateBy},
+        update_time=#{performanceRank.updateTime}
+        WHERE
+        performance_rank_id=#{performanceRank.performanceRankId}
+    </update>
+    <!--逻辑批量删除绩效等级表-->
+    <update id="logicDeletePerformanceRankByPerformanceRankIds">
+        UPDATE performance_rank
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        performance_rank_id IN
+        <foreach item="item"
+                 collection="performanceRankIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增绩效等级表-->
+    <insert id="batchPerformanceRank">
+        INSERT INTO performance_rank
+        (performance_rank_category,performance_rank_name,performance_rank_description,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="performanceRanks"
+                 separator=",">
+            (#{item.performanceRankCategory},#{item.performanceRankName},#{item.performanceRankDescription},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除绩效等级表-->
+    <delete id="deletePerformanceRankByPerformanceRankId">
+        DELETE FROM performance_rank
+        WHERE performance_rank_id=#{performanceRank}
+
+    </delete>
+    <!--物理批量删除绩效等级表-->
+    <delete id="deletePerformanceRankByPerformanceRankIds">
+        DELETE FROM performance_rank
+        WHERE performance_rank_id IN
+        <foreach item="item"
+                 collection="performanceRankIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改绩效等级表-->
+    <update id="updatePerformanceRanks">
+        update performance_rank
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="performance_rank_id=case" suffix="end,">
+            </trim>
+            <trim prefix="performance_rank_category=case" suffix="end,">
+                <foreach collection="performanceRankList" item="item" index="index">
+                    <if test="item.performanceRankCategory != null">
+                        when performance_rank_id=#{item.performanceRankId} then #{item.performanceRankCategory}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="performance_rank_name=case" suffix="end,">
+                <foreach collection="performanceRankList" item="item" index="index">
+                    <if test="item.performanceRankName != null and item.performanceRankName != ''">
+                        when performance_rank_id=#{item.performanceRankId} then #{item.performanceRankName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="performance_rank_description=case" suffix="end,">
+                <foreach collection="performanceRankList" item="item" index="index">
+                    <if test="item.performanceRankDescription != null and item.performanceRankDescription != ''">
+                        when performance_rank_id=#{item.performanceRankId} then #{item.performanceRankDescription}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="performanceRankList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when performance_rank_id=#{item.performanceRankId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="performanceRankList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when performance_rank_id=#{item.performanceRankId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="performanceRankList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when performance_rank_id=#{item.performanceRankId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="performanceRankList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when performance_rank_id=#{item.performanceRankId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="performanceRankList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when performance_rank_id=#{item.performanceRankId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="performanceRankList" separator="or" item="item" index="index">
+            performance_rank_id=#{item.performanceRankId}
+        </foreach>
+    </update>
+</mapper>
+
+
