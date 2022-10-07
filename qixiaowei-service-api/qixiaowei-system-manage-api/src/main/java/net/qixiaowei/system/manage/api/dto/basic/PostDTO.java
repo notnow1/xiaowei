@@ -1,11 +1,12 @@
 package net.qixiaowei.system.manage.api.dto.basic;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+
 import javax.validation.groups.Default;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
 * 岗位表
@@ -92,5 +93,9 @@ public class PostDTO {
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
 
+    /**
+     * 部门表集合
+     */
+    private List<DepartmentDTO> departmentDTOList;
 }
 

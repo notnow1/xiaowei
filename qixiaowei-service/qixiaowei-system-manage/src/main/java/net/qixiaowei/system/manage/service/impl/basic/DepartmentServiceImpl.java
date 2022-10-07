@@ -62,9 +62,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentDTO> tree = new ArrayList<>();
         //筛选数据 获取祖级id
         List<DepartmentDTO> filtrateList = departmentMapper.getParentId(departmentDTO);
-        if (CheckObjectIsNullUtils.isNull(departmentDTO)){
+        if (CheckObjectIsNullUtils.isNull(departmentDTO)) {
             tree = createTree1(filtrateList, 0);
-        }else {
+        } else {
             Department department = new Department();
             BeanUtils.copyProperties(departmentDTO, department);
             //封装数据 根据code或者查询数据为单条数据时
@@ -269,7 +269,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (!CollectionUtils.isEmpty(departmentPostIds)) {
             departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
         }
+        //去除已经删除的id
+        for (int i1 = 0; i1 < departmentPostDTOList.size(); i1++) {
+            if (departmentPostIds.contains(departmentPostDTOList.get(i1).getDepartmentPostId())) {
+                departmentPostDTOList.remove(i1);
+            }
+        }
         if (!CollectionUtils.isEmpty(departmentPostDTOList)) {
+            //组织中间表 新增
+            List<DepartmentPost> departmentPostAddList = new ArrayList<>();
+            //组织中间表 修改
+            List<DepartmentPost> departmentPostUpdateList = new ArrayList<>();
             for (DepartmentPostDTO departmentPostDTO : departmentPostDTOList) {
                 //部门岗位关联表
                 DepartmentPost departmentPost = new DepartmentPost();
@@ -279,24 +289,35 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 //岗位排序
                 departmentPost.setPostSort(i);
                 departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                //部门排序(组织)
-                departmentPost.setDepartmentSort(departmentDTO.getSort());
                 if (null == departmentPostDTO.getDepartmentPostId()) {
-                    try {
-                        departmentPostMapper.insertDepartmentPost(departmentPost);
-                    } catch (Exception e) {
-                        throw new ServiceException("新增组织岗位失败" + e);
-                    }
+
+                    departmentPost.setCreateBy(SecurityUtils.getUserId());
+                    departmentPost.setCreateTime(DateUtils.getNowDate());
+                    departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                    departmentPost.setUpdateTime(DateUtils.getNowDate());
+                    departmentPostAddList.add(departmentPost);
                 } else {
                     departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ONE);
-                    try {
-                        departmentPostMapper.updateDepartmentPost(departmentPost);
-                    } catch (Exception e) {
-                        throw new ServiceException("修改组织岗位失败" + e);
-                    }
+                    departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                    departmentPost.setUpdateTime(DateUtils.getNowDate());
+                    departmentPostUpdateList.add(departmentPost);
                 }
 
                 i++;
+            }
+            if (!CollectionUtils.isEmpty(departmentPostAddList)) {
+                try {
+                    departmentPostMapper.batchDepartmentPost(departmentPostAddList);
+                } catch (Exception e) {
+                    throw new ServiceException("新增组织岗位信息失败");
+                }
+            }
+            if (!CollectionUtils.isEmpty(departmentPostUpdateList)) {
+                try {
+                    departmentPostMapper.updateDepartmentPosts(departmentPostUpdateList);
+                } catch (Exception e) {
+                    throw new ServiceException("修改组织岗位信息失败");
+                }
             }
         }
 
@@ -436,7 +457,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         depterreo.append(posterreo).append(emplerreo);
         if (depterreo.length() > 0) {
             throw new ServiceException(depterreo.toString());
-        }else {
+        } else {
             //删除数据
             i = departmentMapper.logicDeleteDepartmentByDepartmentId(department, SecurityUtils.getUserId(), DateUtils.getNowDate());
         }

@@ -196,6 +196,16 @@ public class TenantServiceImpl implements ITenantService {
                 throw new ServiceException("删除租户联系人失败" + e);
             }
         }
+        //去除已经删除的id
+        for (int i1 = 0; i1 < tenantContactsDTOList1.size(); i1++) {
+            if (tenantContactsIds.contains(tenantContactsDTOList1.get(i1).getTenantContactsId())) {
+                tenantContactsDTOList1.remove(i1);
+            }
+        }
+        //新增集合
+        List<TenantContacts> tenantContactsAddList = new ArrayList<>();
+        //修改集合
+        List<TenantContacts> tenantContactsUpdateList = new ArrayList<>();
         //copy租户联系人
         for (TenantContactsDTO tenantContactsDTO : tenantContactsDTOList1) {
             TenantContacts tenantContacts = new TenantContacts();
@@ -209,21 +219,28 @@ public class TenantServiceImpl implements ITenantService {
             tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             //没有id回显 表示为新增数据
             if (null == tenantContactsDTO.getTenantContactsId()) {
-                try {
-                    tenantContactsMapper.insertTenantContacts(tenantContacts);
-                } catch (Exception e) {
-                    throw new ServiceException("新增租户联系人失败" + e);
-                }
+                tenantContactsAddList.add(tenantContacts);
             } else {
-                try {
-                    //修改
-                    tenantContacts.setTenantContactsId(tenantContactsDTO.getTenantContactsId());
-                    tenantContactsMapper.updateTenantContacts(tenantContacts);
-                } catch (Exception e) {
-                    throw new ServiceException("修改租户联系人失败" + e);
-                }
+                //修改
+                tenantContacts.setTenantContactsId(tenantContactsDTO.getTenantContactsId());
+                tenantContactsUpdateList.add(tenantContacts);
             }
         }
+        if (!CollectionUtils.isEmpty(tenantContactsAddList)) {
+            try {
+                tenantContactsMapper.batchTenantContacts(tenantContactsAddList);
+            } catch (Exception e) {
+                throw new ServiceException("新增租户联系人失败" + e);
+            }
+        }
+        if (!CollectionUtils.isEmpty(tenantContactsUpdateList)) {
+            try {
+                tenantContactsMapper.updateTenantContactss(tenantContactsUpdateList);
+            } catch (Exception e) {
+                throw new ServiceException("修改租户联系人失败" + e);
+            }
+        }
+
         return i;
     }
 

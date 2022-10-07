@@ -239,7 +239,7 @@
         FROM department
         where
         <if test="departmentCode != null and departmentCode != ''">
-            department_code=#{departmentCode},
+            department_code=#{departmentCode}
         </if>
         and delete_flag = 0
     </select>
@@ -367,6 +367,20 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>)
+    </select>
+<!--    批量查询code编码是否已经存在-->
+    <select id="selectDepartmentIds" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        SELECT department_id, parent_department_id, ancestors, department_code, department_name, `level`,
+        department_leader_id, department_leader_post_id, examination_leader_id, department_importance_factor,
+        department_description, sort, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM department
+        where department_code in
+            <foreach item="item"
+                     collection="departmentCodes"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag = 0
     </select>
 
     <!--新增部门表-->

@@ -185,6 +185,27 @@
             #{item}
         </foreach>
     </select>
+<!--    批量查询是否被引用-->
+    <select id="selectEmployeePostIds" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT
+            employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee
+        WHERE  employee_post_id in
+        <foreach item="item"
+                 collection="employeePostIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and delete_flag=0
+    </select>
+<!--    查询是否被引用-->
+    <select id="selectEmployeePostId" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT
+        employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee
+        WHERE  employee_post_id =#{employeePostId}
+        and delete_flag=0
+    </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
         INSERT INTO employee (employee_code,employee_name,employee_gender,identity_type,identity_card,employee_birthday,employee_mobile,employee_email,employee_department_id,employee_post_id,employee_rank,employee_basic_wage,employment_date,departure_date,employment_status,status,delete_flag,create_by,create_time,update_by,update_time)

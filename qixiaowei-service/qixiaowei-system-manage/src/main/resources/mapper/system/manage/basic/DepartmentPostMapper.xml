@@ -55,6 +55,27 @@
         WHERE  department_id=#{departmentId}
           and delete_flag=0
     </select>
+<!--    根据部门中间表id查询出数据库的数据-->
+    <select id="selectDepartmentPostId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        SELECT
+            department_post_id, department_id, post_id, department_sort, post_sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM department_post
+        WHERE  post_id = #{postId}
+          and delete_flag=0
+    </select>
+    <!--    根据部门id批量查询出数据库的数据-->
+    <select id="selectDepartmentIds" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        SELECT
+        department_post_id, department_id, post_id, department_sort, post_sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM department_post
+        WHERE  department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增部门岗位关联表-->
     <insert id="insertDepartmentPost" useGeneratedKeys="true" keyProperty="departmentPostId">
         INSERT INTO department_post (department_id,post_id,department_sort,post_sort,delete_flag,create_by,create_time,update_by,update_time)

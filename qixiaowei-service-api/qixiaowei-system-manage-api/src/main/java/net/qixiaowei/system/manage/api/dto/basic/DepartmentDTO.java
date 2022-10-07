@@ -41,6 +41,10 @@ public class DepartmentDTO {
 
     }
     /**
+     * 组织中间表ID
+     */
+    private  Long departmentPostId;
+    /**
     * 部门ID
     */
     @NotNull(message = "id不能为空",groups = {DepartmentDTO.DeleteDepartmentDTO.class,DepartmentDTO.UpdateDepartmentDTO.class})

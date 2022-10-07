@@ -115,4 +115,18 @@ public interface EmployeeMapper{
      * @return
      */
     EmployeeDTO selectEmployee(@Param("employee")Employee employee);
+
+    /**
+     * 批量查询是否被引用
+     * @param employeePostIds
+     * @return
+     */
+    List<EmployeeDTO> selectEmployeePostIds(@Param("employeePostIds")List<Long> employeePostIds);
+
+    /**
+     * 查询是否被引用
+     * @param employeePostId
+     * @return
+     */
+    List<EmployeeDTO> selectEmployeePostId(@Param("employeePostId")Long employeePostId);
 }

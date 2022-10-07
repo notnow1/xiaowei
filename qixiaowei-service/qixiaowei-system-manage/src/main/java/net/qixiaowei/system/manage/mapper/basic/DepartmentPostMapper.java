@@ -99,4 +99,16 @@ public interface DepartmentPostMapper{
      */
     List<DepartmentPostDTO> selectDepartmentId(@Param("departmentId") Long departmentId);
 
+    /**
+     * 根据部门中间表id查询出数据库的数据
+     * @return
+     */
+    List<DepartmentPostDTO> selectDepartmentPostId(@Param("postId")Long postId);
+
+    /**
+     * 根据部门id批量查询出数据库的数据
+     * @return
+     */
+    List<DepartmentPostDTO> selectDepartmentIds(@Param("departmentIds") List<Long> departmentIds);
+
 }

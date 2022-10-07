@@ -63,6 +63,7 @@ public interface DepartmentMapper{
     */
     int updateDepartment(@Param("department")Department department);
 
+
     /**
     * 批量修改部门表
     *
@@ -137,6 +138,13 @@ public interface DepartmentMapper{
      * @return
      */
     DepartmentDTO selectDepartmentId(@Param("departmentCode")String departmentCode);
+
+    /**
+     * 批量查询code编码是否已经存在
+     * @param departmentCodes
+     * @return
+     */
+    List<DepartmentDTO> selectDepartmentIds(@Param("departmentCodes")List<String> departmentCodes);
 
     /**
      * 查询组织关联岗位信息
