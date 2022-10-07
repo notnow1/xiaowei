@@ -25,7 +25,7 @@ public class ${entity}DTO {
 
     }
 
-    //新增检验
+    //删除检验
     public interface Delete${entity}DTO extends Default{
 
     }

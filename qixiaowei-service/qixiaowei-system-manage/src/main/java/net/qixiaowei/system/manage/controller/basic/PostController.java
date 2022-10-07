@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,7 +62,7 @@ public class PostController extends BaseController
     //@RequiresPermissions("system:manage:post:add")
     //@Log(title = "新增岗位表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody PostDTO postDTO) {
+    public AjaxResult addSave(@RequestBody @Validated(PostDTO.AddPostDTO.class) PostDTO postDTO) {
     return toAjax(postService.insertPost(postDTO));
     }
 
@@ -72,7 +73,7 @@ public class PostController extends BaseController
     //@RequiresPermissions("system:manage:post:edit")
     //@Log(title = "修改岗位表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody PostDTO postDTO)
+    public AjaxResult editSave(@RequestBody @Validated(PostDTO.UpdatePostDTO.class) PostDTO postDTO)
     {
     return toAjax(postService.updatePost(postDTO));
     }
@@ -83,7 +84,7 @@ public class PostController extends BaseController
     //@RequiresPermissions("system:manage:post:remove")
     //@Log(title = "删除岗位表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody PostDTO postDTO)
+    public AjaxResult remove(@RequestBody @Validated(PostDTO.DeletePostDTO.class) PostDTO postDTO)
     {
     return toAjax(postService.logicDeletePostByPostId(postDTO));
     }
@@ -115,7 +116,7 @@ public class PostController extends BaseController
     //@RequiresPermissions("system:manage:post:removes")
     //@Log(title = "批量删除岗位表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<PostDTO>  PostDtos)
+    public AjaxResult removes(@RequestBody @Validated(PostDTO.DeletePostDTO.class) List<PostDTO>  PostDtos)
     {
     return toAjax(postService.logicDeletePostByPostIds(PostDtos));
     }

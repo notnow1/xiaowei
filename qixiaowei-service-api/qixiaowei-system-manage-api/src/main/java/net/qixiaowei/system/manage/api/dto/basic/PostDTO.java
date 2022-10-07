@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +28,7 @@ public class PostDTO {
 
     }
 
-    //新增检验
+    //删除检验
     public interface DeletePostDTO extends Default{
 
     }
@@ -37,30 +39,37 @@ public class PostDTO {
     /**
     * ID
     */
+    @NotNull(message = "岗位ID不能为空",groups = {PostDTO.UpdatePostDTO.class,PostDTO.DeletePostDTO.class})
     private  Long postId;
     /**
     * 岗位编码
     */
+    @NotBlank(message = "岗位编码不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  String postCode;
     /**
     * 岗位名称
     */
+    @NotBlank(message = "岗位名称不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  String postName;
     /**
     * 职级体系ID
     */
+    @NotNull(message = "职级体系不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Long officialRankSystemId;
     /**
     * 岗位职级下限
     */
+    @NotNull(message = "岗位职级下限不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRankLower;
     /**
     * 岗位职级
     */
+    @NotNull(message = "岗位职级不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRank;
     /**
     * 岗位职级上限
     */
+    @NotNull(message = "岗位职级上限不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRankUpper;
     /**
     * 岗位说明书URL路径
@@ -69,6 +78,7 @@ public class PostDTO {
     /**
     * 状态:0失效;1生效
     */
+    @NotNull(message = "岗位状态不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer status;
     /**
     * 删除标记:0未删除;1已删除

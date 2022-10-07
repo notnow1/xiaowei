@@ -4,6 +4,8 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -36,26 +38,32 @@ public class DictionaryTypeDTO {
     /**
     * ID
     */
+    @NotNull(message = "字典ID不能为空",groups = {DictionaryTypeDTO.DeleteDictionaryTypeDTO.class,DictionaryTypeDTO.UpdateDictionaryTypeDTO.class})
     private  Long dictionaryTypeId;
     /**
     * 字典类型
     */
+    @NotBlank(message = "字典类型不能为空",groups = {DictionaryTypeDTO.AddDictionaryTypeDTO.class,DictionaryTypeDTO.UpdateDictionaryTypeDTO.class})
     private  String dictionaryType;
     /**
     * 字典名称
     */
+    @NotBlank(message = "字典名称不能为空",groups = {DictionaryTypeDTO.AddDictionaryTypeDTO.class,DictionaryTypeDTO.UpdateDictionaryTypeDTO.class})
     private  String dictionaryName;
     /**
     * 菜单0层级名称
     */
+    @NotBlank(message = "菜单0层级名称不能为空",groups = {DictionaryTypeDTO.AddDictionaryTypeDTO.class,DictionaryTypeDTO.UpdateDictionaryTypeDTO.class})
     private  String menuZerothName;
     /**
     * 菜单1层级名称
     */
+    @NotBlank(message = "菜单1层级名称不能为空",groups = {DictionaryTypeDTO.AddDictionaryTypeDTO.class,DictionaryTypeDTO.UpdateDictionaryTypeDTO.class})
     private  String menuFirstName;
     /**
     * 菜单2层级名称
     */
+    @NotBlank(message = "菜单2层级名称不能为空",groups = {DictionaryTypeDTO.AddDictionaryTypeDTO.class,DictionaryTypeDTO.UpdateDictionaryTypeDTO.class})
     private  String menuSecondName;
     /**
     * 备注
@@ -64,6 +72,7 @@ public class DictionaryTypeDTO {
     /**
     * 状态:0失效;1生效
     */
+    @NotNull(message = "字典状态不能为空",groups = {DictionaryTypeDTO.AddDictionaryTypeDTO.class,DictionaryTypeDTO.UpdateDictionaryTypeDTO.class})
     private  Integer status;
     /**
     * 删除标记:0未删除;1已删除

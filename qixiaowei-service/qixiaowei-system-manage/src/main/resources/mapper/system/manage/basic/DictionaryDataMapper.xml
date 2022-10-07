@@ -57,6 +57,16 @@
                     and update_time=#{dictionaryData.updateTime}
                 </if>
     </select>
+<!--    根据字典类型ID查询字典数据表-->
+    <select id="selectDictionaryTypeId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO">
+        SELECT
+            dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM dictionary_data
+        WHERE  dictionary_type_id=#{dictionaryTypeId}
+          and delete_flag=0
+        order by sort desc
+    </select>
     <!--新增字典数据表-->
     <insert id="insertDictionaryData" useGeneratedKeys="true" keyProperty="dictionaryDataId">
         INSERT INTO dictionary_data (dictionary_type_id,dictionary_label,dictionary_value,default_flag,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)

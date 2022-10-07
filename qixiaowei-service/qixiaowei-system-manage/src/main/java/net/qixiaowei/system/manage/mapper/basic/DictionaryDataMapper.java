@@ -22,6 +22,15 @@ public interface DictionaryDataMapper{
     DictionaryDataDTO selectDictionaryDataByDictionaryDataId(@Param("dictionaryDataId")Long dictionaryDataId);
 
     /**
+     * 根据字典类型ID查询字典数据表
+     *
+     * @param dictionaryTypeId 字典数据表主键
+     * @return 字典数据表
+     */
+    List<DictionaryDataDTO> selectDictionaryTypeId(@Param("dictionaryTypeId")Long dictionaryTypeId);
+
+
+    /**
     * 查询字典数据表列表
     *
     * @param dictionaryData 字典数据表

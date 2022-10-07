@@ -4,6 +4,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import javax.validation.constraints.NotBlank;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -45,6 +46,11 @@ public class DictionaryDataDTO {
     * 字典标签
     */
     private  String dictionaryLabel;
+
+    /**
+     * 字典名称
+     */
+    private  String dictionaryName;
     /**
     * 字典值
     */
