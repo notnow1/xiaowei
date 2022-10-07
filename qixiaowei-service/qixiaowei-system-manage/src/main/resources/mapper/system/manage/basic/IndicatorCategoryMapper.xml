@@ -171,8 +171,6 @@
     <update id="updateIndicatorCategorys">
         update indicator_category
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="indicator_category_id=case" suffix="end,">
-            </trim>
             <trim prefix="indicator_type=case" suffix="end,">
                 <foreach collection="indicatorCategoryList" item="item" index="index">
                     <if test="item.indicatorType != null">

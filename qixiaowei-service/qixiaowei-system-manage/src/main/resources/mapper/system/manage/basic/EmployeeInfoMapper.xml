@@ -184,8 +184,6 @@
     <update id="updateEmployeeInfos">
         update employee_info
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="employee_info_id=case" suffix="end,">
-            </trim>
             <trim prefix="employee_id=case" suffix="end,">
                 <foreach collection="employeeInfoList" item="item" index="index">
                              <if test="item.employeeId != null">

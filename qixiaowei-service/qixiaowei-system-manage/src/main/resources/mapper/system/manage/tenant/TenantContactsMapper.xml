@@ -154,8 +154,6 @@
     <update id="updateTenantContactss">
         update tenant_contacts
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="tenant_contacts_id=case" suffix="end,">
-            </trim>
             <trim prefix="tenant_id=case" suffix="end,">
                 <foreach collection="tenantContactsList" item="item" index="index">
                              <if test="item.tenantId != null">

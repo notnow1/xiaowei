@@ -180,8 +180,6 @@
     <update id="updateTenants">
         update tenant
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="tenant_id=case" suffix="end,">
-            </trim>
             <trim prefix="tenant_code=case" suffix="end,">
                 <foreach collection="tenantList" item="item" index="index">
                              <if test="item.tenantCode != null and item.tenantCode != ''">

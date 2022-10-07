@@ -172,8 +172,6 @@
     <update id="updateTenantDomainApprovals">
         update tenant_domain_approval
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="tenant_domain_approval_id=case" suffix="end,">
-            </trim>
             <trim prefix="tenant_id=case" suffix="end,">
                 <foreach collection="tenantDomainApprovalList" item="item" index="index">
                              <if test="item.tenantId != null">

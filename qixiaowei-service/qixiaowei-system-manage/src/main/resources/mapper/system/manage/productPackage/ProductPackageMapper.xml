@@ -142,8 +142,6 @@
     <update id="updateProductPackages">
         update product_package
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="product_package_id=case" suffix="end,">
-            </trim>
             <trim prefix="product_package_name=case" suffix="end,">
                 <foreach collection="productPackageList" item="item" index="index">
                              <if test="item.productPackageName != null and item.productPackageName != ''">

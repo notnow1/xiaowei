@@ -227,8 +227,6 @@
     <update id="updateIndustrys">
         update industry
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="industry_id=case" suffix="end,">
-            </trim>
             <trim prefix="parent_industry_id=case" suffix="end,">
                 <foreach collection="industryList" item="item" index="index">
                     <if test="item.parentIndustryId != null and item.parentIndustryId != ''">

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.DictionaryTypeMapper">
+    <!--    查询字典类型表-->
+    <select id="selectDictionaryTypeByDictionaryTypeId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO">
+        SELECT
+        dictionary_type_id, dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM dictionary_type
+        WHERE  dictionary_type_id=#{dictionaryTypeId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询字典类型表列表-->
+    <select id="selectDictionaryTypeList" resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO">
+        SELECT
+        dictionary_type_id, dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM dictionary_type
+        WHERE delete_flag=0
+                <if test="dictionaryType.dictionaryTypeId != null">
+                    and dictionary_type_id=#{dictionaryType.dictionaryTypeId}
+                </if>
+                <if test="dictionaryType.dictionaryType != null and dictionaryType.dictionaryType != ''">
+                    and dictionary_type=#{dictionaryType.dictionaryType}
+                </if>
+                <if test="dictionaryType.dictionaryName != null and dictionaryType.dictionaryName != ''">
+                    and dictionary_name=#{dictionaryType.dictionaryName}
+                </if>
+                <if test="dictionaryType.menuZerothName != null and dictionaryType.menuZerothName != ''">
+                    and menu_zeroth_name=#{dictionaryType.menuZerothName}
+                </if>
+                <if test="dictionaryType.menuFirstName != null and dictionaryType.menuFirstName != ''">
+                    and menu_first_name=#{dictionaryType.menuFirstName}
+                </if>
+                <if test="dictionaryType.menuSecondName != null and dictionaryType.menuSecondName != ''">
+                    and menu_second_name=#{dictionaryType.menuSecondName}
+                </if>
+                <if test="dictionaryType.remark != null and dictionaryType.remark != ''">
+                    and remark=#{dictionaryType.remark}
+                </if>
+                <if test="dictionaryType.status != null">
+                    and status=#{dictionaryType.status}
+                </if>
+                <if test="dictionaryType.deleteFlag != null">
+                    and delete_flag=#{dictionaryType.deleteFlag}
+                </if>
+                <if test="dictionaryType.createBy != null">
+                    and create_by=#{dictionaryType.createBy}
+                </if>
+                <if test="dictionaryType.createTime != null">
+                    and create_time=#{dictionaryType.createTime}
+                </if>
+                <if test="dictionaryType.updateBy != null">
+                    and update_by=#{dictionaryType.updateBy}
+                </if>
+                <if test="dictionaryType.updateTime != null">
+                    and update_time=#{dictionaryType.updateTime}
+                </if>
+    </select>
+    <!--新增字典类型表-->
+    <insert id="insertDictionaryType" useGeneratedKeys="true" keyProperty="dictionaryTypeId">
+        INSERT INTO dictionary_type (dictionary_type,dictionary_name,menu_zeroth_name,menu_first_name,menu_second_name,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{dictionaryType.dictionaryType},#{dictionaryType.dictionaryName},#{dictionaryType.menuZerothName},#{dictionaryType.menuFirstName},#{dictionaryType.menuSecondName},#{dictionaryType.remark},#{dictionaryType.status},#{dictionaryType.deleteFlag},#{dictionaryType.createBy},#{dictionaryType.createTime},#{dictionaryType.updateBy},#{dictionaryType.updateTime})
+    </insert>
+    <!--修改字典类型表-->
+    <update id="updateDictionaryType">
+        UPDATE dictionary_type
+        SET
+                    <if test="dictionaryType.dictionaryType != null and dictionaryType.dictionaryType != ''">
+                        dictionary_type=#{dictionaryType.dictionaryType},
+                    </if>
+                    <if test="dictionaryType.dictionaryName != null and dictionaryType.dictionaryName != ''">
+                        dictionary_name=#{dictionaryType.dictionaryName},
+                    </if>
+                    <if test="dictionaryType.menuZerothName != null and dictionaryType.menuZerothName != ''">
+                        menu_zeroth_name=#{dictionaryType.menuZerothName},
+                    </if>
+                    <if test="dictionaryType.menuFirstName != null and dictionaryType.menuFirstName != ''">
+                        menu_first_name=#{dictionaryType.menuFirstName},
+                    </if>
+                    <if test="dictionaryType.menuSecondName != null and dictionaryType.menuSecondName != ''">
+                        menu_second_name=#{dictionaryType.menuSecondName},
+                    </if>
+                    <if test="dictionaryType.remark != null and dictionaryType.remark != ''">
+                        remark=#{dictionaryType.remark},
+                    </if>
+                    <if test="dictionaryType.status != null">
+                        status=#{dictionaryType.status},
+                    </if>
+                    <if test="dictionaryType.deleteFlag != null">
+                        delete_flag=#{dictionaryType.deleteFlag},
+                    </if>
+                    <if test="dictionaryType.createBy != null">
+                        create_by=#{dictionaryType.createBy},
+                    </if>
+                    <if test="dictionaryType.createTime != null">
+                        create_time=#{dictionaryType.createTime},
+                    </if>
+                    <if test="dictionaryType.updateBy != null">
+                        update_by=#{dictionaryType.updateBy},
+                    </if>
+                    <if test="dictionaryType.updateTime != null">
+                        update_time=#{dictionaryType.updateTime}
+                    </if>
+        WHERE
+                 dictionary_type_id=#{dictionaryType.dictionaryTypeId}
+    </update>
+    <!--逻辑删除字典类型表-->
+    <update id="logicDeleteDictionaryTypeByDictionaryTypeId">
+        UPDATE dictionary_type
+        SET     delete_flag= 1,
+                update_by=#{dictionaryType.updateBy},
+                update_time=#{dictionaryType.updateTime}
+        WHERE
+                dictionary_type_id=#{dictionaryType.dictionaryTypeId}
+    </update>
+    <!--逻辑批量删除字典类型表-->
+    <update id="logicDeleteDictionaryTypeByDictionaryTypeIds">
+        UPDATE dictionary_type
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         dictionary_type_id IN
+            <foreach item="item"
+                     collection="dictionaryTypeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增字典类型表-->
+    <insert id="batchDictionaryType">
+        INSERT INTO dictionary_type (dictionary_type,dictionary_name,menu_zeroth_name,menu_first_name,menu_second_name,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="dictionaryTypes"
+                 separator=",">
+            (#{item.dictionaryType},#{item.dictionaryName},#{item.menuZerothName},#{item.menuFirstName},#{item.menuSecondName},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除字典类型表-->
+    <delete id="deleteDictionaryTypeByDictionaryTypeId">
+        DELETE FROM dictionary_type
+        WHERE  dictionary_type_id=#{dictionaryType}
+
+    </delete>
+    <!--物理批量删除字典类型表-->
+    <delete id="deleteDictionaryTypeByDictionaryTypeIds">
+        DELETE FROM dictionary_type
+        WHERE  dictionary_type_id IN
+            <foreach item="item"
+                     collection="dictionaryTypeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改字典类型表-->
+    <update id="updateDictionaryTypes">
+        update dictionary_type
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="dictionary_type=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.dictionaryType != null and item.dictionaryType != ''">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.dictionaryType}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="dictionary_name=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.dictionaryName != null and item.dictionaryName != ''">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.dictionaryName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="menu_zeroth_name=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.menuZerothName != null and item.menuZerothName != ''">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.menuZerothName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="menu_first_name=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.menuFirstName != null and item.menuFirstName != ''">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.menuFirstName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="menu_second_name=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.menuSecondName != null and item.menuSecondName != ''">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.menuSecondName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="remark=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.remark != null and item.remark != ''">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.remark}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="status=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.status != null">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.status}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="dictionaryTypeList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when dictionary_type_id=#{item.dictionaryTypeId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="dictionaryTypeList" separator="or" item="item" index="index">
+                    dictionary_type_id=#{item.dictionaryTypeId}
+        </foreach>
+    </update>
+</mapper>
+
+

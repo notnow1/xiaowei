@@ -278,8 +278,6 @@
     <update id="updateIndicators">
         update indicator
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="indicator_id=case" suffix="end,">
-            </trim>
             <trim prefix="parent_indicator_id=case" suffix="end,">
                 <foreach collection="indicatorList" item="item" index="index">
                     <if test="item.parentIndicatorId != null">

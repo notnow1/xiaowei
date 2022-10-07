@@ -509,8 +509,6 @@
     <update id="updateDepartments">
         update department
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="department_id=case" suffix="end,">
-            </trim>
             <trim prefix="parent_department_id=case" suffix="end,">
                 <foreach collection="departmentList" item="item" index="index">
                     <if test="item.parentDepartmentId != null">

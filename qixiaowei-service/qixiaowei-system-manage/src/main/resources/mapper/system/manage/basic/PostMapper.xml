@@ -174,8 +174,6 @@
     <update id="updatePosts">
         update post
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="post_id=case" suffix="end,">
-            </trim>
             <trim prefix="post_code=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
                              <if test="item.postCode != null and item.postCode != ''">

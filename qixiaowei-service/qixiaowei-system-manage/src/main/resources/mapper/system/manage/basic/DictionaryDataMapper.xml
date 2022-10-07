@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper">
+    <!--    查询字典数据表-->
+    <select id="selectDictionaryDataByDictionaryDataId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO">
+        SELECT
+        dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM dictionary_data
+        WHERE  dictionary_data_id=#{dictionaryDataId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询字典数据表列表-->
+    <select id="selectDictionaryDataList" resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO">
+        SELECT
+        dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM dictionary_data
+        WHERE delete_flag=0
+                <if test="dictionaryData.dictionaryDataId != null">
+                    and dictionary_data_id=#{dictionaryData.dictionaryDataId}
+                </if>
+                <if test="dictionaryData.dictionaryTypeId != null">
+                    and dictionary_type_id=#{dictionaryData.dictionaryTypeId}
+                </if>
+                <if test="dictionaryData.dictionaryLabel != null and dictionaryData.dictionaryLabel != ''">
+                    and dictionary_label=#{dictionaryData.dictionaryLabel}
+                </if>
+                <if test="dictionaryData.dictionaryValue != null and dictionaryData.dictionaryValue != ''">
+                    and dictionary_value=#{dictionaryData.dictionaryValue}
+                </if>
+                <if test="dictionaryData.defaultFlag != null">
+                    and default_flag=#{dictionaryData.defaultFlag}
+                </if>
+                <if test="dictionaryData.sort != null">
+                    and sort=#{dictionaryData.sort}
+                </if>
+                <if test="dictionaryData.remark != null and dictionaryData.remark != ''">
+                    and remark=#{dictionaryData.remark}
+                </if>
+                <if test="dictionaryData.status != null">
+                    and status=#{dictionaryData.status}
+                </if>
+                <if test="dictionaryData.deleteFlag != null">
+                    and delete_flag=#{dictionaryData.deleteFlag}
+                </if>
+                <if test="dictionaryData.createBy != null">
+                    and create_by=#{dictionaryData.createBy}
+                </if>
+                <if test="dictionaryData.createTime != null">
+                    and create_time=#{dictionaryData.createTime}
+                </if>
+                <if test="dictionaryData.updateBy != null">
+                    and update_by=#{dictionaryData.updateBy}
+                </if>
+                <if test="dictionaryData.updateTime != null">
+                    and update_time=#{dictionaryData.updateTime}
+                </if>
+    </select>
+    <!--新增字典数据表-->
+    <insert id="insertDictionaryData" useGeneratedKeys="true" keyProperty="dictionaryDataId">
+        INSERT INTO dictionary_data (dictionary_type_id,dictionary_label,dictionary_value,default_flag,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{dictionaryData.dictionaryTypeId},#{dictionaryData.dictionaryLabel},#{dictionaryData.dictionaryValue},#{dictionaryData.defaultFlag},#{dictionaryData.sort},#{dictionaryData.remark},#{dictionaryData.status},#{dictionaryData.deleteFlag},#{dictionaryData.createBy},#{dictionaryData.createTime},#{dictionaryData.updateBy},#{dictionaryData.updateTime})
+    </insert>
+    <!--修改字典数据表-->
+    <update id="updateDictionaryData">
+        UPDATE dictionary_data
+        SET
+                    <if test="dictionaryData.dictionaryTypeId != null">
+                        dictionary_type_id=#{dictionaryData.dictionaryTypeId},
+                    </if>
+                    <if test="dictionaryData.dictionaryLabel != null and dictionaryData.dictionaryLabel != ''">
+                        dictionary_label=#{dictionaryData.dictionaryLabel},
+                    </if>
+                    <if test="dictionaryData.dictionaryValue != null and dictionaryData.dictionaryValue != ''">
+                        dictionary_value=#{dictionaryData.dictionaryValue},
+                    </if>
+                    <if test="dictionaryData.defaultFlag != null">
+                        default_flag=#{dictionaryData.defaultFlag},
+                    </if>
+                    <if test="dictionaryData.sort != null">
+                        sort=#{dictionaryData.sort},
+                    </if>
+                    <if test="dictionaryData.remark != null and dictionaryData.remark != ''">
+                        remark=#{dictionaryData.remark},
+                    </if>
+                    <if test="dictionaryData.status != null">
+                        status=#{dictionaryData.status},
+                    </if>
+                    <if test="dictionaryData.deleteFlag != null">
+                        delete_flag=#{dictionaryData.deleteFlag},
+                    </if>
+                    <if test="dictionaryData.createBy != null">
+                        create_by=#{dictionaryData.createBy},
+                    </if>
+                    <if test="dictionaryData.createTime != null">
+                        create_time=#{dictionaryData.createTime},
+                    </if>
+                    <if test="dictionaryData.updateBy != null">
+                        update_by=#{dictionaryData.updateBy},
+                    </if>
+                    <if test="dictionaryData.updateTime != null">
+                        update_time=#{dictionaryData.updateTime}
+                    </if>
+        WHERE
+                 dictionary_data_id=#{dictionaryData.dictionaryDataId}
+    </update>
+    <!--逻辑删除字典数据表-->
+    <update id="logicDeleteDictionaryDataByDictionaryDataId">
+        UPDATE dictionary_data
+        SET     delete_flag= 1,
+                update_by=#{dictionaryData.updateBy},
+                update_time=#{dictionaryData.updateTime}
+        WHERE
+                dictionary_data_id=#{dictionaryData.dictionaryDataId}
+    </update>
+    <!--逻辑批量删除字典数据表-->
+    <update id="logicDeleteDictionaryDataByDictionaryDataIds">
+        UPDATE dictionary_data
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         dictionary_data_id IN
+            <foreach item="item"
+                     collection="dictionaryDataIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增字典数据表-->
+    <insert id="batchDictionaryData">
+        INSERT INTO dictionary_data (dictionary_type_id,dictionary_label,dictionary_value,default_flag,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="dictionaryDatas"
+                 separator=",">
+            (#{item.dictionaryTypeId},#{item.dictionaryLabel},#{item.dictionaryValue},#{item.defaultFlag},#{item.sort},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除字典数据表-->
+    <delete id="deleteDictionaryDataByDictionaryDataId">
+        DELETE FROM dictionary_data
+        WHERE  dictionary_data_id=#{dictionaryData}
+
+    </delete>
+    <!--物理批量删除字典数据表-->
+    <delete id="deleteDictionaryDataByDictionaryDataIds">
+        DELETE FROM dictionary_data
+        WHERE  dictionary_data_id IN
+            <foreach item="item"
+                     collection="dictionaryDataIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改字典数据表-->
+    <update id="updateDictionaryDatas">
+        update dictionary_data
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="dictionary_type_id=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.dictionaryTypeId != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.dictionaryTypeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="dictionary_label=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.dictionaryLabel != null and item.dictionaryLabel != ''">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.dictionaryLabel}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="dictionary_value=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.dictionaryValue != null and item.dictionaryValue != ''">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.dictionaryValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="default_flag=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.defaultFlag != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.defaultFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="remark=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.remark != null and item.remark != ''">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.remark}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="status=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.status != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.status}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="dictionaryDataList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when dictionary_data_id=#{item.dictionaryDataId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="dictionaryDataList" separator="or" item="item" index="index">
+                    dictionary_data_id=#{item.dictionaryDataId}
+        </foreach>
+    </update>
+</mapper>
+
+
