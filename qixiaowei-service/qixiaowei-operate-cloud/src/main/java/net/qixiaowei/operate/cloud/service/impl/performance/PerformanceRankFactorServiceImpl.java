@@ -1,26 +1,23 @@
 package net.qixiaowei.operate.cloud.service.impl.performance;
 
-import java.math.BigDecimal;
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankService;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRankFactor;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceRankFactorMapper;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankFactorService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -100,10 +97,9 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
      * @param performanceRankFactorDtos 需要删除的绩效等级系数主键
      * @return 结果
      */
-
     @Transactional
     @Override
-    public int logicDeletePerformanceRankFactorByPerformanceRankFactorIds(List<PerformanceRankFactorDTO> performanceRankFactorDtos) {
+    public int logicDeletePerformanceRankFactorByPerformanceRankFactorDTO(List<PerformanceRankFactorDTO> performanceRankFactorDtos) {
         List<Long> stringList = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDtos) {
             stringList.add(performanceRankFactorDTO.getPerformanceRankFactorId());
@@ -112,12 +108,23 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
     }
 
     /**
+     * 逻辑批量删除绩效等级系数
+     *
+     * @param performanceRankFactorIds 需要删除的绩效等级系数主键
+     * @return 结果
+     */
+    @Transactional
+    @Override
+    public int logicDeletePerformanceRankFactorByPerformanceRankFactorIds(List<Long> performanceRankFactorIds) {
+        return performanceRankFactorMapper.logicDeletePerformanceRankFactorByPerformanceRankFactorIds(performanceRankFactorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
      * 物理删除绩效等级系数信息
      *
      * @param performanceRankFactorId 绩效等级系数主键
      * @return 结果
      */
-
     @Transactional
     @Override
     public int deletePerformanceRankFactorByPerformanceRankFactorId(Long performanceRankFactorId) {
@@ -244,10 +251,11 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
         List<PerformanceRankFactorDTO> performanceRankFactorBefore
                 = performanceRankFactorMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
         // 交集
-        List<PerformanceRankFactorDTO> updatePerformanceRankFactor = performanceRankFactorBefore.stream().filter(performanceRankFactorDTO ->
-                performanceRankFactorAfter.stream().map(PerformanceRankFactorDTO::getPerformanceRankFactorId)
-                        .collect(Collectors.toList()).contains(performanceRankFactorDTO.getPerformanceRankFactorId())
-        ).collect(Collectors.toList());
+        List<PerformanceRankFactorDTO> updatePerformanceRankFactor =
+                performanceRankFactorAfter.stream().filter(performanceRankFactorDTO ->
+                        performanceRankFactorBefore.stream().map(PerformanceRankFactorDTO::getPerformanceRankFactorId)
+                                .collect(Collectors.toList()).contains(performanceRankFactorDTO.getPerformanceRankFactorId())
+                ).collect(Collectors.toList());
         // 差集 Before中After的补集
         List<PerformanceRankFactorDTO> delPerformanceRankFactor =
                 performanceRankFactorBefore.stream().filter(performanceRankFactorDTO ->
@@ -268,7 +276,7 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
                 updatePerformanceRankFactors(updatePerformanceRankFactor);
             }
             if (StringUtils.isNotEmpty(delPerformanceRankFactor)) {
-                logicDeletePerformanceRankFactorByPerformanceRankFactorIds(delPerformanceRankFactor);
+                logicDeletePerformanceRankFactorByPerformanceRankFactorDTO(delPerformanceRankFactor);
             }
         } catch (ServiceException e) {
             throw new ServiceException(e.toString());

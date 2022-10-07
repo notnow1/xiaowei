@@ -63,10 +63,10 @@ public interface IPerformanceRankService {
     /**
      * 逻辑批量删除绩效等级表
      *
-     * @param PerformanceRankDtos 需要删除的绩效等级表集合
+     * @param PerformanceRankIds 需要删除的绩效等级表集合
      * @return 结果
      */
-    int logicDeletePerformanceRankByPerformanceRankIds(List<PerformanceRankDTO> PerformanceRankDtos);
+    int logicDeletePerformanceRankByPerformanceRankIds(List<Long> PerformanceRankIds);
 
     /**
      * 逻辑删除绩效等级表信息

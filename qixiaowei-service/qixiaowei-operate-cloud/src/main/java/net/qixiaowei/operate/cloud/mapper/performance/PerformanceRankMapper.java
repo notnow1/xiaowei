@@ -110,5 +110,5 @@ public interface PerformanceRankMapper {
      * @param performanceRankIds
      * @return
      */
-    List<Long> selectPerformanceRankFactorIds(List<Long> performanceRankIds);
+    List<Long> selectPerformanceRankFactorIds(@Param("performanceRankIds") List<Long> performanceRankIds);
 }

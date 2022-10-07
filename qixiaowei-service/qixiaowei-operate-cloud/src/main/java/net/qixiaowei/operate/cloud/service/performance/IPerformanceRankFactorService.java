@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.performance;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -71,10 +72,18 @@ public interface IPerformanceRankFactorService {
     /**
      * 逻辑批量删除绩效等级系数
      *
-     * @param PerformanceRankFactorDtos 需要删除的绩效等级系数集合
+     * @param performanceRankFactorDtos 需要删除的绩效等级系数主键
      * @return 结果
      */
-    int logicDeletePerformanceRankFactorByPerformanceRankFactorIds(List<PerformanceRankFactorDTO> PerformanceRankFactorDtos);
+    public int logicDeletePerformanceRankFactorByPerformanceRankFactorDTO(List<PerformanceRankFactorDTO> performanceRankFactorDtos);
+
+    /**
+     * 逻辑批量删除绩效等级系数
+     *
+     * @param PerformanceRankFactorIds 需要删除的绩效等级系数集合
+     * @return 结果
+     */
+    public int logicDeletePerformanceRankFactorByPerformanceRankFactorIds(List<Long> PerformanceRankFactorIds);
 
     /**
      * 逻辑删除绩效等级系数信息

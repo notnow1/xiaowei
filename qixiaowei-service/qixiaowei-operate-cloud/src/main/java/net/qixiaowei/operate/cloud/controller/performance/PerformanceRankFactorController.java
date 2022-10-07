@@ -95,6 +95,6 @@ public class PerformanceRankFactorController extends BaseController {
     @Log(title = "批量删除绩效等级系数", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<PerformanceRankFactorDTO> PerformanceRankFactorDtos) {
-        return toAjax(performanceRankFactorService.logicDeletePerformanceRankFactorByPerformanceRankFactorIds(PerformanceRankFactorDtos));
+        return toAjax(performanceRankFactorService.logicDeletePerformanceRankFactorByPerformanceRankFactorDTO(PerformanceRankFactorDtos));
     }
 }

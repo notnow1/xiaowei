@@ -54,7 +54,10 @@
         WHERE performance_rank_name = #{performanceRankName}
     </select>
     <select id="selectPerformanceRankFactorIds" resultType="java.lang.Long">
-
+        SELECT performance_rank_factor_id FROM performance_rank_factor WHERE performance_rank_id IN
+        <foreach collection="performanceRankIds" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
     <!--新增绩效等级表-->
     <insert id="insertPerformanceRank" useGeneratedKeys="true" keyProperty="performanceRankId">

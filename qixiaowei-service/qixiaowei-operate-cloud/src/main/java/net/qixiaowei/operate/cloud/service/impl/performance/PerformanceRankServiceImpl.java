@@ -118,19 +118,16 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
     /**
      * 逻辑批量删除绩效等级表
      *
-     * @param performanceRankDtos 需要删除的绩效等级表主键
+     * @param performanceRankIds 需要删除的绩效等级表主键
      * @return 结果
      */
     @Transactional
     @Override
-    public int logicDeletePerformanceRankByPerformanceRankIds(List<PerformanceRankDTO> performanceRankDtos) {
-        List<Long> performanceRankIds = new ArrayList<>();
-        for (PerformanceRankDTO performanceRankDTO : performanceRankDtos) {
-            performanceRankIds.add(performanceRankDTO.getPerformanceRankId());
-        }
+    public int logicDeletePerformanceRankByPerformanceRankIds(List<Long> performanceRankIds) {
         List<Long> performanceRankFactorIds = performanceRankMapper.selectPerformanceRankFactorIds(performanceRankIds);
-//        performanceRankFactorService.deletePerformanceRankFactorByPerformanceRankFactorIds(performanceRankFactorIds);
-
+        if (StringUtils.isNotEmpty(performanceRankFactorIds)) {
+            performanceRankFactorService.logicDeletePerformanceRankFactorByPerformanceRankFactorIds(performanceRankFactorIds);
+        }
         return performanceRankMapper.logicDeletePerformanceRankByPerformanceRankIds(performanceRankIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -155,9 +152,9 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
     @Transactional
     @Override
     public int logicDeletePerformanceRankByPerformanceRankId(PerformanceRankDTO performanceRankDTO) {
-        PerformanceRank performanceRank = new PerformanceRank();
-        BeanUtils.copyProperties(performanceRankDTO, performanceRank);
-        return performanceRankMapper.logicDeletePerformanceRankByPerformanceRankId(performanceRank, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        List<Long> performanceIds = new ArrayList<>();
+        performanceIds.add(performanceRankDTO.getPerformanceRankId());
+        return logicDeletePerformanceRankByPerformanceRankIds(performanceIds);
     }
 
     /**

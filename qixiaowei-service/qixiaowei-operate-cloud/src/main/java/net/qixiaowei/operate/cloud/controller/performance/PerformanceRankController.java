@@ -117,7 +117,7 @@ public class PerformanceRankController extends BaseController {
 //    @RequiresPermissions("operate:cloud:performanceRank:removes")
     @Log(title = "批量删除绩效等级表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<PerformanceRankDTO> PerformanceRankDtos) {
-        return toAjax(performanceRankService.logicDeletePerformanceRankByPerformanceRankIds(PerformanceRankDtos));
+    public AjaxResult removes(@RequestBody List<Long> PerformanceRankIds) {
+        return toAjax(performanceRankService.logicDeletePerformanceRankByPerformanceRankIds(PerformanceRankIds));
     }
 }
