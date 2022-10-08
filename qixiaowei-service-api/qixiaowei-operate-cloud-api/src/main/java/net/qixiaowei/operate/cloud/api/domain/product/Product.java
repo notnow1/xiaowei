@@ -5,6 +5,8 @@ package net.qixiaowei.operate.cloud.api.domain.product;
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -57,7 +59,7 @@ public class Product extends BaseEntity {
      /**
      * 目录价
      */
-     private  BigDecimal  listPrice;
+     private BigDecimal listPrice;
      /**
      * 上架标记：0下架;1上架
      */

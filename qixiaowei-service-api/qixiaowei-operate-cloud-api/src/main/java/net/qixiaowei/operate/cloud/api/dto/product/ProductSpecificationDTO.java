@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.api.dto.product;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -48,7 +49,7 @@ public class ProductSpecificationDTO {
     /**
     * 目录价,单位元
     */
-    private  BigDecimal listPrice;
+    private BigDecimal listPrice;
     /**
     * 删除标记:0未删除;1已删除
     */

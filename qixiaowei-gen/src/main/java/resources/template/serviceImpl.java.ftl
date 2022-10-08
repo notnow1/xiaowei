@@ -57,7 +57,6 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     * @param ${entity?uncap_first}DTO ${table.comment!}
     * @return 结果
     */
-    @Transactional
     @Override
     public int insert${entity}(${entity}DTO ${entity?uncap_first}DTO){
     ${entity} ${entity?uncap_first}=new ${entity}();
@@ -76,7 +75,6 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     * @param ${entity?uncap_first}DTO ${table.comment!}
     * @return 结果
     */
-    @Transactional
     @Override
     public int update${entity}(${entity}DTO ${entity?uncap_first}DTO)
     {
@@ -93,8 +91,6 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     * @param ${entity?uncap_first}Dtos 需要删除的${table.comment!}主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<${entity}DTO> ${entity?uncap_first}Dtos){
             List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>> stringList = new ArrayList();
@@ -110,8 +106,6 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     * @param <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list> ${table.comment!}主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list> <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>)
     {
@@ -124,13 +118,14 @@ public class ${entity}ServiceImpl implements I${entity}Service{
      * @param  ${entity?uncap_first}DTO ${table.comment!}
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity}DTO ${entity?uncap_first}DTO)
      {
      ${entity} ${entity?uncap_first}=new ${entity}();
      BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
-     return ${entity?uncap_first}Mapper.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first},SecurityUtils.getUserId(),DateUtils.getNowDate());
+     ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+     ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
+     return ${entity?uncap_first}Mapper.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first});
      }
 
      /**
@@ -139,7 +134,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
      * @param  ${entity?uncap_first}DTO ${table.comment!}
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity}DTO ${entity?uncap_first}DTO)
      {
@@ -153,7 +148,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
      * @param ${entity?uncap_first}Dtos 需要删除的${table.comment!}主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(List<${entity}DTO> ${entity?uncap_first}Dtos){
      List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>> stringList = new ArrayList();
@@ -168,7 +163,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     *
     * @param ${entity?uncap_first}Dtos ${table.comment!}对象
     */
-    @Transactional
+    
     public int insert${entity}s(List<${entity}DTO> ${entity?uncap_first}Dtos){
       List<${entity}> ${entity?uncap_first}List = new ArrayList();
 
@@ -190,7 +185,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     *
     * @param ${entity?uncap_first}Dtos ${table.comment!}对象
     */
-    @Transactional
+    
     public int update${entity}s(List<${entity}DTO> ${entity?uncap_first}Dtos){
      List<${entity}> ${entity?uncap_first}List = new ArrayList();
 

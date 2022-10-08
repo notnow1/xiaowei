@@ -58,7 +58,7 @@ public interface ${entity}Mapper{
     * @param ${entity?uncap_first}
     * @return 结果
     */
-    int logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(@Param("${entity?uncap_first}")${entity} ${entity?uncap_first},@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(@Param("${entity?uncap_first}")${entity} ${entity?uncap_first});
 
     /**
     * 逻辑批量删除${table.comment!}

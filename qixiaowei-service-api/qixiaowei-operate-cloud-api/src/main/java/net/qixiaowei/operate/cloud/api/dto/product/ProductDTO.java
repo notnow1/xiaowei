@@ -1,9 +1,11 @@
 package net.qixiaowei.operate.cloud.api.dto.product;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -72,7 +74,7 @@ public class ProductDTO {
     /**
     * 目录价
     */
-    private  BigDecimal listPrice;
+    private BigDecimal listPrice;
     /**
     * 上架标记：0下架;1上架
     */
@@ -99,6 +101,24 @@ public class ProductDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
+
+    /**
+     * 产品规格表集合
+     */
+    private List<ProductSpecificationDTO> productSpecificationDTOList;
+    /**
+     * 产品规格数据表集合
+     */
+    private List<ProductSpecificationDataDTO> productSpecificationDataDTOList;
+
+    /**
+     * 产品规格参数表集合
+     */
+    private List<ProductSpecificationParamDTO> productSpecificationParamDTOList;
+    /**
+     * 产品文件表集合
+     */
+    private List<ProductFileDTO> productFileDTOList;
 
 }
 
