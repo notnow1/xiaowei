@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.product.ProductSpecificationDataMapper">
+    <!--    查询产品规格数据表-->
+    <select id="selectProductSpecificationDataByProductSpecificationDataId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationDataDTO">
+        SELECT
+        product_specification_data_id, product_id, product_specification_id, product_specification_param_id, value, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_specification_data
+        WHERE  product_specification_data_id=#{productSpecificationDataId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询产品规格数据表列表-->
+    <select id="selectProductSpecificationDataList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationDataDTO">
+        SELECT
+        product_specification_data_id, product_id, product_specification_id, product_specification_param_id, value, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_specification_data
+        WHERE delete_flag=0
+                <if test="productSpecificationData.productSpecificationDataId != null">
+                    and product_specification_data_id=#{productSpecificationData.productSpecificationDataId}
+                </if>
+                <if test="productSpecificationData.productId != null">
+                    and product_id=#{productSpecificationData.productId}
+                </if>
+                <if test="productSpecificationData.productSpecificationId != null">
+                    and product_specification_id=#{productSpecificationData.productSpecificationId}
+                </if>
+                <if test="productSpecificationData.productSpecificationParamId != null">
+                    and product_specification_param_id=#{productSpecificationData.productSpecificationParamId}
+                </if>
+                <if test="productSpecificationData.value != null and productSpecificationData.value != ''">
+                    and value=#{productSpecificationData.value}
+                </if>
+                <if test="productSpecificationData.deleteFlag != null">
+                    and delete_flag=#{productSpecificationData.deleteFlag}
+                </if>
+                <if test="productSpecificationData.createBy != null">
+                    and create_by=#{productSpecificationData.createBy}
+                </if>
+                <if test="productSpecificationData.createTime != null">
+                    and create_time=#{productSpecificationData.createTime}
+                </if>
+                <if test="productSpecificationData.updateBy != null">
+                    and update_by=#{productSpecificationData.updateBy}
+                </if>
+                <if test="productSpecificationData.updateTime != null">
+                    and update_time=#{productSpecificationData.updateTime}
+                </if>
+    </select>
+    <!--新增产品规格数据表-->
+    <insert id="insertProductSpecificationData" useGeneratedKeys="true" keyProperty="productSpecificationDataId">
+        INSERT INTO product_specification_data (product_id,product_specification_id,product_specification_param_id,value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{productSpecificationData.productId},#{productSpecificationData.productSpecificationId},#{productSpecificationData.productSpecificationParamId},#{productSpecificationData.value},#{productSpecificationData.deleteFlag},#{productSpecificationData.createBy},#{productSpecificationData.createTime},#{productSpecificationData.updateBy},#{productSpecificationData.updateTime})
+    </insert>
+    <!--修改产品规格数据表-->
+    <update id="updateProductSpecificationData">
+        UPDATE product_specification_data
+        SET
+                    <if test="productSpecificationData.productId != null">
+                        product_id=#{productSpecificationData.productId},
+                    </if>
+                    <if test="productSpecificationData.productSpecificationId != null">
+                        product_specification_id=#{productSpecificationData.productSpecificationId},
+                    </if>
+                    <if test="productSpecificationData.productSpecificationParamId != null">
+                        product_specification_param_id=#{productSpecificationData.productSpecificationParamId},
+                    </if>
+                    <if test="productSpecificationData.value != null and productSpecificationData.value != ''">
+                        value=#{productSpecificationData.value},
+                    </if>
+                    <if test="productSpecificationData.deleteFlag != null">
+                        delete_flag=#{productSpecificationData.deleteFlag},
+                    </if>
+                    <if test="productSpecificationData.createBy != null">
+                        create_by=#{productSpecificationData.createBy},
+                    </if>
+                    <if test="productSpecificationData.createTime != null">
+                        create_time=#{productSpecificationData.createTime},
+                    </if>
+                    <if test="productSpecificationData.updateBy != null">
+                        update_by=#{productSpecificationData.updateBy},
+                    </if>
+                    <if test="productSpecificationData.updateTime != null">
+                        update_time=#{productSpecificationData.updateTime}
+                    </if>
+        WHERE
+                 product_specification_data_id=#{productSpecificationData.productSpecificationDataId}
+    </update>
+    <!--逻辑删除产品规格数据表-->
+    <update id="logicDeleteProductSpecificationDataByProductSpecificationDataId">
+        UPDATE product_specification_data
+        SET     delete_flag= 1,
+                update_by=#{productSpecificationData.updateBy},
+                update_time=#{productSpecificationData.updateTime}
+        WHERE
+                product_specification_data_id=#{productSpecificationData.productSpecificationDataId}
+    </update>
+    <!--逻辑批量删除产品规格数据表-->
+    <update id="logicDeleteProductSpecificationDataByProductSpecificationDataIds">
+        UPDATE product_specification_data
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         product_specification_data_id IN
+            <foreach item="item"
+                     collection="productSpecificationDataIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增产品规格数据表-->
+    <insert id="batchProductSpecificationData">
+        INSERT INTO product_specification_data (product_id,product_specification_id,product_specification_param_id,value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="productSpecificationDatas"
+                 separator=",">
+            (#{item.productId},#{item.productSpecificationId},#{item.productSpecificationParamId},#{item.value},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除产品规格数据表-->
+    <delete id="deleteProductSpecificationDataByProductSpecificationDataId">
+        DELETE FROM product_specification_data
+        WHERE  product_specification_data_id=#{productSpecificationData}
+
+    </delete>
+    <!--物理批量删除产品规格数据表-->
+    <delete id="deleteProductSpecificationDataByProductSpecificationDataIds">
+        DELETE FROM product_specification_data
+        WHERE  product_specification_data_id IN
+            <foreach item="item"
+                     collection="productSpecificationDataIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改产品规格数据表-->
+    <update id="updateProductSpecificationDatas">
+        update product_specification_data
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="product_id=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.productId != null">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.productId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_specification_id=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.productSpecificationId != null">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.productSpecificationId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_specification_param_id=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.productSpecificationParamId != null">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.productSpecificationParamId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="value=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.value != null and item.value != ''">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.value}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="productSpecificationDataList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when product_specification_data_id=#{item.productSpecificationDataId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="productSpecificationDataList" separator="or" item="item" index="index">
+                    product_specification_data_id=#{item.productSpecificationDataId}
+        </foreach>
+    </update>
+</mapper>
+
+

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.product.ProductSpecificationParamMapper">
+    <!--    查询产品规格参数表-->
+    <select id="selectProductSpecificationParamByProductSpecificationParamId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationParamDTO">
+        SELECT
+        product_specification_param_id, product_id, specification_param_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_specification_param
+        WHERE  product_specification_param_id=#{productSpecificationParamId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询产品规格参数表列表-->
+    <select id="selectProductSpecificationParamList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationParamDTO">
+        SELECT
+        product_specification_param_id, product_id, specification_param_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_specification_param
+        WHERE delete_flag=0
+                <if test="productSpecificationParam.productSpecificationParamId != null">
+                    and product_specification_param_id=#{productSpecificationParam.productSpecificationParamId}
+                </if>
+                <if test="productSpecificationParam.productId != null">
+                    and product_id=#{productSpecificationParam.productId}
+                </if>
+                <if test="productSpecificationParam.specificationParamName != null and productSpecificationParam.specificationParamName != ''">
+                    and specification_param_name=#{productSpecificationParam.specificationParamName}
+                </if>
+                <if test="productSpecificationParam.sort != null">
+                    and sort=#{productSpecificationParam.sort}
+                </if>
+                <if test="productSpecificationParam.deleteFlag != null">
+                    and delete_flag=#{productSpecificationParam.deleteFlag}
+                </if>
+                <if test="productSpecificationParam.createBy != null">
+                    and create_by=#{productSpecificationParam.createBy}
+                </if>
+                <if test="productSpecificationParam.createTime != null">
+                    and create_time=#{productSpecificationParam.createTime}
+                </if>
+                <if test="productSpecificationParam.updateBy != null">
+                    and update_by=#{productSpecificationParam.updateBy}
+                </if>
+                <if test="productSpecificationParam.updateTime != null">
+                    and update_time=#{productSpecificationParam.updateTime}
+                </if>
+    </select>
+    <!--新增产品规格参数表-->
+    <insert id="insertProductSpecificationParam" useGeneratedKeys="true" keyProperty="productSpecificationParamId">
+        INSERT INTO product_specification_param (product_id,specification_param_name,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{productSpecificationParam.productId},#{productSpecificationParam.specificationParamName},#{productSpecificationParam.sort},#{productSpecificationParam.deleteFlag},#{productSpecificationParam.createBy},#{productSpecificationParam.createTime},#{productSpecificationParam.updateBy},#{productSpecificationParam.updateTime})
+    </insert>
+    <!--修改产品规格参数表-->
+    <update id="updateProductSpecificationParam">
+        UPDATE product_specification_param
+        SET
+                    <if test="productSpecificationParam.productId != null">
+                        product_id=#{productSpecificationParam.productId},
+                    </if>
+                    <if test="productSpecificationParam.specificationParamName != null and productSpecificationParam.specificationParamName != ''">
+                        specification_param_name=#{productSpecificationParam.specificationParamName},
+                    </if>
+                    <if test="productSpecificationParam.sort != null">
+                        sort=#{productSpecificationParam.sort},
+                    </if>
+                    <if test="productSpecificationParam.deleteFlag != null">
+                        delete_flag=#{productSpecificationParam.deleteFlag},
+                    </if>
+                    <if test="productSpecificationParam.createBy != null">
+                        create_by=#{productSpecificationParam.createBy},
+                    </if>
+                    <if test="productSpecificationParam.createTime != null">
+                        create_time=#{productSpecificationParam.createTime},
+                    </if>
+                    <if test="productSpecificationParam.updateBy != null">
+                        update_by=#{productSpecificationParam.updateBy},
+                    </if>
+                    <if test="productSpecificationParam.updateTime != null">
+                        update_time=#{productSpecificationParam.updateTime}
+                    </if>
+        WHERE
+                 product_specification_param_id=#{productSpecificationParam.productSpecificationParamId}
+    </update>
+    <!--逻辑删除产品规格参数表-->
+    <update id="logicDeleteProductSpecificationParamByProductSpecificationParamId">
+        UPDATE product_specification_param
+        SET     delete_flag= 1,
+                update_by=#{productSpecificationParam.updateBy},
+                update_time=#{productSpecificationParam.updateTime}
+        WHERE
+                product_specification_param_id=#{productSpecificationParam.productSpecificationParamId}
+    </update>
+    <!--逻辑批量删除产品规格参数表-->
+    <update id="logicDeleteProductSpecificationParamByProductSpecificationParamIds">
+        UPDATE product_specification_param
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         product_specification_param_id IN
+            <foreach item="item"
+                     collection="productSpecificationParamIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增产品规格参数表-->
+    <insert id="batchProductSpecificationParam">
+        INSERT INTO product_specification_param (product_id,specification_param_name,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="productSpecificationParams"
+                 separator=",">
+            (#{item.productId},#{item.specificationParamName},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除产品规格参数表-->
+    <delete id="deleteProductSpecificationParamByProductSpecificationParamId">
+        DELETE FROM product_specification_param
+        WHERE  product_specification_param_id=#{productSpecificationParam}
+
+    </delete>
+    <!--物理批量删除产品规格参数表-->
+    <delete id="deleteProductSpecificationParamByProductSpecificationParamIds">
+        DELETE FROM product_specification_param
+        WHERE  product_specification_param_id IN
+            <foreach item="item"
+                     collection="productSpecificationParamIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改产品规格参数表-->
+    <update id="updateProductSpecificationParams">
+        update product_specification_param
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="product_id=case" suffix="end,">
+                        <foreach collection="productSpecificationParamList" item="item" index="index">
+                                <if test="item.productId != null">
+                                    when product_specification_param_id=#{item.productSpecificationParamId} then #{item.productId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="specification_param_name=case" suffix="end,">
+                        <foreach collection="productSpecificationParamList" item="item" index="index">
+                                <if test="item.specificationParamName != null and item.specificationParamName != ''">
+                                    when product_specification_param_id=#{item.productSpecificationParamId} then #{item.specificationParamName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="productSpecificationParamList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when product_specification_param_id=#{item.productSpecificationParamId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="productSpecificationParamList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when product_specification_param_id=#{item.productSpecificationParamId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="productSpecificationParamList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when product_specification_param_id=#{item.productSpecificationParamId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="productSpecificationParamList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when product_specification_param_id=#{item.productSpecificationParamId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="productSpecificationParamList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when product_specification_param_id=#{item.productSpecificationParamId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="productSpecificationParamList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when product_specification_param_id=#{item.productSpecificationParamId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="productSpecificationParamList" separator="or" item="item" index="index">
+                    product_specification_param_id=#{item.productSpecificationParamId}
+        </foreach>
+    </update>
+</mapper>
+
+

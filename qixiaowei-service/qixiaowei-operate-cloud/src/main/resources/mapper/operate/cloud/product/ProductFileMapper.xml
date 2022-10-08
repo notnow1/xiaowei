@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.product.ProductFileMapper">
+    <!--    查询产品文件表-->
+    <select id="selectProductFileByProductFileId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductFileDTO">
+        SELECT
+        product_file_id, product_id, product_file_name, product_file_format, product_file_size, product_file_path, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_file
+        WHERE  product_file_id=#{productFileId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询产品文件表列表-->
+    <select id="selectProductFileList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductFileDTO">
+        SELECT
+        product_file_id, product_id, product_file_name, product_file_format, product_file_size, product_file_path, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_file
+        WHERE delete_flag=0
+                <if test="productFile.productFileId != null">
+                    and product_file_id=#{productFile.productFileId}
+                </if>
+                <if test="productFile.productId != null">
+                    and product_id=#{productFile.productId}
+                </if>
+                <if test="productFile.productFileName != null and productFile.productFileName != ''">
+                    and product_file_name=#{productFile.productFileName}
+                </if>
+                <if test="productFile.productFileFormat != null and productFile.productFileFormat != ''">
+                    and product_file_format=#{productFile.productFileFormat}
+                </if>
+                <if test="productFile.productFileSize != null">
+                    and product_file_size=#{productFile.productFileSize}
+                </if>
+                <if test="productFile.productFilePath != null and productFile.productFilePath != ''">
+                    and product_file_path=#{productFile.productFilePath}
+                </if>
+                <if test="productFile.sort != null">
+                    and sort=#{productFile.sort}
+                </if>
+                <if test="productFile.deleteFlag != null">
+                    and delete_flag=#{productFile.deleteFlag}
+                </if>
+                <if test="productFile.createBy != null">
+                    and create_by=#{productFile.createBy}
+                </if>
+                <if test="productFile.createTime != null">
+                    and create_time=#{productFile.createTime}
+                </if>
+                <if test="productFile.updateBy != null">
+                    and update_by=#{productFile.updateBy}
+                </if>
+                <if test="productFile.updateTime != null">
+                    and update_time=#{productFile.updateTime}
+                </if>
+    </select>
+    <!--新增产品文件表-->
+    <insert id="insertProductFile" useGeneratedKeys="true" keyProperty="productFileId">
+        INSERT INTO product_file (product_id,product_file_name,product_file_format,product_file_size,product_file_path,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{productFile.productId},#{productFile.productFileName},#{productFile.productFileFormat},#{productFile.productFileSize},#{productFile.productFilePath},#{productFile.sort},#{productFile.deleteFlag},#{productFile.createBy},#{productFile.createTime},#{productFile.updateBy},#{productFile.updateTime})
+    </insert>
+    <!--修改产品文件表-->
+    <update id="updateProductFile">
+        UPDATE product_file
+        SET
+                    <if test="productFile.productId != null">
+                        product_id=#{productFile.productId},
+                    </if>
+                    <if test="productFile.productFileName != null and productFile.productFileName != ''">
+                        product_file_name=#{productFile.productFileName},
+                    </if>
+                    <if test="productFile.productFileFormat != null and productFile.productFileFormat != ''">
+                        product_file_format=#{productFile.productFileFormat},
+                    </if>
+                    <if test="productFile.productFileSize != null">
+                        product_file_size=#{productFile.productFileSize},
+                    </if>
+                    <if test="productFile.productFilePath != null and productFile.productFilePath != ''">
+                        product_file_path=#{productFile.productFilePath},
+                    </if>
+                    <if test="productFile.sort != null">
+                        sort=#{productFile.sort},
+                    </if>
+                    <if test="productFile.deleteFlag != null">
+                        delete_flag=#{productFile.deleteFlag},
+                    </if>
+                    <if test="productFile.createBy != null">
+                        create_by=#{productFile.createBy},
+                    </if>
+                    <if test="productFile.createTime != null">
+                        create_time=#{productFile.createTime},
+                    </if>
+                    <if test="productFile.updateBy != null">
+                        update_by=#{productFile.updateBy},
+                    </if>
+                    <if test="productFile.updateTime != null">
+                        update_time=#{productFile.updateTime}
+                    </if>
+        WHERE
+                 product_file_id=#{productFile.productFileId}
+    </update>
+    <!--逻辑删除产品文件表-->
+    <update id="logicDeleteProductFileByProductFileId">
+        UPDATE product_file
+        SET     delete_flag= 1,
+                update_by=#{productFile.updateBy},
+                update_time=#{productFile.updateTime}
+        WHERE
+                product_file_id=#{productFile.productFileId}
+    </update>
+    <!--逻辑批量删除产品文件表-->
+    <update id="logicDeleteProductFileByProductFileIds">
+        UPDATE product_file
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         product_file_id IN
+            <foreach item="item"
+                     collection="productFileIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增产品文件表-->
+    <insert id="batchProductFile">
+        INSERT INTO product_file (product_id,product_file_name,product_file_format,product_file_size,product_file_path,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="productFiles"
+                 separator=",">
+            (#{item.productId},#{item.productFileName},#{item.productFileFormat},#{item.productFileSize},#{item.productFilePath},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除产品文件表-->
+    <delete id="deleteProductFileByProductFileId">
+        DELETE FROM product_file
+        WHERE  product_file_id=#{productFile}
+
+    </delete>
+    <!--物理批量删除产品文件表-->
+    <delete id="deleteProductFileByProductFileIds">
+        DELETE FROM product_file
+        WHERE  product_file_id IN
+            <foreach item="item"
+                     collection="productFileIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改产品文件表-->
+    <update id="updateProductFiles">
+        update product_file
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="product_id=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.productId != null">
+                                    when product_file_id=#{item.productFileId} then #{item.productId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_file_name=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.productFileName != null and item.productFileName != ''">
+                                    when product_file_id=#{item.productFileId} then #{item.productFileName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_file_format=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.productFileFormat != null and item.productFileFormat != ''">
+                                    when product_file_id=#{item.productFileId} then #{item.productFileFormat}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_file_size=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.productFileSize != null">
+                                    when product_file_id=#{item.productFileId} then #{item.productFileSize}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_file_path=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.productFilePath != null and item.productFilePath != ''">
+                                    when product_file_id=#{item.productFileId} then #{item.productFilePath}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when product_file_id=#{item.productFileId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when product_file_id=#{item.productFileId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when product_file_id=#{item.productFileId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when product_file_id=#{item.productFileId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when product_file_id=#{item.productFileId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="productFileList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when product_file_id=#{item.productFileId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="productFileList" separator="or" item="item" index="index">
+                    product_file_id=#{item.productFileId}
+        </foreach>
+    </update>
+</mapper>
+
+

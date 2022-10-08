@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.product.ProductUnitMapper">
+    <!--    查询产品单位表-->
+    <select id="selectProductUnitByProductUnitId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO">
+        SELECT
+        product_unit_id, product_unit_code, product_unit_name, reserve_digit, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_unit
+        WHERE  product_unit_id=#{productUnitId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询产品单位表列表-->
+    <select id="selectProductUnitList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO">
+        SELECT
+        product_unit_id, product_unit_code, product_unit_name, reserve_digit, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_unit
+        WHERE delete_flag=0
+                <if test="productUnit.productUnitId != null">
+                    and product_unit_id=#{productUnit.productUnitId}
+                </if>
+                <if test="productUnit.productUnitCode != null and productUnit.productUnitCode != ''">
+                    and product_unit_code=#{productUnit.productUnitCode}
+                </if>
+                <if test="productUnit.productUnitName != null and productUnit.productUnitName != ''">
+                    and product_unit_name=#{productUnit.productUnitName}
+                </if>
+                <if test="productUnit.reserveDigit != null">
+                    and reserve_digit=#{productUnit.reserveDigit}
+                </if>
+                <if test="productUnit.deleteFlag != null">
+                    and delete_flag=#{productUnit.deleteFlag}
+                </if>
+                <if test="productUnit.createBy != null">
+                    and create_by=#{productUnit.createBy}
+                </if>
+                <if test="productUnit.createTime != null">
+                    and create_time=#{productUnit.createTime}
+                </if>
+                <if test="productUnit.updateBy != null">
+                    and update_by=#{productUnit.updateBy}
+                </if>
+                <if test="productUnit.updateTime != null">
+                    and update_time=#{productUnit.updateTime}
+                </if>
+    </select>
+    <!--新增产品单位表-->
+    <insert id="insertProductUnit" useGeneratedKeys="true" keyProperty="productUnitId">
+        INSERT INTO product_unit (product_unit_code,product_unit_name,reserve_digit,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{productUnit.productUnitCode},#{productUnit.productUnitName},#{productUnit.reserveDigit},#{productUnit.deleteFlag},#{productUnit.createBy},#{productUnit.createTime},#{productUnit.updateBy},#{productUnit.updateTime})
+    </insert>
+    <!--修改产品单位表-->
+    <update id="updateProductUnit">
+        UPDATE product_unit
+        SET
+                    <if test="productUnit.productUnitCode != null and productUnit.productUnitCode != ''">
+                        product_unit_code=#{productUnit.productUnitCode},
+                    </if>
+                    <if test="productUnit.productUnitName != null and productUnit.productUnitName != ''">
+                        product_unit_name=#{productUnit.productUnitName},
+                    </if>
+                    <if test="productUnit.reserveDigit != null">
+                        reserve_digit=#{productUnit.reserveDigit},
+                    </if>
+                    <if test="productUnit.deleteFlag != null">
+                        delete_flag=#{productUnit.deleteFlag},
+                    </if>
+                    <if test="productUnit.createBy != null">
+                        create_by=#{productUnit.createBy},
+                    </if>
+                    <if test="productUnit.createTime != null">
+                        create_time=#{productUnit.createTime},
+                    </if>
+                    <if test="productUnit.updateBy != null">
+                        update_by=#{productUnit.updateBy},
+                    </if>
+                    <if test="productUnit.updateTime != null">
+                        update_time=#{productUnit.updateTime}
+                    </if>
+        WHERE
+                 product_unit_id=#{productUnit.productUnitId}
+    </update>
+    <!--逻辑删除产品单位表-->
+    <update id="logicDeleteProductUnitByProductUnitId">
+        UPDATE product_unit
+        SET     delete_flag= 1,
+                update_by=#{productUnit.updateBy},
+                update_time=#{productUnit.updateTime}
+        WHERE
+                product_unit_id=#{productUnit.productUnitId}
+    </update>
+    <!--逻辑批量删除产品单位表-->
+    <update id="logicDeleteProductUnitByProductUnitIds">
+        UPDATE product_unit
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         product_unit_id IN
+            <foreach item="item"
+                     collection="productUnitIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增产品单位表-->
+    <insert id="batchProductUnit">
+        INSERT INTO product_unit (product_unit_code,product_unit_name,reserve_digit,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="productUnits"
+                 separator=",">
+            (#{item.productUnitCode},#{item.productUnitName},#{item.reserveDigit},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除产品单位表-->
+    <delete id="deleteProductUnitByProductUnitId">
+        DELETE FROM product_unit
+        WHERE  product_unit_id=#{productUnit}
+
+    </delete>
+    <!--物理批量删除产品单位表-->
+    <delete id="deleteProductUnitByProductUnitIds">
+        DELETE FROM product_unit
+        WHERE  product_unit_id IN
+            <foreach item="item"
+                     collection="productUnitIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改产品单位表-->
+    <update id="updateProductUnits">
+        update product_unit
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="product_unit_code=case" suffix="end,">
+                        <foreach collection="productUnitList" item="item" index="index">
+                                <if test="item.productUnitCode != null and item.productUnitCode != ''">
+                                    when product_unit_id=#{item.productUnitId} then #{item.productUnitCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_unit_name=case" suffix="end,">
+                        <foreach collection="productUnitList" item="item" index="index">
+                                <if test="item.productUnitName != null and item.productUnitName != ''">
+                                    when product_unit_id=#{item.productUnitId} then #{item.productUnitName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="reserve_digit=case" suffix="end,">
+                        <foreach collection="productUnitList" item="item" index="index">
+                                <if test="item.reserveDigit != null">
+                                    when product_unit_id=#{item.productUnitId} then #{item.reserveDigit}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="productUnitList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when product_unit_id=#{item.productUnitId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="productUnitList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when product_unit_id=#{item.productUnitId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="productUnitList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when product_unit_id=#{item.productUnitId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="productUnitList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when product_unit_id=#{item.productUnitId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="productUnitList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when product_unit_id=#{item.productUnitId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="productUnitList" separator="or" item="item" index="index">
+                    product_unit_id=#{item.productUnitId}
+        </foreach>
+    </update>
+</mapper>
+
+
