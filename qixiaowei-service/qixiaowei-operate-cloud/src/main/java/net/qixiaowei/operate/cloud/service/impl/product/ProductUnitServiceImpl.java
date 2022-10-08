@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.service.impl.product;
 
 import java.util.List;
+
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -62,6 +64,10 @@ public class ProductUnitServiceImpl implements IProductUnitService{
     public int insertProductUnit(ProductUnitDTO productUnitDTO){
     ProductUnit productUnit=new ProductUnit();
     BeanUtils.copyProperties(productUnitDTO,productUnit);
+    ProductUnitDTO productUnitDTO1 = productUnitMapper.selectProductUnitByProductUnitCode(productUnitDTO.getProductUnitCode());
+    if (null != productUnitDTO1){
+        throw new ServiceException("产品单位编码已存在！");
+    }
     productUnit.setCreateBy(SecurityUtils.getUserId());
     productUnit.setCreateTime(DateUtils.getNowDate());
     productUnit.setUpdateTime(DateUtils.getNowDate());
@@ -97,6 +103,7 @@ public class ProductUnitServiceImpl implements IProductUnitService{
     @Transactional
     @Override
     public int logicDeleteProductUnitByProductUnitIds(List<ProductUnitDTO> productUnitDtos){
+        //todo 是否被引用
             List<Long> stringList = new ArrayList();
             for (ProductUnitDTO productUnitDTO : productUnitDtos) {
                 stringList.add(productUnitDTO.getProductUnitId());
@@ -130,6 +137,8 @@ public class ProductUnitServiceImpl implements IProductUnitService{
      {
      ProductUnit productUnit=new ProductUnit();
      BeanUtils.copyProperties(productUnitDTO,productUnit);
+     //todo 是否被引用
+
      return productUnitMapper.logicDeleteProductUnitByProductUnitId(productUnit,SecurityUtils.getUserId(),DateUtils.getNowDate());
      }
 

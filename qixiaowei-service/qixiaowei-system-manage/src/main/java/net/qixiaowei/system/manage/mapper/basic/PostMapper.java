@@ -66,7 +66,7 @@ public interface PostMapper{
     * @param post
     * @return 结果
     */
-    int logicDeletePostByPostId(@Param("post")Post post,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeletePostByPostId(@Param("post")Post post);
 
     /**
     * 逻辑批量删除岗位表

@@ -327,7 +327,9 @@ public class TenantServiceImpl implements ITenantService {
     @Override
     public int logicDeleteTenantByTenantId(TenantDTO tenantDTO) {
         Tenant tenant = new Tenant();
-        BeanUtils.copyProperties(tenantDTO, tenant);
+        tenant.setTenantId(tenantDTO.getTenantId());
+        tenant.setUpdateBy(SecurityUtils.getUserId());
+        tenant.setUpdateTime(DateUtils.getNowDate());
         return tenantMapper.logicDeleteTenantByTenantId(tenant);
     }
 

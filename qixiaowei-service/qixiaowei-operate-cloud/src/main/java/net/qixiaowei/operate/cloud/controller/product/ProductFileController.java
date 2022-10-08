@@ -33,6 +33,17 @@ public class ProductFileController extends BaseController
     @Autowired
     private IProductFileService productFileService;
 
+
+    /**
+    * 查询产品文件表详情
+    */
+    @RequiresPermissions("operate:cloud:productFile:info")
+    @GetMapping("/info/{productFileId}")
+    public AjaxResult info(@PathVariable Long productFileId){
+    ProductFileDTO productFileDTO = productFileService.selectProductFileByProductFileId(productFileId);
+        return AjaxResult.success(productFileDTO);
+    }
+
     /**
     * 分页查询产品文件表列表
     */

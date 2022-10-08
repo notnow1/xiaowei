@@ -33,6 +33,17 @@ public class ProductSpecificationDataController extends BaseController
     @Autowired
     private IProductSpecificationDataService productSpecificationDataService;
 
+
+    /**
+    * 查询产品规格数据表详情
+    */
+    @RequiresPermissions("operate:cloud:productSpecificationData:info")
+    @GetMapping("/info/{productSpecificationDataId}")
+    public AjaxResult info(@PathVariable Long productSpecificationDataId){
+    ProductSpecificationDataDTO productSpecificationDataDTO = productSpecificationDataService.selectProductSpecificationDataByProductSpecificationDataId(productSpecificationDataId);
+        return AjaxResult.success(productSpecificationDataDTO);
+    }
+
     /**
     * 分页查询产品规格数据表列表
     */

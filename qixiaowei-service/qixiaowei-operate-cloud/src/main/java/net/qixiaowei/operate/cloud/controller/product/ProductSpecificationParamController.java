@@ -33,10 +33,21 @@ public class ProductSpecificationParamController extends BaseController
     @Autowired
     private IProductSpecificationParamService productSpecificationParamService;
 
+
+    /**
+    * 查询产品规格参数表详情
+    */
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:info")
+    @GetMapping("/info/{productSpecificationParamId}")
+    public AjaxResult info(@PathVariable Long productSpecificationParamId){
+    ProductSpecificationParamDTO productSpecificationParamDTO = productSpecificationParamService.selectProductSpecificationParamByProductSpecificationParamId(productSpecificationParamId);
+        return AjaxResult.success(productSpecificationParamDTO);
+    }
+
     /**
     * 分页查询产品规格参数表列表
     */
-    @RequiresPermissions("operate:cloud:productSpecificationParam:pageList")
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(ProductSpecificationParamDTO productSpecificationParamDTO){
     startPage();
@@ -47,7 +58,7 @@ public class ProductSpecificationParamController extends BaseController
     /**
     * 查询产品规格参数表列表
     */
-    @RequiresPermissions("operate:cloud:productSpecificationParam:list")
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:list")
     @GetMapping("/list")
     public AjaxResult list(ProductSpecificationParamDTO productSpecificationParamDTO){
     List<ProductSpecificationParamDTO> list = productSpecificationParamService.selectProductSpecificationParamList(productSpecificationParamDTO);
@@ -58,8 +69,8 @@ public class ProductSpecificationParamController extends BaseController
     /**
     * 新增产品规格参数表
     */
-    @RequiresPermissions("operate:cloud:productSpecificationParam:add")
-    @Log(title = "新增产品规格参数表", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:add")
+    //@Log(title = "新增产品规格参数表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody ProductSpecificationParamDTO productSpecificationParamDTO) {
     return toAjax(productSpecificationParamService.insertProductSpecificationParam(productSpecificationParamDTO));
@@ -69,8 +80,8 @@ public class ProductSpecificationParamController extends BaseController
     /**
     * 修改产品规格参数表
     */
-    @RequiresPermissions("operate:cloud:productSpecificationParam:edit")
-    @Log(title = "修改产品规格参数表", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:edit")
+    //@Log(title = "修改产品规格参数表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody ProductSpecificationParamDTO productSpecificationParamDTO)
     {
@@ -80,8 +91,8 @@ public class ProductSpecificationParamController extends BaseController
     /**
     * 逻辑删除产品规格参数表
     */
-    @RequiresPermissions("operate:cloud:productSpecificationParam:remove")
-    @Log(title = "删除产品规格参数表", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:remove")
+    //@Log(title = "删除产品规格参数表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody ProductSpecificationParamDTO productSpecificationParamDTO)
     {
@@ -90,8 +101,8 @@ public class ProductSpecificationParamController extends BaseController
     /**
     * 批量修改产品规格参数表
     */
-    @RequiresPermissions("operate:cloud:productSpecificationParam:edits")
-    @Log(title = "批量修改产品规格参数表", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:edits")
+    //@Log(title = "批量修改产品规格参数表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<ProductSpecificationParamDTO> productSpecificationParamDtos)
     {
@@ -101,8 +112,8 @@ public class ProductSpecificationParamController extends BaseController
     /**
     * 批量新增产品规格参数表
     */
-    @RequiresPermissions("operate:cloud:productSpecificationParam:insertProductSpecificationParams")
-    @Log(title = "批量新增产品规格参数表", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:insertProductSpecificationParams")
+    //@Log(title = "批量新增产品规格参数表", businessType = BusinessType.INSERT)
     @PostMapping("/insertProductSpecificationParams")
     public AjaxResult insertProductSpecificationParams(@RequestBody List<ProductSpecificationParamDTO> productSpecificationParamDtos)
     {
@@ -112,8 +123,8 @@ public class ProductSpecificationParamController extends BaseController
     /**
     * 逻辑批量删除产品规格参数表
     */
-    @RequiresPermissions("operate:cloud:productSpecificationParam:removes")
-    @Log(title = "批量删除产品规格参数表", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("operate:cloud:productSpecificationParam:removes")
+    //@Log(title = "批量删除产品规格参数表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<ProductSpecificationParamDTO>  ProductSpecificationParamDtos)
     {

@@ -33,10 +33,21 @@ public class ProductController extends BaseController
     @Autowired
     private IProductService productService;
 
+
+    /**
+    * 查询产品表详情
+    */
+    //@RequiresPermissions("operate:cloud:product:info")
+    @GetMapping("/info/{productId}")
+    public AjaxResult info(@PathVariable Long productId){
+    ProductDTO productDTO = productService.selectProductByProductId(productId);
+        return AjaxResult.success(productDTO);
+    }
+
     /**
     * 分页查询产品表列表
     */
-    @RequiresPermissions("operate:cloud:product:pageList")
+    //@RequiresPermissions("operate:cloud:product:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(ProductDTO productDTO){
     startPage();
@@ -47,7 +58,7 @@ public class ProductController extends BaseController
     /**
     * 查询产品表列表
     */
-    @RequiresPermissions("operate:cloud:product:list")
+    //@RequiresPermissions("operate:cloud:product:list")
     @GetMapping("/list")
     public AjaxResult list(ProductDTO productDTO){
     List<ProductDTO> list = productService.selectProductList(productDTO);
@@ -58,8 +69,8 @@ public class ProductController extends BaseController
     /**
     * 新增产品表
     */
-    @RequiresPermissions("operate:cloud:product:add")
-    @Log(title = "新增产品表", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("operate:cloud:product:add")
+    //@Log(title = "新增产品表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody ProductDTO productDTO) {
     return toAjax(productService.insertProduct(productDTO));
@@ -69,8 +80,8 @@ public class ProductController extends BaseController
     /**
     * 修改产品表
     */
-    @RequiresPermissions("operate:cloud:product:edit")
-    @Log(title = "修改产品表", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("operate:cloud:product:edit")
+    //@Log(title = "修改产品表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody ProductDTO productDTO)
     {
@@ -80,8 +91,8 @@ public class ProductController extends BaseController
     /**
     * 逻辑删除产品表
     */
-    @RequiresPermissions("operate:cloud:product:remove")
-    @Log(title = "删除产品表", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("operate:cloud:product:remove")
+    //@Log(title = "删除产品表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody ProductDTO productDTO)
     {
@@ -90,8 +101,8 @@ public class ProductController extends BaseController
     /**
     * 批量修改产品表
     */
-    @RequiresPermissions("operate:cloud:product:edits")
-    @Log(title = "批量修改产品表", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("operate:cloud:product:edits")
+    //@Log(title = "批量修改产品表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<ProductDTO> productDtos)
     {
@@ -101,8 +112,8 @@ public class ProductController extends BaseController
     /**
     * 批量新增产品表
     */
-    @RequiresPermissions("operate:cloud:product:insertProducts")
-    @Log(title = "批量新增产品表", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("operate:cloud:product:insertProducts")
+    //@Log(title = "批量新增产品表", businessType = BusinessType.INSERT)
     @PostMapping("/insertProducts")
     public AjaxResult insertProducts(@RequestBody List<ProductDTO> productDtos)
     {
@@ -112,8 +123,8 @@ public class ProductController extends BaseController
     /**
     * 逻辑批量删除产品表
     */
-    @RequiresPermissions("operate:cloud:product:removes")
-    @Log(title = "批量删除产品表", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("operate:cloud:product:removes")
+    //@Log(title = "批量删除产品表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<ProductDTO>  ProductDtos)
     {

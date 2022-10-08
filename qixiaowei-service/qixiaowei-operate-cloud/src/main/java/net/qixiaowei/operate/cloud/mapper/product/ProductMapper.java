@@ -22,6 +22,14 @@ public interface ProductMapper{
     ProductDTO selectProductByProductId(@Param("productId")Long productId);
 
     /**
+     * 根据产品编码查询产品表
+     *
+     * @param productCode 产品表主键
+     * @return 产品表
+     */
+    ProductDTO selectProductByProductCode(@Param("productCode")String productCode);
+
+    /**
     * 查询产品表列表
     *
     * @param product 产品表
@@ -92,4 +100,12 @@ public interface ProductMapper{
     * @return 结果
     */
     int batchProduct(@Param("products")List<Product> Products);
+
+    /**
+     * 根据父级id查询数据
+     * @param parentProductId
+     * @return
+     */
+    ProductDTO selectProductByParentProductId(@Param("parentProductId")Long parentProductId);
+
 }

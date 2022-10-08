@@ -45,6 +45,15 @@
                     and update_time=#{productUnit.updateTime}
                 </if>
     </select>
+<!--    根据code查询产品单位表-->
+    <select id="selectProductUnitByProductUnitCode"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO">
+        SELECT
+            product_unit_id, product_unit_code, product_unit_name, reserve_digit, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_unit
+        WHERE  product_unit_code=#{productUnitCode}
+          and delete_flag=0
+    </select>
     <!--新增产品单位表-->
     <insert id="insertProductUnit" useGeneratedKeys="true" keyProperty="productUnitId">
         INSERT INTO product_unit (product_unit_code,product_unit_name,reserve_digit,delete_flag,create_by,create_time,update_by,update_time)

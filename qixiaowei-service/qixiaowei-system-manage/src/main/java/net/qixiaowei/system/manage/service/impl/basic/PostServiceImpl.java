@@ -323,7 +323,9 @@ public class PostServiceImpl implements IPostService {
     @Override
     public int logicDeletePostByPostId(PostDTO postDTO) {
         Post post = new Post();
-        BeanUtils.copyProperties(postDTO, post);
+        post.setPostId(postDTO.getPostId());
+        post.setUpdateTime(DateUtils.getNowDate());
+        post.setUpdateBy(SecurityUtils.getUserId());
         //人员引用
         StringBuffer employeeErreo = new StringBuffer();
         //组织引用
@@ -355,7 +357,7 @@ public class PostServiceImpl implements IPostService {
             postErreo.append("已上数据已被引用 无法删除！");
             throw new ServiceException(postErreo.toString());
         }
-        return postMapper.logicDeletePostByPostId(post, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        return postMapper.logicDeletePostByPostId(post);
     }
 
     /**

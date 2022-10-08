@@ -66,6 +66,23 @@
                     and update_time=#{product.updateTime}
                 </if>
     </select>
+<!--    根据产品编码查询产品表-->
+    <select id="selectProductByProductCode"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+        SELECT
+            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        FROM product
+        WHERE  product_code=#{productCode}
+          and delete_flag=0
+    </select>
+    <select id="selectProductByParentProductId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+        SELECT
+            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        FROM product
+        WHERE parent_product_id=#{parentProductId}
+          and delete_flag=0
+    </select>
     <!--新增产品表-->
     <insert id="insertProduct" useGeneratedKeys="true" keyProperty="productId">
         INSERT INTO product (parent_product_id,ancestors,product_code,product_name,level,product_unit_id,product_category,product_description,list_price,listing_flag,delete_flag,create_by,create_time,update_by,update_time)
@@ -128,8 +145,8 @@
     <update id="logicDeleteProductByProductId">
         UPDATE product
         SET     delete_flag= 1,
-                update_by=#{product.updateBy},
-                update_time=#{product.updateTime}
+                update_by=#{updateBy},
+                update_time=#{updateTime}
         WHERE
                 product_id=#{product.productId}
     </update>
