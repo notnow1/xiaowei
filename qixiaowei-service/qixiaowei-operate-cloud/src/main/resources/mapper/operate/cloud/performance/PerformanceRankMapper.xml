@@ -51,13 +51,22 @@
     <!--绩效等级名称重复校验-->
     <select id="checkUniqueName" resultType="java.lang.Integer">
         SELECT COUNT(performance_rank_name) FROM performance_rank
-        WHERE performance_rank_name = #{performanceRankName}
+        WHERE performance_rank_name = #{performanceRankName} AND delete_flag = 0
     </select>
+    <!--查询与绩效等级关联的绩效等级系数Ids-->
     <select id="selectPerformanceRankFactorIds" resultType="java.lang.Long">
         SELECT performance_rank_factor_id FROM performance_rank_factor WHERE performance_rank_id IN
         <foreach collection="performanceRankIds" index="index" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+        AND delete_flag = 0
+    </select>
+    <select id="isExist" resultType="java.lang.Integer">
+        SELECT COUNT(performance_rank_id) FROM performance_rank WHERE performance_rank_id IN
+        <foreach collection="performanceRankIds" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND delete_flag = 0
     </select>
     <!--新增绩效等级表-->
     <insert id="insertPerformanceRank" useGeneratedKeys="true" keyProperty="performanceRankId">
@@ -96,6 +105,7 @@
         </if>
         WHERE
         performance_rank_id=#{performanceRank.performanceRankId}
+        AND delete_flag = 0
     </update>
     <!--逻辑删除绩效等级表-->
     <update id="logicDeletePerformanceRankByPerformanceRankId">
@@ -215,6 +225,7 @@
         <foreach collection="performanceRankList" separator="or" item="item" index="index">
             performance_rank_id=#{item.performanceRankId}
         </foreach>
+        AND delete_flag = 0
     </update>
 </mapper>
 

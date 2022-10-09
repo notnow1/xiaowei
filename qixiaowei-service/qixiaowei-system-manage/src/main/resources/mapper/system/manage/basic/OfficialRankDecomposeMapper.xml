@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.OfficialRankDecomposeMapper">
+    <!--    查询职级分解表-->
+    <select id="selectOfficialRankDecomposeByOfficialRankDecomposeId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO">
+        SELECT
+        official_rank_decompose_id, official_rank_system_id, rank_decompose_dimension, decompose_dimension,
+        salary_factor, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_decompose
+        WHERE official_rank_decompose_id=#{officialRankDecomposeId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询职级分解表列表-->
+    <select id="selectOfficialRankDecomposeList"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO">
+        SELECT
+        official_rank_decompose_id, official_rank_system_id, rank_decompose_dimension, decompose_dimension,
+        salary_factor, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_decompose
+        WHERE delete_flag=0
+        <if test="officialRankDecompose.officialRankDecomposeId != null">
+            and official_rank_decompose_id=#{officialRankDecompose.officialRankDecomposeId}
+        </if>
+        <if test="officialRankDecompose.officialRankSystemId != null and officialRankDecompose.officialRankSystemId != ''">
+            and official_rank_system_id=#{officialRankDecompose.officialRankSystemId}
+        </if>
+        <if test="officialRankDecompose.rankDecomposeDimension != null">
+            and rank_decompose_dimension=#{officialRankDecompose.rankDecomposeDimension}
+        </if>
+        <if test="officialRankDecompose.decomposeDimension != null">
+            and decompose_dimension=#{officialRankDecompose.decomposeDimension}
+        </if>
+        <if test="officialRankDecompose.salaryFactor != null">
+            and salary_factor=#{officialRankDecompose.salaryFactor}
+        </if>
+        <if test="officialRankDecompose.deleteFlag != null">
+            and delete_flag=#{officialRankDecompose.deleteFlag}
+        </if>
+        <if test="officialRankDecompose.createBy != null">
+            and create_by=#{officialRankDecompose.createBy}
+        </if>
+        <if test="officialRankDecompose.createTime != null">
+            and create_time=#{officialRankDecompose.createTime}
+        </if>
+        <if test="officialRankDecompose.updateBy != null">
+            and update_by=#{officialRankDecompose.updateBy}
+        </if>
+        <if test="officialRankDecompose.updateTime != null">
+            and update_time=#{officialRankDecompose.updateTime}
+        </if>
+    </select>
+    <select id="selectOfficialRankDecomposeByOfficialRankSystemId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO">
+        SELECT
+        official_rank_decompose_id, official_rank_system_id, rank_decompose_dimension, decompose_dimension,
+        salary_factor, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_decompose
+        WHERE official_rank_system_id=#{officialRankSystemId}
+        and delete_flag=0
+    </select>
+    <select id="isExist" resultType="java.lang.Integer">
+        SELECT COUNT(official_rank_decompose_id) FROM official_rank_decompose WHERE official_rank_decompose_id IN
+        <foreach collection="officialRankDecomposeIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+    <select id="selectOfficialRankDecomposeByOfficialRankSystemIds" resultType="java.lang.Long">
+        SELECT official_rank_decompose_id FROM official_rank_decompose WHERE official_rank_system_id IN
+        <foreach collection="officialRankSystemIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+    <!--新增职级分解表-->
+    <insert id="insertOfficialRankDecompose" useGeneratedKeys="true" keyProperty="officialRankDecomposeId">
+        INSERT INTO official_rank_decompose
+        (official_rank_system_id,rank_decompose_dimension,decompose_dimension,salary_factor,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{officialRankDecompose.officialRankSystemId},#{officialRankDecompose.rankDecomposeDimension},#{officialRankDecompose.decomposeDimension},#{officialRankDecompose.salaryFactor},#{officialRankDecompose.deleteFlag},#{officialRankDecompose.createBy},#{officialRankDecompose.createTime},#{officialRankDecompose.updateBy},#{officialRankDecompose.updateTime})
+    </insert>
+    <!--修改职级分解表-->
+    <update id="updateOfficialRankDecompose">
+        UPDATE official_rank_decompose
+        SET
+        <if test="officialRankDecompose.officialRankSystemId != null and officialRankDecompose.officialRankSystemId != ''">
+            official_rank_system_id=#{officialRankDecompose.officialRankSystemId},
+        </if>
+        <if test="officialRankDecompose.rankDecomposeDimension != null">
+            rank_decompose_dimension=#{officialRankDecompose.rankDecomposeDimension},
+        </if>
+        <if test="officialRankDecompose.decomposeDimension != null">
+            decompose_dimension=#{officialRankDecompose.decomposeDimension},
+        </if>
+        <if test="officialRankDecompose.salaryFactor != null">
+            salary_factor=#{officialRankDecompose.salaryFactor},
+        </if>
+        <if test="officialRankDecompose.deleteFlag != null">
+            delete_flag=#{officialRankDecompose.deleteFlag},
+        </if>
+        <if test="officialRankDecompose.createBy != null">
+            create_by=#{officialRankDecompose.createBy},
+        </if>
+        <if test="officialRankDecompose.createTime != null">
+            create_time=#{officialRankDecompose.createTime},
+        </if>
+        <if test="officialRankDecompose.updateBy != null">
+            update_by=#{officialRankDecompose.updateBy},
+        </if>
+        <if test="officialRankDecompose.updateTime != null">
+            update_time=#{officialRankDecompose.updateTime}
+        </if>
+        WHERE
+        official_rank_decompose_id=#{officialRankDecompose.officialRankDecomposeId}
+    </update>
+    <!--逻辑删除职级分解表-->
+    <update id="logicDeleteOfficialRankDecomposeByOfficialRankDecomposeId">
+        UPDATE official_rank_decompose
+        SET delete_flag= 1,
+        update_by=#{officialRankDecompose.updateBy},
+        update_time=#{officialRankDecompose.updateTime}
+        WHERE
+        official_rank_decompose_id=#{officialRankDecompose.officialRankDecomposeId}
+    </update>
+    <!--逻辑批量删除职级分解表-->
+    <update id="logicDeleteOfficialRankDecomposeByOfficialRankDecomposeIds">
+        UPDATE official_rank_decompose
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        official_rank_decompose_id IN
+        <foreach item="item"
+                 collection="officialRankDecomposeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增职级分解表-->
+    <insert id="batchOfficialRankDecompose">
+        INSERT INTO official_rank_decompose
+        (official_rank_system_id,rank_decompose_dimension,decompose_dimension,salary_factor,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="officialRankDecomposes"
+                 separator=",">
+            (#{item.officialRankSystemId},#{item.rankDecomposeDimension},#{item.decomposeDimension},#{item.salaryFactor},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除职级分解表-->
+    <delete id="deleteOfficialRankDecomposeByOfficialRankDecomposeId">
+        DELETE FROM official_rank_decompose
+        WHERE official_rank_decompose_id=#{officialRankDecompose}
+
+    </delete>
+    <!--物理批量删除职级分解表-->
+    <delete id="deleteOfficialRankDecomposeByOfficialRankDecomposeIds">
+        DELETE FROM official_rank_decompose
+        WHERE official_rank_decompose_id IN
+        <foreach item="item"
+                 collection="officialRankDecomposeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改职级分解表-->
+    <update id="updateOfficialRankDecomposes">
+        update official_rank_decompose
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="official_rank_decompose_id=case" suffix="end,">
+            </trim>
+            <trim prefix="official_rank_system_id=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.officialRankSystemId != null and item.officialRankSystemId != ''">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then
+                        #{item.officialRankSystemId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="rank_decompose_dimension=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.rankDecomposeDimension != null">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then
+                        #{item.rankDecomposeDimension}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="decompose_dimension=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.decomposeDimension != null">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then #{item.decomposeDimension}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="salary_factor=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.salaryFactor != null">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then #{item.salaryFactor}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="officialRankDecomposeList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when official_rank_decompose_id=#{item.officialRankDecomposeId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="officialRankDecomposeList" separator="or" item="item" index="index">
+            official_rank_decompose_id=#{item.officialRankDecomposeId}
+        </foreach>
+    </update>
+    <!--通过officialRankSystemId，rankDecomposeDimensionBefore删除rankDecomposeDimension-->
+    <update id="logicDeleteOfficialRankDecomposeByOfficialRankDecompose">
+        UPDATE official_rank_decompose
+        SET delete_flag= 1,
+        update_by=#{officialRankDecompose.updateBy},
+        update_time=#{officialRankDecompose.updateTime}
+        WHERE
+        rank_decompose_dimension=#{rankDecomposeDimension}
+        AND
+        official_rank_system_id=#{officialRankSystemId}
+    </update>
+</mapper>
+
+

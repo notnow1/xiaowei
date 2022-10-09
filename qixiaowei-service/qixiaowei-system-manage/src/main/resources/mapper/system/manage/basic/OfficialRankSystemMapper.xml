@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.OfficialRankSystemMapper">
+    <!--    查询职级体系表-->
+    <select id="selectOfficialRankSystemByOfficialRankSystemId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
+        SELECT
+        official_rank_system_id, official_rank_system_name, rank_prefix_code, rank_start, rank_end,
+        rank_decompose_dimension, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_system
+        WHERE official_rank_system_id=#{officialRankSystemId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询职级体系表列表-->
+    <select id="selectOfficialRankSystemList"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
+        SELECT
+        official_rank_system_id, official_rank_system_name, rank_prefix_code, rank_start, rank_end,
+        rank_decompose_dimension, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_system
+        WHERE delete_flag=0
+        <if test="officialRankSystem.officialRankSystemId != null">
+            and official_rank_system_id=#{officialRankSystem.officialRankSystemId}
+        </if>
+        <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
+            and official_rank_system_name=#{officialRankSystem.officialRankSystemName}
+        </if>
+        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">
+            and rank_prefix_code=#{officialRankSystem.rankPrefixCode}
+        </if>
+        <if test="officialRankSystem.rankStart != null">
+            and rank_start=#{officialRankSystem.rankStart}
+        </if>
+        <if test="officialRankSystem.rankEnd != null">
+            and rank_end=#{officialRankSystem.rankEnd}
+        </if>
+        <if test="officialRankSystem.rankDecomposeDimension != null">
+            and rank_decompose_dimension=#{officialRankSystem.rankDecomposeDimension}
+        </if>
+        <if test="officialRankSystem.status != null">
+            and status=#{officialRankSystem.status}
+        </if>
+        <if test="officialRankSystem.deleteFlag != null">
+            and delete_flag=#{officialRankSystem.deleteFlag}
+        </if>
+        <if test="officialRankSystem.createBy != null">
+            and create_by=#{officialRankSystem.createBy}
+        </if>
+        <if test="officialRankSystem.createTime != null">
+            and create_time=#{officialRankSystem.createTime}
+        </if>
+        <if test="officialRankSystem.updateBy != null">
+            and update_by=#{officialRankSystem.updateBy}
+        </if>
+        <if test="officialRankSystem.updateTime != null">
+            and update_time=#{officialRankSystem.updateTime}
+        </if>
+    </select>
+    <select id="officialRankNameCheckUnique" resultType="java.lang.Integer">
+        SELECT COUNT(official_rank_system_name) FROM official_rank_system WHERE official_rank_system_name =
+        #{officialRankSystemName} and delete_flag = 0
+    </select>
+    <select id="rankPrefixCodeCheckUnique" resultType="java.lang.Integer">
+        SELECT COUNT(rank_prefix_code) FROM official_rank_system WHERE rank_prefix_code =
+        #{rankPrefixCode} and delete_flag = 0
+    </select>
+    <select id="isExistByOfficialRankSystemId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
+        SELECT
+        official_rank_system_id, official_rank_system_name, rank_prefix_code, rank_start, rank_end,
+        rank_decompose_dimension, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_system WHERE official_rank_system_id = #{officialRankSystemId} and delete_flag = 0
+    </select>
+    <select id="isExistByOfficialRankSystemIds" resultType="java.lang.Integer">
+        SELECT COUNT(official_rank_system_id) FROM official_rank_system WHERE delete_flag = 0
+        AND official_rank_system_id IN
+        <foreach item="item"
+                 collection="officialRankSystemIds"
+                 open="(" close=")" separator="," index="index">
+            #{item}
+        </foreach>
+    </select>
+    <!--新增职级体系表-->
+    <insert id="insertOfficialRankSystem" useGeneratedKeys="true" keyProperty="officialRankSystemId">
+        INSERT INTO official_rank_system
+        (official_rank_system_name,rank_prefix_code,rank_start,rank_end,rank_decompose_dimension,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{officialRankSystem.officialRankSystemName},#{officialRankSystem.rankPrefixCode},#{officialRankSystem.rankStart},#{officialRankSystem.rankEnd},#{officialRankSystem.rankDecomposeDimension},#{officialRankSystem.status},#{officialRankSystem.deleteFlag},#{officialRankSystem.createBy},#{officialRankSystem.createTime},#{officialRankSystem.updateBy},#{officialRankSystem.updateTime})
+    </insert>
+    <!--修改职级体系表-->
+    <update id="updateOfficialRankSystem">
+        UPDATE official_rank_system
+        SET
+        <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
+            official_rank_system_name=#{officialRankSystem.officialRankSystemName},
+        </if>
+        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">
+            rank_prefix_code=#{officialRankSystem.rankPrefixCode},
+        </if>
+        <if test="officialRankSystem.rankStart != null">
+            rank_start=#{officialRankSystem.rankStart},
+        </if>
+        <if test="officialRankSystem.rankEnd != null">
+            rank_end=#{officialRankSystem.rankEnd},
+        </if>
+        <if test="officialRankSystem.rankDecomposeDimension != null">
+            rank_decompose_dimension=#{officialRankSystem.rankDecomposeDimension},
+        </if>
+        <if test="officialRankSystem.status != null">
+            status=#{officialRankSystem.status},
+        </if>
+        <if test="officialRankSystem.deleteFlag != null">
+            delete_flag=#{officialRankSystem.deleteFlag},
+        </if>
+        <if test="officialRankSystem.createBy != null">
+            create_by=#{officialRankSystem.createBy},
+        </if>
+        <if test="officialRankSystem.createTime != null">
+            create_time=#{officialRankSystem.createTime},
+        </if>
+        <if test="officialRankSystem.updateBy != null">
+            update_by=#{officialRankSystem.updateBy},
+        </if>
+        <if test="officialRankSystem.updateTime != null">
+            update_time=#{officialRankSystem.updateTime}
+        </if>
+        WHERE
+        official_rank_system_id=#{officialRankSystem.officialRankSystemId}
+    </update>
+    <!--逻辑删除职级体系表-->
+    <update id="logicDeleteOfficialRankSystemByOfficialRankSystemId">
+        UPDATE official_rank_system
+        SET delete_flag= 1,
+        update_by=#{officialRankSystem.updateBy},
+        update_time=#{officialRankSystem.updateTime}
+        WHERE
+        official_rank_system_id=#{officialRankSystem.officialRankSystemId}
+    </update>
+    <!--逻辑批量删除职级体系表-->
+    <update id="logicDeleteOfficialRankSystemByOfficialRankSystemIds">
+        UPDATE official_rank_system
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        official_rank_system_id IN
+        <foreach item="item"
+                 collection="officialRankSystemIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增职级体系表-->
+    <insert id="batchOfficialRankSystem">
+        INSERT INTO official_rank_system
+        (official_rank_system_name,rank_prefix_code,rank_start,rank_end,rank_decompose_dimension,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="officialRankSystems"
+                 separator=",">
+            (#{item.officialRankSystemName},#{item.rankPrefixCode},#{item.rankStart},#{item.rankEnd},#{item.rankDecomposeDimension},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除职级体系表-->
+    <delete id="deleteOfficialRankSystemByOfficialRankSystemId">
+        DELETE FROM official_rank_system
+        WHERE official_rank_system_id=#{officialRankSystem}
+
+    </delete>
+    <!--物理批量删除职级体系表-->
+    <delete id="deleteOfficialRankSystemByOfficialRankSystemIds">
+        DELETE FROM official_rank_system
+        WHERE official_rank_system_id IN
+        <foreach item="item"
+                 collection="officialRankSystemIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改职级体系表-->
+    <update id="updateOfficialRankSystems">
+        update official_rank_system
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="official_rank_system_id=case" suffix="end,">
+            </trim>
+            <trim prefix="official_rank_system_name=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.officialRankSystemName != null and item.officialRankSystemName != ''">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.officialRankSystemName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="rank_prefix_code=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.rankPrefixCode != null and item.rankPrefixCode != ''">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.rankPrefixCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="rank_start=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.rankStart != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.rankStart}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="rank_end=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.rankEnd != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.rankEnd}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="rank_decompose_dimension=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.rankDecomposeDimension != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.rankDecomposeDimension}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.status != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="officialRankSystemList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="officialRankSystemList" separator="or" item="item" index="index">
+            official_rank_system_id=#{item.officialRankSystemId}
+        </foreach>
+    </update>
+</mapper>
+
+

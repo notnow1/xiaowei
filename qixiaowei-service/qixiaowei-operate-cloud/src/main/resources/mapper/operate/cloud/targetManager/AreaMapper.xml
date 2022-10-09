@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.AreaMapper">
+    <!--    查询区域表-->
+    <select id="selectAreaByAreaId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO">
+        SELECT
+        area_id, area_code, area_name, region_ids, region_names, delete_flag, create_by, create_time, update_by,
+        update_time
+        FROM area
+        WHERE area_id=#{areaId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询区域表列表-->
+    <select id="selectAreaList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO">
+        SELECT
+        area_id, area_code, area_name, region_ids, region_names, delete_flag, create_by, create_time, update_by,
+        update_time
+        FROM area
+        WHERE delete_flag=0
+        <if test="area.areaId != null">
+            and area_id=#{area.areaId}
+        </if>
+        <if test="area.areaCode != null and area.areaCode != ''">
+            and area_code=#{area.areaCode}
+        </if>
+        <if test="area.areaName != null and area.areaName != ''">
+            and area_name=#{area.areaName}
+        </if>
+        <if test="area.regionIds != null and area.regionIds != ''">
+            and region_ids=#{area.regionIds}
+        </if>
+        <if test="area.regionNames != null and area.regionNames != ''">
+            and region_names=#{area.regionNames}
+        </if>
+        <if test="area.deleteFlag != null">
+            and delete_flag=#{area.deleteFlag}
+        </if>
+        <if test="area.createBy != null">
+            and create_by=#{area.createBy}
+        </if>
+        <if test="area.createTime != null">
+            and create_time=#{area.createTime}
+        </if>
+        <if test="area.updateBy != null">
+            and update_by=#{area.updateBy}
+        </if>
+        <if test="area.updateTime != null">
+            and update_time=#{area.updateTime}
+        </if>
+    </select>
+    <select id="checkUnique" resultType="java.lang.Integer">
+        SELECT COUNT(area_code) FROM area WHERE area_code = #{areaCode}
+    </select>
+    <!--根据id集合判断是否存在-->
+    <select id="isExist" resultType="java.lang.Integer">
+        SELECT COUNT(area_id) FROM area WHERE area_id IN
+        <foreach item="item"
+                 collection="areaIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND delete_flag = 0
+    </select>
+    <!--新增区域表-->
+    <insert id="insertArea" useGeneratedKeys="true" keyProperty="areaId">
+        INSERT INTO area
+        (area_code,area_name,region_ids,region_names,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{area.areaCode},#{area.areaName},#{area.regionIds},#{area.regionNames},#{area.deleteFlag},#{area.createBy},#{area.createTime},#{area.updateBy},#{area.updateTime})
+    </insert>
+    <!--修改区域表-->
+    <update id="updateArea">
+        UPDATE area
+        SET
+        <if test="area.areaCode != null and area.areaCode != ''">
+            area_code=#{area.areaCode},
+        </if>
+        <if test="area.areaName != null and area.areaName != ''">
+            area_name=#{area.areaName},
+        </if>
+        <if test="area.regionIds != null and area.regionIds != ''">
+            region_ids=#{area.regionIds},
+        </if>
+        <if test="area.regionNames != null and area.regionNames != ''">
+            region_names=#{area.regionNames},
+        </if>
+        <if test="area.deleteFlag != null">
+            delete_flag=#{area.deleteFlag},
+        </if>
+        <if test="area.createBy != null">
+            create_by=#{area.createBy},
+        </if>
+        <if test="area.createTime != null">
+            create_time=#{area.createTime},
+        </if>
+        <if test="area.updateBy != null">
+            update_by=#{area.updateBy},
+        </if>
+        <if test="area.updateTime != null">
+            update_time=#{area.updateTime}
+        </if>
+        WHERE
+        area_id=#{area.areaId} AND delete_flag = 0
+    </update>
+    <!--逻辑删除区域表-->
+    <update id="logicDeleteAreaByAreaId">
+        UPDATE area
+        SET delete_flag= 1,
+        update_by=#{area.updateBy},
+        update_time=#{area.updateTime}
+        WHERE
+        area_id=#{area.areaId}
+    </update>
+    <!--逻辑批量删除区域表-->
+    <update id="logicDeleteAreaByAreaIds">
+        UPDATE area
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        area_id IN
+        <foreach item="item"
+                 collection="areaIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增区域表-->
+    <insert id="batchArea">
+        INSERT INTO area
+        (area_code,area_name,region_ids,region_names,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="areas"
+                 separator=",">
+            (#{item.areaCode},#{item.areaName},#{item.regionIds},#{item.regionNames},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除区域表-->
+    <delete id="deleteAreaByAreaId">
+        DELETE FROM area
+        WHERE area_id=#{area}
+
+    </delete>
+    <!--物理批量删除区域表-->
+    <delete id="deleteAreaByAreaIds">
+        DELETE FROM area
+        WHERE area_id IN
+        <foreach item="item"
+                 collection="areaIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改区域表-->
+    <update id="updateAreas">
+        update area
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="area_id=case" suffix="end,">
+            </trim>
+            <trim prefix="area_code=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.areaCode != null and item.areaCode != ''">
+                        when area_id=#{item.areaId} then #{item.areaCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="area_name=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.areaName != null and item.areaName != ''">
+                        when area_id=#{item.areaId} then #{item.areaName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="region_ids=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.regionIds != null and item.regionIds != ''">
+                        when area_id=#{item.areaId} then #{item.regionIds}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="region_names=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.regionNames != null and item.regionNames != ''">
+                        when area_id=#{item.areaId} then #{item.regionNames}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when area_id=#{item.areaId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when area_id=#{item.areaId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when area_id=#{item.areaId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when area_id=#{item.areaId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="areaList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when area_id=#{item.areaId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="areaList" separator="or" item="item" index="index">
+            area_id=#{item.areaId}
+        </foreach>
+    </update>
+</mapper>
+
+

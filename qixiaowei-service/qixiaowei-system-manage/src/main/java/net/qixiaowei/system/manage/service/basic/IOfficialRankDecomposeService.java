@@ -1,0 +1,144 @@
+package net.qixiaowei.system.manage.service.basic;
+
+import java.util.List;
+
+import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
+
+
+/**
+ * OfficialRankDecomposeService接口
+ *
+ * @author Graves
+ * @since 2022-10-07
+ */
+public interface IOfficialRankDecomposeService {
+    /**
+     * 查询职级分解表
+     *
+     * @param officialRankDecomposeId 职级分解表主键
+     * @return 职级分解表
+     */
+    OfficialRankDecomposeDTO selectOfficialRankDecomposeByOfficialRankDecomposeId(Long officialRankDecomposeId);
+
+    /**
+     * 查询职级分解表列表
+     *
+     * @param officialRankDecomposeDTO 职级分解表
+     * @return 职级分解表集合
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeList(OfficialRankDecomposeDTO officialRankDecomposeDTO);
+
+    /**
+     * 新增职级分解表
+     *
+     * @param officialRankDecomposeDTO 职级分解表
+     * @return 结果
+     */
+    int insertOfficialRankDecompose(OfficialRankDecomposeDTO officialRankDecomposeDTO);
+
+    /**
+     * 修改职级分解表
+     *
+     * @param officialRankDecomposeDTO 职级分解表
+     * @return 结果
+     */
+    int updateOfficialRankDecompose(OfficialRankDecomposeDTO officialRankDecomposeDTO);
+
+    /**
+     * 批量修改职级分解表
+     *
+     * @param officialRankDecomposeDtos 职级分解表
+     * @return 结果
+     */
+    int updateOfficialRankDecomposes(List<OfficialRankDecomposeDTO> officialRankDecomposeDtos, OfficialRankSystem officialRankSystem);
+
+    /**
+     * 批量新增职级分解表
+     *
+     * @param officialRankDecomposeDtos
+     * @param officialRankSystem
+     * @return
+     */
+    int insertOfficialRankDecomposes(List<OfficialRankDecomposeDTO> officialRankDecomposeDtos, OfficialRankSystem officialRankSystem);
+
+    /**
+     * 逻辑批量删除职级分解表
+     *
+     * @param OfficialRankDecomposeDtos 需要删除的职级分解表集合
+     * @return 结果
+     */
+    int logicDeleteOfficialRankDecomposeByOfficialRankDecomposeIds(List<OfficialRankDecomposeDTO> OfficialRankDecomposeDtos);
+
+    /**
+     * 逻辑删除职级分解表信息
+     *
+     * @param officialRankDecomposeDTO
+     * @return 结果
+     */
+    int logicDeleteOfficialRankDecomposeByOfficialRankDecomposeId(OfficialRankDecomposeDTO officialRankDecomposeDTO);
+
+    /**
+     * 逻辑批量删除职级分解表
+     *
+     * @param OfficialRankDecomposeDtos 需要删除的职级分解表集合
+     * @return 结果
+     */
+    int deleteOfficialRankDecomposeByOfficialRankDecomposeIds(List<OfficialRankDecomposeDTO> OfficialRankDecomposeDtos);
+
+    /**
+     * 逻辑删除职级分解表信息
+     *
+     * @param officialRankDecomposeDTO
+     * @return 结果
+     */
+    int deleteOfficialRankDecomposeByOfficialRankDecomposeId(OfficialRankDecomposeDTO officialRankDecomposeDTO);
+
+
+    /**
+     * 删除职级分解表信息
+     *
+     * @param officialRankDecomposeId 职级分解表主键
+     * @return 结果
+     */
+    int deleteOfficialRankDecomposeByOfficialRankDecomposeId(Long officialRankDecomposeId);
+
+    /**
+     * 更新操作
+     *
+     * @param officialRankDecomposeDTOS
+     * @return
+     */
+    int operateOfficialRankDecompose(List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS);
+
+    /**
+     * 通过officialRankDecomposeDTO查找职级分解
+     *
+     * @param officialRankDecomposeDTO
+     * @return
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemDTO(OfficialRankDecomposeDTO officialRankDecomposeDTO);
+
+    /**
+     * 通过officialRankSystemId查找职级分解
+     *
+     * @param officialRankSystemId
+     * @return
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemId(String officialRankSystemId);
+
+    /**
+     * 通过officialRankSystemId，rankDecomposeDimensionBefore删除rankDecomposeDimension
+     * @param officialRankSystemId
+     * @param rankDecomposeDimensionBefore
+     * @return
+     */
+    int logicDeleteOfficialRankDecomposeByOfficialRankDecompose(Long officialRankSystemId, Integer rankDecomposeDimensionBefore);
+
+    /**
+     * 通过officialRankSystemIds删除职级分解
+     * @param officialRankSystemIds
+     * @return
+     */
+    int logicDeleteOfficialRankDecomposeByOfficialRankSystemIds(List<Long> officialRankSystemIds);
+}

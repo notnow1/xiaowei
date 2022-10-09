@@ -124,11 +124,28 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
     @Transactional
     @Override
     public int logicDeletePerformanceRankByPerformanceRankIds(List<Long> performanceRankIds) {
+        int exist = performanceRankMapper.isExist(performanceRankIds);
+        if (exist < performanceRankIds.size()) {
+            throw new ServiceException("绩效等级已不存在");
+        }
+        if (isQuote(performanceRankIds)) {
+            throw new ServiceException("存在被引用的绩效等级");
+        }
         List<Long> performanceRankFactorIds = performanceRankMapper.selectPerformanceRankFactorIds(performanceRankIds);
         if (StringUtils.isNotEmpty(performanceRankFactorIds)) {
             performanceRankFactorService.logicDeletePerformanceRankFactorByPerformanceRankFactorIds(performanceRankFactorIds);
         }
         return performanceRankMapper.logicDeletePerformanceRankByPerformanceRankIds(performanceRankIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * todo 绩效等级删除引用校验
+     *
+     * @param performanceRankIds
+     * @return
+     */
+    private boolean isQuote(List<Long> performanceRankIds) {
+        return false;
     }
 
     /**
