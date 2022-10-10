@@ -115,10 +115,10 @@ public interface IDepartmentService{
 
     /**
      * 部门岗位详情
-     * @param departmentDTO
+     * @param departmentId
      * @return
      */
-   DepartmentDTO deptParticulars(DepartmentDTO departmentDTO);
+   DepartmentDTO deptParticulars(Long departmentId);
 
     /**
      * 分页查询部门人员表列表

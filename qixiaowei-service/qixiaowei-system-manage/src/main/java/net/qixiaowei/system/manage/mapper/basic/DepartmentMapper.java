@@ -24,6 +24,14 @@ public interface DepartmentMapper{
     DepartmentDTO selectDepartmentByDepartmentId(@Param("departmentId")Long departmentId);
 
     /**
+     * 批量查询部门表
+     *
+     * @param departmentIds 部门表主键
+     * @return 部门表
+     */
+    List<DepartmentDTO> selectDepartmentByDepartmentIds(@Param("departmentIds")List<Long> departmentIds);
+
+    /**
     * 查询部门表列表
     *
     * @param departmentDTO 部门表
@@ -137,21 +145,21 @@ public interface DepartmentMapper{
      * @param departmentCode
      * @return
      */
-    DepartmentDTO selectDepartmentId(@Param("departmentCode")String departmentCode);
+    DepartmentDTO selectDepartmentCode(@Param("departmentCode")String departmentCode);
 
     /**
      * 批量查询code编码是否已经存在
      * @param departmentCodes
      * @return
      */
-    List<DepartmentDTO> selectDepartmentIds(@Param("departmentCodes")List<String> departmentCodes);
+    List<DepartmentDTO> selectDepartmentCodes(@Param("departmentCodes")List<String> departmentCodes);
 
     /**
      * 查询组织关联岗位信息
-     * @param departmentDTO
+     * @param departmentId
      * @return
      */
-    List<DepartmentPostDTO> selectDeptAndPost(@Param("departmentDTO")DepartmentDTO departmentDTO);
+    List<DepartmentPostDTO> selectDeptAndPost(@Param("departmentId")Long departmentId);
 
     /**
      * 分页查询部门人员表列表

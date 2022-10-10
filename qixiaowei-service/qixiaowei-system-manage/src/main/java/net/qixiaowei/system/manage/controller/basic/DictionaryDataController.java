@@ -54,6 +54,15 @@ public class DictionaryDataController extends BaseController
     return AjaxResult.success(list);
     }
 
+    /**
+     * 查询字典数据表详情
+     */
+    //@RequiresPermissions("system:manage:dictionaryData:list")
+    @GetMapping("/info/{dictionaryDataId}")
+    public AjaxResult list(@PathVariable  Long dictionaryDataId){
+        DictionaryDataDTO dictionaryDataDTO = dictionaryDataService.selectDictionaryDataByDictionaryDataId(dictionaryDataId);
+        return AjaxResult.success(dictionaryDataDTO);
+    }
 
     /**
     * 新增字典数据表
