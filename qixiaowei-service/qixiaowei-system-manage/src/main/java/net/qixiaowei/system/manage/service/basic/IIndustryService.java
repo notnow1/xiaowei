@@ -114,4 +114,12 @@ public interface IIndustryService {
      * @return
      */
     int updateEnableType(IndustryDTO industryDTO);
+
+    /**
+     * 行业配置详情
+     *
+     * @param industryId
+     * @return
+     */
+    IndustryDTO detailIndustry(Long industryId);
 }

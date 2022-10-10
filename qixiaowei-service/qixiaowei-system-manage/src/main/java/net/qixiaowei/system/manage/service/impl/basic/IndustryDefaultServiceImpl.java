@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
@@ -205,6 +206,24 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     @Override
     public int deleteIndustryDefaultByIndustryId(Long industryId) {
         return industryDefaultMapper.deleteIndustryDefaultByIndustryId(industryId);
+    }
+
+    /**
+     * 默认行业配置详情
+     *
+     * @param industryId
+     * @return
+     */
+    @Override
+    public IndustryDefaultDTO detailIndustryDefault(Long industryId) {
+        if (StringUtils.isNull(industryId)) {
+            throw new ServiceException("行业配置id不能为空");
+        }
+        IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(industryId);
+        if (StringUtils.isNull(industryDefaultDTO)) {
+            throw new ServiceException("该默认行业配置已不存在");
+        }
+        return industryDefaultDTO;
     }
 
     /**

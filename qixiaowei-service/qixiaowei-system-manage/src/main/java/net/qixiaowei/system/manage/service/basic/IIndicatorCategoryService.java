@@ -100,4 +100,12 @@ public interface IIndicatorCategoryService {
      * @return 结果
      */
     int deleteIndicatorCategoryByIndicatorCategoryId(Long indicatorCategoryId);
+
+    /**
+     * 指标类型详情
+     *
+     * @param indicatorCategoryId
+     * @return
+     */
+    IndicatorCategoryDTO detailIndicatorCategory(Long indicatorCategoryId);
 }

@@ -112,4 +112,15 @@ public class IndustryDefaultController extends BaseController {
     public AjaxResult removes(@RequestBody List<Long> industryIds) {
         return toAjax(industryDefaultService.logicDeleteIndustryDefaultByIndustryIds(industryIds));
     }
+
+    /**
+     * 行业配置详情
+     */
+//    @RequiresPermissions("operate:cloud:performanceRank:edit")
+    @Log(title = "默认行业配置详情")
+    @GetMapping("/info/{industryId}")
+    public AjaxResult info(@PathVariable Long industryId) {
+        return AjaxResult.success(industryDefaultService.detailIndustryDefault(industryId));
+    }
+
 }

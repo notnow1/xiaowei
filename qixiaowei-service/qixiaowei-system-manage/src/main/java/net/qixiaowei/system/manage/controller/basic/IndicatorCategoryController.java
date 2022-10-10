@@ -77,6 +77,15 @@ public class IndicatorCategoryController extends BaseController {
     }
 
     /**
+     * 指标类型详情
+     */
+//    @RequiresPermissions("operate:cloud:performanceRank:edit")
+    @GetMapping("/info/{indicatorCategoryId}")
+    public AjaxResult info(@PathVariable Long indicatorCategoryId) {
+        return AjaxResult.success(indicatorCategoryService.detailIndicatorCategory(indicatorCategoryId));
+    }
+
+    /**
      * 逻辑删除指标分类表
      */
 //    @RequiresPermissions("system:manage:indicatorCategory:remove")
@@ -84,7 +93,7 @@ public class IndicatorCategoryController extends BaseController {
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody IndicatorDTO indicatorDTO) {
         Long indicatorId = indicatorDTO.getIndicatorId();
-        if (StringUtils.isNull(indicatorId)){
+        if (StringUtils.isNull(indicatorId)) {
             return AjaxResult.error("指标分类id不能为空！");
         }
         return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryId(indicatorId));

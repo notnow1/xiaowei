@@ -1,22 +1,17 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
-import java.util.List;
-
 import net.qixiaowei.integration.common.utils.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.integration.common.web.controller.BaseController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -86,6 +81,17 @@ public class SalaryItemController extends BaseController {
             return AjaxResult.error("工资条配置id不能为空！");
         }
         return toAjax(salaryItemService.logicDeleteSalaryItemBySalaryItemId(salaryItemDTO));
+    }
+
+    /**
+     * 工资项详情
+     */
+//    @RequiresPermissions("operate:cloud:salaryItem:remove")
+    @Log(title = "工资项详情")
+    @GetMapping("/info/{salaryItemId}")
+    public AjaxResult info(@PathVariable Long salaryItemId) {
+        SalaryItemDTO salaryItemDTO = salaryItemService.detailSalaryItemBySalaryId(salaryItemId);
+        return AjaxResult.success(salaryItemDTO);
     }
 
     /**

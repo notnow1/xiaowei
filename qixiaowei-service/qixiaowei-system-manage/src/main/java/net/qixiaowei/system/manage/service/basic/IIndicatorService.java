@@ -108,4 +108,12 @@ public interface IIndicatorService {
      * @return 结果
      */
     int deleteIndicatorByIndicatorId(Long indicatorId);
+
+    /**
+     * 指标详情
+     *
+     * @param indicatorId
+     * @return
+     */
+    IndicatorDTO detailIndicator(Long indicatorId);
 }

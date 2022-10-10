@@ -140,6 +140,24 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     }
 
     /**
+     * 根据salaryId查询工资详情
+     *
+     * @param salaryId
+     * @return
+     */
+    @Override
+    public SalaryItemDTO detailSalaryItemBySalaryId(Long salaryId) {
+        if (StringUtils.isNull(salaryId)){
+            throw new ServiceException("工资条id不可以为空");
+        }
+        SalaryItemDTO salaryItemDTO = salaryItemMapper.selectSalaryItemBySalaryItemId(salaryId);
+        if (StringUtils.isNull(salaryItemDTO)){
+            throw new ServiceException("当前的工资条已经不存在");
+        }
+        return salaryItemDTO;
+    }
+
+    /**
      * 逻辑删除工资项信息
      *
      * @param salaryItemDTO 工资项

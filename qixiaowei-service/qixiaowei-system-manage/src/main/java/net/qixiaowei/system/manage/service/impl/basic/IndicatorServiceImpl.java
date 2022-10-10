@@ -222,6 +222,24 @@ public class IndicatorServiceImpl implements IIndicatorService {
     }
 
     /**
+     * 指标详情
+     *
+     * @param indicatorId
+     * @return
+     */
+    @Override
+    public IndicatorDTO detailIndicator(Long indicatorId) {
+        if (StringUtils.isNull(indicatorId)) {
+            throw new ServiceException("指标详情id不能为空");
+        }
+        IndicatorDTO dto = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
+        if (StringUtils.isNull(dto)) {
+            throw new ServiceException("该指标已经不存在");
+        }
+        return dto;
+    }
+
+    /**
      * 逻辑删除指标表信息
      *
      * @param indicatorId 指标表

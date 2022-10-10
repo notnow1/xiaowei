@@ -100,6 +100,15 @@ public class IndustryController extends BaseController {
     }
 
     /**
+     * 行业配置详情
+     */
+//    @RequiresPermissions("operate:cloud:performanceRank:edit")
+    @GetMapping("/info/{industryId}")
+    public AjaxResult info(@PathVariable Long industryId) {
+        return AjaxResult.success(industryService.detailIndustry(industryId));
+    }
+
+    /**
      * 逻辑删除行业
      */
 //    @RequiresPermissions("system:manage:industry:remove")

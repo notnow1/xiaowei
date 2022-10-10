@@ -5,51 +5,53 @@
     <select id="selectSalaryItemBySalaryItemId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by, create_time, update_by, update_time
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM salary_item
-        WHERE  salary_item_id=#{salaryItemId}
+        WHERE salary_item_id=#{salaryItemId}
         and delete_flag=0
     </select>
 
     <!--    查询工资项列表-->
     <select id="selectSalaryItemList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by, create_time, update_by, update_time
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM salary_item
         WHERE delete_flag=0
-                <if test="salaryItem.salaryItemId != null">
-                    and salary_item_id=#{salaryItem.salaryItemId}
-                </if>
-                <if test="salaryItem.firstLevelItem != null">
-                    and first_level_item=#{salaryItem.firstLevelItem}
-                </if>
-                <if test="salaryItem.secondLevelItem != null">
-                    and second_level_item=#{salaryItem.secondLevelItem}
-                </if>
-                <if test="salaryItem.thirdLevelItem != null and salaryItem.thirdLevelItem != ''">
-                    and third_level_item=#{salaryItem.thirdLevelItem}
-                </if>
-                <if test="salaryItem.scope != null">
-                    and scope=#{salaryItem.scope}
-                </if>
-                <if test="salaryItem.sort != null">
-                    and sort=#{salaryItem.sort}
-                </if>
-                <if test="salaryItem.deleteFlag != null">
-                    and delete_flag=#{salaryItem.deleteFlag}
-                </if>
-                <if test="salaryItem.createBy != null">
-                    and create_by=#{salaryItem.createBy}
-                </if>
-                <if test="salaryItem.createTime != null">
-                    and create_time=#{salaryItem.createTime}
-                </if>
-                <if test="salaryItem.updateBy != null">
-                    and update_by=#{salaryItem.updateBy}
-                </if>
-                <if test="salaryItem.updateTime != null">
-                    and update_time=#{salaryItem.updateTime}
-                </if>
+        <if test="salaryItem.salaryItemId != null">
+            and salary_item_id=#{salaryItem.salaryItemId}
+        </if>
+        <if test="salaryItem.firstLevelItem != null">
+            and first_level_item=#{salaryItem.firstLevelItem}
+        </if>
+        <if test="salaryItem.secondLevelItem != null">
+            and second_level_item=#{salaryItem.secondLevelItem}
+        </if>
+        <if test="salaryItem.thirdLevelItem != null and salaryItem.thirdLevelItem != ''">
+            and third_level_item=#{salaryItem.thirdLevelItem}
+        </if>
+        <if test="salaryItem.scope != null">
+            and scope=#{salaryItem.scope}
+        </if>
+        <if test="salaryItem.sort != null">
+            and sort=#{salaryItem.sort}
+        </if>
+        <if test="salaryItem.deleteFlag != null">
+            and delete_flag=#{salaryItem.deleteFlag}
+        </if>
+        <if test="salaryItem.createBy != null">
+            and create_by=#{salaryItem.createBy}
+        </if>
+        <if test="salaryItem.createTime != null">
+            and create_time=#{salaryItem.createTime}
+        </if>
+        <if test="salaryItem.updateBy != null">
+            and update_by=#{salaryItem.updateBy}
+        </if>
+        <if test="salaryItem.updateTime != null">
+            and update_time=#{salaryItem.updateTime}
+        </if>
     </select>
     <!--根据id集合判断是否存在-->
     <select id="isExist" resultType="Long">
@@ -59,11 +61,14 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
+        AND
+        delete_flag = 0
     </select>
 
     <!--新增工资项-->
     <insert id="insertSalaryItem" useGeneratedKeys="true" keyProperty="salaryItemId">
-        INSERT INTO salary_item (first_level_item,second_level_item,third_level_item,scope,sort,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO salary_item
+        (first_level_item,second_level_item,third_level_item,scope,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{salaryItem.firstLevelItem},#{salaryItem.secondLevelItem},#{salaryItem.thirdLevelItem},#{salaryItem.scope},#{salaryItem.sort},#{salaryItem.deleteFlag},#{salaryItem.createBy},#{salaryItem.createTime},#{salaryItem.updateBy},#{salaryItem.updateTime})
     </insert>
@@ -71,65 +76,68 @@
     <update id="updateSalaryItem">
         UPDATE salary_item
         SET
-                    <if test="salaryItem.firstLevelItem != null">
-                        first_level_item=#{salaryItem.firstLevelItem},
-                    </if>
-                    <if test="salaryItem.secondLevelItem != null">
-                        second_level_item=#{salaryItem.secondLevelItem},
-                    </if>
-                    <if test="salaryItem.thirdLevelItem != null and salaryItem.thirdLevelItem != ''">
-                        third_level_item=#{salaryItem.thirdLevelItem},
-                    </if>
-                    <if test="salaryItem.scope != null">
-                        scope=#{salaryItem.scope},
-                    </if>
-                    <if test="salaryItem.sort != null">
-                        sort=#{salaryItem.sort},
-                    </if>
-                    <if test="salaryItem.deleteFlag != null">
-                        delete_flag=#{salaryItem.deleteFlag},
-                    </if>
-                    <if test="salaryItem.createBy != null">
-                        create_by=#{salaryItem.createBy},
-                    </if>
-                    <if test="salaryItem.createTime != null">
-                        create_time=#{salaryItem.createTime},
-                    </if>
-                    <if test="salaryItem.updateBy != null">
-                        update_by=#{salaryItem.updateBy},
-                    </if>
-                    <if test="salaryItem.updateTime != null">
-                        update_time=#{salaryItem.updateTime}
-                    </if>
+        <if test="salaryItem.firstLevelItem != null">
+            first_level_item=#{salaryItem.firstLevelItem},
+        </if>
+        <if test="salaryItem.secondLevelItem != null">
+            second_level_item=#{salaryItem.secondLevelItem},
+        </if>
+        <if test="salaryItem.thirdLevelItem != null and salaryItem.thirdLevelItem != ''">
+            third_level_item=#{salaryItem.thirdLevelItem},
+        </if>
+        <if test="salaryItem.scope != null">
+            scope=#{salaryItem.scope},
+        </if>
+        <if test="salaryItem.sort != null">
+            sort=#{salaryItem.sort},
+        </if>
+        <if test="salaryItem.deleteFlag != null">
+            delete_flag=#{salaryItem.deleteFlag},
+        </if>
+        <if test="salaryItem.createBy != null">
+            create_by=#{salaryItem.createBy},
+        </if>
+        <if test="salaryItem.createTime != null">
+            create_time=#{salaryItem.createTime},
+        </if>
+        <if test="salaryItem.updateBy != null">
+            update_by=#{salaryItem.updateBy},
+        </if>
+        <if test="salaryItem.updateTime != null">
+            update_time=#{salaryItem.updateTime}
+        </if>
         WHERE
-                 salary_item_id=#{salaryItem.salaryItemId}
+        salary_item_id=#{salaryItem.salaryItemId}
+        AND
+        delete_flag = 0
     </update>
     <!--逻辑删除工资项-->
     <update id="logicDeleteSalaryItemBySalaryItemId">
         UPDATE salary_item
-        SET     delete_flag= 1,
-                update_by=#{salaryItem.updateBy},
-                update_time=#{salaryItem.updateTime}
+        SET delete_flag= 1,
+        update_by=#{salaryItem.updateBy},
+        update_time=#{salaryItem.updateTime}
         WHERE
-                salary_item_id=#{salaryItem.salaryItemId}
+        salary_item_id=#{salaryItem.salaryItemId}
     </update>
     <!--逻辑批量删除工资项-->
     <update id="logicDeleteSalaryItemBySalaryItemIds">
         UPDATE salary_item
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         salary_item_id IN
-            <foreach item="item"
-                     collection="salaryItemIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        salary_item_id IN
+        <foreach item="item"
+                 collection="salaryItemIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增工资项-->
     <insert id="batchSalaryItem">
-        INSERT INTO salary_item (first_level_item,second_level_item,third_level_item,scope,sort,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO salary_item
+        (first_level_item,second_level_item,third_level_item,scope,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="salaryItems"
@@ -141,18 +149,18 @@
     <!--物理删除工资项-->
     <delete id="deleteSalaryItemBySalaryItemId">
         DELETE FROM salary_item
-        WHERE  salary_item_id=#{salaryItem}
+        WHERE salary_item_id=#{salaryItem}
 
     </delete>
     <!--物理批量删除工资项-->
     <delete id="deleteSalaryItemBySalaryItemIds">
         DELETE FROM salary_item
-        WHERE  salary_item_id IN
-            <foreach item="item"
-                     collection="salaryItemIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE salary_item_id IN
+        <foreach item="item"
+                 collection="salaryItemIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改工资项-->
     <update id="updateSalaryItems">
@@ -162,79 +170,81 @@
             </trim>
             <trim prefix="first_level_item=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.firstLevelItem != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.firstLevelItem}
-                             </if>
+                    <if test="item.firstLevelItem != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.firstLevelItem}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="second_level_item=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.secondLevelItem != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.secondLevelItem}
-                             </if>
+                    <if test="item.secondLevelItem != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.secondLevelItem}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="third_level_item=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.thirdLevelItem != null and item.thirdLevelItem != ''">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.thirdLevelItem}
-                             </if>
+                    <if test="item.thirdLevelItem != null and item.thirdLevelItem != ''">
+                        when salary_item_id=#{item.salaryItemId} then #{item.thirdLevelItem}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="scope=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.scope != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.scope}
-                             </if>
+                    <if test="item.scope != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.scope}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="sort=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.sort != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.sort}
-                             </if>
+                    <if test="item.sort != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.sort}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.deleteFlag}
-                             </if>
+                    <if test="item.deleteFlag != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.deleteFlag}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.createBy}
-                             </if>
+                    <if test="item.createBy != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.createBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.createTime}
-                             </if>
+                    <if test="item.createTime != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.createTime}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.updateBy}
-                             </if>
+                    <if test="item.updateBy != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.updateBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="salaryItemList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when salary_item_id=#{item.salaryItemId} then #{item.updateTime}
-                             </if>
+                    <if test="item.updateTime != null">
+                        when salary_item_id=#{item.salaryItemId} then #{item.updateTime}
+                    </if>
                 </foreach>
             </trim>
         </trim>
         where
         <foreach collection="salaryItemList" separator="or" item="item" index="index">
-                    salary_item_id=#{item.salaryItemId}
+            salary_item_id=#{item.salaryItemId}
         </foreach>
+        AND
+        delete_flag = 0
     </update>
 </mapper>
 

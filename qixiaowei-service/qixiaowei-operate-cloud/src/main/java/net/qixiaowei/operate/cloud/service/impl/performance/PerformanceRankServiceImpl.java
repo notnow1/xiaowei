@@ -211,7 +211,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
      */
     @Transactional
     public int insertPerformanceRanks(List<PerformanceRankDTO> performanceRankDtos) {
-        List<PerformanceRank> performanceRankList = new ArrayList();
+        List<PerformanceRank> performanceRankList = new ArrayList<>();
         for (PerformanceRankDTO performanceRankDTO : performanceRankDtos) {
             PerformanceRank performanceRank = new PerformanceRank();
             BeanUtils.copyProperties(performanceRankDTO, performanceRank);

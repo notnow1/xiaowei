@@ -80,6 +80,16 @@ public class IndicatorController extends BaseController {
     }
 
     /**
+     * 指标详情
+     */
+//    @RequiresPermissions("operate:cloud:performanceRank:edit")
+    @GetMapping("/info/{indicatorId}")
+    public AjaxResult info(@PathVariable Long indicatorId) {
+        return AjaxResult.success(indicatorService.detailIndicator(indicatorId));
+    }
+
+
+    /**
      * 逻辑删除指标表
      */
 //    @RequiresPermissions("system:manage:indicator:remove")

@@ -160,6 +160,24 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     }
 
     /**
+     * 指标类型详情
+     *
+     * @param indicatorCategoryId
+     * @return
+     */
+    @Override
+    public IndicatorCategoryDTO detailIndicatorCategory(Long indicatorCategoryId) {
+        if (StringUtils.isNull(indicatorCategoryId)) {
+            throw new ServiceException("指标类型id不能为空");
+        }
+        IndicatorCategoryDTO indicatorCategoryDTO = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId);
+        if (StringUtils.isNull(indicatorCategoryDTO)) {
+            throw new ServiceException("指标类型已不存在");
+        }
+        return indicatorCategoryDTO;
+    }
+
+    /**
      * 逻辑删除指标分类表信息
      *
      * @param indicatorId 指标分类表

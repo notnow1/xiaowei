@@ -100,4 +100,12 @@ public interface IIndustryDefaultService {
      * @return 结果
      */
     int deleteIndustryDefaultByIndustryId(Long industryId);
+
+    /**
+     * 默认行业配置详情
+     *
+     * @param industryId
+     * @return
+     */
+    IndustryDefaultDTO detailIndustryDefault(Long industryId);
 }

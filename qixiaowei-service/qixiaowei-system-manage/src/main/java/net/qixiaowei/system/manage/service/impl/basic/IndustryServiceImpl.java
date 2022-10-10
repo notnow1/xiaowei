@@ -308,5 +308,23 @@ public class IndustryServiceImpl implements IIndustryService {
 //        industryMapper.setEnableType();
         return 1;
     }
+
+    /**
+     * 行业配置详情
+     *
+     * @param industryId
+     * @return
+     */
+    @Override
+    public IndustryDTO detailIndustry(Long industryId) {
+        if (StringUtils.isNull(industryId)) {
+            throw new ServiceException("行业配置id不能为空");
+        }
+        IndustryDTO industryDTO = industryMapper.selectIndustryByIndustryId(industryId);
+        if (StringUtils.isNull(industryDTO)) {
+            throw new ServiceException("该行业配置已不存在");
+        }
+        return industryDTO;
+    }
 }
 
