@@ -70,11 +70,11 @@ public class PerformanceRankController extends BaseController {
     }
 
     /**
-     * 修改绩效等级表
+     * 绩效等级表详情
      */
 //    @RequiresPermissions("operate:cloud:performanceRank:edit")
-    @GetMapping("/detail")
-    public AjaxResult detail(Long performanceRankId) {
+    @GetMapping("/info/{performanceRankId}")
+    public AjaxResult info(@PathVariable Long performanceRankId) {
         if (StringUtils.isNull(performanceRankId)) {
             return AjaxResult.error("绩效等级配置id不能为空");
         }

@@ -298,12 +298,11 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 职级体系表详情
      *
-     * @param officialRankSystemDTO
+     * @param officialRankSystemId
      * @return
      */
     @Override
-    public OfficialRankSystemDTO detailOfficialRankSystem(OfficialRankSystemDTO officialRankSystemDTO) {
-        Long officialRankSystemId = officialRankSystemDTO.getOfficialRankSystemId();
+    public OfficialRankSystemDTO detailOfficialRankSystem(Long officialRankSystemId) {
         if (StringUtils.isNull(officialRankSystemId)) {
             throw new ServiceException("职级体系ID不能为空");
         }

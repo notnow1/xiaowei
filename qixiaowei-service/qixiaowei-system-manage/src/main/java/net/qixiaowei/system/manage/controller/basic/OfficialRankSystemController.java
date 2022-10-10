@@ -75,9 +75,9 @@ public class OfficialRankSystemController extends BaseController {
      */
 //    @RequiresPermissions("system:manage:officialRankSystem:add")
     @Log(title = "职级体系表详情", businessType = BusinessType.INSERT)
-    @GetMapping("/detail")
-    public AjaxResult detail(OfficialRankSystemDTO officialRankSystemDTO) {
-        return AjaxResult.success(officialRankSystemService.detailOfficialRankSystem(officialRankSystemDTO));
+    @GetMapping("/info/{officialRankSystemId}")
+    public AjaxResult info(@PathVariable Long officialRankSystemId) {
+        return AjaxResult.success(officialRankSystemService.detailOfficialRankSystem(officialRankSystemId));
     }
 
     /**

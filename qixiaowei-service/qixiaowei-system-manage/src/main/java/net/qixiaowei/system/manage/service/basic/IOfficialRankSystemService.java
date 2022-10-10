@@ -104,8 +104,8 @@ public interface IOfficialRankSystemService {
     /**
      * 职级体系表详情
      *
-     * @param officialRankSystemDTO
+     * @param officialRankSystemId
      * @return
      */
-    OfficialRankSystemDTO detailOfficialRankSystem(OfficialRankSystemDTO officialRankSystemDTO);
+    OfficialRankSystemDTO detailOfficialRankSystem(Long officialRankSystemId);
 }

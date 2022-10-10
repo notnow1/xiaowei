@@ -95,9 +95,9 @@ public class OfficialRankDecomposeController extends BaseController {
      * 查询职级分解表详情
      */
 //    @RequiresPermissions("system:manage:officialRankDecompose:pageList")
-    @GetMapping("/detail")
-    public AjaxResult detail(OfficialRankDecomposeDTO officialRankDecomposeDTO) {
-        return AjaxResult.success(officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemDTO(officialRankDecomposeDTO));
+    @GetMapping("/info/{officialRankSystemId}")
+    public AjaxResult info(@PathVariable Long officialRankSystemId) {
+        return AjaxResult.success(officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemDTO(officialRankSystemId));
     }
 
 }

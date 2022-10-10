@@ -122,28 +122,14 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
     }
 
     /**
-     * 更新操作
-     *
-     * @param officialRankDecomposeDTOS
-     * @return
-     */
-    @Override
-    public int operateOfficialRankDecompose(List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS) {
-
-
-        return 0;
-    }
-
-    /**
      * 通过officialRankSystemId查找职级分解
      *
-     * @param officialRankDecomposeDTO
+     * @param officialRankSystemId
      * @return
      */
     @Override
-    public List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemDTO(OfficialRankDecomposeDTO officialRankDecomposeDTO) {
-        String officialRankSystemId = officialRankDecomposeDTO.getOfficialRankSystemId();
-        if (StringUtils.isEmpty(officialRankSystemId)) {
+    public List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemDTO(Long officialRankSystemId) {
+        if (StringUtils.isNull(officialRankSystemId)) {
             throw new ServiceException("职级体系ID不能为空");
         }
         return officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
@@ -160,7 +146,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
         if (StringUtils.isEmpty(officialRankSystemId)) {
             throw new ServiceException("职级体系ID不能为空");
         }
-        return officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
+        return officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemId(Long.valueOf(officialRankSystemId));
     }
 
     /**

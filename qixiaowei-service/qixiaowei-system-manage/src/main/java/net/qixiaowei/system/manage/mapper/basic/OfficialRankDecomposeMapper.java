@@ -103,7 +103,7 @@ public interface OfficialRankDecomposeMapper {
      * @param officialRankSystemId
      * @return
      */
-    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemId(@Param("officialRankSystemId") String officialRankSystemId);
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemId(@Param("officialRankSystemId") Long officialRankSystemId);
 
     /**
      * 校验当前职级分解是否存在

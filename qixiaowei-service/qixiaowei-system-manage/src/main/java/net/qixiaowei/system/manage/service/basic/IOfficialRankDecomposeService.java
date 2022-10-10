@@ -102,22 +102,14 @@ public interface IOfficialRankDecomposeService {
      * @return 结果
      */
     int deleteOfficialRankDecomposeByOfficialRankDecomposeId(Long officialRankDecomposeId);
-
+    
     /**
-     * 更新操作
+     * 通过officialRankSystemId查找职级分解
      *
-     * @param officialRankDecomposeDTOS
+     * @param officialRankSystemId
      * @return
      */
-    int operateOfficialRankDecompose(List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS);
-
-    /**
-     * 通过officialRankDecomposeDTO查找职级分解
-     *
-     * @param officialRankDecomposeDTO
-     * @return
-     */
-    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemDTO(OfficialRankDecomposeDTO officialRankDecomposeDTO);
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemDTO(Long officialRankSystemId);
 
     /**
      * 通过officialRankSystemId查找职级分解
@@ -129,6 +121,7 @@ public interface IOfficialRankDecomposeService {
 
     /**
      * 通过officialRankSystemId，rankDecomposeDimensionBefore删除rankDecomposeDimension
+     *
      * @param officialRankSystemId
      * @param rankDecomposeDimensionBefore
      * @return
@@ -137,6 +130,7 @@ public interface IOfficialRankDecomposeService {
 
     /**
      * 通过officialRankSystemIds删除职级分解
+     *
      * @param officialRankSystemIds
      * @return
      */
