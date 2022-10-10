@@ -7,7 +7,7 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 /**
 * TenantDomainApprovalService接口
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 public interface ITenantDomainApprovalService{
     /**

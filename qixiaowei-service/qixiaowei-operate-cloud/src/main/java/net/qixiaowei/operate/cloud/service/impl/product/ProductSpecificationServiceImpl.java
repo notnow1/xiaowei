@@ -18,7 +18,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 /**
 * ProductSpecificationService业务层处理
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 @Service
 public class ProductSpecificationServiceImpl implements IProductSpecificationService{
@@ -57,7 +57,6 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
     * @param productSpecificationDTO 产品规格表
     * @return 结果
     */
-    @Transactional
     @Override
     public int insertProductSpecification(ProductSpecificationDTO productSpecificationDTO){
     ProductSpecification productSpecification=new ProductSpecification();
@@ -76,7 +75,6 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
     * @param productSpecificationDTO 产品规格表
     * @return 结果
     */
-    @Transactional
     @Override
     public int updateProductSpecification(ProductSpecificationDTO productSpecificationDTO)
     {
@@ -93,8 +91,6 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
     * @param productSpecificationDtos 需要删除的产品规格表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int logicDeleteProductSpecificationByProductSpecificationIds(List<ProductSpecificationDTO> productSpecificationDtos){
             List<Long> stringList = new ArrayList();
@@ -110,8 +106,6 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
     * @param productSpecificationId 产品规格表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int deleteProductSpecificationByProductSpecificationId(Long productSpecificationId)
     {
@@ -124,13 +118,14 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
      * @param  productSpecificationDTO 产品规格表
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDeleteProductSpecificationByProductSpecificationId(ProductSpecificationDTO productSpecificationDTO)
      {
      ProductSpecification productSpecification=new ProductSpecification();
-     BeanUtils.copyProperties(productSpecificationDTO,productSpecification);
-     return productSpecificationMapper.logicDeleteProductSpecificationByProductSpecificationId(productSpecification,SecurityUtils.getUserId(),DateUtils.getNowDate());
+     productSpecification.setProductSpecificationId(productSpecificationDTO.getProductSpecificationId());
+     productSpecification.setUpdateTime(DateUtils.getNowDate());
+     productSpecification.setUpdateBy(SecurityUtils.getUserId());
+     return productSpecificationMapper.logicDeleteProductSpecificationByProductSpecificationId(productSpecification);
      }
 
      /**
@@ -139,7 +134,7 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
      * @param  productSpecificationDTO 产品规格表
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteProductSpecificationByProductSpecificationId(ProductSpecificationDTO productSpecificationDTO)
      {
@@ -153,7 +148,7 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
      * @param productSpecificationDtos 需要删除的产品规格表主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteProductSpecificationByProductSpecificationIds(List<ProductSpecificationDTO> productSpecificationDtos){
      List<Long> stringList = new ArrayList();
@@ -168,7 +163,7 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
     *
     * @param productSpecificationDtos 产品规格表对象
     */
-    @Transactional
+    
     public int insertProductSpecifications(List<ProductSpecificationDTO> productSpecificationDtos){
       List<ProductSpecification> productSpecificationList = new ArrayList();
 
@@ -190,7 +185,7 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
     *
     * @param productSpecificationDtos 产品规格表对象
     */
-    @Transactional
+    
     public int updateProductSpecifications(List<ProductSpecificationDTO> productSpecificationDtos){
      List<ProductSpecification> productSpecificationList = new ArrayList();
 

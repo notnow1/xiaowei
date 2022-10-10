@@ -224,7 +224,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
         StringBuffer erreoEmp = new StringBuffer();
         //员工表
         Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO, employee);
+        employee.setEmployeeId(employeeDTO.getEmployeeId());
+        employee.setUpdateTime(DateUtils.getNowDate());
+        employee.setUpdateBy(SecurityUtils.getUserId());
         //查询数据
         EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeId(employeeDTO.getEmployeeId());
         if (null == employeeDTO1){

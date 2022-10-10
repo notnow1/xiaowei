@@ -1,20 +1,38 @@
 package net.qixiaowei.system.manage.api.dto.tenant;
 
 import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import javax.validation.groups.Default;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
 * 租户域名申请
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 @Data
 @Accessors(chain = true)
 public class TenantDomainApprovalDTO {
+
+    //查询检验
+    public interface QueryTenantDomainApprovalDTO extends Default{
+
+    }
+    //新增检验
+    public interface AddTenantDomainApprovalDTO extends Default{
+
+    }
+
+    //删除检验
+    public interface DeleteTenantDomainApprovalDTO extends Default{
+
+    }
+    //修改检验
+    public interface UpdateTenantDomainApprovalDTO extends Default{
+
+    }
     /**
     * ID
     */
@@ -38,12 +56,12 @@ public class TenantDomainApprovalDTO {
     /**
     * 提交时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private  Date  submissionTime;
     /**
     * 审核时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private  Date  approvalTime;
     /**
     * 审核人用户ID

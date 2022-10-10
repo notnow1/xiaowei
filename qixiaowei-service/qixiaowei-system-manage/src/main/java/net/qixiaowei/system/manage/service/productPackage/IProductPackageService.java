@@ -7,7 +7,7 @@ import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
 /**
 * ProductPackageService接口
 * @author TANGMICHI
-* @since 2022-09-27
+* @since 2022-10-09
 */
 public interface IProductPackageService{
     /**

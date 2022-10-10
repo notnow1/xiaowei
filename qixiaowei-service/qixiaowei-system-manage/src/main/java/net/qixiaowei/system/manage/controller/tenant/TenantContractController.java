@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 /**
 *
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 @RestController
 @RequestMapping("tenantContract")
@@ -32,6 +32,17 @@ public class TenantContractController extends BaseController
 
     @Autowired
     private ITenantContractService tenantContractService;
+
+
+    /**
+    * 查询租户合同信息详情
+    */
+    @RequiresPermissions("system:manage:tenantContract:info")
+    @GetMapping("/info/{tenantContractId}")
+    public AjaxResult info(@PathVariable Long tenantContractId){
+    TenantContractDTO tenantContractDTO = tenantContractService.selectTenantContractByTenantContractId(tenantContractId);
+        return AjaxResult.success(tenantContractDTO);
+    }
 
     /**
     * 分页查询租户合同信息列表

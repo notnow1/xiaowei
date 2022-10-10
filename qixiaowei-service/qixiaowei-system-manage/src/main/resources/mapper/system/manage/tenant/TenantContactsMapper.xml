@@ -154,101 +154,87 @@
     <update id="updateTenantContactss">
         update tenant_contacts
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="tenant_id=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.tenantId != null">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.tenantId}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="contact_name=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.contactName != null and item.contactName != ''">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.contactName}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="contact_tel=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.contactTel != null and item.contactTel != ''">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.contactTel}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="contact_email=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.contactEmail != null and item.contactEmail != ''">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.contactEmail}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="contact_duty=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.contactDuty != null and item.contactDuty != ''">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.contactDuty}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="remark=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.remark != null and item.remark != ''">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.remark}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="delete_flag=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.deleteFlag}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_by=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.createBy}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_time=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.createTime}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_by=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.updateBy}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_time=case" suffix="end,">
-                <foreach collection="tenantContactsList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when tenant_contacts_id=#{item.tenantContactsId} then #{item.updateTime}
-                             </if>
-                </foreach>
-            </trim>
+                <trim prefix="tenant_id=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.tenantId != null">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.tenantId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="contact_name=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.contactName != null and item.contactName != ''">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.contactName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="contact_tel=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.contactTel != null and item.contactTel != ''">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.contactTel}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="contact_email=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.contactEmail != null and item.contactEmail != ''">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.contactEmail}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="contact_duty=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.contactDuty != null and item.contactDuty != ''">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.contactDuty}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="remark=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.remark != null and item.remark != ''">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.remark}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="tenantContactsList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when tenant_contacts_id=#{item.tenantContactsId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
         </trim>
         where
         <foreach collection="tenantContactsList" separator="or" item="item" index="index">
                     tenant_contacts_id=#{item.tenantContactsId}
-        </foreach>
-    </update>
-<!--    根据tenantId逻辑批量删除租户联系人表-->
-    <update id="deleteTenantContactsByTenantIds">
-        UPDATE tenant_contacts
-        SET     delete_flag= 1,
-        update_by=#{updateBy},
-        update_time=#{updateTime}
-        WHERE
-        tenant_id IN
-        <foreach item="item"
-                 collection="tenantIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
         </foreach>
     </update>
 </mapper>

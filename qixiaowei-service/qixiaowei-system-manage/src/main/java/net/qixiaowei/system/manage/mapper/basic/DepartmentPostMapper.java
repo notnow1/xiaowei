@@ -58,7 +58,7 @@ public interface DepartmentPostMapper{
     * @param departmentPost
     * @return 结果
     */
-    int logicDeleteDepartmentPostByDepartmentPostId(@Param("departmentPost")DepartmentPost departmentPost,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteDepartmentPostByDepartmentPostId(@Param("departmentPost")DepartmentPost departmentPost);
 
     /**
     * 逻辑批量删除部门岗位关联表

@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * ProductSpecificationMapper接口
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 public interface ProductSpecificationMapper{
     /**
@@ -58,7 +58,7 @@ public interface ProductSpecificationMapper{
     * @param productSpecification
     * @return 结果
     */
-    int logicDeleteProductSpecificationByProductSpecificationId(@Param("productSpecification")ProductSpecification productSpecification,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteProductSpecificationByProductSpecificationId(@Param("productSpecification")ProductSpecification productSpecification);
 
     /**
     * 逻辑批量删除产品规格表

@@ -129,7 +129,9 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
      public int logicDeleteDictionaryTypeByDictionaryTypeId(DictionaryTypeDTO dictionaryTypeDTO)
      {
      DictionaryType dictionaryType=new DictionaryType();
-     BeanUtils.copyProperties(dictionaryTypeDTO,dictionaryType);
+         dictionaryType.setDictionaryTypeId(dictionaryTypeDTO.getDictionaryTypeId());
+         dictionaryType.setUpdateTime(DateUtils.getNowDate());
+         dictionaryType.setUpdateBy(SecurityUtils.getUserId());
      return dictionaryTypeMapper.logicDeleteDictionaryTypeByDictionaryTypeId(dictionaryType,SecurityUtils.getUserId(),DateUtils.getNowDate());
      }
 

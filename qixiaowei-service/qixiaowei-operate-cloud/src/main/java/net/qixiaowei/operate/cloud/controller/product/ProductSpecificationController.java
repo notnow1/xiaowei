@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 /**
 *
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 @RestController
 @RequestMapping("productSpecification")

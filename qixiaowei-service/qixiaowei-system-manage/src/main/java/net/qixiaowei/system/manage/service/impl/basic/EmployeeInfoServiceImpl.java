@@ -18,7 +18,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 /**
 * EmployeeInfoService业务层处理
 * @author TANGMICHI
-* @since 2022-09-30
+* @since 2022-10-09
 */
 @Service
 public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
@@ -57,7 +57,6 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
     * @param employeeInfoDTO 员工信息
     * @return 结果
     */
-    @Transactional
     @Override
     public int insertEmployeeInfo(EmployeeInfoDTO employeeInfoDTO){
     EmployeeInfo employeeInfo=new EmployeeInfo();
@@ -75,7 +74,6 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
     * @param employeeInfoDTO 员工信息
     * @return 结果
     */
-    @Transactional
     @Override
     public int updateEmployeeInfo(EmployeeInfoDTO employeeInfoDTO)
     {
@@ -92,8 +90,6 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
     * @param employeeInfoDtos 需要删除的员工信息主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int logicDeleteEmployeeInfoByEmployeeInfoIds(List<EmployeeInfoDTO> employeeInfoDtos){
             List<Long> stringList = new ArrayList();
@@ -109,8 +105,6 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
     * @param employeeInfoId 员工信息主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int deleteEmployeeInfoByEmployeeInfoId(Long employeeInfoId)
     {
@@ -123,13 +117,14 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
      * @param  employeeInfoDTO 员工信息
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDeleteEmployeeInfoByEmployeeInfoId(EmployeeInfoDTO employeeInfoDTO)
      {
      EmployeeInfo employeeInfo=new EmployeeInfo();
-     BeanUtils.copyProperties(employeeInfoDTO,employeeInfo);
-     return employeeInfoMapper.logicDeleteEmployeeInfoByEmployeeInfoId(employeeInfo,SecurityUtils.getUserId(),DateUtils.getNowDate());
+     employeeInfo.setEmployeeInfoId(employeeInfoDTO.getEmployeeInfoId());
+     employeeInfo.setUpdateTime(DateUtils.getNowDate());
+     employeeInfo.setUpdateBy(SecurityUtils.getUserId());
+     return employeeInfoMapper.logicDeleteEmployeeInfoByEmployeeInfoId(employeeInfo);
      }
 
      /**
@@ -138,7 +133,7 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
      * @param  employeeInfoDTO 员工信息
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteEmployeeInfoByEmployeeInfoId(EmployeeInfoDTO employeeInfoDTO)
      {
@@ -152,7 +147,7 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
      * @param employeeInfoDtos 需要删除的员工信息主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteEmployeeInfoByEmployeeInfoIds(List<EmployeeInfoDTO> employeeInfoDtos){
      List<Long> stringList = new ArrayList();
@@ -167,7 +162,7 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
     *
     * @param employeeInfoDtos 员工信息对象
     */
-    @Transactional
+    
     public int insertEmployeeInfos(List<EmployeeInfoDTO> employeeInfoDtos){
       List<EmployeeInfo> employeeInfoList = new ArrayList();
 
@@ -188,7 +183,7 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
     *
     * @param employeeInfoDtos 员工信息对象
     */
-    @Transactional
+    
     public int updateEmployeeInfos(List<EmployeeInfoDTO> employeeInfoDtos){
      List<EmployeeInfo> employeeInfoList = new ArrayList();
 

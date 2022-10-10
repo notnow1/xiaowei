@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 /**
 *
 * @author TANGMICHI
-* @since 2022-09-30
+* @since 2022-10-09
 */
 @RestController
 @RequestMapping("employeeInfo")
@@ -32,6 +32,17 @@ public class EmployeeInfoController extends BaseController
 
     @Autowired
     private IEmployeeInfoService employeeInfoService;
+
+
+    /**
+    * 查询员工信息详情
+    */
+    @RequiresPermissions("system:manage:employeeInfo:info")
+    @GetMapping("/info/{employeeInfoId}")
+    public AjaxResult info(@PathVariable Long employeeInfoId){
+    EmployeeInfoDTO employeeInfoDTO = employeeInfoService.selectEmployeeInfoByEmployeeInfoId(employeeInfoId);
+        return AjaxResult.success(employeeInfoDTO);
+    }
 
     /**
     * 分页查询员工信息列表

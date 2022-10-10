@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 /**
 *
 * @author TANGMICHI
-* @since 2022-09-27
+* @since 2022-10-09
 */
 @RestController
 @RequestMapping("productPackage")
@@ -32,6 +32,17 @@ public class ProductPackageController extends BaseController
 
     @Autowired
     private IProductPackageService productPackageService;
+
+
+    /**
+    * 查询产品包详情
+    */
+    @RequiresPermissions("system:manage:productPackage:info")
+    @GetMapping("/info/{productPackageId}")
+    public AjaxResult info(@PathVariable Long productPackageId){
+    ProductPackageDTO productPackageDTO = productPackageService.selectProductPackageByProductPackageId(productPackageId);
+        return AjaxResult.success(productPackageDTO);
+    }
 
     /**
     * 分页查询产品包列表

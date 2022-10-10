@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * ProductPackageMapper接口
 * @author TANGMICHI
-* @since 2022-09-27
+* @since 2022-10-09
 */
 public interface ProductPackageMapper{
     /**
@@ -58,7 +58,7 @@ public interface ProductPackageMapper{
     * @param productPackage
     * @return 结果
     */
-    int logicDeleteProductPackageByProductPackageId(@Param("productPackage")ProductPackage productPackage,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteProductPackageByProductPackageId(@Param("productPackage")ProductPackage productPackage);
 
     /**
     * 逻辑批量删除产品包

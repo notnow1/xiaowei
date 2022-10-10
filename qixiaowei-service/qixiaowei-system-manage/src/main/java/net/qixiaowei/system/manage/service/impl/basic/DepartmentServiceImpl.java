@@ -436,7 +436,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
         StringBuffer depterreo = new StringBuffer();
         int i = 0;
         Department department = new Department();
-        BeanUtils.copyProperties(departmentDTO, department);
+        department.setDepartmentId(departmentDTO.getDepartmentId());
+        department.setUpdateTime(DateUtils.getNowDate());
+        department.setUpdateBy(SecurityUtils.getUserId());
         //岗位是否被引用
         List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(departmentDTO);
         if (null != departmentPostDTOS) {
@@ -459,7 +461,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             throw new ServiceException(depterreo.toString());
         } else {
             //删除数据
-            i = departmentMapper.logicDeleteDepartmentByDepartmentId(department, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            i = departmentMapper.logicDeleteDepartmentByDepartmentId(department);
         }
         return i;
     }
@@ -477,7 +479,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         StringBuffer depterreo = new StringBuffer();
         int i = 0;
         Department department = new Department();
-        BeanUtils.copyProperties(departmentDTO, department);
+        department.setDepartmentId(departmentDTO.getDepartmentId());
         //组织集合
         List<DepartmentDTO> departmentDTOList = new ArrayList<>();
         //根据id查询所有子级数据

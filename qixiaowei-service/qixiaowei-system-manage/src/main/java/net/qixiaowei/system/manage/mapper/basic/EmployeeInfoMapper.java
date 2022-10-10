@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * EmployeeInfoMapper接口
 * @author TANGMICHI
-* @since 2022-09-30
+* @since 2022-10-09
 */
 public interface EmployeeInfoMapper{
     /**
@@ -58,7 +58,7 @@ public interface EmployeeInfoMapper{
     * @param employeeInfo
     * @return 结果
     */
-    int logicDeleteEmployeeInfoByEmployeeInfoId(@Param("employeeInfo")EmployeeInfo employeeInfo,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteEmployeeInfoByEmployeeInfoId(@Param("employeeInfo")EmployeeInfo employeeInfo);
 
     /**
     * 逻辑批量删除员工信息

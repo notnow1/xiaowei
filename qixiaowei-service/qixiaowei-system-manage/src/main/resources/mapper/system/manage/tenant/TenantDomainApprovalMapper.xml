@@ -172,104 +172,104 @@
     <update id="updateTenantDomainApprovals">
         update tenant_domain_approval
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="tenant_id=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.tenantId != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.tenantId}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="approval_domain=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.approvalDomain != null and item.approvalDomain != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalDomain}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="applicant_user_id=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.applicantUserId != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserId}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="applicant_user_account=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.applicantUserAccount != null and item.applicantUserAccount != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserAccount}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="submission_time=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.submissionTime != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.submissionTime}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="approval_time=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.approvalTime != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalTime}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="approval_user_id=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.approvalUserId != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalUserId}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="approval_status=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.approvalStatus != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalStatus}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="remark=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.remark != null and item.remark != ''">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.remark}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="delete_flag=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.deleteFlag}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_by=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createBy}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_time=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createTime}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_by=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateBy}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_time=case" suffix="end,">
-                <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateTime}
-                             </if>
-                </foreach>
-            </trim>
+                <trim prefix="tenant_id=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.tenantId != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.tenantId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="approval_domain=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.approvalDomain != null and item.approvalDomain != ''">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalDomain}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="applicant_user_id=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.applicantUserId != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="applicant_user_account=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.applicantUserAccount != null and item.applicantUserAccount != ''">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserAccount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="submission_time=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.submissionTime != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.submissionTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="approval_time=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.approvalTime != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="approval_user_id=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.approvalUserId != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalUserId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="approval_status=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.approvalStatus != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalStatus}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="remark=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.remark != null and item.remark != ''">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.remark}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
         </trim>
         where
         <foreach collection="tenantDomainApprovalList" separator="or" item="item" index="index">

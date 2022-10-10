@@ -18,7 +18,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 /**
 * ProductSpecificationDataService业务层处理
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 @Service
 public class ProductSpecificationDataServiceImpl implements IProductSpecificationDataService{
@@ -57,7 +57,6 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
     * @param productSpecificationDataDTO 产品规格数据表
     * @return 结果
     */
-    @Transactional
     @Override
     public int insertProductSpecificationData(ProductSpecificationDataDTO productSpecificationDataDTO){
     ProductSpecificationData productSpecificationData=new ProductSpecificationData();
@@ -76,7 +75,6 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
     * @param productSpecificationDataDTO 产品规格数据表
     * @return 结果
     */
-    @Transactional
     @Override
     public int updateProductSpecificationData(ProductSpecificationDataDTO productSpecificationDataDTO)
     {
@@ -93,8 +91,6 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
     * @param productSpecificationDataDtos 需要删除的产品规格数据表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int logicDeleteProductSpecificationDataByProductSpecificationDataIds(List<ProductSpecificationDataDTO> productSpecificationDataDtos){
             List<Long> stringList = new ArrayList();
@@ -110,8 +106,6 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
     * @param productSpecificationDataId 产品规格数据表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int deleteProductSpecificationDataByProductSpecificationDataId(Long productSpecificationDataId)
     {
@@ -124,13 +118,14 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
      * @param  productSpecificationDataDTO 产品规格数据表
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDeleteProductSpecificationDataByProductSpecificationDataId(ProductSpecificationDataDTO productSpecificationDataDTO)
      {
      ProductSpecificationData productSpecificationData=new ProductSpecificationData();
-     BeanUtils.copyProperties(productSpecificationDataDTO,productSpecificationData);
-     return productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductSpecificationDataId(productSpecificationData,SecurityUtils.getUserId(),DateUtils.getNowDate());
+     productSpecificationData.setProductSpecificationDataId(productSpecificationDataDTO.getProductSpecificationDataId());
+     productSpecificationData.setUpdateTime(DateUtils.getNowDate());
+     productSpecificationData.setUpdateBy(SecurityUtils.getUserId());
+     return productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductSpecificationDataId(productSpecificationData);
      }
 
      /**
@@ -139,7 +134,7 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
      * @param  productSpecificationDataDTO 产品规格数据表
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteProductSpecificationDataByProductSpecificationDataId(ProductSpecificationDataDTO productSpecificationDataDTO)
      {
@@ -153,7 +148,7 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
      * @param productSpecificationDataDtos 需要删除的产品规格数据表主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteProductSpecificationDataByProductSpecificationDataIds(List<ProductSpecificationDataDTO> productSpecificationDataDtos){
      List<Long> stringList = new ArrayList();
@@ -168,7 +163,7 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
     *
     * @param productSpecificationDataDtos 产品规格数据表对象
     */
-    @Transactional
+    
     public int insertProductSpecificationDatas(List<ProductSpecificationDataDTO> productSpecificationDataDtos){
       List<ProductSpecificationData> productSpecificationDataList = new ArrayList();
 
@@ -190,7 +185,7 @@ public class ProductSpecificationDataServiceImpl implements IProductSpecificatio
     *
     * @param productSpecificationDataDtos 产品规格数据表对象
     */
-    @Transactional
+    
     public int updateProductSpecificationDatas(List<ProductSpecificationDataDTO> productSpecificationDataDtos){
      List<ProductSpecificationData> productSpecificationDataList = new ArrayList();
 

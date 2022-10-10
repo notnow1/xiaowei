@@ -18,7 +18,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 /**
 * ProductFileService业务层处理
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 @Service
 public class ProductFileServiceImpl implements IProductFileService{
@@ -57,7 +57,6 @@ public class ProductFileServiceImpl implements IProductFileService{
     * @param productFileDTO 产品文件表
     * @return 结果
     */
-    @Transactional
     @Override
     public int insertProductFile(ProductFileDTO productFileDTO){
     ProductFile productFile=new ProductFile();
@@ -76,7 +75,6 @@ public class ProductFileServiceImpl implements IProductFileService{
     * @param productFileDTO 产品文件表
     * @return 结果
     */
-    @Transactional
     @Override
     public int updateProductFile(ProductFileDTO productFileDTO)
     {
@@ -93,8 +91,6 @@ public class ProductFileServiceImpl implements IProductFileService{
     * @param productFileDtos 需要删除的产品文件表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int logicDeleteProductFileByProductFileIds(List<ProductFileDTO> productFileDtos){
             List<Long> stringList = new ArrayList();
@@ -110,8 +106,6 @@ public class ProductFileServiceImpl implements IProductFileService{
     * @param productFileId 产品文件表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int deleteProductFileByProductFileId(Long productFileId)
     {
@@ -124,13 +118,14 @@ public class ProductFileServiceImpl implements IProductFileService{
      * @param  productFileDTO 产品文件表
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDeleteProductFileByProductFileId(ProductFileDTO productFileDTO)
      {
      ProductFile productFile=new ProductFile();
-     BeanUtils.copyProperties(productFileDTO,productFile);
-     return productFileMapper.logicDeleteProductFileByProductFileId(productFile,SecurityUtils.getUserId(),DateUtils.getNowDate());
+     productFile.setProductFileId(productFileDTO.getProductFileId());
+     productFile.setUpdateTime(DateUtils.getNowDate());
+     productFile.setUpdateBy(SecurityUtils.getUserId());
+     return productFileMapper.logicDeleteProductFileByProductFileId(productFile);
      }
 
      /**
@@ -139,7 +134,7 @@ public class ProductFileServiceImpl implements IProductFileService{
      * @param  productFileDTO 产品文件表
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteProductFileByProductFileId(ProductFileDTO productFileDTO)
      {
@@ -153,7 +148,7 @@ public class ProductFileServiceImpl implements IProductFileService{
      * @param productFileDtos 需要删除的产品文件表主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteProductFileByProductFileIds(List<ProductFileDTO> productFileDtos){
      List<Long> stringList = new ArrayList();
@@ -168,7 +163,7 @@ public class ProductFileServiceImpl implements IProductFileService{
     *
     * @param productFileDtos 产品文件表对象
     */
-    @Transactional
+    
     public int insertProductFiles(List<ProductFileDTO> productFileDtos){
       List<ProductFile> productFileList = new ArrayList();
 
@@ -190,7 +185,7 @@ public class ProductFileServiceImpl implements IProductFileService{
     *
     * @param productFileDtos 产品文件表对象
     */
-    @Transactional
+    
     public int updateProductFiles(List<ProductFileDTO> productFileDtos){
      List<ProductFile> productFileList = new ArrayList();
 

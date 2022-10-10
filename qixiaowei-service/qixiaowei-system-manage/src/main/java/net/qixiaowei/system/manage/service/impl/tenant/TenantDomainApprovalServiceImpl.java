@@ -7,16 +7,18 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.mapper.tenant.TenantDomainApprovalMapper;
 import net.qixiaowei.system.manage.service.tenant.ITenantDomainApprovalService;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 
 
 /**
 * TenantDomainApprovalService业务层处理
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 @Service
 public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalService{
@@ -55,13 +57,15 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
     * @param tenantDomainApprovalDTO 租户域名申请
     * @return 结果
     */
-    @Transactional
     @Override
     public int insertTenantDomainApproval(TenantDomainApprovalDTO tenantDomainApprovalDTO){
     TenantDomainApproval tenantDomainApproval=new TenantDomainApproval();
     BeanUtils.copyProperties(tenantDomainApprovalDTO,tenantDomainApproval);
+    tenantDomainApproval.setCreateBy(SecurityUtils.getUserId());
     tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
     tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+    tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId());
+    tenantDomainApproval.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
     return tenantDomainApprovalMapper.insertTenantDomainApproval(tenantDomainApproval);
     }
 
@@ -71,14 +75,13 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
     * @param tenantDomainApprovalDTO 租户域名申请
     * @return 结果
     */
-    @Transactional
     @Override
     public int updateTenantDomainApproval(TenantDomainApprovalDTO tenantDomainApprovalDTO)
     {
     TenantDomainApproval tenantDomainApproval=new TenantDomainApproval();
     BeanUtils.copyProperties(tenantDomainApprovalDTO,tenantDomainApproval);
-    tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
     tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+    tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId());
     return tenantDomainApprovalMapper.updateTenantDomainApproval(tenantDomainApproval);
     }
 
@@ -88,8 +91,6 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
     * @param tenantDomainApprovalDtos 需要删除的租户域名申请主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int logicDeleteTenantDomainApprovalByTenantDomainApprovalIds(List<TenantDomainApprovalDTO> tenantDomainApprovalDtos){
             List<Long> stringList = new ArrayList();
@@ -105,8 +106,6 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
     * @param tenantDomainApprovalId 租户域名申请主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int deleteTenantDomainApprovalByTenantDomainApprovalId(Long tenantDomainApprovalId)
     {
@@ -119,12 +118,13 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
      * @param  tenantDomainApprovalDTO 租户域名申请
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDeleteTenantDomainApprovalByTenantDomainApprovalId(TenantDomainApprovalDTO tenantDomainApprovalDTO)
      {
      TenantDomainApproval tenantDomainApproval=new TenantDomainApproval();
-     BeanUtils.copyProperties(tenantDomainApprovalDTO,tenantDomainApproval);
+     tenantDomainApproval.setTenantDomainApprovalId(tenantDomainApprovalDTO.getTenantDomainApprovalId());
+     tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+     tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId());
      return tenantDomainApprovalMapper.logicDeleteTenantDomainApprovalByTenantDomainApprovalId(tenantDomainApproval);
      }
 
@@ -134,7 +134,7 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
      * @param  tenantDomainApprovalDTO 租户域名申请
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteTenantDomainApprovalByTenantDomainApprovalId(TenantDomainApprovalDTO tenantDomainApprovalDTO)
      {
@@ -148,14 +148,14 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
      * @param tenantDomainApprovalDtos 需要删除的租户域名申请主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteTenantDomainApprovalByTenantDomainApprovalIds(List<TenantDomainApprovalDTO> tenantDomainApprovalDtos){
      List<Long> stringList = new ArrayList();
      for (TenantDomainApprovalDTO tenantDomainApprovalDTO : tenantDomainApprovalDtos) {
      stringList.add(tenantDomainApprovalDTO.getTenantDomainApprovalId());
      }
-     return tenantDomainApprovalMapper.deleteTenantDomainApprovalByTenantDomainApprovalIds(stringList,tenantDomainApprovalDtos.get(0).getUpdateBy(),DateUtils.getNowDate());
+     return tenantDomainApprovalMapper.deleteTenantDomainApprovalByTenantDomainApprovalIds(stringList);
      }
 
     /**
@@ -163,15 +163,18 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
     *
     * @param tenantDomainApprovalDtos 租户域名申请对象
     */
-    @Transactional
+    
     public int insertTenantDomainApprovals(List<TenantDomainApprovalDTO> tenantDomainApprovalDtos){
       List<TenantDomainApproval> tenantDomainApprovalList = new ArrayList();
 
     for (TenantDomainApprovalDTO tenantDomainApprovalDTO : tenantDomainApprovalDtos) {
       TenantDomainApproval tenantDomainApproval =new TenantDomainApproval();
       BeanUtils.copyProperties(tenantDomainApprovalDTO,tenantDomainApproval);
-    tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
-    tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+       tenantDomainApproval.setCreateBy(SecurityUtils.getUserId());
+       tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
+       tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+       tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId());
+       tenantDomainApproval.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
       tenantDomainApprovalList.add(tenantDomainApproval);
     }
     return tenantDomainApprovalMapper.batchTenantDomainApproval(tenantDomainApprovalList);
@@ -182,15 +185,17 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
     *
     * @param tenantDomainApprovalDtos 租户域名申请对象
     */
-    @Transactional
+    
     public int updateTenantDomainApprovals(List<TenantDomainApprovalDTO> tenantDomainApprovalDtos){
      List<TenantDomainApproval> tenantDomainApprovalList = new ArrayList();
 
      for (TenantDomainApprovalDTO tenantDomainApprovalDTO : tenantDomainApprovalDtos) {
      TenantDomainApproval tenantDomainApproval =new TenantDomainApproval();
      BeanUtils.copyProperties(tenantDomainApprovalDTO,tenantDomainApproval);
-     tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
-     tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+        tenantDomainApproval.setCreateBy(SecurityUtils.getUserId());
+        tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
+        tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+        tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId());
      tenantDomainApprovalList.add(tenantDomainApproval);
      }
      return tenantDomainApprovalMapper.updateTenantDomainApprovals(tenantDomainApprovalList);

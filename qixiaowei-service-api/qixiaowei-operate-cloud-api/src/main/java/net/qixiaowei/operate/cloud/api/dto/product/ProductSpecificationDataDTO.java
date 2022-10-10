@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 /**
 * 产品规格数据表
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 @Data
 @Accessors(chain = true)

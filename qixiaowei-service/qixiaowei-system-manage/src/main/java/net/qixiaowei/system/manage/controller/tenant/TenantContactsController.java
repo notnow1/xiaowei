@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 /**
 *
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 @RestController
 @RequestMapping("tenantContacts")
@@ -32,6 +32,17 @@ public class TenantContactsController extends BaseController
 
     @Autowired
     private ITenantContactsService tenantContactsService;
+
+
+    /**
+    * 查询租户联系人表详情
+    */
+    @RequiresPermissions("system:manage:tenantContacts:info")
+    @GetMapping("/info/{tenantContactsId}")
+    public AjaxResult info(@PathVariable Long tenantContactsId){
+    TenantContactsDTO tenantContactsDTO = tenantContactsService.selectTenantContactsByTenantContactsId(tenantContactsId);
+        return AjaxResult.success(tenantContactsDTO);
+    }
 
     /**
     * 分页查询租户联系人表列表

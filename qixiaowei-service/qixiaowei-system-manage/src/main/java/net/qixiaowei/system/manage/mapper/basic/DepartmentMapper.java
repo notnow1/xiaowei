@@ -77,7 +77,7 @@ public interface DepartmentMapper{
     * @param department
     * @return 结果
     */
-    int logicDeleteDepartmentByDepartmentId(@Param("department")Department department,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteDepartmentByDepartmentId(@Param("department")Department department);
 
     /**
     * 逻辑批量删除部门表

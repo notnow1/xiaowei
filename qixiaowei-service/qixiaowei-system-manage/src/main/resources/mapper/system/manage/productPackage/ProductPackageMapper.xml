@@ -142,69 +142,69 @@
     <update id="updateProductPackages">
         update product_package
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="product_package_name=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.productPackageName != null and item.productPackageName != ''">
-                                 when product_package_id=#{item.productPackageId} then #{item.productPackageName}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="product_package_description=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.productPackageDescription != null and item.productPackageDescription != ''">
-                                 when product_package_id=#{item.productPackageId} then #{item.productPackageDescription}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="remark=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.remark != null and item.remark != ''">
-                                 when product_package_id=#{item.productPackageId} then #{item.remark}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="sort=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.sort != null">
-                                 when product_package_id=#{item.productPackageId} then #{item.sort}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="delete_flag=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when product_package_id=#{item.productPackageId} then #{item.deleteFlag}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_by=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when product_package_id=#{item.productPackageId} then #{item.createBy}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_time=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when product_package_id=#{item.productPackageId} then #{item.createTime}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_by=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when product_package_id=#{item.productPackageId} then #{item.updateBy}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_time=case" suffix="end,">
-                <foreach collection="productPackageList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when product_package_id=#{item.productPackageId} then #{item.updateTime}
-                             </if>
-                </foreach>
-            </trim>
+                <trim prefix="product_package_name=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.productPackageName != null and item.productPackageName != ''">
+                                    when product_package_id=#{item.productPackageId} then #{item.productPackageName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_package_description=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.productPackageDescription != null and item.productPackageDescription != ''">
+                                    when product_package_id=#{item.productPackageId} then #{item.productPackageDescription}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="remark=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.remark != null and item.remark != ''">
+                                    when product_package_id=#{item.productPackageId} then #{item.remark}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when product_package_id=#{item.productPackageId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when product_package_id=#{item.productPackageId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when product_package_id=#{item.productPackageId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when product_package_id=#{item.productPackageId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when product_package_id=#{item.productPackageId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="productPackageList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when product_package_id=#{item.productPackageId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
         </trim>
         where
         <foreach collection="productPackageList" separator="or" item="item" index="index">

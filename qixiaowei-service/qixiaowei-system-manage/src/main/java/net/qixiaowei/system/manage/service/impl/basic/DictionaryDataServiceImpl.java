@@ -142,7 +142,9 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     @Override
     public int logicDeleteDictionaryDataByDictionaryDataId(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
-        BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
+        dictionaryData.setDictionaryDataId(dictionaryDataDTO.getDictionaryDataId());
+        dictionaryData.setUpdateTime(DateUtils.getNowDate());
+        dictionaryData.setUpdateBy(SecurityUtils.getUserId());
         // todo 暂时不知道被谁引用
         return dictionaryDataMapper.logicDeleteDictionaryDataByDictionaryDataId(dictionaryData, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }

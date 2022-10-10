@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * 产品文件表
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 @Data
 @Accessors(chain = true)

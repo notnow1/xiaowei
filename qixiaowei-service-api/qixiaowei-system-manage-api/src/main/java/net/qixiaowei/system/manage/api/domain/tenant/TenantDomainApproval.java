@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * 租户域名申请
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 @Data
 @Accessors(chain = true)

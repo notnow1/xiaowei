@@ -7,7 +7,7 @@ import net.qixiaowei.operate.cloud.api.dto.product.ProductFileDTO;
 /**
 * ProductFileService接口
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 public interface IProductFileService{
     /**

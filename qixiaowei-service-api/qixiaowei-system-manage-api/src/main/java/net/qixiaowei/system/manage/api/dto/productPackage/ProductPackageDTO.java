@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 /**
 * 产品包
 * @author TANGMICHI
-* @since 2022-09-27
+* @since 2022-10-09
 */
 @Data
 @Accessors(chain = true)
@@ -25,7 +25,7 @@ public class ProductPackageDTO {
 
     }
 
-    //新增检验
+    //删除检验
     public interface DeleteProductPackageDTO extends Default{
 
     }

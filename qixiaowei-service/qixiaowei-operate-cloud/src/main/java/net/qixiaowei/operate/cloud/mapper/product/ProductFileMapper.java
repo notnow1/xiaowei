@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * ProductFileMapper接口
 * @author TANGMICHI
-* @since 2022-10-08
+* @since 2022-10-09
 */
 public interface ProductFileMapper{
     /**
@@ -58,7 +58,7 @@ public interface ProductFileMapper{
     * @param productFile
     * @return 结果
     */
-    int logicDeleteProductFileByProductFileId(@Param("productFile")ProductFile productFile,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteProductFileByProductFileId(@Param("productFile")ProductFile productFile);
 
     /**
     * 逻辑批量删除产品文件表

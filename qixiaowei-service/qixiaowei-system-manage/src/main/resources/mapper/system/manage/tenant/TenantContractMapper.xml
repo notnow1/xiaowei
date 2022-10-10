@@ -160,90 +160,90 @@
     <update id="updateTenantContracts">
         update tenant_contract
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="tenant_id=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.tenantId != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.tenantId}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="sales_contract_no=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.salesContractNo != null and item.salesContractNo != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.salesContractNo}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="sales_personnel=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.salesPersonnel != null and item.salesPersonnel != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.salesPersonnel}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="contract_amount=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.contractAmount != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contractAmount}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="contract_start_time=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.contractStartTime != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contractStartTime}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="contract_end_time=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.contractEndTime != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.contractEndTime}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="product_package=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.productPackage != null and item.productPackage != ''">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.productPackage}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="delete_flag=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.deleteFlag}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_by=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.createBy}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_time=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.createTime}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_by=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.updateBy}
-                             </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_time=case" suffix="end,">
-                <foreach collection="tenantContractList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when tenant_contract_id=#{item.tenantContractId} then #{item.updateTime}
-                             </if>
-                </foreach>
-            </trim>
+                <trim prefix="tenant_id=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.tenantId != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.tenantId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sales_contract_no=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.salesContractNo != null and item.salesContractNo != ''">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.salesContractNo}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sales_personnel=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.salesPersonnel != null and item.salesPersonnel != ''">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.salesPersonnel}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="contract_amount=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.contractAmount != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.contractAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="contract_start_time=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.contractStartTime != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.contractStartTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="contract_end_time=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.contractEndTime != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.contractEndTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_package=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.productPackage != null and item.productPackage != ''">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.productPackage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="tenantContractList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when tenant_contract_id=#{item.tenantContractId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
         </trim>
         where
         <foreach collection="tenantContractList" separator="or" item="item" index="index">

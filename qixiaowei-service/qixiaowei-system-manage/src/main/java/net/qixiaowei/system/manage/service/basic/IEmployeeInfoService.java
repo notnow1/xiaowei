@@ -7,7 +7,7 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeInfoDTO;
 /**
 * EmployeeInfoService接口
 * @author TANGMICHI
-* @since 2022-09-30
+* @since 2022-10-09
 */
 public interface IEmployeeInfoService{
     /**

@@ -4,12 +4,9 @@ import java.util.List;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
-import net.qixiaowei.operate.cloud.api.domain.product.ProductSpecification;
-import net.qixiaowei.operate.cloud.api.domain.product.ProductSpecificationParam;
-import net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationDTO;
-import net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationParamDTO;
-import net.qixiaowei.operate.cloud.mapper.product.ProductSpecificationMapper;
-import net.qixiaowei.operate.cloud.mapper.product.ProductSpecificationParamMapper;
+import net.qixiaowei.operate.cloud.api.domain.product.*;
+import net.qixiaowei.operate.cloud.api.dto.product.*;
+import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductSpecificationParamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -19,9 +16,6 @@ import java.util.ArrayList;
 
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.product.Product;
-import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
-import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import org.springframework.util.CollectionUtils;
@@ -41,6 +35,10 @@ public class ProductServiceImpl implements IProductService {
     private ProductSpecificationMapper productSpecificationMapper;
     @Autowired
     private ProductSpecificationParamMapper productSpecificationParamMapper;
+    @Autowired
+    private ProductSpecificationDataMapper productSpecificationDataMapper;
+    @Autowired
+    private ProductFileMapper productFileMapper;
 
     /**
      * 查询产品表
@@ -50,7 +48,11 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public ProductDTO selectProductByProductId(Long productId) {
-        return productMapper.selectProductByProductId(productId);
+        //产品表
+        ProductDTO productDTO = productMapper.selectProductByProductId(productId);
+
+        // productSpecificationMapper.selectProductSpecificationByProductSpecificationId()
+        return productDTO;
     }
 
     /**
@@ -83,12 +85,18 @@ public class ProductServiceImpl implements IProductService {
         //封装产品表数据
         Product product = this.packProduct(productDTO);
 
-        //夫级id
+        //父级id
         Long parentProductId = productDTO.getParentProductId();
         if (null != parentProductId) {
-            ProductDTO productDTO2 = productMapper.selectProductByParentProductId(parentProductId);
-            //拼接祖级id
-            product.setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
+            ProductDTO productDTO2 = productMapper.selectProductByProductId(parentProductId);
+            product.setParentProductId(productDTO2.getProductId());
+            if (productDTO2.getAncestors() == null) {
+                //拼接祖级id
+                product.setAncestors(productDTO2.getParentProductId()+ "," +productDTO2.getProductId());
+            }else {
+                //拼接祖级id
+                product.setAncestors(productDTO2.getAncestors() + "," + productDTO2.getProductId());
+            }
         }
         //新增产品表
         try {
@@ -102,8 +110,16 @@ public class ProductServiceImpl implements IProductService {
         this.packProductSpecification(productSpecificationDTOList, product);
         //新增产品参数表
         List<ProductSpecificationParamDTO> productSpecificationParamDTOList = productDTO.getProductSpecificationParamDTOList();
-
+        //封装写入产品参数表数据
+        this.packProductSpecificationParam(productSpecificationParamDTOList,product);
         //新增产品数据表
+        List<ProductSpecificationDataDTO> productSpecificationDataDTOList = productDTO.getProductSpecificationDataDTOList();
+        //封装写入产品数据表数据
+        this.packProductSpecificationData(productSpecificationDataDTOList,product);
+        //新增产品文件表
+        List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
+        //封装写入产品文件表数据
+        this.packProductFile(productFileDTOList,product);
         //新增产品附件表
         return i;
     }
@@ -147,6 +163,7 @@ public class ProductServiceImpl implements IProductService {
      * @param product
      */
     public void packProductSpecificationParam(List<ProductSpecificationParamDTO> productSpecificationParamDTOList, Product product) {
+        int i = 1;
         if (!CollectionUtils.isEmpty(productSpecificationParamDTOList)) {
             List<ProductSpecificationParam> productSpecificationParamList = new ArrayList<>();
 
@@ -155,6 +172,8 @@ public class ProductServiceImpl implements IProductService {
                 BeanUtils.copyProperties(productSpecificationParamDTO, productSpecificationParam);
                 //产品id
                 productSpecificationParam.setProductId(product.getProductId());
+                //排序
+                productSpecificationParam.setSort(i);
                 //删除标识
                 productSpecificationParam.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                 productSpecificationParam.setCreateBy(SecurityUtils.getUserId());
@@ -162,6 +181,7 @@ public class ProductServiceImpl implements IProductService {
                 productSpecificationParam.setUpdateTime(DateUtils.getNowDate());
                 productSpecificationParam.setUpdateBy(SecurityUtils.getUserId());
                 productSpecificationParamList.add(productSpecificationParam);
+                i++;
             }
             if (!CollectionUtils.isEmpty(productSpecificationParamList)) {
                 try {
@@ -174,6 +194,75 @@ public class ProductServiceImpl implements IProductService {
     }
 
     /**
+     * 封装写入产品数据表数据
+     *
+     * @param productSpecificationDataDTOList
+     * @param product
+     */
+    public void packProductSpecificationData(List<ProductSpecificationDataDTO> productSpecificationDataDTOList, Product product) {
+        if (!CollectionUtils.isEmpty(productSpecificationDataDTOList)) {
+            List<ProductSpecificationData> productSpecificationDataList = new ArrayList<>();
+
+            for (ProductSpecificationDataDTO productSpecificationDataDTO : productSpecificationDataDTOList) {
+                ProductSpecificationData productSpecificationData = new ProductSpecificationData();
+                BeanUtils.copyProperties(productSpecificationDataDTO, productSpecificationData);
+                //产品id
+                productSpecificationData.setProductId(product.getProductId());
+                //删除标识
+                productSpecificationData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                productSpecificationData.setCreateBy(SecurityUtils.getUserId());
+                productSpecificationData.setCreateTime(DateUtils.getNowDate());
+                productSpecificationData.setUpdateTime(DateUtils.getNowDate());
+                productSpecificationData.setUpdateBy(SecurityUtils.getUserId());
+                productSpecificationDataList.add(productSpecificationData);
+            }
+            if (!CollectionUtils.isEmpty(productSpecificationDataList)) {
+                try {
+                    productSpecificationDataMapper.batchProductSpecificationData(productSpecificationDataList);
+                } catch (Exception e) {
+                    throw new ServiceException("新增产品数据表失败");
+                }
+            }
+        }
+    }
+
+    /**
+     * 封装写入产品文件表数据
+     *
+     * @param productFileDTOList
+     * @param product
+     */
+    public void packProductFile(List<ProductFileDTO> productFileDTOList, Product product) {
+        int i = 1;
+        if (!CollectionUtils.isEmpty(productFileDTOList)) {
+            List<ProductFile> productFileList = new ArrayList<>();
+
+            for (ProductFileDTO productFileDTO : productFileDTOList) {
+                ProductFile productFile = new ProductFile();
+                BeanUtils.copyProperties(productFileDTO, productFile);
+                //产品id
+                productFile.setProductId(product.getProductId());
+                //排序
+                productFile.setSort(i);
+                //删除标识
+                productFile.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                productFile.setCreateBy(SecurityUtils.getUserId());
+                productFile.setCreateTime(DateUtils.getNowDate());
+                productFile.setUpdateTime(DateUtils.getNowDate());
+                productFile.setUpdateBy(SecurityUtils.getUserId());
+                productFileList.add(productFile);
+                i++;
+            }
+            if (!CollectionUtils.isEmpty(productFileList)) {
+                try {
+                    productFileMapper.batchProductFile(productFileList);
+                } catch (Exception e) {
+                    throw new ServiceException("新增产品文件表失败");
+                }
+            }
+        }
+    }
+    /**
      * 封装产品表数据
      *
      * @param productDTO
@@ -183,6 +272,7 @@ public class ProductServiceImpl implements IProductService {
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
 
+        product.setParentProductId(0L);
         product.setCreateBy(SecurityUtils.getUserId());
         product.setCreateTime(DateUtils.getNowDate());
         product.setUpdateTime(DateUtils.getNowDate());
@@ -247,7 +337,9 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public int logicDeleteProductByProductId(ProductDTO productDTO) {
         Product product = new Product();
-        BeanUtils.copyProperties(productDTO, product);
+        product.setProductId(productDTO.getProductId());
+        product.setUpdateTime(DateUtils.getNowDate());
+        product.setUpdateBy(SecurityUtils.getUserId());
         return productMapper.logicDeleteProductByProductId(product, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 

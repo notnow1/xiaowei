@@ -6,19 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import org.springframework.transaction.annotation.Transactional;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContactsMapper;
 import net.qixiaowei.system.manage.service.tenant.ITenantContactsService;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 
 
 /**
 * TenantContactsService业务层处理
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 @Service
 public class TenantContactsServiceImpl implements ITenantContactsService{
@@ -57,13 +57,15 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
     * @param tenantContactsDTO 租户联系人表
     * @return 结果
     */
-    @Transactional
     @Override
     public int insertTenantContacts(TenantContactsDTO tenantContactsDTO){
     TenantContacts tenantContacts=new TenantContacts();
     BeanUtils.copyProperties(tenantContactsDTO,tenantContacts);
+    tenantContacts.setCreateBy(SecurityUtils.getUserId());
     tenantContacts.setCreateTime(DateUtils.getNowDate());
     tenantContacts.setUpdateTime(DateUtils.getNowDate());
+    tenantContacts.setUpdateBy(SecurityUtils.getUserId());
+    tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
     return tenantContactsMapper.insertTenantContacts(tenantContacts);
     }
 
@@ -73,14 +75,13 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
     * @param tenantContactsDTO 租户联系人表
     * @return 结果
     */
-    @Transactional
     @Override
     public int updateTenantContacts(TenantContactsDTO tenantContactsDTO)
     {
     TenantContacts tenantContacts=new TenantContacts();
     BeanUtils.copyProperties(tenantContactsDTO,tenantContacts);
-    tenantContacts.setCreateTime(DateUtils.getNowDate());
     tenantContacts.setUpdateTime(DateUtils.getNowDate());
+    tenantContacts.setUpdateBy(SecurityUtils.getUserId());
     return tenantContactsMapper.updateTenantContacts(tenantContacts);
     }
 
@@ -90,13 +91,13 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
     * @param tenantContactsDtos 需要删除的租户联系人表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int logicDeleteTenantContactsByTenantContactsIds(List<TenantContactsDTO> tenantContactsDtos){
-        List<Long> stringList= new ArrayList();
-        stringList = tenantContactsDtos.stream().map(TenantContactsDTO::getTenantContactsId).collect(Collectors.toList());
-      return tenantContactsMapper.logicDeleteTenantContactsByTenantContactsIds(stringList,tenantContactsDtos.get(0).getUpdateBy(),DateUtils.getNowDate());
+            List<Long> stringList = new ArrayList();
+            for (TenantContactsDTO tenantContactsDTO : tenantContactsDtos) {
+                stringList.add(tenantContactsDTO.getTenantContactsId());
+            }
+    return tenantContactsMapper.logicDeleteTenantContactsByTenantContactsIds(stringList,tenantContactsDtos.get(0).getUpdateBy(),DateUtils.getNowDate());
     }
 
     /**
@@ -105,8 +106,6 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
     * @param tenantContactsId 租户联系人表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int deleteTenantContactsByTenantContactsId(Long tenantContactsId)
     {
@@ -119,12 +118,13 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
      * @param  tenantContactsDTO 租户联系人表
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDeleteTenantContactsByTenantContactsId(TenantContactsDTO tenantContactsDTO)
      {
      TenantContacts tenantContacts=new TenantContacts();
-     BeanUtils.copyProperties(tenantContactsDTO,tenantContacts);
+     tenantContacts.setTenantContactsId(tenantContactsDTO.getTenantContactsId());
+     tenantContacts.setUpdateTime(DateUtils.getNowDate());
+     tenantContacts.setUpdateBy(SecurityUtils.getUserId());
      return tenantContactsMapper.logicDeleteTenantContactsByTenantContactsId(tenantContacts);
      }
 
@@ -134,7 +134,7 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
      * @param  tenantContactsDTO 租户联系人表
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteTenantContactsByTenantContactsId(TenantContactsDTO tenantContactsDTO)
      {
@@ -148,14 +148,14 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
      * @param tenantContactsDtos 需要删除的租户联系人表主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteTenantContactsByTenantContactsIds(List<TenantContactsDTO> tenantContactsDtos){
      List<Long> stringList = new ArrayList();
      for (TenantContactsDTO tenantContactsDTO : tenantContactsDtos) {
      stringList.add(tenantContactsDTO.getTenantContactsId());
      }
-     return tenantContactsMapper.deleteTenantContactsByTenantContactsIds(stringList,tenantContactsDtos.get(0).getUpdateBy(),DateUtils.getNowDate());
+     return tenantContactsMapper.deleteTenantContactsByTenantContactsIds(stringList);
      }
 
     /**
@@ -163,15 +163,18 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
     *
     * @param tenantContactsDtos 租户联系人表对象
     */
-    @Transactional
+    
     public int insertTenantContactss(List<TenantContactsDTO> tenantContactsDtos){
       List<TenantContacts> tenantContactsList = new ArrayList();
 
     for (TenantContactsDTO tenantContactsDTO : tenantContactsDtos) {
       TenantContacts tenantContacts =new TenantContacts();
       BeanUtils.copyProperties(tenantContactsDTO,tenantContacts);
-    tenantContacts.setCreateTime(DateUtils.getNowDate());
-    tenantContacts.setUpdateTime(DateUtils.getNowDate());
+       tenantContacts.setCreateBy(SecurityUtils.getUserId());
+       tenantContacts.setCreateTime(DateUtils.getNowDate());
+       tenantContacts.setUpdateTime(DateUtils.getNowDate());
+       tenantContacts.setUpdateBy(SecurityUtils.getUserId());
+       tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
       tenantContactsList.add(tenantContacts);
     }
     return tenantContactsMapper.batchTenantContacts(tenantContactsList);
@@ -182,15 +185,17 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
     *
     * @param tenantContactsDtos 租户联系人表对象
     */
-    @Transactional
+    
     public int updateTenantContactss(List<TenantContactsDTO> tenantContactsDtos){
      List<TenantContacts> tenantContactsList = new ArrayList();
 
      for (TenantContactsDTO tenantContactsDTO : tenantContactsDtos) {
      TenantContacts tenantContacts =new TenantContacts();
      BeanUtils.copyProperties(tenantContactsDTO,tenantContacts);
-     tenantContacts.setCreateTime(DateUtils.getNowDate());
-     tenantContacts.setUpdateTime(DateUtils.getNowDate());
+        tenantContacts.setCreateBy(SecurityUtils.getUserId());
+        tenantContacts.setCreateTime(DateUtils.getNowDate());
+        tenantContacts.setUpdateTime(DateUtils.getNowDate());
+        tenantContacts.setUpdateBy(SecurityUtils.getUserId());
      tenantContactsList.add(tenantContacts);
      }
      return tenantContactsMapper.updateTenantContactss(tenantContactsList);

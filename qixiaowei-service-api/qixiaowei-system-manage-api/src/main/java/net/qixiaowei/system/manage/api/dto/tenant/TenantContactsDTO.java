@@ -1,25 +1,38 @@
 package net.qixiaowei.system.manage.api.dto.tenant;
 
 import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import net.qixiaowei.integration.common.utils.Phone;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.util.Date;
+import javax.validation.groups.Default;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
 * 租户联系人表
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 @Data
 @Accessors(chain = true)
 public class TenantContactsDTO {
+
+    //查询检验
+    public interface QueryTenantContactsDTO extends Default{
+
+    }
+    //新增检验
+    public interface AddTenantContactsDTO extends Default{
+
+    }
+
+    //删除检验
+    public interface DeleteTenantContactsDTO extends Default{
+
+    }
+    //修改检验
+    public interface UpdateTenantContactsDTO extends Default{
+
+    }
     /**
     * ID
     */
@@ -31,24 +44,18 @@ public class TenantContactsDTO {
     /**
     * 联系人姓名
     */
-    @NotBlank(message = "联系人姓名不能为空")
     private  String contactName;
     /**
     * 联系人手机号
     */
-    @NotBlank(message = "联系人手机号不能为空")
-    @Pattern(regexp = "^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}$", message = "手机号码有误！")
     private  String contactTel;
     /**
     * 联系人邮箱
     */
-    @NotBlank(message = "联系人邮箱不能为空")
-    @Email
     private  String contactEmail;
     /**
     * 联系人职务
     */
-    @NotBlank(message = "联系人职务不能为空")
     private  String contactDuty;
     /**
     * 备注

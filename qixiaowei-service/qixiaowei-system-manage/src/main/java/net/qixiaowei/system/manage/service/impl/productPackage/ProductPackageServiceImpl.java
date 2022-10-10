@@ -18,7 +18,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 /**
 * ProductPackageService业务层处理
 * @author TANGMICHI
-* @since 2022-09-27
+* @since 2022-10-09
 */
 @Service
 public class ProductPackageServiceImpl implements IProductPackageService{
@@ -57,7 +57,6 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     * @param productPackageDTO 产品包
     * @return 结果
     */
-    @Transactional
     @Override
     public int insertProductPackage(ProductPackageDTO productPackageDTO){
     ProductPackage productPackage=new ProductPackage();
@@ -76,7 +75,6 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     * @param productPackageDTO 产品包
     * @return 结果
     */
-    @Transactional
     @Override
     public int updateProductPackage(ProductPackageDTO productPackageDTO)
     {
@@ -93,8 +91,6 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     * @param productPackageDtos 需要删除的产品包主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int logicDeleteProductPackageByProductPackageIds(List<ProductPackageDTO> productPackageDtos){
             List<Long> stringList = new ArrayList();
@@ -110,8 +106,6 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     * @param productPackageId 产品包主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int deleteProductPackageByProductPackageId(Long productPackageId)
     {
@@ -124,13 +118,14 @@ public class ProductPackageServiceImpl implements IProductPackageService{
      * @param  productPackageDTO 产品包
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDeleteProductPackageByProductPackageId(ProductPackageDTO productPackageDTO)
      {
      ProductPackage productPackage=new ProductPackage();
-     BeanUtils.copyProperties(productPackageDTO,productPackage);
-     return productPackageMapper.logicDeleteProductPackageByProductPackageId(productPackage,SecurityUtils.getUserId(),DateUtils.getNowDate());
+     productPackage.setProductPackageId(productPackageDTO.getProductPackageId());
+     productPackage.setUpdateTime(DateUtils.getNowDate());
+     productPackage.setUpdateBy(SecurityUtils.getUserId());
+     return productPackageMapper.logicDeleteProductPackageByProductPackageId(productPackage);
      }
 
      /**
@@ -139,7 +134,7 @@ public class ProductPackageServiceImpl implements IProductPackageService{
      * @param  productPackageDTO 产品包
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteProductPackageByProductPackageId(ProductPackageDTO productPackageDTO)
      {
@@ -153,7 +148,7 @@ public class ProductPackageServiceImpl implements IProductPackageService{
      * @param productPackageDtos 需要删除的产品包主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteProductPackageByProductPackageIds(List<ProductPackageDTO> productPackageDtos){
      List<Long> stringList = new ArrayList();
@@ -168,7 +163,7 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     *
     * @param productPackageDtos 产品包对象
     */
-    @Transactional
+    
     public int insertProductPackages(List<ProductPackageDTO> productPackageDtos){
       List<ProductPackage> productPackageList = new ArrayList();
 
@@ -190,7 +185,7 @@ public class ProductPackageServiceImpl implements IProductPackageService{
     *
     * @param productPackageDtos 产品包对象
     */
-    @Transactional
+    
     public int updateProductPackages(List<ProductPackageDTO> productPackageDtos){
      List<ProductPackage> productPackageList = new ArrayList();
 

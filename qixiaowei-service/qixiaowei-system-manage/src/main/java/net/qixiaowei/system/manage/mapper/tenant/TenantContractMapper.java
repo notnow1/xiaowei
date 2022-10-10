@@ -1,16 +1,16 @@
 package net.qixiaowei.system.manage.mapper.tenant;
 
-import java.util.Date;
 import java.util.List;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import org.apache.ibatis.annotations.Param;
+import java.util.Date;
 
 
 /**
 * TenantContractMapper接口
 * @author TANGMICHI
-* @since 2022-09-26
+* @since 2022-10-09
 */
 public interface TenantContractMapper{
     /**
@@ -66,7 +66,7 @@ public interface TenantContractMapper{
     * @param tenantContractIds 需要删除的数据主键集合
     * @return 结果
     */
-    int logicDeleteTenantContractByTenantContractIds(@Param("tenantContractIds")List<Long> tenantContractIds,@Param("updateBy")Long updateBy,@Param("updateTime") Date updateTime);
+    int logicDeleteTenantContractByTenantContractIds(@Param("tenantContractIds")List<Long> tenantContractIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
 
 
     /**
@@ -83,7 +83,7 @@ public interface TenantContractMapper{
     * @param tenantContractIds 需要删除的数据主键集合
     * @return 结果
     */
-    int deleteTenantContractByTenantContractIds(@Param("tenantContractIds")List<Long> tenantContractIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int deleteTenantContractByTenantContractIds(@Param("tenantContractIds")List<Long> tenantContractIds);
 
     /**
     * 批量新增租户合同信息

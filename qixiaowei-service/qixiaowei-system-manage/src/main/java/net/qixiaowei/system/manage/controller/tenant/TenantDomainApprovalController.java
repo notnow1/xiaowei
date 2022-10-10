@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 /**
 *
 * @author TANGMICHI
-* @since 2022-09-24
+* @since 2022-10-09
 */
 @RestController
 @RequestMapping("tenantDomainApproval")
@@ -32,6 +32,17 @@ public class TenantDomainApprovalController extends BaseController
 
     @Autowired
     private ITenantDomainApprovalService tenantDomainApprovalService;
+
+
+    /**
+    * 查询租户域名申请详情
+    */
+    @RequiresPermissions("system:manage:tenantDomainApproval:info")
+    @GetMapping("/info/{tenantDomainApprovalId}")
+    public AjaxResult info(@PathVariable Long tenantDomainApprovalId){
+    TenantDomainApprovalDTO tenantDomainApprovalDTO = tenantDomainApprovalService.selectTenantDomainApprovalByTenantDomainApprovalId(tenantDomainApprovalId);
+        return AjaxResult.success(tenantDomainApprovalDTO);
+    }
 
     /**
     * 分页查询租户域名申请列表
