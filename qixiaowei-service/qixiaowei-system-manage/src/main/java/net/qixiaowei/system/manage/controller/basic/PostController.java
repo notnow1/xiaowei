@@ -57,6 +57,15 @@ public class PostController extends BaseController
 
 
     /**
+     * 查询岗位详情
+     */
+    //@RequiresPermissions("system:manage:post:list")
+    @GetMapping("/info/{postId}")
+    public AjaxResult list(@PathVariable Long postId){
+        PostDTO postDTO = postService.selectPostByPostId(postId);
+        return AjaxResult.success(postDTO);
+    }
+    /**
     * 新增岗位表
     */
     //@RequiresPermissions("system:manage:post:add")

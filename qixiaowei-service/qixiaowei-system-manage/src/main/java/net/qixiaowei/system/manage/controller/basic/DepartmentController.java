@@ -62,9 +62,9 @@ public class DepartmentController extends BaseController
      *部门岗位详情
      */
     //@RequiresPermissions("system:manage:department:list")
-    @PostMapping("/deptParticulars")
-    public AjaxResult deptParticulars(@RequestBody DepartmentDTO departmentDTO){
-        DepartmentDTO departmentDTO1 = departmentService.deptParticulars(departmentDTO);
+    @GetMapping("/deptParticulars/{departmentId}")
+    public AjaxResult deptParticulars(@PathVariable Long departmentId){
+        DepartmentDTO departmentDTO1 = departmentService.deptParticulars(departmentId);
         return AjaxResult.success(departmentDTO1);
     }
 

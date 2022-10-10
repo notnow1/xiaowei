@@ -59,7 +59,14 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public PostDTO selectPostByPostId(Long postId) {
-        return postMapper.selectPostByPostId(postId);
+        PostDTO postDTO = postMapper.selectPostByPostId(postId);
+        //先查询中间表
+        List<DepartmentPostDTO> departmentPostDTOS = departmentPostMapper.selectDepartmentPostId(postId);
+        //组织id集合查询
+        List<Long> collect = departmentPostDTOS.stream().map(DepartmentPostDTO::getDepartmentId).collect(Collectors.toList());
+        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentByDepartmentIds(collect);
+        postDTO.setDepartmentDTOList(departmentDTOList);
+        return postDTO;
     }
 
     /**
@@ -110,7 +117,7 @@ public class PostServiceImpl implements IPostService {
             //拿到code编码批量查询
             List<String> collect = collect1.stream().map(DepartmentDTO::getDepartmentCode).collect(Collectors.toList());
 
-            departmentDTOList1 = departmentMapper.selectDepartmentIds(collect);
+            departmentDTOList1 = departmentMapper.selectDepartmentCodes(collect);
             if (CollectionUtils.isEmpty(departmentDTOList1)) {
                 throw new ServiceException("组织信息不存在 无法新增！");
             }
@@ -182,7 +189,7 @@ public class PostServiceImpl implements IPostService {
             //拿到code编码批量查询
             List<String> collect = collect3.stream().map(DepartmentDTO::getDepartmentCode).collect(Collectors.toList());
 
-            departmentDTOList1 = departmentMapper.selectDepartmentIds(collect);
+            departmentDTOList1 = departmentMapper.selectDepartmentCodes(collect);
             if (CollectionUtils.isEmpty(departmentDTOList1)) {
                 throw new ServiceException("组织信息不存在 无法新增！");
             }

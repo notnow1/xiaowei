@@ -232,7 +232,7 @@
         where delete_flag = 0
     </select>
     <!--    查询code编码是否已经存在-->
-    <select id="selectDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+    <select id="selectDepartmentCode" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT department_id, parent_department_id, ancestors, department_code, department_name, `level`,
         department_leader_id, department_leader_post_id, examination_leader_id, department_importance_factor,
         department_description, sort, status, delete_flag, create_by, create_time, update_by, update_time
@@ -262,8 +262,8 @@
         on dept.department_id = deptpost.department_id
         and deptpost.delete_flag=0
         where dept.delete_flag =0
-        <if test="departmentDTO.departmentId != null">
-            and dept.department_id=#{departmentDTO.departmentId}
+        <if test="departmentId != null">
+            and dept.department_id=#{departmentId}
         </if>
     </select>
     <!--    分页查询部门人员表列表-->
@@ -369,7 +369,7 @@
         </foreach>)
     </select>
 <!--    批量查询code编码是否已经存在-->
-    <select id="selectDepartmentIds" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+    <select id="selectDepartmentCodes" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT department_id, parent_department_id, ancestors, department_code, department_name, `level`,
         department_leader_id, department_leader_post_id, examination_leader_id, department_importance_factor,
         department_description, sort, status, delete_flag, create_by, create_time, update_by, update_time
@@ -380,6 +380,21 @@
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+        and delete_flag = 0
+    </select>
+<!--    批量查询部门表-->
+    <select id="selectDepartmentByDepartmentIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        SELECT department_id, parent_department_id, ancestors, department_code, department_name, `level`,
+        department_leader_id, department_leader_post_id, examination_leader_id, department_importance_factor,
+        department_description, sort, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM department
+        where department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag = 0
     </select>
 

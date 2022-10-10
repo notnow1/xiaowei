@@ -59,10 +59,10 @@ public class EmployeeController extends BaseController
      * 查询员工单条信息
      */
     //@RequiresPermissions("system:manage:employee:list")
-    @GetMapping("/info")
-    public AjaxResult info(EmployeeDTO employeeDTO){
-       EmployeeDTO employeeDTO1 = employeeService.selectEmployee(employeeDTO);
-        return AjaxResult.success(employeeDTO1);
+    @GetMapping("/info/{employeeId}")
+    public AjaxResult info(@PathVariable  Long employeeId){
+       EmployeeDTO employeeDTO = employeeService.selectEmployeeByEmployeeId(employeeId);
+        return AjaxResult.success(employeeDTO);
     }
     /**
     * 新增员工表

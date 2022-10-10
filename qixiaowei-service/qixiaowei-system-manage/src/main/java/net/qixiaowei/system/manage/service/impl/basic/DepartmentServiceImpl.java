@@ -173,7 +173,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public int insertDepartment(DepartmentDTO departmentDTO) {
         //查询code编码是否已经存在
-        DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentId(departmentDTO.getDepartmentCode());
+        DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentCode(departmentDTO.getDepartmentCode());
         if (null != departmentDTO1) {
             throw new ServiceException("code编码已经存在 不允许添加相同编码" + departmentDTO.getDepartmentCode());
         }
@@ -348,7 +348,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentDTO> collect = departmentDTOList.stream().distinct().collect(Collectors.toList());
         for (DepartmentDTO dto : collect) {
             // 岗位是否被引用
-            List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto);
+            List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
             if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
                 posterreo.append("组织编码" + dto.getDepartmentCode() + "\r\n");
             }
@@ -403,15 +403,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
     /**
      * 部门岗位详情
      *
-     * @param departmentDTO
+     * @param departmentId
      * @return
      */
     @Override
-    public DepartmentDTO deptParticulars(DepartmentDTO departmentDTO) {
+    public DepartmentDTO deptParticulars(Long departmentId) {
         //查询组织信息
-        DepartmentDTO departmentDTO1 = departmentMapper.selectParentDepartmentId(departmentDTO.getDepartmentId());
+        DepartmentDTO departmentDTO1 = departmentMapper.selectParentDepartmentId(departmentId);
         //查询组织关联岗位信息
-        List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentDTO);
+        List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentId);
         departmentDTO1.setDepartmentPostDTOList(departmentPostDTOList);
         return departmentDTO1;
     }
@@ -440,7 +440,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         department.setUpdateTime(DateUtils.getNowDate());
         department.setUpdateBy(SecurityUtils.getUserId());
         //岗位是否被引用
-        List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(departmentDTO);
+        List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(departmentDTO.getDepartmentId());
         if (null != departmentPostDTOS) {
             posterreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\r\n");
         }
@@ -487,7 +487,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
         for (DepartmentDTO dto : departmentDTOList) {
             // 岗位是否被引用
-            List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto);
+            List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
             if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
                 posterreo.append("组织编码" + dto.getDepartmentCode() + "\r\n");
             }

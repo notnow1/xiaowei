@@ -55,6 +55,16 @@ public class DictionaryTypeController extends BaseController
     return AjaxResult.success(list);
     }
 
+    /**
+     * 查询字典类型表详情
+     */
+    //@RequiresPermissions("system:manage:dictionaryType:list")
+    @GetMapping("/info/{dictionaryTypeId}")
+    public AjaxResult list(@PathVariable Long dictionaryTypeId){
+        DictionaryTypeDTO dictionaryTypeDTO = dictionaryTypeService.selectDictionaryTypeByDictionaryTypeId(dictionaryTypeId);
+        return AjaxResult.success(dictionaryTypeDTO);
+    }
+
 
     /**
     * 新增字典类型表
