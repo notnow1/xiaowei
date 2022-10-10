@@ -238,7 +238,7 @@ public class IndustryServiceImpl implements IIndustryService {
     @Transactional
     @Override
     public int deleteIndustryByIndustryIds(List<IndustryDTO> industryDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (IndustryDTO industryDTO : industryDtos) {
             stringList.add(industryDTO.getIndustryId());
         }
@@ -252,7 +252,7 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Transactional
     public int insertIndustrys(List<IndustryDTO> industryDtos) {
-        List<Industry> industryList = new ArrayList();
+        List<Industry> industryList = new ArrayList<>();
         for (IndustryDTO industryDTO : industryDtos) {
             Industry industry = new Industry();
             BeanUtils.copyProperties(industryDTO, industry);
@@ -273,7 +273,7 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Transactional
     public int updateIndustrys(List<IndustryDTO> industryDtos) {
-        List<Industry> industryList = new ArrayList();
+        List<Industry> industryList = new ArrayList<>();
 
         for (IndustryDTO industryDTO : industryDtos) {
             Industry industry = new Industry();

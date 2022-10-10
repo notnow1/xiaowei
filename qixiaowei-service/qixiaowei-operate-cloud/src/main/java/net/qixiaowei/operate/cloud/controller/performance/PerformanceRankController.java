@@ -92,26 +92,6 @@ public class PerformanceRankController extends BaseController {
     }
 
     /**
-     * 批量修改绩效等级表
-     */
-//    @RequiresPermissions("operate:cloud:performanceRank:edits")
-    @Log(title = "批量修改绩效等级表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<PerformanceRankDTO> performanceRankDtos) {
-        return toAjax(performanceRankService.updatePerformanceRanks(performanceRankDtos));
-    }
-
-    /**
-     * 批量新增绩效等级表
-     */
-//    @RequiresPermissions("operate:cloud:performanceRank:insertPerformanceRanks")
-    @Log(title = "批量新增绩效等级表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertPerformanceRanks")
-    public AjaxResult insertPerformanceRanks(@RequestBody List<PerformanceRankDTO> performanceRankDtos) {
-        return toAjax(performanceRankService.insertPerformanceRanks(performanceRankDtos));
-    }
-
-    /**
      * 逻辑批量删除绩效等级表
      */
 //    @RequiresPermissions("operate:cloud:performanceRank:removes")
@@ -120,4 +100,5 @@ public class PerformanceRankController extends BaseController {
     public AjaxResult removes(@RequestBody List<Long> PerformanceRankIds) {
         return toAjax(performanceRankService.logicDeletePerformanceRankByPerformanceRankIds(PerformanceRankIds));
     }
+
 }

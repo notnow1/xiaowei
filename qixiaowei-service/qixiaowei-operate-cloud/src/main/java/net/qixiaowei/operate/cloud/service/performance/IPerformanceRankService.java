@@ -1,8 +1,11 @@
 package net.qixiaowei.operate.cloud.service.performance;
 
 import java.util.List;
+import java.util.Map;
 
+import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRank;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 
 
 /**
@@ -107,4 +110,11 @@ public interface IPerformanceRankService {
      * @return
      */
     PerformanceRankDTO detailPerformanceRank(Long performanceRankId);
+
+    /**
+     * 返回不同performance_rank_category的PerformanceRankDTO
+     *
+     * @return
+     */
+    Map<String, List<PerformanceRank>> detailLevelInfo();
 }

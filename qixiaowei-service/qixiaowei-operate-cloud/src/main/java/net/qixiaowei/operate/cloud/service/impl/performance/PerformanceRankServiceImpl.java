@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.performance;
 
+import java.util.HashMap;
 import java.util.List;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -12,6 +13,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -258,6 +260,21 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
                 = performanceRankFactorService.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
         performanceRankDTO.setPerformanceRankFactorDTOS(performanceRankFactorDTOS);
         return performanceRankDTO;
+    }
+
+    /**
+     * 返回不同performance_rank_category的PerformanceRankDTO
+     *
+     * @return
+     */
+    @Override
+    public Map<String, List<PerformanceRank>> detailLevelInfo() {
+        Map<String, List<PerformanceRank>> PerformanceRankDTOS = new HashMap<>();
+        List<PerformanceRank> organizeDto = performanceRankMapper.selectOrganizeDto();
+        List<PerformanceRank> personDto = performanceRankMapper.selectPersonDto();
+        PerformanceRankDTOS.put("organize", organizeDto);
+        PerformanceRankDTOS.put("person", personDto);
+        return PerformanceRankDTOS;
     }
 }
 

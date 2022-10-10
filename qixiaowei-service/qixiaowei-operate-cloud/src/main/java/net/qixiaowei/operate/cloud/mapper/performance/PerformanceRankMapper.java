@@ -120,4 +120,18 @@ public interface PerformanceRankMapper {
      * @return
      */
     int isExist(@Param("performanceRankIds") List<Long> performanceRankIds);
+
+    /**
+     * 获取组织绩效等级体系表
+     *
+     * @return
+     */
+    List<PerformanceRank> selectOrganizeDto();
+
+    /**
+     * 获取个人绩效等级体系表
+     *
+     * @return
+     */
+    List<PerformanceRank> selectPersonDto();
 }
