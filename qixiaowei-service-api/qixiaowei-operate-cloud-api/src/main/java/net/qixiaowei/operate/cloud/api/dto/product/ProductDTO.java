@@ -101,20 +101,16 @@ public class ProductDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
-
-    /**
-     * 产品规格表集合
-     */
-    private List<ProductSpecificationDTO> productSpecificationDTOList;
-    /**
-     * 产品规格数据表集合
-     */
-    private List<ProductSpecificationDataDTO> productSpecificationDataDTOList;
-
     /**
      * 产品规格参数表集合
      */
     private List<ProductSpecificationParamDTO> productSpecificationParamDTOList;
+
+    /**
+     * 产品规格数据表集合
+     */
+    private List<ProductDataDTO> productDataDTOList;
+
     /**
      * 产品文件表集合
      */

@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.api.dto.product;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -33,6 +34,8 @@ public class ProductSpecificationDataDTO {
     public interface UpdateProductSpecificationDataDTO extends Default{
 
     }
+
+
     /**
     * ID
     */
@@ -49,6 +52,15 @@ public class ProductSpecificationDataDTO {
     * 产品规格参数ID
     */
     private  Long productSpecificationParamId;
+
+    /**
+     * 规格名称
+     */
+    private  String specificationName;
+    /**
+     * 目录价,单位元
+     */
+    private BigDecimal listPrice;
     /**
     * 产品规格参数数值
     */

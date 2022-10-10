@@ -253,9 +253,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
         Department department = new Department();
         //排序
         int i = 1;
+        DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
         BeanUtils.copyProperties(departmentDTO, department);
         department.setUpdateTime(DateUtils.getNowDate());
         department.setUpdateBy(SecurityUtils.getUserId());
+        if (StringUtils.isBlank(departmentDTO1.getAncestors())){
+            department.setAncestors(departmentDTO1.getParentDepartmentId()+","+departmentDTO1.getDepartmentId());
+        }else {
+            department.setAncestors(departmentDTO1.getAncestors()+","+departmentDTO1.getDepartmentId());
+        }
+
+
         //接收部门岗位关联表参数
         List<DepartmentPostDTO> departmentPostDTOList = departmentDTO.getDepartmentPostDTOList();
         //根据部门id查询出数据库的数据
@@ -267,7 +275,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 !departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()).contains(a.getDepartmentPostId())
         ).collect(Collectors.toList()).stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(departmentPostIds)) {
-            departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            try {
+                departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除组织岗位关联失败");
+            }
         }
         //去除已经删除的id
         for (int i1 = 0; i1 < departmentPostDTOList.size(); i1++) {

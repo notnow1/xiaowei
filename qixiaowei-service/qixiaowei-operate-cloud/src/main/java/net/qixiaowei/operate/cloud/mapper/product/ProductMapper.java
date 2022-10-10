@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.mapper.product;
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.product.Product;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDataDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
