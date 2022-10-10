@@ -11,6 +11,16 @@
         and delete_flag=0
     </select>
 
+<!--    根据产品id查询产品规格参数表-->
+    <select id="selectProductId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationParamDTO">
+        SELECT
+            product_specification_param_id, product_id, specification_param_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_specification_param
+        WHERE  product_id=#{productId}
+          and delete_flag=0
+        order by sort
+    </select>
     <!--    查询产品规格参数表列表-->
     <select id="selectProductSpecificationParamList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationParamDTO">
         SELECT
@@ -106,7 +116,7 @@
             </foreach>
     </update>
     <!--批量新增产品规格参数表-->
-    <insert id="batchProductSpecificationParam">
+    <insert id="batchProductSpecificationParam" useGeneratedKeys="true" keyProperty="productSpecificationParamId">
         INSERT INTO product_specification_param (product_id,specification_param_name,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

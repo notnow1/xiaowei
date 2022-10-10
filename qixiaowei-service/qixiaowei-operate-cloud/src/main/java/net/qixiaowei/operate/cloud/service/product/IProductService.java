@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.product;
 
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDataDTO;
 
 
 /**

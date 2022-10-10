@@ -22,6 +22,13 @@ public interface ProductSpecificationParamMapper{
     ProductSpecificationParamDTO selectProductSpecificationParamByProductSpecificationParamId(@Param("productSpecificationParamId")Long productSpecificationParamId);
 
     /**
+     * 根据产品id查询产品规格参数表
+     *
+     * @param productId 产品规格参数表
+     * @return 产品规格参数表
+     */
+    List<ProductSpecificationParamDTO> selectProductId(@Param("productId")Long productId);
+    /**
     * 查询产品规格参数表列表
     *
     * @param productSpecificationParam 产品规格参数表

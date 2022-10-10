@@ -48,6 +48,15 @@
                     and update_time=#{productSpecificationData.updateTime}
                 </if>
     </select>
+<!--    根据产品id查询产品规格数据表-->
+    <select id="selectProductId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationDataDTO">
+        SELECT
+            product_specification_data_id, product_id, product_specification_id, product_specification_param_id, value, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_specification_data
+        WHERE  product_id=#{productId}
+          and delete_flag=0
+    </select>
     <!--新增产品规格数据表-->
     <insert id="insertProductSpecificationData" useGeneratedKeys="true" keyProperty="productSpecificationDataId">
         INSERT INTO product_specification_data (product_id,product_specification_id,product_specification_param_id,value,delete_flag,create_by,create_time,update_by,update_time)
