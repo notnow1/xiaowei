@@ -2,13 +2,17 @@ package net.qixiaowei.operate.cloud.service.impl.product;
 
 import java.util.List;
 
+import com.alibaba.nacos.common.utils.CollectionUtils;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -29,6 +33,9 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 public class ProductUnitServiceImpl implements IProductUnitService {
     @Autowired
     private ProductUnitMapper productUnitMapper;
+
+    @Autowired
+    private ProductMapper productMapper;
 
     /**
      * 查询产品单位表
@@ -103,12 +110,20 @@ public class ProductUnitServiceImpl implements IProductUnitService {
     @Transactional
     @Override
     public int logicDeleteProductUnitByProductUnitIds(List<ProductUnitDTO> productUnitDtos) {
-        //todo 是否被引用
-        List<Long> stringList = new ArrayList();
-        for (ProductUnitDTO productUnitDTO : productUnitDtos) {
-            stringList.add(productUnitDTO.getProductUnitId());
+        List<Long> collect = productUnitDtos.stream().map(ProductUnitDTO::getProductUnitId).collect(Collectors.toList());
+        //查询是否被引用
+        List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitIds(collect);
+        // 产品引用
+        StringBuffer productErreo = new StringBuffer();
+        if (!CollectionUtils.isEmpty(productDTOList)){
+            for (ProductDTO productDTO : productDTOList) {
+                productErreo.append("产品单位被"+productDTO.getProductName()+"引用"+"\r\n");
+            }
         }
-        return productUnitMapper.logicDeleteProductUnitByProductUnitIds(stringList, productUnitDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+        if (productErreo.length()>0){
+            throw new ServiceException(productErreo.toString());
+        }
+        return productUnitMapper.logicDeleteProductUnitByProductUnitIds(collect, productUnitDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
     }
 
     /**
@@ -138,7 +153,17 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         productUnit.setUpdateTime(DateUtils.getNowDate());
         productUnit.setUpdateBy(SecurityUtils.getUserId());
         //todo 是否被引用
-
+        List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitId(productUnitDTO.getProductUnitId());
+        // 产品引用
+        StringBuffer productErreo = new StringBuffer();
+        if (!CollectionUtils.isEmpty(productDTOList)){
+            for (ProductDTO productDTO : productDTOList) {
+                productErreo.append("产品单位被"+productDTO.getProductName()+"引用"+"\r\n");
+            }
+        }
+        if (productErreo.length()>0){
+            throw new ServiceException(productErreo.toString());
+        }
         return productUnitMapper.logicDeleteProductUnitByProductUnitId(productUnit, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 

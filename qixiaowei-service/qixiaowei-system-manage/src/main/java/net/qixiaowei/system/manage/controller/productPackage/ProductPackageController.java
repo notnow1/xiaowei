@@ -37,7 +37,7 @@ public class ProductPackageController extends BaseController
     /**
     * 查询产品包详情
     */
-    @RequiresPermissions("system:manage:productPackage:info")
+    //@RequiresPermissions("system:manage:productPackage:info")
     @GetMapping("/info/{productPackageId}")
     public AjaxResult info(@PathVariable Long productPackageId){
     ProductPackageDTO productPackageDTO = productPackageService.selectProductPackageByProductPackageId(productPackageId);
@@ -47,7 +47,7 @@ public class ProductPackageController extends BaseController
     /**
     * 分页查询产品包列表
     */
-    @RequiresPermissions("system:manage:productPackage:pageList")
+    //@RequiresPermissions("system:manage:productPackage:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(ProductPackageDTO productPackageDTO){
     startPage();
@@ -58,7 +58,7 @@ public class ProductPackageController extends BaseController
     /**
     * 查询产品包列表
     */
-    @RequiresPermissions("system:manage:productPackage:list")
+    //@RequiresPermissions("system:manage:productPackage:list")
     @GetMapping("/list")
     public AjaxResult list(ProductPackageDTO productPackageDTO){
     List<ProductPackageDTO> list = productPackageService.selectProductPackageList(productPackageDTO);
@@ -69,8 +69,8 @@ public class ProductPackageController extends BaseController
     /**
     * 新增产品包
     */
-    @RequiresPermissions("system:manage:productPackage:add")
-    @Log(title = "新增产品包", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("system:manage:productPackage:add")
+    //@Log(title = "新增产品包", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody ProductPackageDTO productPackageDTO) {
     return toAjax(productPackageService.insertProductPackage(productPackageDTO));
@@ -80,8 +80,8 @@ public class ProductPackageController extends BaseController
     /**
     * 修改产品包
     */
-    @RequiresPermissions("system:manage:productPackage:edit")
-    @Log(title = "修改产品包", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("system:manage:productPackage:edit")
+    //@Log(title = "修改产品包", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody ProductPackageDTO productPackageDTO)
     {
@@ -91,8 +91,8 @@ public class ProductPackageController extends BaseController
     /**
     * 逻辑删除产品包
     */
-    @RequiresPermissions("system:manage:productPackage:remove")
-    @Log(title = "删除产品包", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("system:manage:productPackage:remove")
+    //@Log(title = "删除产品包", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody ProductPackageDTO productPackageDTO)
     {
@@ -101,8 +101,8 @@ public class ProductPackageController extends BaseController
     /**
     * 批量修改产品包
     */
-    @RequiresPermissions("system:manage:productPackage:edits")
-    @Log(title = "批量修改产品包", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("system:manage:productPackage:edits")
+    //@Log(title = "批量修改产品包", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<ProductPackageDTO> productPackageDtos)
     {
@@ -112,8 +112,8 @@ public class ProductPackageController extends BaseController
     /**
     * 批量新增产品包
     */
-    @RequiresPermissions("system:manage:productPackage:insertProductPackages")
-    @Log(title = "批量新增产品包", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("system:manage:productPackage:insertProductPackages")
+    //@Log(title = "批量新增产品包", businessType = BusinessType.INSERT)
     @PostMapping("/insertProductPackages")
     public AjaxResult insertProductPackages(@RequestBody List<ProductPackageDTO> productPackageDtos)
     {
@@ -123,8 +123,8 @@ public class ProductPackageController extends BaseController
     /**
     * 逻辑批量删除产品包
     */
-    @RequiresPermissions("system:manage:productPackage:removes")
-    @Log(title = "批量删除产品包", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("system:manage:productPackage:removes")
+    //@Log(title = "批量删除产品包", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<ProductPackageDTO>  ProductPackageDtos)
     {

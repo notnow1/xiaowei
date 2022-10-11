@@ -22,6 +22,21 @@ public interface ProductPackageMapper{
     ProductPackageDTO selectProductPackageByProductPackageId(@Param("productPackageId")Long productPackageId);
 
     /**
+     * 根据产品包名查询产品包
+     *
+     * @param productPackageName 产品包名称
+     * @return 产品包
+     */
+    ProductPackageDTO selectProductPackageByProductPackageName(@Param("productPackageName")String productPackageName);
+
+    /**
+     * 根据产品包名批量查询产品包
+     *
+     * @param productPackageNames 产品包名称
+     * @return 产品包
+     */
+    List<ProductPackageDTO> selectProductPackageByProductPackageNames(@Param("productPackageNames")List<String> productPackageNames);
+    /**
     * 查询产品包列表
     *
     * @param productPackage 产品包

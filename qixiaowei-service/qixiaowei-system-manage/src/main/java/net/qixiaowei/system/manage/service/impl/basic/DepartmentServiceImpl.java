@@ -254,14 +254,19 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //排序
         int i = 1;
         DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
-        BeanUtils.copyProperties(departmentDTO, department);
-        department.setUpdateTime(DateUtils.getNowDate());
-        department.setUpdateBy(SecurityUtils.getUserId());
-        if (StringUtils.isBlank(departmentDTO1.getAncestors())){
-            department.setAncestors(departmentDTO1.getParentDepartmentId()+","+departmentDTO1.getDepartmentId());
+        if (null == departmentDTO.getDepartmentId()){
+            BeanUtils.copyProperties(departmentDTO, department);
+            departmentDTO.setParentDepartmentId(0L);
         }else {
-            department.setAncestors(departmentDTO1.getAncestors()+","+departmentDTO1.getDepartmentId());
+            BeanUtils.copyProperties(departmentDTO, department);
+            if (StringUtils.isBlank(departmentDTO1.getAncestors())){
+                department.setAncestors(departmentDTO1.getParentDepartmentId()+","+departmentDTO1.getDepartmentId());
+            }else {
+                department.setAncestors(departmentDTO1.getAncestors()+","+departmentDTO1.getDepartmentId());
+            }
         }
+
+
 
 
         //接收部门岗位关联表参数
@@ -332,7 +337,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 }
             }
         }
-
+        department.setUpdateTime(DateUtils.getNowDate());
+        department.setUpdateBy(SecurityUtils.getUserId());
         return departmentMapper.updateDepartment(department);
     }
 

@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.product.ProductSpecificationDataMapper">
     <!--    查询产品规格数据表-->
     <select id="selectProductSpecificationDataByProductSpecificationDataId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationDataDTO">
+            resultType="java.util.Map">
         SELECT
         product_specification_data_id, product_id, product_specification_id, product_specification_param_id, value, delete_flag, create_by, create_time, update_by, update_time
         FROM product_specification_data
@@ -55,6 +55,20 @@
             product_specification_data_id, product_id, product_specification_id, product_specification_param_id, value, delete_flag, create_by, create_time, update_by, update_time
         FROM product_specification_data
         WHERE  product_id=#{productId}
+          and delete_flag=0
+    </select>
+<!--    批量查询产品规格数据表-->
+    <select id="selectProductSpecificationDataByProductSpecificationDataIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationDataDTO">
+        SELECT
+            product_specification_data_id, product_id, product_specification_id, product_specification_param_id, value, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_specification_data
+        WHERE  product_id in
+        <foreach item="item"
+                 collection="productSpecificationDataIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
           and delete_flag=0
     </select>
     <!--新增产品规格数据表-->

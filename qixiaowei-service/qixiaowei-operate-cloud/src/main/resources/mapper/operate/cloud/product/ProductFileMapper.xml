@@ -54,6 +54,29 @@
                     and update_time=#{productFile.updateTime}
                 </if>
     </select>
+<!--    批量查询产品文件表-->
+    <select id="selectProductFileByProductFileIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductFileDTO">
+        SELECT
+            product_file_id, product_id, product_file_name, product_file_format, product_file_size, product_file_path, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_file
+        WHERE  product_file_id in
+        <foreach item="item"
+                 collection="productFileIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and delete_flag=0
+    </select>
+<!--    根据产品id查询产品文件表-->
+    <select id="selectProductFileByProductId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductFileDTO">
+        SELECT
+        product_file_id, product_id, product_file_name, product_file_format, product_file_size, product_file_path, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_file
+        WHERE  product_id =#{productId}
+        and delete_flag=0
+    </select>
     <!--新增产品文件表-->
     <insert id="insertProductFile" useGeneratedKeys="true" keyProperty="productFileId">
         INSERT INTO product_file (product_id,product_file_name,product_file_format,product_file_size,product_file_path,sort,delete_flag,create_by,create_time,update_by,update_time)

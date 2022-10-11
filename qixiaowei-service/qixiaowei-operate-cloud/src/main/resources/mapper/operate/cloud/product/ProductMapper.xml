@@ -83,6 +83,29 @@
         WHERE parent_product_id=#{parentProductId}
           and delete_flag=0
     </select>
+<!--    根据产品单位ID查询产品表-->
+    <select id="selectProductByProductUnitId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+        SELECT
+            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        FROM product
+        WHERE  product_unit_id=#{productUnitId}
+          and delete_flag=0
+    </select>
+<!--    根据产品单位ID批量查询产品表-->
+    <select id="selectProductByProductUnitIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+        SELECT
+            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        FROM product
+        WHERE  product_unit_id in
+        <foreach item="item"
+                 collection="productUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and delete_flag=0
+    </select>
     <!--新增产品表-->
     <insert id="insertProduct" useGeneratedKeys="true" keyProperty="productId">
         INSERT INTO product (parent_product_id,ancestors,product_code,product_name,level,product_unit_id,product_category,product_description,list_price,listing_flag,delete_flag,create_by,create_time,update_by,update_time)

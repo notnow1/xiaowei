@@ -4,6 +4,8 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -76,5 +78,6 @@ public class ProductPackageDTO {
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
 
+    private List<Map<Long,String>> list;
 }
 

@@ -23,13 +23,29 @@ public interface ProductMapper{
     ProductDTO selectProductByProductId(@Param("productId")Long productId);
 
     /**
+     * 根据产品单位ID查询产品表
+     *
+     * @param productUnitId 产品表主键
+     * @return 产品表
+     */
+    List<ProductDTO> selectProductByProductUnitId(@Param("productUnitId")Long productUnitId);
+
+
+    /**
+     * 根据产品单位ID批量查询产品表
+     *
+     * @param productUnitIds 产品表主键
+     * @return 产品表
+     */
+    List<ProductDTO> selectProductByProductUnitIds(@Param("productUnitIds")List<Long> productUnitIds);
+
+    /**
      * 根据产品编码查询产品表
      *
      * @param productCode 产品表主键
      * @return 产品表
      */
     ProductDTO selectProductByProductCode(@Param("productCode")String productCode);
-
     /**
     * 查询产品表列表
     *

@@ -22,6 +22,20 @@ public interface ProductFileMapper{
     ProductFileDTO selectProductFileByProductFileId(@Param("productFileId")Long productFileId);
 
     /**
+     * 根据产品id查询产品文件表
+     *
+     * @param productId 产品id
+     * @return 产品文件表
+     */
+    List<ProductFileDTO> selectProductFileByProductId(@Param("productId")Long productId);
+    /**
+     * 批量查询产品文件表
+     *
+     * @param productFileIds 产品文件表主键
+     * @return 产品文件表
+     */
+    List<ProductFileDTO> selectProductFileByProductFileIds(@Param("productFileIds")List<Long> productFileIds);
+    /**
     * 查询产品文件表列表
     *
     * @param productFile 产品文件表
