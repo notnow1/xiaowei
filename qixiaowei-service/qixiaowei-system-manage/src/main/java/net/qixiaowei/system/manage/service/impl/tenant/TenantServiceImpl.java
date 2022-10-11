@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
@@ -298,7 +297,7 @@ public class TenantServiceImpl implements ITenantService {
             //申请人用户id
             tenantDomainApproval.setApprovalUserId(SecurityUtils.getUserId());
             //申请人账号
-            tenantDomainApproval.setApplicantUserAccount(SecurityUtils.getUsername());
+            tenantDomainApproval.setApplicantUserAccount(SecurityUtils.getUserAccount());
             //提交时间
             tenantDomainApproval.setSubmissionTime(DateUtils.getNowDate());
             //申请状态

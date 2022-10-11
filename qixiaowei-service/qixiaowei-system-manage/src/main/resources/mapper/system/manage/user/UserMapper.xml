@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.user.UserMapper">
+
+    <select id="selectUserByUserAccount"
+            resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
+        SELECT
+        user_id, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM user
+        WHERE user_account=#{userAccount}
+        and delete_flag=0
+    </select>
+
+    <!--    查询用户表-->
+    <select id="selectUserByUserId"
+            resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
+        SELECT
+        user_id, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM user
+        WHERE user_id=#{userId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询用户表列表-->
+    <select id="selectUserList" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
+        SELECT
+        user_id, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM user
+        WHERE delete_flag=0
+        <if test="user.userId != null">
+            and user_id=#{user.userId}
+        </if>
+        <if test="user.employeeId != null">
+            and employee_id=#{user.employeeId}
+        </if>
+        <if test="user.userAccount != null and user.userAccount != ''">
+            and user_account=#{user.userAccount}
+        </if>
+        <if test="user.password != null and user.password != ''">
+            and password=#{user.password}
+        </if>
+        <if test="user.userName != null and user.userName != ''">
+            and user_name=#{user.userName}
+        </if>
+        <if test="user.mobilePhone != null and user.mobilePhone != ''">
+            and mobile_phone=#{user.mobilePhone}
+        </if>
+        <if test="user.email != null and user.email != ''">
+            and email=#{user.email}
+        </if>
+        <if test="user.avatar != null and user.avatar != ''">
+            and avatar=#{user.avatar}
+        </if>
+        <if test="user.remark != null and user.remark != ''">
+            and remark=#{user.remark}
+        </if>
+        <if test="user.status != null">
+            and status=#{user.status}
+        </if>
+        <if test="user.deleteFlag != null">
+            and delete_flag=#{user.deleteFlag}
+        </if>
+        <if test="user.createBy != null">
+            and create_by=#{user.createBy}
+        </if>
+        <if test="user.createTime != null">
+            and create_time=#{user.createTime}
+        </if>
+        <if test="user.updateBy != null">
+            and update_by=#{user.updateBy}
+        </if>
+        <if test="user.updateTime != null">
+            and update_time=#{user.updateTime}
+        </if>
+    </select>
+    <!--新增用户表-->
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO user
+        (employee_id,user_account,password,user_name,mobile_phone,email,avatar,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{user.employeeId},#{user.userAccount},#{user.password},#{user.userName},#{user.mobilePhone},#{user.email},#{user.avatar},#{user.remark},#{user.status},#{user.deleteFlag},#{user.createBy},#{user.createTime},#{user.updateBy},#{user.updateTime})
+    </insert>
+    <!--修改用户表-->
+    <update id="updateUser">
+        UPDATE user
+        SET
+        <if test="user.employeeId != null">
+            employee_id=#{user.employeeId},
+        </if>
+        <if test="user.userAccount != null and user.userAccount != ''">
+            user_account=#{user.userAccount},
+        </if>
+        <if test="user.password != null and user.password != ''">
+            password=#{user.password},
+        </if>
+        <if test="user.userName != null and user.userName != ''">
+            user_name=#{user.userName},
+        </if>
+        <if test="user.mobilePhone != null and user.mobilePhone != ''">
+            mobile_phone=#{user.mobilePhone},
+        </if>
+        <if test="user.email != null and user.email != ''">
+            email=#{user.email},
+        </if>
+        <if test="user.avatar != null and user.avatar != ''">
+            avatar=#{user.avatar},
+        </if>
+        <if test="user.remark != null and user.remark != ''">
+            remark=#{user.remark},
+        </if>
+        <if test="user.status != null">
+            status=#{user.status},
+        </if>
+        <if test="user.deleteFlag != null">
+            delete_flag=#{user.deleteFlag},
+        </if>
+        <if test="user.createBy != null">
+            create_by=#{user.createBy},
+        </if>
+        <if test="user.createTime != null">
+            create_time=#{user.createTime},
+        </if>
+        <if test="user.updateBy != null">
+            update_by=#{user.updateBy},
+        </if>
+        <if test="user.updateTime != null">
+            update_time=#{user.updateTime}
+        </if>
+        WHERE
+        user_id=#{user.userId}
+    </update>
+    <!--逻辑删除用户表-->
+    <update id="logicDeleteUserByUserId">
+        UPDATE user
+        SET delete_flag= 1,
+        update_by=#{user.updateBy},
+        update_time=#{user.updateTime}
+        WHERE
+        user_id=#{user.userId}
+    </update>
+    <!--逻辑批量删除用户表-->
+    <update id="logicDeleteUserByUserIds">
+        UPDATE user
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        user_id IN
+        <foreach item="item"
+                 collection="userIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增用户表-->
+    <insert id="batchUser">
+        INSERT INTO user
+        (employee_id,user_account,password,user_name,mobile_phone,email,avatar,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="users"
+                 separator=",">
+            (#{item.employeeId},#{item.userAccount},#{item.password},#{item.userName},#{item.mobilePhone},#{item.email},#{item.avatar},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除用户表-->
+    <delete id="deleteUserByUserId">
+        DELETE FROM user
+        WHERE user_id=#{user}
+
+    </delete>
+    <!--物理批量删除用户表-->
+    <delete id="deleteUserByUserIds">
+        DELETE FROM user
+        WHERE user_id IN
+        <foreach item="item"
+                 collection="userIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改用户表-->
+    <update id="updateUsers">
+        update user
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="employee_id=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.employeeId != null">
+                        when user_id=#{item.userId} then #{item.employeeId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="user_account=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.userAccount != null and item.userAccount != ''">
+                        when user_id=#{item.userId} then #{item.userAccount}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="password=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.password != null and item.password != ''">
+                        when user_id=#{item.userId} then #{item.password}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="user_name=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.userName != null and item.userName != ''">
+                        when user_id=#{item.userId} then #{item.userName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="mobile_phone=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.mobilePhone != null and item.mobilePhone != ''">
+                        when user_id=#{item.userId} then #{item.mobilePhone}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="email=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.email != null and item.email != ''">
+                        when user_id=#{item.userId} then #{item.email}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="avatar=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.avatar != null and item.avatar != ''">
+                        when user_id=#{item.userId} then #{item.avatar}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.remark != null and item.remark != ''">
+                        when user_id=#{item.userId} then #{item.remark}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.status != null">
+                        when user_id=#{item.userId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when user_id=#{item.userId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when user_id=#{item.userId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when user_id=#{item.userId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when user_id=#{item.userId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="userList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when user_id=#{item.userId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="userList" separator="or" item="item" index="index">
+            user_id=#{item.userId}
+        </foreach>
+    </update>
+</mapper>
+
+

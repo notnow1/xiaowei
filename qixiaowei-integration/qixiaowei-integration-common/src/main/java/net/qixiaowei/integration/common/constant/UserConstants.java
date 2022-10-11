@@ -52,29 +52,19 @@ public interface UserConstants
     String YES = "Y";
 
     /**
-     * 是否菜单外链（是）
-     */
-    String YES_FRAME = "0";
-
-    /**
-     * 是否菜单外链（否）
-     */
-    String NO_FRAME = "1";
-
-    /**
      * 菜单类型（目录）
      */
-    String TYPE_DIR = "M";
+    Integer TYPE_DIR = 1;
 
     /**
      * 菜单类型（菜单）
      */
-    String TYPE_MENU = "C";
+    Integer TYPE_MENU = 2;
 
     /**
      * 菜单类型（按钮）
      */
-    String TYPE_BUTTON = "F";
+    Integer TYPE_BUTTON = 3;
 
     /**
      * Layout组件标识
@@ -101,14 +91,14 @@ public interface UserConstants
     /**
      * 用户名长度限制
      */
-    int USERNAME_MIN_LENGTH = 2;
+    int USERNAME_MIN_LENGTH = 3;
 
     int USERNAME_MAX_LENGTH = 20;
 
     /**
      * 密码长度限制
      */
-    int PASSWORD_MIN_LENGTH = 5;
+    int PASSWORD_MIN_LENGTH = 6;
 
     int PASSWORD_MAX_LENGTH = 20;
 }

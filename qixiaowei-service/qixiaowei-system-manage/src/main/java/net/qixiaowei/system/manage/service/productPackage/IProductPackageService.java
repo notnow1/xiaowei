@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.productPackage;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
+import net.qixiaowei.system.manage.api.vo.productPackage.ProductPackageVO;
 
 
 /**
@@ -25,6 +26,13 @@ public interface IProductPackageService{
     * @return 产品包集合
     */
     List<ProductPackageDTO> selectProductPackageList(ProductPackageDTO productPackageDTO);
+
+    /**
+     * 查询所有产品包列表
+     *
+     * @return 产品包集合
+     */
+    List<ProductPackageVO> selectProductPackageAll();
 
     /**
     * 新增产品包

@@ -84,9 +84,9 @@ public class JwtUtils {
      * @param token 令牌
      * @return 用户名
      */
-    public static String getUserName(String token) {
+    public static String getUserAccount(String token) {
         Claims claims = parseToken(token);
-        return getValue(claims, SecurityConstants.DETAILS_USERNAME);
+        return getValue(claims, SecurityConstants.DETAILS_USER_ACCOUNT);
     }
 
     /**
@@ -95,8 +95,8 @@ public class JwtUtils {
      * @param claims 身份信息
      * @return 用户名
      */
-    public static String getUserName(Claims claims) {
-        return getValue(claims, SecurityConstants.DETAILS_USERNAME);
+    public static String getUserAccount(Claims claims) {
+        return getValue(claims, SecurityConstants.DETAILS_USER_ACCOUNT);
     }
 
     /**

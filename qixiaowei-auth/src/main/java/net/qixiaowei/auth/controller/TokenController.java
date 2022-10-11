@@ -16,7 +16,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.auth.AuthUtil;
 import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
 /**
  * token 控制
@@ -30,9 +30,9 @@ public class TokenController {
     private SysLoginService sysLoginService;
 
     @PostMapping("/login")
-    public R<?> login(@RequestBody LoginBody form) {
+    public R<?> login(@RequestBody LoginBody loginBody) {
         // 用户登录
-        LoginUser userInfo = sysLoginService.login(form.getUsername(), form.getPassword());
+        LoginUserVO userInfo = sysLoginService.login(loginBody.getUserAccount(), loginBody.getPassword());
         // 获取登录token
         return R.ok(tokenService.createToken(userInfo));
     }
@@ -41,30 +41,24 @@ public class TokenController {
     public R<?> logout(HttpServletRequest request) {
         String token = SecurityUtils.getToken(request);
         if (StringUtils.isNotEmpty(token)) {
-            String username = JwtUtils.getUserName(token);
+            String userAccount = JwtUtils.getUserAccount(token);
             // 删除用户缓存记录
             AuthUtil.logoutByToken(token);
             // 记录用户退出日志
-            sysLoginService.logout(username);
+//            sysLoginService.logout(userAccount);
         }
         return R.ok();
     }
 
     @PostMapping("/refresh")
     public R<?> refresh(HttpServletRequest request) {
-        LoginUser loginUser = tokenService.getLoginUser(request);
-        if (StringUtils.isNotNull(loginUser)) {
+        LoginUserVO loginUserVO = tokenService.getLoginUser(request);
+        if (StringUtils.isNotNull(loginUserVO)) {
             // 刷新令牌有效期
-            tokenService.refreshToken(loginUser);
+            tokenService.refreshToken(loginUserVO);
             return R.ok();
         }
         return R.ok();
     }
 
-    @PostMapping("/register")
-    public R<?> register(@RequestBody RegisterBody registerBody) {
-        // 用户注册
-        sysLoginService.register(registerBody.getUsername(), registerBody.getPassword());
-        return R.ok();
-    }
 }

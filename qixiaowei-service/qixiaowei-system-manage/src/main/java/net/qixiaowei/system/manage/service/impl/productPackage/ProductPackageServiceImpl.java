@@ -5,6 +5,7 @@ import java.util.List;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.system.manage.api.vo.productPackage.ProductPackageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,17 @@ public class ProductPackageServiceImpl implements IProductPackageService {
         BeanUtils.copyProperties(productPackageDTO, productPackage);
         return productPackageMapper.selectProductPackageList(productPackage);
     }
+
+    /**
+     * 查询所有产品包列表
+     *
+     * @return 产品包集合
+     */
+    @Override
+    public List<ProductPackageVO> selectProductPackageAll() {
+        return productPackageMapper.selectProductPackageAll();
+    }
+
 
     /**
      * 新增产品包

@@ -2,7 +2,7 @@ package net.qixiaowei.integration.security.auth;
 
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.annotation.RequiresRoles;
-import net.qixiaowei.system.manage.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
 /**
  * Token 权限验证工具类
@@ -45,7 +45,7 @@ public class AuthUtil
     /**
      * 获取当前登录用户信息
      */
-    public static LoginUser getLoginUser(String token)
+    public static LoginUserVO getLoginUser(String token)
     {
         return authLogic.getLoginUser(token);
     }
@@ -53,9 +53,9 @@ public class AuthUtil
     /**
      * 验证当前用户有效期
      */
-    public static void verifyLoginUserExpire(LoginUser loginUser)
+    public static void verifyLoginUserExpire(LoginUserVO loginUserVO)
     {
-        authLogic.verifyLoginUserExpire(loginUser);
+        authLogic.verifyLoginUserExpire(loginUserVO);
     }
 
     /**

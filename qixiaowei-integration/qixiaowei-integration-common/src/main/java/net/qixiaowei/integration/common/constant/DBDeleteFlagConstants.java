@@ -7,10 +7,10 @@ public interface DBDeleteFlagConstants {
     /**
      * 数据正常状态
      */
-    int DELETE_FLAG_ZERO = 0;
+    Integer DELETE_FLAG_ZERO = 0;
     /**
      * 数据逻辑删除状态
      */
-    int DELETE_FLAG_ONE  = 1;
+    Integer DELETE_FLAG_ONE = 1;
 
 }

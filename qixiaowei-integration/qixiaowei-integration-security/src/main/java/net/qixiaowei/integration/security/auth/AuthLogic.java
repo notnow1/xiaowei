@@ -16,7 +16,7 @@ import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.annotation.RequiresRoles;
 import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
 /**
  * Token 权限验证，逻辑实现类
@@ -67,19 +67,19 @@ public class AuthLogic
      * 
      * @return 用户缓存信息
      */
-    public LoginUser getLoginUser()
+    public LoginUserVO getLoginUser()
     {
         String token = SecurityUtils.getToken();
         if (token == null)
         {
             throw new NotLoginException("未提供token");
         }
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (loginUser == null)
+        LoginUserVO loginUserVO = SecurityUtils.getLoginUser();
+        if (loginUserVO == null)
         {
             throw new NotLoginException("无效的token");
         }
-        return loginUser;
+        return loginUserVO;
     }
 
     /**
@@ -88,7 +88,7 @@ public class AuthLogic
      * @param token 前端传递的认证信息
      * @return 用户缓存信息
      */
-    public LoginUser getLoginUser(String token)
+    public LoginUserVO getLoginUser(String token)
     {
         return tokenService.getLoginUser(token);
     }
@@ -96,11 +96,11 @@ public class AuthLogic
     /**
      * 验证当前用户有效期, 如果相差不足120分钟，自动刷新缓存
      * 
-     * @param loginUser 当前用户信息
+     * @param loginUserVO 当前用户信息
      */
-    public void verifyLoginUserExpire(LoginUser loginUser)
+    public void verifyLoginUserExpire(LoginUserVO loginUserVO)
     {
-        tokenService.verifyToken(loginUser);
+        tokenService.verifyToken(loginUserVO);
     }
 
     /**
@@ -318,8 +318,8 @@ public class AuthLogic
     {
         try
         {
-            LoginUser loginUser = getLoginUser();
-            return loginUser.getRoles();
+            LoginUserVO loginUserVO = getLoginUser();
+            return loginUserVO.getRoles();
         }
         catch (Exception e)
         {
@@ -336,8 +336,8 @@ public class AuthLogic
     {
         try
         {
-            LoginUser loginUser = getLoginUser();
-            return loginUser.getPermissions();
+            LoginUserVO loginUserVO = getLoginUser();
+            return loginUserVO.getPermissions();
         }
         catch (Exception e)
         {

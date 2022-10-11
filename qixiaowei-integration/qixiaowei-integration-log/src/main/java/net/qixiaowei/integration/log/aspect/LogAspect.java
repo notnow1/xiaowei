@@ -78,10 +78,10 @@ public class LogAspect
             String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
             operLog.setOperIp(ip);
             operLog.setOperUrl(ServletUtils.getRequest().getRequestURI());
-            String username = SecurityUtils.getUsername();
-            if (StringUtils.isNotBlank(username))
+            String userAccount = SecurityUtils.getUserAccount();
+            if (StringUtils.isNotBlank(userAccount))
             {
-                operLog.setOperName(username);
+                operLog.setOperName(userAccount);
             }
 
             if (e != null)

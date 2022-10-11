@@ -116,4 +116,19 @@ public interface Constants
      */
     String RESOURCE_PREFIX = "/profile";
 
+    /**
+     * 顶层父级ID
+     */
+    Long TOP_PARENT_ID = 0L;
+
+    /**
+     * 标记：是
+     */
+    Integer FLAG_YES = 1;
+
+    /**
+     * 标记：否
+     */
+    Integer FLAG_NO = 0;
+
 }

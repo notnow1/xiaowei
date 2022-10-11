@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
-import net.qixiaowei.system.manage.api.domain.SysUser;
-import net.qixiaowei.system.manage.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.vo.UserVO;
+import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
 /**
  * 用户服务降级处理
@@ -26,13 +26,13 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
         return new RemoteUserService()
         {
             @Override
-            public R<LoginUser> getUserInfo(String username, String source)
+            public R<LoginUserVO> getUserInfo(String username, String source)
             {
                 return R.fail("获取用户失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<Boolean> registerUserInfo(SysUser sysUser, String source)
+            public R<Boolean> registerUserInfo(UserVO userVO, String source)
             {
                 return R.fail("注册用户失败:" + throwable.getMessage());
             }

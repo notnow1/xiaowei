@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.mapper.productPackage;
 import java.util.List;
 import net.qixiaowei.system.manage.api.domain.productPackage.ProductPackage;
 import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
+import net.qixiaowei.system.manage.api.vo.productPackage.ProductPackageVO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -43,6 +44,13 @@ public interface ProductPackageMapper{
     * @return 产品包集合
     */
     List<ProductPackageDTO> selectProductPackageList(@Param("productPackage")ProductPackage productPackage);
+
+    /**
+     * 查询所有产品包列表
+     *
+     * @return 产品包集合
+     */
+    List<ProductPackageVO> selectProductPackageAll();
 
     /**
     * 新增产品包

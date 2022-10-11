@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.system.MenuMapper">
+
+    <select id="selectMenuPermsByRoleIds" parameterType="Long" resultType="String">
+        SELECT distinct m.permission_code
+        FROM menu m
+        LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag =0
+        WHERE m.delete_flag =0 AND m.status = 1
+        AND rm.role_id IN
+        <foreach item="item"
+                 collection="roleIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--    查询菜单表-->
+    <select id="selectMenuByMenuId"
+            resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
+        SELECT
+        menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, path, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM menu
+        WHERE  menu_id=#{menuId}
+        and delete_flag=0
+    </select>
+
+    <!--    查询菜单表列表-->
+    <select id="selectMenuList" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
+        SELECT
+        menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, path, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM menu
+        WHERE delete_flag=0
+                <if test="menu.menuId != null">
+                    and menu_id=#{menu.menuId}
+                </if>
+                <if test="menu.parentMenuId != null">
+                    and parent_menu_id=#{menu.parentMenuId}
+                </if>
+                <if test="menu.menuType != null">
+                    and menu_type=#{menu.menuType}
+                </if>
+                <if test="menu.menuName != null and menu.menuName != ''">
+                    and menu_name=#{menu.menuName}
+                </if>
+                <if test="menu.productPackageId != null">
+                    and product_package_id=#{menu.productPackageId}
+                </if>
+                <if test="menu.sort != null">
+                    and sort=#{menu.sort}
+                </if>
+                <if test="menu.path != null and menu.path != ''">
+                    and path=#{menu.path}
+                </if>
+                <if test="menu.component != null and menu.component != ''">
+                    and component=#{menu.component}
+                </if>
+                <if test="menu.query != null and menu.query != ''">
+                    and query=#{menu.query}
+                </if>
+                <if test="menu.externalLinkFlag != null">
+                    and external_link_flag=#{menu.externalLinkFlag}
+                </if>
+                <if test="menu.cacheFlag != null">
+                    and cache_flag=#{menu.cacheFlag}
+                </if>
+                <if test="menu.visibleFlag != null">
+                    and visible_flag=#{menu.visibleFlag}
+                </if>
+                <if test="menu.permissionCode != null and menu.permissionCode != ''">
+                    and permission_code=#{menu.permissionCode}
+                </if>
+                <if test="menu.icon != null and menu.icon != ''">
+                    and icon=#{menu.icon}
+                </if>
+                <if test="menu.status != null">
+                    and status=#{menu.status}
+                </if>
+                <if test="menu.deleteFlag != null">
+                    and delete_flag=#{menu.deleteFlag}
+                </if>
+                <if test="menu.createBy != null">
+                    and create_by=#{menu.createBy}
+                </if>
+                <if test="menu.createTime != null">
+                    and create_time=#{menu.createTime}
+                </if>
+                <if test="menu.updateBy != null">
+                    and update_by=#{menu.updateBy}
+                </if>
+                <if test="menu.updateTime != null">
+                    and update_time=#{menu.updateTime}
+                </if>
+        ORDER BY parent_menu_id, sort
+    </select>
+
+    <select id="selectMenuRouterAll" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
+        SELECT distinct
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time
+        FROM menu m
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
+        WHERE  m.delete_flag = 0  AND ( pp.product_package_id is null OR pp.delete_flag = 0)  AND m.status = 1 AND m.menu_type IN (1,2)
+        ORDER BY m.parent_menu_id, m.sort
+    </select>
+
+    <select id="selectMenuRouterByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
+        SELECT distinct
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time
+        FROM menu m
+        LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag = 0
+        LEFT JOIN user_role ur on rm.role_id = ur.role_id AND ur.delete_flag = 0
+        LEFT JOIN role ro on ur.role_id = ro.role_id
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
+        WHERE  m.delete_flag = 0  AND ( pp.product_package_id is null OR pp.delete_flag = 0)  AND m.status = 1 AND m.menu_type IN (1,2) AND ro.status = 1 AND ur.user_id = #{userId}
+        ORDER BY m.parent_menu_id, m.sort
+    </select>
+
+    <select id="checkMenuNameUnique"  resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
+        SELECT
+        menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, path, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM menu
+        WHERE  delete_flag = 0 AND menu_name=#{menuName} AND parent_menu_id = #{parentMenuId} limit 1
+    </select>
+
+
+    <select id="selectMenuListByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
+        SELECT
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time
+        FROM menu m
+        LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag = 0
+        LEFT JOIN user_role ur on rm.role_id = ur.role_id AND ur.delete_flag = 0
+        LEFT JOIN role ro on ur.role_id = ro.role_id
+        WHERE  m.delete_flag = 0 AND ur.user_id = #{params.userId}
+        <if test="menuName != null and menuName != ''">
+            AND m.menu_name like concat('%', #{menuName}, '%')
+        </if>
+        <if test="visibleFlag != null and visibleFlag != ''">
+            AND m.visible_flag = #{visibleFlag}
+        </if>
+        <if test="status != null and status != ''">
+            AND m.status = #{status}
+        </if>
+        ORDER BY m.parent_menu_id, m.sort
+    </select>
+
+    <select id="hasChildByMenuId" resultType="Integer">
+        select count(1) from menu where delete_flag = 0 AND parent_menu_id = #{menuId}
+    </select>
+
+    <select id="selectMenuListByRoleId" resultType="Long">
+        SELECT m.menu_id
+        FROM menu m
+        LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag = 0
+        WHERE m.delete_flag = 0 AND rm.role_id = #{roleId}
+        order by m.parent_menu_id, m.sort
+    </select>
+
+    <!--新增菜单表-->
+    <insert id="insertMenu" useGeneratedKeys="true" keyProperty="menuId">
+        INSERT INTO menu (parent_menu_id,menu_type,menu_name,product_package_id,sort,path,component,query,external_link_flag,cache_flag,visible_flag,permission_code,icon,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{menu.parentMenuId},#{menu.menuType},#{menu.menuName},#{menu.productPackageId},#{menu.sort},#{menu.path},#{menu.component},#{menu.query},#{menu.externalLinkFlag},#{menu.cacheFlag},#{menu.visibleFlag},#{menu.permissionCode},#{menu.icon},#{menu.status},#{menu.deleteFlag},#{menu.createBy},#{menu.createTime},#{menu.updateBy},#{menu.updateTime})
+    </insert>
+    <!--修改菜单表-->
+    <update id="updateMenu">
+        UPDATE menu
+        SET
+                    <if test="menu.parentMenuId != null">
+                        parent_menu_id=#{menu.parentMenuId},
+                    </if>
+                    <if test="menu.menuType != null">
+                        menu_type=#{menu.menuType},
+                    </if>
+                    <if test="menu.menuName != null and menu.menuName != ''">
+                        menu_name=#{menu.menuName},
+                    </if>
+                    <if test="menu.productPackageId != null">
+                        product_package_id=#{menu.productPackageId},
+                    </if>
+                    <if test="menu.sort != null">
+                        sort=#{menu.sort},
+                    </if>
+                    <if test="menu.path != null and menu.path != ''">
+                        path=#{menu.path},
+                    </if>
+                    <if test="menu.component != null and menu.component != ''">
+                        component=#{menu.component},
+                    </if>
+                    <if test="menu.query != null and menu.query != ''">
+                        query=#{menu.query},
+                    </if>
+                    <if test="menu.externalLinkFlag != null">
+                        external_link_flag=#{menu.externalLinkFlag},
+                    </if>
+                    <if test="menu.cacheFlag != null">
+                        cache_flag=#{menu.cacheFlag},
+                    </if>
+                    <if test="menu.visibleFlag != null">
+                        visible_flag=#{menu.visibleFlag},
+                    </if>
+                    <if test="menu.permissionCode != null and menu.permissionCode != ''">
+                        permission_code=#{menu.permissionCode},
+                    </if>
+                    <if test="menu.icon != null and menu.icon != ''">
+                        icon=#{menu.icon},
+                    </if>
+                    <if test="menu.status != null">
+                        status=#{menu.status},
+                    </if>
+                    <if test="menu.deleteFlag != null">
+                        delete_flag=#{menu.deleteFlag},
+                    </if>
+                    <if test="menu.createBy != null">
+                        create_by=#{menu.createBy},
+                    </if>
+                    <if test="menu.createTime != null">
+                        create_time=#{menu.createTime},
+                    </if>
+                    <if test="menu.updateBy != null">
+                        update_by=#{menu.updateBy},
+                    </if>
+                    <if test="menu.updateTime != null">
+                        update_time=#{menu.updateTime}
+                    </if>
+        WHERE
+                 menu_id=#{menu.menuId}
+    </update>
+    <!--逻辑删除菜单表-->
+    <update id="logicDeleteMenuByMenuId">
+        UPDATE menu
+        SET     delete_flag= 1,
+                update_by=#{menu.updateBy},
+                update_time=#{menu.updateTime}
+        WHERE
+                menu_id=#{menu.menuId}
+    </update>
+    <!--逻辑批量删除菜单表-->
+    <update id="logicDeleteMenuByMenuIds">
+        UPDATE menu
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         menu_id IN
+            <foreach item="item"
+                     collection="menuIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增菜单表-->
+    <insert id="batchMenu">
+        INSERT INTO menu (parent_menu_id,menu_type,menu_name,product_package_id,sort,path,component,query,external_link_flag,cache_flag,visible_flag,permission_code,icon,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="menus"
+                 separator=",">
+            (#{item.parentMenuId},#{item.menuType},#{item.menuName},#{item.productPackageId},#{item.sort},#{item.path},#{item.component},#{item.query},#{item.externalLinkFlag},#{item.cacheFlag},#{item.visibleFlag},#{item.permissionCode},#{item.icon},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除菜单表-->
+    <delete id="deleteMenuByMenuId">
+        DELETE FROM menu
+        WHERE  menu_id=#{menu}
+
+    </delete>
+    <!--物理批量删除菜单表-->
+    <delete id="deleteMenuByMenuIds">
+        DELETE FROM menu
+        WHERE  menu_id IN
+            <foreach item="item"
+                     collection="menuIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改菜单表-->
+    <update id="updateMenus">
+        update menu
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="menu_id=case" suffix="end,">
+            </trim>
+            <trim prefix="parent_menu_id=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.parentMenuId != null">
+                                 when menu_id=#{item.menuId} then #{item.parentMenuId}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="menu_type=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.menuType != null">
+                                 when menu_id=#{item.menuId} then #{item.menuType}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="menu_name=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.menuName != null and item.menuName != ''">
+                                 when menu_id=#{item.menuId} then #{item.menuName}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_package_id=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.productPackageId != null">
+                                 when menu_id=#{item.menuId} then #{item.productPackageId}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.sort != null">
+                                 when menu_id=#{item.menuId} then #{item.sort}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="path=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.path != null and item.path != ''">
+                                 when menu_id=#{item.menuId} then #{item.path}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="component=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.component != null and item.component != ''">
+                                 when menu_id=#{item.menuId} then #{item.component}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="query=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.query != null and item.query != ''">
+                                 when menu_id=#{item.menuId} then #{item.query}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="external_link_flag=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.externalLinkFlag != null">
+                                 when menu_id=#{item.menuId} then #{item.externalLinkFlag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="cache_flag=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.cacheFlag != null">
+                                 when menu_id=#{item.menuId} then #{item.cacheFlag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="visible_flag=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.visibleFlag != null">
+                                 when menu_id=#{item.menuId} then #{item.visibleFlag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="permission_code=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.permissionCode != null and item.permissionCode != ''">
+                                 when menu_id=#{item.menuId} then #{item.permissionCode}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="icon=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.icon != null and item.icon != ''">
+                                 when menu_id=#{item.menuId} then #{item.icon}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.status != null">
+                                 when menu_id=#{item.menuId} then #{item.status}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.deleteFlag != null">
+                                 when menu_id=#{item.menuId} then #{item.deleteFlag}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.createBy != null">
+                                 when menu_id=#{item.menuId} then #{item.createBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.createTime != null">
+                                 when menu_id=#{item.menuId} then #{item.createTime}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.updateBy != null">
+                                 when menu_id=#{item.menuId} then #{item.updateBy}
+                             </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="menuList" item="item" index="index">
+                             <if test="item.updateTime != null">
+                                 when menu_id=#{item.menuId} then #{item.updateTime}
+                             </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="menuList" separator="or" item="item" index="index">
+                    menu_id=#{item.menuId}
+        </foreach>
+    </update>
+</mapper>
+
+

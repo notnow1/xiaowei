@@ -47,6 +47,15 @@
                 <if test="productPackage.updateTime != null">
                     and update_time=#{productPackage.updateTime}
                 </if>
+        ORDER BY sort ASC
+    </select>
+
+    <select id="selectProductPackageAll" resultType="net.qixiaowei.system.manage.api.vo.productPackage.ProductPackageVO">
+        SELECT
+        product_package_id, product_package_name
+        FROM product_package
+        WHERE delete_flag = 0
+        ORDER BY sort ASC
     </select>
 <!--    根据产品包名查询产品包-->
     <select id="selectProductPackageByProductPackageName"
@@ -71,6 +80,7 @@
         </foreach>
           and delete_flag=0
     </select>
+
     <!--新增产品包-->
     <insert id="insertProductPackage" useGeneratedKeys="true" keyProperty="productPackageId">
         INSERT INTO product_package (product_package_name,product_package_description,remark,sort,delete_flag,create_by,create_time,update_by,update_time)

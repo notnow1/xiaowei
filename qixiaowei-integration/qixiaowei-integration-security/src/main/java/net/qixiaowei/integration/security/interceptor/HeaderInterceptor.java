@@ -11,7 +11,7 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.context.SecurityContextHolder;
 import net.qixiaowei.integration.common.utils.ServletUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.system.manage.api.model.LoginUser;
+import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
 /**
  * 自定义请求头拦截器，将Header数据封装到线程变量中方便获取
@@ -30,17 +30,17 @@ public class HeaderInterceptor implements AsyncHandlerInterceptor
         }
 
         SecurityContextHolder.setUserId(ServletUtils.getHeader(request, SecurityConstants.DETAILS_USER_ID));
-        SecurityContextHolder.setUserName(ServletUtils.getHeader(request, SecurityConstants.DETAILS_USERNAME));
+        SecurityContextHolder.setUserAccount(ServletUtils.getHeader(request, SecurityConstants.DETAILS_USER_ACCOUNT));
         SecurityContextHolder.setUserKey(ServletUtils.getHeader(request, SecurityConstants.USER_KEY));
 
         String token = SecurityUtils.getToken();
         if (StringUtils.isNotEmpty(token))
         {
-            LoginUser loginUser = AuthUtil.getLoginUser(token);
-            if (StringUtils.isNotNull(loginUser))
+            LoginUserVO loginUserVO = AuthUtil.getLoginUser(token);
+            if (StringUtils.isNotNull(loginUserVO))
             {
-                AuthUtil.verifyLoginUserExpire(loginUser);
-                SecurityContextHolder.set(SecurityConstants.LOGIN_USER, loginUser);
+                AuthUtil.verifyLoginUserExpire(loginUserVO);
+                SecurityContextHolder.set(SecurityConstants.LOGIN_USER, loginUserVO);
             }
         }
         return true;

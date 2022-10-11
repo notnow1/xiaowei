@@ -62,14 +62,14 @@ public class SecurityContextHolder
         set(SecurityConstants.DETAILS_USER_ID, account);
     }
 
-    public static String getUserName()
+    public static String getUserAccount()
     {
-        return get(SecurityConstants.DETAILS_USERNAME);
+        return  get(SecurityConstants.DETAILS_USER_ACCOUNT);
     }
 
-    public static void setUserName(String username)
+    public static void setUserAccount(String userAccount)
     {
-        set(SecurityConstants.DETAILS_USERNAME, username);
+        set(SecurityConstants.DETAILS_USER_ACCOUNT, userAccount);
     }
 
     public static String getUserKey()

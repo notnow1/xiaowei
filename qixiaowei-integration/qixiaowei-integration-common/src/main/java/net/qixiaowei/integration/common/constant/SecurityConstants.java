@@ -2,19 +2,17 @@ package net.qixiaowei.integration.common.constant;
 
 /**
  * 权限相关通用常量
- *
  */
-public interface SecurityConstants
-{
+public interface SecurityConstants {
     /**
      * 用户ID字段
      */
     String DETAILS_USER_ID = "user_id";
 
     /**
-     * 用户名字段
+     * 用户帐号字段
      */
-    String DETAILS_USERNAME = "username";
+    String DETAILS_USER_ACCOUNT = "user_account";
 
     /**
      * 授权信息字段
@@ -45,4 +43,14 @@ public interface SecurityConstants
      * 角色权限
      */
     String ROLE_PERMISSION = "role_permission";
+
+    /**
+     * 角色权限-所有
+     */
+    String ROLE_PERMISSION_ALL = "*:*:*";
+
+    /**
+     * 角色权限-所有
+     */
+    String ADMIN_FLAG = "admin_flag";
 }

@@ -36,10 +36,10 @@ public class FeignRequestInterceptor implements RequestInterceptor
             {
                 requestTemplate.header(SecurityConstants.USER_KEY, userKey);
             }
-            String userName = headers.get(SecurityConstants.DETAILS_USERNAME);
-            if (StringUtils.isNotEmpty(userName))
+            String userAccount = headers.get(SecurityConstants.DETAILS_USER_ACCOUNT);
+            if (StringUtils.isNotEmpty(userAccount))
             {
-                requestTemplate.header(SecurityConstants.DETAILS_USERNAME, userName);
+                requestTemplate.header(SecurityConstants.DETAILS_USER_ACCOUNT, userAccount);
             }
             String authentication = headers.get(SecurityConstants.AUTHORIZATION_HEADER);
             if (StringUtils.isNotEmpty(authentication))
