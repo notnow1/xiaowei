@@ -67,6 +67,15 @@ public interface ProductSpecificationDataMapper{
     * @return 结果
     */
     int updateProductSpecificationDatas(@Param("productSpecificationDataList")List<ProductSpecificationData> productSpecificationDataList);
+
+
+    /**
+     * 批量修改产品规格数据表(可修改为空值)
+     *
+     * @param productSpecificationDataList 产品规格数据表
+     * @return 结果
+     */
+    int updateProductSpecificationDatasOfNull(@Param("productSpecificationDataList")List<ProductSpecificationData> productSpecificationDataList);
     /**
     * 逻辑删除产品规格数据表
     *

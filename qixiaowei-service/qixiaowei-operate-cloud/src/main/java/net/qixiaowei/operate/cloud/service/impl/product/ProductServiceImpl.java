@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -555,7 +556,7 @@ public class ProductServiceImpl implements IProductService {
         }
         if (!CollectionUtils.isEmpty(productSpecificationDataUpdateList)){
             try {
-                productSpecificationDataMapper.updateProductSpecificationDatas(productSpecificationDataUpdateList);
+                productSpecificationDataMapper.updateProductSpecificationDatasOfNull(productSpecificationDataUpdateList);
             } catch (Exception e) {
                 throw new ServiceException("修改产品数据失败");
             }
@@ -692,6 +693,33 @@ public class ProductServiceImpl implements IProductService {
         product.setUpdateBy(SecurityUtils.getUserId());
         //todo 是否被引用
         i = productMapper.logicDeleteProductByProductId(product, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        //产品id
+        Long productId = product.getProductId();
+        //规格表
+        List<ProductSpecificationDTO> productSpecificationDTOS = productSpecificationMapper.selectProductId(productId);
+        //规格id集合
+        List<Long> collect = productSpecificationDTOS.stream().map(ProductSpecificationDTO::getProductSpecificationId).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(collect)){
+            try {
+                productSpecificationMapper.logicDeleteProductSpecificationByProductSpecificationIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除规格表失败");
+            }
+        }
+        //参数表
+        List<ProductSpecificationParamDTO> productSpecificationParamDTOS = productSpecificationParamMapper.selectProductId(productId);
+        //参数id集合
+        List<Long> collect1 = productSpecificationParamDTOS.stream().map(ProductSpecificationParamDTO::getProductSpecificationParamId).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(collect1)){
+            try {
+                productSpecificationParamMapper.logicDeleteProductSpecificationParamByProductSpecificationParamIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除规格参数失败");
+            }
+        }
+
+        //删除文件
+//        List<ProductFileDTO> productFileDTOS = productFileMapper.selectProductFileByProductId();
         return i;
     }
 
