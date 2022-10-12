@@ -5,10 +5,8 @@
     <select id="selectTenantByTenantId"
             resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
         SELECT
-        t.tenant_id, tda.approval_status,t.tenant_code, t.tenant_name, t.tenant_address, t.tenant_industry, t.domain, t.admin_account, t.admin_password, t.support_staff, t.login_background, t.tenant_logo, t.tenant_status, t.delete_flag, t.create_by, t.create_time, t.update_by, t.update_time
+        t.tenant_id,t.tenant_code, t.tenant_name, t.tenant_address, t.tenant_industry, t.domain, t.admin_account, t.admin_password, t.support_staff, t.login_background, t.tenant_logo, t.tenant_status, t.delete_flag, t.create_by, t.create_time, t.update_by, t.update_time
         FROM tenant t
-        left join tenant_domain_approval tda
-        on t.tenant_id = tda .tenant_id
         WHERE  t.tenant_id=#{tenantId}
         and t.delete_flag=0
     </select>

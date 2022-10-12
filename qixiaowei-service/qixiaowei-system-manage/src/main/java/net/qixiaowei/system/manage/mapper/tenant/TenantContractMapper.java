@@ -22,6 +22,14 @@ public interface TenantContractMapper{
     TenantContractDTO selectTenantContractByTenantContractId(@Param("tenantContractId")Long tenantContractId);
 
     /**
+     * 根据租户id查询租户合同信息
+     *
+     * @param tenantId 租户合同信息
+     * @return 租户合同信息
+     */
+    List<TenantContractDTO> selectTenantContractByTenantId(@Param("tenantId")Long tenantId);
+
+    /**
     * 查询租户合同信息列表
     *
     * @param tenantContract 租户合同信息

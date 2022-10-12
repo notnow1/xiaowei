@@ -54,6 +54,16 @@
                     and update_time=#{tenantContacts.updateTime}
                 </if>
     </select>
+<!--    根据租户id查询租户联系人表-->
+    <select id="selectTenantContactsByTenantId"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO">
+        SELECT
+            tenant_contacts_id, tenant_id, contact_name, contact_tel, contact_email, contact_duty, remark, delete_flag, create_by, create_time, update_by, update_time
+        FROM tenant_contacts
+        WHERE  tenant_id=#{tenantId}
+          and delete_flag=0
+        order by update_time
+    </select>
     <!--新增租户联系人表-->
     <insert id="insertTenantContacts" useGeneratedKeys="true" keyProperty="tenantContactsId">
         INSERT INTO tenant_contacts (tenant_id,contact_name,contact_tel,contact_email,contact_duty,remark,delete_flag,create_by,create_time,update_by,update_time)

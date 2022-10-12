@@ -22,6 +22,14 @@ public interface TenantContactsMapper{
     TenantContactsDTO selectTenantContactsByTenantContactsId(@Param("tenantContactsId")Long tenantContactsId);
 
     /**
+     * 根据租户id查询租户联系人表
+     *
+     * @param tenantId 租户联系人表
+     * @return 租户联系人表
+     */
+    List<TenantContactsDTO> selectTenantContactsByTenantId(@Param("tenantId")Long tenantId);
+
+    /**
     * 查询租户联系人表列表
     *
     * @param tenantContacts 租户联系人表

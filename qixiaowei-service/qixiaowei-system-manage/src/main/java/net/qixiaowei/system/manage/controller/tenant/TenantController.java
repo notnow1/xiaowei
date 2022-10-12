@@ -50,7 +50,7 @@ public class TenantController extends BaseController {
      */
     //@RequiresPermissions("system:manage:tenant:pageList")
     @PostMapping("/updateInfo")
-    public AjaxResult updateMyTenantDTO(@RequestBody TenantDTO tenantDTO) {
+    public AjaxResult updateMyTenantDTO(@RequestBody @Validated(TenantDTO.UpdateTenantInfoDTO.class) TenantDTO tenantDTO) {
         return AjaxResult.success(tenantService.updateMyTenantDTO(tenantDTO));
     }
 
@@ -104,7 +104,7 @@ public class TenantController extends BaseController {
     //@RequiresPermissions("system:manage:tenant:remove")
     @Log(title = "删除租户表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody TenantDTO tenantDTO) {
+    public AjaxResult remove(@RequestBody @Validated(TenantDTO.DeleteTenantDTO.class) TenantDTO tenantDTO) {
         return toAjax(tenantService.logicDeleteTenantByTenantId(tenantDTO));
     }
 
@@ -134,7 +134,7 @@ public class TenantController extends BaseController {
     //@RequiresPermissions("system:manage:tenant:removes")
     @Log(title = "批量删除租户表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<TenantDTO> TenantDtos) {
+    public AjaxResult removes(@RequestBody @Validated(TenantDTO.DeleteTenantDTO.class) List<TenantDTO> TenantDtos) {
         return toAjax(tenantService.logicDeleteTenantByTenantIds(TenantDtos));
     }
 }

@@ -41,9 +41,14 @@ public class TenantDTO {
     public interface UpdateTenantDTO extends Default{
 
     }
+    //修改检验
+    public interface UpdateTenantInfoDTO extends Default{
+
+    }
     /**
     * 租户ID
     */
+    @NotNull(message = "租户ID不能为空",groups = {TenantDTO.DeleteTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  Long tenantId;
     /**
     * 租户编码
@@ -52,7 +57,7 @@ public class TenantDTO {
     /**
     * 租户名称
     */
-    @NotBlank(message = "租户名称不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
+    @NotBlank(message = "租户名称不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String tenantName;
     /**
     * 租户地址
@@ -61,41 +66,43 @@ public class TenantDTO {
     /**
     * 租户行业
     */
-    @NotNull(message = "租户行业不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
+    @NotNull(message = "租户行业不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  Long tenantIndustry;
     /**
     * 域名
     */
-    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
-    @NotBlank(message = "域名不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
+    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
+    @NotBlank(message = "域名不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String domain;
     /**
     * 管理员帐号
     */
-    @NotBlank(message = "管理员帐号不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
+    @NotBlank(message = "管理员帐号不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String adminAccount;
     /**
     * 管理员密码
     */
-    @NotBlank(message = "管理员密码不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
+    @NotBlank(message = "管理员密码不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String adminPassword;
     /**
     * 客服人员
     */
-    @NotBlank(message = "客服人员不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
+    @NotBlank(message = "客服人员不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String supportStaff;
     /**
     * 租户登录背景图片URL
     */
+    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String loginBackground;
     /**
     * 租户logo图片URL
     */
+    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String tenantLogo;
     /**
     * 状态（0待初始化 1正常 2禁用 3过期）
     */
-    @NotNull(message = "租户状态不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
+    @NotNull(message = "租户状态不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  Integer tenantStatus;
     /**
     * 删除标记:0未删除;1已删除

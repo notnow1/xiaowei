@@ -57,6 +57,16 @@
                     and update_time=#{tenantContract.updateTime}
                 </if>
     </select>
+<!--    根据租户id查询租户合同信息-->
+    <select id="selectTenantContractByTenantId"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO">
+        SELECT
+            tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time, contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
+        FROM tenant_contract
+        WHERE  tenant_id=#{tenantId}
+          and delete_flag=0
+        order by update_time
+    </select>
     <!--新增租户合同信息-->
     <insert id="insertTenantContract" useGeneratedKeys="true" keyProperty="tenantContractId">
         INSERT INTO tenant_contract (tenant_id,sales_contract_no,sales_personnel,contract_amount,contract_start_time,contract_end_time,product_package,delete_flag,create_by,create_time,update_by,update_time)

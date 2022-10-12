@@ -12,6 +12,7 @@ import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContactsMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContractMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantDomainApprovalMapper;
@@ -54,7 +55,19 @@ public class TenantServiceImpl implements ITenantService {
      */
     @Override
     public TenantDTO selectTenantByTenantId(Long tenantId) {
-        return tenantMapper.selectTenantByTenantId(tenantId);
+        TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
+        //租户联系人
+        tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
+        //租户合同
+        tenantDTO.setTenantContractDTOList(tenantContractMapper.selectTenantContractByTenantId(tenantId));
+        //租户域名申请表
+        List<TenantDomainApprovalDTO> tenantDomainApprovalDTOS = tenantDomainApprovalMapper.selectTenantDomainApprovalByTenantId(tenantId);
+        tenantDTO.setTenantDomainApprovalDTOList(tenantDomainApprovalDTOS);
+        if (!CollectionUtils.isEmpty(tenantDomainApprovalDTOS)){
+            //申请状态:0待审核;1审核通过;2审核驳回
+            tenantDTO.setApprovalStatus(tenantDomainApprovalDTOS.get(tenantDomainApprovalDTOS.size()-1).getApprovalStatus());
+        }
+        return tenantDTO;
     }
 
     /**

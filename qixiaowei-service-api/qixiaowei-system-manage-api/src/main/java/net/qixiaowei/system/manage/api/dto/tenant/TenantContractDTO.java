@@ -57,12 +57,12 @@ public class TenantContractDTO {
     /**
     * 合同开始时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private  Date  contractStartTime;
     /**
     * 合同结束时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private  Date  contractEndTime;
     /**
     * 开通的产品包

@@ -63,6 +63,16 @@
                     and update_time=#{tenantDomainApproval.updateTime}
                 </if>
     </select>
+<!--    根据租户id查询租户域名申请-->
+    <select id="selectTenantDomainApprovalByTenantId"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO">
+        SELECT
+            tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account, submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time, update_by, update_time
+        FROM tenant_domain_approval
+        WHERE  tenant_id=#{tenantId}
+          and delete_flag=0
+        order by update_time
+    </select>
     <!--新增租户域名申请-->
     <insert id="insertTenantDomainApproval" useGeneratedKeys="true" keyProperty="tenantDomainApprovalId">
         INSERT INTO tenant_domain_approval (tenant_id,approval_domain,applicant_user_id,applicant_user_account,submission_time,approval_time,approval_user_id,approval_status,remark,delete_flag,create_by,create_time,update_by,update_time)
