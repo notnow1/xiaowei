@@ -54,6 +54,29 @@
         WHERE performance_percentage_name = #{performancePercentageName}
         AND delete_flag = 0
     </select>
+    <!--引用校验-->
+    <select id="isQuote" resultType="java.lang.Integer">
+        SELECT COUNT(performance_percentage_id) FROM performance_percentage
+        WHERE delete_flag = 0
+        <if test="performanceRankCategory = 1">
+            AND org_performance_rank_id = #{performanceRankId}
+        </if>
+        <if test="performanceRankCategory = 2">
+            AND person_performance_rank_id = #{performanceRankId}
+        </if>
+    </select>
+    <select id="selectPerformancePercentageByPerformancePercentageIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO">
+        SELECT
+        performance_percentage_id, performance_percentage_name, org_performance_rank_id, person_performance_rank_id,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_percentage
+        WHERE delete_flag=0
+        AND performance_percentage_id IN
+        <foreach collection="performancePercentageIds" separator="," open="(" close=")" index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
     <!--新增绩效比例表-->
     <insert id="insertPerformancePercentage" useGeneratedKeys="true" keyProperty="performancePercentageId">
         INSERT INTO performance_percentage

@@ -84,6 +84,16 @@
         FROM performance_rank
         WHERE delete_flag = 0 AND performance_rank_category = 2
     </select>
+    <!--通过ids查找绩效等级列表-->
+    <select id="selectPerformanceRank"
+            resultType="net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRank">
+        SELECT performance_rank_id,performance_rank_name FROM performance_rank
+        WHERE delete_flag = 0 AND performance_rank_id IN
+        <foreach collection="orgPerformanceRankIds" item="item" index="index"
+                 open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
     <!--新增绩效等级表-->
     <insert id="insertPerformanceRank" useGeneratedKeys="true" keyProperty="performanceRankId">
         INSERT INTO performance_rank

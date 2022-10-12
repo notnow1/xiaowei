@@ -104,4 +104,21 @@ public interface PerformancePercentageMapper {
      * @return
      */
     int isUnique(@Param("performancePercentageName") String performancePercentageName);
+
+    /**
+     * 引用校验
+     *
+     * @param performanceRankId
+     * @param performanceRankCategory
+     * @return
+     */
+    int isQuote(@Param("performanceRankId") Long performanceRankId, @Param("performanceRankCategory") Integer performanceRankCategory);
+
+    /**
+     * 根据performancePercentageIds查找绩效比例配置
+     *
+     * @param performancePercentageIds
+     * @return
+     */
+    List<PerformancePercentageDTO> selectPerformancePercentageByPerformancePercentageIds(@Param("performancePercentageIds") List<Long> performancePercentageIds);
 }

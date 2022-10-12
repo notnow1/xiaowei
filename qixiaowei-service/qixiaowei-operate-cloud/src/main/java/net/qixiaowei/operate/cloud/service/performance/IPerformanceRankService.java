@@ -117,4 +117,12 @@ public interface IPerformanceRankService {
      * @return
      */
     Map<String, List<PerformanceRank>> detailLevelInfo();
+
+    /**
+     * 通过ids查找绩效等级
+     *
+     * @param orgPerformanceRankIds
+     * @return
+     */
+    List<PerformanceRank> selectPerformanceRank(List<Long> orgPerformanceRankIds);
 }

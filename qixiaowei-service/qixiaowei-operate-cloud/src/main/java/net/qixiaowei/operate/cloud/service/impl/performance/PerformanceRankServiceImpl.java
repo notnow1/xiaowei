@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import net.qixiaowei.operate.cloud.service.performance.IPerformancePercentageService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankFactorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -37,6 +38,9 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
 
     @Autowired
     IPerformanceRankFactorService performanceRankFactorService;
+
+    @Autowired
+    IPerformancePercentageService performancePercentageService;
 
     /**
      * 查询绩效等级表
@@ -256,6 +260,13 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
     @Override
     public PerformanceRankDTO detailPerformanceRank(Long performanceRankId) {
         PerformanceRankDTO performanceRankDTO = performanceRankMapper.selectPerformanceRankByPerformanceRankId(performanceRankId);
+        Integer performanceRankCategory = performanceRankDTO.getPerformanceRankCategory();
+        int quote = performancePercentageService.isQuote(performanceRankId, performanceRankCategory);
+        int isEdit = 1;
+        if (quote > 0) {
+            isEdit = 0;
+        }
+        performanceRankDTO.setIsEdit(isEdit);
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS
                 = performanceRankFactorService.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
         performanceRankDTO.setPerformanceRankFactorDTOS(performanceRankFactorDTOS);
@@ -276,5 +287,17 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         PerformanceRankDTOS.put("person", personDto);
         return PerformanceRankDTOS;
     }
+
+    /**
+     * 通过ids查找绩效等级
+     *
+     * @param orgPerformanceRankIds
+     * @return
+     */
+    @Override
+    public List<PerformanceRank> selectPerformanceRank(List<Long> orgPerformanceRankIds) {
+        return performanceRankMapper.selectPerformanceRank(orgPerformanceRankIds);
+    }
+
 }
 

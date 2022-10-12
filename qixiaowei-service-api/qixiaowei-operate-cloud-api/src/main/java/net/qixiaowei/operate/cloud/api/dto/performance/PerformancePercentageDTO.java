@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.api.dto.performance;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.Data;
@@ -49,6 +50,7 @@ public class PerformancePercentageDTO {
     /**
      * ID
      */
+    @NotNull(message = "绩效比例id不能为空", groups = {PerformancePercentageDTO.UpdatePerformancePercentageDTO.class, PerformancePercentageDTO.DeletePerformancePercentageDTO.class})
     private Long performancePercentageId;
     /**
      * 绩效比例名称
@@ -62,10 +64,18 @@ public class PerformancePercentageDTO {
     @NotNull(message = "组织绩效等级ID", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
     private Long orgPerformanceRankId;
     /**
+     * 组织绩效等级名称
+     */
+    private String orgPerformanceRankName;
+    /**
      * 个人绩效等级ID
      */
     @NotNull(message = "个人绩效等级ID", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
     private Long personPerformanceRankId;
+    /**
+     * 个人绩效等级名称
+     */
+    private String personPerformanceRankName;
     /**
      * 删除标记:0未删除;1已删除
      */
@@ -89,9 +99,16 @@ public class PerformancePercentageDTO {
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     /**
+     * 组织菜单
+     */
+    private List<String> orgMenu;
+    /**
+     * 个人菜单
+     */
+    private List<String> personMenu;
+    /**
      * 绩效比例信息
      */
-    private List<Map<Long, String>> informationList;
-
+    private List<Map<String, BigDecimal>> informationList;
 }
 

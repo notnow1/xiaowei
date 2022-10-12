@@ -5,52 +5,75 @@
     <select id="selectPerformancePercentageDataByPerformancePercentageDataId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDataDTO">
         SELECT
-        performance_percentage_data_id, performance_percentage_id, org_rank_factor_id, person_rank_factor_id, value, delete_flag, create_by, create_time, update_by, update_time
+        performance_percentage_data_id, performance_percentage_id, org_rank_factor_id, person_rank_factor_id, value,
+        delete_flag, create_by, create_time, update_by, update_time
         FROM performance_percentage_data
-        WHERE  performance_percentage_data_id=#{performancePercentageDataId}
+        WHERE performance_percentage_data_id=#{performancePercentageDataId}
         and delete_flag=0
     </select>
 
     <!--    查询绩效比例数据表列表-->
-    <select id="selectPerformancePercentageDataList" resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDataDTO">
+    <select id="selectPerformancePercentageDataList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDataDTO">
         SELECT
-        performance_percentage_data_id, performance_percentage_id, org_rank_factor_id, person_rank_factor_id, value, delete_flag, create_by, create_time, update_by, update_time
+        performance_percentage_data_id, performance_percentage_id, org_rank_factor_id, person_rank_factor_id, value,
+        delete_flag, create_by, create_time, update_by, update_time
         FROM performance_percentage_data
         WHERE delete_flag=0
-                <if test="performancePercentageData.performancePercentageDataId != null">
-                    and performance_percentage_data_id=#{performancePercentageData.performancePercentageDataId}
-                </if>
-                <if test="performancePercentageData.performancePercentageId != null">
-                    and performance_percentage_id=#{performancePercentageData.performancePercentageId}
-                </if>
-                <if test="performancePercentageData.orgRankFactorId != null">
-                    and org_rank_factor_id=#{performancePercentageData.orgRankFactorId}
-                </if>
-                <if test="performancePercentageData.personRankFactorId != null">
-                    and person_rank_factor_id=#{performancePercentageData.personRankFactorId}
-                </if>
-                <if test="performancePercentageData.value != null">
-                    and value=#{performancePercentageData.value}
-                </if>
-                <if test="performancePercentageData.deleteFlag != null">
-                    and delete_flag=#{performancePercentageData.deleteFlag}
-                </if>
-                <if test="performancePercentageData.createBy != null">
-                    and create_by=#{performancePercentageData.createBy}
-                </if>
-                <if test="performancePercentageData.createTime != null">
-                    and create_time=#{performancePercentageData.createTime}
-                </if>
-                <if test="performancePercentageData.updateBy != null">
-                    and update_by=#{performancePercentageData.updateBy}
-                </if>
-                <if test="performancePercentageData.updateTime != null">
-                    and update_time=#{performancePercentageData.updateTime}
-                </if>
+        <if test="performancePercentageData.performancePercentageDataId != null">
+            and performance_percentage_data_id=#{performancePercentageData.performancePercentageDataId}
+        </if>
+        <if test="performancePercentageData.performancePercentageId != null">
+            and performance_percentage_id=#{performancePercentageData.performancePercentageId}
+        </if>
+        <if test="performancePercentageData.orgRankFactorId != null">
+            and org_rank_factor_id=#{performancePercentageData.orgRankFactorId}
+        </if>
+        <if test="performancePercentageData.personRankFactorId != null">
+            and person_rank_factor_id=#{performancePercentageData.personRankFactorId}
+        </if>
+        <if test="performancePercentageData.value != null">
+            and value=#{performancePercentageData.value}
+        </if>
+        <if test="performancePercentageData.deleteFlag != null">
+            and delete_flag=#{performancePercentageData.deleteFlag}
+        </if>
+        <if test="performancePercentageData.createBy != null">
+            and create_by=#{performancePercentageData.createBy}
+        </if>
+        <if test="performancePercentageData.createTime != null">
+            and create_time=#{performancePercentageData.createTime}
+        </if>
+        <if test="performancePercentageData.updateBy != null">
+            and update_by=#{performancePercentageData.updateBy}
+        </if>
+        <if test="performancePercentageData.updateTime != null">
+            and update_time=#{performancePercentageData.updateTime}
+        </if>
+    </select>
+    <!--通过performancePercentageId查找绩效比例信息列表-->
+    <select id="selectPerformancePercentageDataByPerformancePercentageId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDataDTO">
+        SELECT
+        performance_percentage_data_id, performance_percentage_id, org_rank_factor_id, person_rank_factor_id, value,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_percentage_data
+        WHERE performance_percentage_id=#{performancePercentageId}
+        and delete_flag=0
+    </select>
+    <!--通过performancePercentageIds查找绩效比例信息列表-->
+    <select id="selectPerformancePercentageDataByPerformancePercentageIds" resultType="java.lang.Long">
+        SELECT performance_percentage_data_id FROM performance_percentage_data
+        WHERE performance_percentage_id IN
+        <foreach collection="performancePercentageIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND delete_flag=0
     </select>
     <!--新增绩效比例数据表-->
     <insert id="insertPerformancePercentageData" useGeneratedKeys="true" keyProperty="performancePercentageDataId">
-        INSERT INTO performance_percentage_data (performance_percentage_id,org_rank_factor_id,person_rank_factor_id,value,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO performance_percentage_data
+        (performance_percentage_id,org_rank_factor_id,person_rank_factor_id,value,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{performancePercentageData.performancePercentageId},#{performancePercentageData.orgRankFactorId},#{performancePercentageData.personRankFactorId},#{performancePercentageData.value},#{performancePercentageData.deleteFlag},#{performancePercentageData.createBy},#{performancePercentageData.createTime},#{performancePercentageData.updateBy},#{performancePercentageData.updateTime})
     </insert>
@@ -58,62 +81,63 @@
     <update id="updatePerformancePercentageData">
         UPDATE performance_percentage_data
         SET
-                    <if test="performancePercentageData.performancePercentageId != null">
-                        performance_percentage_id=#{performancePercentageData.performancePercentageId},
-                    </if>
-                    <if test="performancePercentageData.orgRankFactorId != null">
-                        org_rank_factor_id=#{performancePercentageData.orgRankFactorId},
-                    </if>
-                    <if test="performancePercentageData.personRankFactorId != null">
-                        person_rank_factor_id=#{performancePercentageData.personRankFactorId},
-                    </if>
-                    <if test="performancePercentageData.value != null">
-                        value=#{performancePercentageData.value},
-                    </if>
-                    <if test="performancePercentageData.deleteFlag != null">
-                        delete_flag=#{performancePercentageData.deleteFlag},
-                    </if>
-                    <if test="performancePercentageData.createBy != null">
-                        create_by=#{performancePercentageData.createBy},
-                    </if>
-                    <if test="performancePercentageData.createTime != null">
-                        create_time=#{performancePercentageData.createTime},
-                    </if>
-                    <if test="performancePercentageData.updateBy != null">
-                        update_by=#{performancePercentageData.updateBy},
-                    </if>
-                    <if test="performancePercentageData.updateTime != null">
-                        update_time=#{performancePercentageData.updateTime}
-                    </if>
+        <if test="performancePercentageData.performancePercentageId != null">
+            performance_percentage_id=#{performancePercentageData.performancePercentageId},
+        </if>
+        <if test="performancePercentageData.orgRankFactorId != null">
+            org_rank_factor_id=#{performancePercentageData.orgRankFactorId},
+        </if>
+        <if test="performancePercentageData.personRankFactorId != null">
+            person_rank_factor_id=#{performancePercentageData.personRankFactorId},
+        </if>
+        <if test="performancePercentageData.value != null">
+            value=#{performancePercentageData.value},
+        </if>
+        <if test="performancePercentageData.deleteFlag != null">
+            delete_flag=#{performancePercentageData.deleteFlag},
+        </if>
+        <if test="performancePercentageData.createBy != null">
+            create_by=#{performancePercentageData.createBy},
+        </if>
+        <if test="performancePercentageData.createTime != null">
+            create_time=#{performancePercentageData.createTime},
+        </if>
+        <if test="performancePercentageData.updateBy != null">
+            update_by=#{performancePercentageData.updateBy},
+        </if>
+        <if test="performancePercentageData.updateTime != null">
+            update_time=#{performancePercentageData.updateTime}
+        </if>
         WHERE
-                 performance_percentage_data_id=#{performancePercentageData.performancePercentageDataId}
+        performance_percentage_data_id=#{performancePercentageData.performancePercentageDataId}
     </update>
     <!--逻辑删除绩效比例数据表-->
     <update id="logicDeletePerformancePercentageDataByPerformancePercentageDataId">
         UPDATE performance_percentage_data
-        SET     delete_flag= 1,
-                update_by=#{performancePercentageData.updateBy},
-                update_time=#{performancePercentageData.updateTime}
+        SET delete_flag= 1,
+        update_by=#{performancePercentageData.updateBy},
+        update_time=#{performancePercentageData.updateTime}
         WHERE
-                performance_percentage_data_id=#{performancePercentageData.performancePercentageDataId}
+        performance_percentage_data_id=#{performancePercentageData.performancePercentageDataId}
     </update>
     <!--逻辑批量删除绩效比例数据表-->
     <update id="logicDeletePerformancePercentageDataByPerformancePercentageDataIds">
         UPDATE performance_percentage_data
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         performance_percentage_data_id IN
-            <foreach item="item"
-                     collection="performancePercentageDataIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        performance_percentage_data_id IN
+        <foreach item="item"
+                 collection="performancePercentageDataIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增绩效比例数据表-->
     <insert id="batchPerformancePercentageData">
-        INSERT INTO performance_percentage_data (performance_percentage_id,org_rank_factor_id,person_rank_factor_id,value,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO performance_percentage_data
+        (performance_percentage_id,org_rank_factor_id,person_rank_factor_id,value,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="performancePercentageDatas"
@@ -125,90 +149,93 @@
     <!--物理删除绩效比例数据表-->
     <delete id="deletePerformancePercentageDataByPerformancePercentageDataId">
         DELETE FROM performance_percentage_data
-        WHERE  performance_percentage_data_id=#{performancePercentageData}
+        WHERE performance_percentage_data_id=#{performancePercentageData}
 
     </delete>
     <!--物理批量删除绩效比例数据表-->
     <delete id="deletePerformancePercentageDataByPerformancePercentageDataIds">
         DELETE FROM performance_percentage_data
-        WHERE  performance_percentage_data_id IN
-            <foreach item="item"
-                     collection="performancePercentageDataIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE performance_percentage_data_id IN
+        <foreach item="item"
+                 collection="performancePercentageDataIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改绩效比例数据表-->
     <update id="updatePerformancePercentageDatas">
         update performance_percentage_data
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="performance_percentage_id=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.performancePercentageId != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.performancePercentageId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="org_rank_factor_id=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.orgRankFactorId != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.orgRankFactorId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="person_rank_factor_id=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.personRankFactorId != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.personRankFactorId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="value=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.value != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.value}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="performancePercentageDataList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="performance_percentage_id=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.performancePercentageId != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then
+                        #{item.performancePercentageId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="org_rank_factor_id=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.orgRankFactorId != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then
+                        #{item.orgRankFactorId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="person_rank_factor_id=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.personRankFactorId != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then
+                        #{item.personRankFactorId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="value=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.value != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.value}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="performancePercentageDataList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when performance_percentage_data_id=#{item.performancePercentageDataId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="performancePercentageDataList" separator="or" item="item" index="index">
-                    performance_percentage_data_id=#{item.performancePercentageDataId}
+            performance_percentage_data_id=#{item.performancePercentageDataId}
         </foreach>
     </update>
 </mapper>

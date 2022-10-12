@@ -83,6 +83,10 @@ public class PerformanceRankDTO {
      * 绩效等级系数
      */
     private List<PerformanceRankFactorDTO> performanceRankFactorDTOS;
+    /**
+     * 是否可以编辑(0-不可以编辑，1-可以编辑)
+     */
+    private int isEdit;
 
 }
 

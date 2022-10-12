@@ -60,6 +60,7 @@
         FROM performance_rank_factor
         WHERE delete_flag=0
         AND performance_rank_id = #{performanceRankId}
+        ORDER BY sort ASC
     </select>
     <!--新增绩效等级系数-->
     <insert id="insertPerformanceRankFactor" useGeneratedKeys="true" keyProperty="performanceRankFactorId">

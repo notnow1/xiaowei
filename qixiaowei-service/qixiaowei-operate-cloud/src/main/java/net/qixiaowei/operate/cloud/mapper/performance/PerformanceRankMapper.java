@@ -134,4 +134,13 @@ public interface PerformanceRankMapper {
      * @return
      */
     List<PerformanceRank> selectPersonDto();
+
+    /**
+     * 通过ids查找绩效等级列表
+     *
+     * @param orgPerformanceRankIds
+     * @return
+     */
+    List<PerformanceRank> selectPerformanceRank(@Param("orgPerformanceRankIds") List<Long> orgPerformanceRankIds);
+
 }
