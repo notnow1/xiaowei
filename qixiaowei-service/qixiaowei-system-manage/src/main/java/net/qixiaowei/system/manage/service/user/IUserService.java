@@ -68,10 +68,10 @@ public interface IUserService{
     /**
     * 逻辑批量删除用户表
     *
-    * @param UserDtos 需要删除的用户表集合
+    * @param userIds 需要删除的用户ID集合
     * @return 结果
     */
-    int logicDeleteUserByUserIds(List<UserDTO> UserDtos);
+    int logicDeleteUserByUserIds(List<Long> userIds);
 
     /**
     * 逻辑删除用户表信息
@@ -80,28 +80,5 @@ public interface IUserService{
     * @return 结果
     */
     int logicDeleteUserByUserId(UserDTO userDTO);
-    /**
-    * 逻辑批量删除用户表
-    *
-    * @param UserDtos 需要删除的用户表集合
-    * @return 结果
-    */
-    int deleteUserByUserIds(List<UserDTO> UserDtos);
 
-    /**
-    * 逻辑删除用户表信息
-    *
-    * @param userDTO
-    * @return 结果
-    */
-    int deleteUserByUserId(UserDTO userDTO);
-
-
-    /**
-    * 删除用户表信息
-    *
-    * @param userId 用户表主键
-    * @return 结果
-    */
-    int deleteUserByUserId(Long userId);
 }

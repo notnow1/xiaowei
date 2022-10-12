@@ -53,22 +53,6 @@ public interface IRoleService{
     int updateRole(RoleDTO roleDTO);
 
     /**
-    * 批量修改角色表
-    *
-    * @param roleDtos 角色表
-    * @return 结果
-    */
-    int updateRoles(List<RoleDTO> roleDtos);
-
-    /**
-    * 批量新增角色表
-    *
-    * @param roleDtos 角色表
-    * @return 结果
-    */
-    int insertRoles(List<RoleDTO> roleDtos);
-
-    /**
     * 逻辑批量删除角色表
     *
     * @param RoleDtos 需要删除的角色表集合

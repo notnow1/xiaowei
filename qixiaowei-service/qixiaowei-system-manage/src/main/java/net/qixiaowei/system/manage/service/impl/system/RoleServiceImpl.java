@@ -88,7 +88,6 @@ public class RoleServiceImpl implements IRoleService {
      * @param roleDTO 角色表
      * @return 结果
      */
-    @Transactional
     @Override
     public int updateRole(RoleDTO roleDTO) {
         Role role = new Role();
@@ -105,7 +104,6 @@ public class RoleServiceImpl implements IRoleService {
      * @return 结果
      */
 
-    @Transactional
     @Override
     public int logicDeleteRoleByRoleIds(List<RoleDTO> roleDtos) {
         List<Long> stringList = new ArrayList();
@@ -122,7 +120,6 @@ public class RoleServiceImpl implements IRoleService {
      * @return 结果
      */
 
-    @Transactional
     @Override
     public int deleteRoleByRoleId(Long roleId) {
         return roleMapper.deleteRoleByRoleId(roleId);
@@ -134,7 +131,6 @@ public class RoleServiceImpl implements IRoleService {
      * @param roleDTO 角色表
      * @return 结果
      */
-    @Transactional
     @Override
     public int logicDeleteRoleByRoleId(RoleDTO roleDTO) {
         Role role = new Role();
@@ -148,7 +144,6 @@ public class RoleServiceImpl implements IRoleService {
      * @param roleDTO 角色表
      * @return 结果
      */
-    @Transactional
     @Override
     public int deleteRoleByRoleId(RoleDTO roleDTO) {
         Role role = new Role();
@@ -162,7 +157,6 @@ public class RoleServiceImpl implements IRoleService {
      * @param roleDtos 需要删除的角色表主键
      * @return 结果
      */
-    @Transactional
     @Override
     public int deleteRoleByRoleIds(List<RoleDTO> roleDtos) {
         List<Long> stringList = new ArrayList();
@@ -172,47 +166,5 @@ public class RoleServiceImpl implements IRoleService {
         return roleMapper.deleteRoleByRoleIds(stringList);
     }
 
-    /**
-     * 批量新增角色表信息
-     *
-     * @param roleDtos 角色表对象
-     */
-    @Transactional
-    public int insertRoles(List<RoleDTO> roleDtos) {
-        List<Role> roleList = new ArrayList();
-
-        for (RoleDTO roleDTO : roleDtos) {
-            Role role = new Role();
-            BeanUtils.copyProperties(roleDTO, role);
-            role.setCreateBy(SecurityUtils.getUserId());
-            role.setCreateTime(DateUtils.getNowDate());
-            role.setUpdateTime(DateUtils.getNowDate());
-            role.setUpdateBy(SecurityUtils.getUserId());
-            role.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            roleList.add(role);
-        }
-        return roleMapper.batchRole(roleList);
-    }
-
-    /**
-     * 批量修改角色表信息
-     *
-     * @param roleDtos 角色表对象
-     */
-    @Transactional
-    public int updateRoles(List<RoleDTO> roleDtos) {
-        List<Role> roleList = new ArrayList();
-
-        for (RoleDTO roleDTO : roleDtos) {
-            Role role = new Role();
-            BeanUtils.copyProperties(roleDTO, role);
-            role.setCreateBy(SecurityUtils.getUserId());
-            role.setCreateTime(DateUtils.getNowDate());
-            role.setUpdateTime(DateUtils.getNowDate());
-            role.setUpdateBy(SecurityUtils.getUserId());
-            roleList.add(role);
-        }
-        return roleMapper.updateRoles(roleList);
-    }
 }
 

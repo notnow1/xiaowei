@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,7 +60,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("system:manage:user:add")
     @Log(title = "新增用户表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody UserDTO userDTO) {
+    public AjaxResult addSave(@Validated(UserDTO.AddUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.insertUser(userDTO));
     }
 
@@ -70,7 +71,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("system:manage:user:edit")
     @Log(title = "修改用户表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody UserDTO userDTO) {
+    public AjaxResult editSave(@Validated(UserDTO.UpdateUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.updateUser(userDTO));
     }
 
@@ -80,28 +81,8 @@ public class UserController extends BaseController {
     @RequiresPermissions("system:manage:user:remove")
     @Log(title = "删除用户表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody UserDTO userDTO) {
+    public AjaxResult remove(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.logicDeleteUserByUserId(userDTO));
-    }
-
-    /**
-     * 批量修改用户表
-     */
-    @RequiresPermissions("system:manage:user:edits")
-    @Log(title = "批量修改用户表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<UserDTO> userDtos) {
-        return toAjax(userService.updateUsers(userDtos));
-    }
-
-    /**
-     * 批量新增用户表
-     */
-    @RequiresPermissions("system:manage:user:insertUsers")
-    @Log(title = "批量新增用户表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertUsers")
-    public AjaxResult insertUsers(@RequestBody List<UserDTO> userDtos) {
-        return toAjax(userService.insertUsers(userDtos));
     }
 
     /**
@@ -110,8 +91,8 @@ public class UserController extends BaseController {
     @RequiresPermissions("system:manage:user:removes")
     @Log(title = "批量删除用户表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<UserDTO> UserDtos) {
-        return toAjax(userService.logicDeleteUserByUserIds(UserDtos));
+    public AjaxResult removes(@RequestBody List<Long> userIds) {
+        return toAjax(userService.logicDeleteUserByUserIds(userIds));
     }
 
     /**

@@ -42,6 +42,14 @@
                     and update_time=#{userRole.updateTime}
                 </if>
     </select>
+
+    <select id="selectUserRoleListByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.UserRoleDTO">
+        SELECT
+        user_role_id, user_id, role_id, delete_flag, create_by, create_time, update_by, update_time
+        FROM user_role
+        WHERE delete_flag = 0  and user_id=#{userId}
+    </select>
+
     <!--新增用户角色表-->
     <insert id="insertUserRole" useGeneratedKeys="true" keyProperty="userRoleId">
         INSERT INTO user_role (user_id,role_id,delete_flag,create_by,create_time,update_by,update_time)

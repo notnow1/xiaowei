@@ -13,6 +13,37 @@ import java.util.Date;
 * @since 2022-10-05
 */
 public interface UserMapper{
+    /**
+     * 校验用户帐号是否唯一
+     *
+     * @param userAccount 用户帐号
+     * @return 结果
+     */
+    int checkUserAccountUnique(@Param("userAccount") String userAccount);
+
+    /**
+     * 校验用户是否唯一
+     *
+     * @param userDTO 用户帐号
+     * @return 结果
+     */
+    List<UserDTO> checkUserUnique(@Param("user")UserDTO userDTO);
+
+    /**
+     * 校验手机号码是否唯一
+     *
+     * @param mobilePhone 手机号码
+     * @return 结果
+     */
+    UserDTO checkMobilePhoneUnique(@Param("mobilePhone")String mobilePhone);
+
+    /**
+     * 校验email是否唯一
+     *
+     * @param email 用户邮箱
+     * @return 结果
+     */
+     UserDTO checkEmailUnique(@Param("email")String email);
 
     /**
      * 查询用户表
@@ -67,7 +98,7 @@ public interface UserMapper{
     * @param user
     * @return 结果
     */
-    int logicDeleteUserByUserId(@Param("user")User user,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteUserByUserId(@Param("user")User user);
 
     /**
     * 逻辑批量删除用户表

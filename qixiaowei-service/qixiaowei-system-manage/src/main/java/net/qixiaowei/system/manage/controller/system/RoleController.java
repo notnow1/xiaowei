@@ -85,27 +85,6 @@ public class RoleController extends BaseController
     {
     return toAjax(roleService.logicDeleteRoleByRoleId(roleDTO));
     }
-    /**
-    * 批量修改角色表
-    */
-    @RequiresPermissions("system:manage:role:edits")
-    @Log(title = "批量修改角色表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<RoleDTO> roleDtos)
-    {
-    return toAjax(roleService.updateRoles(roleDtos));
-    }
-
-    /**
-    * 批量新增角色表
-    */
-    @RequiresPermissions("system:manage:role:insertRoles")
-    @Log(title = "批量新增角色表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertRoles")
-    public AjaxResult insertRoles(@RequestBody List<RoleDTO> roleDtos)
-    {
-    return toAjax(roleService.insertRoles(roleDtos));
-    }
 
     /**
     * 逻辑批量删除角色表
