@@ -163,10 +163,10 @@ public interface DepartmentMapper{
 
     /**
      * 分页查询部门人员表列表
-     * @param departmentDTO
+     * @param departmentId
      * @return
      */
-    List<EmployeeDTO> queryDeptEmployee(@Param("departmentDTO")DepartmentDTO departmentDTO);
+    List<EmployeeDTO> queryDeptEmployee(@Param("departmentId") Long departmentId);
 
     List<DepartmentDTO> deleteFlagEmployees(@Param("collect")List<Long> collect);
 

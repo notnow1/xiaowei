@@ -117,16 +117,12 @@ public class ProductPackageServiceImpl implements IProductPackageService {
     /**
      * 逻辑批量删除产品包
      *
-     * @param productPackageDtos 需要删除的产品包主键
+     * @param productPackageIds 需要删除的产品包主键
      * @return 结果
      */
     @Override
-    public int logicDeleteProductPackageByProductPackageIds(List<ProductPackageDTO> productPackageDtos) {
-        List<Long> stringList = new ArrayList();
-        for (ProductPackageDTO productPackageDTO : productPackageDtos) {
-            stringList.add(productPackageDTO.getProductPackageId());
-        }
-        return productPackageMapper.logicDeleteProductPackageByProductPackageIds(stringList, productPackageDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+    public int logicDeleteProductPackageByProductPackageIds(List<Long> productPackageIds) {
+        return productPackageMapper.logicDeleteProductPackageByProductPackageIds(productPackageIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**

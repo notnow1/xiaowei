@@ -14,6 +14,25 @@
         and delete_flag=0
     </select>
 
+    <!--    批量查询${table.comment!}-->
+    <select id="select${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>"
+            resultType="${dtoPackage}.${entity}DTO">
+        SELECT
+        <#list table.commonFields as field>
+            ${field.name},
+        </#list>
+        ${table.fieldNames}
+        FROM ${table.name}
+        WHERE <#list table.fields as field><#if field.keyFlag> ${field.name} in
+            <foreach item="item"
+                     collection="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s"
+                     index="index" open="(" separator="," close=")">
+                #${leftBrace}item${rightBrace}
+            </foreach>
+        </#if></#list>
+        and delete_flag=0
+    </select>
+
     <!--    查询${table.comment!}列表-->
     <select id="select${entity}List" resultType="${dtoPackage}.${entity}DTO">
         SELECT

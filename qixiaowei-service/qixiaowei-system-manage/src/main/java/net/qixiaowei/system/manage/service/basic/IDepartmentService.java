@@ -62,10 +62,10 @@ public interface IDepartmentService{
     /**
     * 逻辑批量删除部门表
     *
-    * @param DepartmentDtos 需要删除的部门表集合
+    * @param departmentIds 需要删除的部门表集合
     * @return 结果
     */
-    int logicDeleteDepartmentByDepartmentIds(List<DepartmentDTO> DepartmentDtos);
+    int logicDeleteDepartmentByDepartmentIds(List<Long> departmentIds);
 
     /**
     * 逻辑删除部门表信息

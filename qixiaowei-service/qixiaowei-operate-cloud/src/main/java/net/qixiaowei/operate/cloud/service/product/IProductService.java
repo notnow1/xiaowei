@@ -62,10 +62,10 @@ public interface IProductService{
     /**
     * 逻辑批量删除产品表
     *
-    * @param ProductDtos 需要删除的产品表集合
+    * @param productIds 需要删除的产品表集合
     * @return 结果
     */
-    int logicDeleteProductByProductIds(List<ProductDTO> ProductDtos);
+    int logicDeleteProductByProductIds(List<Long>  productIds);
 
     /**
     * 逻辑删除产品表信息

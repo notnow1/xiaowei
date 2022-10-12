@@ -22,6 +22,14 @@ public interface ProductUnitMapper{
     ProductUnitDTO selectProductUnitByProductUnitId(@Param("productUnitId")Long productUnitId);
 
     /**
+     * 批量查询产品单位表
+     *
+     * @param productUnitIds 产品单位表主键
+     * @return 产品单位表
+     */
+    List<ProductUnitDTO> selectProductUnitByProductUnitIds(@Param("productUnitIds")List<Long> productUnitIds);
+
+    /**
      * 根据code查询产品单位表
      *
      * @param productUnitCode 产品单位表主键

@@ -61,10 +61,10 @@ public interface IProductUnitService{
     /**
     * 逻辑批量删除产品单位表
     *
-    * @param ProductUnitDtos 需要删除的产品单位表集合
+    * @param productUnitIds 需要删除的产品单位表集合
     * @return 结果
     */
-    int logicDeleteProductUnitByProductUnitIds(List<ProductUnitDTO> ProductUnitDtos);
+    int logicDeleteProductUnitByProductUnitIds(List<Long>  productUnitIds);
 
     /**
     * 逻辑删除产品单位表信息

@@ -103,16 +103,19 @@ public class ProductUnitServiceImpl implements IProductUnitService {
     /**
      * 逻辑批量删除产品单位表
      *
-     * @param productUnitDtos 需要删除的产品单位表主键
+     * @param productUnitIds 需要删除的产品单位表主键
      * @return 结果
      */
 
     @Transactional
     @Override
-    public int logicDeleteProductUnitByProductUnitIds(List<ProductUnitDTO> productUnitDtos) {
-        List<Long> collect = productUnitDtos.stream().map(ProductUnitDTO::getProductUnitId).collect(Collectors.toList());
+    public int logicDeleteProductUnitByProductUnitIds(List<Long> productUnitIds) {
+        List<ProductUnitDTO> productUnitDTOS = productUnitMapper.selectProductUnitByProductUnitIds(productUnitIds);
+        if (CollectionUtils.isEmpty(productUnitDTOS)){
+            throw new ServiceException("产品单位不存在");
+        }
         //查询是否被引用
-        List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitIds(collect);
+        List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitIds(productUnitIds);
         // 产品引用
         StringBuffer productErreo = new StringBuffer();
         if (!CollectionUtils.isEmpty(productDTOList)){
@@ -123,7 +126,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         if (productErreo.length()>0){
             throw new ServiceException(productErreo.toString());
         }
-        return productUnitMapper.logicDeleteProductUnitByProductUnitIds(collect, productUnitDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+        return productUnitMapper.logicDeleteProductUnitByProductUnitIds(productUnitIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**

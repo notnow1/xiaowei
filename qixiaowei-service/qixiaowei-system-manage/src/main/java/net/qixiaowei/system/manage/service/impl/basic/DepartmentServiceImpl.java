@@ -286,12 +286,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 throw new ServiceException("删除组织岗位关联失败");
             }
         }
-        //去除已经删除的id
-        for (int i1 = 0; i1 < departmentPostDTOList.size(); i1++) {
-            if (departmentPostIds.contains(departmentPostDTOList.get(i1).getDepartmentPostId())) {
-                departmentPostDTOList.remove(i1);
+        if (!CollectionUtils.isEmpty(departmentPostIds)){
+            //去除已经删除的id
+            for (int i1 = 0; i1 < departmentPostDTOList.size(); i1++) {
+                if (departmentPostIds.contains(departmentPostDTOList.get(i1).getDepartmentPostId())) {
+                    departmentPostDTOList.remove(i1);
+                }
             }
         }
+
         if (!CollectionUtils.isEmpty(departmentPostDTOList)) {
             //组织中间表 新增
             List<DepartmentPost> departmentPostAddList = new ArrayList<>();
@@ -314,7 +317,6 @@ public class DepartmentServiceImpl implements IDepartmentService {
                     departmentPost.setUpdateTime(DateUtils.getNowDate());
                     departmentPostAddList.add(departmentPost);
                 } else {
-                    departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ONE);
                     departmentPost.setUpdateBy(SecurityUtils.getUserId());
                     departmentPost.setUpdateTime(DateUtils.getNowDate());
                     departmentPostUpdateList.add(departmentPost);
@@ -345,13 +347,13 @@ public class DepartmentServiceImpl implements IDepartmentService {
     /**
      * 逻辑批量删除部门表
      *
-     * @param departmentDtos 需要删除的部门表主键
+     * @param departmentIds 需要删除的部门表主键
      * @return 结果
      */
 
     @Transactional
     @Override
-    public int logicDeleteDepartmentByDepartmentIds(List<DepartmentDTO> departmentDtos) {
+    public int logicDeleteDepartmentByDepartmentIds(List<Long>  departmentIds) {
         StringBuffer posterreo = new StringBuffer();
         StringBuffer emplerreo = new StringBuffer();
         StringBuffer depterreo = new StringBuffer();
@@ -359,8 +361,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //组织集合
         List<DepartmentDTO> departmentDTOList = new ArrayList<>();
         //循环添加
-        for (DepartmentDTO departmentDto : departmentDtos) {
-            departmentDTOList.addAll(departmentMapper.selectAncestors(departmentDto.getDepartmentId()));
+        for (Long departmentId : departmentIds) {
+            departmentDTOList.addAll(departmentMapper.selectAncestors(departmentId));
         }
         //去重
         List<DepartmentDTO> collect = departmentDTOList.stream().distinct().collect(Collectors.toList());
@@ -372,7 +374,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
 
             // 人员是否被引用
-            List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto);
+            List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
             if (!CollectionUtils.isEmpty(employeeDTOS)) {
                 emplerreo.append("组织编码" + dto.getDepartmentCode() + "\r\n");
             }
@@ -389,8 +391,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
             throw new ServiceException(depterreo.toString());
         } else {
             //没有引用批量删除数据
-            List<Long> departmentIds = collect.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            List<Long> departmentIds2 = collect.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds2, SecurityUtils.getUserId(), DateUtils.getNowDate());
         }
         return i;
     }
@@ -442,7 +444,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<EmployeeDTO> queryDeptEmployee(DepartmentDTO departmentDTO) {
-        return departmentMapper.queryDeptEmployee(departmentDTO);
+        return departmentMapper.queryDeptEmployee(departmentDTO.getDepartmentId());
     }
 
 
@@ -463,7 +465,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             posterreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\r\n");
         }
         //人员是否被引用
-        List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(departmentDTO);
+        List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(departmentDTO.getDepartmentId());
         if (!CollectionUtils.isEmpty(employeeDTOS)) {
             emplerreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\r\n");
         }
@@ -511,7 +513,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
 
             // 人员是否被引用
-            List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto);
+            List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
             if (!CollectionUtils.isEmpty(employeeDTOS)) {
                 emplerreo.append("组织编码" + dto.getDepartmentCode() + "\r\n");
             }

@@ -127,8 +127,8 @@ public class ProductUnitController extends BaseController
     //@RequiresPermissions("operate:cloud:productUnit:removes")
     //@Log(title = "批量删除产品单位表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody @Validated(ProductUnitDTO.DeleteProductUnitDTO.class) List<ProductUnitDTO>  ProductUnitDtos)
+    public AjaxResult removes(@RequestBody  List<Long>  productUnitIds)
     {
-    return toAjax(productUnitService.logicDeleteProductUnitByProductUnitIds(ProductUnitDtos));
+    return toAjax(productUnitService.logicDeleteProductUnitByProductUnitIds(productUnitIds));
     }
 }

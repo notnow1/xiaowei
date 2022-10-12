@@ -143,6 +143,12 @@ public class DepartmentDTO {
      */
     private List<DepartmentPostDTO>  departmentPostDTOList;
 
+
+    /**
+     * 岗位表
+     */
+    private List<PostDTO>  postDTOList;
+
     /**
      * 部门员工表
      */

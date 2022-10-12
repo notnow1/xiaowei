@@ -650,17 +650,16 @@ public class ProductServiceImpl implements IProductService {
     /**
      * 逻辑批量删除产品表
      *
-     * @param productDtos 需要删除的产品表主键
+     * @param productIds 需要删除的产品表主键
      * @return 结果
      */
 
     @Transactional
     @Override
-    public int logicDeleteProductByProductIds(List<ProductDTO> productDtos) {
+    public int logicDeleteProductByProductIds(List<Long> productIds) {
         int i = 0;
-        List<Long> collect = productDtos.stream().map(ProductDTO::getProductId).collect(Collectors.toList());
         // todo 是否被引用
-        i = productMapper.logicDeleteProductByProductIds(collect, productDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+        i = productMapper.logicDeleteProductByProductIds(productIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
         return i;
     }
 

@@ -126,8 +126,8 @@ public class ProductController extends BaseController
     //@RequiresPermissions("operate:cloud:product:removes")
     //@Log(title = "批量删除产品表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<ProductDTO>  ProductDtos)
+    public AjaxResult removes(@RequestBody List<Long>  productIds)
     {
-    return toAjax(productService.logicDeleteProductByProductIds(ProductDtos));
+    return toAjax(productService.logicDeleteProductByProductIds(productIds));
     }
 }

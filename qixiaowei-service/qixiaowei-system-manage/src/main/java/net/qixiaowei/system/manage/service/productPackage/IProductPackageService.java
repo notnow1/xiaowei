@@ -69,10 +69,10 @@ public interface IProductPackageService{
     /**
     * 逻辑批量删除产品包
     *
-    * @param ProductPackageDtos 需要删除的产品包集合
+    * @param productPackageIds 需要删除的产品包集合
     * @return 结果
     */
-    int logicDeleteProductPackageByProductPackageIds(List<ProductPackageDTO> ProductPackageDtos);
+    int logicDeleteProductPackageByProductPackageIds(List<Long> productPackageIds);
 
     /**
     * 逻辑删除产品包信息

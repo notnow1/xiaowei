@@ -116,9 +116,9 @@ public class ProductPackageController extends BaseController {
      * 逻辑批量删除产品包
      */
     //@RequiresPermissions("system:manage:productPackage:removes")
-    //@Log(title = "批量删除产品包", businessType = BusinessType.DELETE)
+    @Log(title = "批量删除产品包", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<ProductPackageDTO> ProductPackageDtos) {
-        return toAjax(productPackageService.logicDeleteProductPackageByProductPackageIds(ProductPackageDtos));
+    public AjaxResult removes(@RequestBody List<Long> productPackageIds) {
+        return toAjax(productPackageService.logicDeleteProductPackageByProductPackageIds(productPackageIds));
     }
 }

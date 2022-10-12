@@ -300,8 +300,8 @@
         and e.delete_flag = 0
         where
         dept.delete_flag = 0
-        <if test="departmentDTO.departmentId != null">
-            and dept.department_id=#{departmentDTO.departmentId}
+        <if test="departmentId != null">
+            and dept.department_id=#{departmentId}
         </if>
     </select>
     <!--    查询人员是否被部门引用-->
