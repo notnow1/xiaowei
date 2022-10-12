@@ -68,6 +68,14 @@ public interface DepartmentPostMapper{
     */
     int logicDeleteDepartmentPostByDepartmentPostIds(@Param("departmentPostIds")List<Long> departmentPostIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
 
+    /**
+     * 根据组织id逻辑批量删除部门岗位关联表
+     *
+     * @param departmentIds 需要删除的数据组织id集合
+     * @return 结果
+     */
+    int logicDeleteDepartmentPostByDepartmentIds(@Param("departmentIds")List<Long> departmentIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+
 
     /**
     * 物理删除部门岗位关联表

@@ -125,7 +125,7 @@
         WHERE
         delete_flag=0
         <if test="departmentId != null">
-            and department_id=#{department.departmentId}
+            and department_id=#{departmentId}
         </if>
         union
         SELECT department_id,
@@ -257,14 +257,12 @@
         deptpost.update_by,
         deptpost.update_time
         from
-        department dept
-        inner join department_post deptpost
-        on dept.department_id = deptpost.department_id
-        and deptpost.delete_flag=0
-        where dept.delete_flag =0
+        department_post deptpost
+        where deptpost.delete_flag =0
         <if test="departmentId != null">
-            and dept.department_id=#{departmentId}
+            and deptpost.department_id=#{departmentId}
         </if>
+        order by post_sort
     </select>
     <!--    分页查询部门人员表列表-->
     <select id="queryDeptEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">

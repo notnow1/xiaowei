@@ -4,6 +4,8 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -33,6 +35,24 @@ public class DepartmentPostDTO {
     public interface UpdateDepartmentPostDTO extends Default{
 
     }
+
+
+    /**
+     * 岗位职级
+     */
+    private  Integer postRank;
+    /**
+     * 岗位编码
+     */
+    private  String postCode;
+    /**
+     * 岗位名称
+     */
+    private  String postName;
+    /**
+     * 职级体系ID
+     */
+    private  Long officialRankSystemId;
     /**
     * ID
     */

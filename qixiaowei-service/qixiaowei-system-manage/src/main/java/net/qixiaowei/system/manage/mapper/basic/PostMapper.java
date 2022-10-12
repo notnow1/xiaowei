@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.mapper.basic;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.domain.basic.Post;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
@@ -20,6 +21,14 @@ public interface PostMapper{
     * @return 岗位表
     */
     PostDTO selectPostByPostId(@Param("postId")Long postId);
+
+    /**
+     * 查询岗位表
+     *
+     * @param postIds 岗位表主键
+     * @return 岗位表
+     */
+    List<DepartmentPostDTO> selectPostByPostIds(@Param("postIds")List<Long> postIds);
 
     /**
      * 查询岗位表Code

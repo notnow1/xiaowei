@@ -9,7 +9,9 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
+import net.qixiaowei.system.manage.mapper.basic.PostMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private DepartmentMapper departmentMapper;
     @Autowired
     private DepartmentPostMapper departmentPostMapper;
+    @Autowired
+    private PostMapper postMapper;
 
     /**
      * 查询部门表
@@ -392,7 +396,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
         } else {
             //没有引用批量删除数据
             List<Long> departmentIds2 = collect.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds2, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            try {
+                i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds2, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("");
+            }
+            departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
         }
         return i;
     }
@@ -432,7 +441,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
         DepartmentDTO departmentDTO1 = departmentMapper.selectParentDepartmentId(departmentId);
         //查询组织关联岗位信息
         List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentId);
-        departmentDTO1.setDepartmentPostDTOList(departmentPostDTOList);
+        List<Long> collect = departmentPostDTOList.stream().map(DepartmentPostDTO::getPostId).collect(Collectors.toList());
+        List<DepartmentPostDTO>  departmentPostDTOList2 = postMapper.selectPostByPostIds(collect);
+
+        departmentDTO1.setDepartmentPostDTOList(departmentPostDTOList2);
         return departmentDTO1;
     }
 
@@ -531,7 +543,16 @@ public class DepartmentServiceImpl implements IDepartmentService {
         } else {
             //没有引用批量删除数据
             List<Long> departmentIds = departmentDTOList.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            try {
+                i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+               throw new ServiceException("删除组织失败");
+            }
+            try {
+                departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除组织关联表失败");
+            }
         }
         return i;
     }

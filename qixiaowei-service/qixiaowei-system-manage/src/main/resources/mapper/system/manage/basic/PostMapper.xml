@@ -11,6 +11,20 @@
         and delete_flag=0
     </select>
 
+    <!--    查询岗位表-->
+    <select id="selectPostByPostIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        SELECT
+            post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM post
+        WHERE  post_id in
+        <foreach item="item"
+                 collection="postIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and delete_flag=0
+    </select>
     <!--    查询岗位表列表-->
     <select id="selectPostList" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
         SELECT

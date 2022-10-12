@@ -56,6 +56,8 @@ public class TenantServiceImpl implements ITenantService {
     @Override
     public TenantDTO selectTenantByTenantId(Long tenantId) {
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
+        //todo 租户域名
+
         //租户联系人
         tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
         //租户合同

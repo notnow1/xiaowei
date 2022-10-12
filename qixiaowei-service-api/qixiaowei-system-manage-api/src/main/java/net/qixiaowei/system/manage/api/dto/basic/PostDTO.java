@@ -3,9 +3,11 @@ package net.qixiaowei.system.manage.api.dto.basic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
@@ -74,6 +76,7 @@ public class PostDTO {
     /**
     * 岗位说明书URL路径
     */
+    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String postDescription;
     /**
     * 状态:0失效;1生效
