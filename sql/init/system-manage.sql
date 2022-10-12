@@ -450,19 +450,19 @@ VALUES(1, 1, 1, 0,0, sysdate(), 0, sysdate());
 
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(1, 0, 1, '系统管理', NULL, 1, 'system', NULL, NULL, 0, 0, 1, NULL, 'system', 1, 0, 1, '2022-10-11 09:55:29', 1, '2022-10-11 19:41:05');
+VALUES(1, 0, 1, '系统管理', NULL, 1, 'system', NULL, NULL, 0, 0, 1, NULL, 'system', 1, 0, 1, sysdate(), 1, sysdate());
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(2, 1, 1, '设置管理', NULL, 1, 'settingsManager', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 0, 1, '2022-10-11 10:49:51', 1, '2022-10-11 10:49:51');
+VALUES(2, 1, 1, '设置管理', NULL, 1, 'settingsManager', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 0, 1, sysdate(), 1, sysdate());
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(3, 2, 2, '权限设置', NULL, 1, 'roleSetting', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, '2022-10-11 10:51:46', 1, '2022-10-11 21:14:33');
+VALUES(3, 2, 2, '权限设置', NULL, 1, 'roleSetting', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, sysdate(), 1, sysdate());
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(4, 1, 2, '菜单管理', NULL, 1, 'menu', 'system/menu/index', NULL, 0, 1, 1, NULL, 'tree-table', 1, 0, 1, '2022-10-11 18:12:46', 1, '2022-10-11 18:12:46');
+VALUES(4, 1, 2, '菜单管理', NULL, 1, 'menu', 'system/menu/index', NULL, 0, 1, 1, NULL, 'tree-table', 1, 0, 1, sysdate(), 1, sysdate());
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(5, 0, 1, '经营云', NULL, 2, 'manage', NULL, NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-11 07:27:22', 1, '2022-10-11 19:32:00');
+VALUES(5, 0, 1, '经营云', NULL, 2, 'manage', NULL, NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
 
 
 
