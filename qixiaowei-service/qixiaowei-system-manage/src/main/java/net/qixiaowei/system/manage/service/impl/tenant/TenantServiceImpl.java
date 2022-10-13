@@ -8,14 +8,19 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContactsMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContractMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantDomainApprovalMapper;
+import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -46,6 +51,11 @@ public class TenantServiceImpl implements ITenantService {
     private TenantContractMapper tenantContractMapper;
     @Autowired
     private TenantDomainApprovalMapper tenantDomainApprovalMapper;
+
+    @Autowired
+    private EmployeeMapper employeeMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 查询租户表
@@ -82,7 +92,9 @@ public class TenantServiceImpl implements ITenantService {
     public List<TenantDTO> selectTenantList(TenantDTO tenantDTO) {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
-        tenant.setSupportStaff(SecurityUtils.getUserId().toString());
+        //用户表
+        UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
+        tenant.setSupportStaff(userDTO.getEmployeeId().toString());
         return tenantMapper.selectTenantList(tenant);
     }
 
@@ -107,8 +119,10 @@ public class TenantServiceImpl implements ITenantService {
         TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
         //copy
         BeanUtils.copyProperties(tenantDTO, tenant);
+        //用户表
+        UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
         //拼接本人用户id
-        tenant.setSupportStaff(tenant.getSupportStaff() + "," + SecurityUtils.getUserId().toString());
+        tenant.setSupportStaff(tenant.getSupportStaff() + "," + userDTO.getEmployeeId());
         tenant.setCreateBy(SecurityUtils.getUserId());
         tenant.setUpdateBy(SecurityUtils.getUserId());
         tenant.setCreateTime(DateUtils.getNowDate());
