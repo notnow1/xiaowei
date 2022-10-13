@@ -4,29 +4,17 @@
     <!--    查询租户合同信息-->
     <select id="selectTenantContractByTenantContractId"
             resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO">
-        SELECT tenant_contract_id,
-               tenant_id,
-               sales_contract_no,
-               sales_personnel,
-               contract_amount,
-               contract_start_time,
-               contract_end_time,
-               product_package,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        SELECT
+            tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time, contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
         FROM tenant_contract
-        WHERE tenant_contract_id = #{tenantContractId}
-          and delete_flag = 0
+        WHERE  tenant_contract_id=#{tenantContractId}
+          and delete_flag=0
     </select>
 
     <!--    查询租户合同信息列表-->
     <select id="selectTenantContractList" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO">
         SELECT
-        tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time,
-        contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
+        tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time, contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
         FROM tenant_contract
         WHERE delete_flag=0
         <if test="tenantContract.tenantContractId != null">
@@ -72,38 +60,18 @@
     <!--    根据租户id查询租户合同信息-->
     <select id="selectTenantContractByTenantId"
             resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO">
-        select pp.product_package_name,
-               tc.tenant_contract_id,
-               tc.tenant_id,
-               tc.sales_contract_no,
-               tc.sales_personnel,
-               tc.contract_amount,
-               tc.contract_start_time,
-               tc.contract_end_time,
-               tc.product_package,
-               tc.delete_flag,
-               tc.create_by,
-               tc.create_time,
-               tc.update_by,
-               tc.update_time
-        from tenant_contract tc
-                 left join product_package pp
-                           on tc.product_package = pp.product_package_id
-                               and pp.delete_flag = 0
-        where tc.tenant_id = #{tenantId}
-          and tc.delete_flag = 0
-        order by tc.update_time
+        SELECT
+            tenant_contract_id, tenant_id, sales_contract_no, sales_personnel, contract_amount, contract_start_time, contract_end_time, product_package, delete_flag, create_by, create_time, update_by, update_time
+        FROM tenant_contract
+        WHERE  tenant_id=#{tenantId}
+          and delete_flag=0
+        order by update_time
     </select>
     <!--新增租户合同信息-->
     <insert id="insertTenantContract" useGeneratedKeys="true" keyProperty="tenantContractId">
-        INSERT INTO tenant_contract (tenant_id, sales_contract_no, sales_personnel, contract_amount,
-                                     contract_start_time, contract_end_time, product_package, delete_flag, create_by,
-                                     create_time, update_by, update_time)
-        VALUES (#{tenantContract.tenantId}, #{tenantContract.salesContractNo}, #{tenantContract.salesPersonnel},
-                #{tenantContract.contractAmount}, #{tenantContract.contractStartTime},
-                #{tenantContract.contractEndTime}, #{tenantContract.productPackage}, #{tenantContract.deleteFlag},
-                #{tenantContract.createBy}, #{tenantContract.createTime}, #{tenantContract.updateBy},
-                #{tenantContract.updateTime})
+        INSERT INTO tenant_contract (tenant_id,sales_contract_no,sales_personnel,contract_amount,contract_start_time,contract_end_time,product_package,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+            (#{tenantContract.tenantId},#{tenantContract.salesContractNo},#{tenantContract.salesPersonnel},#{tenantContract.contractAmount},#{tenantContract.contractStartTime},#{tenantContract.contractEndTime},#{tenantContract.productPackage},#{tenantContract.deleteFlag},#{tenantContract.createBy},#{tenantContract.createTime},#{tenantContract.updateBy},#{tenantContract.updateTime})
     </insert>
     <!--修改租户合同信息-->
     <update id="updateTenantContract">
@@ -151,15 +119,16 @@
     <!--逻辑删除租户合同信息-->
     <update id="logicDeleteTenantContractByTenantContractId">
         UPDATE tenant_contract
-        SET delete_flag= 1,
-            update_by=#{tenantContract.updateBy},
-            update_time=#{tenantContract.updateTime}
-        WHERE tenant_contract_id = #{tenantContract.tenantContractId}
+        SET     delete_flag= 1,
+                update_by=#{tenantContract.updateBy},
+                update_time=#{tenantContract.updateTime}
+        WHERE
+            tenant_contract_id=#{tenantContract.tenantContractId}
     </update>
     <!--逻辑批量删除租户合同信息-->
     <update id="logicDeleteTenantContractByTenantContractIds">
         UPDATE tenant_contract
-        SET delete_flag= 1,
+        SET     delete_flag= 1,
         update_by=#{updateBy},
         update_time=#{updateTime}
         WHERE
@@ -172,8 +141,7 @@
     </update>
     <!--批量新增租户合同信息-->
     <insert id="batchTenantContract">
-        INSERT INTO tenant_contract
-        (tenant_id,sales_contract_no,sales_personnel,contract_amount,contract_start_time,contract_end_time,product_package,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO tenant_contract (tenant_id,sales_contract_no,sales_personnel,contract_amount,contract_start_time,contract_end_time,product_package,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="tenantContracts"
@@ -184,15 +152,14 @@
 
     <!--物理删除租户合同信息-->
     <delete id="deleteTenantContractByTenantContractId">
-        DELETE
-        FROM tenant_contract
-        WHERE tenant_contract_id = #{tenantContract}
+        DELETE FROM tenant_contract
+        WHERE  tenant_contract_id=#{tenantContract}
 
     </delete>
     <!--物理批量删除租户合同信息-->
     <delete id="deleteTenantContractByTenantContractIds">
         DELETE FROM tenant_contract
-        WHERE tenant_contract_id IN
+        WHERE  tenant_contract_id IN
         <foreach item="item"
                  collection="tenantContractIds"
                  index="index" open="(" separator="," close=")">
