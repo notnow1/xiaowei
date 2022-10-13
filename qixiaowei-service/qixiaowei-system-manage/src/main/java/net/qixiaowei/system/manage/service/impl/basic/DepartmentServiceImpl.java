@@ -11,6 +11,7 @@ import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
+import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -42,6 +43,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private DepartmentPostMapper departmentPostMapper;
     @Autowired
     private PostMapper postMapper;
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     /**
      * 查询部门表
@@ -440,11 +443,33 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public DepartmentDTO deptParticulars(Long departmentId) {
         //查询组织信息
         DepartmentDTO departmentDTO1 = departmentMapper.selectParentDepartmentId(departmentId);
+        //人员表
+        EmployeeDTO employeeDTO = employeeMapper.selectEmployeeByEmployeeId(departmentDTO1.getDepartmentLeaderId());
+        if (null != employeeDTO){
+            //部门负责人名称
+            departmentDTO1.setDepartmentLeaderName(employeeDTO.getEmployeeName());
+        }
+
+
+        PostDTO postDTO = postMapper.selectPostByPostId(departmentDTO1.getDepartmentLeaderPostId());
+        if (null != postDTO){
+            //部门负责人岗位名称
+            departmentDTO1.setDepartmentLeaderPostName(postDTO.getPostName());
+        }
+
+        EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeId(departmentDTO1.getExaminationLeaderId());
+        if (null != employeeDTO1){
+            //考核负责人名称
+            departmentDTO1.setDepartmentLeaderName(employeeDTO1.getEmployeeName());
+        }
+
         //查询组织关联岗位信息
         List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentId);
         List<Long> collect = departmentPostDTOList.stream().map(DepartmentPostDTO::getPostId).collect(Collectors.toList());
-        List<DepartmentPostDTO>  departmentPostDTOList2 = postMapper.selectPostByPostIds(collect);
-
+        List<DepartmentPostDTO>  departmentPostDTOList2 = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(collect)){
+            departmentPostDTOList2 = postMapper.selectPostByPostIds(collect);
+        }
         departmentDTO1.setDepartmentPostDTOList(departmentPostDTOList2);
         return departmentDTO1;
     }

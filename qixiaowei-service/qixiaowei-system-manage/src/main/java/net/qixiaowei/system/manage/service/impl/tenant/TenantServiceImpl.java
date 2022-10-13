@@ -13,10 +13,14 @@ import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
+import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
+import net.qixiaowei.system.manage.mapper.basic.IndustryMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContactsMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContractMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantDomainApprovalMapper;
@@ -56,6 +60,8 @@ public class TenantServiceImpl implements ITenantService {
     private EmployeeMapper employeeMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private IndustryDefaultMapper industryDefaultMapper;
 
     /**
      * 查询租户表
@@ -68,8 +74,18 @@ public class TenantServiceImpl implements ITenantService {
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
         String replace = tenantDTO.getDomain().replace("http://", "");
         String replace1 = replace.replace(".qixiaowei.net", "");
+        //行业
+        IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantDTO.getTenantIndustry());
         //域名
         tenantDTO.setDomain(replace1);
+        //用户表
+        UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
+        //人员表
+        EmployeeDTO employeeDTO = employeeMapper.selectEmployeeByEmployeeId(userDTO.getEmployeeId());
+        //行业名称
+        tenantDTO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
+        //客服人员名称
+        tenantDTO.setSupportStaffName(employeeDTO.getEmployeeName());
         //租户联系人
         tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
         //租户合同
@@ -96,6 +112,9 @@ public class TenantServiceImpl implements ITenantService {
         BeanUtils.copyProperties(tenantDTO, tenant);
         //用户表
         UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
+        if (null != userDTO){
+           throw new ServiceException("请配置用户绑定人员信息");
+        }
         tenant.setSupportStaff(userDTO.getEmployeeId().toString());
         return tenantMapper.selectTenantList(tenant);
     }

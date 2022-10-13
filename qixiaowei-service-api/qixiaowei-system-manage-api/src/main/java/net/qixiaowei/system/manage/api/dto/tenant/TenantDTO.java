@@ -68,6 +68,11 @@ public class TenantDTO {
     */
     @NotNull(message = "租户行业不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  Long tenantIndustry;
+
+    /**
+     * 租户行业名称
+     */
+    private  String tenantIndustryName;
     /**
     * 域名
     */
@@ -89,6 +94,12 @@ public class TenantDTO {
     */
     @NotBlank(message = "客服人员不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String supportStaff;
+
+
+    /**
+     * 客服人员名称
+     */
+    private  String supportStaffName;
     /**
     * 租户登录背景图片URL
     */

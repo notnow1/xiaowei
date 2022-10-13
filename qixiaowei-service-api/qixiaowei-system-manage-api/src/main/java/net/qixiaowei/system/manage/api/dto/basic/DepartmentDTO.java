@@ -93,13 +93,29 @@ public class DepartmentDTO {
     */
     private  Long departmentLeaderId;
     /**
+     * 部门负责人名称
+     */
+    private  String departmentLeaderName;
+
+    /**
     * 部门负责人岗位ID
     */
     private  Long departmentLeaderPostId;
+
+
+    /**
+     * 部门负责人岗位名称
+     */
+    private  String departmentLeaderPostName;
     /**
     * 考核负责人ID
     */
     private  Long examinationLeaderId;
+
+    /**
+     * 考核负责人名称
+     */
+    private  Long examinationLeaderName;
     /**
     * 部门重要性系数
     */
