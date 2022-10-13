@@ -92,12 +92,10 @@ public class TenantDTO {
     /**
     * 租户登录背景图片URL
     */
-    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String loginBackground;
     /**
     * 租户logo图片URL
     */
-    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String tenantLogo;
     /**
     * 状态（0待初始化 1正常 2禁用 3过期）
