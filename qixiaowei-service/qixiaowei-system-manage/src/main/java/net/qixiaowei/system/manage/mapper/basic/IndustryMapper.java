@@ -123,10 +123,10 @@ public interface IndustryMapper {
     /**
      * 批量新增行业
      *
-     * @param Industrys 行业列表
+     * @param industrys 行业列表
      * @return 结果
      */
-    int batchIndustry(@Param("industrys") List<Industry> Industrys);
+    int batchIndustry(@Param("industrys") List<Industry> industrys);
 
     /**
      * 根据ids批量修改子级

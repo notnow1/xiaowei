@@ -20,9 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -230,15 +228,25 @@ public class IndustryServiceImpl implements IIndustryService {
         if (StringUtils.isEmpty(exist)) {
             throw new ServiceException("该行业已不存在");
         }
-        List<Long> longs = industryMapper.selectSons(exist);
-        if (StringUtils.isNotEmpty(longs)) {
-            industryIds.addAll(longs);
-        }
+        addSons(industryIds);
         // todo 引用校验
         if (isQuote(industryIds)) {
             throw new ServiceException("存在被引用的行业");
         }
         return industryMapper.logicDeleteIndustryByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * 根据ids添加子级
+     *
+     * @param industryIds
+     * @param industryIds
+     */
+    private void addSons(List<Long> industryIds) {
+        List<Long> longs = industryMapper.selectSons(industryIds);
+        if (StringUtils.isNotEmpty(longs)) {
+            industryIds.addAll(longs);
+        }
     }
 
     /**

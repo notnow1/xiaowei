@@ -7,10 +7,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.domain.basic.Indicator;
-import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
@@ -203,15 +200,20 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
         if (StringUtils.isEmpty(exist)) {
             throw new ServiceException("行业已不存在");
         }
-        List<Long> longs = industryDefaultMapper.selectSons(exist);
-        if (StringUtils.isNotEmpty(longs)) {
-            industryIds.addAll(longs);
-        }
+//        addSons(industryIds);
         // todo 引用校验
-        if (isQuote(longs)) {
+        if (isQuote(industryIds )) {
             throw new ServiceException("存在被引用的行业");
         }
         return industryDefaultMapper.logicDeleteIndustryDefaultByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    private List<Long> addSons(List<Long> industryIds) {
+        List<Long> longs = industryDefaultMapper.selectSons(industryIds);
+        if (StringUtils.isNotEmpty(longs)) {
+            industryIds.addAll(longs);
+        }
+        return longs;
     }
 
     private boolean isQuote(List<Long> longs) {

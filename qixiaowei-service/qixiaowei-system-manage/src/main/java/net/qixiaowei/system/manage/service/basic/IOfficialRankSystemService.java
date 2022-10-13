@@ -108,4 +108,12 @@ public interface IOfficialRankSystemService {
      * @return
      */
     OfficialRankSystemDTO detailOfficialRankSystem(Long officialRankSystemId);
+
+    /**
+     * 分页查询list
+     *
+     * @param officialRankSystemDTO
+     * @return
+     */
+    List<OfficialRankSystemDTO> selectOfficialRankSystemPageList(OfficialRankSystemDTO officialRankSystemDTO);
 }

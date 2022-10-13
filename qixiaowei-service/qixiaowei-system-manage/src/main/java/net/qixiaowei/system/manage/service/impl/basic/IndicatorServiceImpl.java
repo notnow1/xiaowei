@@ -191,15 +191,19 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isEmpty(exist)) {
             throw new ServiceException("指标不存在");
         }
-        List<Long> sons = indicatorMapper.selectSons(exist);//获取子级
-        if (StringUtils.isNotEmpty(sons)) {
-            indicatorIds.addAll(sons);
-        }
+//        addSons(indicatorIds);
         // todo 引用校验
         if (isQuote(indicatorIds)) {
             throw new ServiceException("存在被引用的指标");
         }
         return indicatorMapper.logicDeleteIndicatorByIndicatorIds(indicatorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    private void addSons(List<Long> indicatorIds) {
+        List<Long> sons = indicatorMapper.selectSons(indicatorIds);//获取子级
+        if (StringUtils.isNotEmpty(sons)) {
+            indicatorIds.addAll(sons);
+        }
     }
 
     /**

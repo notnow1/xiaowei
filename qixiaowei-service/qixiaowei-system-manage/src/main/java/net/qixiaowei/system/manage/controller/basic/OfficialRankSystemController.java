@@ -36,7 +36,7 @@ public class OfficialRankSystemController extends BaseController {
     @GetMapping("/pageList")
     public TableDataInfo pageList(OfficialRankSystemDTO officialRankSystemDTO) {
         startPage();
-        List<OfficialRankSystemDTO> list = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
+        List<OfficialRankSystemDTO> list = officialRankSystemService.selectOfficialRankSystemPageList(officialRankSystemDTO);
         return getDataTable(list);
     }
 

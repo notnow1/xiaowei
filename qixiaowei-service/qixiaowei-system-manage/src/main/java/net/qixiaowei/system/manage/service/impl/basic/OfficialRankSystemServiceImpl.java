@@ -63,6 +63,22 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         return officialRankSystemDTOS;
     }
 
+
+    /**
+     * 分页查询list
+     *
+     * @param officialRankSystemDTO
+     * @return
+     */
+    @Override
+    public List<OfficialRankSystemDTO> selectOfficialRankSystemPageList(OfficialRankSystemDTO officialRankSystemDTO) {
+        OfficialRankSystem officialRankSystem = new OfficialRankSystem();
+        BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemMapper.selectOfficialRankSystemList(officialRankSystem);
+        writeOfficialRank(officialRankSystemDTOS);
+        return officialRankSystemDTOS;
+    }
+
     /**
      * 拼接职级字段
      *
