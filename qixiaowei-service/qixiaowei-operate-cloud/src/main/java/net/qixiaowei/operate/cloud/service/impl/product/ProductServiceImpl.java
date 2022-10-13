@@ -659,7 +659,37 @@ public class ProductServiceImpl implements IProductService {
     public int logicDeleteProductByProductIds(List<Long> productIds) {
         int i = 0;
         // todo 是否被引用
-        i = productMapper.logicDeleteProductByProductIds(productIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        try {
+            i = productMapper.logicDeleteProductByProductIds(productIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除产品表失败");
+        }
+
+        //规格表
+        try {
+            productSpecificationMapper.logicDeleteProductSpecificationByProductIds(productIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除规格表失败");
+        }
+        //参数表
+        try {
+            productSpecificationParamMapper.logicDeleteProductSpecificationParamByProductIds(productIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除规格参数失败");
+        }
+
+        //数据表
+        try {
+            productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductIds(productIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除产品数据失败");
+        }
+        //删除文件
+        try {
+            productFileMapper.logicDeleteProductFileByProductIds(productIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除产品文件表失败");
+        }
         return i;
     }
 
@@ -694,31 +724,33 @@ public class ProductServiceImpl implements IProductService {
         i = productMapper.logicDeleteProductByProductId(product, SecurityUtils.getUserId(), DateUtils.getNowDate());
         //产品id
         Long productId = product.getProductId();
+        List<Long> productIds = new ArrayList<>();
+        productIds.add(productId);
         //规格表
-        List<ProductSpecificationDTO> productSpecificationDTOS = productSpecificationMapper.selectProductId(productId);
-        //规格id集合
-        List<Long> collect = productSpecificationDTOS.stream().map(ProductSpecificationDTO::getProductSpecificationId).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(collect)){
             try {
-                productSpecificationMapper.logicDeleteProductSpecificationByProductSpecificationIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                productSpecificationMapper.logicDeleteProductSpecificationByProductIds(productIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
             } catch (Exception e) {
                 throw new ServiceException("删除规格表失败");
             }
-        }
         //参数表
-        List<ProductSpecificationParamDTO> productSpecificationParamDTOS = productSpecificationParamMapper.selectProductId(productId);
-        //参数id集合
-        List<Long> collect1 = productSpecificationParamDTOS.stream().map(ProductSpecificationParamDTO::getProductSpecificationParamId).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(collect1)){
             try {
-                productSpecificationParamMapper.logicDeleteProductSpecificationParamByProductSpecificationParamIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                productSpecificationParamMapper.logicDeleteProductSpecificationParamByProductIds(productIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
             } catch (Exception e) {
                 throw new ServiceException("删除规格参数失败");
             }
-        }
 
+        //数据表
+        try {
+            productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductIds(productIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除产品数据失败");
+        }
         //删除文件
-//        List<ProductFileDTO> productFileDTOS = productFileMapper.selectProductFileByProductId();
+        try {
+            productFileMapper.logicDeleteProductFileByProductIds(productIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除产品文件表失败");
+        }
         return i;
     }
 

@@ -75,6 +75,13 @@ public interface ProductSpecificationParamMapper{
     */
     int logicDeleteProductSpecificationParamByProductSpecificationParamIds(@Param("productSpecificationParamIds")List<Long> productSpecificationParamIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
 
+    /**
+     * 根据产品id逻辑批量删除产品规格参数表
+     *
+     * @param productIds 需要删除的数据主键集合
+     * @return 结果
+     */
+    int logicDeleteProductSpecificationParamByProductIds(@Param("productIds")List<Long> productIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
 
     /**
     * 物理删除产品规格参数表

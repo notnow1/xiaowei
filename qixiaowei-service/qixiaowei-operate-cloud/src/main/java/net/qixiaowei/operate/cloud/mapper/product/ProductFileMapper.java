@@ -82,6 +82,13 @@ public interface ProductFileMapper{
     */
     int logicDeleteProductFileByProductFileIds(@Param("productFileIds")List<Long> productFileIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
 
+    /**
+     * 根据产品id删除逻辑批量删除产品文件表
+     *
+     * @param productIds 需要删除的数据主键集合
+     * @return 结果
+     */
+    int logicDeleteProductFileByProductIds(@Param("productIds")List<Long> productIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
 
     /**
     * 物理删除产品文件表

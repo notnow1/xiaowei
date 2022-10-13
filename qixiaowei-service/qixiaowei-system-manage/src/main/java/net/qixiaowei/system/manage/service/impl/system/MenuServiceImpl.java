@@ -319,10 +319,25 @@ public class MenuServiceImpl implements IMenuService {
             router.setMeta(new MetaVO(menu.getMenuName(), menu.getIcon(), Constants.FLAG_NO.equals(menu.getCacheFlag()), menu.getPath()));
             router.setCloudProduct(StringUtils.isNotNull(menu.getProductPackageId()));
             List<MenuDTO> cMenus = menu.getChildren();
-            if (StringUtils.isNotEmpty(cMenus) && UserConstants.TYPE_DIR.equals(menu.getMenuType())) {
-                router.setAlwaysShow(true);
-                router.setRedirect("noRedirect");
-                router.setChildren(buildMenuRouters(cMenus));
+            if (StringUtils.isNotEmpty(cMenus)) {
+                if (UserConstants.TYPE_DIR.equals(menu.getMenuType())) {
+                    router.setAlwaysShow(true);
+                    router.setRedirect("noRedirect");
+                    router.setChildren(buildMenuRouters(cMenus));
+                } else {
+                    //菜单的菜单，往上提一级，跟父级平级
+                    cMenus.forEach(childMenu -> {
+                        RouterVO routerChild = new RouterVO();
+                        routerChild.setHidden(Constants.FLAG_NO.equals(childMenu.getVisibleFlag()));
+                        routerChild.setName(getRouteName(childMenu));
+                        routerChild.setPath(getRouterPath(childMenu));
+                        routerChild.setComponent(getComponent(childMenu));
+                        routerChild.setQuery(childMenu.getQuery());
+                        routerChild.setMeta(new MetaVO(childMenu.getMenuName(), childMenu.getIcon(), Constants.FLAG_NO.equals(childMenu.getCacheFlag()), childMenu.getPath()));
+                        routerChild.setCloudProduct(StringUtils.isNotNull(childMenu.getProductPackageId()));
+                        routers.add(routerChild);
+                    });
+                }
             } else if (isMenuFrame(menu)) {
                 router.setMeta(null);
                 List<RouterVO> childrenList = new ArrayList<RouterVO>();
@@ -375,7 +390,7 @@ public class MenuServiceImpl implements IMenuService {
      */
     public boolean isMenuFrame(MenuDTO menu) {
         return menu.getParentMenuId().intValue() == 0 && UserConstants.TYPE_MENU.equals(menu.getMenuType())
-                && Constants.FLAG_YES.equals(menu.getExternalLinkFlag());
+                && Constants.FLAG_NO.equals(menu.getExternalLinkFlag());
     }
 
     /**
@@ -391,8 +406,7 @@ public class MenuServiceImpl implements IMenuService {
             routerPath = innerLinkReplaceEach(routerPath);
         }
         // 非外链并且是一级目录（类型为目录）
-        if (0 == menu.getParentMenuId().intValue() && UserConstants.TYPE_DIR.equals(menu.getMenuType())
-                && Constants.FLAG_NO.equals(menu.getExternalLinkFlag())) {
+        if (0 == menu.getParentMenuId().intValue() && Constants.FLAG_NO.equals(menu.getExternalLinkFlag())) {
             routerPath = "/" + menu.getPath();
         }
         // 非外链并且是一级目录（类型为菜单）

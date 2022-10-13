@@ -125,8 +125,8 @@ public class PostController extends BaseController
     //@RequiresPermissions("system:manage:post:removes")
     //@Log(title = "批量删除岗位表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody @Validated(PostDTO.DeletePostDTO.class) List<PostDTO>  PostDtos)
+    public AjaxResult removes(@RequestBody  List<Long>  postIds)
     {
-    return toAjax(postService.logicDeletePostByPostIds(PostDtos));
+    return toAjax(postService.logicDeletePostByPostIds(postIds));
     }
 }

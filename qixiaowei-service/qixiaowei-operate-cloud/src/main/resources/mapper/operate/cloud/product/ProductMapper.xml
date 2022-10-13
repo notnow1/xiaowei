@@ -17,54 +17,54 @@
         product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
         FROM product
         WHERE delete_flag=0
-                <if test="product.productId != null">
-                    and product_id=#{product.productId}
-                </if>
-                <if test="product.parentProductId != null">
-                    and parent_product_id=#{product.parentProductId}
-                </if>
-                <if test="product.ancestors != null and product.ancestors != ''">
-                    and ancestors=#{product.ancestors}
-                </if>
-                <if test="product.productCode != null and product.productCode != ''">
-                    and product_code=#{product.productCode}
-                </if>
-                <if test="product.productName != null and product.productName != ''">
-                    and product_name=#{product.productName}
-                </if>
-                <if test="product.level != null">
-                    and level=#{product.level}
-                </if>
-                <if test="product.productUnitId != null">
-                    and product_unit_id=#{product.productUnitId}
-                </if>
-                <if test="product.productCategory != null and product.productCategory != ''">
-                    and product_category=#{product.productCategory}
-                </if>
-                <if test="product.productDescription != null and product.productDescription != ''">
-                    and product_description=#{product.productDescription}
-                </if>
-                <if test="product.listPrice != null">
-                    and list_price=#{product.listPrice}
-                </if>
-                <if test="product.listingFlag != null">
-                    and listing_flag=#{product.listingFlag}
-                </if>
-                <if test="product.deleteFlag != null">
-                    and delete_flag=#{product.deleteFlag}
-                </if>
-                <if test="product.createBy != null">
-                    and create_by=#{product.createBy}
-                </if>
-                <if test="product.createTime != null">
-                    and create_time=#{product.createTime}
-                </if>
-                <if test="product.updateBy != null">
-                    and update_by=#{product.updateBy}
-                </if>
-                <if test="product.updateTime != null">
-                    and update_time=#{product.updateTime}
-                </if>
+        <if test="product.productId != null">
+            and product_id like '%${product.productId}%'
+        </if>
+        <if test="product.parentProductId != null">
+            and parent_product_id like '%${product.parentProductId}%'
+        </if>
+        <if test="product.ancestors != null and product.ancestors != ''">
+            and ancestors like '%${product.ancestors}%'
+        </if>
+        <if test="product.productCode != null and product.productCode != ''">
+            and product_code like '%${product.productCode}%'
+        </if>
+        <if test="product.productName != null and product.productName != ''">
+            and product_name like '%${product.productName}%'
+        </if>
+        <if test="product.level != null">
+            and level like '%${product.level}%'
+        </if>
+        <if test="product.productUnitId != null">
+            and product_unit_id like '%${product.productUnitId}%'
+        </if>
+        <if test="product.productCategory != null and product.productCategory != ''">
+            and product_category like '%${product.productCategory}%'
+        </if>
+        <if test="product.productDescription != null and product.productDescription != ''">
+            and product_description like '%${product.productDescription}%'
+        </if>
+        <if test="product.listPrice != null">
+            and list_price like '%${product.listPrice}%'
+        </if>
+        <if test="product.listingFlag != null">
+            and listing_flag like '%${product.listingFlag}%'
+        </if>
+        <if test="product.deleteFlag != null">
+            and delete_flag like '%${product.deleteFlag}%'
+        </if>
+        <if test="product.createBy != null">
+            and create_by like '%${product.createBy}%'
+        </if>
+        <if test="product.createTime != null">
+            and create_time like '%${product.createTime}%'
+        </if>
+        <if test="product.updateBy != null">
+            and update_by like '%${product.updateBy}%'
+        </if>
+        <if test="product.updateTime != null">
+            and update_time like '%${product.updateTime}%'
+        </if>
     </select>
 <!--    根据产品编码查询产品表-->
     <select id="selectProductByProductCode"

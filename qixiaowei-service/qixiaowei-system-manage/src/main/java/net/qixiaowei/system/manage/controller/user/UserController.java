@@ -104,4 +104,14 @@ public class UserController extends BaseController {
     public AjaxResult getInfo() {
         return AjaxResult.success(userService.getInfo());
     }
+
+    /**
+     * 重置密码
+     */
+    @RequiresPermissions("system:manage:user:resetPwd")
+    @Log(title = "重置密码", businessType = BusinessType.UPDATE)
+    @PostMapping("/resetPwd")
+    public AjaxResult resetPwd(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
+        return toAjax(userService.resetPwd(userDTO));
+    }
 }

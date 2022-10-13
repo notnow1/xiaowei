@@ -260,6 +260,20 @@
                     product_file_id=#{item.productFileId}
         </foreach>
     </update>
+<!--    根据产品id删除逻辑批量删除产品文件表-->
+    <update id="logicDeleteProductFileByProductIds">
+        UPDATE product_file
+        SET     delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        product_id IN
+        <foreach item="item"
+                 collection="productIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
 </mapper>
 
 

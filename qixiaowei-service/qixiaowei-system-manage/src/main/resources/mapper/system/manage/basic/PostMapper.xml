@@ -27,52 +27,71 @@
     </select>
     <!--    查询岗位表列表-->
     <select id="selectPostList" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
-        SELECT
-        post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM post
-        WHERE delete_flag=0
-                <if test="post.postId != null">
-                    and post_id=#{post.postId}
-                </if>
-                <if test="post.postCode != null and post.postCode != ''">
-                    and post_code=#{post.postCode}
-                </if>
-                <if test="post.postName != null and post.postName != ''">
-                    and post_name=#{post.postName}
-                </if>
-                <if test="post.officialRankSystemId != null">
-                    and official_rank_system_id=#{post.officialRankSystemId}
-                </if>
-                <if test="post.postRankLower != null">
-                    and post_rank_lower=#{post.postRankLower}
-                </if>
-                <if test="post.postRank != null">
-                    and post_rank=#{post.postRank}
-                </if>
-                <if test="post.postRankUpper != null">
-                    and post_rank_upper=#{post.postRankUpper}
-                </if>
-                <if test="post.postDescription != null and post.postDescription != ''">
-                    and post_description=#{post.postDescription}
-                </if>
-                <if test="post.status != null">
-                    and status=#{post.status}
-                </if>
-                <if test="post.deleteFlag != null">
-                    and delete_flag=#{post.deleteFlag}
-                </if>
-                <if test="post.createBy != null">
-                    and create_by=#{post.createBy}
-                </if>
-                <if test="post.createTime != null">
-                    and create_time=#{post.createTime}
-                </if>
-                <if test="post.updateBy != null">
-                    and update_by=#{post.updateBy}
-                </if>
-                <if test="post.updateTime != null">
-                    and update_time=#{post.updateTime}
-                </if>
+        select
+        ors.official_rank_system_name,
+        p.post_id,
+        p.post_code,
+        p.post_name,
+        p.official_rank_system_id,
+        p.post_rank_lower,
+        p.post_rank,
+        p.post_rank_upper,
+        p.post_description,
+        p.status,
+        p.delete_flag,
+        p.create_by,
+        p.create_time,
+        p.update_by,
+        p.update_time
+        from
+        post p
+        left join official_rank_system ors
+        on p.official_rank_system_id = ors .official_rank_system_id
+        and ors .delete_flag = 0
+        where
+        p.delete_flag = 0
+        <if test="post.postId != null">
+            and p.post_id like '%${post.postId}%'
+        </if>
+        <if test="post.postCode != null and post.postCode != ''">
+            and p.post_code like '%${post.postCode}%'
+        </if>
+        <if test="post.postName != null and post.postName != ''">
+            and p.post_name like '%${post.postName}%'
+        </if>
+        <if test="post.officialRankSystemId != null">
+            and p.official_rank_system_id like '%${post.officialRankSystemId}%'
+        </if>
+        <if test="post.postRankLower != null">
+            and p.post_rank_lower like '%${post.postRankLower}%'
+        </if>
+        <if test="post.postRank != null">
+            and p.post_rank like '%${post.postRank}%'
+        </if>
+        <if test="post.postRankUpper != null">
+            and p.post_rank_upper like '%${post.postRankUpper}%'
+        </if>
+        <if test="post.postDescription != null and post.postDescription != ''">
+            and p.post_description like '%${post.postDescription}%'
+        </if>
+        <if test="post.status != null">
+            and p.status like '%${post.status}%'
+        </if>
+        <if test="post.deleteFlag != null">
+            and p.delete_flag like '%${post.deleteFlag}%'
+        </if>
+        <if test="post.createBy != null">
+            and p.create_by like '%${post.createBy}%'
+        </if>
+        <if test="post.createTime != null">
+            and p.create_time like '%${post.createTime}%'
+        </if>
+        <if test="post.updateBy != null">
+            and p.update_by like '%${post.updateBy}%'
+        </if>
+        <if test="post.updateTime != null">
+            and p.update_time like '%${post.updateTime}%'
+        </if>
     </select>
 <!--    查询岗位表Code-->
     <select id="selectPostCode" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">

@@ -114,18 +114,21 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         if (CollectionUtils.isEmpty(productUnitDTOS)){
             throw new ServiceException("产品单位不存在");
         }
-        //查询是否被引用
-        List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitIds(productUnitIds);
-        // 产品引用
-        StringBuffer productErreo = new StringBuffer();
-        if (!CollectionUtils.isEmpty(productDTOList)){
-            for (ProductDTO productDTO : productDTOList) {
-                productErreo.append("产品单位被"+productDTO.getProductName()+"引用"+"\r\n");
+        for (ProductUnitDTO productUnitDTO : productUnitDTOS) {
+            //查询是否被引用
+            List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitId(productUnitDTO.getProductUnitId());
+            // 产品引用
+            StringBuffer productErreo = new StringBuffer();
+            if (!CollectionUtils.isEmpty(productDTOList)){
+                for (ProductDTO productDTO : productDTOList) {
+                    productErreo.append("产品单位"+productUnitDTO.getProductUnitName()+"被"+productDTO.getProductName()+"引用"+"\n");
+                }
+            }
+            if (productErreo.length()>0){
+                throw new ServiceException(productErreo.toString());
             }
         }
-        if (productErreo.length()>0){
-            throw new ServiceException(productErreo.toString());
-        }
+
         return productUnitMapper.logicDeleteProductUnitByProductUnitIds(productUnitIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -155,13 +158,14 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         productUnit.setProductUnitId(productUnitDTO.getProductUnitId());
         productUnit.setUpdateTime(DateUtils.getNowDate());
         productUnit.setUpdateBy(SecurityUtils.getUserId());
+        ProductUnitDTO productUnitDTO1 = productUnitMapper.selectProductUnitByProductUnitId(productUnitDTO.getProductUnitId());
         //todo 是否被引用
         List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitId(productUnitDTO.getProductUnitId());
         // 产品引用
         StringBuffer productErreo = new StringBuffer();
         if (!CollectionUtils.isEmpty(productDTOList)){
             for (ProductDTO productDTO : productDTOList) {
-                productErreo.append("产品单位被"+productDTO.getProductName()+"引用"+"\r\n");
+                productErreo.append("产品单位"+productUnitDTO1.getProductUnitName()+"被"+productDTO.getProductName()+"引用"+"\n");
             }
         }
         if (productErreo.length()>0){

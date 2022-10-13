@@ -23,6 +23,8 @@
     <!--    查询员工表列表-->
     <select id="selectEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
+        p.post_name as employee_post_name,
+        d.department_name  as employee_department_name,
         e.employee_id,
         e.employee_code,
         e.employee_name,
@@ -58,74 +60,80 @@
         left join employee_info ei
         on
         e.employee_id = ei.employee_id
+        left join post p
+        on p.post_id =e.employee_post_id
+        and p.delete_flag =0
+        left join department d
+        on d.department_id = e.employee_department_id
+        and d.delete_flag =0
         where
-        delete_flag = 0
-                <if test="employee.employeeId != null">
-                    and e.employee_id=#{employee.employeeId}
-                </if>
-                <if test="employee.employeeCode != null and employee.employeeCode != ''">
-                    and e.employee_code=#{employee.employeeCode}
-                </if>
-                <if test="employee.employeeName != null and employee.employeeName != ''">
-                    and e.employee_name=#{employee.employeeName}
-                </if>
-                <if test="employee.employeeGender != null">
-                    and e.employee_gender=#{employee.employeeGender}
-                </if>
-                <if test="employee.identityType != null">
-                    and e.identity_type=#{employee.identityType}
-                </if>
-                <if test="employee.identityCard != null and employee.identityCard != ''">
-                    and e.identity_card=#{employee.identityCard}
-                </if>
-                <if test="employee.employeeBirthday != null">
-                    and e.employee_birthday=#{employee.employeeBirthday}
-                </if>
-                <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
-                    and e.employee_mobile=#{employee.employeeMobile}
-                </if>
-                <if test="employee.employeeEmail != null and employee.employeeEmail != ''">
-                    and e.employee_email=#{employee.employeeEmail}
-                </if>
-                <if test="employee.employeeDepartmentId != null">
-                    and e.employee_department_id=#{employee.employeeDepartmentId}
-                </if>
-                <if test="employee.employeePostId != null">
-                    and e.employee_post_id=#{employee.employeePostId}
-                </if>
-                <if test="employee.employeeRank != null">
-                    and e.employee_rank=#{employee.employeeRank}
-                </if>
-                <if test="employee.employeeBasicWage != null">
-                    and e.employee_basic_wage=#{employee.employeeBasicWage}
-                </if>
-                <if test="employee.employmentDate != null">
-                    and e.employment_date=#{employee.employmentDate}
-                </if>
-                <if test="employee.departureDate != null">
-                    and e.departure_date=#{employee.departureDate}
-                </if>
-                <if test="employee.employmentStatus != null">
-                    and e.employment_status=#{employee.employmentStatus}
-                </if>
-                <if test="employee.status != null">
-                    and e.status=#{employee.status}
-                </if>
-                <if test="employee.deleteFlag != null">
-                    and e.delete_flag=#{employee.deleteFlag}
-                </if>
-                <if test="employee.createBy != null">
-                    and e.create_by=#{employee.createBy}
-                </if>
-                <if test="employee.createTime != null">
-                    and e.create_time=#{employee.createTime}
-                </if>
-                <if test="employee.updateBy != null">
-                    and e.update_by=#{employee.updateBy}
-                </if>
-                <if test="employee.updateTime != null">
-                    and e.update_time=#{employee.updateTime}
-                </if>
+        e.delete_flag = 0
+        <if test="employee.employeeId != null">
+            and e.employee_id like '%${employee.employeeId}%'
+        </if>
+        <if test="employee.employeeCode != null and employee.employeeCode != ''">
+            and e.employee_code like '%${employee.employeeCode}%'
+        </if>
+        <if test="employee.employeeName != null and employee.employeeName != ''">
+            and e.employee_name like '%${employee.employeeName}%'
+        </if>
+        <if test="employee.employeeGender != null">
+            and e.employee_gender like '%${employee.employeeGender}%'
+        </if>
+        <if test="employee.identityType != null">
+            and e.identity_type like '%${employee.identityType}%'
+        </if>
+        <if test="employee.identityCard != null and employee.identityCard != ''">
+            and e.identity_card like '%${employee.identityCard}%'
+        </if>
+        <if test="employee.employeeBirthday != null">
+            and e.employee_birthday like '%${employee.employeeBirthday}%'
+        </if>
+        <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
+            and e.employee_mobile like '%${employee.employeeMobile}%'
+        </if>
+        <if test="employee.employeeEmail != null and employee.employeeEmail != ''">
+            and e.employee_email like '%${employee.employeeEmail}%'
+        </if>
+        <if test="employee.employeeDepartmentId != null">
+            and e.employee_department_id like '%${employee.employeeDepartmentId}%'
+        </if>
+        <if test="employee.employeePostId != null">
+            and e.employee_post_id like '%${employee.employeePostId}%'
+        </if>
+        <if test="employee.employeeRank != null">
+            and e.employee_rank like '%${employee.employeeRank}%'
+        </if>
+        <if test="employee.employeeBasicWage != null">
+            and e.employee_basic_wage like '%${employee.employeeBasicWage}%'
+        </if>
+        <if test="employee.employmentDate != null">
+            and e.employment_date like '%${employee.employmentDate}%'
+        </if>
+        <if test="employee.departureDate != null">
+            and e.departure_date like '%${employee.departureDate}%'
+        </if>
+        <if test="employee.employmentStatus != null">
+            and e.employment_status like '%${employee.employmentStatus}%'
+        </if>
+        <if test="employee.status != null">
+            and e.status like '%${employee.status}%'
+        </if>
+        <if test="employee.deleteFlag != null">
+            and e.delete_flag like '%${employee.deleteFlag}%'
+        </if>
+        <if test="employee.createBy != null">
+            and e.create_by like '%${employee.createBy}%'
+        </if>
+        <if test="employee.createTime != null">
+            and e.create_time like '%${employee.createTime}%'
+        </if>
+        <if test="employee.updateBy != null">
+            and e.update_by like '%${employee.updateBy}%'
+        </if>
+        <if test="employee.updateTime != null">
+            and e.update_time like '%${employee.updateTime}%'
+        </if>
     </select>
 <!--    查询员工单条信息-->
     <select id="selectEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">

@@ -317,6 +317,20 @@
             product_specification_data_id=#{item.productSpecificationDataId}
         </foreach>
     </update>
+<!--    根据产品id逻辑批量删除产品规格数据表-->
+    <update id="logicDeleteProductSpecificationDataByProductIds">
+        UPDATE product_specification_data
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        product_id IN
+        <foreach item="item"
+                 collection="productIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
 </mapper>
 
 

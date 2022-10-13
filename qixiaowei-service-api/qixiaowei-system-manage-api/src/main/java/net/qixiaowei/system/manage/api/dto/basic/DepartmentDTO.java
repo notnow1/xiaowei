@@ -59,6 +59,11 @@ public class DepartmentDTO {
     * 父级部门ID
     */
     private  Long parentDepartmentId;
+
+    /**
+     * 父级部门名称
+     */
+    private  String parentDepartmentName;
     /**
     * 祖级列表ID，按层级用英文逗号隔开
     */
@@ -115,7 +120,7 @@ public class DepartmentDTO {
     /**
      * 考核负责人名称
      */
-    private  Long examinationLeaderName;
+    private  String examinationLeaderName;
     /**
     * 部门重要性系数
     */
@@ -172,6 +177,6 @@ public class DepartmentDTO {
     /**
      * 组织子节点信息
      */
-    private List<DepartmentDTO> childList;
+    private List<DepartmentDTO> children;
 }
 

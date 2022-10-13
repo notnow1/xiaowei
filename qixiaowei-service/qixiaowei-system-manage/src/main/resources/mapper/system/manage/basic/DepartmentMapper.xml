@@ -29,75 +29,122 @@
 
     <!--    查询部门表列表-->
     <select id="selectDepartmentList" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-
-        SELECT
-        department_id,
-        parent_department_id,
-        ancestors,
-        department_code,
-        department_name,
-        level,
-        department_leader_id,
-        department_leader_post_id,
-        examination_leader_id,
-        department_importance_factor,
-        department_description,
-        sort,
-        status,
-        delete_flag,
-        create_by,
-        create_time,
-        update_by,
-        update_time
-        FROM
-        department
-        WHERE
-        delete_flag=0
+        select
+            ee.employee_name as department_leader_name,
+            ee2.employee_name as examination_leader_name,
+            p.post_name as department_leader_post_name,
+            dm.department_id,
+            dm.parent_department_id,
+            dm.ancestors,
+            dm.department_code,
+            dm.department_name,
+            dm.level,
+            dm.department_leader_id,
+            dm.department_leader_post_id,
+            dm.examination_leader_id,
+            dm.department_importance_factor,
+            dm.department_description,
+            dm.sort,
+            dm.status
+        from
+            department dm
+                left join employee ee
+                          on ee.employee_id = dm.department_leader_id
+                              and ee.delete_flag =0
+                left join employee ee2
+                          on ee2.employee_id = dm.examination_leader_id
+                              and ee2.delete_flag =0
+                left join post p
+                          on  p.post_id = dm.department_leader_post_id
+                              and p.delete_flag =0
+            where dm.delete_flag =0
         <if test="department.departmentId != null">
-            and department_id=#{department.departmentId}
+            and dm.department_id like '%${department.departmentId}%'
         </if>
-        union
-
-        SELECT
-        department_id, parent_department_id, ancestors, department_code, department_name, level, department_leader_id,
-        department_leader_post_id, examination_leader_id, department_importance_factor, department_description, sort,
-        status, delete_flag, create_by, create_time, update_by, update_time
-        FROM department
-        WHERE delete_flag=0
-        <if test="department.departmentIdList != null">
-            and
-            <foreach item="item" index="index"
-                     collection="department.departmentIdList"
-                     separator="or">
-                FIND_IN_SET(#{item},ancestors)
-            </foreach>
+        <if test="department.parentDepartmentId != null">
+            and  dm.parent_department_id like '%${department.parentDepartmentId}%'
+        </if>
+        <if test="department.ancestors != null and department.ancestors != ''">
+            and  dm.ancestors like '%${department.ancestors}%'
+        </if>
+        <if test="department.departmentCode != null and department.departmentCode != ''">
+            and dm.department_code like '%${department.departmentCode}%'
+        </if>
+        <if test="department.departmentName != null and department.departmentName != ''">
+            and dm.department_name like '%${department.departmentName}%'
+        </if>
+        <if test="department.level != null">
+            and dm.level like '%${department.level}%'
+        </if>
+        <if test="department.departmentLeaderId != null">
+            and  dm.department_leader_id like '%${department.departmentLeaderId}%'
+        </if>
+        <if test="department.departmentLeaderPostId != null">
+            and dm.department_leader_post_id like '%${department.departmentLeaderPostId}%'
+        </if>
+        <if test="department.examinationLeaderId != null">
+            and   dm.examination_leader_id like '%${department.examinationLeaderId}%'
+        </if>
+        <if test="department.departmentImportanceFactor != null">
+            and  dm.department_importance_factor like '%${department.departmentImportanceFactor}%'
+        </if>
+        <if test="department.departmentDescription != null and department.departmentDescription != ''">
+            and  dm.department_description like '%${department.departmentDescription}%'
+        </if>
+        <if test="department.sort != null">
+            and  dm.sort like '%${department.sort}%'
+        </if>
+        <if test="department.status != null">
+            and dm.status like '%${department.status}%'
+        </if>
+        <if test="department.deleteFlag != null">
+            and dm.delete_flag like '%${department.deleteFlag}%'
+        </if>
+        <if test="department.createBy != null">
+            and  dm.create_by like '%${department.createBy}%'
+        </if>
+        <if test="department.createTime != null">
+            and   dm.create_time like '%${department.createTime}%'
+        </if>
+        <if test="department.updateBy != null">
+            and  dm.update_by like '%${department.updateBy}%'
+        </if>
+        <if test="department.updateTime != null">
+            and   dm.update_time like '%${department.updateTime}%'
         </if>
     </select>
     <!--    根据父级id查询数据-->
     <select id="selectParentDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-        SELECT department_id,
-        parent_department_id,
-        ancestors,
-        department_code,
-        department_name,
-        level,
-        department_leader_id,
-        department_leader_post_id,
-        examination_leader_id,
-        department_importance_factor,
-        department_description,
-        sort,
-        status,
-        delete_flag,
-        create_by,
-        create_time,
-        update_by,
-        update_time
-        FROM department
-        <if test="departmentId != null">
-            WHERE department_id = #{departmentId}
-        </if>
-        and delete_flag = 0
+        select
+        ee.employee_name as department_leader_name,
+        ee2.employee_name as examination_leader_name,
+        p.post_name as department_leader_post_name,
+        dm.department_id,
+        dm.parent_department_id,
+        dm.ancestors,
+        dm.department_code,
+        dm.department_name,
+        dm.level,
+        dm.department_leader_id,
+        dm.department_leader_post_id,
+        dm.examination_leader_id,
+        dm.department_importance_factor,
+        dm.department_description,
+        dm.sort,
+        dm.status
+        from
+        department dm
+        left join employee ee
+        on ee.employee_id = dm.department_leader_id
+        and ee.delete_flag =0
+        left join employee ee2
+        on ee2.employee_id = dm.examination_leader_id
+        and ee2.delete_flag =0
+        left join post p
+        on  p.post_id = dm.department_leader_post_id
+        and p.delete_flag =0
+        where dm.delete_flag =0
+            and dm.department_id=#{departmentId}
     </select>
     <!--    根据id查询所有子级数据-->
     <select id="selectAncestors" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">

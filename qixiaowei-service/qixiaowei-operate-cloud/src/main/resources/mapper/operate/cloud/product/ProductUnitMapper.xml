@@ -17,33 +17,33 @@
         product_unit_id, product_unit_code, product_unit_name, reserve_digit, delete_flag, create_by, create_time, update_by, update_time
         FROM product_unit
         WHERE delete_flag=0
-                <if test="productUnit.productUnitId != null">
-                    and product_unit_id=#{productUnit.productUnitId}
-                </if>
-                <if test="productUnit.productUnitCode != null and productUnit.productUnitCode != ''">
-                    and product_unit_code=#{productUnit.productUnitCode}
-                </if>
-                <if test="productUnit.productUnitName != null and productUnit.productUnitName != ''">
-                    and product_unit_name=#{productUnit.productUnitName}
-                </if>
-                <if test="productUnit.reserveDigit != null">
-                    and reserve_digit=#{productUnit.reserveDigit}
-                </if>
-                <if test="productUnit.deleteFlag != null">
-                    and delete_flag=#{productUnit.deleteFlag}
-                </if>
-                <if test="productUnit.createBy != null">
-                    and create_by=#{productUnit.createBy}
-                </if>
-                <if test="productUnit.createTime != null">
-                    and create_time=#{productUnit.createTime}
-                </if>
-                <if test="productUnit.updateBy != null">
-                    and update_by=#{productUnit.updateBy}
-                </if>
-                <if test="productUnit.updateTime != null">
-                    and update_time=#{productUnit.updateTime}
-                </if>
+        <if test="productUnit.productUnitId != null">
+            and product_unit_id like '%${productUnit.productUnitId}%'
+        </if>
+        <if test="productUnit.productUnitCode != null and productUnit.productUnitCode != ''">
+            and product_unit_code like '%${productUnit.productUnitCode}%'
+        </if>
+        <if test="productUnit.productUnitName != null and productUnit.productUnitName != ''">
+            and product_unit_name like '%${productUnit.productUnitName}%'
+        </if>
+        <if test="productUnit.reserveDigit != null">
+            and reserve_digit like '%${productUnit.reserveDigit}%'
+        </if>
+        <if test="productUnit.deleteFlag != null">
+            and delete_flag like '%${productUnit.deleteFlag}%'
+        </if>
+        <if test="productUnit.createBy != null">
+            and create_by like '%${productUnit.createBy}%'
+        </if>
+        <if test="productUnit.createTime != null">
+            and create_time like '%${productUnit.createTime}%'
+        </if>
+        <if test="productUnit.updateBy != null">
+            and update_by like '%${productUnit.updateBy}%'
+        </if>
+        <if test="productUnit.updateTime != null">
+            and update_time like '%${productUnit.updateTime}%'
+        </if>
     </select>
 <!--    根据code查询产品单位表-->
     <select id="selectProductUnitByProductUnitCode"
