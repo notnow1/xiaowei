@@ -15,7 +15,6 @@ import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import net.qixiaowei.integration.common.xss.Xss;
-import net.qixiaowei.system.manage.api.domain.system.Role;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 
 /**
@@ -48,25 +47,34 @@ public class UserDTO {
 
     }
 
+    public interface ResetPwdRUserDTO extends Default {
+
+    }
+
     /**
      * ID
      */
-    @NotNull(message = "用户ID不能为空",groups = {UserDTO.UpdateUserDTO.class,UserDTO.DeleteUserDTO.class})
+    @NotNull(message = "用户ID不能为空",groups = {UserDTO.UpdateUserDTO.class,UserDTO.DeleteUserDTO.class,UserDTO.ResetPwdRUserDTO.class})
     private Long userId;
     /**
      * 员工ID
      */
     private Long employeeId;
     /**
+     * 员工姓名
+     */
+    private  String employeeName;
+    /**
      * 用户帐号
      */
     @Xss(message = "用户账号不能包含脚本字符")
-    @NotBlank(message = "用户账号不能为空")
+    @NotBlank(message = "用户账号不能为空",groups = {UserDTO.AddUserDTO.class,UserDTO.UpdateUserDTO.class})
     @Size(min = 0, max = 120, message = "用户账号长度不能超过120个字符",groups = {UserDTO.AddUserDTO.class,UserDTO.UpdateUserDTO.class})
     private String userAccount;
     /**
      * 密码
      */
+    @NotBlank(message = "密码不能为空",groups = {UserDTO.AddUserDTO.class,UserDTO.ResetPwdRUserDTO.class})
     private String password;
     /**
      * 用户名称

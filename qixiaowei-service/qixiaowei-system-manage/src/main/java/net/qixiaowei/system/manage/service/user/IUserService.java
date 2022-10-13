@@ -81,4 +81,12 @@ public interface IUserService{
     */
     int logicDeleteUserByUserId(UserDTO userDTO);
 
+    /**
+     * 重置密码
+     *
+     * @param userDTO
+     * @return 结果
+     */
+    int resetPwd(UserDTO userDTO);
+
 }

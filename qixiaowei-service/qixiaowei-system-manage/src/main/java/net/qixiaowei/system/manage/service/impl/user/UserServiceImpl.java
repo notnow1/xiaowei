@@ -197,6 +197,26 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 重置密码
+     *
+     * @param userDTO
+     * @return 结果
+     */
+    @Override
+    public int resetPwd(UserDTO userDTO) {
+        Long userId = userDTO.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        Long operateUserId = SecurityUtils.getUserId();
+        this.checkUserAllowed(userDTO);
+        User user = new User();
+        user.setUserId(userId);
+        user.setPassword(SecurityUtils.encryptPassword(userDTO.getPassword()));
+        user.setUpdateTime(nowDate);
+        user.setUpdateBy(operateUserId);
+        return userMapper.updateUser(user);
+    }
+
+    /**
      * 批量新增用户表信息
      *
      * @param userDtos 用户表对象
