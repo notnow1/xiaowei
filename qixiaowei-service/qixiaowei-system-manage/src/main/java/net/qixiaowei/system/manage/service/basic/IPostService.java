@@ -61,10 +61,10 @@ public interface IPostService{
     /**
     * 逻辑批量删除岗位表
     *
-    * @param PostDtos 需要删除的岗位表集合
+    * @param postIds 需要删除的岗位表集合
     * @return 结果
     */
-    int logicDeletePostByPostIds(List<PostDTO> PostDtos);
+    int logicDeletePostByPostIds(List<Long>  postIds);
 
     /**
     * 逻辑删除岗位表信息

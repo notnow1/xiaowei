@@ -67,89 +67,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO) {
         //返回数据
         List<DepartmentDTO> tree = new ArrayList<>();
-        //筛选数据 获取祖级id
-        List<DepartmentDTO> filtrateList = departmentMapper.getParentId(departmentDTO);
-        if (CheckObjectIsNullUtils.isNull(departmentDTO)) {
-            tree = createTree1(filtrateList, 0);
-        } else {
-            Department department = new Department();
-            BeanUtils.copyProperties(departmentDTO, department);
-            //封装数据 根据code或者查询数据为单条数据时
-            if (!CheckObjectIsNullUtils.isNull(departmentDTO) && filtrateList.size() == 1) {
-                for (DepartmentDTO dto : filtrateList) {
-                    List<String> strings = new ArrayList<>();
-                    if (StringUtils.isNotBlank(dto.getAncestors())) {
-                        strings = Arrays.asList(dto.getAncestors().substring(2).split(","));
-                        departmentDTO.setDepartmentIdList(strings);
-                        departmentDTO.setDepartmentId(Long.parseLong(strings.get(0)));
-                    } else {
-                        departmentDTO.setDepartmentId(dto.getDepartmentId());
-                        strings.add(dto.getDepartmentId().toString());
-                        departmentDTO.setDepartmentIdList(strings);
-                    }
-                }
-            }
-
-            //查询数据
-            List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
-            if (filtrateList.size() == 1) {
-                for (DepartmentDTO dto : filtrateList) {
-                    Integer level = 0;
-                    int departmentId = 0;
-                    //租级为空 赋值顶级为0
-                    if (StringUtils.isEmpty(dto.getAncestors())) {
-                        tree = createTree(departmentDTOList, departmentId, level, dto.getDepartmentCode());
-                    } else {
-                        //层级 只要当前层级
-                        level = dto.getLevel();
-                        List<String> strings = Arrays.asList(dto.getAncestors().split(","));
-                        departmentId = Integer.parseInt(strings.get(0));
-                        tree = createTree(departmentDTOList, departmentId, level, dto.getDepartmentCode());
-                    }
-
-                }
-            }
+        //查询数据
+        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
+        if (!CheckObjectIsNullUtils.isNull(departmentDTO)){
+            return departmentDTOList;
+        }else {
+            return this.createTree1(departmentDTOList,0);
         }
 
-        return tree;
     }
 
 
-    /**
-     * 递归建立树形结构 （算法）
-     *
-     * @param lists
-     * @param pid
-     * @return
-     */
-    private List<DepartmentDTO> createTree(List<DepartmentDTO> lists, int pid, Integer level, String departmentCode) {
-        List<DepartmentDTO> tree = new ArrayList<>();
-        for (DepartmentDTO catelog : lists) {
-            if (catelog.getParentDepartmentId() == pid) {
-                catelog.setChildList(createTree(lists, Integer.parseInt(catelog.getDepartmentId().toString()), level, departmentCode));
-                if (level == 0) {
-                    tree.add(catelog);
-                } else {
-                    if (StringUtils.isNotBlank(departmentCode)) {
-                        //只保留上级和本级
-                        if (catelog.getLevel() <= level) {
-                            if (catelog.getLevel().equals(level)) {
-                                if (StringUtils.equals(catelog.getDepartmentCode(), departmentCode)) {
-                                    tree.add(catelog);
-                                    continue;
-                                }
-                            } else {
-                                tree.add(catelog);
-                            }
-                        }
-
-                    }
-
-                }
-            }
-        }
-        return tree;
-    }
 
 
     /**
@@ -163,7 +91,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentDTO> tree = new ArrayList<>();
         for (DepartmentDTO catelog : lists) {
             if (catelog.getParentDepartmentId() == pid) {
-                catelog.setChildList(createTree1(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
+                catelog.setChildren(createTree1(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
                 tree.add(catelog);
             }
         }
@@ -261,19 +189,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //排序
         int i = 1;
         DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
-        if (null == departmentDTO.getDepartmentId()){
+        if (null == departmentDTO.getDepartmentId()) {
             BeanUtils.copyProperties(departmentDTO, department);
             departmentDTO.setParentDepartmentId(0L);
-        }else {
+        } else {
             BeanUtils.copyProperties(departmentDTO, department);
-            if (StringUtils.isBlank(departmentDTO1.getAncestors())){
-                department.setAncestors(departmentDTO1.getParentDepartmentId()+","+departmentDTO1.getDepartmentId());
-            }else {
-                department.setAncestors(departmentDTO1.getAncestors()+","+departmentDTO1.getDepartmentId());
+            if (StringUtils.isBlank(departmentDTO1.getAncestors())) {
+                department.setAncestors(departmentDTO1.getParentDepartmentId() + "," + departmentDTO1.getDepartmentId());
+            } else {
+                department.setAncestors(departmentDTO1.getAncestors() + "," + departmentDTO1.getDepartmentId());
             }
         }
-
-
 
 
         //接收部门岗位关联表参数
@@ -293,7 +219,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 throw new ServiceException("删除组织岗位关联失败");
             }
         }
-        if (!CollectionUtils.isEmpty(departmentPostIds)){
+        if (!CollectionUtils.isEmpty(departmentPostIds)) {
             //去除已经删除的id
             for (int i1 = 0; i1 < departmentPostDTOList.size(); i1++) {
                 if (departmentPostIds.contains(departmentPostDTOList.get(i1).getDepartmentPostId())) {
@@ -360,11 +286,54 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     @Transactional
     @Override
-    public int logicDeleteDepartmentByDepartmentIds(List<Long>  departmentIds) {
+    public int logicDeleteDepartmentByDepartmentIds(List<Long> departmentIds) {
         StringBuffer posterreo = new StringBuffer();
         StringBuffer emplerreo = new StringBuffer();
         StringBuffer depterreo = new StringBuffer();
         int i = 0;
+        List<DepartmentDTO> departmentDTOList1 = departmentMapper.selectDepartmentByDepartmentIds(departmentIds);
+
+        for (DepartmentDTO dto : departmentDTOList1) {
+            // 岗位是否被引用
+            List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
+            String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).collect(Collectors.toList()).toString();
+            if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
+                posterreo.append("组织已被岗位" + s + "引用\n");
+            }
+
+            // 人员是否被引用
+            List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
+            String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
+            if (!CollectionUtils.isEmpty(employeeDTOS)) {
+                emplerreo.append("组织已被人员" + s1 + "引用\n");
+            }
+        }
+        //将错误信息放在一个字符串中
+        depterreo.append(posterreo).append(emplerreo);
+        if (depterreo.length() > 0) {
+            throw new ServiceException(depterreo.toString());
+        } else {
+            //没有引用批量删除数据
+            try {
+                i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除组织信息失败");
+            }
+            try {
+                departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除组织岗位信息失败");
+            }
+        }
+        return i;
+    }
+
+    /**
+     * 批量删 只传父级
+     * @param departmentIds
+     * @return
+     */
+    public  List<DepartmentDTO> packDepartmentDTOList(List<Long> departmentIds){
         //组织集合
         List<DepartmentDTO> departmentDTOList = new ArrayList<>();
         //循环添加
@@ -373,42 +342,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
         }
         //去重
         List<DepartmentDTO> collect = departmentDTOList.stream().distinct().collect(Collectors.toList());
-        for (DepartmentDTO dto : collect) {
-            // 岗位是否被引用
-            List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
-            if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
-                posterreo.append("组织编码" + dto.getDepartmentCode() + "\r\n");
-            }
-
-            // 人员是否被引用
-            List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
-            if (!CollectionUtils.isEmpty(employeeDTOS)) {
-                emplerreo.append("组织编码" + dto.getDepartmentCode() + "\r\n");
-            }
-        }
-        if (posterreo.length() > 0) {
-            posterreo.append("组织已被岗位引用，无法删除！" + "\r\n");
-        }
-        if (emplerreo.length() > 0) {
-            emplerreo.append("组织已被人员引用，无法删除！");
-        }
-        //将错误信息放在一个字符串中
-        depterreo.append(posterreo).append(emplerreo);
-        if (depterreo.length() > 0) {
-            throw new ServiceException(depterreo.toString());
-        } else {
-            //没有引用批量删除数据
-            List<Long> departmentIds2 = collect.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            try {
-                i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds2, SecurityUtils.getUserId(), DateUtils.getNowDate());
-            } catch (Exception e) {
-                throw new ServiceException("");
-            }
-            departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
-        }
-        return i;
+        return collect;
     }
-
     /**
      * 物理删除部门表信息
      *
@@ -430,7 +365,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public List<DepartmentDTO> queryparent() {
         List<DepartmentDTO> queryparent = departmentMapper.queryparent();
-        return this.createTree1(queryparent,0);
+        return this.createTree1(queryparent, 0);
     }
 
     /**
@@ -442,36 +377,22 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public DepartmentDTO deptParticulars(Long departmentId) {
         //查询组织信息
-        DepartmentDTO departmentDTO1 = departmentMapper.selectParentDepartmentId(departmentId);
-        //人员表
-        EmployeeDTO employeeDTO = employeeMapper.selectEmployeeByEmployeeId(departmentDTO1.getDepartmentLeaderId());
-        if (null != employeeDTO){
-            //部门负责人名称
-            departmentDTO1.setDepartmentLeaderName(employeeDTO.getEmployeeName());
+        DepartmentDTO departmentDTO = departmentMapper.selectParentDepartmentId(departmentId);
+
+        DepartmentDTO departmentDTO1 = departmentMapper.selectParentDepartmentId(departmentDTO.getParentDepartmentId());
+        if (null != departmentDTO1) {
+
+            departmentDTO.setParentDepartmentName(departmentDTO1.getDepartmentName());
         }
-
-
-        PostDTO postDTO = postMapper.selectPostByPostId(departmentDTO1.getDepartmentLeaderPostId());
-        if (null != postDTO){
-            //部门负责人岗位名称
-            departmentDTO1.setDepartmentLeaderPostName(postDTO.getPostName());
-        }
-
-        EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeId(departmentDTO1.getExaminationLeaderId());
-        if (null != employeeDTO1){
-            //考核负责人名称
-            departmentDTO1.setDepartmentLeaderName(employeeDTO1.getEmployeeName());
-        }
-
         //查询组织关联岗位信息
         List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentId);
         List<Long> collect = departmentPostDTOList.stream().map(DepartmentPostDTO::getPostId).collect(Collectors.toList());
-        List<DepartmentPostDTO>  departmentPostDTOList2 = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(collect)){
+        List<DepartmentPostDTO> departmentPostDTOList2 = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(collect)) {
             departmentPostDTOList2 = postMapper.selectPostByPostIds(collect);
         }
-        departmentDTO1.setDepartmentPostDTOList(departmentPostDTOList2);
-        return departmentDTO1;
+        departmentDTO.setDepartmentPostDTOList(departmentPostDTOList2);
+        return departmentDTO;
     }
 
     /**
@@ -500,15 +421,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //岗位是否被引用
         List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(departmentDTO.getDepartmentId());
         if (null != departmentPostDTOS) {
-            posterreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\r\n");
+            posterreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\n");
         }
         //人员是否被引用
         List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(departmentDTO.getDepartmentId());
         if (!CollectionUtils.isEmpty(employeeDTOS)) {
-            emplerreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\r\n");
+            emplerreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\n");
         }
         if (posterreo.length() > 0) {
-            posterreo.append("组织已被岗位引用，无法删除！" + "\r\n");
+            posterreo.append("组织已被岗位引用，无法删除！" + "\n");
         }
         if (emplerreo.length() > 0) {
             emplerreo.append("组织已被人员引用，无法删除！");
@@ -519,7 +440,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
             throw new ServiceException(depterreo.toString());
         } else {
             //删除数据
-            i = departmentMapper.logicDeleteDepartmentByDepartmentId(department);
+            try {
+                i = departmentMapper.logicDeleteDepartmentByDepartmentId(department);
+            } catch (Exception e) {
+                throw new ServiceException("删除组织失败");
+            }
+            List<Long> departments = new ArrayList<>();
+            departments.add(department.getDepartmentId());
+            departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departments,SecurityUtils.getUserId(),DateUtils.getNowDate());
         }
         return i;
     }
@@ -546,21 +474,18 @@ public class DepartmentServiceImpl implements IDepartmentService {
         for (DepartmentDTO dto : departmentDTOList) {
             // 岗位是否被引用
             List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
+            String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).collect(Collectors.toList()).toString();
+
             if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
-                posterreo.append("组织编码" + dto.getDepartmentCode() + "\r\n");
+                posterreo.append("组织"+dto.getDepartmentName() +"已被岗位"+ s + "引用\n");
             }
 
             // 人员是否被引用
             List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
+            String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
             if (!CollectionUtils.isEmpty(employeeDTOS)) {
-                emplerreo.append("组织编码" + dto.getDepartmentCode() + "\r\n");
+                posterreo.append("组织名称"+dto.getDepartmentName() +"已被人员"+ s1 + "引用\n");
             }
-        }
-        if (posterreo.length() > 0) {
-            posterreo.append("组织已被岗位引用，无法删除！" + "\r\n");
-        }
-        if (emplerreo.length() > 0) {
-            emplerreo.append("组织已被人员引用，无法删除！");
         }
         //将错误信息放在一个字符串中
         depterreo.append(posterreo).append(emplerreo);
@@ -572,7 +497,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             try {
                 i = departmentMapper.logicDeleteDepartmentByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
             } catch (Exception e) {
-               throw new ServiceException("删除组织失败");
+                throw new ServiceException("删除组织失败");
             }
             try {
                 departmentPostMapper.logicDeleteDepartmentPostByDepartmentIds(departmentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());

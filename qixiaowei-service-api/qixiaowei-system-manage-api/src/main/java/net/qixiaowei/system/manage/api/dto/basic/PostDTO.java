@@ -58,6 +58,12 @@ public class PostDTO {
     */
     @NotNull(message = "职级体系不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Long officialRankSystemId;
+
+
+    /**
+     * 职级体系名称
+     */
+    private  String officialRankSystemName;
     /**
     * 岗位职级下限
     */

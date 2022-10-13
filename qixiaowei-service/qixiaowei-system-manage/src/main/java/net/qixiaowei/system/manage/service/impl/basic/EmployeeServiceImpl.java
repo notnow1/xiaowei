@@ -182,13 +182,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         // todo 校检是否被引用 被引用无法删除
         List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployees(collect1);
+        String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
         if (!CollectionUtils.isEmpty(departmentDTOList)){
-            for (DepartmentDTO dto : departmentDTOList) {
-                deptErreo.append("组织"+dto.getDepartmentCode()+" "+dto.getDepartmentName()+"\r\n");
-            }
-        }
-        if (deptErreo.length()>0){
-            deptErreo.append("人员已被以上组织引用");
+            deptErreo.append("人员已被组织"+s+"引用  无法删除！\n");
         }
         erreoEmp.append(deptErreo);
         if (erreoEmp.length()>0){
@@ -238,13 +234,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
         departmentDTO.setExaminationLeaderId(employeeDTO1.getEmployeeId());
         // todo 校检是否被引用 被引用无法删除
         List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployee(departmentDTO);
+        String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
         if (!CollectionUtils.isEmpty(departmentDTOList)){
-            for (DepartmentDTO dto : departmentDTOList) {
-                deptErreo.append("组织"+dto.getDepartmentCode()+" "+dto.getDepartmentName()+"\r\n");
-            }
-        }
-        if (deptErreo.length()>0){
-            deptErreo.append("人员已被以上组织引用");
+                deptErreo.append("人员已被组织"+s+"引用  无法删除！\n");
         }
         erreoEmp.append(deptErreo);
         if (erreoEmp.length()>0){

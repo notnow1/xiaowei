@@ -68,6 +68,11 @@ public class TenantContractDTO {
     * 开通的产品包
     */
     private  String productPackage;
+
+    /**
+     * 开通的产品包名称
+     */
+    private  String productPackageName;
     /**
     * 删除标记:0未删除;1已删除
     */

@@ -74,8 +74,7 @@ public class EmployeeDTO {
     * 出生日期
     */
     @NotNull(message = "出生日期不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private  Date employeeBirthday;
     /**
     * 员工手机号
@@ -124,11 +123,22 @@ public class EmployeeDTO {
     */
     @NotNull(message = "员工部门不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private  Long employeeDepartmentId;
+
+
+    /**
+     * 员工部门名称
+     */
+    private  String employeeDepartmentName;
     /**
     * 员工岗位ID
     */
     @NotNull(message = "员工岗位不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private  Long employeePostId;
+
+    /**
+     * 员工岗位名称
+     */
+    private  String employeePostName;
     /**
     * 员工职级
     */
@@ -143,12 +153,12 @@ public class EmployeeDTO {
     * 入职日期
     */
     @NotNull(message = "入职日期不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private  Date employmentDate;
     /**
     * 离职日期
     */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private  Date departureDate;
     /**
     * 用工状态:0离职;1在职
@@ -198,7 +208,7 @@ public class EmployeeDTO {
     /**
     * 创建时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private  Date  createTime;
     /**
     * 更新人
@@ -207,7 +217,7 @@ public class EmployeeDTO {
     /**
     * 更新时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private  Date  updateTime;
 
 }

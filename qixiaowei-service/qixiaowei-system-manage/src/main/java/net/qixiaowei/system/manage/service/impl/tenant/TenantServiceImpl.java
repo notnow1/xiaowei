@@ -112,7 +112,7 @@ public class TenantServiceImpl implements ITenantService {
         BeanUtils.copyProperties(tenantDTO, tenant);
         //用户表
         UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
-        if (null != userDTO){
+        if (null == userDTO){
            throw new ServiceException("请配置用户绑定人员信息");
         }
         tenant.setSupportStaff(userDTO.getEmployeeId().toString());
@@ -336,6 +336,10 @@ public class TenantServiceImpl implements ITenantService {
         //
         TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
         BeanUtils.copyProperties(tenantDTO, tenant);
+        //租户登录背景图片URL
+        tenant.setLoginBackground("http://43.139.7.31:9800/local"+tenant.getLoginBackground());
+        //租户logo图片URL
+        tenant.setTenantLogo("http://43.139.7.31:9800/local"+tenant.getTenantLogo());
         //查询租户数据
         TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
         //对比域名是否修改 修改需要保存到域名申请表中

@@ -208,6 +208,20 @@
                     product_specification_param_id=#{item.productSpecificationParamId}
         </foreach>
     </update>
+<!--    根据产品id逻辑批量删除产品规格参数表-->
+    <update id="logicDeleteProductSpecificationParamByProductIds">
+        UPDATE product_specification_param
+        SET     delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        product_id IN
+        <foreach item="item"
+                 collection="productIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
 </mapper>
 
 
