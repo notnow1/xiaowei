@@ -137,4 +137,11 @@ public interface IndustryDefaultMapper {
      */
     List<Long> isExist(@Param("industryIds") List<Long> industryIds);
 
+    /**
+     * 返回默认行业树结构
+     *
+     * @param industryDefault
+     * @return
+     */
+    List<IndustryDefaultDTO> selectIndustryDefaultTreeList(@Param("industryDefault") IndustryDefault industryDefault);
 }

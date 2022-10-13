@@ -11,7 +11,6 @@
         WHERE industry_id=#{industryId}
         and delete_flag=0
     </select>
-
     <!--    查询默认行业列表-->
     <select id="selectIndustryDefaultList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO">
         SELECT
@@ -89,6 +88,76 @@
             #{item}
         </foreach>
     </select>
+    <!--级联查询父菜单-->
+    <select id="selectIndustryDefaultTreeList" resultMap="treeVoMap">
+        SELECT
+        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM industry_default
+        WHERE delete_flag = 0
+        <if test="industryDefault.parentIndustryId != null and industryDefault.parentIndustryId != ''">
+            parent_industry_id=#{industryDefault.parentIndustryId}
+        </if>
+        <if test="industryDefault.industryId != null and industryDefault.industryId != ''">
+            and industry_id=#{industryDefault.industryId}
+        </if>
+        <if test="industryDefault.ancestors != null and industryDefault.ancestors != ''">
+            and ancestors=#{industryDefault.ancestors}
+        </if>
+        <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">
+            and industry_code=#{industryDefault.industryCode}
+        </if>
+        <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
+            and industry_name=#{industryDefault.industryName}
+        </if>
+        <if test="industryDefault.level != null and industryDefault.level != ''">
+            and level=#{industryDefault.level}
+        </if>
+        <if test="industryDefault.status != null and industryDefault.status != ''">
+            and status=#{industryDefault.status}
+        </if>
+        <if test="industryDefault.deleteFlag != null and industryDefault.deleteFlag != ''">
+            and delete_flag=#{industryDefault.deleteFlag}
+        </if>
+        <if test="industryDefault.createBy != null and industryDefault.createBy != ''">
+            and create_by=#{industryDefault.createBy}
+        </if>
+        <if test="industryDefault.createTime != null">
+            and create_time=#{industryDefault.createTime}
+        </if>
+        <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">
+            and update_by=#{industryDefault.updateBy}
+        </if>
+        <if test="industryDefault.updateTime != null">
+            and update_time=#{industryDefault.updateTime}
+        </if>
+    </select>
+    <!--级联查询子菜单-->
+    <select id="findIndustryTreeByPid" resultMap="treeVoMap">
+        SELECT
+        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM industry_default
+        WHERE parent_industry_id = #{parentIndustryId} and delete_flag = 0
+    </select>
+    <!--返回类型-->
+    <resultMap id="treeVoMap" type="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO">
+        <id column="industry_id" property="industryId" jdbcType="BIGINT"/>
+        <result column="parent_industry_id" property="parentIndustryId" jdbcType="BIGINT"/>
+        <result column="ancestors" property="ancestors" jdbcType="VARCHAR"/>
+        <result column="industry_code" property="industryCode" jdbcType="TINYINT"/>
+        <result column="industry_name" property="industryName" jdbcType="VARCHAR"/>
+        <result column="level" property="level" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="delete_flag" property="deleteFlag" jdbcType="TINYINT"/>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_by" property="updateBy" jdbcType="BIGINT"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <collection property="childDefaultIndustry"
+                    ofType="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO"
+                    column="industry_id" select="findIndustryTreeByPid"/>
+    </resultMap>
     <!--新增默认行业-->
     <insert id="insertIndustryDefault" useGeneratedKeys="true" keyProperty="industryId">
         INSERT INTO industry_default

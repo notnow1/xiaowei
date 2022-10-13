@@ -180,15 +180,15 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     /**
      * 逻辑删除指标分类表信息
      *
-     * @param indicatorId 指标分类表
+     * @param indicatorCategoryId 指标分类表
      * @return 结果
      */
     @Transactional
     @Override
-    public int logicDeleteIndicatorCategoryByIndicatorCategoryId(Long indicatorId) {
-        ArrayList<Long> indicatorIds = new ArrayList<>();
-        indicatorIds.add(indicatorId);
-        return logicDeleteIndicatorCategoryByIndicatorCategoryIds(indicatorIds);
+    public int logicDeleteIndicatorCategoryByIndicatorCategoryId(Long indicatorCategoryId) {
+        ArrayList<Long> indicatorCategoryIds = new ArrayList<>();
+        indicatorCategoryIds.add(indicatorCategoryId);
+        return logicDeleteIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryIds);
     }
 
     /**

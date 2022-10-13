@@ -1,6 +1,10 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -16,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -42,6 +48,27 @@ public class IndustryServiceImpl implements IIndustryService {
     }
 
     /**
+     * 查询行业分页列表
+     *
+     * @param industryDTO 行业
+     * @return 行业
+     */
+    @Override
+    public List<IndustryDTO> selectIndustryPageList(IndustryDTO industryDTO) {
+        Long parentIndustryId = industryDTO.getParentIndustryId();
+        Integer status = industryDTO.getStatus();
+        if (StringUtils.isNull(parentIndustryId)) {
+            industryDTO.setParentIndustryId(0L);
+        }
+        if (StringUtils.isNull(status)) {
+            industryDTO.setStatus(1);
+        }
+        Industry industry = new Industry();
+        BeanUtils.copyProperties(industryDTO, industry);
+        return industryMapper.selectIndustryList(industry);
+    }
+
+    /**
      * 查询行业列表
      *
      * @param industryDTO 行业
@@ -49,9 +76,44 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<IndustryDTO> selectIndustryList(IndustryDTO industryDTO) {
+        Integer status = industryDTO.getStatus();
+        if (StringUtils.isNull(status)) {
+            industryDTO.setStatus(1);
+        }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
         return industryMapper.selectIndustryList(industry);
+    }
+
+    /**
+     * 树结构
+     *
+     * @param industryDTO
+     * @return
+     */
+    @Override
+    public List<Tree<Long>> selectIndustryTreeList(IndustryDTO industryDTO) {
+        Integer status = industryDTO.getStatus();
+        if (StringUtils.isNull(status)) {
+            industryDTO.setStatus(1);
+        }
+        Industry industry = new Industry();
+        BeanUtils.copyProperties(industryDTO, industry);
+        List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(industry);
+        //自定义属性名
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("industryId");
+        treeNodeConfig.setNameKey("industryName");
+        treeNodeConfig.setParentIdKey("parentIndustryId");
+        return TreeUtil.build(industryDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getIndustryId());
+            tree.setParentId(treeNode.getParentIndustryId());
+            tree.setName(treeNode.getIndustryName());
+            tree.putExtra("level", treeNode.getLevel());
+            tree.putExtra("industryCode", treeNode.getIndustryCode());
+            tree.putExtra("status", treeNode.getStatus());
+            tree.getParentId();
+        });
     }
 
     /**

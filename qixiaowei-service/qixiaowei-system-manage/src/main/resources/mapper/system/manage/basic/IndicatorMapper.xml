@@ -22,67 +22,67 @@
         FROM indicator
         WHERE delete_flag=0
         <if test="indicator.indicatorId != null">
-            and indicator_id=#{indicatorDTO.indicatorId}
+            and indicator_id=#{indicator.indicatorId}
         </if>
         <if test="indicator.parentIndicatorId != null">
-            and parent_indicator_id=#{indicatorDTO.parentIndicatorId}
+            and parent_indicator_id=#{indicator.parentIndicatorId}
         </if>
         <if test="indicator.ancestors != null and indicator.ancestors != ''">
-            and ancestors=#{indicatorDTO.ancestors}
+            and ancestors=#{indicator.ancestors}
         </if>
         <if test="indicator.indicatorType != null">
-            and indicator_type=#{indicatorDTO.indicatorType}
+            and indicator_type=#{indicator.indicatorType}
         </if>
         <if test="indicator.indicatorCode != null and indicator.indicatorCode != ''">
-            and indicator_code=#{indicatorDTO.indicatorCode}
+            and indicator_code=#{indicator.indicatorCode}
         </if>
         <if test="indicator.indicatorName != null and indicator.indicatorName != ''">
-            and indicator_name=#{indicatorDTO.indicatorName}
+            and indicator_name=#{indicator.indicatorName}
         </if>
         <if test="indicator.sort != null">
-            and sort=#{indicatorDTO.sort}
+            and sort=#{indicator.sort}
         </if>
         <if test="indicator.level != null">
-            and level=#{indicatorDTO.level}
+            and level=#{indicator.level}
         </if>
         <if test="indicator.indicatorCategoryId != null">
-            and indicator_category_id=#{indicatorDTO.indicatorCategoryId}
+            and indicator_category_id=#{indicator.indicatorCategoryId}
         </if>
         <if test="indicator.indicatorValueType != null">
-            and indicator_value_type=#{indicatorDTO.indicatorValueType}
+            and indicator_value_type=#{indicator.indicatorValueType}
         </if>
         <if test="indicator.choiceFlag != null">
-            and choice_flag=#{indicatorDTO.choiceFlag}
+            and choice_flag=#{indicator.choiceFlag}
         </if>
         <if test="indicator.examineDirection != null">
-            and examine_direction=#{indicatorDTO.examineDirection}
+            and examine_direction=#{indicator.examineDirection}
         </if>
         <if test="indicator.indicatorDefinition != null and indicator.indicatorDefinition != ''">
-            and indicator_definition=#{indicatorDTO.indicatorDefinition}
+            and indicator_definition=#{indicator.indicatorDefinition}
         </if>
         <if test="indicator.indicatorFormula != null and indicator.indicatorFormula != ''">
-            and indicator_formula=#{indicatorDTO.indicatorFormula}
+            and indicator_formula=#{indicator.indicatorFormula}
         </if>
         <if test="indicator.drivingFactorFlag != null">
-            and driving_factor_flag=#{indicatorDTO.drivingFactorFlag}
+            and driving_factor_flag=#{indicator.drivingFactorFlag}
         </if>
         <if test="indicator.remark != null and indicator.remark != ''">
-            and remark=#{indicatorDTO.remark}
+            and remark=#{indicator.remark}
         </if>
         <if test="indicator.deleteFlag != null">
-            and delete_flag=#{indicatorDTO.deleteFlag}
+            and delete_flag=#{indicator.deleteFlag}
         </if>
         <if test="indicator.createBy != null">
-            and create_by=#{indicatorDTO.createBy}
+            and create_by=#{indicator.createBy}
         </if>
         <if test="indicator.createTime != null">
-            and create_time=#{indicatorDTO.createTime}
+            and create_time=#{indicator.createTime}
         </if>
         <if test="indicator.updateBy != null">
-            and update_by=#{indicatorDTO.updateBy}
+            and update_by=#{indicator.updateBy}
         </if>
         <if test="indicator.updateTime != null">
-            and update_time=#{indicatorDTO.updateTime}
+            and update_time=#{indicator.updateTime}
         </if>
     </select>
     <!--级联查询父菜单-->

@@ -29,6 +29,14 @@ public interface IIndustryDefaultService {
     List<IndustryDefaultDTO> selectIndustryDefaultList(IndustryDefaultDTO industryDefaultDTO);
 
     /**
+     * 查询默认行业分页列表
+     *
+     * @param industryDefaultDTO 行业
+     * @return 行业集合
+     */
+    List<IndustryDefaultDTO> selectIndustryDefaultPageList(IndustryDefaultDTO industryDefaultDTO);
+
+    /**
      * 新增默认行业
      *
      * @param industryDefaultDTO 默认行业
@@ -108,4 +116,13 @@ public interface IIndustryDefaultService {
      * @return
      */
     IndustryDefaultDTO detailIndustryDefault(Long industryId);
+
+    /**
+     * 树结构默认行业信息
+     *
+     * @param industryDefaultDTO
+     * @return
+     */
+    List<IndustryDefaultDTO> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO);
+
 }

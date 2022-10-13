@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 
 
@@ -21,12 +22,28 @@ public interface IIndustryService {
     IndustryDTO selectIndustryByIndustryId(Long industryId);
 
     /**
-     * 查询行业列表
+     * 查询行业分页列表
      *
      * @param industryDTO 行业
      * @return 行业集合
      */
+    List<IndustryDTO> selectIndustryPageList(IndustryDTO industryDTO);
+
+    /**
+     * 查询行业列表
+     *
+     * @param industryDTO
+     * @return
+     */
     List<IndustryDTO> selectIndustryList(IndustryDTO industryDTO);
+
+    /**
+     * 树结构
+     *
+     * @param industryDTO
+     * @return
+     */
+    public List<Tree<Long>> selectIndustryTreeList(IndustryDTO industryDTO);
 
     /**
      * 新增行业
@@ -122,4 +139,5 @@ public interface IIndustryService {
      * @return
      */
     IndustryDTO detailIndustry(Long industryId);
+
 }

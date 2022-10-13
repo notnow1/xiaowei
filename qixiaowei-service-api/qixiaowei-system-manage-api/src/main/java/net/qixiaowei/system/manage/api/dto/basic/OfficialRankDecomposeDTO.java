@@ -52,7 +52,7 @@ public class OfficialRankDecomposeDTO {
     /**
      * 职级分解维度:1部门;2区域;3省份;4产品
      */
-    private Integer rankDecomposeDimension;
+        private Integer rankDecomposeDimension;
     /**
      * 具体分解维度的ID
      */

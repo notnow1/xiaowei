@@ -91,12 +91,12 @@ public class IndicatorCategoryController extends BaseController {
 //    @RequiresPermissions("system:manage:indicatorCategory:remove")
     @Log(title = "删除指标分类表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody IndicatorDTO indicatorDTO) {
-        Long indicatorId = indicatorDTO.getIndicatorId();
-        if (StringUtils.isNull(indicatorId)) {
+    public AjaxResult remove(@RequestBody IndicatorCategoryDTO indicatorCategoryDTO) {
+        Long indicatorCategoryId = indicatorCategoryDTO.getIndicatorCategoryId();
+        if (StringUtils.isNull(indicatorCategoryId)) {
             return AjaxResult.error("指标分类id不能为空！");
         }
-        return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryId(indicatorId));
+        return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId));
     }
 
     /**

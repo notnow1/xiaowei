@@ -59,6 +59,10 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Override
     public List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO) {
         List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
+        Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
+        if (StringUtils.isNull(parentIndicatorId)) {
+            indicatorDTO.setParentIndicatorId(0L);
+        }
         ArrayList<Long> indicatorCategoryList = new ArrayList<>();
         for (IndicatorDTO dto : indicatorDTOS) {
             indicatorCategoryList.add(dto.getIndicatorCategoryId());

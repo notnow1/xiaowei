@@ -55,10 +55,10 @@ public interface IPerformancePercentageService {
     /**
      * 逻辑批量删除绩效比例表
      *
-     * @param PerformancePercentageDtos 需要删除的绩效比例表集合
+     * @param performancePercentageIds 需要删除的绩效比例表集合
      * @return 结果
      */
-    int logicDeletePerformancePercentageByPerformancePercentageIds(List<PerformancePercentageDTO> PerformancePercentageDtos);
+    int logicDeletePerformancePercentageByPerformancePercentageIds(List<Long> performancePercentageIds);
 
     /**
      * 逻辑删除绩效比例表信息

@@ -39,7 +39,7 @@ public class IndustryController extends BaseController {
     @GetMapping("/pageList")
     public TableDataInfo pageList(IndustryDTO industryDTO) {
         startPage();
-        List<IndustryDTO> list = industryService.selectIndustryList(industryDTO);
+        List<IndustryDTO> list = industryService.selectIndustryPageList(industryDTO);
         return getDataTable(list);
     }
 
@@ -52,6 +52,15 @@ public class IndustryController extends BaseController {
         List<IndustryDTO> list = industryService.selectIndustryList(industryDTO);
         return AjaxResult.success(list);
     }
+
+    /**
+     * 查询行业树结构列表
+     */
+    @GetMapping("/treeList")
+    public AjaxResult treeList(IndustryDTO industryDTO) {
+        return AjaxResult.success(industryService.selectIndustryTreeList(industryDTO));
+    }
+
 
     /**
      * 获取启用行业列表
@@ -122,15 +131,6 @@ public class IndustryController extends BaseController {
         return toAjax(industryService.logicDeleteIndustryByIndustryId(industryId));
     }
 
-    /**
-     * 批量新增行业
-     */
-//    @RequiresPermissions("system:manage:industry:insertIndustrys")
-    @Log(title = "批量新增行业", businessType = BusinessType.INSERT)
-    @PostMapping("/insertIndustrys")
-    public AjaxResult insertIndustrys(@RequestBody List<IndustryDTO> industryDtos) {
-        return toAjax(industryService.insertIndustrys(industryDtos));
-    }
 
     /**
      * 逻辑批量删除行业

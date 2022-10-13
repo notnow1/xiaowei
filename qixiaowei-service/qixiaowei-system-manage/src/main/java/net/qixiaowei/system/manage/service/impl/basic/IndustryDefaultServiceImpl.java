@@ -7,6 +7,8 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.system.manage.api.domain.basic.Indicator;
+import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
@@ -50,6 +52,27 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
      */
     @Override
     public List<IndustryDefaultDTO> selectIndustryDefaultList(IndustryDefaultDTO industryDefaultDTO) {
+        IndustryDefault industryDefault = new IndustryDefault();
+        BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
+        return industryDefaultMapper.selectIndustryDefaultList(industryDefault);
+    }
+
+    /**
+     * 查询默认行业分页列表
+     *
+     * @param industryDefaultDTO 行业
+     * @return
+     */
+    @Override
+    public List<IndustryDefaultDTO> selectIndustryDefaultPageList(IndustryDefaultDTO industryDefaultDTO) {
+        Long parentIndustryId = industryDefaultDTO.getParentIndustryId();
+        Integer status = industryDefaultDTO.getStatus();
+        if (StringUtils.isNull(parentIndustryId)) {
+            industryDefaultDTO.setParentIndustryId(0L);
+        }
+        if (StringUtils.isNull(status)) {
+            industryDefaultDTO.setStatus(1);
+        }
         IndustryDefault industryDefault = new IndustryDefault();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
         return industryDefaultMapper.selectIndustryDefaultList(industryDefault);
@@ -224,6 +247,19 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
             throw new ServiceException("该默认行业配置已不存在");
         }
         return industryDefaultDTO;
+    }
+
+    /**
+     * 树结构默认行业信息
+     *
+     * @param industryDefaultDTO
+     * @return
+     */
+    @Override
+    public List<IndustryDefaultDTO> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO) {
+        IndustryDefault industryDefault = new IndustryDefault();
+        BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
+        return industryDefaultMapper.selectIndustryDefaultTreeList(industryDefault);
     }
 
     /**

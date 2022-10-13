@@ -33,7 +33,7 @@ public class IndustryDefaultController extends BaseController {
     @GetMapping("/pageList")
     public TableDataInfo pageList(IndustryDefaultDTO industryDefaultDTO) {
         startPage();
-        List<IndustryDefaultDTO> list = industryDefaultService.selectIndustryDefaultList(industryDefaultDTO);
+        List<IndustryDefaultDTO> list = industryDefaultService.selectIndustryDefaultPageList(industryDefaultDTO);
         return getDataTable(list);
     }
 
@@ -47,6 +47,15 @@ public class IndustryDefaultController extends BaseController {
         return AjaxResult.success(list);
     }
 
+    /**
+     * 查询默认行业列表
+     */
+//    @RequiresPermissions("system:manage:industryDefault:list")
+    @GetMapping("/treeList")
+    public AjaxResult treeList(IndustryDefaultDTO industryDefaultDTO) {
+        List<IndustryDefaultDTO> list = industryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO);
+        return AjaxResult.success(list);
+    }
 
     /**
      * 新增默认行业

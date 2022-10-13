@@ -106,8 +106,8 @@ public class PerformancePercentageController extends BaseController {
 //    @RequiresPermissions("operate:cloud:performancePercentage:removes")
     @Log(title = "批量删除绩效比例表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody @Validated(PerformancePercentageDTO.DeletePerformancePercentageDTO.class) List<PerformancePercentageDTO> PerformancePercentageDtos) {
-        return toAjax(performancePercentageService.logicDeletePerformancePercentageByPerformancePercentageIds(PerformancePercentageDtos));
+    public AjaxResult removes(@RequestBody @Validated(PerformancePercentageDTO.DeletePerformancePercentageDTO.class) List<Long> performancePercentageIds) {
+        return toAjax(performancePercentageService.logicDeletePerformancePercentageByPerformancePercentageIds(performancePercentageIds));
     }
 
     /**

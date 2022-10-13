@@ -206,16 +206,12 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
     /**
      * 逻辑批量删除绩效比例表
      *
-     * @param performancePercentageDtos 需要删除的绩效比例表主键
+     * @param performancePercentageIds 需要删除的绩效比例表主键
      * @return 结果
      */
     @Override
     @Transactional
-    public int logicDeletePerformancePercentageByPerformancePercentageIds(List<PerformancePercentageDTO> performancePercentageDtos) {
-        List<Long> performancePercentageIds = new ArrayList<>();
-        for (PerformancePercentageDTO performancePercentageDTO : performancePercentageDtos) {
-            performancePercentageIds.add(performancePercentageDTO.getPerformancePercentageId());
-        }
+    public int logicDeletePerformancePercentageByPerformancePercentageIds(List<Long> performancePercentageIds) {
         List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageByPerformancePercentageIds(performancePercentageIds);
         if (performancePercentageDTOS.size() < performancePercentageIds.size()) {
             throw new ServiceException("当前数据已不存在");
@@ -263,9 +259,9 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
     @Override
     @Transactional
     public int logicDeletePerformancePercentageByPerformancePercentageId(PerformancePercentageDTO performancePercentageDTO) {
-        ArrayList<PerformancePercentageDTO> performancePercentageDTOS = new ArrayList<>();
-        performancePercentageDTOS.add(performancePercentageDTO);
-        return logicDeletePerformancePercentageByPerformancePercentageIds(performancePercentageDTOS);
+        ArrayList<Long> performancePercentageIds = new ArrayList<>();
+        performancePercentageIds.add(performancePercentageDTO.getPerformancePercentageId());
+        return logicDeletePerformancePercentageByPerformancePercentageIds(performancePercentageIds);
     }
 
     /**
