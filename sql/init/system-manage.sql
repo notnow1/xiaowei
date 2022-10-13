@@ -499,78 +499,102 @@ VALUES (5, 0, 1, '经营云', NULL, 2, 'manage', NULL, NULL, 0, 0, 1, NULL, NULL
 
 
 
-INSERT INTO `system-manage`.menu (parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component,
-                                  query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status,
-                                  delete_flag, create_by, create_time, update_by, update_time)
-VALUES (0, 1, '系统管理', NULL, 1, 'system', NULL, NULL, 0, 0, 1, NULL, 'system', 1, 0, 1, '2022-10-12 10:16:16', 1,
-        '2022-10-12 10:16:16'),
-       (1, 1, '设置管理', NULL, 1, 'settingsManager', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, '2022-10-12 10:16:16',
-        1, '2022-10-12 15:35:37'),
-       (2, 2, '权限设置', NULL, 1, 'roleSetting', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, '2022-10-12 10:16:17', 1,
-        '2022-10-12 10:16:17'),
-       (1, 2, '菜单管理', NULL, 1, 'menu', 'system/menu/index', NULL, 0, 1, 1, NULL, 'tree-table', 1, 0, 1,
-        '2022-10-12 10:16:17', 1, '2022-10-12 10:16:17'),
-       (0, 1, '经营云', NULL, 2, 'manage', NULL, NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 10:16:17', 1,
-        '2022-10-12 15:16:28'),
-       (0, 1, '配置管理', NULL, 1, 'setting', NULL, NULL, 0, 0, 1, NULL, 'svg8', 1, 0, 1, '2022-10-12 10:40:36', 1,
-        '2022-10-12 10:40:36'),
-       (9, 2, '企业信息', NULL, 0, 'enterpriseInfo', 'setting/basics/enterpriseInfo/index', NULL, 0, 0, 1, NULL,
-        'qiyexinxi', 1, 0, 1, '2022-10-12 10:44:51', 1, '2022-10-12 14:49:49'),
-       (6, 1, '权限配置', NULL, 2, 'auth', NULL, NULL, 0, 0, 1, NULL, 'quanxuan', 1, 0, 1, '2022-10-12 10:46:49', 1,
-        '2022-10-12 13:57:41'),
-       (6, 1, '基础配置', NULL, 3, 'basics', NULL, NULL, 0, 0, 1, NULL, 'jichupeizhi', 1, 0, 1, '2022-10-12 13:57:22', 1,
-        '2022-10-12 13:57:22'),
-       (8, 2, '账号角色', NULL, 1, 'account', 'setting/auth/account/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 14:01:13', 1, '2022-10-12 14:01:13');
-INSERT INTO `system-manage`.menu (parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component,
-                                  query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status,
-                                  delete_flag, create_by, create_time, update_by, update_time)
-VALUES (8, 2, '角色权限', NULL, 2, 'role', 'setting/auth/role/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 14:06:00', 1, '2022-10-12 14:06:00'),
-       (9, 2, '组织配置', NULL, 1, 'organization', 'setting/basics/organization/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 14:07:39', 1, '2022-10-12 14:07:39'),
-       (6, 2, '租户管理', NULL, 1, 'tenant', 'tenant/index', NULL, 0, 0, 1, NULL, 'gerenjixiao', 1, 0, 1,
-        '2022-10-12 14:15:12', 1, '2022-10-12 14:15:12'),
-       (9, 2, '人员配置', NULL, 2, 'personnel', 'setting/basics/personnel/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 02:19:31', 1, '2022-10-12 14:25:02'),
-       (9, 2, '岗位配置', NULL, 3, 'post', 'setting/basics/post/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 14:23:59', 1, '2022-10-12 14:23:59'),
-       (9, 2, '职级配置', NULL, 4, 'rank', 'setting/basics/rank/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 14:27:36', 1, '2022-10-12 14:27:36'),
-       (9, 2, '行业配置', NULL, 5, 'industry', 'setting/basics/industry/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 02:28:58', 1, '2022-10-12 14:29:18'),
-       (9, 2, '指标配置', NULL, 6, 'indicator', 'setting/basics/indicator/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 14:30:20', 1, '2022-10-12 14:30:20'),
-       (9, 2, '指标类型配置', NULL, 6, 'indicatorType', 'setting/basics/indicatorType/index', NULL, 0, 0, 1, NULL, NULL, 1, 0,
-        1, '2022-10-12 02:31:02', 1, '2022-10-12 14:31:13'),
-       (9, 2, '枚举值配置', NULL, 8, 'dict', 'setting/basics/dict/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 14:32:20', 1, '2022-10-12 14:32:20');
-INSERT INTO `system-manage`.menu (parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component,
-                                  query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status,
-                                  delete_flag, create_by, create_time, update_by, update_time)
-VALUES (13, 2, '新建租户', NULL, 1, 'tenantAdd', 'tenant/components/tenantAdd', NULL, 0, 1, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 02:39:53', 1, '2022-10-12 14:44:39'),
-       (6, 2, '新建租户', NULL, 3, 'tenantAdd', 'tenant/components/tenantAdd', NULL, 0, 1, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 02:48:05', 1, '2022-10-12 19:06:21'),
-       (6, 1, '经营云配置', NULL, 4, 'manage', NULL, NULL, 0, 0, 1, NULL, 'jingyingyunpeizhi', 1, 0, 1,
-        '2022-10-12 02:48:49', 1, '2022-10-12 15:00:09'),
-       (23, 2, '分解维度配置', NULL, 1, 'dimensionality', 'setting/manage/dimensionality/index', NULL, 0, 0, 1, NULL, NULL, 1,
-        0, 1, '2022-10-12 15:02:44', 1, '2022-10-12 15:02:44'),
-       (23, 2, '区域配置', NULL, 2, 'regional', 'setting/manage/regional/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 15:03:48', 1, '2022-10-12 15:03:48'),
-       (23, 2, '产品配置', NULL, 3, 'productconfiguration', 'setting/manage/productconfiguration/index', NULL, 0, 0, 1,
-        NULL, NULL, 1, 0, 1, '2022-10-12 03:05:28', 1, '2022-10-12 15:06:03'),
-       (23, 2, '产品单位配置', NULL, 4, 'productUnit', 'setting/manage/productUnit/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1,
-        '2022-10-12 15:07:35', 1, '2022-10-12 15:07:35'),
-       (23, 2, '绩效等级配置', NULL, 5, 'performanceRating', 'setting/manage/performanceRating/index', NULL, 0, 0, 1, NULL,
-        NULL, 1, 0, 1, '2022-10-12 15:09:04', 1, '2022-10-12 15:09:04'),
-       (23, 2, '绩效比率配置', NULL, 6, 'performanceRatio', 'setting/manage/performanceRatio/index', NULL, 0, 0, 1, NULL,
-        NULL, 1, 0, 1, '2022-10-12 15:10:17', 1, '2022-10-12 15:10:17'),
-       (23, 2, '工资条配置', NULL, 7, 'articleWages', 'setting/manage/articleWages/index', NULL, 0, 0, 1, NULL, NULL, 1, 0,
-        1, '2022-10-12 15:11:55', 1, '2022-10-12 15:11:55');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(1, 0, 1, '系统管理', NULL, 1, 'system', NULL, NULL, 0, 0, 1, NULL, 'system', 1, 0, 1, '2022-10-12 10:16:16', 1, '2022-10-12 10:16:16');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(2, 1, 1, '设置管理', NULL, 1, 'settingsManager', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, '2022-10-12 10:16:16', 1, '2022-10-12 15:35:37');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(3, 2, 2, '权限设置', NULL, 1, 'roleSetting', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, '2022-10-12 10:16:17', 1, '2022-10-12 10:16:17');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(4, 1, 2, '菜单管理', NULL, 1, 'menu', 'system/menu/index', NULL, 0, 1, 1, NULL, 'tree-table', 1, 0, 1, '2022-10-12 10:16:17', 1, '2022-10-12 10:16:17');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(5, 0, 1, '经营云', NULL, 2, 'manage', NULL, NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 10:16:17', 1, '2022-10-12 15:16:28');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(6, 0, 1, '配置管理', NULL, 1, 'setting', NULL, NULL, 0, 0, 1, NULL, 'svg8', 1, 0, 1, '2022-10-12 10:40:36', 1, '2022-10-12 10:40:36');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(7, 9, 2, '企业信息', NULL, 0, 'enterpriseInfo', 'setting/basics/enterpriseInfo/index', NULL, 0, 0, 1, NULL, 'qiyexinxi', 1, 0, 1, '2022-10-12 10:44:51', 1, '2022-10-12 14:49:49');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(8, 6, 1, '权限配置', NULL, 2, 'auth', NULL, NULL, 0, 0, 1, NULL, 'quanxuan', 1, 0, 1, '2022-10-12 10:46:49', 1, '2022-10-12 13:57:41');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(9, 6, 1, '基础配置', NULL, 3, 'basics', NULL, NULL, 0, 0, 1, NULL, 'jichupeizhi', 1, 0, 1, '2022-10-12 13:57:22', 1, '2022-10-12 13:57:22');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(10, 8, 2, '账号角色', NULL, 1, 'account', 'setting/auth/account/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 14:01:13', 1, '2022-10-12 14:01:13');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(11, 8, 2, '角色权限', NULL, 2, 'role', 'setting/auth/role/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 14:06:00', 1, '2022-10-12 14:06:00');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(12, 9, 2, '组织配置', NULL, 1, 'organization', 'setting/basics/organization/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 14:07:39', 1, '2022-10-12 14:07:39');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(13, 6, 2, '租户管理', NULL, 1, 'tenant', 'tenant/index', NULL, 0, 0, 1, NULL, 'gerenjixiao', 1, 0, 1, '2022-10-12 14:15:12', 1, '2022-10-12 14:15:12');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(14, 9, 2, '人员配置', NULL, 2, 'personnel', 'setting/basics/personnel/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 02:19:31', 1, '2022-10-12 14:25:02');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(15, 9, 2, '岗位配置', NULL, 3, 'post', 'setting/basics/post/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 14:23:59', 1, '2022-10-12 14:23:59');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(16, 9, 2, '职级配置', NULL, 4, 'rank', 'setting/basics/rank/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 14:27:36', 1, '2022-10-12 14:27:36');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(17, 9, 2, '行业配置', NULL, 5, 'industry', 'setting/basics/industry/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 02:28:58', 1, '2022-10-12 14:29:18');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(18, 9, 2, '指标配置', NULL, 6, 'indicator', 'setting/basics/indicator/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 14:30:20', 1, '2022-10-12 14:30:20');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(19, 9, 2, '指标类型配置', NULL, 6, 'indicatorType', 'setting/basics/indicatorType/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 02:31:02', 1, '2022-10-12 14:31:13');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(20, 9, 2, '枚举值配置', NULL, 8, 'dict', 'setting/basics/dict/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 14:32:20', 1, '2022-10-12 14:32:20');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(21, 13, 2, '新建租户', NULL, 1, 'tenantAdd', 'tenant/components/tenantAdd', NULL, 0, 1, 1, NULL, NULL, 1, 0, 1, '2022-10-12 02:39:53', 1, '2022-10-12 14:44:39');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(22, 6, 2, '新建租户', NULL, 3, 'tenantAdd', 'tenant/components/tenantAdd', NULL, 0, 1, 1, NULL, NULL, 1, 0, 1, '2022-10-12 02:48:05', 1, '2022-10-12 19:06:21');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(23, 6, 1, '经营云配置', NULL, 4, 'manage', NULL, NULL, 0, 0, 1, NULL, 'jingyingyunpeizhi', 1, 0, 1, '2022-10-12 02:48:49', 1, '2022-10-12 15:00:09');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(24, 23, 2, '分解维度配置', NULL, 1, 'dimensionality', 'setting/manage/dimensionality/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 15:02:44', 1, '2022-10-12 15:02:44');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(25, 23, 2, '区域配置', NULL, 2, 'regional', 'setting/manage/regional/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 15:03:48', 1, '2022-10-12 15:03:48');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(26, 23, 2, '产品配置', NULL, 3, 'productconfiguration', 'setting/manage/productconfiguration/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 03:05:28', 1, '2022-10-12 15:06:03');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(27, 23, 2, '产品单位配置', NULL, 4, 'productUnit', 'setting/manage/productUnit/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 15:07:35', 1, '2022-10-12 15:07:35');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(28, 23, 2, '绩效等级配置', NULL, 5, 'performanceRating', 'setting/manage/performanceRating/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 15:09:04', 1, '2022-10-12 15:09:04');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(29, 23, 2, '绩效比率配置', NULL, 6, 'performanceRatio', 'setting/manage/performanceRatio/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 15:10:17', 1, '2022-10-12 15:10:17');
+INSERT INTO `system-manage`.menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(30, 23, 2, '工资条配置', NULL, 7, 'articleWages', 'setting/manage/articleWages/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-12 15:11:55', 1, '2022-10-12 15:11:55');
 
-INSERT INTO `system-manage`.user_role (user_id,role_id,delete_flag,create_by,create_time,update_by,update_time) VALUES
-    (1,1,0,0,'2022-10-12 10:14:54',0,'2022-10-12 10:14:54');
+
+INSERT INTO `system-manage`.user_role
+(user_role_id, user_id, role_id, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(1, 1, 1, 0, 0, '2022-10-12 10:14:54', 0, '2022-10-12 10:14:54');
+
 
 
 
