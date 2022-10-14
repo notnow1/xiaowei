@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -38,6 +40,7 @@ public class ProductDTO {
     /**
     * ID
     */
+    @NotNull(message = "产品ID不能为空",groups = {ProductDTO.DeleteProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Long productId;
     /**
     * 父级产品ID
@@ -50,22 +53,27 @@ public class ProductDTO {
     /**
     * 产品编码
     */
+    @NotBlank(message = "产品编码不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  String productCode;
     /**
     * 产品名称
     */
+    @NotBlank(message = "产品名称不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  String productName;
     /**
     * 层级
     */
+    @NotNull(message = "层级不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Integer level;
     /**
     * 产品单位ID
     */
+    @NotNull(message = "产品单位不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Long productUnitId;
     /**
     * 产品类别
     */
+    @NotBlank(message = "产品类别不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  String productCategory;
     /**
     * 产品描述
@@ -78,6 +86,7 @@ public class ProductDTO {
     /**
     * 上架标记：0下架;1上架
     */
+    @NotNull(message = "是否上下架不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Integer listingFlag;
     /**
     * 删除标记:0未删除;1已删除

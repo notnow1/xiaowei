@@ -126,8 +126,14 @@
         <if test="employee.identityCard != null and employee.identityCard != ''">
             and e.identity_card like '%${employee.identityCard}%'
         </if>
-        <if test="employee.employeeBirthday != null">
-            and e.employee_birthday like '%${employee.employeeBirthday}%'
+
+        <if test="employee.params.employeeBirthdayStart != null">
+            AND date_format(e.employee_birthday,'%y%m%d') &gt;=
+            date_format(#{employee.params.employeeBirthdayStart},'%y%m%d')
+        </if>
+        <if test="employee.params.employeeBirthdayEnd != null">
+            AND date_format(e.employee_birthday,'%y%m%d') &lt;=
+            date_format(#{employee.params.employeeBirthdayEnd},'%y%m%d')
         </if>
         <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
             and e.employee_mobile like '%${employee.employeeMobile}%'
@@ -147,11 +153,18 @@
         <if test="employee.employeeBasicWage != null">
             and e.employee_basic_wage like '%${employee.employeeBasicWage}%'
         </if>
-        <if test="employee.employmentDate != null">
-            and e.employment_date like '%${employee.employmentDate}%'
+        <if test="employee.params.employmentDateStart != null">
+            AND date_format(e.employment_date,'%y%m%d') &gt;=
+            date_format(#{employee.params.employmentDateStart},'%y%m%d')
         </if>
-        <if test="employee.departureDate != null">
-            and e.departure_date like '%${employee.departureDate}%'
+        <if test="employee.params.employmentDateEnd != null">
+            AND date_format(e.employment_date,'%y%m%d') &lt;= date_format(#{employee.params.employmentDateEnd},'%y%m%d')
+        </if>
+        <if test="employee.params.departureDateStart != null">
+            AND date_format(e.departure_date,'%y%m%d') &gt;= date_format(#{employee.params.departureDateStart},'%y%m%d')
+        </if>
+        <if test="employee.params.departureDateEnd != null">
+            AND date_format(e.departure_date,'%y%m%d') &lt;= date_format(#{employee.params.departureDateEnd},'%y%m%d')
         </if>
         <if test="employee.employmentStatus != null">
             and e.employment_status like '%${employee.employmentStatus}%'
@@ -261,7 +274,7 @@
                  left join post p
                            on ee.employee_post_id = p.post_id
                                and p.delete_flag = 0
-        where ee.employee_post_id =#{employeePostId}
+        where ee.employee_post_id = #{employeePostId}
           and ee.delete_flag = 0
     </select>
     <!--新增员工表-->

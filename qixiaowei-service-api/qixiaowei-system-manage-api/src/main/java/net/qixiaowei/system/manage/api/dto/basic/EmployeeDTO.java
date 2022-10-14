@@ -5,6 +5,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.Map;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -105,7 +106,6 @@ public class EmployeeDTO {
     /**
      * 民族
      */
-    @NotBlank(message = "民族不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private  String nation;
     /**
      * 户口所在地
@@ -156,12 +156,12 @@ public class EmployeeDTO {
     * 入职日期
     */
     @NotNull(message = "入职日期不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
     private  Date employmentDate;
     /**
     * 离职日期
     */
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
     private  Date departureDate;
     /**
     * 用工状态:0离职;1在职
@@ -222,6 +222,10 @@ public class EmployeeDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private  Date  updateTime;
+
+
+    /** 请求参数 */
+    private Map<String, Object> params;
 
 }
 
