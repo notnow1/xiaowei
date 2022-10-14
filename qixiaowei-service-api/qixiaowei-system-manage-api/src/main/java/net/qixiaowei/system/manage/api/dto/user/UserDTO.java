@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -54,7 +55,7 @@ public class UserDTO {
     /**
      * ID
      */
-    @NotNull(message = "用户ID不能为空",groups = {UserDTO.UpdateUserDTO.class,UserDTO.DeleteUserDTO.class,UserDTO.ResetPwdRUserDTO.class})
+    @NotNull(message = "用户ID不能为空", groups = {UserDTO.UpdateUserDTO.class, UserDTO.DeleteUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
     private Long userId;
     /**
      * 员工ID
@@ -63,35 +64,35 @@ public class UserDTO {
     /**
      * 员工姓名
      */
-    private  String employeeName;
+    private String employeeName;
     /**
      * 用户帐号
      */
     @Xss(message = "用户账号不能包含脚本字符")
-    @NotBlank(message = "用户账号不能为空",groups = {UserDTO.AddUserDTO.class,UserDTO.UpdateUserDTO.class})
-    @Size(min = 0, max = 120, message = "用户账号长度不能超过120个字符",groups = {UserDTO.AddUserDTO.class,UserDTO.UpdateUserDTO.class})
+    @NotBlank(message = "用户账号不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
+    @Size(min = 0, max = 120, message = "用户账号长度不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
     private String userAccount;
     /**
      * 密码
      */
-    @NotBlank(message = "密码不能为空",groups = {UserDTO.AddUserDTO.class,UserDTO.ResetPwdRUserDTO.class})
+    @NotBlank(message = "密码不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
     private String password;
     /**
      * 用户名称
      */
     @Xss(message = "用户名称不能包含脚本字符")
-    @Size(min = 0, max = 60, message = "用户名称长度不能超过60个字符",groups = {UserDTO.AddUserDTO.class,UserDTO.UpdateUserDTO.class})
+    @Size(min = 0, max = 60, message = "用户名称长度不能超过60个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
     private String userName;
     /**
      * 手机号码
      */
-    @Size(min = 0, max = 30, message = "手机号码长度不能超过30个字符",groups = {UserDTO.AddUserDTO.class,UserDTO.UpdateUserDTO.class})
+    @Size(min = 0, max = 30, message = "手机号码长度不能超过30个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
     private String mobilePhone;
     /**
      * 邮箱
      */
     @Email(message = "邮箱格式不正确")
-    @Size(min = 0, max = 60, message = "邮箱长度不能超过60个字符",groups = {UserDTO.AddUserDTO.class,UserDTO.UpdateUserDTO.class})
+    @Size(min = 0, max = 60, message = "邮箱长度不能超过60个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
     private String email;
     /**
      * 头像
@@ -145,6 +146,11 @@ public class UserDTO {
     public static boolean isAdmin(Long userId) {
         return userId != null && 1L == userId;
     }
+
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 
 
 }

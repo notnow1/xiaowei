@@ -70,6 +70,14 @@ public interface UserMapper{
     UserDTO selectUserByUserId(@Param("userId")Long userId);
 
     /**
+     * 根据用户ID集合查询用户表
+     *
+     * @param userIds 需要查询的数据主键集合
+     * @return 结果
+     */
+    List<UserDTO> selectUserListByUserIds(@Param("userIds")List<Long> userIds);
+
+    /**
     * 查询用户表列表
     *
     * @param user 用户表

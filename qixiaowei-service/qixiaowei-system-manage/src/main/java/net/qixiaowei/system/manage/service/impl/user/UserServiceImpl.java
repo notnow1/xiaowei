@@ -14,6 +14,7 @@ import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.service.system.IRoleMenuService;
 import net.qixiaowei.system.manage.service.system.IUserRoleService;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -106,6 +107,12 @@ public class UserServiceImpl implements IUserService {
     public List<UserDTO> selectUserList(UserDTO userDTO) {
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
+        String employeeName = userDTO.getEmployeeName();
+        Map<String, Object> params = user.getParams();
+        if(StringUtils.isNotEmpty(employeeName)){
+            params.put("employeeName",employeeName);
+        }
+        user.setParams(params);
         return userMapper.selectUserList(user);
     }
 
@@ -150,6 +157,10 @@ public class UserServiceImpl implements IUserService {
     public int updateUser(UserDTO userDTO) {
         this.checkUserAllowed(userDTO);
         Long userId = userDTO.getUserId();
+        UserDTO userByUserId = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userByUserId)) {
+            throw new ServiceException("修改失败，当前用户不存在");
+        }
         //数据权限 todo
         //查找当前用户角色
         List<UserRoleDTO> userRoleDTOS = userRoleMapper.selectUserRoleListByUserId(userId);
@@ -173,9 +184,28 @@ public class UserServiceImpl implements IUserService {
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int logicDeleteUserByUserIds(List<Long> userIds) {
         Long userId = SecurityUtils.getUserId();
+        String userAccount = SecurityUtils.getUserAccount();
+        for (Long id : userIds) {
+            if (SecurityUtils.isAdmin(id)) {
+                throw new ServiceException("不允许删除超级管理员用户");
+            }
+        }
+        if (userIds.contains(userId)) {
+            throw new ServiceException("当前用户【" + userAccount + "】不能删除");
+        }
+        List<UserDTO> userDTOS = userMapper.selectUserListByUserIds(userIds);
+        if (StringUtils.isEmpty(userDTOS)) {
+            throw new ServiceException("删除失败，用户不存在");
+        }
+        if (userIds.size() != userDTOS.size()) {
+            userIds = userDTOS.stream().map(UserDTO::getUserId).collect(Collectors.toList());
+        }
         Date nowDate = DateUtils.getNowDate();
+        //逻辑删除用户角色关系
+        userRoleMapper.logicDeleteUserRoleByUserIds(userIds, userId, nowDate);
         return userMapper.logicDeleteUserByUserIds(userIds, userId, nowDate);
     }
 
@@ -186,12 +216,26 @@ public class UserServiceImpl implements IUserService {
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int logicDeleteUserByUserId(UserDTO userDTO) {
-        Long userId = SecurityUtils.getUserId();
+        Long userId = userDTO.getUserId();
+        Long operateUserId = SecurityUtils.getUserId();
+        if (SecurityUtils.isAdmin(userId)) {
+            throw new ServiceException("不允许删除超级管理员用户");
+        }
+        if (operateUserId.equals(userId)) {
+            throw new ServiceException("当前用户不能删除");
+        }
+        UserDTO userByUserId = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userByUserId)) {
+            throw new ServiceException("删除失败，当前用户不存在");
+        }
         Date nowDate = DateUtils.getNowDate();
+        //逻辑删除用户角色关系
+        userRoleMapper.logicDeleteUserRoleByUserIds(Collections.singletonList(userId), operateUserId, nowDate);
         User user = new User();
-        BeanUtils.copyProperties(userDTO, user);
-        user.setUpdateBy(userId);
+        user.setUserId(userId);
+        user.setUpdateBy(operateUserId);
         user.setUpdateTime(nowDate);
         return userMapper.logicDeleteUserByUserId(user);
     }

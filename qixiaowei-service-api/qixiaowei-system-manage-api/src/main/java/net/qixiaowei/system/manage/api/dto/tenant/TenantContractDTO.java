@@ -5,6 +5,9 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -45,24 +48,29 @@ public class TenantContractDTO {
     /**
     * 销售合同编号
     */
+    @NotBlank(message = "销售合同编号不能为空",groups = {TenantDTO.AddTenantDTO.class})
     private  String salesContractNo;
     /**
     * 销售人员
     */
+    @NotBlank(message = "销售合同编号不能为空",groups = {TenantDTO.AddTenantDTO.class})
     private  String salesPersonnel;
     /**
     * 合同金额
     */
+    @NotNull(message = "合同金额不能为空",groups = {TenantDTO.AddTenantDTO.class})
     private BigDecimal contractAmount;
     /**
     * 合同开始时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
+    @NotNull(message = "合同开始时间不能为空",groups = {TenantDTO.AddTenantDTO.class})
     private  Date  contractStartTime;
     /**
     * 合同结束时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
+    @NotNull(message = "合同结束时间不能为空",groups = {TenantDTO.AddTenantDTO.class})
     private  Date  contractEndTime;
     /**
     * 开通的产品包

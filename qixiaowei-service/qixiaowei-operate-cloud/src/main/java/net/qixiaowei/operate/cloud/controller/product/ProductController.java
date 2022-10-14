@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.controller.product;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,7 +73,7 @@ public class ProductController extends BaseController
     //@RequiresPermissions("operate:cloud:product:add")
     //@Log(title = "新增产品表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody ProductDTO productDTO) {
+    public AjaxResult addSave(@RequestBody @Validated(ProductDTO.AddProductDTO.class) ProductDTO productDTO) {
     return toAjax(productService.insertProduct(productDTO));
     }
 
@@ -83,7 +84,7 @@ public class ProductController extends BaseController
     //@RequiresPermissions("operate:cloud:product:edit")
     //@Log(title = "修改产品表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody ProductDTO productDTO)
+    public AjaxResult editSave(@RequestBody @Validated(ProductDTO.UpdateProductDTO.class)ProductDTO productDTO)
     {
     return toAjax(productService.updateProduct(productDTO));
     }
@@ -94,7 +95,7 @@ public class ProductController extends BaseController
     //@RequiresPermissions("operate:cloud:product:remove")
     //@Log(title = "删除产品表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody ProductDTO productDTO)
+    public AjaxResult remove(@RequestBody @Validated(ProductDTO.DeleteProductDTO.class)ProductDTO productDTO)
     {
     return toAjax(productService.logicDeleteProductByProductId(productDTO));
     }

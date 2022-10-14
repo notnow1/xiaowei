@@ -76,6 +76,14 @@ public interface UserRoleMapper{
     */
     int logicDeleteUserRoleByUserRoleIds(@Param("userRoleIds")List<Long> userRoleIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
 
+    /**
+     * 根据用户ID集合逻辑批量删除用户角色表
+     *
+     * @param userIds 需要删除的用户ID数据主键集合
+     * @return 结果
+     */
+    int logicDeleteUserRoleByUserIds(@Param("userIds")List<Long> userIds,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+
 
     /**
     * 物理删除用户角色表

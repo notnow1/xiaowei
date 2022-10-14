@@ -68,48 +68,42 @@
         <if test="user.userId != null">
             and  u.user_id=#{user.userId}
         </if>
-        <if test="user.employeeId != null">
-            and  u.employee_id=#{user.employeeId}
-        </if>
         <if test="user.userAccount != null and user.userAccount != ''">
-            and  u.user_account=#{user.userAccount}
-        </if>
-        <if test="user.password != null and user.password != ''">
-            and  u.password=#{user.password}
-        </if>
-        <if test="user.userName != null and user.userName != ''">
-            and  u.user_name=#{user.userName}
+            and  u.user_account LIKE concat('%', #{userAccount}, '%')
         </if>
         <if test="user.mobilePhone != null and user.mobilePhone != ''">
-            and  u.mobile_phone=#{user.mobilePhone}
+            and  u.mobile_phone LIKE concat('%', #{mobilePhone}, '%')
         </if>
         <if test="user.email != null and user.email != ''">
             and  u.email=#{user.email}
         </if>
-        <if test="user.avatar != null and user.avatar != ''">
-            and  u.avatar=#{user.avatar}
-        </if>
-        <if test="user.remark != null and user.remark != ''">
-            and  u.remark=#{user.remark}
-        </if>
         <if test="user.status != null">
             and  u.status=#{user.status}
         </if>
-        <if test="user.deleteFlag != null">
-            and  u.delete_flag=#{user.deleteFlag}
+        <if test="user.params.employeeName != null and user.params.employeeName != ''">
+            AND e.employee_name LIKE concat('%', #{user.params.employeeName}, '%')
         </if>
-        <if test="user.createBy != null">
-            and  u.create_by=#{user.createBy}
+        <if test="user.params.createTimeStart != null and user.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{user.params.createTimeStart},'%y%m%d')
         </if>
-        <if test="user.createTime != null">
-            and  u.create_time=#{user.createTime}
+        <if test="user.params.createTimeEnd != null and user.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{user.params.createTimeEnd},'%y%m%d')
         </if>
-        <if test="user.updateBy != null">
-            and  u.update_by=#{user.updateBy}
-        </if>
-        <if test="user.updateTime != null">
-            and  u.update_time=#{user.updateTime}
-        </if>
+    </select>
+
+    <select id="selectUserListByUserIds" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
+        SELECT
+        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark, u.status,
+        u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
+        FROM user u
+        LEFT JOIN employee e ON e.employee_id=u.employee_id
+        WHERE  u.delete_flag = 0
+        AND u.user_id IN
+        <foreach item="item"
+                 collection="userIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 <!--    根据人员查询用户表-->
     <select id="selectUserByEmployeeId" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
@@ -120,6 +114,7 @@
         WHERE employee_id=#{employeeId}
           and delete_flag=0
     </select>
+
     <!--新增用户表-->
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO user

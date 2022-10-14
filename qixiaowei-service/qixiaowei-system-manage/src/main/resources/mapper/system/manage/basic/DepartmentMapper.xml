@@ -58,15 +58,6 @@
                           on  p.post_id = dm.department_leader_post_id
                               and p.delete_flag =0
             where dm.delete_flag =0
-        <if test="department.departmentId != null">
-            and dm.department_id like '%${department.departmentId}%'
-        </if>
-        <if test="department.parentDepartmentId != null">
-            and  dm.parent_department_id like '%${department.parentDepartmentId}%'
-        </if>
-        <if test="department.ancestors != null and department.ancestors != ''">
-            and  dm.ancestors like '%${department.ancestors}%'
-        </if>
         <if test="department.departmentCode != null and department.departmentCode != ''">
             and dm.department_code like '%${department.departmentCode}%'
         </if>
@@ -95,23 +86,9 @@
             and  dm.sort like '%${department.sort}%'
         </if>
         <if test="department.status != null">
-            and dm.status like '%${department.status}%'
+            and dm.status = #{department.status}
         </if>
-        <if test="department.deleteFlag != null">
-            and dm.delete_flag like '%${department.deleteFlag}%'
-        </if>
-        <if test="department.createBy != null">
-            and  dm.create_by like '%${department.createBy}%'
-        </if>
-        <if test="department.createTime != null">
-            and   dm.create_time like '%${department.createTime}%'
-        </if>
-        <if test="department.updateBy != null">
-            and  dm.update_by like '%${department.updateBy}%'
-        </if>
-        <if test="department.updateTime != null">
-            and   dm.update_time like '%${department.updateTime}%'
-        </if>
+
     </select>
     <!--    根据父级id查询数据-->
     <select id="selectParentDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
