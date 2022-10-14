@@ -298,7 +298,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             throw new ServiceException("当前的职级体系已不存在");
         }
         List<PostDTO> quote = isQuote(officialRankSystemIds);
-        // todo 引用
+        // todo 引用校验
         if (StringUtils.isNotEmpty(quote)) {
             throw new ServiceException("当前的职级体系正在被引用");
         }

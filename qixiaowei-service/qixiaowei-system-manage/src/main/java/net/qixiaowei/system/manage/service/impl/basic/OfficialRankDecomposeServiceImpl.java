@@ -171,7 +171,9 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
     public int logicDeleteOfficialRankDecomposeByOfficialRankSystemIds(List<Long> officialRankSystemIds) {
         List<Long> officialRankDecomposeIds =
                 officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemIds(officialRankSystemIds);
-        officialRankDecomposeMapper.logicDeleteOfficialRankDecomposeByOfficialRankDecomposeIds(officialRankDecomposeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        if (StringUtils.isNotEmpty(officialRankDecomposeIds)) {
+            officialRankDecomposeMapper.logicDeleteOfficialRankDecomposeByOfficialRankDecomposeIds(officialRankDecomposeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        }
         return 1;
     }
 
@@ -184,7 +186,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
     @Override
     public int logicDeleteOfficialRankDecomposeByOfficialRankSystemId(Long officialRankSystemId) {
         List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
-        if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)){
+        if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)) {
             officialRankDecomposeMapper.logicDeleteOfficialRankDecomposeByOfficialSystemId(officialRankSystemId, SecurityUtils.getUserId(), DateUtils.getNowDate());
         }
         return 1;
