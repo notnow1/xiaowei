@@ -48,22 +48,7 @@
             and list_price like '%${product.listPrice}%'
         </if>
         <if test="product.listingFlag != null">
-            and listing_flag like '%${product.listingFlag}%'
-        </if>
-        <if test="product.deleteFlag != null">
-            and delete_flag like '%${product.deleteFlag}%'
-        </if>
-        <if test="product.createBy != null">
-            and create_by like '%${product.createBy}%'
-        </if>
-        <if test="product.createTime != null">
-            and create_time like '%${product.createTime}%'
-        </if>
-        <if test="product.updateBy != null">
-            and update_by like '%${product.updateBy}%'
-        </if>
-        <if test="product.updateTime != null">
-            and update_time like '%${product.updateTime}%'
+            and listing_flag =#{product.listingFlag}
         </if>
     </select>
 <!--    根据产品编码查询产品表-->

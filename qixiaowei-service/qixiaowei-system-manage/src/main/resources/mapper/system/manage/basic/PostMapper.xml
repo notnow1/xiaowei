@@ -75,22 +75,7 @@
             and p.post_description like '%${post.postDescription}%'
         </if>
         <if test="post.status != null">
-            and p.status like '%${post.status}%'
-        </if>
-        <if test="post.deleteFlag != null">
-            and p.delete_flag like '%${post.deleteFlag}%'
-        </if>
-        <if test="post.createBy != null">
-            and p.create_by like '%${post.createBy}%'
-        </if>
-        <if test="post.createTime != null">
-            and p.create_time like '%${post.createTime}%'
-        </if>
-        <if test="post.updateBy != null">
-            and p.update_by like '%${post.updateBy}%'
-        </if>
-        <if test="post.updateTime != null">
-            and p.update_time like '%${post.updateTime}%'
+            and p.status =#{post.status}
         </if>
     </select>
 <!--    查询岗位表Code-->

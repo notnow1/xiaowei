@@ -39,22 +39,7 @@
             and remark like '%${dictionaryData.remark}%'
         </if>
         <if test="dictionaryData.status != null">
-            and status like '%${dictionaryData.status}%'
-        </if>
-        <if test="dictionaryData.deleteFlag != null">
-            and delete_flag like '%${dictionaryData.deleteFlag}%'
-        </if>
-        <if test="dictionaryData.createBy != null">
-            and create_by like '%${dictionaryData.createBy}%'
-        </if>
-        <if test="dictionaryData.createTime != null">
-            and create_time like '%${dictionaryData.createTime}%'
-        </if>
-        <if test="dictionaryData.updateBy != null">
-            and update_by like '%${dictionaryData.updateBy}%'
-        </if>
-        <if test="dictionaryData.updateTime != null">
-            and update_time like '%${dictionaryData.updateTime}%'
+            and status =#{dictionaryData.status}
         </if>
     </select>
 <!--    根据字典类型ID查询字典数据表-->

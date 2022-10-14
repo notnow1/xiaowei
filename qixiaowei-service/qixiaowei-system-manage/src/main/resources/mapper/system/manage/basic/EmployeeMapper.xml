@@ -157,22 +157,7 @@
             and e.employment_status like '%${employee.employmentStatus}%'
         </if>
         <if test="employee.status != null">
-            and e.status like '%${employee.status}%'
-        </if>
-        <if test="employee.deleteFlag != null">
-            and e.delete_flag like '%${employee.deleteFlag}%'
-        </if>
-        <if test="employee.createBy != null">
-            and e.create_by like '%${employee.createBy}%'
-        </if>
-        <if test="employee.createTime != null">
-            and e.create_time like '%${employee.createTime}%'
-        </if>
-        <if test="employee.updateBy != null">
-            and e.update_by like '%${employee.updateBy}%'
-        </if>
-        <if test="employee.updateTime != null">
-            and e.update_time like '%${employee.updateTime}%'
+            and e.status =#{employee.status}
         </if>
     </select>
     <!--    查询员工单条信息-->

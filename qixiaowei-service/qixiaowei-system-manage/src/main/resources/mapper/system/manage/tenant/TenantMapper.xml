@@ -88,18 +88,6 @@
         <if test="tenant.tenantStatus != null and tenant.tenantStatus != ''">
             and tenant_status like '%${tenant.tenantStatus}%'
         </if>
-        <if test="tenant.createBy != null and tenant.createBy != ''">
-            and create_by like '%${tenant.createBy}%'
-        </if>
-        <if test="tenant.createTime != null">
-            and create_time like '%${tenant.createTime}%'
-        </if>
-        <if test="tenant.updateBy != null and tenant.updateBy != ''">
-            and update_by like '%${tenant.updateBy}%'
-        </if>
-        <if test="tenant.updateTime != null">
-            and update_time like '%${tenant.updateTime}%'
-        </if>
     </select>
     <!--新增租户表-->
     <insert id="insertTenant" useGeneratedKeys="true" keyProperty="tenantId">

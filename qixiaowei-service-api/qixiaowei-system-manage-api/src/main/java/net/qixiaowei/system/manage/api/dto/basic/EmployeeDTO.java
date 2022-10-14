@@ -77,7 +77,7 @@ public class EmployeeDTO {
     * 出生日期
     */
     @NotNull(message = "出生日期不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
     private  Date employeeBirthday;
     /**
     * 员工手机号
