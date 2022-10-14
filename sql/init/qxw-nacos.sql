@@ -1,4 +1,9 @@
+DROP DATABASE IF EXISTS `qxw-nacos`;
+CREATE DATABASE `qxw-nacos` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
 SET NAMES utf8mb4;
+
+USE `qxw-nacos`;
 
 CREATE TABLE `config_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
