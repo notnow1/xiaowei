@@ -113,4 +113,12 @@ public interface PostMapper {
      * @return 结果
      */
     int batchPost(@Param("posts") List<Post> Posts);
+
+    /**
+     * 职级配置引用校验
+     *
+     * @param officialRankSystemIds
+     * @return
+     */
+    List<PostDTO> selectPostByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
 }

@@ -47,14 +47,15 @@
         <if test="officialRankSystem.createBy != null">
             and create_by=#{officialRankSystem.createBy}
         </if>
-        <if test="officialRankSystem.createTime != null">
-            and create_time=#{officialRankSystem.createTime}
+        <!-- 开始时间检索 -->
+        <if test="officialRankSystem.params.createTimeStart != null and officialRankSystem.params.createTimeStart != ''">
+            AND date_format(create_time,'%y%m%d') &gt;= date_format(#{officialRankSystem.params.createTimeStart},'%y%m%d')
+        </if>
+        <if test="officialRankSystem.params.createTimeEnd != null and officialRankSystem.params.createTimeEnd != ''">
+            AND date_format(create_time,'%y%m%d') &lt;= date_format(#{officialRankSystem.params.createTimeEnd},'%y%m%d')
         </if>
         <if test="officialRankSystem.updateBy != null">
             and update_by=#{officialRankSystem.updateBy}
-        </if>
-        <if test="officialRankSystem.updateTime != null">
-            and update_time=#{officialRankSystem.updateTime}
         </if>
     </select>
     <select id="officialRankNameCheckUnique" resultType="java.lang.Integer">
