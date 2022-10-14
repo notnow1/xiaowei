@@ -103,6 +103,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //员工表
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
+        if (null == employee.getStatus()){
+            employee.setStatus(0);
+        }
         employee.setCreateBy(SecurityUtils.getUserId());
         employee.setCreateTime(DateUtils.getNowDate());
         employee.setUpdateTime(DateUtils.getNowDate());
