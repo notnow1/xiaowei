@@ -95,7 +95,11 @@ public class ProductServiceImpl implements IProductService {
         if (!CheckObjectIsNullUtils.isNull(productDTO)){
             return productDTOList;
         }else {
-            return this.createTree(productDTOList,0);
+            if (CollectionUtils.isEmpty(productDTOList)){
+                return productDTOList;
+            }else {
+                return this.createTree(productDTOList,0);
+            }
         }
     }
 
@@ -110,7 +114,7 @@ public class ProductServiceImpl implements IProductService {
         List<ProductDTO> tree = new ArrayList<>();
         for (ProductDTO catelog : lists) {
             if (catelog.getParentProductId() == pid) {
-                catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getParentProductId().toString())));
+                catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getProductId().toString())));
                 tree.add(catelog);
             }
         }

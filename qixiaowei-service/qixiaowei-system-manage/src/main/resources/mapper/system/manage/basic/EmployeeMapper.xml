@@ -4,27 +4,67 @@
     <!--    查询员工表-->
     <select id="selectEmployeeByEmployeeId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT
-        employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM employee
-        WHERE  employee_id=#{employeeId}
-        and delete_flag=0
+        WHERE employee_id = #{employeeId}
+          and delete_flag = 0
     </select>
 
     <!--    查询员工表-->
     <select id="selectEmployeeByEmployeeCode"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT
-            employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM employee
-        WHERE  employee_code=#{employeeCode}
-          and delete_flag=0
+        WHERE employee_code = #{employeeCode}
+          and delete_flag = 0
     </select>
     <!--    查询员工表列表-->
     <select id="selectEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
         p.post_name as employee_post_name,
-        d.department_name  as employee_department_name,
+        d.department_name as employee_department_name,
         e.employee_id,
         e.employee_code,
         e.employee_name,
@@ -135,7 +175,7 @@
             and e.update_time like '%${employee.updateTime}%'
         </if>
     </select>
-<!--    查询员工单条信息-->
+    <!--    查询员工单条信息-->
     <select id="selectEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
         e.employee_id,
@@ -183,7 +223,10 @@
     <select id="selectEmployeeByEmployeeIds"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT
-            employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
+        employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday,
+        employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage,
+        employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by,
+        update_time
         FROM employee
         WHERE delete_flag=0
         AND employee_id in
@@ -193,129 +236,159 @@
             #{item}
         </foreach>
     </select>
-<!--    批量查询是否被引用-->
+    <!--    批量查询是否被引用-->
     <select id="selectEmployeePostIds" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT
-            employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
+        employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday,
+        employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage,
+        employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by,
+        update_time
         FROM employee
-        WHERE  employee_post_id in
+        WHERE employee_post_id in
         <foreach item="item"
                  collection="employeePostIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-          and delete_flag=0
-    </select>
-<!--    查询是否被引用-->
-    <select id="selectEmployeePostId" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT
-        employee_id, employee_code, employee_name, employee_gender, identity_type, identity_card, employee_birthday, employee_mobile, employee_email, employee_department_id, employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date, employment_status, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM employee
-        WHERE  employee_post_id =#{employeePostId}
         and delete_flag=0
+    </select>
+    <!--    查询是否被引用-->
+    <select id="selectEmployeePostId" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        select p.post_name as employee_post_name,
+               ee.employee_id,
+               ee.employee_code,
+               ee.employee_name,
+               ee.employee_gender,
+               ee.identity_type,
+               ee.identity_card,
+               ee.employee_birthday,
+               ee.employee_mobile,
+               ee.employee_email,
+               ee.employee_department_id,
+               ee.employee_post_id,
+               ee.employee_rank,
+               ee.employee_basic_wage,
+               ee.employment_date,
+               ee.departure_date,
+               ee.employment_status,
+               ee.status
+        from employee ee
+                 left join post p
+                           on ee.employee_post_id = p.post_id
+                               and p.delete_flag = 0
+        where ee.employee_post_id =#{employeePostId}
+          and ee.delete_flag = 0
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
-        INSERT INTO employee (employee_code,employee_name,employee_gender,identity_type,identity_card,employee_birthday,employee_mobile,employee_email,employee_department_id,employee_post_id,employee_rank,employee_basic_wage,employment_date,departure_date,employment_status,status,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-        (#{employee.employeeCode},#{employee.employeeName},#{employee.employeeGender},#{employee.identityType},#{employee.identityCard},#{employee.employeeBirthday},#{employee.employeeMobile},#{employee.employeeEmail},#{employee.employeeDepartmentId},#{employee.employeePostId},#{employee.employeeRank},#{employee.employeeBasicWage},#{employee.employmentDate},#{employee.departureDate},#{employee.employmentStatus},#{employee.status},#{employee.deleteFlag},#{employee.createBy},#{employee.createTime},#{employee.updateBy},#{employee.updateTime})
+        INSERT INTO employee (employee_code, employee_name, employee_gender, identity_type, identity_card,
+                              employee_birthday, employee_mobile, employee_email, employee_department_id,
+                              employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date,
+                              employment_status, status, delete_flag, create_by, create_time, update_by, update_time)
+        VALUES (#{employee.employeeCode}, #{employee.employeeName}, #{employee.employeeGender},
+                #{employee.identityType}, #{employee.identityCard}, #{employee.employeeBirthday},
+                #{employee.employeeMobile}, #{employee.employeeEmail}, #{employee.employeeDepartmentId},
+                #{employee.employeePostId}, #{employee.employeeRank}, #{employee.employeeBasicWage},
+                #{employee.employmentDate}, #{employee.departureDate}, #{employee.employmentStatus}, #{employee.status},
+                #{employee.deleteFlag}, #{employee.createBy}, #{employee.createTime}, #{employee.updateBy},
+                #{employee.updateTime})
     </insert>
     <!--修改员工表-->
     <update id="updateEmployee">
         UPDATE employee
         SET
-                    <if test="employee.employeeCode != null and employee.employeeCode != ''">
-                        employee_code=#{employee.employeeCode},
-                    </if>
-                    <if test="employee.employeeName != null and employee.employeeName != ''">
-                        employee_name=#{employee.employeeName},
-                    </if>
-                    <if test="employee.employeeGender != null">
-                        employee_gender=#{employee.employeeGender},
-                    </if>
-                    <if test="employee.identityType != null">
-                        identity_type=#{employee.identityType},
-                    </if>
-                    <if test="employee.identityCard != null and employee.identityCard != ''">
-                        identity_card=#{employee.identityCard},
-                    </if>
-                    <if test="employee.employeeBirthday != null">
-                        employee_birthday=#{employee.employeeBirthday},
-                    </if>
-                    <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
-                        employee_mobile=#{employee.employeeMobile},
-                    </if>
-                    <if test="employee.employeeEmail != null and employee.employeeEmail != ''">
-                        employee_email=#{employee.employeeEmail},
-                    </if>
-                    <if test="employee.employeeDepartmentId != null">
-                        employee_department_id=#{employee.employeeDepartmentId},
-                    </if>
-                    <if test="employee.employeePostId != null">
-                        employee_post_id=#{employee.employeePostId},
-                    </if>
-                    <if test="employee.employeeRank != null">
-                        employee_rank=#{employee.employeeRank},
-                    </if>
-                    <if test="employee.employeeBasicWage != null">
-                        employee_basic_wage=#{employee.employeeBasicWage},
-                    </if>
-                    <if test="employee.employmentDate != null">
-                        employment_date=#{employee.employmentDate},
-                    </if>
-                    <if test="employee.departureDate != null">
-                        departure_date=#{employee.departureDate},
-                    </if>
-                    <if test="employee.employmentStatus != null">
-                        employment_status=#{employee.employmentStatus},
-                    </if>
-                    <if test="employee.status != null">
-                        status=#{employee.status},
-                    </if>
-                    <if test="employee.deleteFlag != null">
-                        delete_flag=#{employee.deleteFlag},
-                    </if>
-                    <if test="employee.createBy != null">
-                        create_by=#{employee.createBy},
-                    </if>
-                    <if test="employee.createTime != null">
-                        create_time=#{employee.createTime},
-                    </if>
-                    <if test="employee.updateBy != null">
-                        update_by=#{employee.updateBy},
-                    </if>
-                    <if test="employee.updateTime != null">
-                        update_time=#{employee.updateTime}
-                    </if>
+        <if test="employee.employeeCode != null and employee.employeeCode != ''">
+            employee_code=#{employee.employeeCode},
+        </if>
+        <if test="employee.employeeName != null and employee.employeeName != ''">
+            employee_name=#{employee.employeeName},
+        </if>
+        <if test="employee.employeeGender != null">
+            employee_gender=#{employee.employeeGender},
+        </if>
+        <if test="employee.identityType != null">
+            identity_type=#{employee.identityType},
+        </if>
+        <if test="employee.identityCard != null and employee.identityCard != ''">
+            identity_card=#{employee.identityCard},
+        </if>
+        <if test="employee.employeeBirthday != null">
+            employee_birthday=#{employee.employeeBirthday},
+        </if>
+        <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
+            employee_mobile=#{employee.employeeMobile},
+        </if>
+        <if test="employee.employeeEmail != null and employee.employeeEmail != ''">
+            employee_email=#{employee.employeeEmail},
+        </if>
+        <if test="employee.employeeDepartmentId != null">
+            employee_department_id=#{employee.employeeDepartmentId},
+        </if>
+        <if test="employee.employeePostId != null">
+            employee_post_id=#{employee.employeePostId},
+        </if>
+        <if test="employee.employeeRank != null">
+            employee_rank=#{employee.employeeRank},
+        </if>
+        <if test="employee.employeeBasicWage != null">
+            employee_basic_wage=#{employee.employeeBasicWage},
+        </if>
+        <if test="employee.employmentDate != null">
+            employment_date=#{employee.employmentDate},
+        </if>
+        <if test="employee.departureDate != null">
+            departure_date=#{employee.departureDate},
+        </if>
+        <if test="employee.employmentStatus != null">
+            employment_status=#{employee.employmentStatus},
+        </if>
+        <if test="employee.status != null">
+            status=#{employee.status},
+        </if>
+        <if test="employee.deleteFlag != null">
+            delete_flag=#{employee.deleteFlag},
+        </if>
+        <if test="employee.createBy != null">
+            create_by=#{employee.createBy},
+        </if>
+        <if test="employee.createTime != null">
+            create_time=#{employee.createTime},
+        </if>
+        <if test="employee.updateBy != null">
+            update_by=#{employee.updateBy},
+        </if>
+        <if test="employee.updateTime != null">
+            update_time=#{employee.updateTime}
+        </if>
         WHERE
-                 employee_id=#{employee.employeeId}
+        employee_id=#{employee.employeeId}
     </update>
     <!--逻辑删除员工表-->
     <update id="logicDeleteEmployeeByEmployeeId">
         UPDATE employee
-        SET     delete_flag= 1,
-                update_by=#{employee.updateBy},
-                update_time=#{employee.updateTime}
-        WHERE
-                employee_id=#{employee.employeeId}
+        SET delete_flag= 1,
+            update_by=#{employee.updateBy},
+            update_time=#{employee.updateTime}
+        WHERE employee_id = #{employee.employeeId}
     </update>
     <!--逻辑批量删除员工表-->
     <update id="logicDeleteEmployeeByEmployeeIds">
         UPDATE employee
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         employee_id IN
-            <foreach item="item"
-                     collection="employeeIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        employee_id IN
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增员工表-->
     <insert id="batchEmployee">
-        INSERT INTO employee (employee_code,employee_name,employee_gender,identity_type,identity_card,employee_birthday,employee_mobile,employee_email,employee_department_id,employee_post_id,employee_rank,employee_basic_wage,employment_date,departure_date,employment_status,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO employee
+        (employee_code,employee_name,employee_gender,identity_type,identity_card,employee_birthday,employee_mobile,employee_email,employee_department_id,employee_post_id,employee_rank,employee_basic_wage,employment_date,departure_date,employment_status,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="employees"
@@ -326,19 +399,20 @@
 
     <!--物理删除员工表-->
     <delete id="deleteEmployeeByEmployeeId">
-        DELETE FROM employee
-        WHERE  employee_id=#{employee}
+        DELETE
+        FROM employee
+        WHERE employee_id = #{employee}
 
     </delete>
     <!--物理批量删除员工表-->
     <delete id="deleteEmployeeByEmployeeIds">
         DELETE FROM employee
-        WHERE  employee_id IN
-            <foreach item="item"
-                     collection="employeeIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE employee_id IN
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改员工表-->
     <update id="updateEmployees">
@@ -346,155 +420,155 @@
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="employee_code=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeCode != null and item.employeeCode != ''">
-                                 when employee_id=#{item.employeeId} then #{item.employeeCode}
-                             </if>
+                    <if test="item.employeeCode != null and item.employeeCode != ''">
+                        when employee_id=#{item.employeeId} then #{item.employeeCode}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_name=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeName != null and item.employeeName != ''">
-                                 when employee_id=#{item.employeeId} then #{item.employeeName}
-                             </if>
+                    <if test="item.employeeName != null and item.employeeName != ''">
+                        when employee_id=#{item.employeeId} then #{item.employeeName}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_gender=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeGender != null">
-                                 when employee_id=#{item.employeeId} then #{item.employeeGender}
-                             </if>
+                    <if test="item.employeeGender != null">
+                        when employee_id=#{item.employeeId} then #{item.employeeGender}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="identity_type=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.identityType != null">
-                                 when employee_id=#{item.employeeId} then #{item.identityType}
-                             </if>
+                    <if test="item.identityType != null">
+                        when employee_id=#{item.employeeId} then #{item.identityType}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="identity_card=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.identityCard != null and item.identityCard != ''">
-                                 when employee_id=#{item.employeeId} then #{item.identityCard}
-                             </if>
+                    <if test="item.identityCard != null and item.identityCard != ''">
+                        when employee_id=#{item.employeeId} then #{item.identityCard}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_birthday=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeBirthday != null">
-                                 when employee_id=#{item.employeeId} then #{item.employeeBirthday}
-                             </if>
+                    <if test="item.employeeBirthday != null">
+                        when employee_id=#{item.employeeId} then #{item.employeeBirthday}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_mobile=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeMobile != null and item.employeeMobile != ''">
-                                 when employee_id=#{item.employeeId} then #{item.employeeMobile}
-                             </if>
+                    <if test="item.employeeMobile != null and item.employeeMobile != ''">
+                        when employee_id=#{item.employeeId} then #{item.employeeMobile}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_email=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeEmail != null and item.employeeEmail != ''">
-                                 when employee_id=#{item.employeeId} then #{item.employeeEmail}
-                             </if>
+                    <if test="item.employeeEmail != null and item.employeeEmail != ''">
+                        when employee_id=#{item.employeeId} then #{item.employeeEmail}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_department_id=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeDepartmentId != null">
-                                 when employee_id=#{item.employeeId} then #{item.employeeDepartmentId}
-                             </if>
+                    <if test="item.employeeDepartmentId != null">
+                        when employee_id=#{item.employeeId} then #{item.employeeDepartmentId}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_post_id=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeePostId != null">
-                                 when employee_id=#{item.employeeId} then #{item.employeePostId}
-                             </if>
+                    <if test="item.employeePostId != null">
+                        when employee_id=#{item.employeeId} then #{item.employeePostId}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_rank=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeRank != null">
-                                 when employee_id=#{item.employeeId} then #{item.employeeRank}
-                             </if>
+                    <if test="item.employeeRank != null">
+                        when employee_id=#{item.employeeId} then #{item.employeeRank}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employee_basic_wage=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employeeBasicWage != null">
-                                 when employee_id=#{item.employeeId} then #{item.employeeBasicWage}
-                             </if>
+                    <if test="item.employeeBasicWage != null">
+                        when employee_id=#{item.employeeId} then #{item.employeeBasicWage}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employment_date=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employmentDate != null">
-                                 when employee_id=#{item.employeeId} then #{item.employmentDate}
-                             </if>
+                    <if test="item.employmentDate != null">
+                        when employee_id=#{item.employeeId} then #{item.employmentDate}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="departure_date=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.departureDate != null">
-                                 when employee_id=#{item.employeeId} then #{item.departureDate}
-                             </if>
+                    <if test="item.departureDate != null">
+                        when employee_id=#{item.employeeId} then #{item.departureDate}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="employment_status=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.employmentStatus != null">
-                                 when employee_id=#{item.employeeId} then #{item.employmentStatus}
-                             </if>
+                    <if test="item.employmentStatus != null">
+                        when employee_id=#{item.employeeId} then #{item.employmentStatus}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="status=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.status != null">
-                                 when employee_id=#{item.employeeId} then #{item.status}
-                             </if>
+                    <if test="item.status != null">
+                        when employee_id=#{item.employeeId} then #{item.status}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when employee_id=#{item.employeeId} then #{item.deleteFlag}
-                             </if>
+                    <if test="item.deleteFlag != null">
+                        when employee_id=#{item.employeeId} then #{item.deleteFlag}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when employee_id=#{item.employeeId} then #{item.createBy}
-                             </if>
+                    <if test="item.createBy != null">
+                        when employee_id=#{item.employeeId} then #{item.createBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when employee_id=#{item.employeeId} then #{item.createTime}
-                             </if>
+                    <if test="item.createTime != null">
+                        when employee_id=#{item.employeeId} then #{item.createTime}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when employee_id=#{item.employeeId} then #{item.updateBy}
-                             </if>
+                    <if test="item.updateBy != null">
+                        when employee_id=#{item.employeeId} then #{item.updateBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when employee_id=#{item.employeeId} then #{item.updateTime}
-                             </if>
+                    <if test="item.updateTime != null">
+                        when employee_id=#{item.employeeId} then #{item.updateTime}
+                    </if>
                 </foreach>
             </trim>
         </trim>
         where
         <foreach collection="employeeList" separator="or" item="item" index="index">
-                    employee_id=#{item.employeeId}
+            employee_id=#{item.employeeId}
         </foreach>
     </update>
 </mapper>

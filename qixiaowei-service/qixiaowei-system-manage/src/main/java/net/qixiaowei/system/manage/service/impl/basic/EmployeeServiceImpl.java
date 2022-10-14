@@ -184,23 +184,22 @@ public class EmployeeServiceImpl implements IEmployeeService {
         StringBuffer erreoEmp = new StringBuffer();
         // todo 校检是否被引用 被引用无法删除
         for (Long employeeId : employeeIds) {
-            //组织
-            List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployee(employeeId);
-            String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
-            if (!CollectionUtils.isEmpty(departmentDTOList)){
-                deptErreo.append("人员已被组织"+s+"引用  无法删除！\n");
+            List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeId);
+            String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).distinct().collect(Collectors.toList()).toString();
+            String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
+            String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
+            for (EmployeeDTO employeeDTO : employeeDTOList) {
+                if (null != username){
+                    userErreo.append("人员"+employeeDTO.getEmployeeName()+"已被用户"+username+"引用  无法删除！\n");
+                }
+                if (null != employeeDepartmentName){
+                    deptErreo.append("人员"+employeeDTO.getEmployeeName()+"已被组织"+employeeDepartmentName+"引用  无法删除！\n");
+                }
+                if (null != employeePostName){
+                    postErreo.append("人员"+employeeDTO.getEmployeeName()+"已被岗位"+employeePostName+"引用  无法删除！\n");
+                }
             }
 
-            //岗位
-            PostDTO postDTO = postMapper.selectPostByPostId(employeeId);
-            if (null != postDTO){
-                postErreo.append("人员已被岗位"+postDTO.getPostName()+"引用  无法删除！\n");
-            }
-            //用户
-            UserDTO userDTO = userMapper.selectUserByEmployeeId(employeeId);
-            if (null != userDTO){
-                postErreo.append("人员已被用户"+userDTO.getUserName()+"引用  无法删除！\n");
-            }
         }
 
         erreoEmp.append(deptErreo).append(postErreo).append(userErreo);
@@ -255,21 +254,20 @@ public class EmployeeServiceImpl implements IEmployeeService {
         departmentDTO.setDepartmentLeaderId(employeeDTO1.getEmployeeId());
         departmentDTO.setExaminationLeaderId(employeeDTO1.getEmployeeId());
         // todo 校检是否被引用 被引用无法删除
-        //组织
-        List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployee(departmentDTO.getDepartmentId());
-        String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
-        if (!CollectionUtils.isEmpty(departmentDTOList)){
-                deptErreo.append("人员已被组织"+s+"引用  无法删除！\n");
-        }
-        //岗位
-        PostDTO postDTO = postMapper.selectPostByPostId(employeeDTO.getEmployeePostId());
-        if (null != postDTO){
-            postErreo.append("人员已被岗位"+postDTO.getPostName()+"引用  无法删除！\n");
-        }
-        //用户
-        UserDTO userDTO = userMapper.selectUserByEmployeeId(employeeDTO.getEmployeeId());
-        if (null != userDTO){
-            postErreo.append("人员已被用户"+userDTO.getUserName()+"引用  无法删除！\n");
+        List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeDTO.getEmployeeId());
+        String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).distinct().collect(Collectors.toList()).toString();
+        String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
+        String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
+        for (EmployeeDTO employeeDTO2 : employeeDTOList) {
+            if (null != username){
+                userErreo.append("人员"+employeeDTO2.getEmployeeName()+"已被用户"+username+"引用  无法删除！\n");
+            }
+            if (null != employeeDepartmentName){
+                deptErreo.append("人员"+employeeDTO2.getEmployeeName()+"已被组织"+employeeDepartmentName+"引用  无法删除！\n");
+            }
+            if (null != employeePostName){
+                postErreo.append("人员"+employeeDTO2.getEmployeeName()+"已被岗位"+employeePostName+"引用  无法删除！\n");
+            }
         }
 
         erreoEmp.append(deptErreo).append(postErreo).append(userErreo);

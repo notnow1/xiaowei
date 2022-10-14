@@ -44,6 +44,9 @@ public class EmployeeDTO {
     */
     @NotNull(message = "ID不能为空",groups = {EmployeeDTO.UpdateEmployeeDTO.class,EmployeeDTO.DeleteEmployeeDTO.class})
     private  Long employeeId;
+
+    /** 用户账号 */
+    private String userName;
     /**
     * 工号
     */

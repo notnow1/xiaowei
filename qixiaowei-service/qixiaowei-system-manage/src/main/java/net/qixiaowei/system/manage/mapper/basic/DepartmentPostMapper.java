@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.mapper.basic;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
@@ -111,7 +112,7 @@ public interface DepartmentPostMapper{
      * 根据部门中间表id查询出数据库的数据
      * @return
      */
-    List<DepartmentPostDTO> selectDepartmentPostId(@Param("postId")Long postId);
+    List<DepartmentDTO> selectDepartmentPostId(@Param("postId")Long postId);
 
     /**
      * 根据部门id批量查询出数据库的数据

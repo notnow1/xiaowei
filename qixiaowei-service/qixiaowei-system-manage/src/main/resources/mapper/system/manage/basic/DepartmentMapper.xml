@@ -307,27 +307,30 @@
     <!--    查询组织关联岗位信息-->
     <select id="selectDeptAndPost" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
         select
-        deptpost.department_post_id,
-        deptpost.department_id,
-        deptpost.post_id,
-        deptpost.department_sort,
-        deptpost.post_sort,
-        deptpost.delete_flag,
-        deptpost.create_by,
-        deptpost.create_time,
-        deptpost.update_by,
-        deptpost.update_time
+            dm.department_name ,
+            deptpost.department_post_id,
+            deptpost.department_id,
+            deptpost.post_id,
+            deptpost.department_sort,
+            deptpost.post_sort,
+            deptpost.delete_flag,
+            deptpost.create_by,
+            deptpost.create_time,
+            deptpost.update_by,
+            deptpost.update_time
         from
-        department_post deptpost
+            department_post deptpost
+                left join department dm
+                          on deptpost.department_id = dm.department_id
+                              and dm.delete_flag =0
         where deptpost.delete_flag =0
-        <if test="departmentId != null">
-            and deptpost.department_id=#{departmentId}
-        </if>
-        order by post_sort
+          and deptpost.department_id=#{departmentId}
+        order by deptpost.post_sort
     </select>
     <!--    分页查询部门人员表列表-->
     <select id="queryDeptEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
+        dept.department_name,
         e.employee_id,
         e.employee_code,
         e.employee_name,
@@ -364,30 +367,42 @@
         </if>
     </select>
     <!--    查询人员是否被部门引用-->
-    <select id="deleteFlagEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-        SELECT department_id,
-               parent_department_id,
-               ancestors,
-               department_code,
-               department_name,
-               level,
-               department_leader_id,
-               department_leader_post_id,
-               examination_leader_id,
-               department_importance_factor,
-               department_description,
-               sort,
-               status,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
-        FROM department
-        WHERE 1 = 1
-          and delete_flag = 0
-          and (department_leader_id = #{employeeId} or
-               examination_leader_id = #{employeeId})
+    <select id="deleteFlagEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        select
+            u.user_name ,
+            p.post_name as employee_post_name,
+            dm.department_name as employee_department_name,
+            ee.employee_id,
+            ee.employee_code,
+            ee.employee_name,
+            ee.employee_gender,
+            ee.identity_type,
+            ee.identity_card,
+            ee.employee_birthday,
+            ee.employee_mobile,
+            ee.employee_email,
+            ee.employee_department_id,
+            ee.employee_post_id,
+            ee.employee_rank,
+            ee.employee_basic_wage,
+            ee.employment_date,
+            ee.departure_date,
+            ee.employment_status,
+            ee.status
+        from
+            employee ee
+                left join department dm
+                          on (ee.employee_id =dm.department_leader_id
+                              or ee.employee_id =dm.examination_leader_id)
+                              and dm.delete_flag = 0
+                left join post p
+                          on p.post_id = ee.employee_post_id
+                              and p.delete_flag =0
+                left join `user` u
+                          on u.employee_id =ee.employee_id
+                              and u.delete_flag =0
+        where ee.employee_id = #{employeeId}
+          and ee.delete_flag = 0
     </select>
 
 

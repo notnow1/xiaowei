@@ -72,7 +72,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (!CheckObjectIsNullUtils.isNull(departmentDTO)){
             return departmentDTOList;
         }else {
-            return this.createTree(departmentDTOList,0);
+            if (CollectionUtils.isEmpty(departmentDTOList)){
+                return departmentDTOList;
+            }else {
+                return this.createTree(departmentDTOList,0);
+            }
         }
 
     }
@@ -297,15 +301,18 @@ public class DepartmentServiceImpl implements IDepartmentService {
             // 岗位是否被引用
             List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
             String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).collect(Collectors.toList()).toString();
+            String departmentName = departmentPostDTOS.stream().map(DepartmentPostDTO::getDepartmentName).distinct().collect(Collectors.toList()).toString();
             if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
-                posterreo.append("组织已被岗位" + s + "引用\n");
+                posterreo.append("组织"+departmentName+"已被岗位" + s + "引用\n");
             }
 
             // 人员是否被引用
             List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
             String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
+            String employeeDepartmentName = employeeDTOS.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
+
             if (!CollectionUtils.isEmpty(employeeDTOS)) {
-                emplerreo.append("组织已被人员" + s1 + "引用\n");
+                emplerreo.append("组织"+employeeDepartmentName+"已被人员" + s1 + "引用\n");
             }
         }
         //将错误信息放在一个字符串中
@@ -475,7 +482,6 @@ public class DepartmentServiceImpl implements IDepartmentService {
             // 岗位是否被引用
             List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
             String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).collect(Collectors.toList()).toString();
-
             if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
                 posterreo.append("组织"+dto.getDepartmentName() +"已被岗位"+ s + "引用\n");
             }

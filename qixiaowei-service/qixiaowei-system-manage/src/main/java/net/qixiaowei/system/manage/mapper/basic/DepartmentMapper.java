@@ -45,7 +45,7 @@ public interface DepartmentMapper{
      * @param employeeId 部门表
      * @return 部门表集合
      */
-    List<DepartmentDTO> deleteFlagEmployee(@Param("employeeId")Long employeeId);
+    List<EmployeeDTO> deleteFlagEmployee(@Param("employeeId")Long employeeId);
 
     /**
      * 根据条件筛选树

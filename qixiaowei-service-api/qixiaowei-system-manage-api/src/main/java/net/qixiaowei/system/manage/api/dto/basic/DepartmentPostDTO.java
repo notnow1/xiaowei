@@ -4,6 +4,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
@@ -36,6 +37,15 @@ public class DepartmentPostDTO {
 
     }
 
+
+    /**
+     * 部门编码
+     */
+    private  String departmentCode;
+    /**
+     * 部门名称
+     */
+    private  String departmentName;
 
     /**
      * 岗位职级
