@@ -64,6 +64,16 @@ public class UserController extends BaseController {
         return toAjax(userService.insertUser(userDTO));
     }
 
+    /**
+     * 查看用户信息
+     *
+     * @return 用户信息
+     */
+    @GetMapping("/info/{userId}")
+    public AjaxResult info(@PathVariable Long userId) {
+        return AjaxResult.success(userService.selectUserByUserId(userId));
+    }
+
 
     /**
      * 修改用户表
