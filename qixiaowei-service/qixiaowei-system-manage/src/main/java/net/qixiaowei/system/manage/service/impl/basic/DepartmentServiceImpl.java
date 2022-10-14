@@ -72,7 +72,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (!CheckObjectIsNullUtils.isNull(departmentDTO)){
             return departmentDTOList;
         }else {
-            return this.createTree1(departmentDTOList,0);
+            return this.createTree(departmentDTOList,0);
         }
 
     }
@@ -81,17 +81,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
 
     /**
-     * 懒加载
+     * 树形结构
      *
      * @param lists
      * @param pid
      * @return
      */
-    private List<DepartmentDTO> createTree1(List<DepartmentDTO> lists, int pid) {
+    private List<DepartmentDTO> createTree(List<DepartmentDTO> lists, int pid) {
         List<DepartmentDTO> tree = new ArrayList<>();
         for (DepartmentDTO catelog : lists) {
             if (catelog.getParentDepartmentId() == pid) {
-                catelog.setChildren(createTree1(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
+                catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
                 tree.add(catelog);
             }
         }
@@ -365,7 +365,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public List<DepartmentDTO> queryparent() {
         List<DepartmentDTO> queryparent = departmentMapper.queryparent();
-        return this.createTree1(queryparent, 0);
+        return this.createTree(queryparent, 0);
     }
 
     /**

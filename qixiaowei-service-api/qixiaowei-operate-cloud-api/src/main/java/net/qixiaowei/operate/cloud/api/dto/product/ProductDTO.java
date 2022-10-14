@@ -115,6 +115,11 @@ public class ProductDTO {
      * 产品文件表集合
      */
     private List<ProductFileDTO> productFileDTOList;
+    /**
+     * 组织子节点信息
+     */
+    private List<ProductDTO> children;
+
 
 }
 

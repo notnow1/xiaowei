@@ -3,11 +3,13 @@ package net.qixiaowei.operate.cloud.service.impl.product;
 import java.util.*;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.*;
 import net.qixiaowei.operate.cloud.api.dto.product.*;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductSpecificationParamService;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -86,9 +88,34 @@ public class ProductServiceImpl implements IProductService {
     public List<ProductDTO> selectProductList(ProductDTO productDTO) {
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
-        return productMapper.selectProductList(product);
+        //返回数据
+        List<ProductDTO> tree = new ArrayList<>();
+        //查询数据
+        List<ProductDTO> productDTOList = productMapper.selectProductList(product);
+        if (!CheckObjectIsNullUtils.isNull(productDTO)){
+            return productDTOList;
+        }else {
+            return this.createTree(productDTOList,0);
+        }
     }
 
+    /**
+     * 树形结构
+     *
+     * @param lists
+     * @param pid
+     * @return
+     */
+    private List<ProductDTO> createTree(List<ProductDTO> lists, int pid) {
+        List<ProductDTO> tree = new ArrayList<>();
+        for (ProductDTO catelog : lists) {
+            if (catelog.getParentProductId() == pid) {
+                catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getParentProductId().toString())));
+                tree.add(catelog);
+            }
+        }
+        return tree;
+    }
     /**
      * 新增产品表
      *
