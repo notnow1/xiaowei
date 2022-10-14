@@ -68,10 +68,10 @@ public interface IEmployeeService{
     /**
     * 逻辑批量删除员工表
     *
-    * @param EmployeeDtos 需要删除的员工表集合
+    * @param employeeIds 需要删除的员工表集合
     * @return 结果
     */
-    int logicDeleteEmployeeByEmployeeIds(List<EmployeeDTO> EmployeeDtos);
+    int logicDeleteEmployeeByEmployeeIds(List<Long>  employeeIds);
 
     /**
     * 逻辑删除员工表信息

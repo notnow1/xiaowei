@@ -386,8 +386,8 @@
         FROM department
         WHERE 1 = 1
           and delete_flag = 0
-          and (department_leader_id = #{department.departmentLeaderId} or
-               examination_leader_id = #{department.examinationLeaderId})
+          and (department_leader_id = #{employeeId} or
+               examination_leader_id = #{employeeId})
     </select>
 
 

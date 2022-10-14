@@ -7,8 +7,12 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeInfoMapper;
+import net.qixiaowei.system.manage.mapper.basic.PostMapper;
+import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -40,6 +44,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private EmployeeInfoMapper employeeInfoMapper;
     @Autowired
     private DepartmentMapper departmentMapper;
+    @Autowired
+    private PostMapper postMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 查询员工表
@@ -159,38 +167,47 @@ public class EmployeeServiceImpl implements IEmployeeService {
     /**
      * 逻辑批量删除员工表
      *
-     * @param employeeDtos 需要删除的员工表主键
+     * @param employeeIds 需要删除的员工表主键
      * @return 结果
      */
 
     @Transactional
     @Override
-    public int logicDeleteEmployeeByEmployeeIds(List<EmployeeDTO> employeeDtos) {
+    public int logicDeleteEmployeeByEmployeeIds(List<Long>  employeeIds) {
         int i= 0;
+        //组织引用
         StringBuffer deptErreo = new StringBuffer();
+        //岗位引用
+        StringBuffer postErreo = new StringBuffer();
+        //用户引用
+        StringBuffer userErreo = new StringBuffer();
         StringBuffer erreoEmp = new StringBuffer();
-        //根据id查询数据
-        List<Long> collect = employeeDtos.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-        //查询数据
-        List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeeByEmployeeIds(collect);
-        if (CollectionUtils.isEmpty(employeeDTOS)){
-            throw new ServiceException("数据不存在无法删除！");
-        }
-
-
-        List<Long> collect1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-
         // todo 校检是否被引用 被引用无法删除
-        List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployees(collect1);
-        String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
-        if (!CollectionUtils.isEmpty(departmentDTOList)){
-            deptErreo.append("人员已被组织"+s+"引用  无法删除！\n");
+        for (Long employeeId : employeeIds) {
+            //组织
+            List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployee(employeeId);
+            String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
+            if (!CollectionUtils.isEmpty(departmentDTOList)){
+                deptErreo.append("人员已被组织"+s+"引用  无法删除！\n");
+            }
+
+            //岗位
+            PostDTO postDTO = postMapper.selectPostByPostId(employeeId);
+            if (null != postDTO){
+                postErreo.append("人员已被岗位"+postDTO.getPostName()+"引用  无法删除！\n");
+            }
+            //用户
+            UserDTO userDTO = userMapper.selectUserByEmployeeId(employeeId);
+            if (null != userDTO){
+                postErreo.append("人员已被用户"+userDTO.getUserName()+"引用  无法删除！\n");
+            }
         }
-        erreoEmp.append(deptErreo);
+
+        erreoEmp.append(deptErreo).append(postErreo).append(userErreo);
         if (erreoEmp.length()>0){
             throw new ServiceException(erreoEmp.toString());
         }
-        return employeeMapper.logicDeleteEmployeeByEmployeeIds(collect, employeeDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+        return employeeMapper.logicDeleteEmployeeByEmployeeIds(employeeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**
@@ -216,7 +233,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public int logicDeleteEmployeeByEmployeeId(EmployeeDTO employeeDTO) {
         int i= 0;
+        //组织引用
         StringBuffer deptErreo = new StringBuffer();
+        //岗位引用
+        StringBuffer postErreo = new StringBuffer();
+        //用户引用
+        StringBuffer userErreo = new StringBuffer();
         StringBuffer erreoEmp = new StringBuffer();
         //员工表
         Employee employee = new Employee();
@@ -233,12 +255,24 @@ public class EmployeeServiceImpl implements IEmployeeService {
         departmentDTO.setDepartmentLeaderId(employeeDTO1.getEmployeeId());
         departmentDTO.setExaminationLeaderId(employeeDTO1.getEmployeeId());
         // todo 校检是否被引用 被引用无法删除
-        List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployee(departmentDTO);
+        //组织
+        List<DepartmentDTO> departmentDTOList = departmentMapper.deleteFlagEmployee(departmentDTO.getDepartmentId());
         String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
         if (!CollectionUtils.isEmpty(departmentDTOList)){
                 deptErreo.append("人员已被组织"+s+"引用  无法删除！\n");
         }
-        erreoEmp.append(deptErreo);
+        //岗位
+        PostDTO postDTO = postMapper.selectPostByPostId(employeeDTO.getEmployeePostId());
+        if (null != postDTO){
+            postErreo.append("人员已被岗位"+postDTO.getPostName()+"引用  无法删除！\n");
+        }
+        //用户
+        UserDTO userDTO = userMapper.selectUserByEmployeeId(employeeDTO.getEmployeeId());
+        if (null != userDTO){
+            postErreo.append("人员已被用户"+userDTO.getUserName()+"引用  无法删除！\n");
+        }
+
+        erreoEmp.append(deptErreo).append(postErreo).append(userErreo);
         if (erreoEmp.length()>0){
             throw new ServiceException(erreoEmp.toString());
         }

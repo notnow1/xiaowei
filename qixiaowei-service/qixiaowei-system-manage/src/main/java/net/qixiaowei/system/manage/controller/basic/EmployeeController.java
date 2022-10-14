@@ -124,8 +124,8 @@ public class EmployeeController extends BaseController
     //@RequiresPermissions("system:manage:employee:removes")
     //@Log(title = "批量删除员工表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<EmployeeDTO>  EmployeeDtos)
+    public AjaxResult removes(@RequestBody List<Long>  employeeIds)
     {
-    return toAjax(employeeService.logicDeleteEmployeeByEmployeeIds(EmployeeDtos));
+    return toAjax(employeeService.logicDeleteEmployeeByEmployeeIds(employeeIds));
     }
 }

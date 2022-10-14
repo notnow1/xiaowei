@@ -23,6 +23,14 @@ public interface ProductPackageMapper{
     ProductPackageDTO selectProductPackageByProductPackageId(@Param("productPackageId")Long productPackageId);
 
     /**
+     * 批量查询产品包
+     *
+     * @param productPackageIds 产品包主键集合
+     * @return 产品包
+     */
+    List<ProductPackageDTO> selectProductPackageByProductPackageIds(@Param("productPackageIds")List<Long> productPackageIds);
+
+    /**
      * 根据产品包名查询产品包
      *
      * @param productPackageName 产品包名称

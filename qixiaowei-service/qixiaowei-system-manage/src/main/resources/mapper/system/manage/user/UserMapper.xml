@@ -111,6 +111,15 @@
             and  u.update_time=#{user.updateTime}
         </if>
     </select>
+<!--    根据人员查询用户表-->
+    <select id="selectUserByEmployeeId" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
+        SELECT
+            user_id, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status,
+            delete_flag, create_by, create_time, update_by, update_time
+        FROM user
+        WHERE employee_id=#{employeeId}
+          and delete_flag=0
+    </select>
     <!--新增用户表-->
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO user

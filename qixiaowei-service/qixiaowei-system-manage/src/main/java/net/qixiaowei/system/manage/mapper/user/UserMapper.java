@@ -54,11 +54,19 @@ public interface UserMapper{
     UserDTO selectUserByUserAccount(@Param("userAccount") String userAccount);
 
     /**
-    * 查询用户表
+    * 根据人员查询用户表
     *
-    * @param userId 用户表主键
+    * @param employeeId 用户表主键
     * @return 用户表
     */
+    UserDTO selectUserByEmployeeId(@Param("employeeId")Long employeeId);
+
+    /**
+     * 根据人员查询用户表
+     *
+     * @param userId 用户表主键
+     * @return 用户表
+     */
     UserDTO selectUserByUserId(@Param("userId")Long userId);
 
     /**

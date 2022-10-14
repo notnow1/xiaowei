@@ -42,10 +42,10 @@ public interface DepartmentMapper{
     /**
      * 查询人员是否被部门引用
      *
-     * @param departmentDTO 部门表
+     * @param employeeId 部门表
      * @return 部门表集合
      */
-    List<DepartmentDTO> deleteFlagEmployee(@Param("department")DepartmentDTO departmentDTO);
+    List<DepartmentDTO> deleteFlagEmployee(@Param("employeeId")Long employeeId);
 
     /**
      * 根据条件筛选树

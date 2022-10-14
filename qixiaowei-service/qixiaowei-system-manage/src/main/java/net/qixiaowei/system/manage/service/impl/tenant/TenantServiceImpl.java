@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.tenant;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.alibaba.nacos.common.utils.CollectionUtils;
@@ -15,6 +16,7 @@ import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
+import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
@@ -22,6 +24,7 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndustryMapper;
+import net.qixiaowei.system.manage.mapper.productPackage.ProductPackageMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContactsMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContractMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantDomainApprovalMapper;
@@ -64,6 +67,9 @@ public class TenantServiceImpl implements ITenantService {
     @Autowired
     private IndustryDefaultMapper industryDefaultMapper;
 
+    @Autowired
+    private ProductPackageMapper productPackageMapper;
+
     /**
      * 查询租户表
      *
@@ -89,8 +95,15 @@ public class TenantServiceImpl implements ITenantService {
         tenantDTO.setSupportStaffName(employeeDTO.getEmployeeName());
         //租户联系人
         tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
-
+        //租赁模块
         List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
+        for (TenantContractDTO tenantContractDTO : tenantContractDTOS) {
+            String productPackage = tenantContractDTO.getProductPackage();
+            List<Long> collect = Arrays.asList(productPackage).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageIds(collect);
+            tenantContractDTO.setProductPackage(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()).toString());
+        }
+
         //租户合同
         tenantDTO.setTenantContractDTOList(tenantContractDTOS);
         //租户域名申请表
