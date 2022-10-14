@@ -124,8 +124,19 @@ public interface OfficialRankDecomposeMapper {
 
     /**
      * 通过职级体系ids查找职级分解ids
+     *
      * @param officialRankSystemIds
      * @return
      */
     List<Long> selectOfficialRankDecomposeByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
+
+    /**
+     * 根据officialRankSystemId删除officialRankDecomposeDTO
+     *
+     * @param officialRankSystemId
+     * @param updateBy
+     * @param updateTime
+     * @return
+     */
+    int logicDeleteOfficialRankDecomposeByOfficialSystemId(@Param("officialRankSystemId") Long officialRankSystemId, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
 }

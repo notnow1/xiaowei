@@ -138,6 +138,14 @@
             #{item}
         </foreach>
     </update>
+    <!--根据OfficialRankSystemIds逻辑批量删除职级分解表-->
+    <update id="logicDeleteOfficialRankDecomposeByOfficialSystemId">
+        UPDATE official_rank_decompose
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE official_rank_system_id = #{officialRankSystemId}
+    </update>
     <!--批量新增职级分解表-->
     <insert id="batchOfficialRankDecompose">
         INSERT INTO official_rank_decompose

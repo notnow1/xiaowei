@@ -102,7 +102,7 @@ public interface IOfficialRankDecomposeService {
      * @return 结果
      */
     int deleteOfficialRankDecomposeByOfficialRankDecomposeId(Long officialRankDecomposeId);
-    
+
     /**
      * 通过officialRankSystemId查找职级分解
      *
@@ -135,4 +135,12 @@ public interface IOfficialRankDecomposeService {
      * @return
      */
     int logicDeleteOfficialRankDecomposeByOfficialRankSystemIds(List<Long> officialRankSystemIds);
+
+    /**
+     * 通过officialRankSystemId删除职级分解
+     *
+     * @param officialRankSystemId
+     * @return
+     */
+    int logicDeleteOfficialRankDecomposeByOfficialRankSystemId(Long officialRankSystemId);
 }

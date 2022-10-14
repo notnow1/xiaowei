@@ -72,8 +72,9 @@
         rank_decompose_dimension, status, delete_flag, create_by, create_time, update_by, update_time
         FROM official_rank_system WHERE official_rank_system_id = #{officialRankSystemId} and delete_flag = 0
     </select>
-    <select id="isExistByOfficialRankSystemIds" resultType="java.lang.Integer">
-        SELECT COUNT(official_rank_system_id) FROM official_rank_system WHERE delete_flag = 0
+    <select id="isExistByOfficialRankSystemIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
+        SELECT official_rank_system_id,official_rank_system_name FROM official_rank_system WHERE delete_flag = 0
         AND official_rank_system_id IN
         <foreach item="item"
                  collection="officialRankSystemIds"

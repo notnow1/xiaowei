@@ -1,26 +1,26 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
-import net.qixiaowei.system.manage.service.basic.IOfficialRankDecomposeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.mapper.basic.OfficialRankSystemMapper;
+import net.qixiaowei.system.manage.mapper.basic.PostMapper;
+import net.qixiaowei.system.manage.service.basic.IOfficialRankDecomposeService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankSystemService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -36,6 +36,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
 
     @Autowired
     private IOfficialRankDecomposeService officialRankDecomposeService;
+
+    @Autowired
+    private PostMapper postMapper;
 
     /**
      * 查询职级体系表
@@ -85,11 +88,11 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      * @param officialRankSystemDTOS
      */
     private void writeOfficialRank(List<OfficialRankSystemDTO> officialRankSystemDTOS) {
-        StringBuilder officialRank = new StringBuilder("");
         String rankPrefixCode;
         int rankStart;
         int rankEnd;
         for (OfficialRankSystemDTO officialRankSystemDTO : officialRankSystemDTOS) {
+            StringBuilder officialRank = new StringBuilder("");
             rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
             rankStart = officialRankSystemDTO.getRankStart();
             rankEnd = officialRankSystemDTO.getRankEnd();
@@ -281,22 +284,40 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 逻辑批量删除职级体系表
      *
-     * @param officialRankSystemDtos 需要删除的职级体系表主键
+     * @param officialRankSystemIds 需要删除的职级体系表主键
      * @return 结果
      */
     @Transactional
     @Override
-    public int logicDeleteOfficialRankSystemByOfficialRankSystemIds(List<OfficialRankSystemDTO> officialRankSystemDtos) {
-        List<Long> officialRankSystemIds = new ArrayList<>();
-        for (OfficialRankSystemDTO officialRankSystemDTO : officialRankSystemDtos) {
-            officialRankSystemIds.add(officialRankSystemDTO.getOfficialRankSystemId());
+    public int logicDeleteOfficialRankSystemByOfficialRankSystemIds(List<Long> officialRankSystemIds) {
+        if (StringUtils.isEmpty(officialRankSystemIds)) {
+            throw new ServiceException("职级体系id列表不能为空");
         }
-        int existByOfficialRankSystemIds = officialRankSystemMapper.isExistByOfficialRankSystemIds(officialRankSystemIds);
-        if (existByOfficialRankSystemIds < officialRankSystemDtos.size()) {
+        List<OfficialRankSystemDTO> existByOfficialRankSystemDTOS = officialRankSystemMapper.isExistByOfficialRankSystemIds(officialRankSystemIds);
+        if (existByOfficialRankSystemDTOS.size() < officialRankSystemIds.size()) {
             throw new ServiceException("当前的职级体系已不存在");
         }
-        officialRankDecomposeService.logicDeleteOfficialRankDecomposeByOfficialRankSystemIds(officialRankSystemIds);
-        return officialRankSystemMapper.logicDeleteOfficialRankSystemByOfficialRankSystemIds(officialRankSystemIds, officialRankSystemDtos.get(0).getUpdateBy(), DateUtils.getNowDate());
+        List<PostDTO> quote = isQuote(officialRankSystemIds);
+        // todo 引用
+        if (StringUtils.isNotEmpty(quote)) {
+            throw new ServiceException("当前的职级体系正在被引用");
+        }
+        int i = officialRankDecomposeService.logicDeleteOfficialRankDecomposeByOfficialRankSystemIds(officialRankSystemIds);
+        if (i == 0) {
+            throw new ServiceException("删除失败，请检查相关联的的职级分解是否正常");
+        }
+        return officialRankSystemMapper.logicDeleteOfficialRankSystemByOfficialRankSystemIds(officialRankSystemIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * todo 职级体系引用校验
+     *
+     * @param officialRankSystemIds
+     * @return
+     */
+    private List<PostDTO> isQuote(List<Long> officialRankSystemIds) {
+//        return postMapper.selectPostByOfficialRankSystemIds(officialRankSystemIds);
+        return null;
     }
 
     /**
@@ -339,6 +360,30 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     @Transactional
     @Override
     public int logicDeleteOfficialRankSystemByOfficialRankSystemId(OfficialRankSystemDTO officialRankSystemDTO) {
+        Long officialRankSystemId = officialRankSystemDTO.getOfficialRankSystemId();
+        if (StringUtils.isNull(officialRankSystemId)) {
+            throw new ServiceException("职级体系id不能为空");
+        }
+        if (StringUtils.isNull(officialRankSystemMapper.isExistByOfficialRankSystemId(officialRankSystemId))) {
+            throw new ServiceException("当前的职级体系已不存在");
+        }
+        List<Long> officialRankSystemIds = new ArrayList<>();
+        List<PostDTO> quote = isQuote(officialRankSystemIds);
+        if (StringUtils.isNotEmpty(quote)) {
+            StringBuffer stringBuffer = new StringBuffer(quote.get(0).getOfficialRankSystemName());
+//            if (quote){
+//
+//            }
+//                for (PostDTO postDTO : quote) {
+//
+//                }
+//            stringBuffer.append()
+            throw new ServiceException(stringBuffer + "职级体系正在被引用");
+        }
+        int i = officialRankDecomposeService.logicDeleteOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
+        if (i == 0) {
+            throw new ServiceException("删除失败，请检查相关联的的职级分解是否正常");
+        }
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();
         BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
         return officialRankSystemMapper.logicDeleteOfficialRankSystemByOfficialRankSystemId(officialRankSystem, SecurityUtils.getUserId(), DateUtils.getNowDate());

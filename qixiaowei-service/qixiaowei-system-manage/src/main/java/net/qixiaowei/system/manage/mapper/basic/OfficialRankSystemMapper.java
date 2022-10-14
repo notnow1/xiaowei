@@ -126,5 +126,5 @@ public interface OfficialRankSystemMapper {
      * @param officialRankSystemIds
      * @return
      */
-    int isExistByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
+    List<OfficialRankSystemDTO> isExistByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
 }

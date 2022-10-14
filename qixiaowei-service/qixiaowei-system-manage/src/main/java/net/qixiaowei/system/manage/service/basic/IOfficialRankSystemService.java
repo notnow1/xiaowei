@@ -63,10 +63,10 @@ public interface IOfficialRankSystemService {
     /**
      * 逻辑批量删除职级体系表
      *
-     * @param OfficialRankSystemDtos 需要删除的职级体系表集合
+     * @param OfficialRankSystemIds 需要删除的职级体系表集合
      * @return 结果
      */
-    int logicDeleteOfficialRankSystemByOfficialRankSystemIds(List<OfficialRankSystemDTO> OfficialRankSystemDtos);
+    int logicDeleteOfficialRankSystemByOfficialRankSystemIds(List<Long> OfficialRankSystemIds);
 
     /**
      * 逻辑删除职级体系表信息

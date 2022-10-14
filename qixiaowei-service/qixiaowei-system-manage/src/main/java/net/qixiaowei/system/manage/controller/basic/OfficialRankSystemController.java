@@ -96,7 +96,7 @@ public class OfficialRankSystemController extends BaseController {
 //    @RequiresPermissions("system:manage:officialRankSystem:removes")
     @Log(title = "批量删除职级体系表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<OfficialRankSystemDTO> OfficialRankSystemDtos) {
-        return toAjax(officialRankSystemService.logicDeleteOfficialRankSystemByOfficialRankSystemIds(OfficialRankSystemDtos));
+    public AjaxResult removes(@RequestBody List<Long> OfficialRankSystemIds) {
+        return toAjax(officialRankSystemService.logicDeleteOfficialRankSystemByOfficialRankSystemIds(OfficialRankSystemIds));
     }
 }

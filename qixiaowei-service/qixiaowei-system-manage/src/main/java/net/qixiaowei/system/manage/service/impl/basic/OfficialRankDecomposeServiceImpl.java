@@ -172,7 +172,22 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
         List<Long> officialRankDecomposeIds =
                 officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemIds(officialRankSystemIds);
         officialRankDecomposeMapper.logicDeleteOfficialRankDecomposeByOfficialRankDecomposeIds(officialRankDecomposeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
-        return 0;
+        return 1;
+    }
+
+    /**
+     * 通过officialRankSystemId删除职级分解
+     *
+     * @param officialRankSystemId
+     * @return
+     */
+    @Override
+    public int logicDeleteOfficialRankDecomposeByOfficialRankSystemId(Long officialRankSystemId) {
+        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
+        if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)){
+            officialRankDecomposeMapper.logicDeleteOfficialRankDecomposeByOfficialSystemId(officialRankSystemId, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        }
+        return 1;
     }
 
     /**
