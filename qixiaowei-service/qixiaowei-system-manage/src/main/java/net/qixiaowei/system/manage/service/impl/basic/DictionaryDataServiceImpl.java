@@ -156,10 +156,15 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
         productDTO.setProductCategory(dictionaryDataDTO.getDictionaryDataId().toString());
         productDTO.setListingFlag(Integer.parseInt(dictionaryDataDTO.getDictionaryDataId().toString()));
         R<List<ProductDTO>> listR = remoteDictionaryService.queryDictionaryType(productDTO);
-        List<ProductDTO> data = listR.getData();
-        if (!CollectionUtils.isEmpty(data)){
 
+        if (null != listR){
+            List<ProductDTO> data = listR.getData();
+            if (!CollectionUtils.isEmpty(data)){
+
+            }
         }
+
+
         // todo 暂时不知道被谁引用
         return dictionaryDataMapper.logicDeleteDictionaryDataByDictionaryDataId(dictionaryData, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }

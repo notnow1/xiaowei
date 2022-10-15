@@ -126,12 +126,6 @@ public class TenantServiceImpl implements ITenantService {
     public List<TenantDTO> selectTenantList(TenantDTO tenantDTO) {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
-        //用户表
-        UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
-        if (null == userDTO){
-           throw new ServiceException("请配置用户绑定人员信息");
-        }
-        tenant.setSupportStaff(userDTO.getEmployeeId().toString());
         return tenantMapper.selectTenantList(tenant);
     }
 
