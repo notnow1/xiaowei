@@ -7,7 +7,7 @@ import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 /**
 * DictionaryTypeService接口
 * @author TANGMICHI
-* @since 2022-10-07
+* @since 2022-10-15
 */
 public interface IDictionaryTypeService{
     /**
@@ -61,10 +61,10 @@ public interface IDictionaryTypeService{
     /**
     * 逻辑批量删除字典类型表
     *
-    * @param DictionaryTypeDtos 需要删除的字典类型表集合
+    * @param dictionaryTypeIds 需要删除的字典类型表集合
     * @return 结果
     */
-    int logicDeleteDictionaryTypeByDictionaryTypeIds(List<DictionaryTypeDTO> DictionaryTypeDtos);
+    int logicDeleteDictionaryTypeByDictionaryTypeIds(List<Long> dictionaryTypeIds);
 
     /**
     * 逻辑删除字典类型表信息
@@ -74,9 +74,9 @@ public interface IDictionaryTypeService{
     */
     int logicDeleteDictionaryTypeByDictionaryTypeId(DictionaryTypeDTO dictionaryTypeDTO);
     /**
-    * 逻辑批量删除字典类型表
+    * 批量删除字典类型表
     *
-    * @param DictionaryTypeDtos 需要删除的字典类型表集合
+    * @param DictionaryTypeDtos
     * @return 结果
     */
     int deleteDictionaryTypeByDictionaryTypeIds(List<DictionaryTypeDTO> DictionaryTypeDtos);

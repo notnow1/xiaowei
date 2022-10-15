@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * DictionaryDataMapper接口
 * @author TANGMICHI
-* @since 2022-10-07
+* @since 2022-10-15
 */
 public interface DictionaryDataMapper{
     /**
@@ -21,14 +21,14 @@ public interface DictionaryDataMapper{
     */
     DictionaryDataDTO selectDictionaryDataByDictionaryDataId(@Param("dictionaryDataId")Long dictionaryDataId);
 
-    /**
-     * 根据字典类型ID查询字典数据表
-     *
-     * @param dictionaryTypeId 字典数据表主键
-     * @return 字典数据表
-     */
-    List<DictionaryDataDTO> selectDictionaryTypeId(@Param("dictionaryTypeId")Long dictionaryTypeId);
 
+    /**
+    * 批量查询字典数据表
+    *
+    * @param dictionaryDataIds 字典数据表主键集合
+    * @return 字典数据表
+    */
+    List<DictionaryDataDTO> selectDictionaryDataByDictionaryDataId(@Param("dictionaryDataIds") List<Long> dictionaryDataIds);
 
     /**
     * 查询字典数据表列表
@@ -67,7 +67,7 @@ public interface DictionaryDataMapper{
     * @param dictionaryData
     * @return 结果
     */
-    int logicDeleteDictionaryDataByDictionaryDataId(@Param("dictionaryData")DictionaryData dictionaryData,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteDictionaryDataByDictionaryDataId(@Param("dictionaryData")DictionaryData dictionaryData);
 
     /**
     * 逻辑批量删除字典数据表

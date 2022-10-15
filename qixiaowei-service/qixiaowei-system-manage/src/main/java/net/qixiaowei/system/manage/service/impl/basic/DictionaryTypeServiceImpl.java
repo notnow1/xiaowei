@@ -18,7 +18,7 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 /**
 * DictionaryTypeService业务层处理
 * @author TANGMICHI
-* @since 2022-10-07
+* @since 2022-10-15
 */
 @Service
 public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
@@ -57,7 +57,6 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @param dictionaryTypeDTO 字典类型表
     * @return 结果
     */
-    @Transactional
     @Override
     public int insertDictionaryType(DictionaryTypeDTO dictionaryTypeDTO){
     DictionaryType dictionaryType=new DictionaryType();
@@ -76,7 +75,6 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @param dictionaryTypeDTO 字典类型表
     * @return 结果
     */
-    @Transactional
     @Override
     public int updateDictionaryType(DictionaryTypeDTO dictionaryTypeDTO)
     {
@@ -90,18 +88,12 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     /**
     * 逻辑批量删除字典类型表
     *
-    * @param dictionaryTypeDtos 需要删除的字典类型表主键
+    * @param dictionaryTypeIds 主键集合
     * @return 结果
     */
-
-    @Transactional
     @Override
-    public int logicDeleteDictionaryTypeByDictionaryTypeIds(List<DictionaryTypeDTO> dictionaryTypeDtos){
-            List<Long> stringList = new ArrayList();
-            for (DictionaryTypeDTO dictionaryTypeDTO : dictionaryTypeDtos) {
-                stringList.add(dictionaryTypeDTO.getDictionaryTypeId());
-            }
-    return dictionaryTypeMapper.logicDeleteDictionaryTypeByDictionaryTypeIds(stringList,dictionaryTypeDtos.get(0).getUpdateBy(),DateUtils.getNowDate());
+    public int logicDeleteDictionaryTypeByDictionaryTypeIds(List<Long> dictionaryTypeIds){
+    return dictionaryTypeMapper.logicDeleteDictionaryTypeByDictionaryTypeIds(dictionaryTypeIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
     }
 
     /**
@@ -110,8 +102,6 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @param dictionaryTypeId 字典类型表主键
     * @return 结果
     */
-
-    @Transactional
     @Override
     public int deleteDictionaryTypeByDictionaryTypeId(Long dictionaryTypeId)
     {
@@ -124,15 +114,14 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
      * @param  dictionaryTypeDTO 字典类型表
      * @return 结果
      */
-     @Transactional
      @Override
      public int logicDeleteDictionaryTypeByDictionaryTypeId(DictionaryTypeDTO dictionaryTypeDTO)
      {
      DictionaryType dictionaryType=new DictionaryType();
-         dictionaryType.setDictionaryTypeId(dictionaryTypeDTO.getDictionaryTypeId());
-         dictionaryType.setUpdateTime(DateUtils.getNowDate());
-         dictionaryType.setUpdateBy(SecurityUtils.getUserId());
-     return dictionaryTypeMapper.logicDeleteDictionaryTypeByDictionaryTypeId(dictionaryType,SecurityUtils.getUserId(),DateUtils.getNowDate());
+     dictionaryType.setDictionaryTypeId(dictionaryTypeDTO.getDictionaryTypeId());
+     dictionaryType.setUpdateTime(DateUtils.getNowDate());
+     dictionaryType.setUpdateBy(SecurityUtils.getUserId());
+     return dictionaryTypeMapper.logicDeleteDictionaryTypeByDictionaryTypeId(dictionaryType);
      }
 
      /**
@@ -141,7 +130,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
      * @param  dictionaryTypeDTO 字典类型表
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteDictionaryTypeByDictionaryTypeId(DictionaryTypeDTO dictionaryTypeDTO)
      {
@@ -155,7 +144,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
      * @param dictionaryTypeDtos 需要删除的字典类型表主键
      * @return 结果
      */
-     @Transactional
+     
      @Override
      public int deleteDictionaryTypeByDictionaryTypeIds(List<DictionaryTypeDTO> dictionaryTypeDtos){
      List<Long> stringList = new ArrayList();
@@ -170,7 +159,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     *
     * @param dictionaryTypeDtos 字典类型表对象
     */
-    @Transactional
+    
     public int insertDictionaryTypes(List<DictionaryTypeDTO> dictionaryTypeDtos){
       List<DictionaryType> dictionaryTypeList = new ArrayList();
 
@@ -192,7 +181,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     *
     * @param dictionaryTypeDtos 字典类型表对象
     */
-    @Transactional
+    
     public int updateDictionaryTypes(List<DictionaryTypeDTO> dictionaryTypeDtos){
      List<DictionaryType> dictionaryTypeList = new ArrayList();
 

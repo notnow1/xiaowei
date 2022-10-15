@@ -7,7 +7,7 @@ import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 /**
 * DictionaryDataService接口
 * @author TANGMICHI
-* @since 2022-10-07
+* @since 2022-10-15
 */
 public interface IDictionaryDataService{
     /**
@@ -61,10 +61,10 @@ public interface IDictionaryDataService{
     /**
     * 逻辑批量删除字典数据表
     *
-    * @param DictionaryDataDtos 需要删除的字典数据表集合
+    * @param dictionaryDataIds 需要删除的字典数据表集合
     * @return 结果
     */
-    int logicDeleteDictionaryDataByDictionaryDataIds(List<DictionaryDataDTO> DictionaryDataDtos);
+    int logicDeleteDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds);
 
     /**
     * 逻辑删除字典数据表信息
@@ -74,9 +74,9 @@ public interface IDictionaryDataService{
     */
     int logicDeleteDictionaryDataByDictionaryDataId(DictionaryDataDTO dictionaryDataDTO);
     /**
-    * 逻辑批量删除字典数据表
+    * 批量删除字典数据表
     *
-    * @param DictionaryDataDtos 需要删除的字典数据表集合
+    * @param DictionaryDataDtos
     * @return 结果
     */
     int deleteDictionaryDataByDictionaryDataIds(List<DictionaryDataDTO> DictionaryDataDtos);

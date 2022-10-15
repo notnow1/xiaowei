@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 /**
 *
 * @author TANGMICHI
-* @since 2022-10-07
+* @since 2022-10-15
 */
 @RestController
 @RequestMapping("dictionaryData")
@@ -32,6 +32,17 @@ public class DictionaryDataController extends BaseController
 
     @Autowired
     private IDictionaryDataService dictionaryDataService;
+
+
+    /**
+    * 查询字典数据表详情
+    */
+    //@RequiresPermissions("system:manage:dictionaryData:info")
+    @GetMapping("/info/{dictionaryDataId}")
+    public AjaxResult info(@PathVariable Long dictionaryDataId){
+    DictionaryDataDTO dictionaryDataDTO = dictionaryDataService.selectDictionaryDataByDictionaryDataId(dictionaryDataId);
+        return AjaxResult.success(dictionaryDataDTO);
+    }
 
     /**
     * 分页查询字典数据表列表
@@ -54,15 +65,6 @@ public class DictionaryDataController extends BaseController
     return AjaxResult.success(list);
     }
 
-    /**
-     * 查询字典数据表详情
-     */
-    //@RequiresPermissions("system:manage:dictionaryData:list")
-    @GetMapping("/info/{dictionaryDataId}")
-    public AjaxResult list(@PathVariable  Long dictionaryDataId){
-        DictionaryDataDTO dictionaryDataDTO = dictionaryDataService.selectDictionaryDataByDictionaryDataId(dictionaryDataId);
-        return AjaxResult.success(dictionaryDataDTO);
-    }
 
     /**
     * 新增字典数据表
@@ -124,8 +126,8 @@ public class DictionaryDataController extends BaseController
     //@RequiresPermissions("system:manage:dictionaryData:removes")
     //@Log(title = "批量删除字典数据表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<DictionaryDataDTO>  DictionaryDataDtos)
+    public AjaxResult removes(@RequestBody List<Long>  dictionaryDataIds)
     {
-    return toAjax(dictionaryDataService.logicDeleteDictionaryDataByDictionaryDataIds(DictionaryDataDtos));
+    return toAjax(dictionaryDataService.logicDeleteDictionaryDataByDictionaryDataIds(dictionaryDataIds));
     }
 }

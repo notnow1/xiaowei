@@ -4,10 +4,34 @@
     <!--    查询字典数据表-->
     <select id="selectDictionaryDataByDictionaryDataId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO">
+        select dt.dictionary_type,
+               da.dictionary_data_id,
+               da.dictionary_type_id,
+               da.dictionary_label,
+               da.dictionary_value,
+               da.default_flag,
+               da.sort,
+               da.remark,
+               da.status
+        from dictionary_data da
+                 left join dictionary_type dt
+                           on da.dictionary_type_id = dt.dictionary_type_id
+                               and dt.delete_flag = 0
+        where da.dictionary_data_id = #{dictionaryDataId}
+    </select>
+
+    <!--    批量查询字典数据表-->
+    <select id="selectDictionaryDataByDictionaryDataIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO">
         SELECT
         dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
         FROM dictionary_data
-        WHERE  dictionary_data_id=#{dictionaryDataId}
+        WHERE  dictionary_data_id in
+            <foreach item="item"
+                     collection="dictionaryDataIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         and delete_flag=0
     </select>
 
@@ -17,40 +41,45 @@
         dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
         FROM dictionary_data
         WHERE delete_flag=0
-        <if test="dictionaryData.dictionaryDataId != null">
-            and dictionary_data_id like '%${dictionaryData.dictionaryDataId}%'
-        </if>
-        <if test="dictionaryData.dictionaryTypeId != null">
-            and dictionary_type_id like '%${dictionaryData.dictionaryTypeId}%'
-        </if>
-        <if test="dictionaryData.dictionaryLabel != null and dictionaryData.dictionaryLabel != ''">
-            and dictionary_label like '%${dictionaryData.dictionaryLabel}%'
-        </if>
-        <if test="dictionaryData.dictionaryValue != null and dictionaryData.dictionaryValue != ''">
-            and dictionary_value like '%${dictionaryData.dictionaryValue}%'
-        </if>
-        <if test="dictionaryData.defaultFlag != null">
-            and default_flag like '%${dictionaryData.defaultFlag}%'
-        </if>
-        <if test="dictionaryData.sort != null">
-            and sort like '%${dictionaryData.sort}%'
-        </if>
-        <if test="dictionaryData.remark != null and dictionaryData.remark != ''">
-            and remark like '%${dictionaryData.remark}%'
-        </if>
-        <if test="dictionaryData.status != null">
-            and status =#{dictionaryData.status}
-        </if>
-    </select>
-<!--    根据字典类型ID查询字典数据表-->
-    <select id="selectDictionaryTypeId"
-            resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO">
-        SELECT
-            dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM dictionary_data
-        WHERE  dictionary_type_id=#{dictionaryTypeId}
-          and delete_flag=0
-        order by sort desc
+                <if test="dictionaryData.dictionaryDataId != null">
+                    and dictionary_data_id=#{dictionaryData.dictionaryDataId}
+                </if>
+                <if test="dictionaryData.dictionaryTypeId != null">
+                    and dictionary_type_id=#{dictionaryData.dictionaryTypeId}
+                </if>
+                <if test="dictionaryData.dictionaryLabel != null and dictionaryData.dictionaryLabel != ''">
+                    and dictionary_label=#{dictionaryData.dictionaryLabel}
+                </if>
+                <if test="dictionaryData.dictionaryValue != null and dictionaryData.dictionaryValue != ''">
+                    and dictionary_value=#{dictionaryData.dictionaryValue}
+                </if>
+                <if test="dictionaryData.defaultFlag != null">
+                    and default_flag=#{dictionaryData.defaultFlag}
+                </if>
+                <if test="dictionaryData.sort != null">
+                    and sort=#{dictionaryData.sort}
+                </if>
+                <if test="dictionaryData.remark != null and dictionaryData.remark != ''">
+                    and remark=#{dictionaryData.remark}
+                </if>
+                <if test="dictionaryData.status != null">
+                    and status=#{dictionaryData.status}
+                </if>
+                <if test="dictionaryData.deleteFlag != null">
+                    and delete_flag=#{dictionaryData.deleteFlag}
+                </if>
+                <if test="dictionaryData.createBy != null">
+                    and create_by=#{dictionaryData.createBy}
+                </if>
+                <if test="dictionaryData.createTime != null">
+                    and create_time=#{dictionaryData.createTime}
+                </if>
+                <if test="dictionaryData.updateBy != null">
+                    and update_by=#{dictionaryData.updateBy}
+                </if>
+                <if test="dictionaryData.updateTime != null">
+                    and update_time=#{dictionaryData.updateTime}
+                </if>
     </select>
     <!--新增字典数据表-->
     <insert id="insertDictionaryData" useGeneratedKeys="true" keyProperty="dictionaryDataId">

@@ -11,6 +11,21 @@
         and delete_flag=0
     </select>
 
+    <!--    批量查询字典类型表-->
+    <select id="selectDictionaryTypeByDictionaryTypeIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO">
+        SELECT
+        dictionary_type_id, dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM dictionary_type
+        WHERE  dictionary_type_id in
+            <foreach item="item"
+                     collection="dictionaryTypeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
     <!--    查询字典类型表列表-->
     <select id="selectDictionaryTypeList" resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO">
         SELECT

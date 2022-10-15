@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * DictionaryTypeMapper接口
 * @author TANGMICHI
-* @since 2022-10-07
+* @since 2022-10-15
 */
 public interface DictionaryTypeMapper{
     /**
@@ -20,6 +20,15 @@ public interface DictionaryTypeMapper{
     * @return 字典类型表
     */
     DictionaryTypeDTO selectDictionaryTypeByDictionaryTypeId(@Param("dictionaryTypeId")Long dictionaryTypeId);
+
+
+    /**
+    * 批量查询字典类型表
+    *
+    * @param dictionaryTypeIds 字典类型表主键集合
+    * @return 字典类型表
+    */
+    List<DictionaryTypeDTO> selectDictionaryTypeByDictionaryTypeId(@Param("dictionaryTypeIds") List<Long> dictionaryTypeIds);
 
     /**
     * 查询字典类型表列表
@@ -58,7 +67,7 @@ public interface DictionaryTypeMapper{
     * @param dictionaryType
     * @return 结果
     */
-    int logicDeleteDictionaryTypeByDictionaryTypeId(@Param("dictionaryType")DictionaryType dictionaryType,@Param("updateBy")Long updateBy,@Param("updateTime")Date updateTime);
+    int logicDeleteDictionaryTypeByDictionaryTypeId(@Param("dictionaryType")DictionaryType dictionaryType);
 
     /**
     * 逻辑批量删除字典类型表

@@ -4,14 +4,13 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
-import javax.validation.constraints.NotBlank;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
 * 字典数据表
 * @author TANGMICHI
-* @since 2022-10-07
+* @since 2022-10-15
 */
 @Data
 @Accessors(chain = true)
@@ -26,7 +25,7 @@ public class DictionaryDataDTO {
 
     }
 
-    //新增检验
+    //删除检验
     public interface DeleteDictionaryDataDTO extends Default{
 
     }
@@ -38,6 +37,11 @@ public class DictionaryDataDTO {
     * ID
     */
     private  Long dictionaryDataId;
+
+    /**
+     * 字典类型
+     */
+    private  String dictionaryType;
     /**
     * 字典类型ID
     */
@@ -46,11 +50,6 @@ public class DictionaryDataDTO {
     * 字典标签
     */
     private  String dictionaryLabel;
-
-    /**
-     * 字典名称
-     */
-    private  String dictionaryName;
     /**
     * 字典值
     */

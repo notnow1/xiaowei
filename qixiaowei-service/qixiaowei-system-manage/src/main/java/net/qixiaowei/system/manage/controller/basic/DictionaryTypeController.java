@@ -2,7 +2,6 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 /**
 *
 * @author TANGMICHI
-* @since 2022-10-07
+* @since 2022-10-15
 */
 @RestController
 @RequestMapping("dictionaryType")
@@ -33,6 +32,17 @@ public class DictionaryTypeController extends BaseController
 
     @Autowired
     private IDictionaryTypeService dictionaryTypeService;
+
+
+    /**
+    * 查询字典类型表详情
+    */
+    //@RequiresPermissions("system:manage:dictionaryType:info")
+    @GetMapping("/info/{dictionaryTypeId}")
+    public AjaxResult info(@PathVariable Long dictionaryTypeId){
+    DictionaryTypeDTO dictionaryTypeDTO = dictionaryTypeService.selectDictionaryTypeByDictionaryTypeId(dictionaryTypeId);
+        return AjaxResult.success(dictionaryTypeDTO);
+    }
 
     /**
     * 分页查询字典类型表列表
@@ -55,16 +65,6 @@ public class DictionaryTypeController extends BaseController
     return AjaxResult.success(list);
     }
 
-    /**
-     * 查询字典类型表详情
-     */
-    //@RequiresPermissions("system:manage:dictionaryType:list")
-    @GetMapping("/info/{dictionaryTypeId}")
-    public AjaxResult list(@PathVariable Long dictionaryTypeId){
-        DictionaryTypeDTO dictionaryTypeDTO = dictionaryTypeService.selectDictionaryTypeByDictionaryTypeId(dictionaryTypeId);
-        return AjaxResult.success(dictionaryTypeDTO);
-    }
-
 
     /**
     * 新增字典类型表
@@ -72,7 +72,7 @@ public class DictionaryTypeController extends BaseController
     //@RequiresPermissions("system:manage:dictionaryType:add")
     //@Log(title = "新增字典类型表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody @Validated(DictionaryTypeDTO.AddDictionaryTypeDTO.class) DictionaryTypeDTO dictionaryTypeDTO) {
+    public AjaxResult addSave(@RequestBody DictionaryTypeDTO dictionaryTypeDTO) {
     return toAjax(dictionaryTypeService.insertDictionaryType(dictionaryTypeDTO));
     }
 
@@ -83,7 +83,7 @@ public class DictionaryTypeController extends BaseController
     //@RequiresPermissions("system:manage:dictionaryType:edit")
     //@Log(title = "修改字典类型表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody  @Validated(DictionaryTypeDTO.UpdateDictionaryTypeDTO.class) DictionaryTypeDTO dictionaryTypeDTO)
+    public AjaxResult editSave(@RequestBody DictionaryTypeDTO dictionaryTypeDTO)
     {
     return toAjax(dictionaryTypeService.updateDictionaryType(dictionaryTypeDTO));
     }
@@ -94,7 +94,7 @@ public class DictionaryTypeController extends BaseController
     //@RequiresPermissions("system:manage:dictionaryType:remove")
     //@Log(title = "删除字典类型表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody @Validated(DictionaryTypeDTO.DeleteDictionaryTypeDTO.class)DictionaryTypeDTO dictionaryTypeDTO)
+    public AjaxResult remove(@RequestBody DictionaryTypeDTO dictionaryTypeDTO)
     {
     return toAjax(dictionaryTypeService.logicDeleteDictionaryTypeByDictionaryTypeId(dictionaryTypeDTO));
     }
@@ -126,8 +126,8 @@ public class DictionaryTypeController extends BaseController
     //@RequiresPermissions("system:manage:dictionaryType:removes")
     //@Log(title = "批量删除字典类型表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody @Validated(DictionaryTypeDTO.DeleteDictionaryTypeDTO.class) List<DictionaryTypeDTO>  DictionaryTypeDtos)
+    public AjaxResult removes(@RequestBody List<Long>  dictionaryTypeIds)
     {
-    return toAjax(dictionaryTypeService.logicDeleteDictionaryTypeByDictionaryTypeIds(DictionaryTypeDtos));
+    return toAjax(dictionaryTypeService.logicDeleteDictionaryTypeByDictionaryTypeIds(dictionaryTypeIds));
     }
 }
