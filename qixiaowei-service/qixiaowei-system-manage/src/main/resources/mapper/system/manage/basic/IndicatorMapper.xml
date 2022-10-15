@@ -34,10 +34,10 @@
             and indicator_type=#{indicator.indicatorType}
         </if>
         <if test="indicator.indicatorCode != null and indicator.indicatorCode != ''">
-            and indicator_code=#{indicator.indicatorCode}
+            and indicator_code like "%" #{indicator.indicatorCode} "%"
         </if>
         <if test="indicator.indicatorName != null and indicator.indicatorName != ''">
-            and indicator_name=#{indicator.indicatorName}
+            and indicator_name like "%" #{indicator.indicatorName} "%"
         </if>
         <if test="indicator.sort != null">
             and sort=#{indicator.sort}

@@ -28,10 +28,10 @@
             and ancestors=#{industryDefault.ancestors}
         </if>
         <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">
-            and industry_code=#{industryDefault.industryCode}
+            and industry_code like "%" #{industryDefault.industryCode} "%"
         </if>
         <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
-            and industry_name=#{industryDefault.industryName}
+            and industry_name like "%" #{industryDefault.industryName} "%"
         </if>
         <if test="industryDefault.level != null and industryDefault.level != ''">
             and level=#{industryDefault.level}
@@ -45,14 +45,8 @@
         <if test="industryDefault.createBy != null and industryDefault.createBy != ''">
             and create_by=#{industryDefault.createBy}
         </if>
-        <if test="industryDefault.createTime != null">
-            and create_time=#{industryDefault.createTime}
-        </if>
         <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">
             and update_by=#{industryDefault.updateBy}
-        </if>
-        <if test="industryDefault.updateTime != null">
-            and update_time=#{industryDefault.updateTime}
         </if>
     </select>
     <!--默认行业唯一性校验-->

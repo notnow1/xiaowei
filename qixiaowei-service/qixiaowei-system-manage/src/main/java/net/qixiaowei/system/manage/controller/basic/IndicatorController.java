@@ -33,6 +33,10 @@ public class IndicatorController extends BaseController {
     @GetMapping("/pageList")
     public TableDataInfo pageList(IndicatorDTO indicatorDTO) {
         startPage();
+        Integer indicatorType = indicatorDTO.getIndicatorType();
+        if (StringUtils.isNull(indicatorType)) {
+            indicatorDTO.setIndicatorType(1);
+        }
         List<IndicatorDTO> list = indicatorService.selectIndicatorList(indicatorDTO);
         return getDataTable(list);
     }
@@ -97,7 +101,7 @@ public class IndicatorController extends BaseController {
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody IndicatorDTO indicatorDTO) {
         Long indicatorId = indicatorDTO.getIndicatorId();
-        if (StringUtils.isNull(indicatorId)){
+        if (StringUtils.isNull(indicatorId)) {
             return AjaxResult.error("指标id不能为空！");
         }
         return toAjax(indicatorService.logicDeleteIndicatorByIndicatorId(indicatorId));

@@ -21,41 +21,42 @@
         FROM official_rank_system
         WHERE delete_flag=0
         <if test="officialRankSystem.officialRankSystemId != null">
-            and official_rank_system_id=#{officialRankSystem.officialRankSystemId}
+            and official_rank_system_id like "%" #{officialRankSystem.officialRankSystemId} "%"
         </if>
         <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
-            and official_rank_system_name=#{officialRankSystem.officialRankSystemName}
+            and official_rank_system_name like "%" #{officialRankSystem.officialRankSystemName} "%"
         </if>
         <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">
-            and rank_prefix_code=#{officialRankSystem.rankPrefixCode}
+            and rank_prefix_code like "%" #{officialRankSystem.rankPrefixCode} "%"
         </if>
         <if test="officialRankSystem.rankStart != null">
-            and rank_start=#{officialRankSystem.rankStart}
+            and rank_start = #{officialRankSystem.rankStart}
         </if>
         <if test="officialRankSystem.rankEnd != null">
-            and rank_end=#{officialRankSystem.rankEnd}
+            and rank_end = #{officialRankSystem.rankEnd}
         </if>
         <if test="officialRankSystem.rankDecomposeDimension != null">
-            and rank_decompose_dimension=#{officialRankSystem.rankDecomposeDimension}
+            and rank_decompose_dimension = #{officialRankSystem.rankDecomposeDimension}
         </if>
         <if test="officialRankSystem.status != null">
-            and status=#{officialRankSystem.status}
+            and status = #{officialRankSystem.status}
         </if>
         <if test="officialRankSystem.deleteFlag != null">
-            and delete_flag=#{officialRankSystem.deleteFlag}
+            and delete_flag = #{officialRankSystem.deleteFlag}
         </if>
         <if test="officialRankSystem.createBy != null">
-            and create_by=#{officialRankSystem.createBy}
+            and create_by like "%" #{officialRankSystem.createBy} "%"
         </if>
         <!-- 开始时间检索 -->
         <if test="officialRankSystem.params.createTimeStart != null and officialRankSystem.params.createTimeStart != ''">
-            AND date_format(create_time,'%y%m%d') &gt;= date_format(#{officialRankSystem.params.createTimeStart},'%y%m%d')
+            AND date_format(create_time,'%y%m%d') &gt;=
+            date_format(#{officialRankSystem.params.createTimeStart},'%y%m%d')
         </if>
         <if test="officialRankSystem.params.createTimeEnd != null and officialRankSystem.params.createTimeEnd != ''">
             AND date_format(create_time,'%y%m%d') &lt;= date_format(#{officialRankSystem.params.createTimeEnd},'%y%m%d')
         </if>
         <if test="officialRankSystem.updateBy != null">
-            and update_by=#{officialRankSystem.updateBy}
+            and update_by like "%" #{officialRankSystem.updateBy}
         </if>
     </select>
     <select id="officialRankNameCheckUnique" resultType="java.lang.Integer">

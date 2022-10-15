@@ -29,10 +29,10 @@
             and ancestors=#{industry.ancestors}
         </if>
         <if test="industry.industryCode != null and industry.industryCode != ''">
-            and industry_code=#{industry.industryCode}
+            and industry_code like "%" #{industry.industryCode} "%"
         </if>
         <if test="industry.industryName != null and industry.industryName != ''">
-            and industry_name=#{industry.industryName}
+            and industry_name like "%" #{industry.industryName} "%"
         </if>
         <if test="industry.level != null and industry.level != ''">
             and level=#{industry.level}
@@ -46,14 +46,8 @@
         <if test="industry.createBy != null and industry.createBy != ''">
             and create_by=#{industry.createBy}
         </if>
-        <if test="industry.createTime != null">
-            and create_time=#{industry.createTime}
-        </if>
         <if test="industry.updateBy != null and industry.updateBy != ''">
             and update_by=#{industry.updateBy}
-        </if>
-        <if test="industry.updateTime != null">
-            and update_time=#{industry.updateTime}
         </if>
     </select>
 
