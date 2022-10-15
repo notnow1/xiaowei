@@ -2,13 +2,14 @@ package net.qixiaowei.system.manage.service.impl.user;
 
 import java.util.*;
 
-import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
+import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
@@ -16,7 +17,6 @@ import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.service.system.IRoleMenuService;
 import net.qixiaowei.system.manage.service.system.IUserRoleService;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -100,7 +100,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserDTO selectUserByUserId(Long userId) {
         UserDTO userDTO = userMapper.selectUserByUserId(userId);
-        if(StringUtils.isNull(userDTO)){
+        if (StringUtils.isNull(userDTO)) {
             throw new ServiceException("当前用户不存在");
         }
         List<RoleDTO> roleList = roleMapper.selectRolesByUserId(userId);
@@ -120,8 +120,8 @@ public class UserServiceImpl implements IUserService {
         BeanUtils.copyProperties(userDTO, user);
         String employeeName = userDTO.getEmployeeName();
         Map<String, Object> params = user.getParams();
-        if(StringUtils.isNotEmpty(employeeName)){
-            params.put("employeeName",employeeName);
+        if (StringUtils.isNotEmpty(employeeName)) {
+            params.put("employeeName", employeeName);
         }
         user.setParams(params);
         return userMapper.selectUserList(user);
@@ -135,7 +135,7 @@ public class UserServiceImpl implements IUserService {
      */
     @Transactional
     @Override
-    public int insertUser(UserDTO userDTO) {
+    public UserDTO insertUser(UserDTO userDTO) {
         this.checkUserUnique(userDTO);
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
@@ -154,7 +154,8 @@ public class UserServiceImpl implements IUserService {
         userDTO.setUserId(user.getUserId());
         //新增用户角色
         insertUserRole(userDTO);
-        return row;
+        userDTO.setUserId(user.getUserId());
+        return userDTO;
     }
 
     /**
@@ -272,6 +273,37 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 用户授权角色
+     */
+    @Override
+    public void authRoles(AuthRolesDTO authRolesDTO) {
+        Set<Long> userIds = authRolesDTO.getUserIds();
+        Set<Long> roleIds = authRolesDTO.getRoleIds();
+        List<UserRoleDTO> userRoleDTOS = userRoleMapper.selectUserRoleListByUserIds(new ArrayList<>(userIds));
+        Set<String> userRoleSet = new HashSet<>();
+        if (StringUtils.isNotEmpty(userRoleDTOS)) {
+            userRoleDTOS.forEach(userRoleDTO -> userRoleSet.add(userRoleDTO.getUserId() + Constants.COLON_EN + userRoleDTO.getRoleId()));
+        }
+        List<UserRole> userRoles = new ArrayList<>();
+        for (Long userId : userIds) {
+            roleIds.forEach(roleId -> {
+                //仅添加不存在的用户角色
+                if (!userRoleSet.contains(userId + Constants.COLON_EN + roleId)) {
+                    UserRole userRole = new UserRole();
+                    userRole.setRoleId(roleId);
+                    userRole.setUserId(userId);
+                    userRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    userRoles.add(userRole);
+                }
+            });
+        }
+        //批量新增用户角色
+        if (StringUtils.isNotEmpty(userRoles)) {
+            userRoleMapper.batchUserRole(userRoles);
+        }
+    }
+
+    /**
      * 批量新增用户表信息
      *
      * @param userDtos 用户表对象
@@ -371,7 +403,7 @@ public class UserServiceImpl implements IUserService {
      * @param userId  用户ID
      * @param roleIds 角色组
      */
-    public void insertUserRole(Long userId, Long[] roleIds) {
+    public void insertUserRole(Long userId, Set<Long> roleIds) {
         if (StringUtils.isNotEmpty(roleIds)) {
             Date nowDate = DateUtils.getNowDate();
             Long insertUserId = SecurityUtils.getUserId();
@@ -410,10 +442,10 @@ public class UserServiceImpl implements IUserService {
      * @param oldUserRoles 用户旧角色集合
      */
     public void updateUserRole(UserDTO user, List<Long> oldUserRoles) {
-        Long[] roleIds = user.getRoleIds();
+        Set<Long> roleIds = user.getRoleIds();
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
-        List<Long> insertUserRoleIds = new ArrayList<>();
+        Set<Long> insertUserRoleIds = new HashSet<>();
         if (StringUtils.isNotEmpty(roleIds)) {
             for (Long userRole : roleIds) {
                 if (oldUserRoles.contains(userRole)) {
@@ -425,7 +457,7 @@ public class UserServiceImpl implements IUserService {
         }
         //新增
         if (StringUtils.isNotEmpty(insertUserRoleIds)) {
-            this.insertUserRole(user.getUserId(), insertUserRoleIds.toArray(new Long[insertUserRoleIds.size()]));
+            this.insertUserRole(user.getUserId(), insertUserRoleIds);
         }
         //执行假删除
         if (StringUtils.isNotEmpty(oldUserRoles)) {

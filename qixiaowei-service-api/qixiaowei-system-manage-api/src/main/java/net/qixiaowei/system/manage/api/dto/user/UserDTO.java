@@ -1,13 +1,11 @@
 package net.qixiaowei.system.manage.api.dto.user;
 
-import java.util.Date;
+import java.util.*;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -137,7 +135,7 @@ public class UserDTO {
     /**
      * 要保存的角色组
      */
-    private Long[] roleIds;
+    private Set<Long> roleIds;
 
     public boolean isAdmin() {
         return isAdmin(this.userId);

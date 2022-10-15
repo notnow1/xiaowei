@@ -1,6 +1,8 @@
 package net.qixiaowei.system.manage.service.user;
 
 import java.util.List;
+
+import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
@@ -39,7 +41,7 @@ public interface IUserService{
     * @param userDTO 用户表
     * @return 结果
     */
-    int insertUser(UserDTO userDTO);
+    UserDTO insertUser(UserDTO userDTO);
 
     /**
     * 修改用户表
@@ -88,5 +90,10 @@ public interface IUserService{
      * @return 结果
      */
     int resetPwd(UserDTO userDTO);
+
+    /**
+     * 用户授权角色
+     */
+    void authRoles(AuthRolesDTO authRolesDTO);
 
 }

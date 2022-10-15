@@ -2,10 +2,8 @@ package net.qixiaowei.integration.common.constant;
 
 /**
  * 通用常量信息
- *
  */
-public interface Constants
-{
+public interface Constants {
     /**
      * UTF-8 字符集
      */
@@ -130,5 +128,16 @@ public interface Constants
      * 标记：否
      */
     Integer FLAG_NO = 0;
+
+    /**
+     * 英文冒号
+     */
+    String COLON_EN = ":";
+
+    /**
+     * 英文逗号号
+     */
+    String COMMA_EN = ",";
+
 
 }

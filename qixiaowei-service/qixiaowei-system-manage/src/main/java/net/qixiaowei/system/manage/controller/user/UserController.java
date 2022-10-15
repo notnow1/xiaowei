@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.controller.user;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,7 +60,7 @@ public class UserController extends BaseController {
     @Log(title = "新增用户表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@Validated(UserDTO.AddUserDTO.class) @RequestBody UserDTO userDTO) {
-        return toAjax(userService.insertUser(userDTO));
+        return AjaxResult.success(userService.insertUser(userDTO));
     }
 
     /**
@@ -121,4 +122,16 @@ public class UserController extends BaseController {
     public AjaxResult resetPwd(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.resetPwd(userDTO));
     }
+
+    /**
+     * 用户授权角色
+     */
+    @RequiresPermissions("system:manage:user:authRoles")
+    @Log(title = "用户授权角色", businessType = BusinessType.GRANT)
+    @PostMapping("/authRoles")
+    public AjaxResult authRoles(@Validated @RequestBody AuthRolesDTO authRolesDTO) {
+        userService.authRoles(authRolesDTO);
+        return success();
+    }
+
 }
