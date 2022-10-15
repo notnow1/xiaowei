@@ -32,6 +32,14 @@ public interface RoleMapper{
     RoleDTO selectRoleByRoleId(@Param("roleId")Long roleId);
 
     /**
+     * 查询角色表
+     *
+     * @param roleCode 角色编码
+     * @return 角色表
+     */
+    RoleDTO selectRoleByRoleCode(@Param("roleCode")String roleCode);
+
+    /**
     * 查询角色表列表
     *
     * @param role 角色表

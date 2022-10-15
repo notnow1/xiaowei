@@ -109,13 +109,10 @@ public class MenuServiceImpl implements IMenuService {
     }
 
     @Override
-    public RoleMenuTreeVO roleMenuTreeSelect(Long roleId) {
+    public List<Tree<Long>> roleMenuTreeSelect() {
         MenuDTO menuDTO = new MenuDTO();
         List<MenuDTO> menus = this.selectMenuList(menuDTO);
-        RoleMenuTreeVO roleMenuTreeVO = new RoleMenuTreeVO();
-        roleMenuTreeVO.setCheckedKeys(this.selectMenuListByRoleId(roleId));
-        roleMenuTreeVO.setMenus(this.buildMenuTree(menus));
-        return roleMenuTreeVO;
+        return this.buildMenuTree(menus);
     }
 
     /**

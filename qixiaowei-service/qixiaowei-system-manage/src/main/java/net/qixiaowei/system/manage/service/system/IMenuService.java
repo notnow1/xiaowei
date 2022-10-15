@@ -49,7 +49,7 @@ public interface IMenuService {
     List<RouterVO> getRouters();
 
 
-    RoleMenuTreeVO roleMenuTreeSelect(Long roleId);
+    List<Tree<Long>> roleMenuTreeSelect();
 
     /**
      * 根据角色ID查询菜单树信息

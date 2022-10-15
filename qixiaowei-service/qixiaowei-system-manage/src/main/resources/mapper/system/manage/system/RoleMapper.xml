@@ -11,6 +11,15 @@
         and delete_flag=0
     </select>
 
+    <select id="selectRoleByRoleCode"
+            resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
+        SELECT
+        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM role
+        WHERE  role_code = #{roleCode}
+        and delete_flag = 0
+    </select>
+
     <select id="selectRolesByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT distinct
         r.role_id, r.role_code, r.role_name, r.data_scope, r.product_package, r.sort, r.remark, r.status, r.delete_flag, r.create_by, r.create_time, r.update_by, r.update_time

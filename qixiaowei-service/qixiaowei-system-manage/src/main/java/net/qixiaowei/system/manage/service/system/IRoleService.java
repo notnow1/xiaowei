@@ -42,7 +42,7 @@ public interface IRoleService{
     * @param roleDTO 角色表
     * @return 结果
     */
-    int insertRole(RoleDTO roleDTO);
+    RoleDTO insertRole(RoleDTO roleDTO);
 
     /**
     * 修改角色表
@@ -55,10 +55,10 @@ public interface IRoleService{
     /**
     * 逻辑批量删除角色表
     *
-    * @param RoleDtos 需要删除的角色表集合
+    * @param roleIds 需要删除的角色表集合
     * @return 结果
     */
-    int logicDeleteRoleByRoleIds(List<RoleDTO> RoleDtos);
+    int logicDeleteRoleByRoleIds( List<Long> roleIds);
 
     /**
     * 逻辑删除角色表信息

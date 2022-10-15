@@ -60,9 +60,9 @@ public class MenuController extends BaseController {
     /**
      * 加载对应角色菜单列表树
      */
-    @GetMapping(value = "/roleMenuTreeSelect/{roleId}")
-    public AjaxResult roleMenuTreeSelect(@PathVariable Long roleId) {
-        return AjaxResult.success(menuService.roleMenuTreeSelect(roleId));
+    @GetMapping(value = "/roleMenuTreeSelect")
+    public AjaxResult roleMenuTreeSelect( ){
+        return AjaxResult.success(menuService.roleMenuTreeSelect());
     }
 
     /**
