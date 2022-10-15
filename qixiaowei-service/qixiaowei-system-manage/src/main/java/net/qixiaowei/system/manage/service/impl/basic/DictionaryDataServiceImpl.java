@@ -2,7 +2,11 @@ package net.qixiaowei.system.manage.service.impl.basic;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.remote.dictionary.RemoteDictionaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
 import net.qixiaowei.system.manage.service.basic.IDictionaryDataService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+
 import org.springframework.util.CollectionUtils;
 
 
@@ -29,6 +34,8 @@ import org.springframework.util.CollectionUtils;
 public class DictionaryDataServiceImpl implements IDictionaryDataService {
     @Autowired
     private DictionaryDataMapper dictionaryDataMapper;
+    @Autowired
+    private RemoteDictionaryService remoteDictionaryService;
 
     /**
      * 查询字典数据表
@@ -145,6 +152,14 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
         dictionaryData.setDictionaryDataId(dictionaryDataDTO.getDictionaryDataId());
         dictionaryData.setUpdateTime(DateUtils.getNowDate());
         dictionaryData.setUpdateBy(SecurityUtils.getUserId());
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setProductCategory(dictionaryDataDTO.getDictionaryDataId().toString());
+        productDTO.setListingFlag(Integer.parseInt(dictionaryDataDTO.getDictionaryDataId().toString()));
+        R<List<ProductDTO>> listR = remoteDictionaryService.queryDictionaryType(productDTO);
+        List<ProductDTO> data = listR.getData();
+        if (!CollectionUtils.isEmpty(data)){
+
+        }
         // todo 暂时不知道被谁引用
         return dictionaryDataMapper.logicDeleteDictionaryDataByDictionaryDataId(dictionaryData, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }

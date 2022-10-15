@@ -1,1 +1,1 @@
-net.qixiaowei.operate.cloud.api.RemoteFallbackFactory
+net.qixiaowei.operate.cloud.api.factory.RemoteDictionaryFallbackFactory
