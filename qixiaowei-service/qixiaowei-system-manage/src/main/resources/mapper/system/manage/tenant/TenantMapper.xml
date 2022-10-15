@@ -52,8 +52,10 @@
         left join industry_default id
         on t.tenant_industry = id.industry_id
         and id.delete_flag = 0
-        where
-        find_in_set(#{tenant.supportStaff}, support_staff)
+        where 1=1
+        <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
+          and   find_in_set(#{tenant.supportStaff}, support_staff)
+        </if>
         and t.delete_flag = 0
         <if test="tenant.tenantId != null and tenant.tenantId != ''">
             and tenant_id like '%${tenant.tenantId}%'
