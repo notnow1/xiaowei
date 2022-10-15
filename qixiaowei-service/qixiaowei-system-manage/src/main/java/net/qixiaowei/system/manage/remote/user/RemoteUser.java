@@ -26,7 +26,7 @@ public class RemoteUser implements RemoteUserService {
     @Override
     @InnerAuth
     @GetMapping("/info")
-    public R<LoginUserVO> getUserInfo(@RequestParam("userAccount")String userAccount, @RequestParam("source")String source) {
+    public R<LoginUserVO> getUserInfo(String userAccount, String source) {
         return R.ok(userService.getUserByUserAccount(userAccount));
     }
 
