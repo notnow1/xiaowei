@@ -2,7 +2,7 @@
 nacos:
   username: nacos
   password: nacos
-  server-addr: 192.168.10.187:8848
+  server-addr: nacos-qxw-headless.qixiaowei-stg1:8848
 
 # Spring cloud nacos
 spring:
@@ -37,7 +37,7 @@ spring:
       datasource:
         ds1:
           nacos:
-            server-addr: 192.168.10.187:8848
+            server-addr: nacos-qxw-headless.qixiaowei-stg1:8848
             dataId: sentinel-qixiaowei-gateway
             groupId: TEST_GROUP
             data-type: json
