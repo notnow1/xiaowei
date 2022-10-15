@@ -91,6 +91,15 @@
         </foreach>
           and delete_flag=0
     </select>
+<!--    查询产品是否用到枚举-->
+    <select id="queryDictionaryType" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+        SELECT
+            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        FROM product
+        WHERE  product_description=#{product.productCategory}
+          or listing_flag = #{product.listingFlag}
+          and delete_flag=0
+    </select>
     <!--新增产品表-->
     <insert id="insertProduct" useGeneratedKeys="true" keyProperty="productId">
         INSERT INTO product (parent_product_id,ancestors,product_code,product_name,level,product_unit_id,product_category,product_description,list_price,listing_flag,delete_flag,create_by,create_time,update_by,update_time)

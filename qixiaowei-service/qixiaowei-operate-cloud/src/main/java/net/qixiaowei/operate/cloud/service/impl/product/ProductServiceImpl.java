@@ -738,6 +738,19 @@ public class ProductServiceImpl implements IProductService {
     }
 
     /**
+     * 查询产品是否用到枚举
+     * @param productDTO
+     * @return
+     */
+    @Override
+    public List<ProductDTO> queryDictionaryType(ProductDTO productDTO) {
+        Product product = new Product();
+        product.setProductCategory(productDTO.getProductCategory());
+        product.setListingFlag(productDTO.getListingFlag());
+        return productMapper.queryDictionaryType(product);
+    }
+
+    /**
      * 逻辑删除产品表信息
      *
      * @param productDTO 产品表

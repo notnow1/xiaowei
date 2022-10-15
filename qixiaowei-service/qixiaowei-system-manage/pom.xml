@@ -85,6 +85,10 @@
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-system-manage-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-operate-cloud-api</artifactId>
+        </dependency>
 
     </dependencies>
 

@@ -56,7 +56,7 @@ public class PostDTO {
     /**
     * 职级体系ID
     */
-    @NotNull(message = "职级体系不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
+//    @NotNull(message = "职级体系不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Long officialRankSystemId;
 
 
@@ -67,27 +67,27 @@ public class PostDTO {
     /**
     * 岗位职级下限
     */
-    @NotNull(message = "岗位职级下限不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
+//    @NotNull(message = "岗位职级下限不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRankLower;
     /**
     * 岗位职级
     */
-    @NotNull(message = "岗位职级不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
+//    @NotNull(message = "岗位职级不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRank;
     /**
     * 岗位职级上限
     */
-    @NotNull(message = "岗位职级上限不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
+//    @NotNull(message = "岗位职级上限不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRankUpper;
     /**
     * 岗位说明书URL路径
     */
-    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
+//    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String postDescription;
     /**
     * 状态:0失效;1生效
     */
-    @NotNull(message = "岗位状态不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
+//    @NotNull(message = "岗位状态不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer status;
     /**
     * 删除标记:0未删除;1已删除

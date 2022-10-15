@@ -33,6 +33,15 @@ public class ProductController extends BaseController
 
     @Autowired
     private IProductService productService;
+    /**
+     * 查询产品是否用到枚举
+     */
+    //@RequiresPermissions("operate:cloud:product:info")
+    @PostMapping("/queryDictionaryType")
+    public AjaxResult queryDictionaryType(@RequestBody ProductDTO productDTO){
+         List<ProductDTO>  productDTOList =  productService.queryDictionaryType(productDTO);
+        return AjaxResult.success(productDTOList);
+    }
 
 
     /**

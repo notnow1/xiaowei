@@ -125,4 +125,10 @@ public interface ProductMapper{
      */
     ProductDTO selectProductByParentProductId(@Param("parentProductId")Long parentProductId);
 
+    /**
+     * 查询产品是否用到枚举
+     * @param product
+     * @return
+     */
+    List<ProductDTO> queryDictionaryType(@Param("product")Product product);
 }

@@ -98,4 +98,11 @@ public interface IProductService{
     * @return 结果
     */
     int deleteProductByProductId(Long productId);
+
+    /**
+     * 查询产品是否用到枚举
+     * @param productDTO
+     * @return
+     */
+    List<ProductDTO> queryDictionaryType(ProductDTO productDTO);
 }
