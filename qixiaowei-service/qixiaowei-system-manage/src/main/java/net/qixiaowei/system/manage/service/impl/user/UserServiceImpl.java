@@ -100,6 +100,9 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserDTO selectUserByUserId(Long userId) {
         UserDTO userDTO = userMapper.selectUserByUserId(userId);
+        if(StringUtils.isNull(userDTO)){
+            throw new ServiceException("当前用户不存在");
+        }
         List<RoleDTO> roleList = roleMapper.selectRolesByUserId(userId);
         userDTO.setRoles(roleList);
         return userDTO;
