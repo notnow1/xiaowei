@@ -135,7 +135,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
         this.quoteFlag(dictionaryDataDTO1.getDictionaryType(), dictionaryDataDTO1);
 
 
-        return dictionaryDataMapper.logicDeleteDictionaryDataByDictionaryDataId(dictionaryDataDTO1);
+        return dictionaryDataMapper.logicDeleteDictionaryDataByDictionaryDataId(dictionaryData);
     }
 
     /**
