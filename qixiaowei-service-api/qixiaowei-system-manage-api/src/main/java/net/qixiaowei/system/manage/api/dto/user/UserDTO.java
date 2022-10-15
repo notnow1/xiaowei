@@ -109,7 +109,7 @@ public class UserDTO {
     /**
      * 删除标记:0未删除;1已删除
      */
-    private Integer deleteFlag;
+    private  Integer  deleteFlag;
     /**
      * 创建人
      */
@@ -117,7 +117,7 @@ public class UserDTO {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date createTime;
     /**
      * 更新人
@@ -126,16 +126,16 @@ public class UserDTO {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date updateTime;
 
     /**
-     * 角色对象
+     * 拥有的角色对象
      */
     private List<RoleDTO> roles;
 
     /**
-     * 角色组
+     * 要保存的角色组
      */
     private Long[] roleIds;
 

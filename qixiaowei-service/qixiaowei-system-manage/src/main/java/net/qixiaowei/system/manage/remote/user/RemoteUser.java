@@ -9,6 +9,7 @@ import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -24,7 +25,7 @@ public class RemoteUser implements RemoteUserService {
 
     @Override
     @InnerAuth
-    @GetMapping("/info/{userAccount}")
+    @GetMapping("/info")
     public R<LoginUserVO> getUserInfo(String userAccount, String source) {
         return R.ok(userService.getUserByUserAccount(userAccount));
     }

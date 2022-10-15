@@ -1,7 +1,6 @@
 package net.qixiaowei.system.manage.controller.user;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -53,7 +52,6 @@ public class UserController extends BaseController {
         return AjaxResult.success(list);
     }
 
-
     /**
      * 新增用户表
      */
@@ -64,6 +62,15 @@ public class UserController extends BaseController {
         return toAjax(userService.insertUser(userDTO));
     }
 
+    /**
+     * 查看用户信息
+     *
+     * @return 用户信息
+     */
+    @GetMapping("/info/{userId}")
+    public AjaxResult info(@PathVariable Long userId) {
+        return AjaxResult.success(userService.selectUserByUserId(userId));
+    }
 
     /**
      * 修改用户表

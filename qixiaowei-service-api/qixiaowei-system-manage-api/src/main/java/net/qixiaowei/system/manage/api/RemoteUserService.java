@@ -7,11 +7,7 @@ import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.factory.RemoteUserFallbackFactory;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 用户服务
@@ -28,8 +24,8 @@ public interface RemoteUserService {
      * @param source      请求来源
      * @return 结果
      */
-    @GetMapping(API_PREFIX_USER + "/info/{userAccount}")
-    R<LoginUserVO> getUserInfo(@PathVariable("userAccount") String userAccount, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @GetMapping(API_PREFIX_USER + "/info")
+    R<LoginUserVO> getUserInfo(@RequestParam("userAccount") String userAccount, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 注册用户信息

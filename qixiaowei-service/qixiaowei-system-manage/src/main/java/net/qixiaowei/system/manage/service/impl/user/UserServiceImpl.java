@@ -7,10 +7,12 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
+import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
+import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.service.system.IRoleMenuService;
 import net.qixiaowei.system.manage.service.system.IUserRoleService;
@@ -40,6 +42,9 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 public class UserServiceImpl implements IUserService {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
 
     @Autowired
     private UserRoleMapper userRoleMapper;
@@ -94,7 +99,13 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     public UserDTO selectUserByUserId(Long userId) {
-        return userMapper.selectUserByUserId(userId);
+        UserDTO userDTO = userMapper.selectUserByUserId(userId);
+        if(StringUtils.isNull(userDTO)){
+            throw new ServiceException("当前用户不存在");
+        }
+        List<RoleDTO> roleList = roleMapper.selectRolesByUserId(userId);
+        userDTO.setRoles(roleList);
+        return userDTO;
     }
 
     /**
