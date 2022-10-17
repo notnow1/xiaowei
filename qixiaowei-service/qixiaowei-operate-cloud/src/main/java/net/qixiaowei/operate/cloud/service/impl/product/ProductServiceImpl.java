@@ -128,8 +128,7 @@ public class ProductServiceImpl implements IProductService {
      */
     @Transactional
     @Override
-    public int insertProduct(ProductDTO productDTO) {
-        int i = 0;
+    public ProductDTO insertProduct(ProductDTO productDTO) {
         ProductDTO productDTO1 = productMapper.selectProductByProductCode(productDTO.getProductCode());
         if (null != productDTO1) {
             throw new ServiceException("产品编码已存在！");
@@ -152,7 +151,7 @@ public class ProductServiceImpl implements IProductService {
         }
         //新增产品表
         try {
-            i = productMapper.insertProduct(product);
+             productMapper.insertProduct(product);
         } catch (Exception e) {
             throw new ServiceException("新增产品表失败");
         }
@@ -171,7 +170,8 @@ public class ProductServiceImpl implements IProductService {
         List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
         //封装写入产品文件表数据
         this.batchProductFile(productFileDTOList, product);
-        return i;
+        productDTO.setProductId(product.getProductId());
+        return productDTO;
     }
 
 

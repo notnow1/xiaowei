@@ -32,7 +32,7 @@ public interface IDictionaryTypeService{
     * @param dictionaryTypeDTO 字典类型表
     * @return 结果
     */
-    int insertDictionaryType(DictionaryTypeDTO dictionaryTypeDTO);
+    DictionaryTypeDTO insertDictionaryType(DictionaryTypeDTO dictionaryTypeDTO);
 
     /**
     * 修改字典类型表

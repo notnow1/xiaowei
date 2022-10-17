@@ -32,7 +32,7 @@ public interface IDictionaryDataService{
     * @param dictionaryDataDTO 字典数据表
     * @return 结果
     */
-    int insertDictionaryData(DictionaryDataDTO dictionaryDataDTO);
+    DictionaryDataDTO insertDictionaryData(DictionaryDataDTO dictionaryDataDTO);
 
     /**
     * 修改字典数据表

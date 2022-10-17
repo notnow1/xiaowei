@@ -73,7 +73,7 @@ public class ${table.controllerName} extends BaseController
     @Log(title = "新增${table.comment!}", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody ${entity}DTO ${entity?uncap_first}DTO) {
-    return toAjax(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}DTO));
+    return AjaxResult.success(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}DTO));
     }
 
 

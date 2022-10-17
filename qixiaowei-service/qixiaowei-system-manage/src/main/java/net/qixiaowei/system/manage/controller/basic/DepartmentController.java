@@ -94,7 +94,7 @@ public class DepartmentController extends BaseController
     //@Log(title = "新增部门表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(DepartmentDTO.AddDepartmentDTO.class)DepartmentDTO departmentDTO) {
-    return toAjax(departmentService.insertDepartment(departmentDTO));
+    return AjaxResult.success(departmentService.insertDepartment(departmentDTO));
     }
 
 

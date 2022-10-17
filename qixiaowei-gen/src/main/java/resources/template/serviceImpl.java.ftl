@@ -58,7 +58,7 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     * @return 结果
     */
     @Override
-    public int insert${entity}(${entity}DTO ${entity?uncap_first}DTO){
+    public ${entity}DTO insert${entity}(${entity}DTO ${entity?uncap_first}DTO){
     ${entity} ${entity?uncap_first}=new ${entity}();
     BeanUtils.copyProperties(${entity?uncap_first}DTO,${entity?uncap_first});
     ${entity?uncap_first}.setCreateBy(SecurityUtils.getUserId());
@@ -66,7 +66,9 @@ public class ${entity}ServiceImpl implements I${entity}Service{
     ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
     ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
     ${entity?uncap_first}.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-    return ${entity?uncap_first}Mapper.insert${entity}(${entity?uncap_first});
+    ${entity?uncap_first}Mapper.insert${entity}(${entity?uncap_first});
+    ${entity?uncap_first}DTO.set<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}.get<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>());
+    return ${entity?uncap_first}DTO;
     }
 
     /**

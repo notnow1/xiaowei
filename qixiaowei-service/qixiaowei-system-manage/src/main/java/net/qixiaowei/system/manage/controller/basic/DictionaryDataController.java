@@ -73,7 +73,7 @@ public class DictionaryDataController extends BaseController
     //@Log(title = "新增字典数据表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody DictionaryDataDTO dictionaryDataDTO) {
-    return toAjax(dictionaryDataService.insertDictionaryData(dictionaryDataDTO));
+    return AjaxResult.success(dictionaryDataService.insertDictionaryData(dictionaryDataDTO));
     }
 
 

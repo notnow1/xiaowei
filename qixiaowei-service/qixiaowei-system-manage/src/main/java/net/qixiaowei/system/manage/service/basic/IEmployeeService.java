@@ -39,7 +39,7 @@ public interface IEmployeeService{
     * @param employeeDTO 员工表
     * @return 结果
     */
-    int insertEmployee(EmployeeDTO employeeDTO);
+    EmployeeDTO insertEmployee(EmployeeDTO employeeDTO);
 
     /**
     * 修改员工表

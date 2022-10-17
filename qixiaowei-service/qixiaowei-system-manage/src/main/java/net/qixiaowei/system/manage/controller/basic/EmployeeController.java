@@ -71,7 +71,7 @@ public class EmployeeController extends BaseController
     //@Log(title = "新增员工表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(EmployeeDTO.AddEmployeeDTO.class) EmployeeDTO employeeDTO) {
-    return toAjax(employeeService.insertEmployee(employeeDTO));
+    return AjaxResult.success(employeeService.insertEmployee(employeeDTO));
     }
 
 

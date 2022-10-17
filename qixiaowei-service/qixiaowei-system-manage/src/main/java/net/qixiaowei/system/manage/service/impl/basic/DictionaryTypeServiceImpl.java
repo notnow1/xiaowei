@@ -58,7 +58,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @return 结果
     */
     @Override
-    public int insertDictionaryType(DictionaryTypeDTO dictionaryTypeDTO){
+    public DictionaryTypeDTO insertDictionaryType(DictionaryTypeDTO dictionaryTypeDTO){
     DictionaryType dictionaryType=new DictionaryType();
     BeanUtils.copyProperties(dictionaryTypeDTO,dictionaryType);
     dictionaryType.setCreateBy(SecurityUtils.getUserId());
@@ -66,7 +66,9 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     dictionaryType.setUpdateTime(DateUtils.getNowDate());
     dictionaryType.setUpdateBy(SecurityUtils.getUserId());
     dictionaryType.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-    return dictionaryTypeMapper.insertDictionaryType(dictionaryType);
+        dictionaryTypeMapper.insertDictionaryType(dictionaryType);
+        dictionaryTypeDTO.setDictionaryTypeId(dictionaryType.getDictionaryTypeId());
+    return dictionaryTypeDTO;
     }
 
     /**

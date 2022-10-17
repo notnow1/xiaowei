@@ -32,7 +32,7 @@ public interface IPostService{
     * @param postDTO 岗位表
     * @return 结果
     */
-    int insertPost(PostDTO postDTO);
+    PostDTO insertPost(PostDTO postDTO);
 
     /**
     * 修改岗位表

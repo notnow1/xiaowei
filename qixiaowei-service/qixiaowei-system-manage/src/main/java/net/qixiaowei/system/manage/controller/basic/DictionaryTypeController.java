@@ -73,7 +73,7 @@ public class DictionaryTypeController extends BaseController
     //@Log(title = "新增字典类型表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody DictionaryTypeDTO dictionaryTypeDTO) {
-    return toAjax(dictionaryTypeService.insertDictionaryType(dictionaryTypeDTO));
+    return AjaxResult.success(dictionaryTypeService.insertDictionaryType(dictionaryTypeDTO));
     }
 
 

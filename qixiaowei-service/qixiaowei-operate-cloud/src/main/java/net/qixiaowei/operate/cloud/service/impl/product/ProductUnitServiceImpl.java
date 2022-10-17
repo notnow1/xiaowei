@@ -69,7 +69,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
      */
     @Transactional
     @Override
-    public int insertProductUnit(ProductUnitDTO productUnitDTO) {
+    public ProductUnitDTO insertProductUnit(ProductUnitDTO productUnitDTO) {
         ProductUnit productUnit = new ProductUnit();
         BeanUtils.copyProperties(productUnitDTO, productUnit);
         ProductUnitDTO productUnitDTO1 = productUnitMapper.selectProductUnitByProductUnitCode(productUnitDTO.getProductUnitCode());
@@ -81,7 +81,9 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         productUnit.setUpdateTime(DateUtils.getNowDate());
         productUnit.setUpdateBy(SecurityUtils.getUserId());
         productUnit.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        return productUnitMapper.insertProductUnit(productUnit);
+        productUnitMapper.insertProductUnit(productUnit);
+        productUnitDTO.setProductUnitId(productUnit.getProductUnitId());
+        return productUnitDTO;
     }
 
     /**

@@ -72,7 +72,7 @@ public class PostController extends BaseController
     //@Log(title = "新增岗位表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(PostDTO.AddPostDTO.class) PostDTO postDTO) {
-    return toAjax(postService.insertPost(postDTO));
+    return AjaxResult.success(postService.insertPost(postDTO));
     }
 
 

@@ -32,7 +32,7 @@ public interface IProductUnitService{
     * @param productUnitDTO 产品单位表
     * @return 结果
     */
-    int insertProductUnit(ProductUnitDTO productUnitDTO);
+    ProductUnitDTO insertProductUnit(ProductUnitDTO productUnitDTO);
 
     /**
     * 修改产品单位表

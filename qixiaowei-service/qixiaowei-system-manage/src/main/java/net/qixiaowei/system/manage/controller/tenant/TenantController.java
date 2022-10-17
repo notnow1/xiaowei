@@ -83,8 +83,7 @@ public class TenantController extends BaseController {
     // @Log(title = "新增租户表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@Validated(TenantDTO.AddTenantDTO.class) @RequestBody TenantDTO tenantDTO) {
-        AjaxResult ajaxResult = toAjax(tenantService.insertTenant(tenantDTO));
-        return ajaxResult;
+        return AjaxResult.success(tenantService.insertTenant(tenantDTO));
     }
 
 

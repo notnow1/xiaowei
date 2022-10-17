@@ -87,8 +87,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Transactional
     @Override
-    public int insertPost(PostDTO postDTO) {
-        int i = 0;
+    public PostDTO insertPost(PostDTO postDTO) {
         //岗位表
         Post post = new Post();
         BeanUtils.copyProperties(postDTO, post);
@@ -106,7 +105,7 @@ public class PostServiceImpl implements IPostService {
         post.setUpdateBy(SecurityUtils.getUserId());
         post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         try {
-            i = postMapper.insertPost(post);
+             postMapper.insertPost(post);
         } catch (Exception e) {
             throw new ServiceException("新增岗位失败！");
         }
@@ -149,7 +148,8 @@ public class PostServiceImpl implements IPostService {
                 throw new ServiceException("新增岗位组织信息失败！");
             }
         }
-        return i;
+        postDTO.setPostId(post.getPostId());
+        return postDTO;
     }
 
     /**

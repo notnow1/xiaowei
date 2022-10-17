@@ -32,7 +32,7 @@ public interface ITenantService{
     * @param tenantDTO 租户表
     * @return 结果
     */
-    int insertTenant(TenantDTO tenantDTO);
+    TenantDTO insertTenant(TenantDTO tenantDTO);
 
     /**
     * 修改租户表

@@ -137,9 +137,7 @@ public class TenantServiceImpl implements ITenantService {
      */
     @Transactional
     @Override
-    public int insertTenant(TenantDTO tenantDTO) {
-        int i = 0;
-
+    public TenantDTO insertTenant(TenantDTO tenantDTO) {
         //租户
         Tenant tenant = new Tenant();
         //租户联系人
@@ -161,7 +159,7 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         //插入租户表
         try {
-            i = tenantMapper.insertTenant(tenant);
+            tenantMapper.insertTenant(tenant);
         } catch (Exception e) {
             throw new ServiceException("插入租户表失败" + e);
         }
@@ -206,8 +204,9 @@ public class TenantServiceImpl implements ITenantService {
         } catch (Exception e) {
             throw new ServiceException("插入租户合同人失败" + e);
         }
-        //返回条数
-        return i;
+        //返回数据
+        tenantDTO.setTenantId(tenant.getTenantId());
+        return tenantDTO;
     }
 
 

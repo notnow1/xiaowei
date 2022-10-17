@@ -110,7 +110,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Transactional
     @Override
-    public int insertDepartment(DepartmentDTO departmentDTO) {
+    public DepartmentDTO insertDepartment(DepartmentDTO departmentDTO) {
         //查询code编码是否已经存在
         DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentCode(departmentDTO.getDepartmentCode());
         if (null != departmentDTO1) {
@@ -134,7 +134,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
             department.setSort(1);
             department.setParentDepartmentId(0L);
             department.setAncestors("");
-            return departmentMapper.insertDepartment(department);
+            departmentMapper.insertDepartment(department);
+            departmentDTO.setDepartmentId(department.getDepartmentId());
+            return departmentDTO;
         } else {
             department = this.packDepartment(department);
             //根据父级id查询 获取父级id的祖级列表ID
@@ -146,7 +148,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 department.setParentDepartmentId(departmentId);
                 //祖级id就是父级id
                 department.setAncestors(String.valueOf(departmentDTO.getParentDepartmentId()));
-                return departmentMapper.insertDepartment(department);
+                departmentMapper.insertDepartment(department);
+                departmentDTO.setDepartmentId(department.getDepartmentId());
+                return departmentDTO;
             } else {
                 department.setSort(departmentDTO2.getSort() + 1);
                 department.setParentDepartmentId(departmentId);
@@ -159,7 +163,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
                 //祖级id
                 department.setAncestors(ancestors);
-                return departmentMapper.insertDepartment(department);
+                departmentMapper.insertDepartment(department);
+                departmentDTO.setDepartmentId(department.getDepartmentId());
+                return departmentDTO;
             }
         }
     }

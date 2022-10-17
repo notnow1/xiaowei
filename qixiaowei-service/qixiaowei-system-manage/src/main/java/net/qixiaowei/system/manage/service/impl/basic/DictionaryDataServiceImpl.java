@@ -69,7 +69,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @return 结果
      */
     @Override
-    public int insertDictionaryData(DictionaryDataDTO dictionaryDataDTO) {
+    public DictionaryDataDTO insertDictionaryData(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
         dictionaryData.setCreateBy(SecurityUtils.getUserId());
@@ -77,7 +77,9 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
         dictionaryData.setUpdateTime(DateUtils.getNowDate());
         dictionaryData.setUpdateBy(SecurityUtils.getUserId());
         dictionaryData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        return dictionaryDataMapper.insertDictionaryData(dictionaryData);
+        dictionaryDataMapper.insertDictionaryData(dictionaryData);
+        dictionaryDataDTO.setDictionaryDataId(dictionaryData.getDictionaryDataId());
+        return dictionaryDataDTO;
     }
 
     /**

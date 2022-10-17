@@ -33,7 +33,7 @@ public interface IDepartmentService{
     * @param departmentDTO 部门表
     * @return 结果
     */
-    int insertDepartment(DepartmentDTO departmentDTO);
+    DepartmentDTO insertDepartment(DepartmentDTO departmentDTO);
 
     /**
     * 修改部门表

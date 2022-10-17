@@ -4,11 +4,31 @@
     <!--    查询岗位表-->
     <select id="selectPostByPostId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
-        SELECT
-        post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM post
-        WHERE  post_id=#{postId}
-        and delete_flag=0
+        select
+            ors.official_rank_system_name,
+            ors.rank_prefix_code,
+            p.post_id,
+            p.post_code,
+            p.post_name,
+            p.official_rank_system_id,
+            concat(ors.rank_prefix_code, p.post_rank_lower) as post_rank_lower,
+            concat(ors.rank_prefix_code, p.post_rank_upper) as post_rank_upper,
+            p.post_rank,
+            p.post_description,
+            p.status,
+            p.delete_flag,
+            p.create_by,
+            p.create_time,
+            p.update_by,
+            p.update_time
+        from
+            post p
+                left join official_rank_system ors
+                          on p.official_rank_system_id = ors .official_rank_system_id
+                              and ors .delete_flag = 0
+        where
+            p.delete_flag = 0
+        and p.post_id=#{postId}
     </select>
 
     <!--    查询岗位表-->
@@ -29,13 +49,14 @@
     <select id="selectPostList" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
         select
         ors.official_rank_system_name,
+        ors.rank_prefix_code,
         p.post_id,
         p.post_code,
         p.post_name,
         p.official_rank_system_id,
-        p.post_rank_lower,
+        concat(ors.rank_prefix_code, p.post_rank_lower) as post_rank_lower,
+        concat(ors.rank_prefix_code, p.post_rank_upper) as post_rank_upper,
         p.post_rank,
-        p.post_rank_upper,
         p.post_description,
         p.status,
         p.delete_flag,

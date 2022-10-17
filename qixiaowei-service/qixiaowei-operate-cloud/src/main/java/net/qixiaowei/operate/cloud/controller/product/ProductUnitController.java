@@ -74,7 +74,7 @@ public class ProductUnitController extends BaseController
     //@Log(title = "新增产品单位表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(ProductUnitDTO.AddProductUnitDTO.class) ProductUnitDTO productUnitDTO) {
-    return toAjax(productUnitService.insertProductUnit(productUnitDTO));
+    return AjaxResult.success(productUnitService.insertProductUnit(productUnitDTO));
     }
 
 

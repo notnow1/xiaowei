@@ -32,7 +32,7 @@ public interface I${entity}Service{
     * @param ${entity?uncap_first}DTO ${table.comment!}
     * @return 结果
     */
-    int insert${entity}(${entity}DTO ${entity?uncap_first}DTO);
+    ${entity}DTO insert${entity}(${entity}DTO ${entity?uncap_first}DTO);
 
     /**
     * 修改${table.comment!}

@@ -33,7 +33,7 @@ public interface IProductService{
     * @param productDTO 产品表
     * @return 结果
     */
-    int insertProduct(ProductDTO productDTO);
+    ProductDTO insertProduct(ProductDTO productDTO);
 
     /**
     * 修改产品表

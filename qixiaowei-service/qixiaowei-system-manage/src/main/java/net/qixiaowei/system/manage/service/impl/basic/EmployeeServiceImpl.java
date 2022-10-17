@@ -93,8 +93,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Transactional
     @Override
-    public int insertEmployee(EmployeeDTO employeeDTO) {
-        int i = 0;
+    public EmployeeDTO insertEmployee(EmployeeDTO employeeDTO) {
         //查询是否已经存在员工
         EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeCode(employeeDTO.getEmployeeCode());
         if (null != employeeDTO1){
@@ -109,7 +108,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee.setUpdateBy(SecurityUtils.getUserId());
         employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         try {
-            i = employeeMapper.insertEmployee(employee);
+             employeeMapper.insertEmployee(employee);
         } catch (Exception e) {
             throw new ServiceException("新增员工失败");
         }
@@ -126,7 +125,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
         } catch (Exception e) {
             throw new ServiceException("新增员工信息失败");
         }
-        return i;
+        employeeDTO.setEmployeeId(employee.getEmployeeId());
+        return employeeDTO;
     }
 
     /**
