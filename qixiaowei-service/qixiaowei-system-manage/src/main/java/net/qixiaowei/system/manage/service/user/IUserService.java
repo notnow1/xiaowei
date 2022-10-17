@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.user;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
@@ -26,6 +27,14 @@ public interface IUserService{
     * @return 用户表
     */
     UserDTO selectUserByUserId(Long userId);
+
+    /**
+     * 根据用户ID查询用户角色列表
+     *
+     * @param userId 用户表主键
+     * @return 用户表
+     */
+    List<RoleDTO> selectUserRolesByUserId(Long userId);
 
     /**
     * 查询用户表列表

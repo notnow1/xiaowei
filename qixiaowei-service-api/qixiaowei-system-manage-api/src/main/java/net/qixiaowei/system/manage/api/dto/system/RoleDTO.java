@@ -7,9 +7,12 @@ import lombok.experimental.Accessors;
 
 import java.util.Date;
 import java.util.Set;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 
 /**
  * 角色表
@@ -44,14 +47,17 @@ public class RoleDTO {
     /**
      * ID
      */
+    @NotNull(message = "角色ID不能为空", groups = {RoleDTO.UpdateRoleDTO.class, RoleDTO.DeleteRoleDTO.class})
     private Long roleId;
     /**
      * 角色编码
      */
+    @NotBlank(message = "角色编码不能为空", groups = {RoleDTO.AddRoleDTO.class})
     private String roleCode;
     /**
      * 角色名称
      */
+    @NotBlank(message = "角色名称不能为空", groups = {RoleDTO.AddRoleDTO.class})
     private String roleName;
     /**
      * 数据范围:1全公司;2本部门及下属部门;3本部门;4本人及下属;5本人

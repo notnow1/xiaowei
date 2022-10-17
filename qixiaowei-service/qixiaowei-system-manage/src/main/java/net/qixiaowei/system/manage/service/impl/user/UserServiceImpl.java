@@ -20,9 +20,7 @@ import net.qixiaowei.system.manage.service.system.IUserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
-
 import java.util.stream.Collectors;
-
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.user.User;
@@ -109,6 +107,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 根据用户ID查询用户角色列表
+     *
+     * @param userId 用户表主键
+     * @return 用户表
+     */
+    @Override
+    public List<RoleDTO> selectUserRolesByUserId(Long userId) {
+        return roleMapper.selectRolesByUserId(userId);
+    }
+
+    /**
      * 查询用户表列表
      *
      * @param userDTO 用户表
@@ -179,8 +188,9 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isEmpty(userRoleDTOS)) {
             this.insertUserRole(userDTO);
         } else { //更新用户角色
-            List<Long> oldUserRoles = userRoleDTOS.stream().map(UserRoleDTO::getUserRoleId).collect(Collectors.toList());
-            this.updateUserRole(userDTO, oldUserRoles);
+            Map<Long, Long> userRoleMap = new HashMap<>();
+            userRoleDTOS.forEach(userRoleDTO -> userRoleMap.put(userRoleDTO.getRoleId(), userRoleDTO.getUserRoleId()));
+            this.updateUserRole(userDTO, userRoleMap);
         }
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
@@ -438,30 +448,33 @@ public class UserServiceImpl implements IUserService {
     /**
      * 更新用户角色信息
      *
-     * @param user         用户对象
-     * @param oldUserRoles 用户旧角色集合
+     * @param user        用户对象
+     * @param userRoleMap 用户旧角色集合
      */
-    public void updateUserRole(UserDTO user, List<Long> oldUserRoles) {
+    public void updateUserRole(UserDTO user, Map<Long, Long> userRoleMap) {
         Set<Long> roleIds = user.getRoleIds();
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
-        Set<Long> insertUserRoleIds = new HashSet<>();
+        Set<Long> insertRoleIds = new HashSet<>();
         if (StringUtils.isNotEmpty(roleIds)) {
-            for (Long userRole : roleIds) {
-                if (oldUserRoles.contains(userRole)) {
-                    oldUserRoles.remove(userRole);
+            for (Long roleId : roleIds) {
+                if (userRoleMap.containsKey(roleId)) {
+                    userRoleMap.remove(roleId);
                 } else {
-                    insertUserRoleIds.add(userRole);
+                    insertRoleIds.add(roleId);
                 }
             }
         }
         //新增
-        if (StringUtils.isNotEmpty(insertUserRoleIds)) {
-            this.insertUserRole(user.getUserId(), insertUserRoleIds);
+        if (StringUtils.isNotEmpty(insertRoleIds)) {
+            this.insertUserRole(user.getUserId(), insertRoleIds);
         }
-        //执行假删除
-        if (StringUtils.isNotEmpty(oldUserRoles)) {
-            userRoleMapper.logicDeleteUserRoleByUserRoleIds(oldUserRoles, userId, nowDate);
+        if (StringUtils.isNotEmpty(userRoleMap)) {
+            Set<Long> removeUserRoleIds = new HashSet<>(userRoleMap.values());
+            if (StringUtils.isNotEmpty(removeUserRoleIds)) {
+                //执行假删除
+                userRoleMapper.logicDeleteUserRoleByUserRoleIds(new ArrayList<>(removeUserRoleIds), userId, nowDate);
+            }
         }
     }
 

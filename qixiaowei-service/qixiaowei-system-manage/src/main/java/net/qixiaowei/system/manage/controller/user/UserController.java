@@ -74,6 +74,16 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 查看用户授权角色列表
+     *
+     * @return 用户信息
+     */
+    @GetMapping("/allocatedRoles/{userId}")
+    public AjaxResult userRoles(@PathVariable Long userId) {
+        return AjaxResult.success(userService.selectUserRolesByUserId(userId));
+    }
+
+    /**
      * 修改用户表
      */
     @RequiresPermissions("system:manage:user:edit")

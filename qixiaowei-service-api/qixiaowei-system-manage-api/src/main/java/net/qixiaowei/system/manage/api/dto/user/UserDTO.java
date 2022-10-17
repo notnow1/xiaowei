@@ -137,6 +137,11 @@ public class UserDTO {
      */
     private Set<Long> roleIds;
 
+    /**
+     * 角色ID，查询时使用
+     */
+    private Long roleId;
+
     public boolean isAdmin() {
         return isAdmin(this.userId);
     }

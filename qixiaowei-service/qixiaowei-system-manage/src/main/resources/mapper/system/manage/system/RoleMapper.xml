@@ -40,10 +40,10 @@
                     and role_id=#{role.roleId}
                 </if>
                 <if test="role.roleCode != null and role.roleCode != ''">
-                    and role_code=#{role.roleCode}
+                    and role_code LIKE concat('%', #{role.roleCode}, '%')
                 </if>
                 <if test="role.roleName != null and role.roleName != ''">
-                    and role_name=#{role.roleName}
+                    and role_name LIKE concat('%', #{role.roleName}, '%')
                 </if>
                 <if test="role.dataScope != null">
                     and data_scope=#{role.dataScope}

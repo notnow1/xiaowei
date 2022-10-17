@@ -1,21 +1,20 @@
 package net.qixiaowei.system.manage.service.impl.system;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
+import net.qixiaowei.system.manage.api.domain.user.User;
 import net.qixiaowei.system.manage.api.dto.system.RoleMenuDTO;
-import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.system.MenuMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
+import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.system.Role;
@@ -41,6 +40,9 @@ public class RoleServiceImpl implements IRoleService {
 
     @Autowired
     private MenuMapper menuMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 根据用户ID查询角色列表
@@ -104,6 +106,8 @@ public class RoleServiceImpl implements IRoleService {
         role.setCreateTime(DateUtils.getNowDate());
         role.setUpdateTime(DateUtils.getNowDate());
         role.setUpdateBy(SecurityUtils.getUserId());
+        role.setSort(1);
+        role.setStatus(1);
         role.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         roleMapper.insertRole(role);
         this.insertRoleMenu(role.getRoleId(), menuIds);
@@ -132,14 +136,39 @@ public class RoleServiceImpl implements IRoleService {
         if (StringUtils.isEmpty(roleMenuDTOS)) {
             this.insertRoleMenu(roleId, menuIds);
         } else { //更新角色菜单
-            List<Long> oldRoleMenus = roleMenuDTOS.stream().map(RoleMenuDTO::getRoleMenuId).collect(Collectors.toList());
-            this.updateRoleMenu(roleId, menuIds, oldRoleMenus);
+            Map<Long, Long> roleMenuMap = new HashMap<>();
+            roleMenuDTOS.forEach(roleMenuDTO -> roleMenuMap.put(roleMenuDTO.getMenuId(), roleMenuDTO.getRoleMenuId()));
+            this.updateRoleMenu(roleId, menuIds, roleMenuMap);
         }
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
         role.setUpdateTime(DateUtils.getNowDate());
         role.setUpdateBy(SecurityUtils.getUserId());
         return roleMapper.updateRole(role);
+    }
+
+    /**
+     * 根据条件分页查询已分配用户角色列表
+     *
+     * @param userDTO 用户信息
+     * @return 用户信息集合信息
+     */
+    @Override
+    public List<UserDTO> selectAllocatedList(UserDTO userDTO) {
+        Long roleId = userDTO.getRoleId();
+        if (StringUtils.isNull(roleId)) {
+            throw new ServiceException("角色ID不能为空");
+        }
+        User user = new User();
+        BeanUtils.copyProperties(userDTO, user);
+        String employeeName = userDTO.getEmployeeName();
+        Map<String, Object> params = user.getParams();
+        params.put("roleId", roleId);
+        if (StringUtils.isNotEmpty(employeeName)) {
+            params.put("employeeName", employeeName);
+        }
+        user.setParams(params);
+        return userMapper.selectAllocatedList(user);
     }
 
     /**
@@ -218,6 +247,8 @@ public class RoleServiceImpl implements IRoleService {
         if (StringUtils.isEmpty(menuIds) || StringUtils.isNull(roleId)) {
             return;
         }
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
         // 新增用户与角色管理
         List<RoleMenu> list = new ArrayList<>();
         for (Long menuId : menuIds) {
@@ -225,6 +256,10 @@ public class RoleServiceImpl implements IRoleService {
             rm.setRoleId(roleId);
             rm.setMenuId(menuId);
             rm.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            rm.setCreateBy(userId);
+            rm.setCreateTime(nowDate);
+            rm.setUpdateBy(userId);
+            rm.setUpdateTime(nowDate);
             list.add(rm);
         }
         if (list.size() > 0) {
@@ -246,30 +281,33 @@ public class RoleServiceImpl implements IRoleService {
     /**
      * 更新角色菜单信息
      *
-     * @param roleId       角色ID
-     * @param menuIds      菜单集合
-     * @param oldRoleMenus 角色旧菜单集合
+     * @param roleId      角色ID
+     * @param menuIds     菜单集合
+     * @param roleMenuMap 角色旧菜单集合
      */
-    public void updateRoleMenu(Long roleId, Set<Long> menuIds, List<Long> oldRoleMenus) {
+    public void updateRoleMenu(Long roleId, Set<Long> menuIds, Map<Long, Long> roleMenuMap) {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
-        Set<Long> insertUserRoleIds = new HashSet<>();
+        Set<Long> insertMenuIds = new HashSet<>();
         if (StringUtils.isNotEmpty(menuIds)) {
             for (Long menuId : menuIds) {
-                if (oldRoleMenus.contains(menuId)) {
-                    oldRoleMenus.remove(menuId);
+                if (roleMenuMap.containsKey(menuId)) {
+                    roleMenuMap.remove(menuId);
                 } else {
-                    insertUserRoleIds.add(menuId);
+                    insertMenuIds.add(menuId);
                 }
             }
         }
         //新增
-        if (StringUtils.isNotEmpty(insertUserRoleIds)) {
-            this.insertRoleMenu(roleId, insertUserRoleIds);
+        if (StringUtils.isNotEmpty(insertMenuIds)) {
+            this.insertRoleMenu(roleId, insertMenuIds);
         }
-        //执行假删除
-        if (StringUtils.isNotEmpty(oldRoleMenus)) {
-            roleMenuMapper.logicDeleteRoleMenuByRoleMenuIds(oldRoleMenus, userId, nowDate);
+        if (StringUtils.isNotEmpty(roleMenuMap)) {
+            Set<Long> removeRoleMenuIds = new HashSet<>(roleMenuMap.values());
+            if (StringUtils.isNotEmpty(removeRoleMenuIds)) {
+                //执行假删除
+                roleMenuMapper.logicDeleteRoleMenuByRoleMenuIds(new ArrayList<>(removeRoleMenuIds), userId, nowDate);
+            }
         }
     }
 

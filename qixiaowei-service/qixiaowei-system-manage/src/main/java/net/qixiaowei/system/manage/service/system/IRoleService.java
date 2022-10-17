@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.service.system;
 import java.util.List;
 
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 
 
 /**
@@ -51,6 +52,14 @@ public interface IRoleService{
     * @return 结果
     */
     int updateRole(RoleDTO roleDTO);
+
+    /**
+     * 根据条件分页查询已分配用户角色列表
+     *
+     * @param userDTO 用户信息
+     * @return 用户信息集合信息
+     */
+    List<UserDTO> selectAllocatedList(UserDTO userDTO);
 
     /**
     * 逻辑批量删除角色表
