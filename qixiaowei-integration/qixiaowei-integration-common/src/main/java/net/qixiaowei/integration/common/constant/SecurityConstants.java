@@ -10,6 +10,11 @@ public interface SecurityConstants {
     String DETAILS_USER_ID = "user_id";
 
     /**
+     * 租户ID字段
+     */
+    String DETAILS_TENANT_ID = "tenant_id";
+
+    /**
      * 用户帐号字段
      */
     String DETAILS_USER_ACCOUNT = "user_account";

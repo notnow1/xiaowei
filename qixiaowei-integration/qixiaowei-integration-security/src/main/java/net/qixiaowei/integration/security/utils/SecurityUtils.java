@@ -29,10 +29,10 @@ public class SecurityUtils {
     }
 
     /**
-     * 获取用户key
+     * 获取租户ID
      */
-    public static String getUserKey() {
-        return SecurityContextHolder.getUserKey();
+    public static Long getTenantId() {
+        return SecurityContextHolder.getTenantId();
     }
 
     /**
@@ -75,8 +75,7 @@ public class SecurityUtils {
      * @param userId 用户ID
      * @return 结果
      */
-    public static boolean isAdmin(Long userId)
-    {
+    public static boolean isAdmin(Long userId) {
         return userId != null && 1L == userId;
     }
 
