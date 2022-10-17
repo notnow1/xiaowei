@@ -93,10 +93,14 @@ public class TenantServiceImpl implements ITenantService {
         UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
         //人员表
         EmployeeDTO employeeDTO = employeeMapper.selectEmployeeByEmployeeId(userDTO.getEmployeeId());
-        //行业名称
-        tenantDTO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
-        //客服人员名称
-        tenantDTO.setSupportStaffName(employeeDTO.getEmployeeName());
+        if (StringUtils.isBlank(industryDefaultDTO.getIndustryName())){
+            //行业名称
+            tenantDTO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
+        }
+        if (StringUtils.isBlank(employeeDTO.getEmployeeName())){
+            //客服人员名称
+            tenantDTO.setSupportStaffName(employeeDTO.getEmployeeName());
+        }
         //租户联系人
         tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
         //租赁模块
@@ -105,7 +109,9 @@ public class TenantServiceImpl implements ITenantService {
             String productPackage = tenantContractDTO.getProductPackage();
             List<Long> collect = Arrays.asList(productPackage).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageIds(collect);
-            tenantContractDTO.setProductPackage(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()).toString());
+            if (!CollectionUtils.isEmpty(productPackageDTOList)){
+                tenantContractDTO.setProductPackage(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()).toString());
+            }
         }
 
         //租户合同
