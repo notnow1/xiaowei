@@ -105,6 +105,12 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      */
     @Override
     public int logicDeleteDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds) {
+        //查询code
+        List<DictionaryDataDTO> dictionaryDataDTOS = dictionaryDataMapper.selectDictionaryDataByDictionaryDataIds(dictionaryDataIds);
+        for (DictionaryDataDTO dictionaryDataDTO : dictionaryDataDTOS) {
+            //是否被引用
+            this.quoteFlag(dictionaryDataDTO.getDictionaryType(), dictionaryDataDTO);
+        }
         return dictionaryDataMapper.logicDeleteDictionaryDataByDictionaryDataIds(dictionaryDataIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
