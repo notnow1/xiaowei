@@ -454,6 +454,22 @@ CREATE TABLE official_rank_decompose
 ) COMMENT = '职级分解表';
 
 
+CREATE TABLE config(
+    config_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    parent_config_id BIGINT    COMMENT '父级配置ID' ,
+    path_code VARCHAR(256)    COMMENT '节点路径code,用英文.做连接' ,
+    config_code VARCHAR(128)    COMMENT '配置编码' ,
+    config_value VARCHAR(64)    COMMENT '配置值' ,
+    status TINYINT    COMMENT '状态:0失效;1生效' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (config_id)
+)  COMMENT = '配置表';
+
+
 -- ----------------------------
 -- 初始化数据
 -- ----------------------------
@@ -563,6 +579,14 @@ VALUES(29, 23, 2, '绩效比率配置', NULL, 6, 'performanceRatio', 'setting/ma
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
 VALUES(30, 23, 2, '工资条配置', NULL, 7, 'articleWages', 'setting/manage/articleWages/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+
+
+INSERT INTO config
+(config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(1, 0, '', 'basic', NULL, '基础配置', 1, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO `system-manage`.config
+(config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(2, 1, 'basic', 'industry_enable', '1', '行业启用：1系统；2自定义', 1, 0, 1, sysdate(), 1, sysdate());
 
 
 
