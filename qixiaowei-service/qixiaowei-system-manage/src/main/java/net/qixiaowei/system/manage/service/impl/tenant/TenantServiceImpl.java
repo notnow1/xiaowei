@@ -83,6 +83,9 @@ public class TenantServiceImpl implements ITenantService {
             tenantId = SecurityUtils.getTenantId();
         }
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
+        if (StringUtils.isNull(tenantDTO)){
+            throw new ServiceException("租户数据不存在");
+        }
         String replace1 = null;
         if (!StringUtils.isBlank(tenantDTO.getDomain())){
             String replace = tenantDTO.getDomain().replace("http://", "");
