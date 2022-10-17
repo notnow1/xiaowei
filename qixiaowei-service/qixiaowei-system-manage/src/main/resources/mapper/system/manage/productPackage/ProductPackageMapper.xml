@@ -81,6 +81,20 @@
           and delete_flag=0
     </select>
 
+    <select id="selectProductPackageByProductPackageIds"
+            resultType="net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO">
+        SELECT
+            product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM product_package
+        WHERE  product_package_id in
+        <foreach item="item"
+                 collection="productPackageIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and delete_flag=0
+    </select>
+
     <!--新增产品包-->
     <insert id="insertProductPackage" useGeneratedKeys="true" keyProperty="productPackageId">
         INSERT INTO product_package (product_package_name,product_package_description,remark,sort,delete_flag,create_by,create_time,update_by,update_time)
