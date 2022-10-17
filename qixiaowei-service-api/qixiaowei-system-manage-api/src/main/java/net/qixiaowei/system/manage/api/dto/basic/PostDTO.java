@@ -69,16 +69,22 @@ public class PostDTO {
     */
 //    @NotNull(message = "岗位职级下限不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRankLower;
+
+    private  String postRankLowerName;
     /**
     * 岗位职级
     */
 //    @NotNull(message = "岗位职级不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRank;
+
+    private  String postRankName;
     /**
     * 岗位职级上限
     */
 //    @NotNull(message = "岗位职级上限不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  Integer postRankUpper;
+
+    private  String postRankUpperName;
     /**
     * 岗位说明书URL路径
     */
