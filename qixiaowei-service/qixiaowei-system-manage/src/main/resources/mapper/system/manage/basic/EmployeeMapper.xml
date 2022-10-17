@@ -4,31 +4,46 @@
     <!--    查询员工表-->
     <select id="selectEmployeeByEmployeeId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT employee_id,
-               employee_code,
-               employee_name,
-               employee_gender,
-               identity_type,
-               identity_card,
-               employee_birthday,
-               employee_mobile,
-               employee_email,
-               employee_department_id,
-               employee_post_id,
-               employee_rank,
-               employee_basic_wage,
-               employment_date,
-               departure_date,
-               employment_status,
-               status,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
-        FROM employee
-        WHERE employee_id = #{employeeId}
-          and delete_flag = 0
+        SELECT ei.employee_info_id,
+               ei.employee_id,
+               ei.marital_status,
+               ei.nationality,
+               ei.nation,
+               ei.resident_city,
+               ei.insured_city,
+               ei.permanent_address,
+               ei.contact_address,
+               ei.contact_address_detail,
+               ei.wechat_code,
+               ei.emergency_contact,
+               ei.emergency_mobile,
+               concat(ors.rank_prefix_code, e.employee_rank) as employee_rank_name,
+               e.employee_id,
+               e.employee_code,
+               e.employee_name,
+               e.employee_gender,
+               e.identity_type,
+               e.identity_card,
+               e.employee_birthday,
+               e.employee_mobile,
+               e.employee_email,
+               e.employee_department_id,
+               e.employee_post_id,
+               e.employee_rank,
+               e.employee_basic_wage,
+               e.employment_date,
+               e.departure_date,
+               e.employment_status,
+               e.status
+        FROM employee e
+                 left join employee_info ei on e.employee_id = ei.employee_id
+                 left join post p
+                           on p.post_id = e.employee_post_id
+                               and p.delete_flag = 0
+                 left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
+            and ors.delete_flag = 0
+        WHERE e.employee_id = #{employeeId}
+          and e.delete_flag = 0
     </select>
 
     <!--    查询员工表-->
@@ -65,6 +80,7 @@
         select
         p.post_name as employee_post_name,
         d.department_name as employee_department_name,
+        concat(ors.rank_prefix_code, e.employee_rank) as employee_rank_name,
         e.employee_id,
         e.employee_code,
         e.employee_name,
@@ -106,6 +122,8 @@
         left join department d
         on d.department_id = e.employee_department_id
         and d.delete_flag =0
+        left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
+        and  ors.delete_flag = 0
         where
         e.delete_flag = 0
         <if test="employee.employeeId != null">

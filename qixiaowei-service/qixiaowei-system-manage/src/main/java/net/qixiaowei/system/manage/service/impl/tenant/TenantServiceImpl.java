@@ -83,23 +83,27 @@ public class TenantServiceImpl implements ITenantService {
             tenantId = SecurityUtils.getTenantId();
         }
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
-        String replace = tenantDTO.getDomain().replace("http://", "");
-        String replace1 = replace.replace(".qixiaowei.net", "");
+        String replace1 = null;
+        if (!StringUtils.isBlank(tenantDTO.getDomain())){
+            String replace = tenantDTO.getDomain().replace("http://", "");
+             replace1 = replace.replace(".qixiaowei.net", "");
+        }
+
         //行业
         IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantDTO.getTenantIndustry());
         //域名
         tenantDTO.setDomain(replace1);
-        //用户表
-        UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
+        //客服人员
+        List<Long> collect1 = Arrays.asList(tenantDTO.getSupportStaff().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         //人员表
-        EmployeeDTO employeeDTO = employeeMapper.selectEmployeeByEmployeeId(userDTO.getEmployeeId());
+        List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeIds(collect1);
         if (StringUtils.isBlank(industryDefaultDTO.getIndustryName())){
             //行业名称
             tenantDTO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
         }
-        if (StringUtils.isBlank(employeeDTO.getEmployeeName())){
+        if (!CollectionUtils.isEmpty(employeeDTOList)){
             //客服人员名称
-            tenantDTO.setSupportStaffName(employeeDTO.getEmployeeName());
+            tenantDTO.setSupportStaffName(StringUtils.join(employeeDTOList.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()),","));
         }
         //租户联系人
         tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
@@ -107,10 +111,10 @@ public class TenantServiceImpl implements ITenantService {
         List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
         for (TenantContractDTO tenantContractDTO : tenantContractDTOS) {
             String productPackage = tenantContractDTO.getProductPackage();
-            List<Long> collect = Arrays.asList(productPackage).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<Long> collect = Arrays.asList(productPackage.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageIds(collect);
             if (!CollectionUtils.isEmpty(productPackageDTOList)){
-                tenantContractDTO.setProductPackage(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()).toString());
+                tenantContractDTO.setProductPackage(StringUtils.join(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()),","));
             }
         }
 

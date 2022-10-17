@@ -147,6 +147,8 @@ public class EmployeeDTO {
     */
 //    @NotNull(message = "个人职级不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private  Integer employeeRank;
+
+    private  String employeeRankName;
     /**
     * 员工基本工资
     */
