@@ -20,7 +20,9 @@ import net.qixiaowei.system.manage.service.system.IUserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
+
 import java.util.stream.Collectors;
+
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.user.User;
@@ -114,7 +116,8 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     public List<RoleDTO> selectUserRolesByUserId(Long userId) {
-        return roleMapper.selectRolesByUserId(userId);
+        List<RoleDTO> roleDTOS = roleMapper.selectRolesByUserId(userId);
+        return SecurityUtils.isAdmin(userId) ? roleDTOS : roleDTOS.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList());
     }
 
     /**
