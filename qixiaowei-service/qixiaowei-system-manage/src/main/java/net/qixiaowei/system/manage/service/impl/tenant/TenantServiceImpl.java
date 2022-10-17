@@ -97,11 +97,11 @@ public class TenantServiceImpl implements ITenantService {
         List<Long> collect1 = Arrays.asList(tenantDTO.getSupportStaff().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         //人员表
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeIds(collect1);
-        if (StringUtils.isBlank(industryDefaultDTO.getIndustryName())){
+        if (StringUtils.isNotNull(industryDefaultDTO)){
             //行业名称
             tenantDTO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
         }
-        if (!CollectionUtils.isEmpty(employeeDTOList)){
+        if (StringUtils.isNotEmpty(employeeDTOList)){
             //客服人员名称
             tenantDTO.setSupportStaffName(StringUtils.join(employeeDTOList.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()),","));
         }
