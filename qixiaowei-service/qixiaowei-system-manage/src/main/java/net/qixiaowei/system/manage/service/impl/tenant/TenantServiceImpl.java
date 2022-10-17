@@ -78,6 +78,10 @@ public class TenantServiceImpl implements ITenantService {
      */
     @Override
     public TenantDTO selectTenantByTenantId(Long tenantId) {
+        //为空时从token里面取数据
+        if (null == tenantId) {
+            tenantId = SecurityUtils.getTenantId();
+        }
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
         String replace = tenantDTO.getDomain().replace("http://", "");
         String replace1 = replace.replace(".qixiaowei.net", "");
@@ -109,9 +113,9 @@ public class TenantServiceImpl implements ITenantService {
         //租户域名申请表
         List<TenantDomainApprovalDTO> tenantDomainApprovalDTOS = tenantDomainApprovalMapper.selectTenantDomainApprovalByTenantId(tenantId);
         tenantDTO.setTenantDomainApprovalDTOList(tenantDomainApprovalDTOS);
-        if (!CollectionUtils.isEmpty(tenantDomainApprovalDTOS)){
+        if (!CollectionUtils.isEmpty(tenantDomainApprovalDTOS)) {
             //申请状态:0待审核;1审核通过;2审核驳回
-            tenantDTO.setApprovalStatus(tenantDomainApprovalDTOS.get(tenantDomainApprovalDTOS.size()-1).getApprovalStatus());
+            tenantDTO.setApprovalStatus(tenantDomainApprovalDTOS.get(tenantDomainApprovalDTOS.size() - 1).getApprovalStatus());
         }
         return tenantDTO;
     }
@@ -346,9 +350,9 @@ public class TenantServiceImpl implements ITenantService {
         TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
         BeanUtils.copyProperties(tenantDTO, tenant);
         //租户登录背景图片URL
-        tenant.setLoginBackground("http://43.139.7.31:9800/local"+tenant.getLoginBackground());
+        tenant.setLoginBackground("http://43.139.7.31:9800/local" + tenant.getLoginBackground());
         //租户logo图片URL
-        tenant.setTenantLogo("http://43.139.7.31:9800/local"+tenant.getTenantLogo());
+        tenant.setTenantLogo("http://43.139.7.31:9800/local" + tenant.getTenantLogo());
         //查询租户数据
         TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
         //对比域名是否修改 修改需要保存到域名申请表中
