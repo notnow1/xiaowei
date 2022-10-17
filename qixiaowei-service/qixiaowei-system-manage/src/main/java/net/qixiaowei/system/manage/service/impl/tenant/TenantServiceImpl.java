@@ -167,8 +167,9 @@ public class TenantServiceImpl implements ITenantService {
         BeanUtils.copyProperties(tenantDTO, tenant);
         //用户表
         UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
-        //拼接本人用户id
-        tenant.setSupportStaff(tenant.getSupportStaff() + "," + userDTO.getEmployeeId());
+//        //拼接本人用户id
+//        tenant.setSupportStaff(tenant.getSupportStaff() + "," + userDTO.getEmployeeId());
+        tenant.setSupportStaff(tenant.getSupportStaff());
         tenant.setCreateBy(SecurityUtils.getUserId());
         tenant.setUpdateBy(SecurityUtils.getUserId());
         tenant.setCreateTime(DateUtils.getNowDate());
