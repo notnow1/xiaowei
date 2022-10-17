@@ -50,6 +50,10 @@ public class IndustryDTO {
      */
     private Long parentIndustryId;
     /**
+     * 父级行业ID
+     */
+    private String parentIndustryName;
+    /**
      * 祖级列表ID，按层级用英文逗号隔开
      */
     private String ancestors;
