@@ -144,4 +144,11 @@ public interface IndustryDefaultMapper {
      * @return
      */
     List<IndustryDefaultDTO> selectIndustryDefaultTreeList(@Param("industryDefault") IndustryDefault industryDefault);
+
+    /**
+     * 获取指标最大层级
+     *
+     * @return
+     */
+    List<Integer> selectLevelList();
 }

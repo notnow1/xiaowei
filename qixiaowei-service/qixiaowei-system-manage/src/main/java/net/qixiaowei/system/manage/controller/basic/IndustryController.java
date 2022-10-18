@@ -141,4 +141,13 @@ public class IndustryController extends BaseController {
     public AjaxResult removes(@RequestBody List<Long> industryIds) {
         return toAjax(industryService.logicDeleteIndustryByIndustryIds(industryIds));
     }
+
+    /**
+     * 获取指标最大层级
+     */
+//    @RequiresPermissions("system:manage:indicator:list")
+    @GetMapping("/selectLevel")
+    public AjaxResult level() {
+        return AjaxResult.success(industryService.getLevel());
+    }
 }

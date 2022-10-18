@@ -49,13 +49,7 @@
         </if>
     </select>
     <!--指标类型编码唯一性校验-->
-    <select id="checkUnique" resultType="java.lang.Integer">
-        SELECT
-        count(indicator_category_code)
-        FROM indicator_category
-        WHERE indicator_category_code=#{indicatorCategoryCode}
-        and delete_flag=0
-    </select>
+
     <!--根据指标分类ids查找指标分类names-->
     <select id="selectIndicatorCategoryByIndicatorCategoryIds"
             resultType="net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory">
@@ -77,6 +71,14 @@
             #{item}
         </foreach>
         and delete_flag = 0
+    </select>
+    <select id="checkUnique" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO">
+        SELECT
+        indicator_category_id, indicator_type, indicator_category_code, indicator_category_name, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM indicator_category
+        WHERE indicator_category_code=#{indicatorCategoryCode}
+        and delete_flag=0
     </select>
     <!--新增指标分类表-->
     <insert id="insertIndicatorCategory" useGeneratedKeys="true" keyProperty="indicatorCategoryId">

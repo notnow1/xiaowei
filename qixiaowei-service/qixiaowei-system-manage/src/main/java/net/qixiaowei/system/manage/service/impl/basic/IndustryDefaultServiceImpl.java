@@ -146,18 +146,18 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
             throw new ServiceException("行业编码不能为空");
         }
         IndustryDefaultDTO industryDefaultById = industryDefaultMapper.selectIndustryDefaultByIndustryId(industryId);
-        if (StringUtils.isNotNull(industryDefaultById)) {
+        if (StringUtils.isNull(industryDefaultById)) {
             throw new ServiceException("该行业不存在");
         }
         IndustryDefaultDTO industryDefaultByCode = industryDefaultMapper.checkUnique(industryCode);
         if (StringUtils.isNotNull(industryDefaultByCode)) {
             if (!industryDefaultByCode.getIndustryId().equals(industryId))
-                throw new ServiceException("更新默认行业" + industryDefaultByCode.getIndustryName() + "失败,默认行业编码重复");
+                throw new ServiceException("更新默认行业" + industryDefaultDTO.getIndustryName() + "失败,默认行业编码重复");
         }
         Long parentIndustryId = industryDefaultDTO.getParentIndustryId();
         if (StringUtils.isNotNull(parentIndustryId)) {// 一级行业
             IndustryDefaultDTO parentIndustry = industryDefaultMapper.selectIndustryDefaultByIndustryId(parentIndustryId);
-            if (parentIndustry == null) {
+            if (StringUtils.isNull(parentIndustry)) {
                 throw new ServiceException("该上级行业不存在");
             }
             Integer status = parentIndustry.getStatus();
@@ -260,6 +260,16 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
         IndustryDefault industryDefault = new IndustryDefault();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
         return industryDefaultMapper.selectIndustryDefaultTreeList(industryDefault);
+    }
+
+    /**
+     * 获取指标最大层级
+     *
+     * @return
+     */
+    @Override
+    public List<Integer> getLevel() {
+        return industryDefaultMapper.selectLevelList();
     }
 
     /**

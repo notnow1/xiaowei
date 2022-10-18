@@ -125,4 +125,10 @@ public interface IIndustryDefaultService {
      */
     List<IndustryDefaultDTO> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO);
 
+    /**
+     * 获取指标最大层级
+     *
+     * @return
+     */
+    List<Integer> getLevel();
 }

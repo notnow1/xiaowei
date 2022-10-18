@@ -150,4 +150,11 @@ public interface IndustryMapper {
      * @return
      */
     List<Long> isExist(@Param("industryIds") List<Long> industryIds);
+
+    /**
+     * 获取行业的层级列表
+     *
+     * @return
+     */
+    List<Integer> getLevelList();
 }

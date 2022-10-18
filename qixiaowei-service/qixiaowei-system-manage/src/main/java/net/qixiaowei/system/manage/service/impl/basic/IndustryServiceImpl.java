@@ -190,7 +190,7 @@ public class IndustryServiceImpl implements IIndustryService {
         IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
         if (StringUtils.isNotNull(industryByCode)) {
             if (!industryByCode.getIndustryId().equals(industryId)) {
-                throw new ServiceException("更新行业" + industryByCode.getIndustryName() + "失败,行业编码重复");
+                throw new ServiceException("更新行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
             }
         }
         Long parentIndustryId = industryDTO.getParentIndustryId();
@@ -407,6 +407,15 @@ public class IndustryServiceImpl implements IIndustryService {
             industryDTO.setParentIndustryName(parentIndustryDTO.getIndustryName());
         }
         return industryDTO;
+    }
+
+    /**
+     * 获取行业的层级列表
+     * @return
+     */
+    @Override
+    public List<Integer> getLevel() {
+        return industryMapper.getLevelList();
     }
 }
 

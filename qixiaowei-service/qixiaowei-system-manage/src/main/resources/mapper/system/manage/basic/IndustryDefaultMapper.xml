@@ -140,6 +140,15 @@
         WHERE delete_flag=0
         AND industry_code = #{industryCode}
     </select>
+    <!--获取默认行业层级列表-->
+    <select id="selectLevelList" resultType="java.lang.Integer">
+        SELECT
+        level
+        FROM industry_default
+        WHERE delete_flag = 0
+        GROUP BY `level`
+        ORDER BY `level` ASC
+    </select>
     <!--返回类型-->
     <resultMap id="treeVoMap" type="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO">
         <id column="industry_id" property="industryId" jdbcType="BIGINT"/>

@@ -116,4 +116,11 @@ public interface IIndicatorService {
      * @return
      */
     IndicatorDTO detailIndicator(Long indicatorId);
+
+    /**
+     * 获取指标最大层级
+     *
+     * @return
+     */
+    List<Integer> getLevel();
 }
