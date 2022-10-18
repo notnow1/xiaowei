@@ -19,84 +19,74 @@
     <select id="selectMenuByMenuId"
             resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
         SELECT
-        menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, path, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM menu
-        WHERE  menu_id=#{menuId}
-        and delete_flag=0
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
+        FROM menu m
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
+        WHERE  m.menu_id=#{menuId}
+        and m.delete_flag=0
     </select>
 
     <!--    查询菜单表列表-->
     <select id="selectMenuList" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
         SELECT
-        menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, path, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM menu
-        WHERE delete_flag=0
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
+        FROM menu m
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
+        WHERE m.delete_flag=0
                 <if test="menu.menuId != null">
-                    and menu_id=#{menu.menuId}
+                    and m.menu_id=#{menu.menuId}
                 </if>
                 <if test="menu.parentMenuId != null">
-                    and parent_menu_id=#{menu.parentMenuId}
+                    and m.parent_menu_id=#{menu.parentMenuId}
                 </if>
                 <if test="menu.menuType != null">
-                    and menu_type=#{menu.menuType}
+                    and m.menu_type=#{menu.menuType}
                 </if>
                 <if test="menu.menuName != null and menu.menuName != ''">
-                    and menu_name=#{menu.menuName}
+                    and m.menu_name=#{menu.menuName}
                 </if>
                 <if test="menu.productPackageId != null">
-                    and product_package_id=#{menu.productPackageId}
+                    and m.product_package_id=#{menu.productPackageId}
                 </if>
                 <if test="menu.sort != null">
-                    and sort=#{menu.sort}
+                    and m.sort=#{menu.sort}
                 </if>
                 <if test="menu.path != null and menu.path != ''">
-                    and path=#{menu.path}
+                    and m.path=#{menu.path}
                 </if>
                 <if test="menu.component != null and menu.component != ''">
-                    and component=#{menu.component}
+                    and m.component=#{menu.component}
                 </if>
                 <if test="menu.query != null and menu.query != ''">
-                    and query=#{menu.query}
+                    and m.query=#{menu.query}
                 </if>
                 <if test="menu.externalLinkFlag != null">
-                    and external_link_flag=#{menu.externalLinkFlag}
+                    and m.external_link_flag=#{menu.externalLinkFlag}
                 </if>
                 <if test="menu.cacheFlag != null">
-                    and cache_flag=#{menu.cacheFlag}
+                    and m.cache_flag=#{menu.cacheFlag}
                 </if>
                 <if test="menu.visibleFlag != null">
-                    and visible_flag=#{menu.visibleFlag}
+                    and m.visible_flag=#{menu.visibleFlag}
                 </if>
                 <if test="menu.permissionCode != null and menu.permissionCode != ''">
-                    and permission_code=#{menu.permissionCode}
+                    and m.permission_code=#{menu.permissionCode}
                 </if>
                 <if test="menu.icon != null and menu.icon != ''">
-                    and icon=#{menu.icon}
+                    and m.icon=#{menu.icon}
                 </if>
                 <if test="menu.status != null">
-                    and status=#{menu.status}
+                    and m.status=#{menu.status}
                 </if>
                 <if test="menu.deleteFlag != null">
-                    and delete_flag=#{menu.deleteFlag}
+                    and m.delete_flag=#{menu.deleteFlag}
                 </if>
-                <if test="menu.createBy != null">
-                    and create_by=#{menu.createBy}
-                </if>
-                <if test="menu.createTime != null">
-                    and create_time=#{menu.createTime}
-                </if>
-                <if test="menu.updateBy != null">
-                    and update_by=#{menu.updateBy}
-                </if>
-                <if test="menu.updateTime != null">
-                    and update_time=#{menu.updateTime}
-                </if>
-        ORDER BY parent_menu_id, sort
+        ORDER BY m.parent_menu_id, m.sort
     </select>
 
     <select id="selectMenuRouterAll" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
         SELECT distinct
-        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
         FROM menu m
         LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
         WHERE  m.delete_flag = 0  AND ( pp.product_package_id is null OR pp.delete_flag = 0)  AND m.status = 1 AND m.menu_type IN (1,2)
@@ -105,7 +95,7 @@
 
     <select id="selectMenuRouterByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
         SELECT distinct
-        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
         FROM menu m
         LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag = 0
         LEFT JOIN user_role ur on rm.role_id = ur.role_id AND ur.delete_flag = 0
@@ -125,11 +115,12 @@
 
     <select id="selectMenuListByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.MenuDTO">
         SELECT
-        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time
+        m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
         FROM menu m
         LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag = 0
         LEFT JOIN user_role ur on rm.role_id = ur.role_id AND ur.delete_flag = 0
         LEFT JOIN role ro on ur.role_id = ro.role_id
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
         WHERE  m.delete_flag = 0 AND ur.user_id = #{params.userId}
         <if test="menuName != null and menuName != ''">
             AND m.menu_name like concat('%', #{menuName}, '%')

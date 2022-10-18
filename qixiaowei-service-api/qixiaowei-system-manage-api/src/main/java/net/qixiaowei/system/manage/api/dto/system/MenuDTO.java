@@ -62,6 +62,10 @@ public class MenuDTO {
      */
     private Long productPackageId;
     /**
+     * 产品包名
+     */
+    private  String productPackageName;
+    /**
      * 排序
      */
     private Integer sort;

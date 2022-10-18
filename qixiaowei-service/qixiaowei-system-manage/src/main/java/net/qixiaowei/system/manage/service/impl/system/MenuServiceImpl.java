@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 
-
 /**
  * MenuService业务层处理
  *
@@ -90,6 +89,8 @@ public class MenuServiceImpl implements IMenuService {
             tree.setId(treeNode.getMenuId());
             tree.setParentId(treeNode.getParentMenuId());
             tree.setName(treeNode.getMenuName());
+            tree.putExtra("productPackageId", treeNode.getProductPackageId());
+            tree.putExtra("productPackageName", treeNode.getProductPackageName());
         });
     }
 
