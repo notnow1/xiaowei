@@ -76,7 +76,6 @@ public class TenantDTO {
     /**
     * 域名
     */
-    @Pattern(regexp = "^http://([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$",message = "请输入正确的url地址",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     @NotBlank(message = "域名不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  String domain;
     /**

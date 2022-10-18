@@ -48,6 +48,50 @@ public class EmployeeController extends BaseController
     private IEmployeeService employeeService;
 
 
+    /**
+     * 导入用户
+     */
+    @PostMapping("import-user")
+    public AjaxResult importUser(MultipartFile file, Integer isCovered) {
+        String filename = file.getOriginalFilename();
+        if (StringUtils.isEmpty(filename)) {
+            throw new RuntimeException("请上传文件!");
+        }
+        if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
+            throw new RuntimeException("请上传正确的excel文件!");
+        }
+        InputStream inputStream;
+        try {
+
+            inputStream = new BufferedInputStream(file.getInputStream());
+            ExcelReaderBuilder builder = EasyExcel.read(inputStream, UserExcel.class, importListener);
+            builder.doReadAll();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return AjaxResult.success("操作成功");
+    }
+
+    /**
+     * 导出用户
+     */
+    @SneakyThrows
+    @GetMapping("export-user")
+    @ApiOperationSupport(order = 13)
+    @ApiOperation(value = "导出用户", notes = "传入user")
+    public void exportUser(@ApiIgnore @RequestParam Map<String, Object> user, BladeUser bladeUser, HttpServletResponse response) {
+        QueryWrapper<User> queryWrapper = Condition.getQueryWrapper(user, User.class);
+        if (!SecureUtil.isAdministrator()){
+            queryWrapper.lambda().eq(User::getTenantId, bladeUser.getTenantId());
+        }
+        queryWrapper.lambda().eq(User::getIsDeleted, BladeConstant.DB_NOT_DELETED);
+        List<UserExcel> list = userService.exportUser(queryWrapper);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(Charsets.UTF_8.name());
+        String fileName = URLEncoder.encode("用户数据导出", Charsets.UTF_8.name());
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), UserExcel.class).sheet("用户数据表").doWrite(list);
+    }
 
     /**
     * 分页查询员工表列表

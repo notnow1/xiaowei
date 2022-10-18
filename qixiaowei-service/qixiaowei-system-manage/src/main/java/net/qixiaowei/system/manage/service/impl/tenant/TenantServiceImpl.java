@@ -86,16 +86,8 @@ public class TenantServiceImpl implements ITenantService {
         if (StringUtils.isNull(tenantDTO)){
             throw new ServiceException("租户数据不存在");
         }
-        String replace1 = null;
-        if (!StringUtils.isBlank(tenantDTO.getDomain())){
-            String replace = tenantDTO.getDomain().replace("http://", "");
-             replace1 = replace.replace(".qixiaowei.net", "");
-        }
-
         //行业
         IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantDTO.getTenantIndustry());
-        //域名
-        tenantDTO.setDomain(replace1);
         //客服人员
         List<Long> collect1 = Arrays.asList(tenantDTO.getSupportStaff().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         //人员表
