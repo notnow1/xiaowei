@@ -37,6 +37,14 @@ public interface RoleMenuMapper{
      */
     List<RoleMenuDTO> selectRoleMenuListByRoleId(@Param("roleId")Long roleId);
 
+    /**
+     * 根据角色ID集合查询角色菜单ID集合
+     *
+     * @param roleIds 角色ID
+     * @return 角色菜单ID集合
+     */
+    List<Long> selectRoleMenuIdsByRoleIds(@Param("roleIds")List<Long> roleIds);
+
 
     /**
     * 查询角色菜单表列表
