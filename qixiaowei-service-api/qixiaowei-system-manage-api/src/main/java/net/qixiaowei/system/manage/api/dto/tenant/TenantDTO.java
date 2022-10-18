@@ -137,6 +137,17 @@ public class TenantDTO {
     private  Date  updateTime;
 
     /**
+     * 合同开始时间
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
+    private  Date  contractStartTime;
+    /**
+     * 合同结束时间
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
+    private  Date  contractEndTime;
+
+    /**
      * 租户联系人表
      */
     @NotEmpty(message = "租户联系人不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
