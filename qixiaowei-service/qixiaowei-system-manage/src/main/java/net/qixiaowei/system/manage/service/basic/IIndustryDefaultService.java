@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.basic;
 
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 
 import java.util.List;
@@ -123,7 +124,7 @@ public interface IIndustryDefaultService {
      * @param industryDefaultDTO
      * @return
      */
-    List<IndustryDefaultDTO> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO);
+    List<Tree<Long>> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO);
 
     /**
      * 获取指标最大层级

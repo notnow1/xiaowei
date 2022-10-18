@@ -77,7 +77,7 @@ public class IndicatorDTO {
     /**
      * 指标分类
      */
-    private String indicatorCategory;
+    private String indicatorCategoryName;
     /**
      * 指标值类型:1金额;2比率
      */
@@ -131,7 +131,7 @@ public class IndicatorDTO {
     /**
      * 子级
      */
-    private List<IndustryDTO> childIndustry;
+    private List<IndustryDTO> children;
 
 }
 

@@ -57,8 +57,7 @@ public class IndicatorController extends BaseController {
 //    @RequiresPermissions("system:manage:indicator:list")
     @GetMapping("/treeList")
     public AjaxResult treeList(IndicatorDTO indicatorDTO) {
-        List<IndicatorDTO> list = indicatorService.selectTreeList(indicatorDTO);
-        return AjaxResult.success(list);
+        return AjaxResult.success(indicatorService.selectTreeList(indicatorDTO));
     }
 
 

@@ -1,13 +1,19 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
@@ -154,8 +160,8 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
             if (!industryDefaultByCode.getIndustryId().equals(industryId))
                 throw new ServiceException("更新默认行业" + industryDefaultDTO.getIndustryName() + "失败,默认行业编码重复");
         }
-        Long parentIndustryId = industryDefaultDTO.getParentIndustryId();
-        if (StringUtils.isNotNull(parentIndustryId)) {// 一级行业
+        Long parentIndustryId = industryDefaultById.getParentIndustryId();
+        if (StringUtils.isNotNull(parentIndustryId) && parentIndustryId != 0) {// 一级行业
             IndustryDefaultDTO parentIndustry = industryDefaultMapper.selectIndustryDefaultByIndustryId(parentIndustryId);
             if (StringUtils.isNull(parentIndustry)) {
                 throw new ServiceException("该上级行业不存在");
@@ -256,10 +262,23 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
      * @return
      */
     @Override
-    public List<IndustryDefaultDTO> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO) {
+    public List<Tree<Long>> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO) {
         IndustryDefault industryDefault = new IndustryDefault();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
-        return industryDefaultMapper.selectIndustryDefaultTreeList(industryDefault);
+        List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultMapper.selectIndustryDefaultList(industryDefault);
+        //自定义属性名
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("industryId");
+        treeNodeConfig.setNameKey("industryName");
+        treeNodeConfig.setParentIdKey("parentIndustryId");
+        return TreeUtil.build(industryDefaultDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getIndustryId());
+            tree.setParentId(treeNode.getParentIndustryId());
+            tree.setName(treeNode.getIndustryName());
+            tree.putExtra("level", treeNode.getLevel());
+            tree.putExtra("industryCode", treeNode.getIndustryCode());
+            tree.putExtra("status", treeNode.getStatus());
+        });
     }
 
     /**

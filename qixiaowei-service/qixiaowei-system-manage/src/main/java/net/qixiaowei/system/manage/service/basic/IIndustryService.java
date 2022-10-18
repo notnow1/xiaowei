@@ -123,14 +123,14 @@ public interface IIndustryService {
      *
      * @return
      */
-    int getEnableType();
+    List<Tree<Long>> getEnableType(IndustryDTO industryDTO);
 
     /**
      * 修改启用行业类型
      *
      * @return
      */
-    int updateEnableType(IndustryDTO industryDTO);
+    int updateEnableType(Integer configValue);
 
     /**
      * 行业配置详情

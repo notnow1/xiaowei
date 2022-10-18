@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.basic;
 
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public interface IIndicatorService {
      * @param indicatorDTO
      * @return
      */
-    List<IndicatorDTO> selectTreeList(IndicatorDTO indicatorDTO);
+    List<Tree<Long>> selectTreeList(IndicatorDTO indicatorDTO);
 
     /**
      * 新增指标表

@@ -1,5 +1,9 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -10,7 +14,6 @@ import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
@@ -47,7 +50,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         IndicatorDTO indicatorDTO = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
         Long indicatorCategoryId = indicatorDTO.getIndicatorCategoryId();
         IndicatorCategoryDTO indicatorCategoryDTO = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId);
-        indicatorDTO.setIndicatorCategory(indicatorCategoryDTO.getIndicatorCategoryName());
+        indicatorDTO.setIndicatorCategoryName(indicatorCategoryDTO.getIndicatorCategoryName());
         return indicatorDTO;
     }
 
@@ -74,7 +77,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         for (int i = 0; i < indicatorCategoryList.size(); i++) {
             for (IndicatorCategory category : indicatorCategory) {
                 if (category.getIndicatorCategoryId().equals(indicatorCategoryList.get(i))) {
-                    indicatorDTOS.get(i).setIndicatorCategory(category.getIndicatorCategoryName());
+                    indicatorDTOS.get(i).setIndicatorCategoryName(category.getIndicatorCategoryName());
                     break;
                 }
             }
@@ -89,10 +92,42 @@ public class IndicatorServiceImpl implements IIndicatorService {
      * @return
      */
     @Override
-    public List<IndicatorDTO> selectTreeList(IndicatorDTO indicatorDTO) {
-        Indicator indicator = new Indicator();
-        BeanUtils.copyProperties(indicatorDTO, indicator);
-        return indicatorMapper.selectIndicatorTree(indicator);
+    public List<Tree<Long>> selectTreeList(IndicatorDTO indicatorDTO) {
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
+        List<Long> indicatorCategoryIds = new ArrayList<>();
+        for (IndicatorDTO dto : indicatorDTOS) {
+            indicatorCategoryIds.add(dto.getIndicatorCategoryId());
+        }
+        // 通过categoryId集合查找对应的categoryName
+        List<IndicatorCategory> indicatorCategory = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryIds);
+        // 赋值
+        for (int i = 0; i < indicatorCategoryIds.size(); i++) {
+            for (IndicatorCategory category : indicatorCategory) {
+                if (category.getIndicatorCategoryId().equals(indicatorCategoryIds.get(i))) {
+                    indicatorDTOS.get(i).setIndicatorCategoryName(category.getIndicatorCategoryName());
+                    break;
+                }
+            }
+        }
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("indicator");
+        treeNodeConfig.setNameKey("indicatorName");
+        treeNodeConfig.setParentIdKey("parentIndicatorId");
+        return TreeUtil.build(indicatorDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getIndicatorId());
+            tree.setParentId(treeNode.getParentIndicatorId());
+            tree.setName(treeNode.getIndicatorName());
+            tree.putExtra("level", treeNode.getLevel());
+            tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
+            tree.putExtra("sort", treeNode.getSort());
+            tree.putExtra("indicatorType", treeNode.getIndicatorType());
+            tree.putExtra("indicatorValueType", treeNode.getIndicatorValueType());
+            tree.putExtra("choiceFlag", treeNode.getChoiceFlag());
+            tree.putExtra("examineDirection", treeNode.getExamineDirection());
+            tree.putExtra("drivingFactorFlag", treeNode.getDrivingFactorFlag());
+            tree.putExtra("indicatorCategoryId", treeNode.getIndicatorCategoryId());
+            tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
+        });
     }
 
     /**
@@ -105,12 +140,24 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Override
     public IndicatorDTO insertIndicator(IndicatorDTO indicatorDTO) {
         String indicatorCode = indicatorDTO.getIndicatorCode();
+        Integer indicatorValueType = indicatorDTO.getIndicatorValueType();
+        Integer examineDirection = indicatorDTO.getExamineDirection();
+        Integer choiceFlag = indicatorDTO.getChoiceFlag();
         if (StringUtils.isEmpty(indicatorCode)) {
             throw new ServiceException("指标编码不能为空");
         }
         IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             throw new ServiceException("指标编码重复");
+        }
+        if (indicatorValueType != 1 && indicatorValueType != 2) {
+            throw new ServiceException("指标值类型输入不正确");
+        }
+        if (choiceFlag != 0 && choiceFlag != 1) {
+            throw new ServiceException("必选标记输入不正确");
+        }
+        if (examineDirection != 0 && examineDirection != 1) {
+            throw new ServiceException("考核方向输入不正确");
         }
         Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
         String parentAncestors = "";//仅在非一级行业时有用
@@ -170,7 +217,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
-            if (indicatorByCode.getIndicatorId().equals(indicatorId)) {
+            if (!indicatorByCode.getIndicatorId().equals(indicatorId)) {
                 throw new ServiceException("更新指标" + indicatorDTO.getIndicatorName() + "失败,指标编码重复");
             }
         }
@@ -302,7 +349,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     @Override
     public int deleteIndicatorByIndicatorIds(List<IndicatorDTO> indicatorDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (IndicatorDTO indicatorDTO : indicatorDtos) {
             stringList.add(indicatorDTO.getIndicatorId());
         }
@@ -316,7 +363,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
      */
     @Transactional
     public int insertIndicators(List<IndicatorDTO> indicatorDtos) {
-        List<Indicator> indicatorList = new ArrayList();
+        List<Indicator> indicatorList = new ArrayList<>();
         for (IndicatorDTO indicatorDTO : indicatorDtos) {
             Indicator indicator = new Indicator();
             BeanUtils.copyProperties(indicatorDTO, indicator);

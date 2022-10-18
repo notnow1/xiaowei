@@ -16,73 +16,80 @@
     <!--    查询指标表列表-->
     <select id="selectIndicatorList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">
         SELECT
-        indicator_id, parent_indicator_id, ancestors, indicator_type, indicator_code, indicator_name, sort, level,
-        indicator_category_id, indicator_value_type, choice_flag, examine_direction, indicator_definition,
-        indicator_formula, driving_factor_flag, remark, delete_flag, create_by, create_time, update_by, update_time
-        FROM indicator
-        WHERE delete_flag=0
+        t1.indicator_id, t1.parent_indicator_id, t1.ancestors, t1.indicator_type, t1.indicator_code, t1.indicator_name,
+        t1.sort, t1.level,t2.indicator_category_name,
+        t1.indicator_category_id, t1.indicator_value_type, t1.choice_flag, t1.examine_direction,
+        t1.indicator_definition,
+        t1.indicator_formula, t1.driving_factor_flag, t1.remark, t1.delete_flag, t1.create_by, t1.create_time,
+        t1.update_by, t1.update_time
+        FROM indicator t1 left join indicator_category t2
+        ON t1.indicator_category_id = t2.indicator_category_id
+        WHERE t1.delete_flag=0
         <if test="indicator.indicatorId != null">
-            and indicator_id=#{indicator.indicatorId}
+            and t1.indicator_id=#{indicator.indicatorId}
         </if>
         <if test="indicator.parentIndicatorId != null">
-            and parent_indicator_id=#{indicator.parentIndicatorId}
+            and t1.parent_indicator_id=#{indicator.parentIndicatorId}
         </if>
         <if test="indicator.ancestors != null and indicator.ancestors != ''">
-            and ancestors=#{indicator.ancestors}
+            and t1.ancestors=#{indicator.ancestors}
         </if>
         <if test="indicator.indicatorType != null">
-            and indicator_type=#{indicator.indicatorType}
+            and t1.indicator_type=#{indicator.indicatorType}
         </if>
         <if test="indicator.indicatorCode != null and indicator.indicatorCode != ''">
-            and indicator_code like "%" #{indicator.indicatorCode} "%"
+            and t1.indicator_code like "%" #{indicator.indicatorCode} "%"
         </if>
         <if test="indicator.indicatorName != null and indicator.indicatorName != ''">
-            and indicator_name like "%" #{indicator.indicatorName} "%"
+            and t1.indicator_name like "%" #{indicator.indicatorName} "%"
         </if>
         <if test="indicator.sort != null">
-            and sort=#{indicator.sort}
+            and t1.sort=#{indicator.sort}
         </if>
         <if test="indicator.level != null">
-            and level=#{indicator.level}
+            and t1.level=#{indicator.level}
         </if>
         <if test="indicator.indicatorCategoryId != null">
-            and indicator_category_id=#{indicator.indicatorCategoryId}
+            and t1.indicator_category_id=#{indicator.indicatorCategoryId}
         </if>
         <if test="indicator.indicatorValueType != null">
-            and indicator_value_type=#{indicator.indicatorValueType}
+            and t1.indicator_value_type=#{indicator.indicatorValueType}
         </if>
         <if test="indicator.choiceFlag != null">
-            and choice_flag=#{indicator.choiceFlag}
+            and t1.choice_flag=#{indicator.choiceFlag}
         </if>
         <if test="indicator.examineDirection != null">
-            and examine_direction=#{indicator.examineDirection}
+            and t1.examine_direction=#{indicator.examineDirection}
         </if>
         <if test="indicator.indicatorDefinition != null and indicator.indicatorDefinition != ''">
-            and indicator_definition=#{indicator.indicatorDefinition}
+            and t1.indicator_definition=#{indicator.indicatorDefinition}
         </if>
         <if test="indicator.indicatorFormula != null and indicator.indicatorFormula != ''">
-            and indicator_formula=#{indicator.indicatorFormula}
+            and t1.indicator_formula=#{indicator.indicatorFormula}
         </if>
         <if test="indicator.drivingFactorFlag != null">
-            and driving_factor_flag=#{indicator.drivingFactorFlag}
+            and t1.driving_factor_flag=#{indicator.drivingFactorFlag}
         </if>
         <if test="indicator.remark != null and indicator.remark != ''">
-            and remark=#{indicator.remark}
+            and t1.remark=#{indicator.remark}
         </if>
         <if test="indicator.deleteFlag != null">
-            and delete_flag=#{indicator.deleteFlag}
+            and t1.delete_flag=#{indicator.deleteFlag}
         </if>
         <if test="indicator.createBy != null">
-            and create_by=#{indicator.createBy}
+            and t1.create_by=#{indicator.createBy}
         </if>
         <if test="indicator.createTime != null">
-            and create_time=#{indicator.createTime}
+            and t1.create_time=#{indicator.createTime}
         </if>
         <if test="indicator.updateBy != null">
-            and update_by=#{indicator.updateBy}
+            and t1.update_by=#{indicator.updateBy}
         </if>
         <if test="indicator.updateTime != null">
-            and update_time=#{indicator.updateTime}
+            and t1.update_time=#{indicator.updateTime}
+        </if>
+        <if test="indicator.indicatorCategoryName != null">
+            and t2.indicator_category_name=#{indicator.indicatorCategoryName}
         </if>
     </select>
     <!--级联查询父菜单-->
@@ -126,7 +133,7 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_by" property="updateBy" jdbcType="BIGINT"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
-        <collection property="childIndustry" ofType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO"
+        <collection property="children" ofType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO"
                     column="indicator_id" select="findIndicatorTreeByPid"/>
     </resultMap>
     <!-- 根据父级查找子级-->
