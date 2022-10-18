@@ -3,15 +3,20 @@ package net.qixiaowei.system.manage.service.impl.system;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
+import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.domain.user.User;
+import net.qixiaowei.system.manage.api.dto.system.RoleAuthUsersDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleMenuDTO;
+import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.system.MenuMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
+import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -44,6 +49,9 @@ public class RoleServiceImpl implements IRoleService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private UserRoleMapper userRoleMapper;
 
     /**
      * 根据用户ID查询角色列表
@@ -146,6 +154,36 @@ public class RoleServiceImpl implements IRoleService {
         role.setUpdateTime(DateUtils.getNowDate());
         role.setUpdateBy(SecurityUtils.getUserId());
         return roleMapper.updateRole(role);
+    }
+
+    /**
+     * 角色授权用户
+     */
+    @Override
+    public void authUsers(RoleAuthUsersDTO roleAuthUsersDTO) {
+        //todo 数据权限校验
+        Set<Long> userIds = roleAuthUsersDTO.getUserIds();
+        Long roleId = roleAuthUsersDTO.getRoleId();
+        List<UserRoleDTO> userRoleDTOS = userRoleMapper.selectUserRoleListByUserIds(new ArrayList<>(userIds));
+        Set<String> userRoleSet = new HashSet<>();
+        if (StringUtils.isNotEmpty(userRoleDTOS)) {
+            userRoleDTOS.forEach(userRoleDTO -> userRoleSet.add(userRoleDTO.getUserId() + Constants.COLON_EN + userRoleDTO.getRoleId()));
+        }
+        List<UserRole> userRoles = new ArrayList<>();
+        for (Long userId : userIds) {
+            //仅添加不存在的用户角色
+            if (!userRoleSet.contains(userId + Constants.COLON_EN + roleId)) {
+                UserRole userRole = new UserRole();
+                userRole.setRoleId(roleId);
+                userRole.setUserId(userId);
+                userRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                userRoles.add(userRole);
+            }
+        }
+        //批量新增用户角色
+        if (StringUtils.isNotEmpty(userRoles)) {
+            userRoleMapper.batchUserRole(userRoles);
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.system;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.dto.system.RoleAuthUsersDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 
@@ -52,6 +53,11 @@ public interface IRoleService{
     * @return 结果
     */
     int updateRole(RoleDTO roleDTO);
+
+    /**
+     * 角色授权用户
+     */
+    void authUsers(RoleAuthUsersDTO roleAuthUsersDTO);
 
     /**
      * 根据条件分页查询已分配用户角色列表

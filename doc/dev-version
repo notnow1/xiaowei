@@ -1,4 +1,4 @@
 JDK = 1.8
 Mysql = 8.0.30
-Redis = 6.2.4
-nacos = 2.0.4
+Redis = 6.2.7
+nacos = 2.1.2

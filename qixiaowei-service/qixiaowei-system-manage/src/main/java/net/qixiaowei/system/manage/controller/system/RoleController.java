@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.controller.system;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.dto.system.RoleAuthUsersDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -80,6 +81,17 @@ public class RoleController extends BaseController {
     @PostMapping("/edit")
     public AjaxResult editSave(@Validated(RoleDTO.UpdateRoleDTO.class) @RequestBody RoleDTO roleDTO) {
         return toAjax(roleService.updateRole(roleDTO));
+    }
+
+    /**
+     * 角色授权用户
+     */
+    @RequiresPermissions("system:manage:role:authUsers")
+    @Log(title = "角色授权用户", businessType = BusinessType.GRANT)
+    @PostMapping("/authUsers")
+    public AjaxResult authUsers(@Validated @RequestBody RoleAuthUsersDTO roleAuthUsersDTO) {
+        roleService.authUsers(roleAuthUsersDTO);
+        return success();
     }
 
     /**
