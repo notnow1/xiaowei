@@ -2,11 +2,11 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import com.alibaba.nacos.shaded.com.google.common.base.Charsets;
-import java.net.URLEncoder;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -72,8 +73,8 @@ public class EmployeeController extends BaseController {
     public void exportUser(@RequestParam Map<String, Object> user, EmployeeDTO employeeDTO, HttpServletResponse response) {
         List<EmployeeDTO> employeeDTOList = employeeService.selectEmployeeList(employeeDTO);
         response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(Charsets.UTF_8.name());
-        String fileName = URLEncoder.encode("人员数据导出", Charsets.UTF_8.name());
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("人员数据导出", CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), EmployeeExcel.class).sheet("人员数据表").doWrite(employeeDTOList);
     }
