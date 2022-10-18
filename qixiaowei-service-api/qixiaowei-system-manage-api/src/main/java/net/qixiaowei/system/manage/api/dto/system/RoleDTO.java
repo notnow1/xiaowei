@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.api.dto.system;
 import java.util.Date;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.Set;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 @Data
 @Accessors(chain = true)
+@NoArgsConstructor
 public class RoleDTO {
 
     public RoleDTO(Long roleId) {
