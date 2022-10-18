@@ -1,24 +1,17 @@
 package net.qixiaowei.system.manage.controller.basic;
 
-import java.util.List;
-
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
-import org.apache.poi.util.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.service.basic.IIndicatorCategoryService;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.integration.common.web.controller.BaseController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -62,7 +55,7 @@ public class IndicatorCategoryController extends BaseController {
     @Log(title = "新增指标分类表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndicatorCategoryDTO indicatorCategoryDTO) {
-        return toAjax(indicatorCategoryService.insertIndicatorCategory(indicatorCategoryDTO));
+        return AjaxResult.success(indicatorCategoryService.insertIndicatorCategory(indicatorCategoryDTO));
     }
 
 

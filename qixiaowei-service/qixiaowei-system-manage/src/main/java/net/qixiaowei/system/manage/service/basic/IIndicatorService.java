@@ -42,7 +42,7 @@ public interface IIndicatorService {
      * @param indicatorDTO 指标表
      * @return 结果
      */
-    int insertIndicator(IndicatorDTO indicatorDTO);
+    IndicatorDTO insertIndicator(IndicatorDTO indicatorDTO);
 
     /**
      * 修改指标表

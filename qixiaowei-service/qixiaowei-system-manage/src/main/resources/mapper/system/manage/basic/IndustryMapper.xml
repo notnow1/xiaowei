@@ -52,13 +52,7 @@
     </select>
 
     <!--    唯一性校验-->
-    <select id="checkUnique" resultType="java.lang.Integer">
-        SELECT
-        count(industry_code)
-        FROM industry
-        WHERE industry_code=#{industryCode}
-        and delete_flag=0
-    </select>
+
 
     <!--新增行业-->
     <insert id="insertIndustry" useGeneratedKeys="true" keyProperty="industryId">
@@ -188,6 +182,14 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </select>
+    <select id="checkUnique" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
+        SELECT
+        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM industry
+        WHERE industry_code=#{industryCode}
+        and delete_flag=0
     </select>
 
     <!--批量新增行业-->

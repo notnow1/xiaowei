@@ -69,7 +69,7 @@ public class IndicatorController extends BaseController {
     @Log(title = "新增指标表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndicatorDTO indicatorDTO) {
-        return toAjax(indicatorService.insertIndicator(indicatorDTO));
+        return AjaxResult.success(indicatorService.insertIndicator(indicatorDTO));
     }
 
 

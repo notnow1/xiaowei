@@ -10,6 +10,7 @@ import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
@@ -102,12 +103,13 @@ public class IndicatorServiceImpl implements IIndicatorService {
      */
     @Transactional
     @Override
-    public int insertIndicator(IndicatorDTO indicatorDTO) {
+    public IndicatorDTO insertIndicator(IndicatorDTO indicatorDTO) {
         String indicatorCode = indicatorDTO.getIndicatorCode();
         if (StringUtils.isEmpty(indicatorCode)) {
             throw new ServiceException("指标编码不能为空");
         }
-        if (indicatorMapper.checkUnique(indicatorCode) > 0) {
+        IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
+        if (StringUtils.isNotNull(indicatorByCode)) {
             throw new ServiceException("指标编码重复");
         }
         Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
@@ -143,7 +145,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
         indicator.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        return indicatorMapper.insertIndicator(indicator);
+        indicatorMapper.insertIndicator(indicator);
+        indicatorDTO.setIndicatorId(indicator.getIndicatorId());
+        return indicatorDTO;
     }
 
     /**
@@ -160,22 +164,18 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isEmpty(indicatorCode)) {
             throw new ServiceException("指标编码不能为空");
         }
-        if (StringUtils.isNull(indicatorId)) {
-            throw new ServiceException("指标ID不能为空");
-        }
-        IndicatorDTO isExist = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
-        if (StringUtils.isNull(isExist)) {
-            throw new ServiceException("当前指标不存在");
-        }
-        if (indicatorMapper.checkUnique(indicatorCode) > 0) {
-            throw new ServiceException("指标编码重复");
+        IndicatorDTO indicatorById = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
+        if (StringUtils.isNull(indicatorById)) {
+            IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
+            if (StringUtils.isNotNull(indicatorByCode)) {
+                throw new ServiceException("新增指标" + indicatorByCode.getIndicatorName() + "失败,指标编码重复");
+            }
         }
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
         return indicatorMapper.updateIndicator(indicator);
-
     }
 
     /**

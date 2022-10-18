@@ -122,13 +122,11 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Transactional
     @Override
-    public int insertIndustry(IndustryDTO industryDTO) {
+    public IndustryDTO insertIndustry(IndustryDTO industryDTO) {
         String industryCode = industryDTO.getIndustryCode();
+        Long industryId = industryDTO.getIndustryId();
         if (StringUtils.isEmpty(industryCode)) {
             throw new ServiceException("行业编码不能为空");
-        }
-        if (industryMapper.checkUnique(industryCode) > 0) {
-            throw new ServiceException("行业编码重复");
         }
         String parentAncestors = "";//仅在非一级行业时有用
         Integer parentLevel = 1;
@@ -166,7 +164,9 @@ public class IndustryServiceImpl implements IIndustryService {
         industry.setCreateBy(SecurityUtils.getUserId());
         industry.setUpdateBy(SecurityUtils.getUserId());
         industry.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        return industryMapper.insertIndustry(industry);
+        industryMapper.insertIndustry(industry);
+        industryDTO.setIndustryId(industry.getIndustryId());
+        return industryDTO;
     }
 
     /**
@@ -179,8 +179,16 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public int updateIndustry(IndustryDTO industryDTO) {
         String industryCode = industryDTO.getIndustryCode();
+        Long industryId = industryDTO.getIndustryId();
+        IndustryDTO industryById = industryMapper.selectIndustryByIndustryId(industryId);
         if (StringUtils.isEmpty(industryCode)) {
             throw new ServiceException("行业编码不能为空");
+        }
+        if (StringUtils.isNull(industryById)) {
+            IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
+            if (StringUtils.isNotNull(industryByCode)) {
+                throw new ServiceException("新增行业" + industryByCode.getIndustryName() + "失败,行业编码重复");
+            }
         }
         Long parentIndustryId = industryDTO.getParentIndustryId();
         if (StringUtils.isNotNull(parentIndustryId)) {// 一级行业
@@ -195,7 +203,6 @@ public class IndustryServiceImpl implements IIndustryService {
             }
         }
         Integer status = industryDTO.getStatus();
-        Long industryId = industryDTO.getIndustryId();
         if (BusinessConstants.DISABLE.equals(status)) {//失效会影响子级
             //先查再批量更新
             List<Long> industryIds = industryMapper.selectSon(industryId);
@@ -392,7 +399,7 @@ public class IndustryServiceImpl implements IIndustryService {
             throw new ServiceException("该行业配置已不存在");
         }
         Long parentIndustryId = industryDTO.getParentIndustryId();
-        if (StringUtils.isNotNull(parentIndustryId)) {
+        if (parentIndustryId != 0) {
             IndustryDTO parentIndustryDTO = industryMapper.selectIndustryByIndustryId(parentIndustryId);
             industryDTO.setParentIndustryName(parentIndustryDTO.getIndustryName());
         }

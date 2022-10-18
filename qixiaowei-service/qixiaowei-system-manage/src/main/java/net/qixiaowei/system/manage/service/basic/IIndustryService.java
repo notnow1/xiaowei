@@ -51,7 +51,7 @@ public interface IIndustryService {
      * @param industryDTO 行业
      * @return 结果
      */
-    int insertIndustry(IndustryDTO industryDTO);
+    IndustryDTO insertIndustry(IndustryDTO industryDTO);
 
     /**
      * 修改行业

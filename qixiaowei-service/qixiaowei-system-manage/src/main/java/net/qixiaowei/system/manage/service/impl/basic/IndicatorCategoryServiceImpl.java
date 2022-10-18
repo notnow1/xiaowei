@@ -65,7 +65,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
      */
     @Transactional
     @Override
-    public int insertIndicatorCategory(IndicatorCategoryDTO indicatorCategoryDTO) {
+    public IndicatorCategoryDTO insertIndicatorCategory(IndicatorCategoryDTO indicatorCategoryDTO) {
         String indicatorCategoryCode = indicatorCategoryDTO.getIndicatorCategoryCode();
         String indicatorCategoryName = indicatorCategoryDTO.getIndicatorCategoryName();
         if (StringUtils.isEmpty(indicatorCategoryName)) {
@@ -84,7 +84,15 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         indicatorCategory.setUpdateTime(DateUtils.getNowDate());
         indicatorCategory.setUpdateBy(SecurityUtils.getUserId());
         indicatorCategory.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        return indicatorCategoryMapper.insertIndicatorCategory(indicatorCategory);
+        int i = indicatorCategoryMapper.insertIndicatorCategory(indicatorCategory);
+        if (i == 1) {
+            Long indicatorCategoryId = indicatorCategory.getIndicatorCategoryId();
+            if (StringUtils.isNotNull(indicatorCategoryId)) {
+                indicatorCategoryDTO.setIndicatorCategoryId(indicatorCategoryId);
+            }
+            return indicatorCategoryDTO;
+        }
+        throw new ServiceException("指标分类新增失败");
     }
 
     /**

@@ -30,7 +30,7 @@ public interface IndustryMapper {
      * @param industryCode
      * @return
      */
-    int checkUnique(@Param("industryCode") String industryCode);
+    IndustryDTO checkUnique(@Param("industryCode") String industryCode);
 
     /**
      * 查询行业列表

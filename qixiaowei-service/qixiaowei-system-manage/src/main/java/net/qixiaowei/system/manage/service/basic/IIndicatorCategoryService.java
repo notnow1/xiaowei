@@ -34,7 +34,7 @@ public interface IIndicatorCategoryService {
      * @param indicatorCategoryDTO 指标分类表
      * @return 结果
      */
-    int insertIndicatorCategory(IndicatorCategoryDTO indicatorCategoryDTO);
+    IndicatorCategoryDTO insertIndicatorCategory(IndicatorCategoryDTO indicatorCategoryDTO);
 
     /**
      * 修改指标分类表

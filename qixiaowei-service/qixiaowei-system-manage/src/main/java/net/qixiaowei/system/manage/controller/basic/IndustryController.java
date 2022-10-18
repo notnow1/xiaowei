@@ -95,7 +95,7 @@ public class IndustryController extends BaseController {
     @Log(title = "新增行业", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndustryDTO industryDTO) {
-        return toAjax(industryService.insertIndustry(industryDTO));
+        return AjaxResult.success(industryService.insertIndustry(industryDTO));
     }
 
     /**

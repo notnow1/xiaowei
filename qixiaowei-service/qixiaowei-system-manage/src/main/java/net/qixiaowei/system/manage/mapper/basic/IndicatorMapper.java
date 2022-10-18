@@ -127,7 +127,7 @@ public interface IndicatorMapper {
      * @param indicatorCode
      * @return
      */
-    int checkUnique(@Param("indicatorCode") String indicatorCode);
+    IndicatorDTO checkUnique(@Param("indicatorCode") String indicatorCode);
 
     /**
      * 新增时修改指标祖级列表ID
