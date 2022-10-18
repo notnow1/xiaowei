@@ -185,9 +185,12 @@ public class IndustryServiceImpl implements IIndustryService {
             throw new ServiceException("行业编码不能为空");
         }
         if (StringUtils.isNull(industryById)) {
-            IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
-            if (StringUtils.isNotNull(industryByCode)) {
-                throw new ServiceException("新增行业" + industryByCode.getIndustryName() + "失败,行业编码重复");
+            throw new ServiceException("该行业不存在");
+        }
+        IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
+        if (StringUtils.isNotNull(industryByCode)) {
+            if (!industryByCode.getIndustryId().equals(industryId)) {
+                throw new ServiceException("更新行业" + industryByCode.getIndustryName() + "失败,行业编码重复");
             }
         }
         Long parentIndustryId = industryDTO.getParentIndustryId();

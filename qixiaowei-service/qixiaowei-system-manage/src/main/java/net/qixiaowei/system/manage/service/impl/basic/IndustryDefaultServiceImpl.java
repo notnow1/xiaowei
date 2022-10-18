@@ -88,8 +88,9 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
         if (StringUtils.isEmpty(industryCode)) {
             throw new ServiceException("行业编码不能为空");
         }
-        if (industryDefaultMapper.checkUnique(industryCode) > 0) {
-            throw new ServiceException("行业编码重复");
+        IndustryDefaultDTO industryDefaultByCode = industryDefaultMapper.checkUnique(industryCode);
+        if (StringUtils.isNotNull(industryDefaultByCode)) {
+            throw new ServiceException("新增行业编码重复");
         }
         String parentAncestors = "";//仅在非一级行业时有用
         Integer parentLevel = 1;
@@ -131,16 +132,6 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     }
 
     /**
-     * 默认行业唯一性校验
-     *
-     * @param IndustryCode
-     * @return
-     */
-    private int checkUnique(String IndustryCode) {
-        return industryDefaultMapper.checkUnique(IndustryCode);
-    }
-
-    /**
      * 修改默认行业
      *
      * @param industryDefaultDTO 默认行业
@@ -150,11 +141,18 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     @Override
     public int updateIndustryDefault(IndustryDefaultDTO industryDefaultDTO) {
         String industryCode = industryDefaultDTO.getIndustryCode();
+        Long industryId = industryDefaultDTO.getIndustryId();
         if (StringUtils.isEmpty(industryCode)) {
             throw new ServiceException("行业编码不能为空");
         }
-        if (industryDefaultMapper.checkUnique(industryCode) > 0) {
-            throw new ServiceException("行业编码重复");
+        IndustryDefaultDTO industryDefaultById = industryDefaultMapper.selectIndustryDefaultByIndustryId(industryId);
+        if (StringUtils.isNotNull(industryDefaultById)) {
+            throw new ServiceException("该行业不存在");
+        }
+        IndustryDefaultDTO industryDefaultByCode = industryDefaultMapper.checkUnique(industryCode);
+        if (StringUtils.isNotNull(industryDefaultByCode)) {
+            if (!industryDefaultByCode.getIndustryId().equals(industryId))
+                throw new ServiceException("更新默认行业" + industryDefaultByCode.getIndustryName() + "失败,默认行业编码重复");
         }
         Long parentIndustryId = industryDefaultDTO.getParentIndustryId();
         if (StringUtils.isNotNull(parentIndustryId)) {// 一级行业
@@ -169,7 +167,7 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
             }
         }
         Integer status = industryDefaultDTO.getStatus();
-        Long industryId = industryDefaultDTO.getIndustryId();
+
         if (BusinessConstants.DISABLE.equals(status)) {//失效会影响子级
             //先查再批量更新
             List<Long> industryIds = industryDefaultMapper.selectSon(industryId);
@@ -202,7 +200,7 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
         }
 //        addSons(industryIds);
         // todo 引用校验
-        if (isQuote(industryIds )) {
+        if (isQuote(industryIds)) {
             throw new ServiceException("存在被引用的行业");
         }
         return industryDefaultMapper.logicDeleteIndustryDefaultByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());

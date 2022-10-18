@@ -103,7 +103,7 @@ public interface IndustryDefaultMapper {
      * @param industryCode
      * @return
      */
-    int checkUnique(@Param("industryCode") String industryCode);
+    IndustryDefaultDTO checkUnique(@Param("industryCode") String industryCode);
 
     /**
      * 根据父级id查找子级

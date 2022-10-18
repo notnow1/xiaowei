@@ -166,9 +166,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         IndicatorDTO indicatorById = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
         if (StringUtils.isNull(indicatorById)) {
-            IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
-            if (StringUtils.isNotNull(indicatorByCode)) {
-                throw new ServiceException("新增指标" + indicatorByCode.getIndicatorName() + "失败,指标编码重复");
+            throw new ServiceException("该行业不存在");
+        }
+        IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
+        if (StringUtils.isNotNull(indicatorByCode)) {
+            if (indicatorByCode.getIndicatorId().equals(indicatorId)) {
+                throw new ServiceException("更新指标" + indicatorByCode.getIndicatorName() + "失败,指标编码重复");
             }
         }
         Indicator indicator = new Indicator();
@@ -199,6 +202,11 @@ public class IndicatorServiceImpl implements IIndicatorService {
         return indicatorMapper.logicDeleteIndicatorByIndicatorIds(indicatorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
+    /**
+     * 添加子级
+     *
+     * @param indicatorIds
+     */
     private void addSons(List<Long> indicatorIds) {
         List<Long> sons = indicatorMapper.selectSons(indicatorIds);//获取子级
         if (StringUtils.isNotEmpty(sons)) {
