@@ -1,19 +1,15 @@
 package net.qixiaowei.operate.cloud.service.impl.product;
 
 import java.util.List;
-
-import com.alibaba.nacos.common.utils.CollectionUtils;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.ProductUnit;
@@ -113,7 +109,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
     @Override
     public int logicDeleteProductUnitByProductUnitIds(List<Long> productUnitIds) {
         List<ProductUnitDTO> productUnitDTOS = productUnitMapper.selectProductUnitByProductUnitIds(productUnitIds);
-        if (CollectionUtils.isEmpty(productUnitDTOS)){
+        if (StringUtils.isEmpty(productUnitDTOS)){
             throw new ServiceException("产品单位不存在");
         }
         for (ProductUnitDTO productUnitDTO : productUnitDTOS) {
@@ -121,7 +117,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
             List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitId(productUnitDTO.getProductUnitId());
             // 产品引用
             StringBuffer productErreo = new StringBuffer();
-            if (!CollectionUtils.isEmpty(productDTOList)){
+            if (!StringUtils.isEmpty(productDTOList)){
                 for (ProductDTO productDTO : productDTOList) {
                     productErreo.append("产品单位"+productUnitDTO.getProductUnitName()+"被"+productDTO.getProductName()+"引用"+"\n");
                 }
@@ -165,7 +161,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitId(productUnitDTO.getProductUnitId());
         // 产品引用
         StringBuffer productErreo = new StringBuffer();
-        if (!CollectionUtils.isEmpty(productDTOList)){
+        if (!StringUtils.isEmpty(productDTOList)){
             for (ProductDTO productDTO : productDTOList) {
                 productErreo.append("产品单位"+productUnitDTO1.getProductUnitName()+"被"+productDTO.getProductName()+"引用"+"\n");
             }

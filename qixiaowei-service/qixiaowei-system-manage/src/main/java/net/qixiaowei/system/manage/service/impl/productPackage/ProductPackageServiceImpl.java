@@ -1,25 +1,22 @@
 package net.qixiaowei.system.manage.service.impl.productPackage;
 
-import java.util.List;
-
-import com.alibaba.nacos.common.utils.CollectionUtils;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
-import net.qixiaowei.system.manage.api.vo.productPackage.ProductPackageVO;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.productPackage.ProductPackage;
 import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
+import net.qixiaowei.system.manage.api.vo.productPackage.ProductPackageVO;
 import net.qixiaowei.system.manage.mapper.productPackage.ProductPackageMapper;
 import net.qixiaowei.system.manage.service.productPackage.IProductPackageService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -89,7 +86,7 @@ public class ProductPackageServiceImpl implements IProductPackageService {
         productPackage.setCreateTime(DateUtils.getNowDate());
         productPackage.setUpdateTime(DateUtils.getNowDate());
         productPackage.setUpdateBy(SecurityUtils.getUserId());
-        if (!CollectionUtils.isEmpty(productPackageDTOList1)){
+        if (!StringUtils.isEmpty(productPackageDTOList1)){
             sort = productPackageDTOList1.get(productPackageDTOList1.size() - 1).getSort();
             productPackage.setSort(sort+1);
         }else {
@@ -191,7 +188,7 @@ public class ProductPackageServiceImpl implements IProductPackageService {
         int sort =1;
         List<String> collect = productPackageDtos.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList());
         List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageNames(collect);
-        if (!CollectionUtils.isEmpty(productPackageDTOList)){
+        if (!StringUtils.isEmpty(productPackageDTOList)){
             throw new ServiceException("产品包已存在");
         }
         List<ProductPackageDTO> productPackageDTOList1 = productPackageMapper.selectProductPackageList(new ProductPackage());
@@ -204,7 +201,7 @@ public class ProductPackageServiceImpl implements IProductPackageService {
             productPackage.setCreateTime(DateUtils.getNowDate());
             productPackage.setUpdateTime(DateUtils.getNowDate());
             productPackage.setUpdateBy(SecurityUtils.getUserId());
-            if (!CollectionUtils.isEmpty(productPackageDTOList1)){
+            if (!StringUtils.isEmpty(productPackageDTOList1)){
                 sort = productPackageDTOList1.get(productPackageDTOList1.size() - 1).getSort();
                 productPackage.setSort(sort+1);
             }else {

@@ -9,6 +9,7 @@ import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.excel.EmployeeExcel;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeInfoMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
@@ -27,7 +28,7 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import org.springframework.util.CollectionUtils;
+
 
 
 /**
@@ -220,6 +221,30 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public int deleteEmployeeByEmployeeId(Long employeeId) {
         return employeeMapper.deleteEmployeeByEmployeeId(employeeId);
+    }
+
+    /**
+     * 导入excel
+     * @param list
+     */
+    @Override
+    public void importEmployee(List<EmployeeExcel> list) {
+        List<Employee> employeeList = new ArrayList<>();
+        list.forEach(l->{
+            Employee employee = new Employee();
+             BeanUtils.copyProperties(l,employee);
+            employee.setCreateBy(SecurityUtils.getUserId());
+            employee.setCreateTime(DateUtils.getNowDate());
+            employee.setUpdateTime(DateUtils.getNowDate());
+            employee.setUpdateBy(SecurityUtils.getUserId());
+            employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            employeeList.add(employee);
+            });
+        try {
+            employeeMapper.batchEmployee(employeeList);
+        } catch (Exception e) {
+            throw new ServiceException("批量插入产品表失败");
+        }
     }
 
     /**

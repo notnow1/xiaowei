@@ -4,7 +4,11 @@
     <!--    查询员工表-->
     <select id="selectEmployeeByEmployeeId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT ei.employee_info_id,
+        SELECT
+            p.post_name as employee_post_name,
+            d.department_name as employee_department_name,
+            concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
+               ei.employee_info_id,
                ei.employee_id,
                ei.marital_status,
                ei.nationality,
@@ -41,7 +45,10 @@
                            on p.post_id = e.employee_post_id
                                and p.delete_flag = 0
                  left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
-            and ors.delete_flag = 0
+                                and ors.delete_flag = 0
+                 left join department d
+                           on d.department_id = e.employee_department_id
+                               and d.delete_flag = 0
         WHERE e.employee_id = #{employeeId}
           and e.delete_flag = 0
     </select>
@@ -123,7 +130,7 @@
         on d.department_id = e.employee_department_id
         and d.delete_flag =0
         left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
-        and  ors.delete_flag = 0
+        and ors.delete_flag = 0
         where
         e.delete_flag = 0
         <if test="employee.employeeId != null">

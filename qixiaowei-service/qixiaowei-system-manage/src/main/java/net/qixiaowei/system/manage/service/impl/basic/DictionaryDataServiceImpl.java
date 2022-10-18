@@ -1,27 +1,25 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
-import java.util.List;
 
-import com.alibaba.nacos.client.naming.utils.CollectionUtils;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.remote.dictionary.RemoteDictionaryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
-import org.springframework.transaction.annotation.Transactional;
-import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
 import net.qixiaowei.system.manage.service.basic.IDictionaryDataService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -163,7 +161,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
                 R<List<ProductDTO>> listR = remoteDictionaryService.queryDictionaryType(productDTO);
                 if (null != listR) {
                     List<ProductDTO> data = listR.getData();
-                    if (!CollectionUtils.isEmpty(data)) {
+                    if (!StringUtils.isEmpty(data)) {
                         productErreo.append("枚举值"+dictionaryDataDTO.getDictionaryLabel()+"被产品类别"+data.stream().map(ProductDTO::getProductName).collect(Collectors.toList())+"引用 无法删除！");
                     }
                 }

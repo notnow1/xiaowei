@@ -5,10 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
-import com.sun.istack.internal.NotNull;
 import net.qixiaowei.gen.main.utils.ExcelDiskUtils;
-
-
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,9 +33,11 @@ public class CodeGenerator {
 
     //实体类 默认生成 不生成改为false
     private static final boolean default_entity = true;
+    //支持生成Excel生成导入导出
+    private static final boolean default_excel = true;
     //DTO类
     private static final boolean default_DTO = true;
-    //DTO类
+    //controller类
     private static final boolean default_controller = true;
     //service类
     private static final boolean default_service = true;
@@ -65,6 +65,8 @@ public class CodeGenerator {
 
     //实体类package
     private static final String entityPackage = "domain" + extend_Package;
+    //实体类package
+    private static final String excelPackage = "excel" + extend_Package;
     //dto package
     private static final String dtoPackage = "dto" + extend_Package;
     //dto controller
@@ -133,6 +135,7 @@ public class CodeGenerator {
             //自定义模板参数（定义的这些参数可以在我们的Freemark模板中使用&{}语法取到该值，比如 &{requestMapping}）
             objectMap.put("requestMapping", StringUtils.firstToLowerCase(entityName));
             objectMap.put("entityPackage", s + ".api." + entityPackage.replaceAll("/", "."));
+            objectMap.put("excelPackage", s + ".api." + excelPackage.replaceAll("/", "."));
             objectMap.put("packageName", s);
             objectMap.put("dtoPackage", s + ".api." + dtoPackage.replaceAll("/", "."));
             objectMap.put("controllerPackage", s + "." + controllerPackage.replaceAll("/", "."));
@@ -154,6 +157,9 @@ public class CodeGenerator {
             if (default_entity) {
                 // 实体类
                 customFile.put(entityName + StringPool.DOT_JAVA, "/template/domain.java.ftl");
+            }
+            if (default_excel) {          // excel类
+                customFile.put(entityName + "Excel" + StringPool.DOT_JAVA, "/template/excel.java.ftl");
             }
             if (default_DTO) {          // dto类
                 customFile.put(entityName + "DTO" + StringPool.DOT_JAVA, "/template/dto.java.ftl");
@@ -181,6 +187,11 @@ public class CodeGenerator {
                 String fileName = null;
                 if (StringUtils.equals(key, entityName + StringPool.DOT_JAVA)) {
                     fileName = entityAndDtoPath + "/" + entityPackage + "/" + key;
+                    //如果存在就删除
+                    ExcelDiskUtils.deleteFile2(new File(fileName));
+                }//
+                else if (StringUtils.equals(key, entityName + "Excel" + StringPool.DOT_JAVA)) {
+                    fileName = entityAndDtoPath + "/" + excelPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//

@@ -1,30 +1,28 @@
 package net.qixiaowei.system.manage.service.impl.system;
 
-import java.util.*;
-
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.Constants;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.UserConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.system.manage.api.vo.system.MetaVO;
-import net.qixiaowei.system.manage.api.vo.system.RoleMenuTreeVO;
-import net.qixiaowei.system.manage.api.vo.system.RouterVO;
-import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.system.Menu;
 import net.qixiaowei.system.manage.api.dto.system.MenuDTO;
+import net.qixiaowei.system.manage.api.vo.system.MetaVO;
+import net.qixiaowei.system.manage.api.vo.system.RouterVO;
 import net.qixiaowei.system.manage.mapper.system.MenuMapper;
+import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.service.system.IMenuService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import org.springframework.util.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
 
 
 /**

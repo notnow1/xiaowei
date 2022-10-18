@@ -1,46 +1,40 @@
 package net.qixiaowei.system.manage.service.impl.tenant;
 
-import java.util.Arrays;
-import java.util.List;
-
-import com.alibaba.nacos.common.utils.CollectionUtils;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.domain.basic.Employee;
+import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
-import net.qixiaowei.system.manage.mapper.basic.IndustryMapper;
 import net.qixiaowei.system.manage.mapper.productPackage.ProductPackageMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContactsMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantContractMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantDomainApprovalMapper;
+import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
+import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import org.springframework.beans.factory.annotation.Autowired;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.transaction.annotation.Transactional;
-import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
-import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
-import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
-import net.qixiaowei.system.manage.service.tenant.ITenantService;
 
 
 /**
@@ -108,7 +102,7 @@ public class TenantServiceImpl implements ITenantService {
             String productPackage = tenantContractDTO.getProductPackage();
             List<Long> collect = Arrays.asList(productPackage.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageIds(collect);
-            if (!CollectionUtils.isEmpty(productPackageDTOList)){
+            if (!StringUtils.isEmpty(productPackageDTOList)){
                 tenantContractDTO.setProductPackage(StringUtils.join(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()),","));
             }
         }
@@ -124,7 +118,7 @@ public class TenantServiceImpl implements ITenantService {
         //租户域名申请表
         List<TenantDomainApprovalDTO> tenantDomainApprovalDTOS = tenantDomainApprovalMapper.selectTenantDomainApprovalByTenantId(tenantId);
         tenantDTO.setTenantDomainApprovalDTOList(tenantDomainApprovalDTOS);
-        if (!CollectionUtils.isEmpty(tenantDomainApprovalDTOS)) {
+        if (!StringUtils.isEmpty(tenantDomainApprovalDTOS)) {
             //申请状态:0待审核;1审核通过;2审核驳回
             tenantDTO.setApprovalStatus(tenantDomainApprovalDTOS.get(tenantDomainApprovalDTOS.size() - 1).getApprovalStatus());
         }
@@ -262,7 +256,7 @@ public class TenantServiceImpl implements ITenantService {
                 !tenantContactsDTOList1.stream().map(TenantContactsDTO::getTenantContactsId).collect(Collectors.toList()).contains(a.getTenantContactsId())
         ).collect(Collectors.toList()).stream().map(TenantContactsDTO::getTenantContactsId).collect(Collectors.toList());
 
-        if (!CollectionUtils.isEmpty(tenantContactsIds)) {
+        if (!StringUtils.isEmpty(tenantContactsIds)) {
             //逻辑删除
             try {
                 tenantContactsMapper.logicDeleteTenantContactsByTenantContactsIds(tenantContactsIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -300,14 +294,14 @@ public class TenantServiceImpl implements ITenantService {
                 tenantContactsUpdateList.add(tenantContacts);
             }
         }
-        if (!CollectionUtils.isEmpty(tenantContactsAddList)) {
+        if (!StringUtils.isEmpty(tenantContactsAddList)) {
             try {
                 tenantContactsMapper.batchTenantContacts(tenantContactsAddList);
             } catch (Exception e) {
                 throw new ServiceException("新增租户联系人失败" + e);
             }
         }
-        if (!CollectionUtils.isEmpty(tenantContactsUpdateList)) {
+        if (!StringUtils.isEmpty(tenantContactsUpdateList)) {
             try {
                 tenantContactsMapper.updateTenantContactss(tenantContactsUpdateList);
             } catch (Exception e) {

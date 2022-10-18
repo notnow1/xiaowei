@@ -1,32 +1,30 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
-import java.util.*;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
+import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.domain.basic.Department;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
-import net.qixiaowei.system.manage.service.basic.IDepartmentService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import org.springframework.util.CollectionUtils;
 
 
 /**
@@ -72,7 +70,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (!CheckObjectIsNullUtils.isNull(departmentDTO)){
             return departmentDTOList;
         }else {
-            if (CollectionUtils.isEmpty(departmentDTOList)){
+            if (StringUtils.isEmpty(departmentDTOList)){
                 return departmentDTOList;
             }else {
                 return this.createTree(departmentDTOList,0);
@@ -229,14 +227,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
         departmentPostIds = departmentPostDTOList2.stream().filter(a ->
                 !departmentPostDTOList.stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList()).contains(a.getDepartmentPostId())
         ).collect(Collectors.toList()).stream().map(DepartmentPostDTO::getDepartmentPostId).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(departmentPostIds)) {
+        if (!StringUtils.isEmpty(departmentPostIds)) {
             try {
                 departmentPostMapper.logicDeleteDepartmentPostByDepartmentPostIds(departmentPostIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
             } catch (Exception e) {
                 throw new ServiceException("删除组织岗位关联失败");
             }
         }
-        if (!CollectionUtils.isEmpty(departmentPostIds)) {
+        if (!StringUtils.isEmpty(departmentPostIds)) {
             //去除已经删除的id
             for (int i1 = 0; i1 < departmentPostDTOList.size(); i1++) {
                 if (departmentPostIds.contains(departmentPostDTOList.get(i1).getDepartmentPostId())) {
@@ -245,7 +243,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
         }
 
-        if (!CollectionUtils.isEmpty(departmentPostDTOList)) {
+        if (!StringUtils.isEmpty(departmentPostDTOList)) {
             //组织中间表 新增
             List<DepartmentPost> departmentPostAddList = new ArrayList<>();
             //组织中间表 修改
@@ -274,14 +272,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
                 i++;
             }
-            if (!CollectionUtils.isEmpty(departmentPostAddList)) {
+            if (!StringUtils.isEmpty(departmentPostAddList)) {
                 try {
                     departmentPostMapper.batchDepartmentPost(departmentPostAddList);
                 } catch (Exception e) {
                     throw new ServiceException("新增组织岗位信息失败");
                 }
             }
-            if (!CollectionUtils.isEmpty(departmentPostUpdateList)) {
+            if (!StringUtils.isEmpty(departmentPostUpdateList)) {
                 try {
                     departmentPostMapper.updateDepartmentPosts(departmentPostUpdateList);
                 } catch (Exception e) {
@@ -315,7 +313,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
             String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).collect(Collectors.toList()).toString();
             String departmentName = departmentPostDTOS.stream().map(DepartmentPostDTO::getDepartmentName).distinct().collect(Collectors.toList()).toString();
-            if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
+            if (!StringUtils.isEmpty(departmentPostDTOS)) {
                 posterreo.append("组织"+departmentName+"已被岗位" + s + "引用\n");
             }
 
@@ -324,7 +322,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
             String employeeDepartmentName = employeeDTOS.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
 
-            if (!CollectionUtils.isEmpty(employeeDTOS)) {
+            if (!StringUtils.isEmpty(employeeDTOS)) {
                 emplerreo.append("组织"+employeeDepartmentName+"已被人员" + s1 + "引用\n");
             }
         }
@@ -408,7 +406,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentId);
         List<Long> collect = departmentPostDTOList.stream().map(DepartmentPostDTO::getPostId).collect(Collectors.toList());
         List<DepartmentPostDTO> departmentPostDTOList2 = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(collect)) {
+        if (!StringUtils.isEmpty(collect)) {
             departmentPostDTOList2 = postMapper.selectPostByPostIds(collect);
         }
         departmentDTO.setDepartmentPostDTOList(departmentPostDTOList2);
@@ -445,7 +443,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         }
         //人员是否被引用
         List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(departmentDTO.getDepartmentId());
-        if (!CollectionUtils.isEmpty(employeeDTOS)) {
+        if (!StringUtils.isEmpty(employeeDTOS)) {
             emplerreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\n");
         }
         if (posterreo.length() > 0) {
@@ -495,14 +493,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
             // 岗位是否被引用
             List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
             String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).collect(Collectors.toList()).toString();
-            if (!CollectionUtils.isEmpty(departmentPostDTOS)) {
+            if (!StringUtils.isEmpty(departmentPostDTOS)) {
                 posterreo.append("组织"+dto.getDepartmentName() +"已被岗位"+ s + "引用\n");
             }
 
             // 人员是否被引用
             List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
             String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
-            if (!CollectionUtils.isEmpty(employeeDTOS)) {
+            if (!StringUtils.isEmpty(employeeDTOS)) {
                 posterreo.append("组织名称"+dto.getDepartmentName() +"已被人员"+ s1 + "引用\n");
             }
         }

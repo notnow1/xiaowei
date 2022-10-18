@@ -143,6 +143,11 @@ public class EmployeeDTO {
      */
     private  String employeePostName;
     /**
+     * 岗位职级
+     */
+    private  String postRankName;
+
+    /**
     * 员工职级
     */
 //    @NotNull(message = "个人职级不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})

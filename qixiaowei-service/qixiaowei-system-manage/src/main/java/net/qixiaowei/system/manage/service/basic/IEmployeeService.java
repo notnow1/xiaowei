@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.excel.EmployeeExcel;
 
 
 /**
@@ -104,4 +105,10 @@ public interface IEmployeeService{
     * @return 结果
     */
     int deleteEmployeeByEmployeeId(Long employeeId);
+
+    /**
+     * 导入excel
+     * @param list
+     */
+    void importEmployee(List<EmployeeExcel> list);
 }
