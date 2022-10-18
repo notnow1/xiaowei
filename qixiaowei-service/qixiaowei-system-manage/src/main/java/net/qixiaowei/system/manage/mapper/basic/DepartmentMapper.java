@@ -174,6 +174,6 @@ public interface DepartmentMapper{
      * 返回部门层级
      * @return
      */
-    List<Integer> selectdeptLevel();
+    List<Integer> selectDeptLevel();
 
 }
