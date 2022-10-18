@@ -58,6 +58,12 @@
                           on  p.post_id = dm.department_leader_post_id
                               and p.delete_flag =0
             where dm.delete_flag =0
+        <if test="department.examinationLeaderName != null and department.examinationLeaderName != ''">
+            and ee.employee_name like '%${department.examinationLeaderName}%'
+        </if>
+        <if test="department.departmentLeaderName != null and department.departmentLeaderName != ''">
+            and ee.employee_name like '%${department.departmentLeaderName}%'
+        </if>
         <if test="department.departmentCode != null and department.departmentCode != ''">
             and dm.department_code like '%${department.departmentCode}%'
         </if>

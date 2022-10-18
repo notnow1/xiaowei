@@ -133,6 +133,18 @@
         and ors.delete_flag = 0
         where
         e.delete_flag = 0
+        <if test="employee.employeeDepartmentName != null and employee.employeeDepartmentName != ''">
+            and d.department_name like '%${employee.employeeDepartmentName}%'
+        </if>
+        <if test="employee.employeePostName != null and employee.employeePostName != ''">
+            and p.post_name like '%${employee.employeePostName}%'
+        </if>
+        <if test="employee.postRankName != null and employee.postRankName != ''">
+            and concat(ors.rank_prefix_code, p.post_rank)  like '%${employee.postRankName}%'
+        </if>
+        <if test="employee.employeeRankName != null and employee.employeeRankName != ''">
+            and concat(ors.rank_prefix_code, e.employee_rank) like '%${employee.employeeRankName}%'
+        </if>
         <if test="employee.employeeId != null">
             and e.employee_id like '%${employee.employeeId}%'
         </if>
@@ -196,6 +208,45 @@
         </if>
         <if test="employee.status != null">
             and e.status =#{employee.status}
+        </if>
+        <if test="employee.employeeId != null">
+            and ei.employee_info_id=#{employee.employeeId}
+        </if>
+        <if test="employee.employeeId != null">
+            and ei.employee_id=#{employee.employeeId}
+        </if>
+        <if test="employee.maritalStatus != null">
+            and ei.marital_status=#{employee.maritalStatus}
+        </if>
+        <if test="employee.nationality != null and employee.nationality != ''">
+            and ei.nationality=#{employee.nationality}
+        </if>
+        <if test="employee.nation != null and employee.nation != ''">
+            and ei.nation=#{employee.nation}
+        </if>
+        <if test="employee.residentCity != null and employee.residentCity != ''">
+            and ei.resident_city=#{employee.residentCity}
+        </if>
+        <if test="employee.insuredCity != null and employee.insuredCity != ''">
+            and ei.insured_city=#{employee.insuredCity}
+        </if>
+        <if test="employee.permanentAddress != null and employee.permanentAddress != ''">
+            and ei.permanent_address=#{employee.permanentAddress}
+        </if>
+        <if test="employee.contactAddress != null and employee.contactAddress != ''">
+            and ei.contact_address=#{employee.contactAddress}
+        </if>
+        <if test="employee.contactAddressDetail != null and employee.contactAddressDetail != ''">
+            and ei.contact_address_detail=#{employee.contactAddressDetail}
+        </if>
+        <if test="employee.wechatCode != null and employee.wechatCode != ''">
+            and ei.wechat_code=#{employee.wechatCode}
+        </if>
+        <if test="employee.emergencyContact != null and employee.emergencyContact != ''">
+            and ei.emergency_contact=#{employee.emergencyContact}
+        </if>
+        <if test="employee.emergencyMobile != null and employee.emergencyMobile != ''">
+            and ei.emergency_mobile=#{employee.emergencyMobile}
         </if>
     </select>
     <!--    查询员工单条信息-->

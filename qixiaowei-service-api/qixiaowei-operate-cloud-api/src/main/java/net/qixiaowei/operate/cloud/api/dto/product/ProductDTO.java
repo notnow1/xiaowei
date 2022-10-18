@@ -75,6 +75,7 @@ public class ProductDTO {
     */
     @NotBlank(message = "产品类别不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  String productCategory;
+    private  String productCategoryName;
     /**
     * 产品描述
     */
@@ -88,6 +89,8 @@ public class ProductDTO {
     */
     @NotNull(message = "是否上下架不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Integer listingFlag;
+
+    private  String listingFlagName;
     /**
     * 删除标记:0未删除;1已删除
     */

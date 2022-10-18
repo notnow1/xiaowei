@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.sun.deploy.net.URLEncoder;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
@@ -16,10 +17,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -38,10 +41,10 @@ public class EmployeeController extends BaseController
 
 
     /**
-     * 导入用户
+     * 导入人员
      */
-    @PostMapping("import-user")
-    public AjaxResult importUser(MultipartFile file) {
+    @PostMapping("import")
+    public AjaxResult importEmployee(MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -60,6 +63,19 @@ public class EmployeeController extends BaseController
         }
         return AjaxResult.success("操作成功");
     }
+
+/*    *//**
+     * 导出用户
+     *//*
+    @GetMapping("export")
+    public void exportUser(@RequestParam Map<String, Object> user, EmployeeDTO employeeDTO, HttpServletResponse response) {
+        List<EmployeeDTO> employeeDTOList = employeeService.selectEmployeeList(employeeDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(Charsets.UTF_8.name());
+        String fileName = URLEncoder.encode("用户数据导出", Charsets.UTF_8.name());
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), UserExcel.class).sheet("用户数据表").doWrite(employeeDTOList);
+    }*/
     /**
     * 分页查询员工表列表
     */

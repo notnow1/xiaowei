@@ -13,42 +13,74 @@
 
     <!--    查询产品表列表-->
     <select id="selectProductList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT
-        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
-        FROM product
-        WHERE delete_flag=0
-        <if test="product.productId != null">
-            and product_id like '%${product.productId}%'
+        SELECT pu.product_unit_name,
+        case when p.product_category =d.dictionary_data_id then d.dictionary_label end as product_category_name,
+        case when p.listing_flag =d.dictionary_data_id then d.dictionary_label end as listing_flag_name,
+        p.product_id,
+        p.parent_product_id,
+        p.ancestors,
+        p.product_code,
+        p.product_name,
+        p.level,
+        p.product_unit_id,
+        p.product_category,
+        p.product_description,
+        p.list_price,
+        p.listing_flag,
+        p.delete_flag,
+        p.create_by,
+        p.create_time,
+        p.update_by,
+        p.update_time
+        FROM product p
+        left join `system-manage`.dictionary_data d
+        on (p.product_category =d.dictionary_data_id or p.listing_flag =d.dictionary_data_id)
+        and d.delete_flag= 0
+        left join product_unit pu
+        on p.product_unit_id =pu.product_unit_id
+        and pu.delete_flag= 0
+        WHERE p.delete_flag = 0
+        <if test="product.productCategoryName != null and product.productCategoryName != '' ">
+            and d.dictionary_label like '%${product.productCategoryName}%'
         </if>
-        <if test="product.parentProductId != null">
-            and parent_product_id like '%${product.parentProductId}%'
-        </if>
-        <if test="product.ancestors != null and product.ancestors != ''">
-            and ancestors like '%${product.ancestors}%'
-        </if>
-        <if test="product.productCode != null and product.productCode != ''">
-            and product_code like '%${product.productCode}%'
-        </if>
-        <if test="product.productName != null and product.productName != ''">
-            and product_name like '%${product.productName}%'
-        </if>
-        <if test="product.level != null">
-            and level like '%${product.level}%'
+        <if test="product.listingFlagName != null">
+            and d.dictionary_label like '%${product.listingFlagName}%'
         </if>
         <if test="product.productUnitId != null">
-            and product_unit_id like '%${product.productUnitId}%'
+            and pu.productUnitId =#{product.productUnitId}
+        </if>
+        <if test="product.productId != null">
+            and p.product_id like '%${product.productId}%'
+        </if>
+        <if test="product.parentProductId != null">
+            and p.parent_product_id like '%${product.parentProductId}%'
+        </if>
+        <if test="product.ancestors != null and product.ancestors != ''">
+            and p.ancestors like '%${product.ancestors}%'
+        </if>
+        <if test="product.productCode != null and product.productCode != ''">
+            and p.product_code like '%${product.productCode}%'
+        </if>
+        <if test="product.productName != null and product.productName != ''">
+            and p.product_name like '%${product.productName}%'
+        </if>
+        <if test="product.level != null">
+            and p.level like '%${product.level}%'
+        </if>
+        <if test="product.productUnitId != null">
+            and p.product_unit_id like '%${product.productUnitId}%'
         </if>
         <if test="product.productCategory != null and product.productCategory != ''">
-            and product_category like '%${product.productCategory}%'
+            and p.product_category like '%${product.productCategory}%'
         </if>
         <if test="product.productDescription != null and product.productDescription != ''">
-            and product_description like '%${product.productDescription}%'
+            and p.product_description like '%${product.productDescription}%'
         </if>
         <if test="product.listPrice != null">
-            and list_price like '%${product.listPrice}%'
+            and p.list_price like '%${product.listPrice}%'
         </if>
         <if test="product.listingFlag != null">
-            and listing_flag =#{product.listingFlag}
+            and p.listing_flag =#{product.listingFlag}
         </if>
     </select>
 <!--    根据产品编码查询产品表-->

@@ -77,6 +77,9 @@
         and ors .delete_flag = 0
         where
         p.delete_flag = 0
+        <if test="post.officialRankSystemName != null and post.postDescription != '' ">
+            and ors.official_rank_system_name like '%${post.officialRankSystemName}%'
+        </if>
         <if test="post.postId != null">
             and p.post_id like '%${post.postId}%'
         </if>
@@ -89,14 +92,14 @@
         <if test="post.officialRankSystemId != null">
             and p.official_rank_system_id like '%${post.officialRankSystemId}%'
         </if>
-        <if test="post.postRankLower != null">
-            and p.post_rank_lower like '%${post.postRankLower}%'
+        <if test="post.postRankLowerName != null and  post.postRankLowerName != '' ">
+            and concat(ors.rank_prefix_code, p.post_rank_lower) like '%${post.postRankLowerName}%'
         </if>
-        <if test="post.postRank != null">
-            and p.post_rank like '%${post.postRank}%'
+        <if test="post.postRankName != null and post.postRankName != '' ">
+            and concat(ors.rank_prefix_code, p.post_rank) like '%${post.postRankName}%'
         </if>
-        <if test="post.postRankUpper != null">
-            and p.post_rank_upper like '%${post.postRankUpper}%'
+        <if test="post.postRankUpperName != null and post.postRankUpperName != '' ">
+            and concat(ors.rank_prefix_code, p.post_rank_upper) like '%${post.postRankUpperName}%'
         </if>
         <if test="post.postDescription != null and post.postDescription != ''">
             and p.post_description like '%${post.postDescription}%'
