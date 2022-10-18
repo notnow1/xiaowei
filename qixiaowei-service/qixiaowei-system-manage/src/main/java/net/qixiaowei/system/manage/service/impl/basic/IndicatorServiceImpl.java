@@ -94,21 +94,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Override
     public List<Tree<Long>> selectTreeList(IndicatorDTO indicatorDTO) {
         List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
-        List<Long> indicatorCategoryIds = new ArrayList<>();
-        for (IndicatorDTO dto : indicatorDTOS) {
-            indicatorCategoryIds.add(dto.getIndicatorCategoryId());
-        }
-        // 通过categoryId集合查找对应的categoryName
-        List<IndicatorCategory> indicatorCategory = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryIds);
-        // 赋值
-        for (int i = 0; i < indicatorCategoryIds.size(); i++) {
-            for (IndicatorCategory category : indicatorCategory) {
-                if (category.getIndicatorCategoryId().equals(indicatorCategoryIds.get(i))) {
-                    indicatorDTOS.get(i).setIndicatorCategoryName(category.getIndicatorCategoryName());
-                    break;
-                }
-            }
-        }
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("indicator");
         treeNodeConfig.setNameKey("indicatorName");
@@ -185,7 +170,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
             indicator.setAncestors(parentAncestors);
             indicator.setLevel(parentLevel);
         }
-        //todo 指标排序
         indicator.setSort(0);
         indicator.setCreateBy(SecurityUtils.getUserId());
         indicator.setCreateTime(DateUtils.getNowDate());

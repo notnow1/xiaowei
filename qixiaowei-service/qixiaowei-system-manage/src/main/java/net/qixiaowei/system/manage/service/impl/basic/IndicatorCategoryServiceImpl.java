@@ -68,6 +68,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     public IndicatorCategoryDTO insertIndicatorCategory(IndicatorCategoryDTO indicatorCategoryDTO) {
         String indicatorCategoryCode = indicatorCategoryDTO.getIndicatorCategoryCode();
         String indicatorCategoryName = indicatorCategoryDTO.getIndicatorCategoryName();
+        Long indicatorCategoryId = indicatorCategoryDTO.getIndicatorCategoryId();
         if (StringUtils.isEmpty(indicatorCategoryName)) {
             throw new ServiceException("指标分类名称不能为空");
         }
@@ -75,8 +76,8 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
             throw new ServiceException("指标分类编码不能为空");
         }
         IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkUnique(indicatorCategoryCode);
-
-        if (StringUtils.isNotNull(indicatorCategoryByCode)) {
+        if (StringUtils.isNotNull(indicatorCategoryByCode)
+                && !indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
             throw new ServiceException("指标分类编码重复");
         }
         IndicatorCategory indicatorCategory = new IndicatorCategory();
@@ -86,15 +87,8 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         indicatorCategory.setUpdateTime(DateUtils.getNowDate());
         indicatorCategory.setUpdateBy(SecurityUtils.getUserId());
         indicatorCategory.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        int i = indicatorCategoryMapper.insertIndicatorCategory(indicatorCategory);
-        if (i == 1) {
-            Long indicatorCategoryId = indicatorCategory.getIndicatorCategoryId();
-            if (StringUtils.isNotNull(indicatorCategoryId)) {
-                indicatorCategoryDTO.setIndicatorCategoryId(indicatorCategoryId);
-            }
-            return indicatorCategoryDTO;
-        }
-        throw new ServiceException("指标分类新增失败");
+        indicatorCategoryMapper.insertIndicatorCategory(indicatorCategory);
+        return indicatorCategoryDTO.setIndicatorCategoryId(indicatorCategory.getIndicatorCategoryId());
     }
 
     /**
