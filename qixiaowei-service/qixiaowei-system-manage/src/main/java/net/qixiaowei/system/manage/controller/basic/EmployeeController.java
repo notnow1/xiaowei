@@ -3,7 +3,7 @@ package net.qixiaowei.system.manage.controller.basic;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.nacos.shaded.com.google.common.base.Charsets;
-import com.sun.deploy.net.URLEncoder;
+import java.net.URLEncoder;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
