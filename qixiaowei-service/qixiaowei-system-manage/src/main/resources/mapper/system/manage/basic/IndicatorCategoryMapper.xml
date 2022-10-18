@@ -27,10 +27,10 @@
             and indicator_type=#{indicatorCategory.indicatorType}
         </if>
         <if test="indicatorCategory.indicatorCategoryCode != null and indicatorCategory.indicatorCategoryCode != ''">
-            and indicator_category_code=#{indicatorCategory.indicatorCategoryCode}
+            and indicator_category_code like "%" #{indicatorCategory.indicatorCategoryCode} "%"
         </if>
         <if test="indicatorCategory.indicatorCategoryName != null and indicatorCategory.indicatorCategoryName != ''">
-            and indicator_category_name=#{indicatorCategory.indicatorCategoryName}
+            and indicator_category_name like "%" #{indicatorCategory.indicatorCategoryName} "%"
         </if>
         <if test="indicatorCategory.deleteFlag != null">
             and delete_flag=#{indicatorCategory.deleteFlag}

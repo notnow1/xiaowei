@@ -53,8 +53,7 @@ public class IndustryDefaultController extends BaseController {
 //    @RequiresPermissions("system:manage:industryDefault:list")
     @GetMapping("/treeList")
     public AjaxResult treeList(IndustryDefaultDTO industryDefaultDTO) {
-        List<IndustryDefaultDTO> list = industryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO);
-        return AjaxResult.success(list);
+        return AjaxResult.success(industryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO));
     }
 
     /**

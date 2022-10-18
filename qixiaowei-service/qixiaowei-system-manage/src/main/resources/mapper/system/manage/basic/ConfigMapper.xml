@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.ConfigMapper">
+    <!--    查询配置表-->
+    <select id="selectConfigByConfigCode"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.ConfigDTO">
+        SELECT
+        config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM config
+        WHERE config_code=#{configCode}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询配置表-->
+    <select id="selectConfigByConfigIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.ConfigDTO">
+        SELECT
+        config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM config
+        WHERE config_id in
+        <foreach item="item"
+                 collection="configIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询配置表列表-->
+    <select id="selectConfigList" resultType="net.qixiaowei.system.manage.api.dto.basic.ConfigDTO">
+        SELECT
+        config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM config
+        WHERE delete_flag=0
+        <if test="config.configId != null">
+            and config_id=#{config.configId}
+        </if>
+        <if test="config.parentConfigId != null">
+            and parent_config_id=#{config.parentConfigId}
+        </if>
+        <if test="config.pathCode != null and config.pathCode != ''">
+            and path_code=#{config.pathCode}
+        </if>
+        <if test="config.configCode != null and config.configCode != ''">
+            and config_code=#{config.configCode}
+        </if>
+        <if test="config.configValue != null and config.configValue != ''">
+            and config_value=#{config.configValue}
+        </if>
+        <if test="config.remark != null and config.remark != ''">
+            and remark=#{config.remark}
+        </if>
+        <if test="config.status != null">
+            and status=#{config.status}
+        </if>
+        <if test="config.deleteFlag != null">
+            and delete_flag=#{config.deleteFlag}
+        </if>
+        <if test="config.createBy != null">
+            and create_by=#{config.createBy}
+        </if>
+        <if test="config.createTime != null">
+            and create_time=#{config.createTime}
+        </if>
+        <if test="config.updateBy != null">
+            and update_by=#{config.updateBy}
+        </if>
+        <if test="config.updateTime != null">
+            and update_time=#{config.updateTime}
+        </if>
+    </select>
+    <select id="selectConfigValueByCode" resultType="java.lang.Integer">
+        SELECT
+        config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM config
+        WHERE config_code = #{configCode}
+    </select>
+    <!--新增配置表-->
+    <insert id="insertConfig" useGeneratedKeys="true" keyProperty="configId">
+        INSERT INTO config
+        (parent_config_id,path_code,config_code,config_value,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{config.parentConfigId},#{config.pathCode},#{config.configCode},#{config.configValue},#{config.remark},#{config.status},#{config.deleteFlag},#{config.createBy},#{config.createTime},#{config.updateBy},#{config.updateTime})
+    </insert>
+    <!--修改配置表-->
+    <update id="updateConfig">
+        UPDATE config
+        SET
+        <if test="config.parentConfigId != null">
+            parent_config_id=#{config.parentConfigId},
+        </if>
+        <if test="config.configCode != null and config.configCode != ''">
+            config_code=#{config.configCode},
+        </if>
+        <if test="config.configValue != null and config.configValue != ''">
+            config_value=#{config.configValue},
+        </if>
+        <if test="config.remark != null and config.remark != ''">
+            remark=#{config.remark},
+        </if>
+        <if test="config.status != null">
+            status=#{config.status},
+        </if>
+        <if test="config.deleteFlag != null">
+            delete_flag=#{config.deleteFlag},
+        </if>
+        <if test="config.createBy != null">
+            create_by=#{config.createBy},
+        </if>
+        <if test="config.createTime != null">
+            create_time=#{config.createTime},
+        </if>
+        <if test="config.updateBy != null">
+            update_by=#{config.updateBy},
+        </if>
+        <if test="config.updateTime != null">
+            update_time=#{config.updateTime}
+        </if>
+        WHERE
+        config_Code=#{config.configCode}
+    </update>
+    <!--逻辑删除配置表-->
+    <update id="logicDeleteConfigByConfigId">
+        UPDATE config
+        SET delete_flag= 1,
+        update_by=#{config.updateBy},
+        update_time=#{config.updateTime}
+        WHERE
+        config_id=#{config.configId}
+    </update>
+    <!--逻辑批量删除配置表-->
+    <update id="logicDeleteConfigByConfigIds">
+        UPDATE config
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        config_id IN
+        <foreach item="item"
+                 collection="configIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增配置表-->
+    <insert id="batchConfig">
+        INSERT INTO config
+        (parent_config_id,path_code,config_code,config_value,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="configs"
+                 separator=",">
+            (#{item.parentConfigId},#{item.pathCode},#{item.configCode},#{item.configValue},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除配置表-->
+    <delete id="deleteConfigByConfigId">
+        DELETE FROM config
+        WHERE config_id=#{config}
+
+    </delete>
+    <!--物理批量删除配置表-->
+    <delete id="deleteConfigByConfigIds">
+        DELETE FROM config
+        WHERE config_id IN
+        <foreach item="item"
+                 collection="configIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改配置表-->
+    <update id="updateConfigs">
+        update config
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="parent_config_id=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.parentConfigId != null">
+                        when config_id=#{item.configId} then #{item.parentConfigId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="path_code=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.pathCode != null and item.pathCode != ''">
+                        when config_id=#{item.configId} then #{item.pathCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="config_code=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.configCode != null and item.configCode != ''">
+                        when config_id=#{item.configId} then #{item.configCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="config_value=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.configValue != null and item.configValue != ''">
+                        when config_id=#{item.configId} then #{item.configValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.remark != null and item.remark != ''">
+                        when config_id=#{item.configId} then #{item.remark}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.status != null">
+                        when config_id=#{item.configId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when config_id=#{item.configId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when config_id=#{item.configId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when config_id=#{item.configId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when config_id=#{item.configId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="configList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when config_id=#{item.configId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="configList" separator="or" item="item" index="index">
+            config_id=#{item.configId}
+        </foreach>
+    </update>
+</mapper>
+
+

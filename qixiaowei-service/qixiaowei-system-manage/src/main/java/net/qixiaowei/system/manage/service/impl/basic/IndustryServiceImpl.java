@@ -6,14 +6,19 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.enums.system.ConfigCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
+import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndustryMapper;
+import net.qixiaowei.system.manage.service.basic.IConfigService;
+import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
 import net.qixiaowei.system.manage.service.basic.IIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +38,12 @@ import java.util.List;
 public class IndustryServiceImpl implements IIndustryService {
     @Autowired
     private IndustryMapper industryMapper;
+
+    @Autowired
+    private IConfigService configService;
+
+    @Autowired
+    private IIndustryDefaultService industryDefaultService;
 
     /**
      * 查询行业
@@ -54,12 +65,8 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public List<IndustryDTO> selectIndustryPageList(IndustryDTO industryDTO) {
         Long parentIndustryId = industryDTO.getParentIndustryId();
-        Integer status = industryDTO.getStatus();
         if (StringUtils.isNull(parentIndustryId)) {
             industryDTO.setParentIndustryId(0L);
-        }
-        if (StringUtils.isNull(status)) {
-            industryDTO.setStatus(1);
         }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
@@ -74,10 +81,6 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<IndustryDTO> selectIndustryList(IndustryDTO industryDTO) {
-        Integer status = industryDTO.getStatus();
-        if (StringUtils.isNull(status)) {
-            industryDTO.setStatus(1);
-        }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
         return industryMapper.selectIndustryList(industry);
@@ -91,10 +94,6 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> selectIndustryTreeList(IndustryDTO industryDTO) {
-        Integer status = industryDTO.getStatus();
-        if (StringUtils.isNull(status)) {
-            industryDTO.setStatus(1);
-        }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
         List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(industry);
@@ -110,7 +109,6 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
-            tree.getParentId();
         });
     }
 
@@ -124,7 +122,6 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public IndustryDTO insertIndustry(IndustryDTO industryDTO) {
         String industryCode = industryDTO.getIndustryCode();
-        Long industryId = industryDTO.getIndustryId();
         if (StringUtils.isEmpty(industryCode)) {
             throw new ServiceException("行业编码不能为空");
         }
@@ -365,25 +362,41 @@ public class IndustryServiceImpl implements IIndustryService {
     }
 
     /**
-     * todo 获取启用行业类型
+     * 获取启用行业类型
      *
      * @return
      */
     @Override
-    public int getEnableType() {
-//        industryMapper.getEnableType();
-        return 1;
+    public List<Tree<Long>> getEnableType(IndustryDTO industryDTO) {
+        // todo 0-默认,1-自定义
+        int enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        if (enableType == 1) {
+            return selectIndustryTreeList(industryDTO);
+        } else {
+            IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
+            BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
+            return industryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO);
+        }
     }
 
     /**
-     * todo 修改启用行业类型
+     * 修改启用行业类型
      *
      * @return
      */
     @Override
-    public int updateEnableType(IndustryDTO industryDTO) {
-//        industryMapper.setEnableType();
-        return 1;
+    public int updateEnableType(Integer configValue) {
+        if (StringUtils.isEmpty(configValue.toString())) {
+            throw new ServiceException("configValue传值为空,无法进行操作");
+        }
+        ConfigDTO configById = configService.selectConfigByConfigCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        if (StringUtils.isNull(configById)){
+            throw new ServiceException("当前无启用行业");
+        }
+        ConfigDTO configDTO = new ConfigDTO();
+        configDTO.setConfigValue(configValue.toString());
+        configDTO.setConfigCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        return configService.updateConfig(configDTO);
     }
 
     /**
@@ -411,6 +424,7 @@ public class IndustryServiceImpl implements IIndustryService {
 
     /**
      * 获取行业的层级列表
+     *
      * @return
      */
     @Override

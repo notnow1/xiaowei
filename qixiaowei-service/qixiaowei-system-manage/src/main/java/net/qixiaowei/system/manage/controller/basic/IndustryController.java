@@ -7,10 +7,8 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
 import net.qixiaowei.system.manage.service.basic.IIndustryService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +26,6 @@ public class IndustryController extends BaseController {
 
     @Autowired
     private IIndustryService industryService;
-
-    @Autowired
-    private IIndustryDefaultService industryDefaultService;
 
     /**
      * 分页查询行业列表
@@ -68,24 +63,17 @@ public class IndustryController extends BaseController {
 //    @RequiresPermissions("system:manage:industry:list")
     @GetMapping("/enableList")
     public AjaxResult enableList(IndustryDTO industryDTO) {
-        // todo 0-默认,1-自定义
-        int enableType = industryService.getEnableType();
-        if (enableType == 1) {
-            return AjaxResult.success(industryService.selectIndustryList(industryDTO));
-        } else {
-            IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
-            BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
-            return AjaxResult.success(industryDefaultService.selectIndustryDefaultList(industryDefaultDTO));
-        }
+        return AjaxResult.success(industryService.getEnableType(industryDTO));
+
     }
 
     /**
      * 修改启用行业类型
      */
 //    @RequiresPermissions("system:manage:industry:list")
-    @PostMapping("/enableEdit")
-    public AjaxResult enableEdit(IndustryDTO industryDTO) {
-        return AjaxResult.success(industryService.updateEnableType(industryDTO));
+    @PostMapping("/enableEdit/{configValue}")
+    public AjaxResult enableEdit(@PathVariable Integer configValue) {
+        return AjaxResult.success(industryService.updateEnableType(configValue));
     }
 
     /**
