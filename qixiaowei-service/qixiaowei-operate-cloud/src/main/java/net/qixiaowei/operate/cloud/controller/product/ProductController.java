@@ -48,9 +48,9 @@ public class ProductController extends BaseController
      * 返回产品层级
      */
     //@RequiresPermissions("system:manage:department:list")
-    @GetMapping("/selectProdLevel")
-    public AjaxResult selectProdLevel(){
-        return AjaxResult.success(productService.selectProdLevel());
+    @GetMapping("/selectLevel")
+    public AjaxResult selectLevel(){
+        return AjaxResult.success(productService.selectLevel());
     }
 
     /**

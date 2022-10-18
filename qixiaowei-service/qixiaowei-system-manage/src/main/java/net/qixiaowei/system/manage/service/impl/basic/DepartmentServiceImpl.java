@@ -86,8 +86,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return
      */
     @Override
-    public List<Integer> selectDeptLevel() {
-        return departmentMapper.selectDeptLevel();
+    public List<Integer> selectLevel() {
+        return departmentMapper.selectLevel();
     }
 
 

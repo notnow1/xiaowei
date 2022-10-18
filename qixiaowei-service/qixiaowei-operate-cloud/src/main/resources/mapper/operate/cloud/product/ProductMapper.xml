@@ -101,7 +101,7 @@
           and delete_flag=0
     </select>
 <!--    返回产品层级-->
-    <select id="selectProdLevel" resultType="java.lang.Integer">
+    <select id="selectLevel" resultType="java.lang.Integer">
         SELECT
            level
         FROM product

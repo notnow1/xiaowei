@@ -32,7 +32,7 @@ public interface IDepartmentService{
      *
      * @return 层级集合
      */
-    List<Integer> selectDeptLevel();
+    List<Integer> selectLevel();
 
     /**
     * 新增部门表

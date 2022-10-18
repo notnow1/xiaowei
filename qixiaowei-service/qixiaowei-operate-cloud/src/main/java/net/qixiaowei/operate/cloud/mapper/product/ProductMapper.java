@@ -136,5 +136,5 @@ public interface ProductMapper{
      * 返回产品层级
      * @return
      */
-    List<Integer> selectProdLevel();
+    List<Integer> selectLevel();
 }

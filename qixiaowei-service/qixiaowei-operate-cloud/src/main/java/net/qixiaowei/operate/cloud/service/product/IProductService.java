@@ -110,5 +110,5 @@ public interface IProductService{
      * 返回产品层级
      * @return
      */
-    List<Integer> selectProdLevel();
+    List<Integer> selectLevel();
 }

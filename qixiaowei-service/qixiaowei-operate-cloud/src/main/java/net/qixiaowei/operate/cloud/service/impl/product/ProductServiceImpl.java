@@ -755,8 +755,8 @@ public class ProductServiceImpl implements IProductService {
      * @return
      */
     @Override
-    public List<Integer> selectProdLevel() {
-        return productMapper.selectProdLevel();
+    public List<Integer> selectLevel() {
+        return productMapper.selectLevel();
     }
 
     /**

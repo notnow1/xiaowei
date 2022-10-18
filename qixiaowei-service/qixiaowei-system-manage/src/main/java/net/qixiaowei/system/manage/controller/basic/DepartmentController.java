@@ -41,9 +41,9 @@ public class DepartmentController extends BaseController
      * 返回部门层级
      */
     //@RequiresPermissions("system:manage:department:list")
-    @GetMapping("/selectDeptLevel")
-    public AjaxResult selectDeptLevel(){
-        return AjaxResult.success(departmentService.selectDeptLevel());
+    @GetMapping("/selectLevel")
+    public AjaxResult selectLevel(){
+        return AjaxResult.success(departmentService.selectLevel());
     }
 
     /**
