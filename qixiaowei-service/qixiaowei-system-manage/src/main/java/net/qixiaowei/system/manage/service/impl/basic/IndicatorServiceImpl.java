@@ -171,7 +171,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             if (indicatorByCode.getIndicatorId().equals(indicatorId)) {
-                throw new ServiceException("更新指标" + indicatorByCode.getIndicatorName() + "失败,指标编码重复");
+                throw new ServiceException("更新指标" + indicatorDTO.getIndicatorName() + "失败,指标编码重复");
             }
         }
         Indicator indicator = new Indicator();
@@ -253,6 +253,16 @@ public class IndicatorServiceImpl implements IIndicatorService {
             throw new ServiceException("该指标已经不存在");
         }
         return dto;
+    }
+
+    /**
+     * 获取指标最大层级
+     *
+     * @return
+     */
+    @Override
+    public List<Integer> getLevel() {
+        return indicatorMapper.selectLevel();
     }
 
     /**

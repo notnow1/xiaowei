@@ -74,7 +74,9 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         if (StringUtils.isEmpty(indicatorCategoryCode)) {
             throw new ServiceException("指标分类编码不能为空");
         }
-        if (indicatorCategoryMapper.checkUnique(indicatorCategoryCode) > 0) {
+        IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkUnique(indicatorCategoryCode);
+
+        if (StringUtils.isNotNull(indicatorCategoryByCode)) {
             throw new ServiceException("指标分类编码重复");
         }
         IndicatorCategory indicatorCategory = new IndicatorCategory();
@@ -112,12 +114,15 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         if (StringUtils.isEmpty(indicatorCategoryCode)) {
             throw new ServiceException("指标分类编码不能为空");
         }
-        IndicatorCategoryDTO isExist = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId);
-        if (StringUtils.isNull(isExist)) {
+        IndicatorCategoryDTO indicatorCategoryById = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryId(indicatorCategoryId);
+        if (StringUtils.isNull(indicatorCategoryById)) {
             throw new ServiceException("当前指标分类不存在");
         }
-        if (indicatorCategoryMapper.checkUnique(indicatorCategoryCode) > 0) {
-            throw new ServiceException("指标分类编码重复");
+        IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkUnique(indicatorCategoryCode);
+        if (StringUtils.isNotNull(indicatorCategoryByCode)) {
+            if (indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
+                throw new ServiceException("更新指标" + indicatorCategoryDTO.getIndicatorCategoryName() + "失败,指标编码重复");
+            }
         }
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);

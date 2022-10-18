@@ -132,4 +132,12 @@ public class IndustryDefaultController extends BaseController {
         return AjaxResult.success(industryDefaultService.detailIndustryDefault(industryId));
     }
 
+    /**
+     * 获取指标最大层级
+     */
+//    @RequiresPermissions("system:manage:indicator:list")
+    @GetMapping("/selectLevel")
+    public AjaxResult level() {
+        return AjaxResult.success(industryDefaultService.getLevel());
+    }
 }

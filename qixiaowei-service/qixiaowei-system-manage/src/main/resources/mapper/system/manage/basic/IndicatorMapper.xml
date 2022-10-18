@@ -458,6 +458,16 @@
         WHERE indicator_code=#{indicatorCode}
         AND delete_flag = 0
     </select>
+    <select id="selectLevel" resultType="java.lang.Integer">
+        SELECT
+        level
+        FROM indicator
+        WHERE delete_flag = 0
+        GROUP BY `level`
+        ORDER BY `level` ASC
+    </select>
+    <!--获取指标最大层级-->
+
     <!--新增时修改指标祖级列表ID-->
     <update id="updateAncestors">
         UPDATE indicator

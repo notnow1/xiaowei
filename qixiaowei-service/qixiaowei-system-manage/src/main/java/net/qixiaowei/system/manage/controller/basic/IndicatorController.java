@@ -118,16 +118,6 @@ public class IndicatorController extends BaseController {
     }
 
     /**
-     * 批量新增指标表
-     */
-//    @RequiresPermissions("system:manage:indicator:insertIndicators")
-    @Log(title = "批量新增指标表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertIndicators")
-    public AjaxResult insertIndicators(@RequestBody List<IndicatorDTO> indicatorDtos) {
-        return toAjax(indicatorService.insertIndicators(indicatorDtos));
-    }
-
-    /**
      * 逻辑批量删除指标表
      */
 //    @RequiresPermissions("system:manage:indicator:removes")
@@ -135,5 +125,14 @@ public class IndicatorController extends BaseController {
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> indicatorIds) {
         return toAjax(indicatorService.logicDeleteIndicatorByIndicatorIds(indicatorIds));
+    }
+
+    /**
+     * 获取指标最大层级
+     */
+//    @RequiresPermissions("system:manage:indicator:list")
+    @GetMapping("/selectLevel")
+    public AjaxResult level() {
+        return AjaxResult.success(indicatorService.getLevel());
     }
 }

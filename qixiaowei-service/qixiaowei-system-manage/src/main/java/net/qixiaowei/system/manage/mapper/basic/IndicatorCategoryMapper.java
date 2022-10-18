@@ -111,7 +111,7 @@ public interface IndicatorCategoryMapper {
      * @param indicatorCategoryCode
      * @return
      */
-    int checkUnique(@Param("indicatorCategoryCode") String indicatorCategoryCode);
+    IndicatorCategoryDTO checkUnique(@Param("indicatorCategoryCode") String indicatorCategoryCode);
 
     /**
      * 根据id集合判断是否存在

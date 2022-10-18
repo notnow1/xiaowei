@@ -191,7 +191,15 @@
         WHERE industry_code=#{industryCode}
         and delete_flag=0
     </select>
-
+    <!--获取行业层级列表-->
+    <select id="getLevelList" resultType="java.lang.Integer">
+        SELECT
+        level
+        FROM industry
+        WHERE delete_flag = 0
+        GROUP BY `level`
+        ORDER BY `level` ASC
+    </select>
     <!--批量新增行业-->
     <insert id="batchIndustry">
         INSERT INTO industry

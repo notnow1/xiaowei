@@ -153,5 +153,8 @@ public interface IndicatorMapper {
      */
     List<Long> isExist(@Param("indicatorIds") List<Long> indicatorIds);
 
-
+    /**
+     * 获取指标最大层级
+     */
+    List<Integer> selectLevel();
 }

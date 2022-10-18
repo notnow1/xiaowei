@@ -140,4 +140,10 @@ public interface IIndustryService {
      */
     IndustryDTO detailIndustry(Long industryId);
 
+    /**
+     * 获取行业的层级列表
+     *
+     * @return
+     */
+    List<Integer> getLevel();
 }
