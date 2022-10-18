@@ -28,6 +28,13 @@ public interface IDepartmentService{
     List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO);
 
     /**
+     * 返回组织层级
+     *
+     * @return 层级集合
+     */
+    List<Integer> selectdeptLevel();
+
+    /**
     * 新增部门表
     *
     * @param departmentDTO 部门表

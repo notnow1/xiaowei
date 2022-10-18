@@ -81,7 +81,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     }
 
-
+    /**
+     *返回组织层级
+     * @return
+     */
+    @Override
+    public List<Integer> selectdeptLevel() {
+        return departmentMapper.selectdeptLevel();
+    }
 
 
     /**

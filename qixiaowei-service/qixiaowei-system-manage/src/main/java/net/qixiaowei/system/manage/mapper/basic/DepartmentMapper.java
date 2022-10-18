@@ -170,4 +170,10 @@ public interface DepartmentMapper{
 
     List<DepartmentDTO> deleteFlagEmployees(@Param("collect")List<Long> collect);
 
+    /**
+     * 返回部门层级
+     * @return
+     */
+    List<Integer> selectdeptLevel();
+
 }
