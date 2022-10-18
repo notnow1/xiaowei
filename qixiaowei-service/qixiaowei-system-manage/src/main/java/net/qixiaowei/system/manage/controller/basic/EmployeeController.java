@@ -1,7 +1,19 @@
 package net.qixiaowei.system.manage.controller.basic;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
+
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import io.swagger.annotations.ApiOperation;
+import lombok.SneakyThrows;
+import org.apache.commons.codec.Charsets;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +28,9 @@ import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -33,6 +46,8 @@ public class EmployeeController extends BaseController
 
     @Autowired
     private IEmployeeService employeeService;
+
+
 
     /**
     * 分页查询员工表列表

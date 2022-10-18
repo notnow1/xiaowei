@@ -39,6 +39,14 @@ public interface UserRoleMapper{
     List<UserRoleDTO> selectUserRoleListByUserIds(@Param("userIds")List<Long> userIds);
 
     /**
+     * 查询用户角色表ID集合
+     *
+     * @param userIds 用户ID集合
+     * @return 用户角色表ID集合
+     */
+    List<Long> selectUserRoleIdsByUserIds(@Param("userIds")List<Long> userIds);
+
+    /**
     * 查询用户角色表列表
     *
     * @param userRole 用户角色表

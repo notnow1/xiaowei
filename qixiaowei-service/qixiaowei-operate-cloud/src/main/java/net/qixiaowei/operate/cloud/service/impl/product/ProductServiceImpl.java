@@ -751,6 +751,15 @@ public class ProductServiceImpl implements IProductService {
     }
 
     /**
+     * 返回产品层级
+     * @return
+     */
+    @Override
+    public List<Integer> selectProdLevel() {
+        return productMapper.selectProdLevel();
+    }
+
+    /**
      * 逻辑删除产品表信息
      *
      * @param productDTO 产品表

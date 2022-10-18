@@ -63,6 +63,19 @@
         </foreach>
     </select>
 
+    <select id="selectUserRoleIdsByUserIds" resultType="java.lang.Long">
+        SELECT
+        user_role_id
+        FROM user_role
+        WHERE delete_flag = 0
+        AND user_id IN
+        <foreach item="item"
+                 collection="userIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
     <!--新增用户角色表-->
     <insert id="insertUserRole" useGeneratedKeys="true" keyProperty="userRoleId">
         INSERT INTO user_role (user_id,role_id,delete_flag,create_by,create_time,update_by,update_time)

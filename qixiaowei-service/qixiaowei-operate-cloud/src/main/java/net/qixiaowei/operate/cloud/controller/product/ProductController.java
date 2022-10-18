@@ -45,6 +45,15 @@ public class ProductController extends BaseController
 
 
     /**
+     * 返回产品层级
+     */
+    //@RequiresPermissions("system:manage:department:list")
+    @GetMapping("/selectProdLevel")
+    public AjaxResult selectProdLevel(){
+        return AjaxResult.success(productService.selectProdLevel());
+    }
+
+    /**
     * 查询产品表详情
     */
     //@RequiresPermissions("operate:cloud:product:info")

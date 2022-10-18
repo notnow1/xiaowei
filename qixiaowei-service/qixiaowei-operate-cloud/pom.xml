@@ -49,6 +49,13 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <!-- Alibaba EasyExcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>${easyexcel.version}</version>
+        </dependency>
+
         <!-- qixiaowei integration DataSource -->
         <dependency>
             <groupId>net.qixiaowei</groupId>

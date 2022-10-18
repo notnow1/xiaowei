@@ -120,7 +120,13 @@ public class TenantServiceImpl implements ITenantService {
                 tenantContractDTO.setProductPackage(StringUtils.join(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()),","));
             }
         }
-
+        //合同时间
+        if (StringUtils.isNotEmpty(tenantContractDTOS)){
+            //合同开始时间
+            tenantDTO.setContractStartTime(tenantContractDTOS.get(tenantContractDTOS.size()-1).getContractStartTime());
+            //合同结束时间
+            tenantDTO.setContractEndTime(tenantContractDTOS.get(tenantContractDTOS.size()-1).getContractEndTime());
+        }
         //租户合同
         tenantDTO.setTenantContractDTOList(tenantContractDTOS);
         //租户域名申请表
@@ -369,6 +375,9 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setTenantLogo("http://43.139.7.31:9800/local" + tenant.getTenantLogo());
         //查询租户数据
         TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
+        if (StringUtils.isNull(tenantDTO1)){
+            throw new ServiceException("租户信息不存在");
+        }
         //对比域名是否修改 修改需要保存到域名申请表中
         if (!StringUtils.equals(tenantDTO1.getDomain(), tenant.getDomain())) {
             //租户id

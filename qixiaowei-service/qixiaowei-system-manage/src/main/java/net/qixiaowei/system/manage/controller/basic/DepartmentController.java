@@ -38,6 +38,15 @@ public class DepartmentController extends BaseController
     private IDepartmentService departmentService;
 
     /**
+     * 返回部门层级
+     */
+    //@RequiresPermissions("system:manage:department:list")
+    @GetMapping("/selectdeptLevel")
+    public AjaxResult selectdeptLevel(){
+        return AjaxResult.success(departmentService.selectdeptLevel());
+    }
+
+    /**
     * 分页查询部门表列表
     */
     //@RequiresPermissions("system:manage:department:pageList")

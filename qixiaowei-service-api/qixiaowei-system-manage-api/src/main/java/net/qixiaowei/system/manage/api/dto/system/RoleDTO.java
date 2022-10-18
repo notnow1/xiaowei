@@ -5,14 +5,12 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.Date;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 
 /**
  * 角色表
@@ -23,6 +21,10 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 @Data
 @Accessors(chain = true)
 public class RoleDTO {
+
+    public RoleDTO(Long roleId) {
+        this.roleId = roleId;
+    }
 
     //查询检验
     public interface QueryRoleDTO extends Default {

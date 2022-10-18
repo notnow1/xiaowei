@@ -76,6 +76,20 @@
                     and update_time=#{role.updateTime}
                 </if>
     </select>
+
+    <select id="selectRolesByRoleIds" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
+        SELECT
+        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM role
+        WHERE delete_flag=0 AND
+        role_id IN
+        <foreach item="item"
+                 collection="roleIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
     <!--新增角色表-->
     <insert id="insertRole" useGeneratedKeys="true" keyProperty="roleId">
         INSERT INTO role (role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)

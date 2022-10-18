@@ -229,8 +229,13 @@ public class UserServiceImpl implements IUserService {
             userIds = userDTOS.stream().map(UserDTO::getUserId).collect(Collectors.toList());
         }
         Date nowDate = DateUtils.getNowDate();
-        //逻辑删除用户角色关系
-        userRoleMapper.logicDeleteUserRoleByUserIds(userIds, userId, nowDate);
+        if (StringUtils.isNotEmpty(userIds)) {
+            List<Long> delList = userRoleMapper.selectUserRoleIdsByUserIds(userIds);
+            if (StringUtils.isNotEmpty(delList)) {
+                //逻辑删除用户角色关系
+                userRoleMapper.logicDeleteUserRoleByUserIds(delList, userId, nowDate);
+            }
+        }
         return userMapper.logicDeleteUserByUserIds(userIds, userId, nowDate);
     }
 
@@ -256,8 +261,12 @@ public class UserServiceImpl implements IUserService {
             throw new ServiceException("删除失败，当前用户不存在");
         }
         Date nowDate = DateUtils.getNowDate();
-        //逻辑删除用户角色关系
-        userRoleMapper.logicDeleteUserRoleByUserIds(Collections.singletonList(userId), operateUserId, nowDate);
+        List<UserRoleDTO> userRoleDTOS = userRoleMapper.selectUserRoleListByUserId(userId);
+        if (StringUtils.isNotEmpty(userRoleDTOS)) {
+            List<Long> delUserRoleIds = userRoleDTOS.stream().map(UserRoleDTO::getUserRoleId).collect(Collectors.toList());
+            //逻辑删除用户角色关系
+            userRoleMapper.logicDeleteUserRoleByUserRoleIds(delUserRoleIds, operateUserId, nowDate);
+        }
         User user = new User();
         user.setUserId(userId);
         user.setUpdateBy(operateUserId);

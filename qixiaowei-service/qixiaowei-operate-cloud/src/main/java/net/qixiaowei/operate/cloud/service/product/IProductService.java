@@ -105,4 +105,10 @@ public interface IProductService{
      * @return
      */
     List<ProductDTO> queryDictionaryType(ProductDTO productDTO);
+
+    /**
+     * 返回产品层级
+     * @return
+     */
+    List<Integer> selectProdLevel();
 }

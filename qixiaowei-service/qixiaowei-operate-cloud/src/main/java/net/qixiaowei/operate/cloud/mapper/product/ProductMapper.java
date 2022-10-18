@@ -131,4 +131,10 @@ public interface ProductMapper{
      * @return
      */
     List<ProductDTO> queryDictionaryType(@Param("product")Product product);
+
+    /**
+     * 返回产品层级
+     * @return
+     */
+    List<Integer> selectProdLevel();
 }

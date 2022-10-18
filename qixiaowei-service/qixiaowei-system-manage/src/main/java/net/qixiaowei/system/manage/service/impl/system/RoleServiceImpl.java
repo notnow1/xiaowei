@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.impl.system;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -179,8 +180,24 @@ public class RoleServiceImpl implements IRoleService {
      */
     @Override
     public int logicDeleteRoleByRoleIds(List<Long> roleIds) {
+        for (Long roleId : roleIds) {
+            this.checkRoleAllowed(new RoleDTO(roleId));
+        }
+        List<RoleDTO> roleDTOS = roleMapper.selectRolesByRoleIds(roleIds);
+        if (StringUtils.isEmpty(roleDTOS)) {
+            throw new ServiceException("删除失败，角色不存在");
+        }
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
+        if (roleIds.size() != roleDTOS.size()) {
+            roleIds = roleDTOS.stream().map(RoleDTO::getRoleId).collect(Collectors.toList());
+        }
+        if (StringUtils.isNotEmpty(roleIds)) {
+            List<Long> delList = roleMenuMapper.selectRoleMenuIdsByRoleIds(roleIds);
+            if (StringUtils.isNotEmpty(delList)) {
+                roleMenuMapper.logicDeleteRoleMenuByRoleMenuIds(delList, userId, nowDate);
+            }
+        }
         return roleMapper.logicDeleteRoleByRoleIds(roleIds, userId, nowDate);
     }
 
@@ -204,9 +221,23 @@ public class RoleServiceImpl implements IRoleService {
      */
     @Override
     public int logicDeleteRoleByRoleId(RoleDTO roleDTO) {
+        Long roleId = roleDTO.getRoleId();
+        Long userId = SecurityUtils.getUserId();
+        this.checkRoleAllowed(roleDTO);
+        RoleDTO roleByRoleId = roleMapper.selectRoleByRoleId(roleId);
+        if (StringUtils.isNull(roleByRoleId)) {
+            throw new ServiceException("删除失败，当前角色不存在");
+        }
+        Date nowDate = DateUtils.getNowDate();
+        List<RoleMenuDTO> roleMenuDTOS = roleMenuMapper.selectRoleMenuListByRoleId(roleId);
+        if (StringUtils.isNotEmpty(roleMenuDTOS)) {
+            //逻辑删除角色菜单关系
+            List<Long> delRoleMenuIds = roleMenuDTOS.stream().map(RoleMenuDTO::getRoleMenuId).collect(Collectors.toList());
+            roleMenuMapper.logicDeleteRoleMenuByRoleMenuIds(delRoleMenuIds, userId, nowDate);
+        }
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
-        return roleMapper.logicDeleteRoleByRoleId(role, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        return roleMapper.logicDeleteRoleByRoleId(role, userId, nowDate);
     }
 
     /**
