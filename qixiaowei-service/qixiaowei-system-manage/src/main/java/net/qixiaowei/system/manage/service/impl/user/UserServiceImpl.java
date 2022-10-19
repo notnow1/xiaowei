@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
@@ -15,6 +16,7 @@ import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
+import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.system.manage.service.system.IRoleMenuService;
 import net.qixiaowei.system.manage.service.system.IUserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private IRoleMenuService roleMenuService;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
 
     @Override
@@ -324,6 +329,14 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isNotEmpty(userRoles)) {
             userRoleMapper.batchUserRole(userRoles);
         }
+    }
+
+    /**
+     * 查询未分配用户员工列表
+     */
+    @Override
+    public List<EmployeeDTO> unallocatedEmployees() {
+        return employeeService.unallocatedUserList();
     }
 
     /**

@@ -27,7 +27,6 @@ import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 
 
-
 /**
  * EmployeeService业务层处理
  *
@@ -73,6 +72,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 查询员工单条信息
+     *
      * @param employeeDTO 员工表
      * @return
      */
@@ -94,7 +94,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public EmployeeDTO insertEmployee(EmployeeDTO employeeDTO) {
         //查询是否已经存在员工
         EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeCode(employeeDTO.getEmployeeCode());
-        if (null != employeeDTO1){
+        if (null != employeeDTO1) {
             throw new ServiceException("工号已存在请重新添加！");
         }
         //员工表
@@ -106,7 +106,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee.setUpdateBy(SecurityUtils.getUserId());
         employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         try {
-             employeeMapper.insertEmployee(employee);
+            employeeMapper.insertEmployee(employee);
         } catch (Exception e) {
             throw new ServiceException("新增员工失败");
         }
@@ -171,8 +171,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Transactional
     @Override
-    public int logicDeleteEmployeeByEmployeeIds(List<Long>  employeeIds) {
-        int i= 0;
+    public int logicDeleteEmployeeByEmployeeIds(List<Long> employeeIds) {
+        int i = 0;
         //组织引用
         StringBuffer deptErreo = new StringBuffer();
         //岗位引用
@@ -187,21 +187,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
             String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
             String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
             for (EmployeeDTO employeeDTO : employeeDTOList) {
-                if (null != username){
-                    userErreo.append("人员"+employeeDTO.getEmployeeName()+"已被用户"+username+"引用  无法删除！\n");
+                if (null != username) {
+                    userErreo.append("人员" + employeeDTO.getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
                 }
-                if (null != employeeDepartmentName){
-                    deptErreo.append("人员"+employeeDTO.getEmployeeName()+"已被组织"+employeeDepartmentName+"引用  无法删除！\n");
+                if (null != employeeDepartmentName) {
+                    deptErreo.append("人员" + employeeDTO.getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
                 }
-                if (null != employeePostName){
-                    postErreo.append("人员"+employeeDTO.getEmployeeName()+"已被岗位"+employeePostName+"引用  无法删除！\n");
+                if (null != employeePostName) {
+                    postErreo.append("人员" + employeeDTO.getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
                 }
             }
 
         }
 
         erreoEmp.append(deptErreo).append(postErreo).append(userErreo);
-        if (erreoEmp.length()>0){
+        if (erreoEmp.length() > 0) {
             throw new ServiceException(erreoEmp.toString());
         }
         return employeeMapper.logicDeleteEmployeeByEmployeeIds(employeeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -222,21 +222,22 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 导入excel
+     *
      * @param list
      */
     @Override
     public void importEmployee(List<EmployeeExcel> list) {
         List<Employee> employeeList = new ArrayList<>();
-        list.forEach(l->{
+        list.forEach(l -> {
             Employee employee = new Employee();
-             BeanUtils.copyProperties(l,employee);
+            BeanUtils.copyProperties(l, employee);
             employee.setCreateBy(SecurityUtils.getUserId());
             employee.setCreateTime(DateUtils.getNowDate());
             employee.setUpdateTime(DateUtils.getNowDate());
             employee.setUpdateBy(SecurityUtils.getUserId());
             employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             employeeList.add(employee);
-            });
+        });
         try {
             employeeMapper.batchEmployee(employeeList);
         } catch (Exception e) {
@@ -247,25 +248,33 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public List<EmployeeExcel> exportUser(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO, employee);
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeList(employee);
         List<EmployeeExcel> employeeExcelList = new ArrayList<>();
         for (EmployeeDTO dto : employeeDTOList) {
-            EmployeeExcel employeeExcel =new EmployeeExcel();
-            BeanUtils.copyProperties(dto,employeeExcel);
-            if (dto.getEmployeeGender() == 1){
+            EmployeeExcel employeeExcel = new EmployeeExcel();
+            BeanUtils.copyProperties(dto, employeeExcel);
+            if (dto.getEmployeeGender() == 1) {
                 employeeExcel.setEmployeeGender("男");
-            }else {
+            } else {
                 employeeExcel.setEmployeeGender("女");
             }
-            if (dto.getEmploymentStatus() == 1){
+            if (dto.getEmploymentStatus() == 1) {
                 employeeExcel.setEmploymentStatus("在职");
-            }else {
+            } else {
                 employeeExcel.setEmploymentStatus("离职");
             }
             employeeExcelList.add(employeeExcel);
         }
         return employeeExcelList;
+    }
+
+    /**
+     * 查询未分配用户员工列表
+     */
+    @Override
+    public List<EmployeeDTO> unallocatedUserList() {
+        return employeeMapper.unallocatedUserList();
     }
 
     /**
@@ -277,7 +286,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     @Override
     public int logicDeleteEmployeeByEmployeeId(EmployeeDTO employeeDTO) {
-        int i= 0;
+        int i = 0;
         //组织引用
         StringBuffer deptErreo = new StringBuffer();
         //岗位引用
@@ -292,7 +301,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         employee.setUpdateBy(SecurityUtils.getUserId());
         //查询数据
         EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeId(employeeDTO.getEmployeeId());
-        if (null == employeeDTO1){
+        if (null == employeeDTO1) {
             throw new ServiceException("数据不存在无法删除！");
         }
         //部门表
@@ -305,19 +314,19 @@ public class EmployeeServiceImpl implements IEmployeeService {
         String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
         String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
         for (EmployeeDTO employeeDTO2 : employeeDTOList) {
-            if (null != username){
-                userErreo.append("人员"+employeeDTO2.getEmployeeName()+"已被用户"+username+"引用  无法删除！\n");
+            if (null != username) {
+                userErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
             }
-            if (null != employeeDepartmentName){
-                deptErreo.append("人员"+employeeDTO2.getEmployeeName()+"已被组织"+employeeDepartmentName+"引用  无法删除！\n");
+            if (null != employeeDepartmentName) {
+                deptErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
             }
-            if (null != employeePostName){
-                postErreo.append("人员"+employeeDTO2.getEmployeeName()+"已被岗位"+employeePostName+"引用  无法删除！\n");
+            if (null != employeePostName) {
+                postErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
             }
         }
 
         erreoEmp.append(deptErreo).append(postErreo).append(userErreo);
-        if (erreoEmp.length()>0){
+        if (erreoEmp.length() > 0) {
             throw new ServiceException(erreoEmp.toString());
         }
         try {

@@ -113,4 +113,9 @@ public interface IEmployeeService{
     void importEmployee(List<EmployeeExcel> list);
 
     List<EmployeeExcel> exportUser(EmployeeDTO employeeDTO);
+
+    /**
+     * 查询未分配用户员工列表
+     */
+    List<EmployeeDTO> unallocatedUserList();
 }

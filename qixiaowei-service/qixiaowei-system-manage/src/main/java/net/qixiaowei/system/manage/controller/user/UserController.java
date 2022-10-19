@@ -144,4 +144,13 @@ public class UserController extends BaseController {
         return success();
     }
 
+    /**
+     * 查询未分配用户员工列表
+     */
+    @RequiresPermissions("system:manage:user:pageList")
+    @GetMapping("/unallocatedEmployees")
+    public AjaxResult unallocatedEmployees() {
+        return AjaxResult.success(userService.unallocatedEmployees());
+    }
+
 }

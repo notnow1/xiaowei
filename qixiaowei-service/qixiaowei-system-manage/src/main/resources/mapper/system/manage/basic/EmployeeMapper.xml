@@ -249,6 +249,34 @@
             and ei.emergency_mobile=#{employee.emergencyMobile}
         </if>
     </select>
+
+    <select id="unallocatedUserList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag
+        FROM
+        employee e
+        LEFT JOIN user u ON u.employee_id=e.employee_id AND u.delete_flag = 0
+        WHERE
+        e.delete_flag = 0 and u.user_id is null
+    </select>
+
     <!--    查询员工单条信息-->
     <select id="selectEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select

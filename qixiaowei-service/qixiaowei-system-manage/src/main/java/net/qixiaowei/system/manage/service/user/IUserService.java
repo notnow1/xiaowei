@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.user;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
@@ -104,5 +105,10 @@ public interface IUserService{
      * 用户授权角色
      */
     void authRoles(AuthRolesDTO authRolesDTO);
+
+    /**
+     * 查询未分配用户员工列表
+     */
+    List<EmployeeDTO> unallocatedEmployees();
 
 }
