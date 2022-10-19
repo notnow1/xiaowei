@@ -95,6 +95,10 @@ public class IndustryDTO {
      */
     @JsonFormat(pattern = "yyyy/MM/dd hh:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+    /**
+     * 启用类型（0-默认，1-自定义）
+     */
+    private Integer configValue;
 
 }
 

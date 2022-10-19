@@ -1,12 +1,11 @@
 package net.qixiaowei.system.manage.mapper.basic;
 
-import java.util.List;
-
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -102,7 +101,7 @@ public interface OfficialRankSystemMapper {
      * @param officialRankSystemName
      * @return
      */
-    int officialRankNameCheckUnique(@Param("officialRankSystemName") String officialRankSystemName);
+    OfficialRankSystemDTO officialRankByName(@Param("officialRankSystemName") String officialRankSystemName);
 
     /**
      * 职级体系前缀重复校验
@@ -110,7 +109,7 @@ public interface OfficialRankSystemMapper {
      * @param rankPrefixCode
      * @return
      */
-    int rankPrefixCodeCheckUnique(@Param("rankPrefixCode") String rankPrefixCode);
+    OfficialRankSystemDTO officialRankByPrefixCode(@Param("rankPrefixCode") String rankPrefixCode);
 
     /**
      * 根据officialRankSystemId判断该职级体系是否存在

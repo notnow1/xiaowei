@@ -37,7 +37,7 @@ public class OfficialRankDecomposeController extends BaseController {
     @Log(title = "查询职级分解表详情")
     @GetMapping("/info/{officialRankSystemId}")
     public AjaxResult info(@PathVariable Long officialRankSystemId) {
-        return AjaxResult.success(officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemDTO(officialRankSystemId));
+        return AjaxResult.success(officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId));
     }
 
 }

@@ -67,8 +67,13 @@
         </foreach>
         and delete_flag=0
     </select>
-    <select id="selectOfficialRankDecomposeByOfficialRankSystemIds" resultType="java.lang.Long">
-        SELECT official_rank_decompose_id FROM official_rank_decompose WHERE official_rank_system_id IN
+    <select id="selectOfficialRankDecomposeByOfficialRankSystemIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO">
+        SELECT
+        official_rank_decompose_id, official_rank_system_id, rank_decompose_dimension, decompose_dimension,
+        salary_factor, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_decompose
+        WHERE official_rank_system_id IN
         <foreach collection="officialRankSystemIds" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>

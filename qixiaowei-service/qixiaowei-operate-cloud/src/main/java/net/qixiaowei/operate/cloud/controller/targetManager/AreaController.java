@@ -51,6 +51,15 @@ public class AreaController extends BaseController {
         return AjaxResult.success(list);
     }
 
+    /**
+     * 查询分解维度区域下拉列表
+     */
+//    @RequiresPermissions("operate:cloud:area:list")
+    @GetMapping("/dropList")
+    public AjaxResult dropList(AreaDTO areaDTO) {
+        return AjaxResult.success(areaService.selectDropList(areaDTO));
+    }
+
 
     /**
      * 新增区域表

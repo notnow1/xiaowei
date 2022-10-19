@@ -7,7 +7,6 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
-import net.qixiaowei.system.manage.service.basic.IIndustryDefaultService;
 import net.qixiaowei.system.manage.service.basic.IIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -71,8 +70,9 @@ public class IndustryController extends BaseController {
      * 修改启用行业类型
      */
 //    @RequiresPermissions("system:manage:industry:list")
-    @PostMapping("/enableEdit/{configValue}")
-    public AjaxResult enableEdit(@PathVariable Integer configValue) {
+    @PostMapping("/enableEdit")
+    public AjaxResult enableEdit(@RequestBody IndustryDTO industryDTO) {
+        Integer configValue = industryDTO.getConfigValue();
         return AjaxResult.success(industryService.updateEnableType(configValue));
     }
 

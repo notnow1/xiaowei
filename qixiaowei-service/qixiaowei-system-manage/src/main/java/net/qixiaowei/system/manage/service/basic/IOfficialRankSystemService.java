@@ -1,8 +1,9 @@
 package net.qixiaowei.system.manage.service.basic;
 
-import java.util.List;
-
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -34,7 +35,7 @@ public interface IOfficialRankSystemService {
      * @param officialRankSystemDTO 职级体系表
      * @return 结果
      */
-    int insertOfficialRankSystem(OfficialRankSystemDTO officialRankSystemDTO);
+    OfficialRankSystemDTO insertOfficialRankSystem(OfficialRankSystemDTO officialRankSystemDTO);
 
     /**
      * 修改职级体系表
@@ -116,4 +117,12 @@ public interface IOfficialRankSystemService {
      * @return
      */
     List<OfficialRankSystemDTO> selectOfficialRankSystemPageList(OfficialRankSystemDTO officialRankSystemDTO);
+
+    /**
+     * 职级分解维度下拉框
+     *
+     * @param rankDecomposeDimension
+     * @return
+     */
+    Map<Long, String> decomposeDrop(Integer rankDecomposeDimension);
 }

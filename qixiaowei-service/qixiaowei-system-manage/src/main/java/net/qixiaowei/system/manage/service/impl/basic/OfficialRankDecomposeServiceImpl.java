@@ -1,24 +1,22 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
+import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.mapper.basic.OfficialRankDecomposeMapper;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankDecomposeService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -128,7 +126,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
      * @return
      */
     @Override
-    public List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemDTO(Long officialRankSystemId) {
+    public List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemId(Long officialRankSystemId) {
         if (StringUtils.isNull(officialRankSystemId)) {
             throw new ServiceException("职级体系ID不能为空");
         }
@@ -136,17 +134,17 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
     }
 
     /**
-     * 通过officialRankSystemId查找职级分解
+     * 通过officialRankSystemIds查找职级分解
      *
-     * @param officialRankSystemId
+     * @param officialRankSystemIds
      * @return
      */
     @Override
-    public List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemId(String officialRankSystemId) {
-        if (StringUtils.isEmpty(officialRankSystemId)) {
-            throw new ServiceException("职级体系ID不能为空");
+    public List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeBySystemIds(List<Long> officialRankSystemIds) {
+        if (StringUtils.isEmpty(officialRankSystemIds)) {
+            throw new ServiceException("officialRankSystemIds为空");
         }
-        return officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemId(Long.valueOf(officialRankSystemId));
+        return officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemIds(officialRankSystemIds);
     }
 
     /**
@@ -162,16 +160,20 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
     }
 
     /**
-     * 根据officialRankSystemIds判断该职级体系是否存在
+     * 根据officialRankSystemIds删除职级分解
      *
      * @param officialRankSystemIds
      * @return
      */
     @Override
     public int logicDeleteOfficialRankDecomposeByOfficialRankSystemIds(List<Long> officialRankSystemIds) {
-        List<Long> officialRankDecomposeIds =
+        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS =
                 officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemIds(officialRankSystemIds);
-        if (StringUtils.isNotEmpty(officialRankDecomposeIds)) {
+        if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)) {
+            List<Long> officialRankDecomposeIds = new ArrayList<>();
+            for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+                officialRankDecomposeIds.add(officialRankDecomposeDTO.getOfficialRankDecomposeId());
+            }
             officialRankDecomposeMapper.logicDeleteOfficialRankDecomposeByOfficialRankDecomposeIds(officialRankDecomposeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
         }
         return 1;
@@ -246,7 +248,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
      * @param officialRankSystem
      */
     @Transactional
-    public int insertOfficialRankDecomposes(List<OfficialRankDecomposeDTO> officialRankDecomposeDtos, OfficialRankSystem officialRankSystem) {
+    public List<OfficialRankDecompose> insertOfficialRankDecomposes(List<OfficialRankDecomposeDTO> officialRankDecomposeDtos, OfficialRankSystem officialRankSystem) {
         List<OfficialRankDecompose> officialRankDecomposeList = new ArrayList<>();
         Long officialRankSystemId = officialRankSystem.getOfficialRankSystemId();
         Integer rankDecomposeDimension = officialRankSystem.getRankDecomposeDimension();
@@ -262,7 +264,8 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
             officialRankDecompose.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             officialRankDecomposeList.add(officialRankDecompose);
         }
-        return officialRankDecomposeMapper.batchOfficialRankDecompose(officialRankDecomposeList);
+        officialRankDecomposeMapper.batchOfficialRankDecompose(officialRankDecomposeList);
+        return officialRankDecomposeList;
     }
 
     /**

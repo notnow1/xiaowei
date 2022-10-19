@@ -112,4 +112,12 @@ public interface AreaMapper {
      * @return
      */
     int isExist(@Param("areaIds") List<Long> areaIds);
+
+    /**
+     * 获取地区/名称
+     *
+     * @param area
+     * @return
+     */
+    List<AreaDTO> dropList(@Param("area") Area area);
 }

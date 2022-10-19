@@ -1,9 +1,10 @@
 package net.qixiaowei.system.manage.service.basic;
 
-import java.util.List;
-
+import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
+
+import java.util.List;
 
 
 /**
@@ -60,7 +61,7 @@ public interface IOfficialRankDecomposeService {
      * @param officialRankSystem
      * @return
      */
-    int insertOfficialRankDecomposes(List<OfficialRankDecomposeDTO> officialRankDecomposeDtos, OfficialRankSystem officialRankSystem);
+    List<OfficialRankDecompose> insertOfficialRankDecomposes(List<OfficialRankDecomposeDTO> officialRankDecomposeDtos, OfficialRankSystem officialRankSystem);
 
     /**
      * 逻辑批量删除职级分解表
@@ -109,15 +110,15 @@ public interface IOfficialRankDecomposeService {
      * @param officialRankSystemId
      * @return
      */
-    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemDTO(Long officialRankSystemId);
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemId(Long officialRankSystemId);
 
     /**
      * 通过officialRankSystemId查找职级分解
      *
-     * @param officialRankSystemId
+     * @param officialRankSystemIds
      * @return
      */
-    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemId(String officialRankSystemId);
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeBySystemIds(List<Long> officialRankSystemIds);
 
     /**
      * 通过officialRankSystemId，rankDecomposeDimensionBefore删除rankDecomposeDimension

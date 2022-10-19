@@ -100,4 +100,12 @@ public interface IAreaService {
      * @return 结果
      */
     int deleteAreaByAreaId(Long areaId);
+
+    /**
+     * 查询分解维度区域下拉列表
+     *
+     * @param areaDTO
+     * @return
+     */
+    List<AreaDTO> selectDropList(AreaDTO areaDTO);
 }

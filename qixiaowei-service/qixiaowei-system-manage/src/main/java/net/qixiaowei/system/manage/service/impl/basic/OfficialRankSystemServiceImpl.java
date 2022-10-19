@@ -1,11 +1,15 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
+import net.qixiaowei.operate.cloud.api.remote.officialRank.RemoteOfficialRankService;
+import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
@@ -42,6 +46,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     @Autowired
     private PostMapper postMapper;
 
+    @Autowired
+    private RemoteOfficialRankService remoteOfficialRankService;
+
     /**
      * 查询职级体系表
      *
@@ -76,12 +83,36 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      * @return
      */
     @Override
-    public List<OfficialRankSystemDTO>  selectOfficialRankSystemPageList(OfficialRankSystemDTO officialRankSystemDTO) {
+    public List<OfficialRankSystemDTO> selectOfficialRankSystemPageList(OfficialRankSystemDTO officialRankSystemDTO) {
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();
         BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
         List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemMapper.selectOfficialRankSystemList(officialRankSystem);
         writeOfficialRank(officialRankSystemDTOS);
         return officialRankSystemDTOS;
+    }
+
+    /**
+     * 职级分解维度下拉框
+     *
+     * @param rankDecomposeDimension
+     * @return
+     */
+    @Override
+    public Map<Long, String> decomposeDrop(Integer rankDecomposeDimension) {
+        Map<Long, String> map = new HashMap<>();
+        switch (rankDecomposeDimension) {
+            case 1:
+                break;
+            case 2:
+                AreaDTO areaDTO = new AreaDTO();
+                R<List<AreaDTO>> listR = remoteOfficialRankService.queryOfficialRankList(areaDTO);
+                break;
+//            case 3:
+//                break;
+//            case 4:
+//                break;
+        }
+        return null;
     }
 
     /**
@@ -115,7 +146,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      */
     @Transactional
     @Override
-    public int insertOfficialRankSystem(OfficialRankSystemDTO officialRankSystemDTO) {
+    public OfficialRankSystemDTO insertOfficialRankSystem(OfficialRankSystemDTO officialRankSystemDTO) {
         String officialRankSystemName = officialRankSystemDTO.getOfficialRankSystemName();
         Integer rankStart = officialRankSystemDTO.getRankStart();
         Integer rankEnd = officialRankSystemDTO.getRankEnd();
@@ -137,12 +168,12 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isEmpty(rankPrefixCode)) {
             throw new ServiceException("职级体系级别前缀不能为空");
         }
-        int officialRankNameCheckUnique = officialRankSystemMapper.officialRankNameCheckUnique(officialRankSystemName);
-        int rankPrefixCodeCheckUnique = officialRankSystemMapper.rankPrefixCodeCheckUnique(rankPrefixCode);
-        if (officialRankNameCheckUnique > 0) {
+        OfficialRankSystemDTO officialRankByName = officialRankSystemMapper.officialRankByName(officialRankSystemName);
+        OfficialRankSystemDTO officialRankByPrefixCode = officialRankSystemMapper.officialRankByPrefixCode(rankPrefixCode);
+        if (StringUtils.isNotNull(officialRankByName)) {
             throw new ServiceException("职级体系名称重复");
         }
-        if (rankPrefixCodeCheckUnique > 0) {
+        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
             throw new ServiceException("职级体系级别前缀重复");
         }
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();
@@ -152,15 +183,13 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         officialRankSystem.setUpdateTime(DateUtils.getNowDate());
         officialRankSystem.setUpdateBy(SecurityUtils.getUserId());
         officialRankSystem.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        try {
-            officialRankSystemMapper.insertOfficialRankSystem(officialRankSystem);
-            if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)) {
-                officialRankDecomposeService.insertOfficialRankDecomposes(officialRankDecomposeDTOS, officialRankSystem);// 新增操作
-            }
-            return 1;
-        } catch (Exception e) {
-            return 0;
+        officialRankSystemMapper.insertOfficialRankSystem(officialRankSystem);
+        if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)) {
+            List<OfficialRankDecompose> officialRankDecomposes = officialRankDecomposeService.insertOfficialRankDecomposes(officialRankDecomposeDTOS, officialRankSystem);// 新增操作
+            officialRankSystemDTO.setOfficialRankDecomposes(officialRankDecomposes);
         }
+        officialRankSystemDTO.setOfficialRankSystemId(officialRankSystem.getOfficialRankSystemId());
+        return officialRankSystemDTO;
     }
 
     /**
@@ -198,13 +227,16 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isEmpty(rankPrefixCode)) {
             throw new ServiceException("职级体系级别前缀不能为空");
         }
-        int officialRankNameCheckUnique = officialRankSystemMapper.officialRankNameCheckUnique(officialRankSystemName);
-        int rankPrefixCodeCheckUnique = officialRankSystemMapper.rankPrefixCodeCheckUnique(rankPrefixCode);
-        if (officialRankNameCheckUnique > 0) {
-            throw new ServiceException("职级体系名称重复");
+        OfficialRankSystemDTO officialRankByName = officialRankSystemMapper.officialRankByName(officialRankSystemName);
+        OfficialRankSystemDTO officialRankByPrefixCode = officialRankSystemMapper.officialRankByPrefixCode(rankPrefixCode);
+        if (StringUtils.isNotNull(officialRankByName)) {
+            if (!officialRankByName.getOfficialRankSystemId().equals(officialRankSystemId)) {
+                throw new ServiceException("职级体系名称重复");
+            }
         }
-        if (rankPrefixCodeCheckUnique > 0) {
-            throw new ServiceException("职级体系级别前缀重复");
+        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
+            if (!officialRankByPrefixCode.getOfficialRankSystemId().equals(officialRankSystemId))
+                throw new ServiceException("职级体系级别前缀重复");
         }
         // 分解为度校验
         List<Integer> decomposeDimensions = new ArrayList<>();
@@ -231,7 +263,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         Integer rankDecomposeDimensionBefore = officialRankSystem.getRankDecomposeDimension();
         if (rankDecomposeDimensionAfter.equals(rankDecomposeDimensionBefore)) {// 操作
             List<OfficialRankDecomposeDTO> officialRankDecomposeDTOSBefore =
-                    officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId.toString());
+                    officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
             return operateRankDecompose(officialRankDecomposeDTOSBefore, officialRankDecomposeDTOAfter, officialRankSystem);
         } else {// 新增
             officialRankSystem.setRankDecomposeDimension(rankDecomposeDimensionAfter);
@@ -359,11 +391,13 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isNull(officialRankSystemId)) {
             throw new ServiceException("职级体系ID不能为空");
         }
-        OfficialRankSystemDTO isExist = officialRankSystemMapper.isExistByOfficialRankSystemId(officialRankSystemId);
-        if (StringUtils.isNull(isExist)) {
+        OfficialRankSystemDTO officialRankSystemDTO = officialRankSystemMapper.isExistByOfficialRankSystemId(officialRankSystemId);
+        if (StringUtils.isNull(officialRankSystemDTO)) {
             throw new ServiceException("该职级体系已不存在");
         }
-        return officialRankSystemMapper.selectOfficialRankSystemByOfficialRankSystemId(officialRankSystemId);
+        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
+        officialRankSystemDTO.setOfficialRankDecomposeDTOS(officialRankDecomposeDTOS);
+        return officialRankSystemDTO;
     }
 
     /**

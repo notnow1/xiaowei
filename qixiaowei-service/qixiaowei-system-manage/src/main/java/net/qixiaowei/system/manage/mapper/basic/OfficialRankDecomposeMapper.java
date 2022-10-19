@@ -128,7 +128,7 @@ public interface OfficialRankDecomposeMapper {
      * @param officialRankSystemIds
      * @return
      */
-    List<Long> selectOfficialRankDecomposeByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
 
     /**
      * 根据officialRankSystemId删除officialRankDecomposeDTO

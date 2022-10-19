@@ -59,13 +59,21 @@
             and update_by like "%" #{officialRankSystem.updateBy}
         </if>
     </select>
-    <select id="officialRankNameCheckUnique" resultType="java.lang.Integer">
-        SELECT COUNT(official_rank_system_name) FROM official_rank_system WHERE official_rank_system_name =
-        #{officialRankSystemName} and delete_flag = 0
+    <select id="officialRankByName" resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
+        SELECT
+        official_rank_system_id, official_rank_system_name, rank_prefix_code, rank_start, rank_end,
+        rank_decompose_dimension, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_system
+        WHERE official_rank_system_name =
+        #{officialRankSystemName} AND delete_flag = 0
     </select>
-    <select id="rankPrefixCodeCheckUnique" resultType="java.lang.Integer">
-        SELECT COUNT(rank_prefix_code) FROM official_rank_system WHERE rank_prefix_code =
-        #{rankPrefixCode} and delete_flag = 0
+    <select id="officialRankByPrefixCode" resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
+        SELECT
+        official_rank_system_id, official_rank_system_name, rank_prefix_code, rank_start, rank_end,
+        rank_decompose_dimension, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_system
+        WHERE rank_prefix_code =
+        #{rankPrefixCode} AND delete_flag = 0
     </select>
     <select id="isExistByOfficialRankSystemId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">

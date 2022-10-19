@@ -139,6 +139,19 @@ public class AreaServiceImpl implements IAreaService {
     }
 
     /**
+     * 查询分解维度区域下拉列表
+     *
+     * @param areaDTO
+     * @return ID,Name
+     */
+    @Override
+    public List<AreaDTO> selectDropList(AreaDTO areaDTO) {
+        Area area = new Area();
+        BeanUtils.copyProperties(areaDTO, area);
+        return areaMapper.dropList(area);
+    }
+
+    /**
      * 逻辑删除区域表信息
      *
      * @param areaDTO 区域表

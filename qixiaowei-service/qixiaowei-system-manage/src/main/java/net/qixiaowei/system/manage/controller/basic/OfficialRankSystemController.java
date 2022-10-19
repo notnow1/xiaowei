@@ -52,7 +52,7 @@ public class OfficialRankSystemController extends BaseController {
     @Log(title = "新增职级体系表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody OfficialRankSystemDTO officialRankSystemDTO) {
-        return toAjax(officialRankSystemService.insertOfficialRankSystem(officialRankSystemDTO));
+        return AjaxResult.success(officialRankSystemService.insertOfficialRankSystem(officialRankSystemDTO));
     }
 
     /**
@@ -93,5 +93,15 @@ public class OfficialRankSystemController extends BaseController {
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> OfficialRankSystemIds) {
         return toAjax(officialRankSystemService.logicDeleteOfficialRankSystemByOfficialRankSystemIds(OfficialRankSystemIds));
+    }
+
+    /**
+     * 职级分解维度下拉框
+     */
+//    @RequiresPermissions("system:manage:officialRankSystem:add")
+    @Log(title = "职级体系表详情")
+    @GetMapping("/decomposeDrop/{rankDecomposeDimension}")
+    public AjaxResult decomposeDrop(@PathVariable Integer rankDecomposeDimension) {
+        return AjaxResult.success(officialRankSystemService.decomposeDrop(rankDecomposeDimension));
     }
 }

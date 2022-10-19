@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 
 /**
  * 职级体系表
@@ -96,6 +97,10 @@ public class OfficialRankSystemDTO {
      * 职级分解
      */
     private List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS;
+    /**
+     * 职级分解
+     */
+    private List<OfficialRankDecompose> officialRankDecomposes;
     /**
      * 职级
      */
