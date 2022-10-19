@@ -2,7 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.excel.EmployeeExcel;
+import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 
 
 /**
@@ -111,4 +111,6 @@ public interface IEmployeeService{
      * @param list
      */
     void importEmployee(List<EmployeeExcel> list);
+
+    List<EmployeeExcel> exportUser(EmployeeDTO employeeDTO);
 }

@@ -4,12 +4,9 @@ import java.util.List;
 
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
-import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
-import net.qixiaowei.system.manage.api.dto.user.UserDTO;
-import net.qixiaowei.system.manage.excel.EmployeeExcel;
+import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.mapper.basic.DepartmentMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeInfoMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
@@ -245,6 +242,30 @@ public class EmployeeServiceImpl implements IEmployeeService {
         } catch (Exception e) {
             throw new ServiceException("批量插入产品表失败");
         }
+    }
+
+    @Override
+    public List<EmployeeExcel> exportUser(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO,employee);
+        List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeList(employee);
+        List<EmployeeExcel> employeeExcelList = new ArrayList<>();
+        for (EmployeeDTO dto : employeeDTOList) {
+            EmployeeExcel employeeExcel =new EmployeeExcel();
+            BeanUtils.copyProperties(dto,employeeExcel);
+            if (dto.getEmployeeGender() == 1){
+                employeeExcel.setEmployeeGender("男");
+            }else {
+                employeeExcel.setEmployeeGender("女");
+            }
+            if (dto.getEmploymentStatus() == 1){
+                employeeExcel.setEmploymentStatus("在职");
+            }else {
+                employeeExcel.setEmploymentStatus("离职");
+            }
+            employeeExcelList.add(employeeExcel);
+        }
+        return employeeExcelList;
     }
 
     /**
