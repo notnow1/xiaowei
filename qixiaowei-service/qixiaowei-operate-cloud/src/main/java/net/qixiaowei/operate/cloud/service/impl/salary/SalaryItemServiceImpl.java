@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
+import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,8 +111,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Transactional
     @Override
     public int logicDeleteSalaryItemBySalaryItemIds(List<Long> salaryItemIds) {
-        List<Long> exist = salaryItemMapper.isExist(salaryItemIds);
-        if (StringUtils.isEmpty(exist)) {
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.getSalaryItemByIds(salaryItemIds);
+        if (StringUtils.isEmpty(salaryItemDTOS)) {
             throw new ServiceException("该工资条配置已不存在");
         }
         //todo 引用校验
@@ -147,14 +148,88 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      */
     @Override
     public SalaryItemDTO detailSalaryItemBySalaryId(Long salaryId) {
-        if (StringUtils.isNull(salaryId)){
+        if (StringUtils.isNull(salaryId)) {
             throw new ServiceException("工资条id不可以为空");
         }
         SalaryItemDTO salaryItemDTO = salaryItemMapper.selectSalaryItemBySalaryItemId(salaryId);
-        if (StringUtils.isNull(salaryItemDTO)){
+        if (StringUtils.isNull(salaryItemDTO)) {
             throw new ServiceException("当前的工资条已经不存在");
         }
         return salaryItemDTO;
+    }
+
+    /**
+     * 导出工资条
+     *
+     * @param salaryItemDTO
+     * @return
+     */
+    @Override
+    public List<SalaryItemExcel> exportSalaryExcel(SalaryItemDTO salaryItemDTO) {
+        Integer isSelect = salaryItemDTO.getIsSelect();
+        List<SalaryItemDTO> salaryItemDTOList;
+        if (isSelect.equals(1)) {
+            List<Long> salaryItemIds = salaryItemDTO.getSelectSalaryItem();
+            salaryItemDTOList = salaryItemMapper.getSalaryItemByIds(salaryItemIds);
+        } else {
+            SalaryItem salaryItem = new SalaryItem();
+            BeanUtils.copyProperties(salaryItemDTO, salaryItem);
+            salaryItemDTOList = salaryItemMapper.selectSalaryItemList(salaryItem);
+        }
+        List<SalaryItemExcel> salaryItemExcelList = new ArrayList<>();
+        for (SalaryItemDTO dto : salaryItemDTOList) {
+            SalaryItemExcel salaryItemExcel = new SalaryItemExcel();
+            BeanUtils.copyProperties(dto, salaryItemExcel);
+            switch (dto.getFirstLevelItem()) {
+                case 1:
+                    salaryItemExcel.setFirstLevelItem("总工资包");
+                    break;
+                case 2:
+                    salaryItemExcel.setFirstLevelItem("总奖金包");
+                    break;
+                case 3:
+                    salaryItemExcel.setFirstLevelItem("总扣减项");
+                    break;
+            }
+            switch (dto.getSecondLevelItem()) {
+                case 1:
+                    salaryItemExcel.setSecondLevelItem("工资");
+                    break;
+                case 2:
+                    salaryItemExcel.setSecondLevelItem("津贴");
+                    break;
+                case 3:
+                    salaryItemExcel.setSecondLevelItem("福利");
+                    break;
+                case 4:
+                    salaryItemExcel.setSecondLevelItem("奖金");
+                    break;
+                case 5:
+                    salaryItemExcel.setSecondLevelItem("代扣代缴");
+                    break;
+                case 6:
+                    salaryItemExcel.setSecondLevelItem("其他扣款");
+                    break;
+            }
+            if (dto.getScope() == 1) {
+                salaryItemExcel.setScope("部门");
+            } else {
+                salaryItemExcel.setScope("公司");
+            }
+            salaryItemExcelList.add(salaryItemExcel);
+        }
+        return salaryItemExcelList;
+    }
+
+    /**
+     * 导入工资条
+     *
+     * @param list
+     * @return
+     */
+    @Override
+    public void importSalaryItem(List<SalaryItemExcel> list) {
+
     }
 
     /**

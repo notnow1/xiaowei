@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.salary;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
+import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -109,4 +110,14 @@ public interface ISalaryItemService {
      * @return
      */
     SalaryItemDTO detailSalaryItemBySalaryId(Long salaryId);
+
+    /**
+     * 导出工资条
+     *
+     * @param salaryItemDTO
+     * @return
+     */
+    List<SalaryItemExcel> exportSalaryExcel(SalaryItemDTO salaryItemDTO);
+
+    void importSalaryItem(List<SalaryItemExcel> list);
 }

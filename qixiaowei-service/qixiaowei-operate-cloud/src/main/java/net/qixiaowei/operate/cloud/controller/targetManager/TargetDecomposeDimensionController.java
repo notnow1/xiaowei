@@ -31,8 +31,7 @@ public class TargetDecomposeDimensionController extends BaseController {
     @GetMapping("/pageList")
     public TableDataInfo pageList(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
         startPage();
-        List<TargetDecomposeDimensionDTO> list = targetDecomposeDimensionService.selectTargetDecomposeDimensionList(targetDecomposeDimensionDTO);
-        return getDataTable(list);
+        return getDataTable(targetDecomposeDimensionService.selectTargetDecomposeDimensionList(targetDecomposeDimensionDTO));
     }
 
     /**
@@ -41,8 +40,7 @@ public class TargetDecomposeDimensionController extends BaseController {
 //    @RequiresPermissions("operate:cloud:targetDecomposeDimension:list")
     @GetMapping("/list")
     public AjaxResult list(TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
-        List<TargetDecomposeDimensionDTO> list = targetDecomposeDimensionService.selectTargetDecomposeDimensionList(targetDecomposeDimensionDTO);
-        return AjaxResult.success(list);
+        return AjaxResult.success(targetDecomposeDimensionService.selectTargetDecomposeDimensionList(targetDecomposeDimensionDTO));
     }
 
     /**

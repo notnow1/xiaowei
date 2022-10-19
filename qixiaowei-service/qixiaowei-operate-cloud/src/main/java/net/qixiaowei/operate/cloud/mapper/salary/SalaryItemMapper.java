@@ -98,10 +98,11 @@ public interface SalaryItemMapper {
     int batchSalaryItem(@Param("salaryItems") List<SalaryItem> SalaryItems);
 
     /**
-     * 根据id集合判断是否存在
+     * 根据id集合获取数据
      *
      * @param salaryItemIds
      * @return
      */
-    List<Long> isExist(@Param("salaryItemIds") List<Long> salaryItemIds);
+    List<SalaryItemDTO> getSalaryItemByIds(@Param("salaryItemIds") List<Long> salaryItemIds);
+
 }

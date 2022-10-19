@@ -53,18 +53,19 @@
             and update_time=#{salaryItem.updateTime}
         </if>
     </select>
-    <!--根据id集合判断是否存在-->
-    <select id="isExist" resultType="Long">
-        SELECT salary_item_id FROM salary_item WHERE salary_item_id IN
+    <!--根据id集合获取数据-->
+    <select id="getSalaryItemByIds" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
+        SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag,
+        create_by, create_time, update_by, update_time
+        FROM salary_item
+        WHERE salary_item_id IN
         <foreach item="item"
                  collection="salaryItemIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        AND
-        delete_flag = 0
+        AND delete_flag = 0
     </select>
-
     <!--新增工资项-->
     <insert id="insertSalaryItem" useGeneratedKeys="true" keyProperty="salaryItemId">
         INSERT INTO salary_item

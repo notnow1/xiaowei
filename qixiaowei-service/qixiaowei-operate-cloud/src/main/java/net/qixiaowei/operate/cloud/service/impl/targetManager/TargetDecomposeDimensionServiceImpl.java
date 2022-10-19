@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
+import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -27,6 +29,8 @@ import java.util.List;
 public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDimensionService {
     @Autowired
     private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
+
+    private static List<String> targetDecomposeDimensionList = Lists.newArrayList("region", "salesman", "department", "product", "province", "industry");
 
     /**
      * 查询目标分解维度配置
@@ -68,6 +72,12 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
         }
         if (checkUnique(decompositionDimension)) {
             throw new ServiceException("分解维度不能重复");
+        }
+        String[] targetDecomposeDimensions = decompositionDimension.split(",");
+        for (String target : targetDecomposeDimensions) {
+            if (!targetDecomposeDimensionList.contains(target)) {
+                throw new ServiceException("分解维度不符合规范");
+            }
         }
         // todo 分解维度是否正确校验
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
