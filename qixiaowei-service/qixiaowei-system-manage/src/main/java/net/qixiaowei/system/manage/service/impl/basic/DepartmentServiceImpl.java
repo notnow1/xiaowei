@@ -133,8 +133,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
         //父级部门ID
         Long parentDepartmentId = departmentDTO.getParentDepartmentId();
+        //层级
+        Integer level = departmentDTO.getLevel();
         //如果父级部门ID为空 直接插入数据库
-        if (null == parentDepartmentId) {
+        if (level == 1) {
             department = this.packDepartment(department);
             department.setSort(1);
             department.setParentDepartmentId(0L);
@@ -147,23 +149,13 @@ public class DepartmentServiceImpl implements IDepartmentService {
             //根据父级id查询 获取父级id的祖级列表ID
             departmentDTO2 = departmentMapper.selectParentDepartmentId(parentDepartmentId);
             Long departmentId = departmentDTO2.getDepartmentId();
-            //父级id第一层级
-            if (null == departmentId) {
-                department.setSort(departmentDTO2.getSort() + 1);
-                department.setParentDepartmentId(departmentId);
-                //祖级id就是父级id
-                department.setAncestors(String.valueOf(departmentDTO.getParentDepartmentId()));
-                departmentMapper.insertDepartment(department);
-                departmentDTO.setDepartmentId(department.getDepartmentId());
-                return departmentDTO;
-            } else {
                 department.setSort(departmentDTO2.getSort() + 1);
                 department.setParentDepartmentId(departmentId);
                 //祖级id
                 if (StringUtils.isNotBlank(departmentDTO2.getAncestors())) {
                     ancestors = departmentDTO2.getAncestors().trim() + "," + department.getParentDepartmentId();
                 } else {
-                    ancestors = department.getParentDepartmentId().toString();
+                    ancestors = departmentDTO2.getParentDepartmentId()+","+departmentDTO2.getDepartmentId();
                 }
 
                 //祖级id
@@ -171,7 +163,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 departmentMapper.insertDepartment(department);
                 departmentDTO.setDepartmentId(department.getDepartmentId());
                 return departmentDTO;
-            }
+
         }
     }
 
@@ -204,17 +196,18 @@ public class DepartmentServiceImpl implements IDepartmentService {
         //排序
         int i = 1;
         DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
-        if (null == departmentDTO.getDepartmentId()) {
-            BeanUtils.copyProperties(departmentDTO, department);
-            departmentDTO.setParentDepartmentId(0L);
-        } else {
-            BeanUtils.copyProperties(departmentDTO, department);
-            if (StringUtils.isBlank(departmentDTO1.getAncestors())) {
-                department.setAncestors(departmentDTO1.getParentDepartmentId() + "," + departmentDTO1.getDepartmentId());
-            } else {
-                department.setAncestors(departmentDTO1.getAncestors() + "," + departmentDTO1.getDepartmentId());
+            if (StringUtils.isNull(departmentDTO1)){
+                BeanUtils.copyProperties(departmentDTO, department);
+                departmentDTO.setParentDepartmentId(0L);
+            }else {
+                BeanUtils.copyProperties(departmentDTO, department);
+                if (StringUtils.isBlank(departmentDTO1.getAncestors())) {
+                    department.setAncestors(departmentDTO1.getParentDepartmentId() + "," + departmentDTO1.getDepartmentId());
+                } else {
+                    department.setAncestors(departmentDTO1.getAncestors() + "," + departmentDTO1.getDepartmentId());
+                }
             }
-        }
+
 
 
         //接收部门岗位关联表参数

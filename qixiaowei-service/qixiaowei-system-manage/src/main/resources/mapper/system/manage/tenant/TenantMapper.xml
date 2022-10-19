@@ -29,6 +29,7 @@
     <!--    查询租户表列表-->
     <select id="selectTenantList" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
         select
+        e.employee_name,
         id.industry_name as tenant_industry_name,
         t.tenant_id,
         t.tenant_code,
@@ -52,43 +53,48 @@
         left join industry_default id
         on t.tenant_industry = id.industry_id
         and id.delete_flag = 0
-        where 1=1
-        <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
-          and   find_in_set(#{tenant.supportStaff}, support_staff)
+        left join employee e
+        on e.employee_id in (t.support_staff)
+        and e.delete_flag = 0
+        where t.delete_flag = 0
+        <if test="tenant.supportStaffName != null and tenant.supportStaffName != ''">
+            and   id.industry_name  like '%${tenant.tenantIndustryName}%'
         </if>
-        and t.delete_flag = 0
+        <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
+          and   e.employee_name like '%${tenant.supportStaffName}%'
+        </if>
         <if test="tenant.tenantId != null and tenant.tenantId != ''">
-            and tenant_id like '%${tenant.tenantId}%'
+            and t.tenant_id like '%${tenant.tenantId}%'
         </if>
         <if test="tenant.tenantCode != null and tenant.tenantCode != ''">
-            and tenant_code like '%${tenant.tenantCode}%'
+            and t.tenant_code like '%${tenant.tenantCode}%'
         </if>
         <if test="tenant.tenantName != null and tenant.tenantName != ''">
-            and tenant_name like '%${tenant.tenantName}%'
+            and t.tenant_name like '%${tenant.tenantName}%'
         </if>
         <if test="tenant.tenantAddress != null and tenant.tenantAddress != ''">
-            and tenant_address like '%${tenant.tenantAddress}%'
+            and t.tenant_address like '%${tenant.tenantAddress}%'
         </if>
         <if test="tenant.tenantIndustry != null and tenant.tenantIndustry != ''">
-            and tenant_industry like '%${tenant.tenantIndustry}%'
+            and t.tenant_industry like '%${tenant.tenantIndustry}%'
         </if>
         <if test="tenant.domain != null and tenant.domain != ''">
-            and domain like '%${tenant.domain}%'
+            and t.domain like '%${tenant.domain}%'
         </if>
         <if test="tenant.adminAccount != null and tenant.adminAccount != ''">
-            and admin_account like '%${tenant.adminAccount}%'
+            and t.admin_account like '%${tenant.adminAccount}%'
         </if>
         <if test="tenant.adminPassword != null and tenant.adminPassword != ''">
-            and admin_password like '%${tenant.adminPassword}%'
+            and t.admin_password like '%${tenant.adminPassword}%'
         </if>
         <if test="tenant.loginBackground != null and tenant.loginBackground != ''">
-            and login_background like '%${tenant.loginBackground}%'
+            and t.login_background like '%${tenant.loginBackground}%'
         </if>
         <if test="tenant.tenantLogo != null and tenant.tenantLogo != ''">
-            and tenant_logo like '%${tenant.tenantLogo}%'
+            and t.tenant_logo like '%${tenant.tenantLogo}%'
         </if>
         <if test="tenant.tenantStatus != null and tenant.tenantStatus != ''">
-            and tenant_status like '%${tenant.tenantStatus}%'
+            and t.tenant_status like '%${tenant.tenantStatus}%'
         </if>
     </select>
     <!--新增租户表-->
