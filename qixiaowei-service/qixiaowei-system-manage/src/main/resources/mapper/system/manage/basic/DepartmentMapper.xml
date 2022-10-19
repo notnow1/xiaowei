@@ -290,6 +290,9 @@
     <!--    查询组织关联岗位信息-->
     <select id="selectDeptAndPost" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
         select
+            p.post_name,
+            ors.official_rank_system_name,
+            concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
             dm.department_name ,
             deptpost.department_post_id,
             deptpost.department_id,
@@ -306,6 +309,12 @@
                 left join department dm
                           on deptpost.department_id = dm.department_id
                               and dm.delete_flag =0
+                left join post p on
+                        p.post_id = deptpost.post_id
+                    and p.delete_flag = 0
+                left join official_rank_system ors on
+                        p.official_rank_system_id = ors.official_rank_system_id
+                    and ors.delete_flag = 0
         where deptpost.delete_flag =0
           and deptpost.department_id=#{departmentId}
         order by deptpost.post_sort
