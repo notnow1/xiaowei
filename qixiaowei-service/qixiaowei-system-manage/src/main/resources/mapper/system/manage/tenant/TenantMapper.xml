@@ -57,10 +57,10 @@
         on e.employee_id in (t.support_staff)
         and e.delete_flag = 0
         where t.delete_flag = 0
-        <if test="tenant.supportStaffName != null and tenant.supportStaffName != ''">
+        <if test="tenant.tenantIndustryName != null and tenant.tenantIndustryName != ''">
             and   id.industry_name  like '%${tenant.tenantIndustryName}%'
         </if>
-        <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
+        <if test="tenant.supportStaffName != null and tenant.supportStaffName != ''">
           and   e.employee_name like '%${tenant.supportStaffName}%'
         </if>
         <if test="tenant.tenantId != null and tenant.tenantId != ''">
