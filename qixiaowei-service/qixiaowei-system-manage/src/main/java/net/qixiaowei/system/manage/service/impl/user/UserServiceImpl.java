@@ -185,6 +185,7 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isNull(userByUserId)) {
             throw new ServiceException("修改失败，当前用户不存在");
         }
+        this.checkUserUnique(userDTO);
         //数据权限 todo
         //查找当前用户角色
         List<UserRoleDTO> userRoleDTOS = userRoleMapper.selectUserRoleListByUserId(userId);
@@ -398,10 +399,10 @@ public class UserServiceImpl implements IUserService {
                     if (StringUtils.isNotEmpty(userAccount) && userAccount.equals(userDTO.getUserAccount())) {
                         resultMessage.append("｛帐号｝");
                     }
-                    if (StringUtils.isNotEmpty(mobilePhone) && userAccount.equals(userDTO.getMobilePhone())) {
+                    if (StringUtils.isNotEmpty(mobilePhone) && mobilePhone.equals(userDTO.getMobilePhone())) {
                         resultMessage.append("｛手机号码｝");
                     }
-                    if (StringUtils.isNotEmpty(email) && userAccount.equals(userDTO.getEmail())) {
+                    if (StringUtils.isNotEmpty(email) && email.equals(userDTO.getEmail())) {
                         resultMessage.append("｛邮箱｝");
                     }
                 });

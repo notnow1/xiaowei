@@ -21,19 +21,11 @@
         SELECT
         user_id, employee_id, user_account, mobile_phone, email
         FROM user
-        WHERE delete_flag=0
-        <if test="user.employeeId != null">
-            and employee_id=#{user.employeeId}
-        </if>
-        <if test="user.userAccount != null and user.userAccount != ''">
-            and user_account=#{user.userAccount}
-        </if>
-        <if test="user.mobilePhone != null and user.mobilePhone != ''">
-            and mobile_phone=#{user.mobilePhone}
-        </if>
-        <if test="user.email != null and user.email != ''">
-            and email=#{user.email}
-        </if>
+        WHERE delete_flag=0 and ( employee_id = #{user.employeeId}
+        or user_account=#{user.userAccount}
+        or mobile_phone=#{user.mobilePhone}
+        or email=#{user.email}
+        )
     </select>
 
     <select id="selectUserByUserAccount"
@@ -104,7 +96,7 @@
             and  u.mobile_phone LIKE concat('%', #{user.mobilePhone}, '%')
         </if>
         <if test="user.email != null and user.email != ''">
-            and  u.email=#{user.email}
+            and  u.email LIKE concat('%', #{user.email}, '%')
         </if>
         <if test="user.status != null">
             and  u.status=#{user.status}
