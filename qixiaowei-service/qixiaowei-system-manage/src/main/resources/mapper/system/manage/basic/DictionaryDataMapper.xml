@@ -94,6 +94,7 @@
                da.status
         from dictionary_data da
         where da.dictionary_type_id = #{dictionaryTypeId}
+        order by sort
     </select>
     <!--新增字典数据表-->
     <insert id="insertDictionaryData" useGeneratedKeys="true" keyProperty="dictionaryDataId">

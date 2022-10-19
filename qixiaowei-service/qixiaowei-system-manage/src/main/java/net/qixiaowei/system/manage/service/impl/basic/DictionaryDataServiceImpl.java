@@ -70,14 +70,14 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     public DictionaryDataDTO insertDictionaryData(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
-        //根据type Id查询数据做排序 自增
-        List<DictionaryDataDTO> dictionaryDataDTOList = dictionaryDataMapper.selectDictionaryTypeId(dictionaryData.getDictionaryTypeId());
-        if (StringUtils.isNotEmpty(dictionaryDataDTOList)){
-            dictionaryData.setSort(dictionaryDataDTOList.get(dictionaryDataDTOList.size()-1).getSort()+1);
-            dictionaryData.setDictionaryValue(String.valueOf(Integer.parseInt(dictionaryDataDTOList.get(dictionaryDataDTOList.size()-1).getDictionaryValue())+1));
-        }else {
-            dictionaryData.setSort(1);
-            dictionaryData.setDictionaryValue("1");
+        if(StringUtils.isEmpty(dictionaryDataDTO.getDictionaryValue())){
+            //根据type Id查询数据做排序 自增
+          int i  = dictionaryDataMapper.selectDictionaryTypeId(dictionaryData.getDictionaryTypeId());
+          //如果为空赋值
+          if (dictionaryDataDTO.getSort() == null){
+              dictionaryData.setSort(i+1);
+          }
+            dictionaryData.setDictionaryValue(String.valueOf(i+1));
         }
         dictionaryData.setDefaultFlag(0);
         dictionaryData.setCreateBy(SecurityUtils.getUserId());

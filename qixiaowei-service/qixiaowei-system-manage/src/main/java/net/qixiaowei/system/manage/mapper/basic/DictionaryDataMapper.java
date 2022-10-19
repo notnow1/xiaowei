@@ -107,5 +107,5 @@ public interface DictionaryDataMapper{
      * @param dictionaryTypeId
      * @return
      */
-    List<DictionaryDataDTO> selectDictionaryTypeId( @Param("dictionaryTypeId")Long dictionaryTypeId);
+    int selectDictionaryTypeId( @Param("dictionaryTypeId")Long dictionaryTypeId);
 }

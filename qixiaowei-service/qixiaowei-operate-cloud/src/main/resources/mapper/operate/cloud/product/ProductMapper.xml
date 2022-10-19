@@ -14,8 +14,6 @@
     <!--    查询产品表列表-->
     <select id="selectProductList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT pu.product_unit_name,
-        case when p.product_category =d.dictionary_data_id then d.dictionary_label end as product_category_name,
-        case when p.listing_flag =d.dictionary_data_id then d.dictionary_label end as listing_flag_name,
         p.product_id,
         p.parent_product_id,
         p.ancestors,
@@ -33,19 +31,10 @@
         p.update_by,
         p.update_time
         FROM product p
-        left join `system-manage`.dictionary_data d
-        on (p.product_category =d.dictionary_data_id or p.listing_flag =d.dictionary_data_id)
-        and d.delete_flag= 0
         left join product_unit pu
         on p.product_unit_id =pu.product_unit_id
         and pu.delete_flag= 0
         WHERE p.delete_flag = 0
-        <if test="product.productCategoryName != null and product.productCategoryName != '' ">
-            and d.dictionary_label like '%${product.productCategoryName}%'
-        </if>
-        <if test="product.listingFlagName != null">
-            and d.dictionary_label like '%${product.listingFlagName}%'
-        </if>
         <if test="product.productUnitId != null">
             and pu.productUnitId =#{product.productUnitId}
         </if>
@@ -71,7 +60,7 @@
             and p.product_unit_id like '%${product.productUnitId}%'
         </if>
         <if test="product.productCategory != null and product.productCategory != ''">
-            and p.product_category like '%${product.productCategory}%'
+            and p.product_category = #{product.productCategory}
         </if>
         <if test="product.productDescription != null and product.productDescription != ''">
             and p.product_description like '%${product.productDescription}%'
