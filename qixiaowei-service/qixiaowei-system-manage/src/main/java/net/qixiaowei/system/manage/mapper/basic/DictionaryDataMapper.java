@@ -101,4 +101,11 @@ public interface DictionaryDataMapper{
     * @return 结果
     */
     int batchDictionaryData(@Param("dictionaryDatas")List<DictionaryData> DictionaryDatas);
+
+    /**
+     * 根据type Id查询数据做排序 自增
+     * @param dictionaryTypeId
+     * @return
+     */
+    List<DictionaryDataDTO> selectDictionaryTypeId( @Param("dictionaryTypeId")Long dictionaryTypeId);
 }
