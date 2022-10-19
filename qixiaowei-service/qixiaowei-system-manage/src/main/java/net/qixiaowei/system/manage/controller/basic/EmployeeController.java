@@ -6,13 +6,12 @@ import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.excel.EmployeeExcel;
-import net.qixiaowei.system.manage.excel.EmployeeImportListener;
+import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
+import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +23,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -71,12 +72,13 @@ public class EmployeeController extends BaseController {
     @SneakyThrows
     @GetMapping("export")
     public void exportUser(@RequestParam Map<String, Object> user, EmployeeDTO employeeDTO, HttpServletResponse response) {
-        List<EmployeeDTO> employeeDTOList = employeeService.selectEmployeeList(employeeDTO);
+        List<EmployeeExcel> employeeExcelList = employeeService.exportUser(employeeDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("人员数据导出", CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("人员信息配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), EmployeeExcel.class).sheet("人员数据表").doWrite(employeeDTOList);
+        EasyExcel.write(response.getOutputStream(), EmployeeExcel.class).sheet("人员数据表").doWrite(employeeExcelList);
     }
 
     /**
