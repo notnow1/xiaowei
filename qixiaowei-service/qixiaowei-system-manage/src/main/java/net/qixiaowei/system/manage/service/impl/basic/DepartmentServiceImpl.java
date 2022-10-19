@@ -397,12 +397,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         }
         //查询组织关联岗位信息
         List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentId);
-        List<Long> collect = departmentPostDTOList.stream().map(DepartmentPostDTO::getPostId).collect(Collectors.toList());
-        List<DepartmentPostDTO> departmentPostDTOList2 = new ArrayList<>();
-        if (!StringUtils.isEmpty(collect)) {
-            departmentPostDTOList2 = postMapper.selectPostByPostIds(collect);
-        }
-        departmentDTO.setDepartmentPostDTOList(departmentPostDTOList2);
+        departmentDTO.setDepartmentPostDTOList(departmentPostDTOList);
         return departmentDTO;
     }
 

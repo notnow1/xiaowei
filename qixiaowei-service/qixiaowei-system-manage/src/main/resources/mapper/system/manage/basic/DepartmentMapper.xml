@@ -290,6 +290,7 @@
     <!--    查询组织关联岗位信息-->
     <select id="selectDeptAndPost" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
         select
+            p.post_name,
             ors.official_rank_system_name,
             concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
             dm.department_name ,
