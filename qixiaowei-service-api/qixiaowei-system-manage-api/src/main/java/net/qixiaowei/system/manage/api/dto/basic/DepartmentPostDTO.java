@@ -51,6 +51,7 @@ public class DepartmentPostDTO {
      * 岗位职级
      */
     private  Integer postRank;
+    private  String postRankName;
     /**
      * 岗位编码
      */
@@ -63,6 +64,8 @@ public class DepartmentPostDTO {
      * 职级体系ID
      */
     private  Long officialRankSystemId;
+    private  String officialRankSystemName;
+
     /**
     * ID
     */
