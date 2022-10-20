@@ -140,7 +140,7 @@
         on ei.nation = n.nation_id
         and n.delete_flag =0
         where
-        e.delete_flag = 0;
+        e.delete_flag = 0
         <if test="employee.nationalityName != null and employee.nationalityName != ''">
             and c.country_name like '%${employee.nationalityName}%'
         </if>
