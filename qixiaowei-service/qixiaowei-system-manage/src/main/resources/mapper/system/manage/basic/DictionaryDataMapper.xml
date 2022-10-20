@@ -24,15 +24,18 @@
     <select id="selectDictionaryDataByDictionaryDataIds"
             resultType="net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO">
         SELECT
-        dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM dictionary_data
-        WHERE  dictionary_data_id in
+        da.dictionary_data_id,  dt.dictionary_type, da.dictionary_type_id,  da.dictionary_label,  da.dictionary_value,  da.default_flag,  da.sort,  da.remark,  da.status,  da.delete_flag,  da.create_by,  da.create_time,  da.update_by,  da.update_time
+        from dictionary_data da
+        left join dictionary_type dt
+        on da.dictionary_type_id = dt.dictionary_type_id
+        and dt.delete_flag = 0
+        WHERE  da.dictionary_data_id in
             <foreach item="item"
                      collection="dictionaryDataIds"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-        and delete_flag=0
+        and da.delete_flag=0
     </select>
 
     <!--    查询字典数据表列表-->

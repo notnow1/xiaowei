@@ -5,6 +5,8 @@
     <select id="selectEmployeeByEmployeeId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT
+            c.country_name as nationality_name,
+            n.nation_name,
             p.post_name as employee_post_name,
             d.department_name as employee_department_name,
             concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
@@ -49,6 +51,12 @@
                  left join department d
                            on d.department_id = e.employee_department_id
                                and d.delete_flag = 0
+                 left join country c
+                           on REVERSE(SUBSTRING_INDEX(REVERSE(ei.nationality),',',1)) = c.country_id
+                               and c.delete_flag =0
+                 left join nation n
+                           on ei.nation = n.nation_id
+                               and n.delete_flag =0
         WHERE e.employee_id = #{employeeId}
           and e.delete_flag = 0
     </select>
