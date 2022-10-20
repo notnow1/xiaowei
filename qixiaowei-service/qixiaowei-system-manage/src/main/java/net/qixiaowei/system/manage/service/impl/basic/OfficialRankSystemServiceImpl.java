@@ -8,7 +8,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
-import net.qixiaowei.operate.cloud.api.remote.officialRank.RemoteOfficialRankService;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
@@ -47,7 +47,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     private PostMapper postMapper;
 
     @Autowired
-    private RemoteOfficialRankService remoteOfficialRankService;
+    private RemoteAreaService remoteAreaService;
 
     /**
      * 查询职级体系表
@@ -101,16 +101,16 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     public Map<Long, String> decomposeDrop(Integer rankDecomposeDimension) {
         Map<Long, String> map = new HashMap<>();
         switch (rankDecomposeDimension) {
-            case 1:
+            case 1:// todo 1部门
                 break;
-            case 2:
+            case 2:// todo 2区域
                 AreaDTO areaDTO = new AreaDTO();
-                R<List<AreaDTO>> listR = remoteOfficialRankService.queryOfficialRankList(areaDTO);
+                R<List<AreaDTO>> listR = remoteAreaService.dropList(areaDTO);
                 break;
-//            case 3:
-//                break;
-//            case 4:
-//                break;
+            case 3:// todo 3省份
+                break;
+            case 4:// todo 4产品
+                break;
         }
         return null;
     }
