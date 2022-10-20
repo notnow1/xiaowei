@@ -18,6 +18,7 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.mapper.productPackage.ProductPackageMapper;
@@ -390,6 +391,37 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setUpdateBy(SecurityUtils.getUserId());
         tenant.setUpdateTime(DateUtils.getNowDate());
         return tenantMapper.updateTenant(tenant);
+    }
+
+    /**
+     * 导出租户
+     * @param tenantDTO
+     * @return
+     */
+    @Override
+    public List<TenantExcel> exportTenant(TenantDTO tenantDTO) {
+        Tenant tenant = new Tenant();
+        BeanUtils.copyProperties(tenantDTO,tenant);
+        List<TenantExcel> tenantExcelList = new ArrayList<>();
+        List<TenantDTO> tenantDTOList = tenantMapper.selectTenantList(tenant);
+
+        if (StringUtils.isNotEmpty(tenantDTOList)){
+            for (TenantDTO dto : tenantDTOList) {
+                TenantExcel tenantExcel = new TenantExcel();
+                BeanUtils.copyProperties(dto,tenantExcel);
+                if (dto.getTenantStatus() == 0){
+                    tenantExcel.setTenantStatusName("待初始化");
+                }else if (dto.getTenantStatus() == 1){
+                    tenantExcel.setTenantStatusName("正常");
+                }else if (dto.getTenantStatus() == 2){
+                    tenantExcel.setTenantStatusName("禁用");
+                }else if (dto.getTenantStatus() == 3){
+                    tenantExcel.setTenantStatusName("过期");
+                }
+            }
+        }
+
+        return tenantExcelList;
     }
 
     /**

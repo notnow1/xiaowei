@@ -67,7 +67,7 @@ public class EmployeeController extends BaseController {
     }
 
     /**
-     * 导出用户
+     * 导出人员
      */
     @SneakyThrows
     @GetMapping("export")

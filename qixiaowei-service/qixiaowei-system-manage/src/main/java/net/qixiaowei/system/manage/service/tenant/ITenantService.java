@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.tenant;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
+import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
 
 
 /**
@@ -104,4 +105,12 @@ public interface ITenantService{
      * @return
      */
     int updateMyTenantDTO(TenantDTO tenantDTO);
+
+    /**
+     * 导出租户
+     * @param tenantDTO
+     * @return
+     */
+    List<TenantExcel> exportTenant(TenantDTO tenantDTO);
+
 }
