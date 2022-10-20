@@ -367,7 +367,7 @@ public class IndustryServiceImpl implements IIndustryService {
      * @return
      */
     @Override
-    public List<Tree<Long>> getEnableType(IndustryDTO industryDTO) {
+    public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
         // todo 0-默认,1-自定义
         int enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
         if (enableType == 1) {
@@ -377,6 +377,19 @@ public class IndustryServiceImpl implements IIndustryService {
             BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
             return industryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO);
         }
+    }
+
+    /**
+     * 获取启用行业类型
+     *
+     * @return
+     */
+    @Override
+    public IndustryDTO getEnableType(IndustryDTO industryDTO) {
+        // todo 0-默认,1-自定义
+        int enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        industryDTO.setConfigValue(enableType);
+        return industryDTO;
     }
 
     /**
@@ -390,7 +403,7 @@ public class IndustryServiceImpl implements IIndustryService {
             throw new ServiceException("configValue传值为空,无法进行操作");
         }
         ConfigDTO configById = configService.selectConfigByConfigCode(ConfigCode.INDUSTRY_ENABLE.getCode());
-        if (StringUtils.isNull(configById)){
+        if (StringUtils.isNull(configById)) {
             throw new ServiceException("当前无启用行业");
         }
         ConfigDTO configDTO = new ConfigDTO();

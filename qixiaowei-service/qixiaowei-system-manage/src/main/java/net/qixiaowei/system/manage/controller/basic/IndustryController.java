@@ -62,8 +62,15 @@ public class IndustryController extends BaseController {
 //    @RequiresPermissions("system:manage:industry:list")
     @GetMapping("/enableList")
     public AjaxResult enableList(IndustryDTO industryDTO) {
-        return AjaxResult.success(industryService.getEnableType(industryDTO));
+        return AjaxResult.success(industryService.getEnableList(industryDTO));
+    }
 
+    /**
+     * 获取启用行业类型
+     */
+    @GetMapping("/enableType")
+    public AjaxResult enableType(IndustryDTO industryDTO) {
+        return AjaxResult.success(industryService.getEnableType(industryDTO));
     }
 
     /**

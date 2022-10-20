@@ -119,11 +119,18 @@ public interface IIndustryService {
     int deleteIndustryByIndustryId(Long industryId);
 
     /**
+     * 获取启用行业类型列表
+     *
+     * @return
+     */
+    List<Tree<Long>> getEnableList(IndustryDTO industryDTO);
+
+    /**
      * 获取启用行业类型
      *
      * @return
      */
-    List<Tree<Long>> getEnableType(IndustryDTO industryDTO);
+    IndustryDTO getEnableType(IndustryDTO industryDTO);
 
     /**
      * 修改启用行业类型
