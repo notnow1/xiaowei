@@ -114,7 +114,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         }
         IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkUnique(indicatorCategoryCode);
         if (StringUtils.isNotNull(indicatorCategoryByCode)) {
-            if (indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
+            if (!indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
                 throw new ServiceException("更新指标" + indicatorCategoryDTO.getIndicatorCategoryName() + "失败,指标编码重复");
             }
         }

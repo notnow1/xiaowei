@@ -95,7 +95,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
     public List<Tree<Long>> selectTreeList(IndicatorDTO indicatorDTO) {
         List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
-        treeNodeConfig.setIdKey("indicator");
+        treeNodeConfig.setIdKey("indicatorId");
         treeNodeConfig.setNameKey("indicatorName");
         treeNodeConfig.setParentIdKey("parentIndicatorId");
         return TreeUtil.build(indicatorDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
