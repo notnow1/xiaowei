@@ -52,7 +52,7 @@ public class TenantController extends BaseController {
      */
     @SneakyThrows
     @GetMapping("export")
-    public void exportUser(@RequestParam TenantDTO tenantDTO, HttpServletResponse response) {
+    public void exportUser(@RequestParam Map<String, Object> tenant,TenantDTO tenantDTO, HttpServletResponse response) {
         List<TenantExcel> tenantExcelList = tenantService.exportTenant(tenantDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);

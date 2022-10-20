@@ -71,7 +71,7 @@ public class EmployeeController extends BaseController {
      */
     @SneakyThrows
     @GetMapping("export")
-    public void exportUser(@RequestParam EmployeeDTO employeeDTO, HttpServletResponse response) {
+    public void exportUser(@RequestParam Map<String, Object> employee,EmployeeDTO employeeDTO, HttpServletResponse response) {
         List<EmployeeExcel> employeeExcelList = employeeService.exportUser(employeeDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);

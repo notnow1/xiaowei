@@ -242,7 +242,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         try {
             employeeMapper.batchEmployee(employeeList);
         } catch (Exception e) {
-            throw new ServiceException("批量插入产品表失败");
+            throw new ServiceException("导入产品表失败");
         }
     }
 

@@ -10,6 +10,9 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+/**
+ * 租户表
+ */
 @Data
 @ColumnWidth(25)
 @HeadRowHeight(20)

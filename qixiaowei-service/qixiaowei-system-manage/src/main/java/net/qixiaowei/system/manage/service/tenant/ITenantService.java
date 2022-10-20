@@ -35,6 +35,15 @@ public interface ITenantService{
     */
     TenantDTO insertTenant(TenantDTO tenantDTO);
 
+
+    /**
+     * 导入租户
+     *
+     * @param tenantExcels 租户表
+     * @return 结果
+     */
+    void insertTenant(List<TenantExcel> tenantExcels);
+
     /**
     * 修改租户表
     *

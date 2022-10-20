@@ -184,7 +184,7 @@ public class TenantServiceImpl implements ITenantService {
             tenantContacts.setUpdateTime(DateUtils.getNowDate());
             tenantContacts.setCreateBy(SecurityUtils.getUserId());
             tenantContacts.setUpdateBy(SecurityUtils.getUserId());
-            tenantContacts.setDeleteFlag(0);
+            tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             return tenantContacts;
         }).collect(Collectors.toList());
 
@@ -218,6 +218,30 @@ public class TenantServiceImpl implements ITenantService {
         //返回数据
         tenantDTO.setTenantId(tenant.getTenantId());
         return tenantDTO;
+    }
+
+    /**
+     * 导入租户
+     * @param tenantExcels 租户表
+     */
+    @Override
+    public void insertTenant(List<TenantExcel> tenantExcels) {
+       List<Tenant>  tenantList = new ArrayList<>();
+        for (TenantExcel tenantExcel : tenantExcels) {
+            Tenant tenant = new Tenant();
+            BeanUtils.copyProperties(tenantExcel,tenant);
+            tenant.setCreateTime(DateUtils.getNowDate());
+            tenant.setUpdateTime(DateUtils.getNowDate());
+            tenant.setCreateBy(SecurityUtils.getUserId());
+            tenant.setUpdateBy(SecurityUtils.getUserId());
+            tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            tenantList.add(tenant);
+        }
+        try {
+            tenantMapper.batchTenant(tenantList);
+        } catch (Exception e) {
+            throw new ServiceException("导入租户失败");
+        }
     }
 
 
@@ -418,6 +442,7 @@ public class TenantServiceImpl implements ITenantService {
                 }else if (dto.getTenantStatus() == 3){
                     tenantExcel.setTenantStatusName("过期");
                 }
+                tenantExcelList.add(tenantExcel);
             }
         }
 
