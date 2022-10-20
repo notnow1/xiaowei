@@ -22,7 +22,7 @@ public class RemoteProductController implements RemoteProductService {
     @Autowired
     private IProductService productService;
     @Override
-
+    @InnerAuth
     @PostMapping("/queryProductQuote")
     public R<List<ProductDTO>> queryProductQuote(ProductDTO productDTO) {
         return R.ok(productService.queryProductQuote(productDTO));
