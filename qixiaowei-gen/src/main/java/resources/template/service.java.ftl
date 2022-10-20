@@ -2,6 +2,7 @@ package ${servicePackage};
 
 import java.util.List;
 import ${dtoPackage}.${entity}DTO;
+import ${excelPackage}.${entity}Excel;
 
 
 /**
@@ -97,4 +98,15 @@ public interface I${entity}Service{
     * @return 结果
     */
     int delete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list> <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>);
+    /**
+    * 导入Excel
+    * @param list
+    */
+    void import${entity}(List<${entity}Excel> list);
+    /**
+    * 导出Excel
+    * @param ${entity?uncap_first}DTO
+    * @return
+    */
+    List<${entity}Excel> export${entity}(${entity}DTO ${entity?uncap_first}DTO);
 }

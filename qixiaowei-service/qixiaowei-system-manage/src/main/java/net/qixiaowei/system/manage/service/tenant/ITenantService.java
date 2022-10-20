@@ -37,7 +37,7 @@ public interface ITenantService{
 
 
     /**
-     * 导入租户
+     * 导入Excel
      *
      * @param tenantExcels 租户表
      * @return 结果
@@ -116,7 +116,7 @@ public interface ITenantService{
     int updateMyTenantDTO(TenantDTO tenantDTO);
 
     /**
-     * 导出租户
+     * 导出Excel
      * @param tenantDTO
      * @return
      */

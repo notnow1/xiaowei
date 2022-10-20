@@ -107,11 +107,16 @@ public interface IEmployeeService{
     int deleteEmployeeByEmployeeId(Long employeeId);
 
     /**
-     * 导入excel
+     * 导入Excel
      * @param list
      */
     void importEmployee(List<EmployeeExcel> list);
 
+    /**
+     * 导出Excel
+     * @param employeeDTO
+     * @return
+     */
     List<EmployeeExcel> exportUser(EmployeeDTO employeeDTO);
 
     /**

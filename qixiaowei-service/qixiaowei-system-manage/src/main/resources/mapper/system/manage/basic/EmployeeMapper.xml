@@ -85,6 +85,8 @@
     <!--    查询员工表列表-->
     <select id="selectEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
+        c.country_name as nationality_name,
+        n.nation_name,
         p.post_name as employee_post_name,
         d.department_name as employee_department_name,
         concat(ors.rank_prefix_code, e.employee_rank) as employee_rank_name,
@@ -131,8 +133,20 @@
         and d.delete_flag =0
         left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
+        left join country c
+        on REVERSE(SUBSTRING_INDEX(REVERSE(ei.nationality),',',1)) = c.country_id
+        and c.delete_flag =0
+        left join nation n
+        on ei.nation = n.nation_id
+        and n.delete_flag =0
         where
-        e.delete_flag = 0
+        e.delete_flag = 0;
+        <if test="employee.nationalityName != null and employee.nationalityName != ''">
+            and c.country_name like '%${employee.nationalityName}%'
+        </if>
+        <if test="employee.nationName != null and employee.nationName != ''">
+            and n.nation_name like '%${employee.nationName}%'
+        </if>
         <if test="employee.employeeDepartmentName != null and employee.employeeDepartmentName != ''">
             and d.department_name like '%${employee.employeeDepartmentName}%'
         </if>

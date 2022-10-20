@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import ${entityPackage}.${entity};
+import ${excelPackage}.${entity}Excel;
 import ${dtoPackage}.${entity}DTO;
 import ${mapperPackage}.${entity}Mapper;
 import ${servicePackage}.I${entity}Service;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
 
 
 /**
@@ -197,6 +199,42 @@ public class ${entity}ServiceImpl implements I${entity}Service{
      ${entity?uncap_first}List.add(${entity?uncap_first});
      }
      return ${entity?uncap_first}Mapper.update${entity}s(${entity?uncap_first}List);
+    }
+    /**
+    * 导入Excel
+    * @param list
+    */
+    @Override
+    public void import${entity}(List<${entity}Excel> list) {
+    List<${entity}> ${entity?uncap_first}List = new ArrayList<>();
+        list.forEach(l -> {
+        ${entity} ${entity?uncap_first} = new ${entity}();
+        BeanUtils.copyProperties(l, ${entity?uncap_first});
+        ${entity?uncap_first}.setCreateBy(SecurityUtils.getUserId());
+        ${entity?uncap_first}.setCreateTime(DateUtils.getNowDate());
+        ${entity?uncap_first}.setUpdateTime(DateUtils.getNowDate());
+        ${entity?uncap_first}.setUpdateBy(SecurityUtils.getUserId());
+        ${entity?uncap_first}.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        ${entity?uncap_first}List.add(${entity?uncap_first});
+        });
+        try {
+        ${entity?uncap_first}Mapper.batch${entity}(${entity?uncap_first}List);
+        } catch (Exception e) {
+        throw new ServiceException("导入${table.comment!}失败");
+        }
+    }
+    /**
+    * 导出Excel
+    * @param ${entity?uncap_first}DTO
+    * @return
+    */
+    @Override
+    public List<${entity}Excel> export${entity}(${entity}DTO ${entity?uncap_first}DTO) {
+        ${entity} ${entity?uncap_first} = new ${entity}();
+        BeanUtils.copyProperties(${entity?uncap_first}DTO, ${entity?uncap_first});
+        List<${entity}DTO> ${entity?uncap_first}DTOList = ${entity?uncap_first}Mapper.select${entity}List(${entity?uncap_first});
+        List<${entity}Excel> ${entity?uncap_first}ExcelList = new ArrayList<>();
+        return ${entity?uncap_first}ExcelList;
     }
 }
 

@@ -222,7 +222,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     /**
-     * 导入excel
+     * 导入Excel
      *
      * @param list
      */
@@ -242,10 +242,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
         try {
             employeeMapper.batchEmployee(employeeList);
         } catch (Exception e) {
-            throw new ServiceException("导入产品表失败");
+            throw new ServiceException("导入人员失败");
         }
     }
 
+    /**
+     * 导出Excel
+     * @param employeeDTO
+     * @return
+     */
     @Override
     public List<EmployeeExcel> exportUser(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();

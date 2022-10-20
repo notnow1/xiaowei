@@ -9,13 +9,29 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import org.springframework.stereotype.Controller;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.text.CharsetKit;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import ${dtoPackage}.${entity}DTO;
+import ${excelPackage}.${entity}Excel;
+import ${excelImportListenerPackage}.${entity}ImportListener;
 import ${servicePackage}.${table.serviceName};
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
 
 
@@ -32,6 +48,7 @@ public class ${table.controllerName} extends BaseController
 
     @Autowired
     private I${entity}Service ${entity?uncap_first}Service;
+
 
 
     /**
@@ -130,4 +147,43 @@ public class ${table.controllerName} extends BaseController
     {
     return toAjax(${entity?uncap_first}Service.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s(<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s));
     }
+
+    /**
+    * 导入${table.comment!}
+    */
+    @PostMapping("import")
+    public AjaxResult importEmployee(MultipartFile file) {
+    String filename = file.getOriginalFilename();
+    if (StringUtils.isBlank(filename)) {
+    throw new RuntimeException("请上传文件!");
+    }
+    if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
+    throw new RuntimeException("请上传正确的excel文件!");
+    }
+    InputStream inputStream;
+    try {
+    ${entity}ImportListener importListener = new ${entity}ImportListener(${entity?uncap_first}Service);
+    inputStream = new BufferedInputStream(file.getInputStream());
+    ExcelReaderBuilder builder = EasyExcel.read(inputStream, ${entity}Excel.class, importListener);
+    builder.doReadAll();
+    } catch (IOException e) {
+    throw new ServiceException("导入${table.comment!}Excel失败");
+    }
+    return AjaxResult.success("操作成功");
+    }
+
+    /**
+    * 导出${table.comment!}
+    */
+    @SneakyThrows
+    @GetMapping("export")
+    public void exportUser(@RequestParam Map<String, Object> ${entity?uncap_first},${entity}DTO ${entity?uncap_first}DTO, HttpServletResponse response) {
+    List<${entity}Excel> ${entity?uncap_first}ExcelList = ${entity?uncap_first}Service.export${entity}(${entity?uncap_first}DTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("${table.comment!}" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+        , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), ${entity}Excel.class).sheet("${table.comment!}").doWrite(${entity?uncap_first}ExcelList);
+        }
 }

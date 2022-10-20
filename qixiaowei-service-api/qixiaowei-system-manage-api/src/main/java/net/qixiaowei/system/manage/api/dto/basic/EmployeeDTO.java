@@ -104,10 +104,12 @@ public class EmployeeDTO {
      */
 //    @NotBlank(message = "国籍不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private  String nationality;
+    private  String nationalityName;
     /**
      * 民族
      */
     private  String nation;
+    private  String nationName;
     /**
      * 户口所在地
      */

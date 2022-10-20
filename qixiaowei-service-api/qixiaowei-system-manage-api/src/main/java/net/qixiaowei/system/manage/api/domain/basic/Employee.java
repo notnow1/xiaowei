@@ -116,10 +116,12 @@ public class Employee extends BaseEntity {
      * 国籍
      */
     private  String nationality;
+    private  String nationalityName;
     /**
      * 民族
      */
     private  String nation;
+    private  String nationName;
     /**
      * 户口所在地
      */

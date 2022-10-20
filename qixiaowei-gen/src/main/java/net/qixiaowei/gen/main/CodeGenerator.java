@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import net.qixiaowei.gen.main.utils.ExcelDiskUtils;
+
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.HashMap;
@@ -16,9 +17,9 @@ public class CodeGenerator {
 
     private static final String projectPath = System.getProperties().getProperty("user.dir");
     //项目名称
-    private static final String module_name = "system-manage" ;
+    private static final String module_name = "system-manage";
     //项目路径
-    private static final String module_path = "system/manage" ;
+    private static final String module_path = "system/manage";
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
     private static final String extend_Package = "/user" ;
     //表名
@@ -26,9 +27,9 @@ public class CodeGenerator {
     //生成文件的作者名
     private static final String author ="author" ;
     //数据库配置
-    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/system-manage" ;
-    private static final String username = "qxwopr" ;
-    private static final String password = "7fpJR7i2" ;
+    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/system-manage";
+    private static final String username = "qxwopr";
+    private static final String password = "7fpJR7i2";
 
 
     //实体类 默认生成 不生成改为false
@@ -49,15 +50,15 @@ public class CodeGenerator {
     private static final boolean default_mapper_xml = true;
 
 
-    private static final String api_default = "/qixiaowei-service-api" ;
-    private static final String service_default = "/qixiaowei-service" ;
-    private static final String common_default_path = "/src/main/java/net/qixiaowei/" ;
+    private static final String api_default = "/qixiaowei-service-api";
+    private static final String service_default = "/qixiaowei-service";
+    private static final String common_default_path = "/src/main/java/net/qixiaowei/";
     //导入包名 如net.qixiaowei.system
     private static final String packagePath = "net/qixiaowei/" + module_path;
-    private static final String qixiaowei_name = "/qixiaowei-" ;
+    private static final String qixiaowei_name = "/qixiaowei-";
 
     // 实体类 出参 入参 输出目录 因固定实体类和dto生成路径 不需要修改！！！！
-    private static final String entityAndDtoPath = projectPath + api_default + qixiaowei_name + module_name + "-api" + common_default_path + module_path + "/api" ;
+    private static final String entityAndDtoPath = projectPath + api_default + qixiaowei_name + module_name + "-api" + common_default_path + module_path + "/api";
 
 
     //controller输出目录
@@ -65,8 +66,11 @@ public class CodeGenerator {
 
     //实体类package
     private static final String entityPackage = "domain" + extend_Package;
-    //实体类package
+    //Excel
     private static final String excelPackage = "excel" + extend_Package;
+
+    //Excel监听类
+    private static final String excelImportListenerPackage = "excel" + extend_Package;
     //dto package
     private static final String dtoPackage = "dto" + extend_Package;
     //dto controller
@@ -77,20 +81,20 @@ public class CodeGenerator {
     private static final String serviceImplPackage = "service/impl" + extend_Package;
     //mapper package
     private static final String mapperPackage = "mapper" + extend_Package;
-    private static final String mapperXmlPackage = "mapper" +"/"+module_path+extend_Package;
+    private static final String mapperXmlPackage = "mapper" + "/" + module_path + extend_Package;
     //mapperXml路径
-    private static final String mapperXmlPath = projectPath + service_default + qixiaowei_name + module_name + "/src/main/resources" ;
+    private static final String mapperXmlPath = projectPath + service_default + qixiaowei_name + module_name + "/src/main/resources";
 
 
     public static void main(String[] args) {
-        if (StringUtils.isNotBlank(tables)){
-            System.out.println("你确定要生成:"+tables+"吗？"+"Y:生成 N:不生成");
+        if (StringUtils.isNotBlank(tables)) {
+            System.out.println("你确定要生成:" + tables + "吗？" + "Y:生成 N:不生成");
             Scanner scanner = new Scanner(System.in);
             String generateFalg = scanner.nextLine();
-            if (generateFalg.equals("N")){
+            if (generateFalg.equals("N")) {
                 return;
             }
-        }else {
+        } else {
             System.out.println("请输入表名!!!");
             return;
         }
@@ -135,10 +139,11 @@ public class CodeGenerator {
             //自定义模板参数（定义的这些参数可以在我们的Freemark模板中使用&{}语法取到该值，比如 &{requestMapping}）
             objectMap.put("requestMapping", StringUtils.firstToLowerCase(entityName));
             objectMap.put("entityPackage", s + ".api." + entityPackage.replaceAll("/", "."));
-            objectMap.put("excelPackage", s + ".api." + excelPackage.replaceAll("/", "."));
             objectMap.put("packageName", s);
             objectMap.put("dtoPackage", s + ".api." + dtoPackage.replaceAll("/", "."));
             objectMap.put("controllerPackage", s + "." + controllerPackage.replaceAll("/", "."));
+            objectMap.put("excelPackage", s + "." + excelPackage.replaceAll("/", "."));
+            objectMap.put("excelImportListenerPackage", s + "." + excelImportListenerPackage.replaceAll("/", "."));
             objectMap.put("servicePackage", s + "." + servicePackage.replaceAll("/", "."));
             objectMap.put("servicePackageImpl", s + "." + serviceImplPackage.replaceAll("/", "."));
             objectMap.put("mapperPackage", s + "." + mapperPackage.replaceAll("/", "."));
@@ -160,6 +165,7 @@ public class CodeGenerator {
             }
             if (default_excel) {          // excel类
                 customFile.put(entityName + "Excel" + StringPool.DOT_JAVA, "/template/excel.java.ftl");
+                customFile.put(entityName + "ImportListener" + StringPool.DOT_JAVA, "/template/excelListener.java.ftl");
             }
             if (default_DTO) {          // dto类
                 customFile.put(entityName + "DTO" + StringPool.DOT_JAVA, "/template/dto.java.ftl");
@@ -191,7 +197,12 @@ public class CodeGenerator {
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
                 else if (StringUtils.equals(key, entityName + "Excel" + StringPool.DOT_JAVA)) {
-                    fileName = entityAndDtoPath + "/" + excelPackage + "/" + key;
+                    fileName = generatePath + "/" + excelPackage + "/" + key;
+                    //如果存在就删除
+                    ExcelDiskUtils.deleteFile2(new File(fileName));
+                }//
+                else if (StringUtils.equals(key, entityName + "ImportListener" + StringPool.DOT_JAVA)) {
+                    fileName = generatePath + "/" + excelImportListenerPackage + "/" + key;
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
