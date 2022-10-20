@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.system.RegionMapper">
+    <!--    查询区域表-->
+    <select id="selectRegionByRegionId"
+            resultType="net.qixiaowei.system.manage.api.dto.system.RegionDTO">
+        SELECT
+        region_id, parent_region_id, ancestors, region_name, province_code, province_name, city_code, city_name, district_code, district_name, town_code, town_name, village_code, village_name, level, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM region
+        WHERE  region_id=#{regionId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询区域表-->
+    <select id="selectRegionByRegionIds"
+            resultType="net.qixiaowei.system.manage.api.dto.system.RegionDTO">
+        SELECT
+        region_id, parent_region_id, ancestors, region_name, province_code, province_name, city_code, city_name, district_code, district_name, town_code, town_name, village_code, village_name, level, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM region
+        WHERE  region_id in
+            <foreach item="item"
+                     collection="regionIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询区域表列表-->
+    <select id="selectRegionList" resultType="net.qixiaowei.system.manage.api.dto.system.RegionDTO">
+        SELECT
+        region_id, parent_region_id, ancestors, region_name, province_code, province_name, city_code, city_name, district_code, district_name, town_code, town_name, village_code, village_name, level, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM region
+        WHERE delete_flag=0
+                <if test="region.regionId != null">
+                    and region_id=#{region.regionId}
+                </if>
+                <if test="region.parentRegionId != null">
+                    and parent_region_id=#{region.parentRegionId}
+                </if>
+                <if test="region.ancestors != null and region.ancestors != ''">
+                    and ancestors=#{region.ancestors}
+                </if>
+                <if test="region.regionName != null and region.regionName != ''">
+                    and region_name=#{region.regionName}
+                </if>
+                <if test="region.provinceCode != null and region.provinceCode != ''">
+                    and province_code=#{region.provinceCode}
+                </if>
+                <if test="region.provinceName != null and region.provinceName != ''">
+                    and province_name=#{region.provinceName}
+                </if>
+                <if test="region.cityCode != null and region.cityCode != ''">
+                    and city_code=#{region.cityCode}
+                </if>
+                <if test="region.cityName != null and region.cityName != ''">
+                    and city_name=#{region.cityName}
+                </if>
+                <if test="region.districtCode != null and region.districtCode != ''">
+                    and district_code=#{region.districtCode}
+                </if>
+                <if test="region.districtName != null and region.districtName != ''">
+                    and district_name=#{region.districtName}
+                </if>
+                <if test="region.townCode != null and region.townCode != ''">
+                    and town_code=#{region.townCode}
+                </if>
+                <if test="region.townName != null and region.townName != ''">
+                    and town_name=#{region.townName}
+                </if>
+                <if test="region.villageCode != null and region.villageCode != ''">
+                    and village_code=#{region.villageCode}
+                </if>
+                <if test="region.villageName != null and region.villageName != ''">
+                    and village_name=#{region.villageName}
+                </if>
+                <if test="region.level != null">
+                    and level=#{region.level}
+                </if>
+                <if test="region.sort != null">
+                    and sort=#{region.sort}
+                </if>
+                <if test="region.deleteFlag != null">
+                    and delete_flag=#{region.deleteFlag}
+                </if>
+                <if test="region.createBy != null">
+                    and create_by=#{region.createBy}
+                </if>
+                <if test="region.createTime != null">
+                    and create_time=#{region.createTime}
+                </if>
+                <if test="region.updateBy != null">
+                    and update_by=#{region.updateBy}
+                </if>
+                <if test="region.updateTime != null">
+                    and update_time=#{region.updateTime}
+                </if>
+        ORDER BY sort ASC
+    </select>
+
+    <select id="selectRegions" resultType="net.qixiaowei.system.manage.api.vo.system.RegionVO">
+        SELECT
+        region_id, parent_region_id,region_name
+        FROM region
+        WHERE delete_flag=0
+        <if test="region.regionId != null">
+            and region_id=#{region.regionId}
+        </if>
+        <if test="region.parentRegionId != null">
+            and parent_region_id=#{region.parentRegionId}
+        </if>
+        <if test="region.ancestors != null and region.ancestors != ''">
+            and ancestors=#{region.ancestors}
+        </if>
+        <if test="region.regionName != null and region.regionName != ''">
+            and region_name=#{region.regionName}
+        </if>
+        <if test="region.provinceCode != null and region.provinceCode != ''">
+            and province_code=#{region.provinceCode}
+        </if>
+        <if test="region.provinceName != null and region.provinceName != ''">
+            and province_name=#{region.provinceName}
+        </if>
+        <if test="region.cityCode != null and region.cityCode != ''">
+            and city_code=#{region.cityCode}
+        </if>
+        <if test="region.cityName != null and region.cityName != ''">
+            and city_name=#{region.cityName}
+        </if>
+        <if test="region.districtCode != null and region.districtCode != ''">
+            and district_code=#{region.districtCode}
+        </if>
+        <if test="region.districtName != null and region.districtName != ''">
+            and district_name=#{region.districtName}
+        </if>
+        <if test="region.townCode != null and region.townCode != ''">
+            and town_code=#{region.townCode}
+        </if>
+        <if test="region.townName != null and region.townName != ''">
+            and town_name=#{region.townName}
+        </if>
+        <if test="region.villageCode != null and region.villageCode != ''">
+            and village_code=#{region.villageCode}
+        </if>
+        <if test="region.villageName != null and region.villageName != ''">
+            and village_name=#{region.villageName}
+        </if>
+        <if test="region.level != null">
+            and level=#{region.level}
+        </if>
+        <if test="region.sort != null">
+            and sort=#{region.sort}
+        </if>
+        <if test="region.deleteFlag != null">
+            and delete_flag=#{region.deleteFlag}
+        </if>
+        <if test="region.createBy != null">
+            and create_by=#{region.createBy}
+        </if>
+        <if test="region.createTime != null">
+            and create_time=#{region.createTime}
+        </if>
+        <if test="region.updateBy != null">
+            and update_by=#{region.updateBy}
+        </if>
+        <if test="region.updateTime != null">
+            and update_time=#{region.updateTime}
+        </if>
+        ORDER BY sort ASC
+    </select>
+
+    <!--新增区域表-->
+    <insert id="insertRegion" useGeneratedKeys="true" keyProperty="regionId">
+        INSERT INTO region (parent_region_id,ancestors,region_name,province_code,province_name,city_code,city_name,district_code,district_name,town_code,town_name,village_code,village_name,level,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{region.parentRegionId},#{region.ancestors},#{region.regionName},#{region.provinceCode},#{region.provinceName},#{region.cityCode},#{region.cityName},#{region.districtCode},#{region.districtName},#{region.townCode},#{region.townName},#{region.villageCode},#{region.villageName},#{region.level},#{region.sort},#{region.deleteFlag},#{region.createBy},#{region.createTime},#{region.updateBy},#{region.updateTime})
+    </insert>
+    <!--修改区域表-->
+    <update id="updateRegion">
+        UPDATE region
+        SET
+                    <if test="region.parentRegionId != null">
+                        parent_region_id=#{region.parentRegionId},
+                    </if>
+                    <if test="region.ancestors != null and region.ancestors != ''">
+                        ancestors=#{region.ancestors},
+                    </if>
+                    <if test="region.regionName != null and region.regionName != ''">
+                        region_name=#{region.regionName},
+                    </if>
+                    <if test="region.provinceCode != null and region.provinceCode != ''">
+                        province_code=#{region.provinceCode},
+                    </if>
+                    <if test="region.provinceName != null and region.provinceName != ''">
+                        province_name=#{region.provinceName},
+                    </if>
+                    <if test="region.cityCode != null and region.cityCode != ''">
+                        city_code=#{region.cityCode},
+                    </if>
+                    <if test="region.cityName != null and region.cityName != ''">
+                        city_name=#{region.cityName},
+                    </if>
+                    <if test="region.districtCode != null and region.districtCode != ''">
+                        district_code=#{region.districtCode},
+                    </if>
+                    <if test="region.districtName != null and region.districtName != ''">
+                        district_name=#{region.districtName},
+                    </if>
+                    <if test="region.townCode != null and region.townCode != ''">
+                        town_code=#{region.townCode},
+                    </if>
+                    <if test="region.townName != null and region.townName != ''">
+                        town_name=#{region.townName},
+                    </if>
+                    <if test="region.villageCode != null and region.villageCode != ''">
+                        village_code=#{region.villageCode},
+                    </if>
+                    <if test="region.villageName != null and region.villageName != ''">
+                        village_name=#{region.villageName},
+                    </if>
+                    <if test="region.level != null">
+                        level=#{region.level},
+                    </if>
+                    <if test="region.sort != null">
+                        sort=#{region.sort},
+                    </if>
+                    <if test="region.deleteFlag != null">
+                        delete_flag=#{region.deleteFlag},
+                    </if>
+                    <if test="region.createBy != null">
+                        create_by=#{region.createBy},
+                    </if>
+                    <if test="region.createTime != null">
+                        create_time=#{region.createTime},
+                    </if>
+                    <if test="region.updateBy != null">
+                        update_by=#{region.updateBy},
+                    </if>
+                    <if test="region.updateTime != null">
+                        update_time=#{region.updateTime}
+                    </if>
+        WHERE
+                 region_id=#{region.regionId}
+    </update>
+    <!--逻辑删除区域表-->
+    <update id="logicDeleteRegionByRegionId">
+        UPDATE region
+        SET     delete_flag= 1,
+                update_by=#{region.updateBy},
+                update_time=#{region.updateTime}
+        WHERE
+                region_id=#{region.regionId}
+    </update>
+    <!--逻辑批量删除区域表-->
+    <update id="logicDeleteRegionByRegionIds">
+        UPDATE region
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         region_id IN
+            <foreach item="item"
+                     collection="regionIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增区域表-->
+    <insert id="batchRegion">
+        INSERT INTO region (parent_region_id,ancestors,region_name,province_code,province_name,city_code,city_name,district_code,district_name,town_code,town_name,village_code,village_name,level,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="regions"
+                 separator=",">
+            (#{item.parentRegionId},#{item.ancestors},#{item.regionName},#{item.provinceCode},#{item.provinceName},#{item.cityCode},#{item.cityName},#{item.districtCode},#{item.districtName},#{item.townCode},#{item.townName},#{item.villageCode},#{item.villageName},#{item.level},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除区域表-->
+    <delete id="deleteRegionByRegionId">
+        DELETE FROM region
+        WHERE  region_id=#{region}
+
+    </delete>
+    <!--物理批量删除区域表-->
+    <delete id="deleteRegionByRegionIds">
+        DELETE FROM region
+        WHERE  region_id IN
+            <foreach item="item"
+                     collection="regionIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改区域表-->
+    <update id="updateRegions">
+        update region
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="parent_region_id=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.parentRegionId != null">
+                                    when region_id=#{item.regionId} then #{item.parentRegionId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="ancestors=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.ancestors != null and item.ancestors != ''">
+                                    when region_id=#{item.regionId} then #{item.ancestors}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="region_name=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.regionName != null and item.regionName != ''">
+                                    when region_id=#{item.regionId} then #{item.regionName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="province_code=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.provinceCode != null and item.provinceCode != ''">
+                                    when region_id=#{item.regionId} then #{item.provinceCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="province_name=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.provinceName != null and item.provinceName != ''">
+                                    when region_id=#{item.regionId} then #{item.provinceName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="city_code=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.cityCode != null and item.cityCode != ''">
+                                    when region_id=#{item.regionId} then #{item.cityCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="city_name=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.cityName != null and item.cityName != ''">
+                                    when region_id=#{item.regionId} then #{item.cityName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="district_code=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.districtCode != null and item.districtCode != ''">
+                                    when region_id=#{item.regionId} then #{item.districtCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="district_name=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.districtName != null and item.districtName != ''">
+                                    when region_id=#{item.regionId} then #{item.districtName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="town_code=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.townCode != null and item.townCode != ''">
+                                    when region_id=#{item.regionId} then #{item.townCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="town_name=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.townName != null and item.townName != ''">
+                                    when region_id=#{item.regionId} then #{item.townName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="village_code=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.villageCode != null and item.villageCode != ''">
+                                    when region_id=#{item.regionId} then #{item.villageCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="village_name=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.villageName != null and item.villageName != ''">
+                                    when region_id=#{item.regionId} then #{item.villageName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="level=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.level != null">
+                                    when region_id=#{item.regionId} then #{item.level}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when region_id=#{item.regionId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when region_id=#{item.regionId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when region_id=#{item.regionId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when region_id=#{item.regionId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when region_id=#{item.regionId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="regionList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when region_id=#{item.regionId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="regionList" separator="or" item="item" index="index">
+                    region_id=#{item.regionId}
+        </foreach>
+    </update>
+</mapper>
+
+

@@ -2,7 +2,6 @@ package net.qixiaowei.auth.service;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
-import net.qixiaowei.system.manage.api.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import net.qixiaowei.integration.common.constant.Constants;
@@ -12,8 +11,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.UserStatus;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.RemoteUserService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
 /**

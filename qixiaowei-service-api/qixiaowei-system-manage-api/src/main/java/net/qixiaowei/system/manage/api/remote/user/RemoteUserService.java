@@ -1,10 +1,10 @@
-package net.qixiaowei.system.manage.api;
+package net.qixiaowei.system.manage.api.remote.user;
 
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.vo.UserVO;
-import net.qixiaowei.system.manage.api.factory.RemoteUserFallbackFactory;
+import net.qixiaowei.system.manage.api.factory.user.RemoteUserFallbackFactory;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;

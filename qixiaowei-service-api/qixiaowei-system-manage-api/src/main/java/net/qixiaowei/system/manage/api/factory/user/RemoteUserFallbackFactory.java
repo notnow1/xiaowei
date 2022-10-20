@@ -1,7 +1,7 @@
-package net.qixiaowei.system.manage.api.factory;
+package net.qixiaowei.system.manage.api.factory.user;
 
 import net.qixiaowei.integration.common.domain.R;
-import net.qixiaowei.system.manage.api.RemoteUserService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
