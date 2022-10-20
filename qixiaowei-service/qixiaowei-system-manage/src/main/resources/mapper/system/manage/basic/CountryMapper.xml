@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.CountryMapper">
+    <!--    查询国家表-->
+    <select id="selectCountryByCountryId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.CountryDTO">
+        SELECT
+        country_id, parent_country_id, country_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM country
+        WHERE  country_id=#{countryId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询国家表-->
+    <select id="selectCountryByCountryIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.CountryDTO">
+        SELECT
+        country_id, parent_country_id, country_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM country
+        WHERE  country_id in
+            <foreach item="item"
+                     collection="countryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询国家表列表-->
+    <select id="selectCountryList" resultType="net.qixiaowei.system.manage.api.dto.basic.CountryDTO">
+        SELECT
+        country_id, parent_country_id, country_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM country
+        WHERE delete_flag=0
+                <if test="country.countryId != null">
+                    and country_id=#{country.countryId}
+                </if>
+                <if test="country.parentCountryId != null">
+                    and parent_country_id=#{country.parentCountryId}
+                </if>
+                <if test="country.countryName != null and country.countryName != ''">
+                    and country_name=#{country.countryName}
+                </if>
+                <if test="country.sort != null">
+                    and sort=#{country.sort}
+                </if>
+                <if test="country.deleteFlag != null">
+                    and delete_flag=#{country.deleteFlag}
+                </if>
+                <if test="country.createBy != null">
+                    and create_by=#{country.createBy}
+                </if>
+                <if test="country.createTime != null">
+                    and create_time=#{country.createTime}
+                </if>
+                <if test="country.updateBy != null">
+                    and update_by=#{country.updateBy}
+                </if>
+                <if test="country.updateTime != null">
+                    and update_time=#{country.updateTime}
+                </if>
+    </select>
+    <!--新增国家表-->
+    <insert id="insertCountry" useGeneratedKeys="true" keyProperty="countryId">
+        INSERT INTO country (parent_country_id,country_name,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{country.parentCountryId},#{country.countryName},#{country.sort},#{country.deleteFlag},#{country.createBy},#{country.createTime},#{country.updateBy},#{country.updateTime})
+    </insert>
+    <!--修改国家表-->
+    <update id="updateCountry">
+        UPDATE country
+        SET
+                    <if test="country.parentCountryId != null">
+                        parent_country_id=#{country.parentCountryId},
+                    </if>
+                    <if test="country.countryName != null and country.countryName != ''">
+                        country_name=#{country.countryName},
+                    </if>
+                    <if test="country.sort != null">
+                        sort=#{country.sort},
+                    </if>
+                    <if test="country.deleteFlag != null">
+                        delete_flag=#{country.deleteFlag},
+                    </if>
+                    <if test="country.createBy != null">
+                        create_by=#{country.createBy},
+                    </if>
+                    <if test="country.createTime != null">
+                        create_time=#{country.createTime},
+                    </if>
+                    <if test="country.updateBy != null">
+                        update_by=#{country.updateBy},
+                    </if>
+                    <if test="country.updateTime != null">
+                        update_time=#{country.updateTime}
+                    </if>
+        WHERE
+                 country_id=#{country.countryId}
+    </update>
+    <!--逻辑删除国家表-->
+    <update id="logicDeleteCountryByCountryId">
+        UPDATE country
+        SET     delete_flag= 1,
+                update_by=#{country.updateBy},
+                update_time=#{country.updateTime}
+        WHERE
+                country_id=#{country.countryId}
+    </update>
+    <!--逻辑批量删除国家表-->
+    <update id="logicDeleteCountryByCountryIds">
+        UPDATE country
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         country_id IN
+            <foreach item="item"
+                     collection="countryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增国家表-->
+    <insert id="batchCountry">
+        INSERT INTO country (parent_country_id,country_name,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="countrys"
+                 separator=",">
+            (#{item.parentCountryId},#{item.countryName},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除国家表-->
+    <delete id="deleteCountryByCountryId">
+        DELETE FROM country
+        WHERE  country_id=#{country}
+
+    </delete>
+    <!--物理批量删除国家表-->
+    <delete id="deleteCountryByCountryIds">
+        DELETE FROM country
+        WHERE  country_id IN
+            <foreach item="item"
+                     collection="countryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改国家表-->
+    <update id="updateCountrys">
+        update country
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="parent_country_id=case" suffix="end,">
+                        <foreach collection="countryList" item="item" index="index">
+                                <if test="item.parentCountryId != null">
+                                    when country_id=#{item.countryId} then #{item.parentCountryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="country_name=case" suffix="end,">
+                        <foreach collection="countryList" item="item" index="index">
+                                <if test="item.countryName != null and item.countryName != ''">
+                                    when country_id=#{item.countryId} then #{item.countryName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="countryList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when country_id=#{item.countryId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="countryList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when country_id=#{item.countryId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="countryList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when country_id=#{item.countryId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="countryList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when country_id=#{item.countryId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="countryList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when country_id=#{item.countryId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="countryList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when country_id=#{item.countryId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="countryList" separator="or" item="item" index="index">
+                    country_id=#{item.countryId}
+        </foreach>
+    </update>
+</mapper>
+
+

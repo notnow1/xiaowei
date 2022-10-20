@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.basic.NationMapper">
+    <!--    查询民族表-->
+    <select id="selectNationByNationId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.NationDTO">
+        SELECT
+        nation_id, nation_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM nation
+        WHERE  nation_id=#{nationId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询民族表-->
+    <select id="selectNationByNationIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.NationDTO">
+        SELECT
+        nation_id, nation_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM nation
+        WHERE  nation_id in
+            <foreach item="item"
+                     collection="nationIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询民族表列表-->
+    <select id="selectNationList" resultType="net.qixiaowei.system.manage.api.dto.basic.NationDTO">
+        SELECT
+        nation_id, nation_name, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM nation
+        WHERE delete_flag=0
+                <if test="nation.nationId != null">
+                    and nation_id=#{nation.nationId}
+                </if>
+                <if test="nation.nationName != null and nation.nationName != ''">
+                    and nation_name=#{nation.nationName}
+                </if>
+                <if test="nation.sort != null">
+                    and sort=#{nation.sort}
+                </if>
+                <if test="nation.deleteFlag != null">
+                    and delete_flag=#{nation.deleteFlag}
+                </if>
+                <if test="nation.createBy != null">
+                    and create_by=#{nation.createBy}
+                </if>
+                <if test="nation.createTime != null">
+                    and create_time=#{nation.createTime}
+                </if>
+                <if test="nation.updateBy != null">
+                    and update_by=#{nation.updateBy}
+                </if>
+                <if test="nation.updateTime != null">
+                    and update_time=#{nation.updateTime}
+                </if>
+    </select>
+    <!--新增民族表-->
+    <insert id="insertNation" useGeneratedKeys="true" keyProperty="nationId">
+        INSERT INTO nation (nation_name,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{nation.nationName},#{nation.sort},#{nation.deleteFlag},#{nation.createBy},#{nation.createTime},#{nation.updateBy},#{nation.updateTime})
+    </insert>
+    <!--修改民族表-->
+    <update id="updateNation">
+        UPDATE nation
+        SET
+                    <if test="nation.nationName != null and nation.nationName != ''">
+                        nation_name=#{nation.nationName},
+                    </if>
+                    <if test="nation.sort != null">
+                        sort=#{nation.sort},
+                    </if>
+                    <if test="nation.deleteFlag != null">
+                        delete_flag=#{nation.deleteFlag},
+                    </if>
+                    <if test="nation.createBy != null">
+                        create_by=#{nation.createBy},
+                    </if>
+                    <if test="nation.createTime != null">
+                        create_time=#{nation.createTime},
+                    </if>
+                    <if test="nation.updateBy != null">
+                        update_by=#{nation.updateBy},
+                    </if>
+                    <if test="nation.updateTime != null">
+                        update_time=#{nation.updateTime}
+                    </if>
+        WHERE
+                 nation_id=#{nation.nationId}
+    </update>
+    <!--逻辑删除民族表-->
+    <update id="logicDeleteNationByNationId">
+        UPDATE nation
+        SET     delete_flag= 1,
+                update_by=#{nation.updateBy},
+                update_time=#{nation.updateTime}
+        WHERE
+                nation_id=#{nation.nationId}
+    </update>
+    <!--逻辑批量删除民族表-->
+    <update id="logicDeleteNationByNationIds">
+        UPDATE nation
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         nation_id IN
+            <foreach item="item"
+                     collection="nationIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增民族表-->
+    <insert id="batchNation">
+        INSERT INTO nation (nation_name,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="nations"
+                 separator=",">
+            (#{item.nationName},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除民族表-->
+    <delete id="deleteNationByNationId">
+        DELETE FROM nation
+        WHERE  nation_id=#{nation}
+
+    </delete>
+    <!--物理批量删除民族表-->
+    <delete id="deleteNationByNationIds">
+        DELETE FROM nation
+        WHERE  nation_id IN
+            <foreach item="item"
+                     collection="nationIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改民族表-->
+    <update id="updateNations">
+        update nation
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="nation_name=case" suffix="end,">
+                        <foreach collection="nationList" item="item" index="index">
+                                <if test="item.nationName != null and item.nationName != ''">
+                                    when nation_id=#{item.nationId} then #{item.nationName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="nationList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when nation_id=#{item.nationId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="nationList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when nation_id=#{item.nationId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="nationList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when nation_id=#{item.nationId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="nationList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when nation_id=#{item.nationId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="nationList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when nation_id=#{item.nationId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="nationList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when nation_id=#{item.nationId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="nationList" separator="or" item="item" index="index">
+                    nation_id=#{item.nationId}
+        </foreach>
+    </update>
+</mapper>
+
+
