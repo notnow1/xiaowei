@@ -104,7 +104,7 @@ public interface IProductService{
      * @param productDTO
      * @return
      */
-    List<ProductDTO> queryDictionaryType(ProductDTO productDTO);
+    List<ProductDTO> queryProductQuote(ProductDTO productDTO);
 
     /**
      * 返回产品层级

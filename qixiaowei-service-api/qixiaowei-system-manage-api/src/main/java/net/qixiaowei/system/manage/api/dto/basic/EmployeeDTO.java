@@ -21,7 +21,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 * @since 2022-09-30
 */
 @Data
-@EqualsAndHashCode
 @Accessors(chain = true)
 public class EmployeeDTO {
 

@@ -42,6 +42,14 @@ public interface PostMapper {
     PostDTO selectPostCode(@Param("postCode") String postCode);
 
     /**
+     * 查询岗位表名称
+     *
+     * @param postName 岗位表Code
+     * @return 岗位表
+     */
+    PostDTO selectPostName(@Param("postName") String postName);
+
+    /**
      * 查询岗位表列表
      *
      * @param post 岗位表

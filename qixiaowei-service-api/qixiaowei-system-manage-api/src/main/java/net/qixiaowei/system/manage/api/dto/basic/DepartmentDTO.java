@@ -21,7 +21,6 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 * @since 2022-09-27
 */
 @Data
-@EqualsAndHashCode
 @Accessors(chain = true)
 public class DepartmentDTO {
 

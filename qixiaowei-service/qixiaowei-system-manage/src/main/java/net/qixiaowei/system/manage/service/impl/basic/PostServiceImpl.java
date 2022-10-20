@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-
 /**
  * PostService业务层处理
  *
@@ -101,7 +100,7 @@ public class PostServiceImpl implements IPostService {
         post.setUpdateBy(SecurityUtils.getUserId());
         post.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         try {
-             postMapper.insertPost(post);
+            postMapper.insertPost(post);
         } catch (Exception e) {
             throw new ServiceException("新增岗位失败！");
         }
@@ -118,6 +117,11 @@ public class PostServiceImpl implements IPostService {
         PostDTO postDTO1 = postMapper.selectPostCode(post.getPostCode());
         if (null == postDTO1) {
             throw new ServiceException("岗位编码已存在！");
+        }
+        //先查询 重复无法添加
+        PostDTO postDTO2 = postMapper.selectPostName(post.getPostName());
+        if (null == postDTO2) {
+            throw new ServiceException("岗位名称已存在！");
         }
         for (DepartmentDTO departmentDTO : collect1) {
             //组织中间表
@@ -274,14 +278,14 @@ public class PostServiceImpl implements IPostService {
             String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
             String postname1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
             if (!StringUtils.isEmpty(employeeDTOS)) {
-                    employeeErreo.append("该岗位" +postname1+ "已被" + s1 + "人员引用" + "\n");
+                employeeErreo.append("该岗位" + postname1 + "已被" + s1 + "人员引用" + "\n");
             }
             //查询是否被组织引用
             List<DepartmentDTO> departmentDTOList = departmentPostMapper.selectDepartmentPostId(postId);
             String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
             String postname2 = departmentDTOList.stream().map(DepartmentDTO::getDepartmentLeaderPostName).distinct().collect(Collectors.toList()).toString();
             if (!StringUtils.isEmpty(departmentDTOList)) {
-                    deptPostErreo.append("岗位"+postname2+ "已被组织"+s+"引用" + "\n");
+                deptPostErreo.append("岗位" + postname2 + "已被组织" + s + "引用" + "\n");
             }
         }
         // todo 还有暂未确定
@@ -334,16 +338,16 @@ public class PostServiceImpl implements IPostService {
         //查询是否被人员引用
         List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeePostId(post.getPostId());
         String s = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
-        String postname1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeePostName).collect(Collectors.toList()).stream().distinct().toString();
+        String postname1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
         if (!StringUtils.isEmpty(employeeDTOS)) {
-                employeeErreo.append("岗位"+postname1+"被"+s+"人员引用  无法删除！\n");
+            employeeErreo.append("岗位" + postname1 + "被" + s + "人员引用  无法删除！\n");
         }
         //查询是否被组织引用
         List<DepartmentDTO> departmentDTOList = departmentPostMapper.selectDepartmentPostId(post.getPostId());
         String s2 = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
         String postname2 = departmentDTOList.stream().map(DepartmentDTO::getDepartmentLeaderPostName).distinct().collect(Collectors.toList()).toString();
         if (!StringUtils.isEmpty(departmentDTOList)) {
-                deptPostErreo.append("岗位"+postname2+"被"+s2+"组织引用 无法删除！\n");
+            deptPostErreo.append("岗位" + postname2 + "被" + s2 + "组织引用 无法删除！\n");
 
         }
         // todo 还有暂未确定
