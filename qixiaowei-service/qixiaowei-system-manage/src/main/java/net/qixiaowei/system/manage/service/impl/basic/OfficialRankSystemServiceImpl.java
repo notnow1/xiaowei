@@ -165,9 +165,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (rankEnd < rankStart) {
             throw new ServiceException("职级体系终止级别不能小于职级初始级别");
         }
-        if (StringUtils.isEmpty(rankPrefixCode)) {
-            throw new ServiceException("职级体系级别前缀不能为空");
-        }
         OfficialRankSystemDTO officialRankByName = officialRankSystemMapper.officialRankByName(officialRankSystemName);
         OfficialRankSystemDTO officialRankByPrefixCode = officialRankSystemMapper.officialRankByPrefixCode(rankPrefixCode);
         if (StringUtils.isNotNull(officialRankByName)) {
@@ -212,9 +209,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isNull(officialRankSystemId)) {
             throw new ServiceException("职级体系表id不能为空");
         }
-        if (StringUtils.isNotEmpty(officialRankSystemName)) {
-            throw new ServiceException("职级体系名称不能进行编辑");
-        }
         if (StringUtils.isNull(rankStart)) {
             throw new ServiceException("职级体系起始级别不能为空");
         }
@@ -223,9 +217,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         }
         if (rankEnd < rankStart) {
             throw new ServiceException("职级体系终止级别不能小于职级初始级别");
-        }
-        if (StringUtils.isEmpty(rankPrefixCode)) {
-            throw new ServiceException("职级体系级别前缀不能为空");
         }
         OfficialRankSystemDTO officialRankByName = officialRankSystemMapper.officialRankByName(officialRankSystemName);
         OfficialRankSystemDTO officialRankByPrefixCode = officialRankSystemMapper.officialRankByPrefixCode(rankPrefixCode);
