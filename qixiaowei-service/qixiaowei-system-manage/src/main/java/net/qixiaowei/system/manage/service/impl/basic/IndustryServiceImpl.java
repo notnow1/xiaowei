@@ -191,7 +191,7 @@ public class IndustryServiceImpl implements IIndustryService {
             }
         }
         Long parentIndustryId = industryDTO.getParentIndustryId();
-        if (StringUtils.isNotNull(parentIndustryId)) {// 一级行业
+        if (StringUtils.isNotNull(parentIndustryId) && parentIndustryId != 0) {// 一级行业
             IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(parentIndustryId);
             if (parentIndustry == null) {
                 throw new ServiceException("该上级行业不存在");
