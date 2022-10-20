@@ -1,2 +1,2 @@
 net.qixiaowei.operate.cloud.api.factory.RemoteProductFallbackFactory
-net.qixiaowei.operate.cloud.api.factory.RemoteAreaFactory
+net.qixiaowei.operate.cloud.api.factory.RemoteAreaFallbackFactory

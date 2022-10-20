@@ -10,9 +10,9 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 
 import java.util.List;
 
-public class RemoteAreaFactory implements FallbackFactory<RemoteAreaService> {
+public class RemoteAreaFallbackFactory implements FallbackFactory<RemoteAreaService> {
 
-    private static final Logger log = LoggerFactory.getLogger(RemoteAreaFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(RemoteAreaFallbackFactory.class);
 
     @Override
     public RemoteAreaService create(Throwable throwable) {

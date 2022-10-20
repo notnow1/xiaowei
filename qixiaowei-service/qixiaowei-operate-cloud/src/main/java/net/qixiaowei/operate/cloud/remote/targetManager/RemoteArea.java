@@ -1,7 +1,6 @@
 package net.qixiaowei.operate.cloud.remote.targetManager;
 
 import net.qixiaowei.integration.common.domain.R;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
