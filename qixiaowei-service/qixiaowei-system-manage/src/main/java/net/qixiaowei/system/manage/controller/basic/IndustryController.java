@@ -52,6 +52,11 @@ public class IndustryController extends BaseController {
      */
     @GetMapping("/treeList")
     public AjaxResult treeList(IndustryDTO industryDTO) {
+        String industryName = industryDTO.getIndustryName();
+        String industryCode = industryDTO.getIndustryCode();
+        if (StringUtils.isNotEmpty(industryName) || StringUtils.isNotEmpty(industryCode)) {
+            return AjaxResult.success(industryService.selectIndustryList(industryDTO));
+        }
         return AjaxResult.success(industryService.selectIndustryTreeList(industryDTO));
     }
 
