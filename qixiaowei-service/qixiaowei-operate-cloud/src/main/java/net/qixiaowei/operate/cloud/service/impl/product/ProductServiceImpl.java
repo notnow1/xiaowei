@@ -741,11 +741,11 @@ public class ProductServiceImpl implements IProductService {
      * @return
      */
     @Override
-    public List<ProductDTO> queryDictionaryType(ProductDTO productDTO) {
+    public List<ProductDTO> queryProductQuote(ProductDTO productDTO) {
         Product product = new Product();
         product.setProductCategory(productDTO.getProductCategory());
         product.setListingFlag(productDTO.getListingFlag());
-        return productMapper.queryDictionaryType(product);
+        return productMapper.queryProductQuote(product);
     }
 
     /**

@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 * @since 2022-10-08
 */
 @Data
-@EqualsAndHashCode
 @Accessors(chain = true)
 public class ProductDTO {
 

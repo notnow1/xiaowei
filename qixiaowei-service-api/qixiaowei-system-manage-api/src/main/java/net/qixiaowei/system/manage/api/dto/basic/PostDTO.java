@@ -19,7 +19,6 @@ import java.util.List;
 * @since 2022-09-30
 */
 @Data
-@EqualsAndHashCode
 @Accessors(chain = true)
 public class PostDTO {
 

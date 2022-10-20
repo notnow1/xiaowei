@@ -130,7 +130,7 @@ public interface ProductMapper{
      * @param product
      * @return
      */
-    List<ProductDTO> queryDictionaryType(@Param("product")Product product);
+    List<ProductDTO> queryProductQuote(@Param("product")Product product);
 
     /**
      * 返回产品层级

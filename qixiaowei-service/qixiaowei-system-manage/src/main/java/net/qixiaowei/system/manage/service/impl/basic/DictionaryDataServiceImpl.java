@@ -9,7 +9,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
-import net.qixiaowei.operate.cloud.api.remote.dictionary.RemoteDictionaryService;
+import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
@@ -34,7 +34,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     private DictionaryDataMapper dictionaryDataMapper;
 
     @Autowired
-    private RemoteDictionaryService remoteDictionaryService;
+    private RemoteProductService remoteDictionaryService;
 
     /**
      * 查询字典数据表
@@ -168,11 +168,11 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
                 ProductDTO productDTO = new ProductDTO();
                 productDTO.setProductCategory(dictionaryDataDTO.getDictionaryDataId().toString());
                 productDTO.setListingFlag(Integer.parseInt(dictionaryDataDTO.getDictionaryDataId().toString()));
-                R<List<ProductDTO>> listR = remoteDictionaryService.queryDictionaryType(productDTO);
+                R<List<ProductDTO>> listR = remoteDictionaryService.queryProductQuote(productDTO);
                 if (null != listR) {
                     List<ProductDTO> data = listR.getData();
                     if (!StringUtils.isEmpty(data)) {
-                        productErreo.append("枚举值"+dictionaryDataDTO.getDictionaryLabel()+"被产品类别"+data.stream().map(ProductDTO::getProductName).collect(Collectors.toList())+"引用 无法删除！");
+                        productErreo.append("枚举值"+dictionaryDataDTO.getDictionaryLabel()+(dictionaryType=="PRODUCT_CATEGORY"?"被产品类别":"被产品上下架")+data.stream().map(ProductDTO::getProductName).collect(Collectors.toList())+"引用 无法删除！");
                     }
                 }
                 if (productErreo.length()>1){
