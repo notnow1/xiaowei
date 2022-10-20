@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 * @since 2022-09-27
 */
 @Data
+@EqualsAndHashCode
 @Accessors(chain = true)
 public class DepartmentDTO {
 

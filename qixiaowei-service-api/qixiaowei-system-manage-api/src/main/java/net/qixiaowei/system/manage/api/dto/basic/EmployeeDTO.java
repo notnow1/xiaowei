@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.api.dto.basic;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 * @since 2022-09-30
 */
 @Data
+@EqualsAndHashCode
 @Accessors(chain = true)
 public class EmployeeDTO {
 

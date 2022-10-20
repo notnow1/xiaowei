@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.api.dto.product;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 * @since 2022-10-08
 */
 @Data
+@EqualsAndHashCode
 @Accessors(chain = true)
 public class ProductDTO {
 

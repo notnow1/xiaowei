@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.api.dto.basic;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 
@@ -18,6 +19,7 @@ import java.util.List;
 * @since 2022-09-30
 */
 @Data
+@EqualsAndHashCode
 @Accessors(chain = true)
 public class PostDTO {
 
