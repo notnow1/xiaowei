@@ -28,7 +28,7 @@ public interface NationMapper{
     * @param nationIds 民族表主键集合
     * @return 民族表
     */
-    List<NationDTO> selectNationByNationId(@Param("nationIds") List<Long> nationIds);
+    List<NationDTO> selectNationByNationIds(@Param("nationIds") List<Long> nationIds);
 
     /**
     * 查询民族表列表
