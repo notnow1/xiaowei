@@ -28,7 +28,7 @@ public interface CountryMapper{
     * @param countryIds 国家表主键集合
     * @return 国家表
     */
-    List<CountryDTO> selectCountryByCountryId(@Param("countryIds") List<Long> countryIds);
+    List<CountryDTO> selectCountryByCountryIds(@Param("countryIds") List<Long> countryIds);
 
     /**
     * 查询国家表列表
