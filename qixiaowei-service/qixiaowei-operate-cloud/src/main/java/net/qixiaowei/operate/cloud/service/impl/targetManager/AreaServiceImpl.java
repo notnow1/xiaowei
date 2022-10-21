@@ -77,8 +77,8 @@ public class AreaServiceImpl implements IAreaService {
         if (StringUtils.isEmpty(regionIds) && StringUtils.isEmpty(regionNames)) {
             throw new ServiceException("省份不可以为空");
         }
-        int areaCodeCount = areaMapper.checkUnique(areaCode);
-        if (areaCodeCount > 0) {
+        AreaDTO areaByCode = areaMapper.checkUnique(areaCode);
+        if (StringUtils.isNotNull(areaByCode)) {
             throw new ServiceException("区域编码不可重复");
         }
         Area area = new Area();
@@ -100,6 +100,26 @@ public class AreaServiceImpl implements IAreaService {
     @Transactional
     @Override
     public int updateArea(AreaDTO areaDTO) {
+        Long areaId = areaDTO.getAreaId();
+        String areaCode = areaDTO.getAreaCode();
+        String areaName = areaDTO.getAreaName();
+        String regionIds = areaDTO.getRegionIds();
+        String regionNames = areaDTO.getRegionNames();
+        if (StringUtils.isEmpty(areaCode)) {
+            throw new ServiceException("区域编码不能为空");
+        }
+        if (StringUtils.isEmpty(areaName)) {
+            throw new ServiceException("区域名称不能为空");
+        }
+        if (StringUtils.isEmpty(regionIds) || StringUtils.isEmpty(regionNames)) {
+            throw new ServiceException("省份不可以为空");
+        }
+        AreaDTO areaByCode = areaMapper.checkUnique(areaCode);
+        if (StringUtils.isNotNull(areaByCode)) {
+            if (!areaByCode.getAreaId().equals(areaId)) {
+                throw new ServiceException("区域编码不可重复");
+            }
+        }
         Area area = new Area();
         BeanUtils.copyProperties(areaDTO, area);
         area.setUpdateTime(DateUtils.getNowDate());
@@ -119,8 +139,8 @@ public class AreaServiceImpl implements IAreaService {
         if (StringUtils.isEmpty(areaIds)) {
             throw new ServiceException("区域id不能为空");
         }
-        int exist = areaMapper.isExist(areaIds);
-        if (exist != areaIds.size()) {
+        List<AreaDTO> exist = areaMapper.isExist(areaIds);
+        if (exist.size() < areaIds.size()) {
             throw new ServiceException("区域配置已不存在");
         }
         return areaMapper.logicDeleteAreaByAreaIds(areaIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -142,7 +162,7 @@ public class AreaServiceImpl implements IAreaService {
      * 查询分解维度区域下拉列表
      *
      * @param areaDTO
-     * @return ID,Name
+     * @return ID, Name
      */
     @Override
     public List<AreaDTO> selectDropList(AreaDTO areaDTO) {

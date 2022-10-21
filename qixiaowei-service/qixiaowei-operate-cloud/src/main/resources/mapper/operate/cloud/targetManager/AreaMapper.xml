@@ -50,12 +50,19 @@
             and update_time=#{area.updateTime}
         </if>
     </select>
-    <select id="checkUnique" resultType="java.lang.Integer">
-        SELECT COUNT(area_code) FROM area WHERE area_code = #{areaCode}
+    <select id="checkUnique" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO">
+        SELECT area_id, area_code, area_name, region_ids, region_names, delete_flag, create_by, create_time, update_by,
+        update_time
+        FROM area
+        WHERE area_code = #{areaCode}
     </select>
     <!--根据id集合判断是否存在-->
-    <select id="isExist" resultType="java.lang.Integer">
-        SELECT COUNT(area_id) FROM area WHERE area_id IN
+    <select id="isExist" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO">
+        SELECT area_id, area_code, area_name, region_ids, region_names, delete_flag, create_by, create_time, update_by,
+        update_time
+        FROM area
+        WHERE area_id
+        IN
         <foreach item="item"
                  collection="areaIds"
                  index="index" open="(" separator="," close=")">

@@ -103,7 +103,7 @@ public interface AreaMapper {
      * @param areaCode
      * @return
      */
-    int checkUnique(@Param("areaCode") String areaCode);
+    AreaDTO checkUnique(@Param("areaCode") String areaCode);
 
     /**
      * 根据id集合判断是否存在
@@ -111,7 +111,7 @@ public interface AreaMapper {
      * @param areaIds
      * @return
      */
-    int isExist(@Param("areaIds") List<Long> areaIds);
+    List<AreaDTO> isExist(@Param("areaIds") List<Long> areaIds);
 
     /**
      * 获取地区/名称

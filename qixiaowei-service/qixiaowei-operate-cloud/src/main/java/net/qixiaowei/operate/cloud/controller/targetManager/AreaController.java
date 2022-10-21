@@ -61,7 +61,6 @@ public class AreaController extends BaseController {
         return toAjax(areaService.insertArea(areaDTO));
     }
 
-
     /**
      * 修改区域表
      */
@@ -70,36 +69,6 @@ public class AreaController extends BaseController {
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody AreaDTO areaDTO) {
         return toAjax(areaService.updateArea(areaDTO));
-    }
-
-    /**
-     * 逻辑删除区域表
-     */
-//    @RequiresPermissions("operate:cloud:area:remove")
-    @Log(title = "删除区域表", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody AreaDTO areaDTO) {
-        return toAjax(areaService.logicDeleteAreaByAreaId(areaDTO));
-    }
-
-    /**
-     * 批量修改区域表
-     */
-//    @RequiresPermissions("operate:cloud:area:edits")
-    @Log(title = "批量修改区域表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<AreaDTO> areaDtos) {
-        return toAjax(areaService.updateAreas(areaDtos));
-    }
-
-    /**
-     * 批量新增区域表
-     */
-//    @RequiresPermissions("operate:cloud:area:insertAreas")
-    @Log(title = "批量新增区域表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertAreas")
-    public AjaxResult insertAreas(@RequestBody List<AreaDTO> areaDtos) {
-        return toAjax(areaService.insertAreas(areaDtos));
     }
 
     /**
