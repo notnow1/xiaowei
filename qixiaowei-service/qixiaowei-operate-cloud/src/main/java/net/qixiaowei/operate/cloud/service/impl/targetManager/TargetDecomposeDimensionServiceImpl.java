@@ -219,23 +219,17 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     @Transactional
     public int updateTargetDecomposeDimensions(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
         Long targetDecomposeDimensionId;
-        List<Integer> sorts = new ArrayList<>();
+
         List<Long> targetDecomposeDimensionIds = new ArrayList<>();
-        Integer sort;
+        int i = 0;
         for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
             targetDecomposeDimensionId = targetDecomposeDimensionDTO.getTargetDecomposeDimensionId();
-            sort = targetDecomposeDimensionDTO.getSort();
+            targetDecomposeDimensionDTO.setSort(i);
             if (StringUtils.isNull(targetDecomposeDimensionId)) {
                 throw new ServiceException("id不能为空！");
             }
-            if (StringUtils.isNull(sort)) {
-                throw new ServiceException("sort不能为空");
-            }
-            if (sorts.contains(targetDecomposeDimensionDTO.getSort())) {
-                throw new ServiceException("sort存在重复");
-            }
             targetDecomposeDimensionIds.add(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
-            sorts.add(targetDecomposeDimensionDTO.getSort());
+            i++;
         }
         int exist = targetDecomposeDimensionMapper.isExist(targetDecomposeDimensionIds);
         if (exist < targetDecomposeDimensionIds.size()) {//查询到的数量小于ids的数量

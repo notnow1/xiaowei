@@ -63,13 +63,14 @@ public class TargetDecomposeDimensionController extends BaseController {
         return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimensionDTO));
     }
 
+
     /**
      * 批量修改目标分解维度配置
      */
 //    @RequiresPermissions("operate:cloud:targetDecomposeDimension:edits")
     @Log(title = "批量修改目标分解维度配置", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
+    @PostMapping("/sort")
+    public AjaxResult sort(@RequestBody List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
         return toAjax(targetDecomposeDimensionService.updateTargetDecomposeDimensions(targetDecomposeDimensionDtos));
     }
 

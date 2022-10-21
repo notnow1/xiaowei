@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.remote.targetManager.product;
+package net.qixiaowei.operate.cloud.remote.product;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
