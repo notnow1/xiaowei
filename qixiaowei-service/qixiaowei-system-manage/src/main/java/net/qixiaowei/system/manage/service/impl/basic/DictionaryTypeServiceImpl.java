@@ -38,6 +38,16 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     }
 
     /**
+     * 根据type类型查询字典类型表
+     * @param dictionaryType 字典类型表主键
+     * @return
+     */
+    @Override
+    public String selectDictionaryTypeByDictionaryType(String dictionaryType) {
+        return dictionaryTypeMapper.selectDictionaryTypeByDictionaryType(dictionaryType);
+    }
+
+    /**
     * 查询字典类型表列表
     *
     * @param dictionaryTypeDTO 字典类型表

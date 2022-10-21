@@ -19,6 +19,13 @@ public interface IDictionaryTypeService{
     DictionaryTypeDTO selectDictionaryTypeByDictionaryTypeId(Long dictionaryTypeId);
 
     /**
+     * 根据type类型查询字典类型表
+     *
+     * @param dictionaryType 字典类型表主键
+     * @return 字典类型表
+     */
+    String selectDictionaryTypeByDictionaryType(String dictionaryType);
+    /**
     * 查询字典类型表列表
     *
     * @param dictionaryTypeDTO 字典类型表

@@ -28,7 +28,7 @@ public interface DictionaryTypeMapper{
     * @param dictionaryTypeIds 字典类型表主键集合
     * @return 字典类型表
     */
-    List<DictionaryTypeDTO> selectDictionaryTypeByDictionaryTypeId(@Param("dictionaryTypeIds") List<Long> dictionaryTypeIds);
+    List<DictionaryTypeDTO> selectDictionaryTypeByDictionaryTypeIds(@Param("dictionaryTypeIds") List<Long> dictionaryTypeIds);
 
     /**
     * 查询字典类型表列表
@@ -101,4 +101,12 @@ public interface DictionaryTypeMapper{
     * @return 结果
     */
     int batchDictionaryType(@Param("dictionaryTypes")List<DictionaryType> DictionaryTypes);
+
+    /**
+     * 根据type类型查询字典类型表
+     * @param dictionaryType
+     * @return
+     */
+    String selectDictionaryTypeByDictionaryType(@Param("dictionaryType")String dictionaryType);
+
 }
