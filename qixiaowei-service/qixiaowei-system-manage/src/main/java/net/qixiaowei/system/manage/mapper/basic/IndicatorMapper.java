@@ -151,7 +151,7 @@ public interface IndicatorMapper {
      * @param indicatorIds
      * @return
      */
-    List<Long> isExist(@Param("indicatorIds") List<Long> indicatorIds);
+    List<IndicatorDTO> isExist(@Param("indicatorIds") List<Long> indicatorIds);
 
     /**
      * 获取指标最大层级

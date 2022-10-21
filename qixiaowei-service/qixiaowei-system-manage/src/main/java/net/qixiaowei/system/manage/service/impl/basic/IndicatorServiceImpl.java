@@ -5,6 +5,7 @@ import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -128,13 +129,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Integer indicatorValueType = indicatorDTO.getIndicatorValueType();
         Integer examineDirection = indicatorDTO.getExamineDirection();
         Integer choiceFlag = indicatorDTO.getChoiceFlag();
-        if (StringUtils.isEmpty(indicatorCode)) {
-            throw new ServiceException("指标编码不能为空");
-        }
-        IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
-        if (StringUtils.isNotNull(indicatorByCode)) {
-            throw new ServiceException("指标编码重复");
-        }
         if (indicatorValueType != 1 && indicatorValueType != 2) {
             throw new ServiceException("指标值类型输入不正确");
         }
@@ -143,6 +137,13 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         if (examineDirection != 0 && examineDirection != 1) {
             throw new ServiceException("考核方向输入不正确");
+        }
+        if (StringUtils.isEmpty(indicatorCode)) {
+            throw new ServiceException("指标编码不能为空");
+        }
+        IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
+        if (StringUtils.isNotNull(indicatorByCode)) {
+            throw new ServiceException("指标编码重复");
         }
         Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
         String parentAncestors = "";//仅在非一级行业时有用
@@ -199,6 +200,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isNull(indicatorById)) {
             throw new ServiceException("该行业不存在");
         }
+        if (IndicatorCode.contains(indicatorById.getIndicatorCode())) {
+            throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
+        }
         IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             if (!indicatorByCode.getIndicatorId().equals(indicatorId)) {
@@ -221,9 +225,14 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     @Override
     public int logicDeleteIndicatorByIndicatorIds(List<Long> indicatorIds) {
-        List<Long> exist = indicatorMapper.isExist(indicatorIds);
-        if (StringUtils.isEmpty(exist)) {
+        List<IndicatorDTO> indicatorByIds = indicatorMapper.isExist(indicatorIds);
+        if (StringUtils.isEmpty(indicatorByIds)) {
             throw new ServiceException("指标不存在");
+        }
+        for (IndicatorDTO indicatorById : indicatorByIds) {
+            if (IndicatorCode.contains(indicatorById.getIndicatorCode())) {
+                throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
+            }
         }
 //        addSons(indicatorIds);
         // todo 引用校验
