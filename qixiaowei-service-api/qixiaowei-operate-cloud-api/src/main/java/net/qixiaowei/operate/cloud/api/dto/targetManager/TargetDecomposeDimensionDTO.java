@@ -51,5 +51,9 @@ public class TargetDecomposeDimensionDTO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+    /**
+     * 分解维度名称(区域，销售员，部门，产品，省份，行业)
+     */
+    private String decompositionDimensionName;
 }
 

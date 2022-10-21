@@ -74,7 +74,7 @@ public interface IAreaService {
      * @param areaDTO
      * @return 结果
      */
-    int logicDeleteAreaByAreaId(AreaDTO areaDTO);
+    int logicDeleteAreaByAreaDTO(AreaDTO areaDTO);
 
     /**
      * 逻辑批量删除区域表

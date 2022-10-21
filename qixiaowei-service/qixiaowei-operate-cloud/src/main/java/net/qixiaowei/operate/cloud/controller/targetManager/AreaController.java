@@ -1,21 +1,18 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.integration.common.web.controller.BaseController;
+import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -69,6 +66,16 @@ public class AreaController extends BaseController {
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody AreaDTO areaDTO) {
         return toAjax(areaService.updateArea(areaDTO));
+    }
+
+    /**
+     * 逻辑批量删除区域表
+     */
+//    @RequiresPermissions("operate:cloud:area:removes")
+    @Log(title = "批量删除区域表", businessType = BusinessType.DELETE)
+    @PostMapping("/remove")
+    public AjaxResult remove(@Validated(AreaDTO.DeleteAreaDTO.class) @RequestBody AreaDTO areaDTO) {
+        return toAjax(areaService.logicDeleteAreaByAreaDTO(areaDTO));
     }
 
     /**

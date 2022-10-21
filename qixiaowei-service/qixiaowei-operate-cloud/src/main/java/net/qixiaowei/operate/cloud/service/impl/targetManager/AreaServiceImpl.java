@@ -179,7 +179,15 @@ public class AreaServiceImpl implements IAreaService {
      */
     @Transactional
     @Override
-    public int logicDeleteAreaByAreaId(AreaDTO areaDTO) {
+    public int logicDeleteAreaByAreaDTO(AreaDTO areaDTO) {
+        Long areaId = areaDTO.getAreaId();
+        if (StringUtils.isNull(areaId)) {
+            throw new ServiceException("区域ID不能为空");
+        }
+        AreaDTO areaById = areaMapper.selectAreaByAreaId(areaId);
+        if (StringUtils.isNull(areaById)) {
+            throw new ServiceException("当前区域配置不存在");
+        }
         Area area = new Area();
         BeanUtils.copyProperties(areaDTO, area);
         return areaMapper.logicDeleteAreaByAreaId(area, SecurityUtils.getUserId(), DateUtils.getNowDate());
