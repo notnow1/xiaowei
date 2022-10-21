@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.controller.basic;
 
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
@@ -52,9 +53,7 @@ public class IndustryController extends BaseController {
      */
     @GetMapping("/treeList")
     public AjaxResult treeList(IndustryDTO industryDTO) {
-        String industryName = industryDTO.getIndustryName();
-        String industryCode = industryDTO.getIndustryCode();
-        if (StringUtils.isNotEmpty(industryName) || StringUtils.isNotEmpty(industryCode)) {
+        if (!CheckObjectIsNullUtils.isNull(industryDTO)) {
             return AjaxResult.success(industryService.selectIndustryList(industryDTO));
         }
         return AjaxResult.success(industryService.selectIndustryTreeList(industryDTO));

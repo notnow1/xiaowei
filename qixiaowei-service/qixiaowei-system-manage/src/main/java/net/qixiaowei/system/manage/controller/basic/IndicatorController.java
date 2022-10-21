@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.controller.basic;
 
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
@@ -57,6 +58,9 @@ public class IndicatorController extends BaseController {
 //    @RequiresPermissions("system:manage:indicator:list")
     @GetMapping("/treeList")
     public AjaxResult treeList(IndicatorDTO indicatorDTO) {
+        if (!CheckObjectIsNullUtils.isNull(indicatorDTO)) {
+            return AjaxResult.success(indicatorService.selectIndicatorList(indicatorDTO));
+        }
         return AjaxResult.success(indicatorService.selectTreeList(indicatorDTO));
     }
 
