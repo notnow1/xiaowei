@@ -58,9 +58,9 @@ public class TargetDecomposeDimensionController extends BaseController {
      */
 //    @RequiresPermissions("operate:cloud:targetDecomposeDimension:remove")
     @Log(title = "删除目标分解维度配置", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody TargetDecomposeDimensionDTO targetDecomposeDimensionDTO) {
-        return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimensionDTO));
+    @PostMapping("/removes")
+    public AjaxResult removes(List<Long> targetDecomposeDimensionIds) {
+        return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(targetDecomposeDimensionIds));
     }
 
 
