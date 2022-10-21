@@ -112,6 +112,11 @@ public interface TargetDecomposeDimensionMapper {
      */
     int getMaxTargetDimensionConfigSort();
 
-
-    int isExist(@Param("targetDecomposeDimensionIds")List<Long> targetDecomposeDimensionIds);
+    /**
+     * 判断该分解为度是否存在
+     *
+     * @param targetDecomposeDimensionIds
+     * @return
+     */
+    List<TargetDecomposeDimensionDTO> isExist(@Param("targetDecomposeDimensionIds") List<Long> targetDecomposeDimensionIds);
 }

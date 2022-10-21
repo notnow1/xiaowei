@@ -1,7 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
-import com.alibaba.nacos.shaded.com.google.common.collect.Maps;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -16,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -70,7 +72,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
             String decompositionDimension = decomposeDimensionDTO.getDecompositionDimension();
             if (StringUtils.isNotEmpty(decompositionDimension)) {
                 for (String dimension : decompositionDimension.split(",")) {
-                    targetDecomposeDimensionName.append(TARGET_DECOMPOSEDIMENSION_MAP.get(dimension)).append(",");
+                    targetDecomposeDimensionName.append(TARGET_DECOMPOSEDIMENSION_MAP.get(dimension)).append("+");
                 }
                 String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
                 decomposeDimensionDTO.setDecompositionDimensionName(substring);
@@ -145,9 +147,12 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     @Transactional
     @Override
     public int logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(List<Long> targetDecomposeDimensionIds) {
-        int exist = targetDecomposeDimensionMapper.isExist(targetDecomposeDimensionIds);
-        if (exist == 0) {
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTO = targetDecomposeDimensionMapper.isExist(targetDecomposeDimensionIds);
+        if (StringUtils.isNull(targetDecomposeDimensionDTO)) {
             throw new ServiceException("目标分解维度配置不存在");
+        }
+        if (isQuote(targetDecomposeDimensionIds)) {
+            throw new ServiceException("该分解维度已被引用");
         }
         return targetDecomposeDimensionMapper.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(targetDecomposeDimensionIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
@@ -178,7 +183,12 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
         if (StringUtils.isNull(targetDecomposeDimensionId)) {
             throw new ServiceException("分解维度id为空");
         }
-        if (isQuote(targetDecomposeDimensionId)) {
+        List<Long> targetDecomposeDimensionIds = Lists.newArrayList(targetDecomposeDimensionId);
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionByIds = targetDecomposeDimensionMapper.isExist(targetDecomposeDimensionIds);
+        if (StringUtils.isNull(targetDecomposeDimensionByIds)) {
+            throw new ServiceException("目标分解维度配置不存在");
+        }
+        if (isQuote(targetDecomposeDimensionIds)) {
             throw new ServiceException("该分解维度已被引用");
         }
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
@@ -259,8 +269,8 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
             targetDecomposeDimensionIds.add(targetDecomposeDimensionDTO.getTargetDecomposeDimensionId());
             i++;
         }
-        int exist = targetDecomposeDimensionMapper.isExist(targetDecomposeDimensionIds);
-        if (exist < targetDecomposeDimensionIds.size()) {//查询到的数量小于ids的数量
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionByIds = targetDecomposeDimensionMapper.isExist(targetDecomposeDimensionIds);
+        if (targetDecomposeDimensionByIds.size() < targetDecomposeDimensionIds.size()) {//查询到的数量小于ids的数量
             throw new ServiceException("数据已经不存在");
         }
         List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList<>();
@@ -292,10 +302,10 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
     /**
      * 分解维度引用校验
      *
-     * @param targetDecomposeDimensionId
+     * @param targetDecomposeDimensionIds
      * @return
      */
-    private boolean isQuote(Long targetDecomposeDimensionId) {
+    private boolean isQuote(List<Long> targetDecomposeDimensionIds) {
         //todo 引用校验
         return false;
     }

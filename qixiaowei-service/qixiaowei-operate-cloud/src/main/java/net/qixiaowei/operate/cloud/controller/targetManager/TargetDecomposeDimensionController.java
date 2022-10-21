@@ -8,6 +8,7 @@ import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeDimensionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,6 +59,16 @@ public class TargetDecomposeDimensionController extends BaseController {
      */
 //    @RequiresPermissions("operate:cloud:targetDecomposeDimension:remove")
     @Log(title = "删除目标分解维度配置", businessType = BusinessType.DELETE)
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody TargetDecomposeDimensionDTO targetDecomposeDimensionDto) {
+        return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionId(targetDecomposeDimensionDto));
+    }
+
+    /**
+     * 逻辑批量删除目标分解维度配置
+     */
+//    @RequiresPermissions("operate:cloud:targetDecomposeDimension:remove")
+    @Log(title = "批量删除目标分解维度配置", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> targetDecomposeDimensionIds) {
         return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(targetDecomposeDimensionIds));
