@@ -10,6 +10,7 @@ import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimen
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDimensionMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeDimensionService;
+import org.apache.ibatis.binding.BindingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,9 +83,14 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
         // todo 分解维度是否正确校验
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
         BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
-        int maxSort = targetDecomposeDimensionMapper.getMaxTargetDimensionConfigSort() + 1;
+        int maxTargetDimensionConfigSort;
+        try {
+            maxTargetDimensionConfigSort = targetDecomposeDimensionMapper.getMaxTargetDimensionConfigSort() + 1;
+        } catch (BindingException e) {
+            maxTargetDimensionConfigSort = 1;
+        }
+        targetDecomposeDimension.setSort(maxTargetDimensionConfigSort);
         targetDecomposeDimension.setDeleteFlag(0);
-        targetDecomposeDimension.setSort(maxSort);
         targetDecomposeDimension.setCreateTime(DateUtils.getNowDate());
         targetDecomposeDimension.setUpdateTime(DateUtils.getNowDate());
         targetDecomposeDimension.setCreateBy(SecurityUtils.getUserId());
@@ -221,7 +227,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
         Long targetDecomposeDimensionId;
 
         List<Long> targetDecomposeDimensionIds = new ArrayList<>();
-        int i = 0;
+        int i = 1;
         for (TargetDecomposeDimensionDTO targetDecomposeDimensionDTO : targetDecomposeDimensionDtos) {
             targetDecomposeDimensionId = targetDecomposeDimensionDTO.getTargetDecomposeDimensionId();
             targetDecomposeDimensionDTO.setSort(i);
