@@ -391,23 +391,34 @@ public class ProductServiceImpl implements IProductService {
             }
         }
 
-
-
         //产品参数表
-        List<ProductSpecificationParamDTO> productSpecificationParamDTOList = productDTO.getProductSpecificationParamDTOList();
+        List<ProductSpecificationParamDTO> productSpecificationParamDTOList = new ArrayList<>();
         //修改产品参数表
-        List<ProductSpecificationParam> productSpecificationParamList = this.updateProductSpecificationParam(productSpecificationParamDTOList, productDTO);
+        List<ProductSpecificationParam> productSpecificationParamList = new ArrayList<>();
         //新增产品数据表
-        List<ProductDataDTO> productDataDTOList = productDTO.getProductDataDTOList();
-        //修改产品规格表数据
-        this.updateProductSpecification(productDataDTOList, productDTO);
-        //修改产品数据表数据
-        this.updateProductSpecificationData(productDataDTOList,productSpecificationParamList, productDTO);
+        List<ProductDataDTO> productDataDTOList = new ArrayList<>();
+        if(!CheckObjectIsNullUtils.isNull(productDTO.getProductSpecificationParamDTOList())){
+             productSpecificationParamDTOList = productDTO.getProductSpecificationParamDTOList();
+            //修改产品参数表
+            productSpecificationParamList = this.updateProductSpecificationParam(productSpecificationParamDTOList, productDTO);
+        }
 
-        //修改产品文件表
-        List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
-        //修改产品文件表数据
-        this.updateProductFile(productFileDTOList, productDTO);
+        if(!CheckObjectIsNullUtils.isNull(productDTO.getProductDataDTOList())){
+            productDataDTOList = productDTO.getProductDataDTOList();
+            //修改产品规格表数据
+            this.updateProductSpecification(productDataDTOList, productDTO);
+            //修改产品数据表数据
+            this.updateProductSpecificationData(productDataDTOList,productSpecificationParamList, productDTO);
+        }
+
+        if(!CheckObjectIsNullUtils.isNull(productDTO.getProductFileDTOList())){
+            //修改产品文件表
+            List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
+            //修改产品文件表数据
+            this.updateProductFile(productFileDTOList, productDTO);
+        }
+
+
         //修改产品表
         product.setUpdateBy(SecurityUtils.getUserId());
         product.setUpdateTime(DateUtils.getNowDate());
