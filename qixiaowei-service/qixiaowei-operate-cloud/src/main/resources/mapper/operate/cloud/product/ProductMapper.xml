@@ -34,9 +34,9 @@
                                       da.dictionary_data_id = p.product_category
                                   and da.default_flag = 0
         WHERE
-                product_id =
+                p.product_id =
                 #{productId}
-          and delete_flag = 0
+          and p.delete_flag = 0
     </select>
 
     <!--    查询产品表列表-->
