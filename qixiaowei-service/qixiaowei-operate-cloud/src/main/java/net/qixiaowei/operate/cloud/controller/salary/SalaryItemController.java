@@ -135,6 +135,6 @@ public class SalaryItemController extends BaseController {
         String fileName = URLEncoder.encode("工资条配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), SalaryItemExcel.class).sheet("工资条配置22").doWrite(salaryItemExcels);
+        EasyExcel.write(response.getOutputStream(), SalaryItemExcel.class).sheet("工资条配置").doWrite(salaryItemExcels);
     }
 }

@@ -203,7 +203,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
     @Transactional
     @Override
     public int deletePerformanceRankByPerformanceRankIds(List<PerformanceRankDTO> performanceRankDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (PerformanceRankDTO performanceRankDTO : performanceRankDtos) {
             stringList.add(performanceRankDTO.getPerformanceRankId());
         }

@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.enums.salary.ThirdLevelSalaryCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -67,6 +68,13 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         if (StringUtils.isEmpty(thirdLevelItem)) {
             throw new ServiceException("三级工资项目不可为空");
         }
+        if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
+            throw new ServiceException("新增三级项目不能为预置三级项目");
+        }
+        SalaryItemDTO salaryItemByThirdLevelItem = salaryItemMapper.getSalaryItemByThirdLevelItem(thirdLevelItem);
+        if (StringUtils.isNotNull(salaryItemByThirdLevelItem)) {
+            throw new ServiceException("三级项目名称不能重复");
+        }
         SalaryItem salaryItem = new SalaryItem();
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
         salaryItem.setCreateBy(SecurityUtils.getUserId());
@@ -94,6 +102,15 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         if (StringUtils.isEmpty(thirdLevelItem)) {
             throw new ServiceException("三级工资项目不可为空！");
         }
+        if (ThirdLevelSalaryCode.containThirdItems(thirdLevelItem)) {
+            throw new ServiceException("新增三级项目不能为预置三级项目");
+        }
+        SalaryItemDTO salaryItemByThirdLevelItem = salaryItemMapper.getSalaryItemByThirdLevelItem(thirdLevelItem);
+        if (StringUtils.isNotNull(salaryItemByThirdLevelItem)) {
+            if (!salaryItemByThirdLevelItem.getSalaryItemId().equals(salaryItemId)) {
+                throw new ServiceException("三级项目名称不能重复");
+            }
+        }
         SalaryItem salaryItem = new SalaryItem();
         salaryItem.setSalaryItemId(salaryItemId);
         salaryItem.setThirdLevelItem(thirdLevelItem);
@@ -114,6 +131,12 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.getSalaryItemByIds(salaryItemIds);
         if (StringUtils.isEmpty(salaryItemDTOS)) {
             throw new ServiceException("该工资条配置已不存在");
+        }
+        for (Long salaryItemId : salaryItemIds) {
+            String thirdLevelItem = ThirdLevelSalaryCode.containIds(salaryItemId);
+            if (StringUtils.isNotEmpty(thirdLevelItem)) {
+                throw new ServiceException(thirdLevelItem + "为预置配置，不可以删除");
+            }
         }
         //todo 引用校验
         if (isQuote(salaryItemIds)) {
@@ -241,6 +264,15 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Transactional
     @Override
     public int logicDeleteSalaryItemBySalaryItemId(SalaryItemDTO salaryItemDTO) {
+        Long salaryItemId = salaryItemDTO.getSalaryItemId();
+
+        if (StringUtils.isNull(salaryItemId)) {
+            throw new ServiceException("工资条ID不能为空");
+        }
+        String thirdLevelItem = ThirdLevelSalaryCode.containIds(salaryItemId);
+        if (StringUtils.isNotEmpty(thirdLevelItem)) {
+            throw new ServiceException(thirdLevelItem + "为预置配置，不可以删除");
+        }
         SalaryItem salaryItem = new SalaryItem();
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
         return salaryItemMapper.logicDeleteSalaryItemBySalaryItemId(salaryItem, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -269,7 +301,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Transactional
     @Override
     public int deleteSalaryItemBySalaryItemIds(List<SalaryItemDTO> salaryItemDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (SalaryItemDTO salaryItemDTO : salaryItemDtos) {
             stringList.add(salaryItemDTO.getSalaryItemId());
         }
@@ -283,7 +315,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      */
     @Transactional
     public int insertSalaryItems(List<SalaryItemDTO> salaryItemDtos) {
-        List<SalaryItem> salaryItemList = new ArrayList();
+        List<SalaryItem> salaryItemList = new ArrayList<>();
 
         for (SalaryItemDTO salaryItemDTO : salaryItemDtos) {
             SalaryItem salaryItem = new SalaryItem();
@@ -305,7 +337,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      */
     @Transactional
     public int updateSalaryItems(List<SalaryItemDTO> salaryItemDtos) {
-        List<SalaryItem> salaryItemList = new ArrayList();
+        List<SalaryItem> salaryItemList = new ArrayList<>();
         for (SalaryItemDTO salaryItemDTO : salaryItemDtos) {
             SalaryItem salaryItem = new SalaryItem();
             BeanUtils.copyProperties(salaryItemDTO, salaryItem);

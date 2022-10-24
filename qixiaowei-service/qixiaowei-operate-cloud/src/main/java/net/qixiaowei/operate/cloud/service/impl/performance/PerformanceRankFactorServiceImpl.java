@@ -168,7 +168,7 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
     @Transactional
     @Override
     public int deletePerformanceRankFactorByPerformanceRankFactorIds(List<PerformanceRankFactorDTO> performanceRankFactorDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDtos) {
             stringList.add(performanceRankFactorDTO.getPerformanceRankFactorId());
         }

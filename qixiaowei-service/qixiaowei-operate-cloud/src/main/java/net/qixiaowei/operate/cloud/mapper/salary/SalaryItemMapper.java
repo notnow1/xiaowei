@@ -105,4 +105,12 @@ public interface SalaryItemMapper {
      */
     List<SalaryItemDTO> getSalaryItemByIds(@Param("salaryItemIds") List<Long> salaryItemIds);
 
+    /**
+     * 根据id获取数据
+     *
+     * @param thirdLevelItem
+     * @return
+     */
+    SalaryItemDTO getSalaryItemByThirdLevelItem(@Param("thirdLevelItem") String thirdLevelItem);
+
 }
