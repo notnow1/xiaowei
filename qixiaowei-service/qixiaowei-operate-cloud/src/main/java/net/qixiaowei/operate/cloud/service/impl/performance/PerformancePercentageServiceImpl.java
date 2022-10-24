@@ -159,7 +159,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
     @Transactional
     public int insertPerformancePercentage(PerformancePercentageDTO performancePercentageDTO) {
         String performancePercentageName = performancePercentageDTO.getPerformancePercentageName();
-        List<Map<String, BigDecimal>> informationList = performancePercentageDTO.getInformationList();
+        List<Map<String, String>> receiveList = performancePercentageDTO.getReceiveList();
         int count = performancePercentageMapper.isUnique(performancePercentageName);
         if (count > 0) {
             throw new ServiceException("该绩效比例名称重复");
@@ -173,8 +173,8 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         performancePercentage.setUpdateBy(SecurityUtils.getUserId());
         performancePercentage.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         int i = performancePercentageMapper.insertPerformancePercentage(performancePercentage);
-        if (StringUtils.isNotEmpty(informationList)) {
-            return performancePercentageDataService.insertPerformancePercentageDatas(informationList, performancePercentage);
+        if (StringUtils.isNotEmpty(receiveList)) {
+            return performancePercentageDataService.insertPerformancePercentageDatas(receiveList, performancePercentage);
         }
         return i;
     }
@@ -189,7 +189,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
     @Transactional
     public int updatePerformancePercentage(PerformancePercentageDTO performancePercentageDTO) {
         String performancePercentageName = performancePercentageDTO.getPerformancePercentageName();
-        List<Map<String, BigDecimal>> informationList = performancePercentageDTO.getInformationList();
+        List<Map<String, String>> receiveList = performancePercentageDTO.getReceiveList();
         int count = performancePercentageMapper.isUnique(performancePercentageName);
         if (count > 0) {
             throw new ServiceException("该绩效比例名称重复");
@@ -200,7 +200,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         performancePercentage.setUpdateTime(DateUtils.getNowDate());
         performancePercentage.setUpdateBy(SecurityUtils.getUserId());
         performancePercentageMapper.updatePerformancePercentage(performancePercentage);
-        return performancePercentageDataService.updatePerformancePercentageDatas(informationList, performancePercentage);
+        return performancePercentageDataService.updatePerformancePercentageDataS(receiveList, performancePercentage);
     }
 
     /**

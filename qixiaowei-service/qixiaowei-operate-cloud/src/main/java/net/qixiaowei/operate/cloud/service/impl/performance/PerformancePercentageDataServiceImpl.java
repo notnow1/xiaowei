@@ -98,13 +98,13 @@ public class PerformancePercentageDataServiceImpl implements IPerformancePercent
     /**
      * 逻辑批量删除绩效比例数据表
      *
-     * @param performancePercentageDataDtos 需要删除的绩效比例数据表主键
+     * @param performancePercentageDataDtoS 需要删除的绩效比例数据表主键
      * @return 结果
      */
     @Override
     @Transactional
-    public int logicDeletePerformancePercentageDataByPerformancePercentageDataIds(List<Long> performancePercentageDataDtos) {
-        return performancePercentageDataMapper.logicDeletePerformancePercentageDataByPerformancePercentageDataIds(performancePercentageDataDtos, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    public int logicDeletePerformancePercentageDataByPerformancePercentageDataIds(List<Long> performancePercentageDataDtoS) {
+        return performancePercentageDataMapper.logicDeletePerformancePercentageDataByPerformancePercentageDataIds(performancePercentageDataDtoS, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**
@@ -190,40 +190,44 @@ public class PerformancePercentageDataServiceImpl implements IPerformancePercent
     /**
      * 批量新增绩效比例数据表信息
      *
-     * @param informationList 绩效比例数据表对象
+     * @param receiveList           绩效比例数据表对象
+     * @param performancePercentage 绩效等级数据
      */
     @Override
     @Transactional
-    public int insertPerformancePercentageDatas(List<Map<String, BigDecimal>> informationList, PerformancePercentage performancePercentage) {
+    public int insertPerformancePercentageDatas(List<Map<String, String>> receiveList, PerformancePercentage performancePercentage) {
+
         Long performancePercentageId = performancePercentage.getPerformancePercentageId();
         List<Long> orgIds = new ArrayList<>();
-        for (Map<String, BigDecimal> information : informationList) {
-            for (String personId : information.keySet()) {
+        for (Map<String, String> receive : receiveList) {
+            for (String personId : receive.keySet()) {
                 if (personId.equals("-1")) {
-                    orgIds.add(information.get("-1").longValue());
-                    information.remove("-1");
+                    orgIds.add(Long.valueOf(receive.get("-1")));
+                    receive.remove("-1");
                     break;
                 }
             }
+            receive.remove("performanceRankName");
+            receive.remove("rowSum");
         }
         List<PerformancePercentageData> performancePercentageDataList = new ArrayList<>();
-        for (int i = 0; i < informationList.size(); i++) {
-            Map<String, BigDecimal> information = informationList.get(i);
-            for (String personId : information.keySet()) {
-                BigDecimal value = information.get(personId);//数值
+        for (int i = 0; i < receiveList.size(); i++) {
+            Map<String, String> receive = receiveList.get(i);
+            for (String personId : receive.keySet()) {
+                String value = receive.get(personId);//数值
                 PerformancePercentageData performancePercentageData = new PerformancePercentageData();
-                performancePercentageData.setValue(value);
+                performancePercentageData.setValue(new BigDecimal(value));
                 performancePercentageData.setOrgRankFactorId(orgIds.get(i));
                 try {
                     performancePercentageData.setPersonRankFactorId(Long.valueOf(personId));
                 } catch (Exception e) {
-                    throw new ServiceException("informationList中key存在字符串");
+                    throw new ServiceException("请检查receiveList的数据类型");
                 }
                 performancePercentageData.setPerformancePercentageId(performancePercentageId);
                 performancePercentageData.setCreateBy(SecurityUtils.getUserId());
+                performancePercentageData.setUpdateBy(SecurityUtils.getUserId());
                 performancePercentageData.setCreateTime(DateUtils.getNowDate());
                 performancePercentageData.setUpdateTime(DateUtils.getNowDate());
-                performancePercentageData.setUpdateBy(SecurityUtils.getUserId());
                 performancePercentageData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                 performancePercentageDataList.add(performancePercentageData);
             }
@@ -234,30 +238,32 @@ public class PerformancePercentageDataServiceImpl implements IPerformancePercent
     /**
      * 批量修改绩效比例数据表信息
      *
-     * @param informationList
+     * @param receiveList
      * @param performancePercentage
      * @return
      */
     @Override
     @Transactional
-    public int updatePerformancePercentageDatas(List<Map<String, BigDecimal>> informationList, PerformancePercentage performancePercentage) {
+        public int updatePerformancePercentageDataS(List<Map<String, String>> receiveList, PerformancePercentage performancePercentage) {
         Long performancePercentageId = performancePercentage.getPerformancePercentageId();
         List<PerformancePercentageDataDTO> performancePercentageDataDTOS =
                 performancePercentageDataMapper.selectPerformancePercentageDataByPerformancePercentageId(performancePercentageId);
         List<PerformancePercentageData> performancePercentageDataList = new ArrayList<>();
         List<Long> orgIds = new ArrayList<>();
-        for (Map<String, BigDecimal> information : informationList) {
-            for (String personId : information.keySet()) {
+        for (Map<String, String> receive : receiveList) {
+            for (String personId : receive.keySet()) {
                 if (personId.equals("-1")) {
-                    orgIds.add(information.get("-1").longValue());
-                    information.remove("-1");
+                    orgIds.add(Long.valueOf(receive.get("-1")));
+                    receive.remove("-1");
                     break;
                 }
             }
+            receive.remove("performanceRankName");
+            receive.remove("rowSum");
         }
-        for (int i = 0; i < informationList.size(); i++) {
-            Map<String, BigDecimal> information = informationList.get(i);
-            for (String personId : information.keySet()) {
+        for (int i = 0; i < receiveList.size(); i++) {
+            Map<String, String> receive = receiveList.get(i);
+            for (String personId : receive.keySet()) {
                 for (PerformancePercentageDataDTO performancePercentageDataDTO : performancePercentageDataDTOS) {
                     if (performancePercentageDataDTO.getOrgRankFactorId().equals(orgIds.get(i))
                             && performancePercentageDataDTO.getPersonRankFactorId().equals(Long.valueOf(personId))) {
@@ -265,7 +271,7 @@ public class PerformancePercentageDataServiceImpl implements IPerformancePercent
                         BeanUtils.copyProperties(performancePercentageDataDTO, performancePercentageData);
                         try {
                             performancePercentageData.setPersonRankFactorId(Long.valueOf(personId));
-                            performancePercentageData.setValue(information.get(personId));
+                            performancePercentageData.setValue(new BigDecimal(receive.get(personId)));
                             performancePercentageData.setOrgRankFactorId(orgIds.get(i));
                         } catch (Exception e) {
                             break;

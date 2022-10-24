@@ -110,5 +110,10 @@ public class PerformancePercentageDTO {
      * 绩效比例信息
      */
     private List<Map<String, BigDecimal>> informationList;
+
+    /**
+     * 接收比例信息
+     */
+    private List<Map<String, String>> receiveList;
 }
 

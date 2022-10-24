@@ -2,42 +2,33 @@ package net.qixiaowei.integration.common.enums.salary;
 
 public enum ThirdLevelSalaryCode {
 
-    BASIC(1L, "基本工资"),
-    STRATEGIC(2L, "战略奖"),
-    PROJECT(3L, "项目奖"),
-    PERFORMANCE(4L, "绩效奖金");
+    BASIC("基本工资", "基本工资"),
+    STRATEGIC("战略奖", "战略奖"),
+    PROJECT("项目奖", "项目奖"),
+    PERFORMANCE("绩效奖金", "绩效奖金");
 
-    private final Long salaryId;
-    private final String thirdLevelItem;
+    private final String code;
+    private final String info;
 
-    ThirdLevelSalaryCode(Long salaryId, String thirdLevelItem) {
-        this.thirdLevelItem = thirdLevelItem;
-        this.salaryId = salaryId;
+    ThirdLevelSalaryCode(String code, String info) {
+        this.code = code;
+        this.info = info;
     }
 
-    public String getThirdLevelItem() {
-        return thirdLevelItem;
+    public String getCode() {
+        return code;
     }
 
-    public Long getSalaryId() {
-        return salaryId;
+    public String getInfo() {
+        return info;
     }
 
     public static Boolean containThirdItems(String thirdLevelItem) {
         for (ThirdLevelSalaryCode salaryCode : ThirdLevelSalaryCode.values()) {
-            if (salaryCode.getThirdLevelItem().equals(thirdLevelItem)) {
+            if (salaryCode.getInfo().equals(thirdLevelItem)) {
                 return true;
             }
         }
         return false;
-    }
-
-    public static String containIds(Long salaryId) {
-        for (ThirdLevelSalaryCode salaryCode : ThirdLevelSalaryCode.values()) {
-            if (salaryCode.getSalaryId().equals(salaryId)) {
-                return salaryCode.getThirdLevelItem();
-            }
-        }
-        return null;
     }
 }

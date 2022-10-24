@@ -50,27 +50,27 @@ public interface IPerformancePercentageDataService {
     /**
      * 批量修改绩效比例数据表
      *
-     * @param informationList
+     * @param receiveList
      * @param performancePercentage
      * @return
      */
-    int updatePerformancePercentageDatas(List<Map<String, BigDecimal>> informationList, PerformancePercentage performancePercentage);
+    int updatePerformancePercentageDataS(List<Map<String, String>> receiveList, PerformancePercentage performancePercentage);
 
     /**
      * 批量新增绩效比例数据表
      *
-     * @param informationList 绩效比例数据表
+     * @param receiveList 绩效比例数据表
      * @return 结果
      */
-    int insertPerformancePercentageDatas(List<Map<String, BigDecimal>> informationList, PerformancePercentage performancePercentage);
+    int insertPerformancePercentageDatas(List<Map<String, String>> receiveList, PerformancePercentage performancePercentage);
 
     /**
      * 逻辑批量删除绩效比例数据表
      *
-     * @param PerformancePercentageDataDtos 需要删除的绩效比例数据表集合
+     * @param performancePercentageDataDtoS 需要删除的绩效比例数据表集合
      * @return 结果
      */
-    int logicDeletePerformancePercentageDataByPerformancePercentageDataIds(List<Long> PerformancePercentageDataDtos);
+    int logicDeletePerformancePercentageDataByPerformancePercentageDataIds(List<Long> performancePercentageDataDtoS);
 
     /**
      * 逻辑删除绩效比例数据表信息

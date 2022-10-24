@@ -44,6 +44,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
 
     /**
      * 查询工资项列表
+     * todo 正在做
      *
      * @param salaryItemDTO 工资项
      * @return 工资项
@@ -52,7 +53,43 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     public List<SalaryItemDTO> selectSalaryItemList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
-        return salaryItemMapper.selectSalaryItemList(salaryItem);
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
+        for (SalaryItemDTO itemDTO : salaryItemDTOS) {
+            Integer firstLevelItem = itemDTO.getFirstLevelItem();
+            Integer secondLevelItem = itemDTO.getSecondLevelItem();
+//            switch (firstLevelItem) {
+//                case 1:
+//                    salaryItemExcel.setFirstLevelItem("总工资包");
+//                    break;
+//                case 2:
+//                    salaryItemExcel.setFirstLevelItem("总奖金包");
+//                    break;
+//                case 3:
+//                    salaryItemExcel.setFirstLevelItem("总扣减项");
+//                    break;
+//            }
+//            switch (dto.getSecondLevelItem()) {
+//                case 1:
+//                    salaryItemExcel.setSecondLevelItem("工资");
+//                    break;
+//                case 2:
+//                    salaryItemExcel.setSecondLevelItem("津贴");
+//                    break;
+//                case 3:
+//                    salaryItemExcel.setSecondLevelItem("福利");
+//                    break;
+//                case 4:
+//                    salaryItemExcel.setSecondLevelItem("奖金");
+//                    break;
+//                case 5:
+//                    salaryItemExcel.setSecondLevelItem("代扣代缴");
+//                    break;
+//                case 6:
+//                    salaryItemExcel.setSecondLevelItem("其他扣款");
+//                    break;
+//            }
+        }
+        return salaryItemDTOS;
     }
 
     /**
@@ -129,13 +166,12 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     public int logicDeleteSalaryItemBySalaryItemIds(List<Long> salaryItemIds) {
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.getSalaryItemByIds(salaryItemIds);
-        if (StringUtils.isEmpty(salaryItemDTOS)) {
+        if (StringUtils.isEmpty(salaryItemDTOS) && salaryItemDTOS.size() < salaryItemIds.size()) {
             throw new ServiceException("该工资条配置已不存在");
         }
-        for (Long salaryItemId : salaryItemIds) {
-            String thirdLevelItem = ThirdLevelSalaryCode.containIds(salaryItemId);
-            if (StringUtils.isNotEmpty(thirdLevelItem)) {
-                throw new ServiceException(thirdLevelItem + "为预置配置，不可以删除");
+        for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+            if (ThirdLevelSalaryCode.containThirdItems(salaryItemDTO.getThirdLevelItem())) {
+                throw new ServiceException(salaryItemDTO.getThirdLevelItem() + "为预置配置，不可以删除");
             }
         }
         //todo 引用校验
@@ -265,13 +301,13 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     public int logicDeleteSalaryItemBySalaryItemId(SalaryItemDTO salaryItemDTO) {
         Long salaryItemId = salaryItemDTO.getSalaryItemId();
+        SalaryItemDTO salaryItemBySalaryItemId = salaryItemMapper.selectSalaryItemBySalaryItemId(salaryItemId);
 
         if (StringUtils.isNull(salaryItemId)) {
             throw new ServiceException("工资条ID不能为空");
         }
-        String thirdLevelItem = ThirdLevelSalaryCode.containIds(salaryItemId);
-        if (StringUtils.isNotEmpty(thirdLevelItem)) {
-            throw new ServiceException(thirdLevelItem + "为预置配置，不可以删除");
+        if (ThirdLevelSalaryCode.containThirdItems(salaryItemBySalaryItemId.getThirdLevelItem())) {
+            throw new ServiceException(salaryItemBySalaryItemId.getThirdLevelItem() + "为预置配置，不可以删除");
         }
         SalaryItem salaryItem = new SalaryItem();
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);

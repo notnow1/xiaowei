@@ -79,7 +79,6 @@ public class PerformancePercentageController extends BaseController {
         return toAjax(performancePercentageService.insertPerformancePercentage(performancePercentageDTO));
     }
 
-
     /**
      * 修改绩效比例表
      */
