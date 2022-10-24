@@ -375,7 +375,12 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     @Override
     public int updateProduct(ProductDTO productDTO) {
-        ProductDTO productDTO1 = productMapper.selectProductByProductId(productDTO.getParentProductId());
+        ProductDTO productDTO1 = null;
+        try {
+            productDTO1 = productMapper.selectProductByProductId(productDTO.getParentProductId());
+        } catch (Exception e) {
+            throw new ServiceException("产品数据不存在！");
+        }
         Product product = new Product();
         if (null == productDTO.getParentProductId()){
             BeanUtils.copyProperties(productDTO, product);
@@ -397,13 +402,13 @@ public class ProductServiceImpl implements IProductService {
         List<ProductSpecificationParam> productSpecificationParamList = new ArrayList<>();
         //新增产品数据表
         List<ProductDataDTO> productDataDTOList = new ArrayList<>();
-        if(!CheckObjectIsNullUtils.isNull(productDTO.getProductSpecificationParamDTOList())){
+        if(StringUtils.isNotEmpty(productDTO.getProductSpecificationParamDTOList())){
              productSpecificationParamDTOList = productDTO.getProductSpecificationParamDTOList();
             //修改产品参数表
             productSpecificationParamList = this.updateProductSpecificationParam(productSpecificationParamDTOList, productDTO);
         }
 
-        if(!CheckObjectIsNullUtils.isNull(productDTO.getProductDataDTOList())){
+        if(StringUtils.isNotEmpty(productDTO.getProductDataDTOList())){
             productDataDTOList = productDTO.getProductDataDTOList();
             //修改产品规格表数据
             this.updateProductSpecification(productDataDTOList, productDTO);
@@ -411,7 +416,7 @@ public class ProductServiceImpl implements IProductService {
             this.updateProductSpecificationData(productDataDTOList,productSpecificationParamList, productDTO);
         }
 
-        if(!CheckObjectIsNullUtils.isNull(productDTO.getProductFileDTOList())){
+        if(StringUtils.isNotEmpty(productDTO.getProductFileDTOList())){
             //修改产品文件表
             List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
             //修改产品文件表数据
