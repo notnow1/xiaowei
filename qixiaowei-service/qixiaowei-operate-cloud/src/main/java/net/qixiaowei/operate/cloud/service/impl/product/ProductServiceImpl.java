@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.product;
 
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
@@ -357,7 +358,7 @@ public class ProductServiceImpl implements IProductService {
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
 
-        product.setParentProductId(0L);
+        product.setParentProductId(Constants.TOP_PARENT_ID);
         product.setCreateBy(SecurityUtils.getUserId());
         product.setCreateTime(DateUtils.getNowDate());
         product.setUpdateTime(DateUtils.getNowDate());
@@ -375,16 +376,14 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     @Override
     public int updateProduct(ProductDTO productDTO) {
-        ProductDTO productDTO1 = null;
-        try {
-            productDTO1 = productMapper.selectProductByProductId(productDTO.getParentProductId());
-        } catch (Exception e) {
-            throw new ServiceException("产品数据不存在！");
+        ProductDTO  productDTO1 = productMapper.selectProductByProductId(productDTO.getProductId());
+        if (StringUtils.isNull(productDTO1)){
+            throw new ServiceException("产品不存在！");
         }
         Product product = new Product();
         if (null == productDTO.getParentProductId()){
             BeanUtils.copyProperties(productDTO, product);
-            productDTO.setParentProductId(0L);
+            productDTO.setParentProductId(Constants.TOP_PARENT_ID);
         }else {
             BeanUtils.copyProperties(productDTO, product);
             if (productDTO1.getAncestors() == null) {
@@ -411,9 +410,9 @@ public class ProductServiceImpl implements IProductService {
         if(StringUtils.isNotEmpty(productDTO.getProductDataDTOList())){
             productDataDTOList = productDTO.getProductDataDTOList();
             //修改产品规格表数据
-            this.updateProductSpecification(productDataDTOList, productDTO);
+            List<ProductDataDTO> productDataDTOS = this.updateProductSpecification(productDataDTOList, productDTO);
             //修改产品数据表数据
-            this.updateProductSpecificationData(productDataDTOList,productSpecificationParamList, productDTO);
+            this.updateProductSpecificationData(productDataDTOS,productSpecificationParamList, productDTO);
         }
 
         if(StringUtils.isNotEmpty(productDTO.getProductFileDTOList())){
@@ -503,26 +502,77 @@ public class ProductServiceImpl implements IProductService {
      * @param productDataDTOList
      * @param productDTO
      */
-    private void updateProductSpecification(List<ProductDataDTO> productDataDTOList, ProductDTO productDTO) {
-        //产品规格表
-        List<ProductSpecification> productSpecificationList = new ArrayList<>();
+    private List<ProductDataDTO> updateProductSpecification(List<ProductDataDTO> productDataDTOList, ProductDTO productDTO) {
+        //新增产品规格表
+        List<ProductSpecification> productSpecificationAddList = new ArrayList<>();
+        //修改产品规格表
+        List<ProductSpecification> productSpecificationUpdateList = new ArrayList<>();
+
+        List<ProductSpecificationDTO> productSpecificationDTOS = productSpecificationMapper.selectProductId(productDTO.getProductId());
+        //sterm流求差集
+        List<Long> collect = productSpecificationDTOS.stream().filter(a ->
+                !productDataDTOList.stream().map(ProductDataDTO::getProductSpecificationId).collect(Collectors.toList()).contains(a.getProductSpecificationId())
+        ).collect(Collectors.toList()).stream().map(ProductSpecificationDTO::getProductSpecificationId).collect(Collectors.toList());
+
+        if (StringUtils.isNotEmpty(collect)){
+            try {
+                productSpecificationMapper.logicDeleteProductSpecificationByProductSpecificationIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("批量删除规格表失败");
+            }
+        }
+        //去除已经删除的id
+        for (int i = 0; i < productDataDTOList.size(); i++) {
+                if (collect.contains(productDataDTOList.get(i).getProductSpecificationId())){
+                    productDataDTOList.remove(i);
+                }
+        }
+
         if (!StringUtils.isEmpty(productDataDTOList)) {
             for (ProductDataDTO productDataDTO : productDataDTOList) {
                 //产品规格表
                 ProductSpecification productSpecification = new ProductSpecification();
                 BeanUtils.copyProperties(productDataDTO, productSpecification);
-                productSpecification.setUpdateTime(DateUtils.getNowDate());
-                productSpecification.setUpdateBy(SecurityUtils.getUserId());
-                productSpecificationList.add(productSpecification);
+
+                if (!StringUtils.isNull(productDataDTO.getProductSpecificationId())){
+                    productSpecification.setCreateTime(DateUtils.getNowDate());
+                    productSpecification.setCreateBy(SecurityUtils.getUserId());
+                    productSpecification.setUpdateTime(DateUtils.getNowDate());
+                    productSpecification.setUpdateBy(SecurityUtils.getUserId());
+                    productSpecification.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    productSpecificationAddList.add(productSpecification);
+                }else {
+                    productSpecification.setUpdateTime(DateUtils.getNowDate());
+                    productSpecification.setUpdateBy(SecurityUtils.getUserId());
+                    productSpecificationUpdateList.add(productSpecification);
+                }
+
             }
-            if (!StringUtils.isEmpty(productSpecificationList)) {
+
+            if (!StringUtils.isEmpty(productSpecificationAddList)) {
                 try {
-                    productSpecificationMapper.updateProductSpecifications(productSpecificationList);
+                    productSpecificationMapper.batchProductSpecification(productSpecificationAddList);
                 } catch (Exception e) {
-                    throw new ServiceException("修改产品规格表失败");
+                    throw new ServiceException("批量新增产品规格表失败");
+                }
+            }
+            if (!StringUtils.isEmpty(productSpecificationUpdateList)) {
+                try {
+                    productSpecificationMapper.updateProductSpecifications(productSpecificationUpdateList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量修改产品规格表失败");
                 }
             }
         }
+        if (StringUtils.isNotEmpty(productDataDTOList)){
+            for (int i = 0; i < productDataDTOList.size(); i++) {
+                if (StringUtils.isNull(productDataDTOList.get(i).getProductSpecificationId())){
+                    productDataDTOList.get(i).setProductSpecificationId(productSpecificationAddList.get(i).getProductSpecificationId());
+                }
+            }
+        }
+
+        return productDataDTOList;
     }
 
     /**
@@ -771,6 +821,17 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<Integer> selectLevel() {
         return productMapper.selectLevel();
+    }
+
+    /**
+     * 查询上级产品
+     * @return
+     */
+    @Override
+    public List<ProductDTO> queryparent() {
+        Product product = new Product();
+        return this.createTree(productMapper.selectProductList(product),0);
+
     }
 
     /**

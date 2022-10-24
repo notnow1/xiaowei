@@ -5,15 +5,44 @@
     <select id="selectProductByProductId"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
-        FROM product
-        WHERE  product_id=#{productId}
-        and delete_flag=0
+            da.dictionary_label as product_category_name,
+            p.product_id,
+            p.parent_product_id,
+            pu.product_unit_name,
+            p.ancestors,
+            p.product_code,
+            p.product_name,
+            p.level,
+            p.product_unit_id,
+            p.product_category,
+            p.product_description,
+            p.list_price,
+            p.listing_flag,
+            p.delete_flag,
+            p.create_by,
+            p.create_time,
+            p.update_by,
+            p.update_time
+        FROM
+            product p
+                left join product_unit pu
+                          on
+                                      pu.product_unit_id = p.product_unit_id
+                                  and pu.delete_flag = 0
+                left join `system-manage`.dictionary_data da
+                          on
+                                      da.dictionary_data_id = p.product_category
+                                  and da.default_flag = 0
+        WHERE
+                p.product_id =
+                #{productId}
+          and p.delete_flag = 0
     </select>
 
     <!--    查询产品表列表-->
     <select id="selectProductList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT pu.product_unit_name,
+        SELECT da.dictionary_label as product_description_name,
+        pu.product_unit_name,
         p.product_id,
         p.parent_product_id,
         p.ancestors,
@@ -34,6 +63,9 @@
         left join product_unit pu
         on p.product_unit_id =pu.product_unit_id
         and pu.delete_flag= 0
+        left join `system-manage`.dictionary_data da
+        on da.dictionary_data_id =p.product_id
+        and da.delete_flag= 0
         WHERE p.delete_flag = 0
         <if test="product.productUnitId != null">
             and pu.productUnitId =#{product.productUnitId}

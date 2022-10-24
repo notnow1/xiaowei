@@ -163,7 +163,6 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
         StringBuffer dictDataErreo = new StringBuffer();
         switch (dictionaryType) {
             case "PRODUCT_CATEGORY":
-            case "LISTING_FLAG":
                 StringBuffer productErreo = new StringBuffer();
                 ProductDTO productDTO = new ProductDTO();
                 productDTO.setProductCategory(dictionaryDataDTO.getDictionaryDataId().toString());
