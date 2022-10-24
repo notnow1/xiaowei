@@ -71,6 +71,7 @@ public class ProductDTO {
     */
     @NotNull(message = "产品单位不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Long productUnitId;
+    private  Long productUnitName;
     /**
     * 产品类别
     */

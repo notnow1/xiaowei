@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.controller.product;
 
 import java.util.List;
+
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,6 +56,15 @@ public class ProductController extends BaseController
         return AjaxResult.success(productDTO);
     }
 
+    /**
+     * 查询上级产品
+     */
+    //@RequiresPermissions("system:manage:department:pageList")
+    @GetMapping("/queryparent")
+    public AjaxResult queryparent(){
+        List<ProductDTO> list = productService.queryparent();
+        return AjaxResult.success(list);
+    }
     /**
     * 分页查询产品表列表
     */

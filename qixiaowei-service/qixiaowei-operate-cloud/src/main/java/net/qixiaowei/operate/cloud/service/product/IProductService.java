@@ -111,4 +111,10 @@ public interface IProductService{
      * @return
      */
     List<Integer> selectLevel();
+
+    /**
+     * 查询上级产品
+     * @return
+     */
+    List<ProductDTO> queryparent();
 }

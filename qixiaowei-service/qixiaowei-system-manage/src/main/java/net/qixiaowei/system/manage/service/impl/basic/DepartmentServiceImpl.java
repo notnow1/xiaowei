@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
@@ -139,7 +140,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (level == 1) {
             department = this.packDepartment(department);
             department.setSort(1);
-            department.setParentDepartmentId(0L);
+            department.setParentDepartmentId(Constants.TOP_PARENT_ID);
             department.setAncestors("");
             departmentMapper.insertDepartment(department);
             departmentDTO.setDepartmentId(department.getDepartmentId());
@@ -198,7 +199,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getDepartmentId());
             if (StringUtils.isNull(departmentDTO1)){
                 BeanUtils.copyProperties(departmentDTO, department);
-                departmentDTO.setParentDepartmentId(0L);
+                departmentDTO.setParentDepartmentId(Constants.TOP_PARENT_ID);
             }else {
                 BeanUtils.copyProperties(departmentDTO, department);
                 if (StringUtils.isBlank(departmentDTO1.getAncestors())) {

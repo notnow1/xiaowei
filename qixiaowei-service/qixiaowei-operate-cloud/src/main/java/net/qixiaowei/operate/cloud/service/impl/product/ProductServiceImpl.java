@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.product;
 
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
@@ -357,7 +358,7 @@ public class ProductServiceImpl implements IProductService {
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
 
-        product.setParentProductId(0L);
+        product.setParentProductId(Constants.TOP_PARENT_ID);
         product.setCreateBy(SecurityUtils.getUserId());
         product.setCreateTime(DateUtils.getNowDate());
         product.setUpdateTime(DateUtils.getNowDate());
@@ -384,7 +385,7 @@ public class ProductServiceImpl implements IProductService {
         Product product = new Product();
         if (null == productDTO.getParentProductId()){
             BeanUtils.copyProperties(productDTO, product);
-            productDTO.setParentProductId(0L);
+            productDTO.setParentProductId(Constants.TOP_PARENT_ID);
         }else {
             BeanUtils.copyProperties(productDTO, product);
             if (productDTO1.getAncestors() == null) {
@@ -771,6 +772,17 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<Integer> selectLevel() {
         return productMapper.selectLevel();
+    }
+
+    /**
+     * 查询上级产品
+     * @return
+     */
+    @Override
+    public List<ProductDTO> queryparent() {
+        Product product = new Product();
+        return this.createTree(productMapper.selectProductList(product),0);
+
     }
 
     /**
