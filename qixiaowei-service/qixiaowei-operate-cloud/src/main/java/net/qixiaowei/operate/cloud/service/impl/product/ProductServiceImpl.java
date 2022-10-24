@@ -376,11 +376,9 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     @Override
     public int updateProduct(ProductDTO productDTO) {
-        ProductDTO productDTO1 = null;
-        try {
-            productDTO1 = productMapper.selectProductByProductId(productDTO.getParentProductId());
-        } catch (Exception e) {
-            throw new ServiceException("产品数据不存在！");
+        ProductDTO  productDTO1 = productMapper.selectProductByProductId(productDTO.getProductId());
+        if (StringUtils.isNull(productDTO1)){
+            throw new ServiceException("产品不存在！");
         }
         Product product = new Product();
         if (null == productDTO.getParentProductId()){
