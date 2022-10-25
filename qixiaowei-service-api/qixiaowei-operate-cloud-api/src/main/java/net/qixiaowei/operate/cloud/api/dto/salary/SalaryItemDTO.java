@@ -60,7 +60,7 @@ public class SalaryItemDTO {
     /**
      * 二级项目:1工资;2津贴;3福利;4奖金;5代扣代缴;6其他扣款
      */
-    private Integer secondLevelItemValue;
+    private String secondLevelItemValue;
     /**
      * 三级项目
      */
