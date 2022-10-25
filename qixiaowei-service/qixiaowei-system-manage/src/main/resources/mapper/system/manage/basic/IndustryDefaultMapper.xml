@@ -36,7 +36,7 @@
         <if test="industryDefault.level != null and industryDefault.level != ''">
             and level=#{industryDefault.level}
         </if>
-        <if test="industryDefault.status != null and industryDefault.status != ''">
+        <if test="industryDefault.status != null">
             and status=#{industryDefault.status}
         </if>
         <if test="industryDefault.deleteFlag != null and industryDefault.deleteFlag != ''">
