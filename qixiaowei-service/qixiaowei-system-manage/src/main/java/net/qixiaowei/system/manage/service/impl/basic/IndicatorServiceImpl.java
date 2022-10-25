@@ -82,6 +82,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     break;
                 }
             }
+            String indicatorCode = indicatorDTOS.get(i).getIndicatorCode();
+            if (IndicatorCode.contains(indicatorCode)) {
+                indicatorDTOS.get(i).setIsPreset(1);
+            } else {
+                indicatorDTOS.get(i).setIsPreset(0);
+            }
         }
         return indicatorDTOS;
     }
@@ -141,6 +147,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isEmpty(indicatorCode)) {
             throw new ServiceException("指标编码不能为空");
         }
+        if (IndicatorCode.contains(indicatorCode)) {
+            throw new ServiceException("该指标编码为预置编码不可新增");
+        }
         IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             throw new ServiceException("指标编码重复");
@@ -196,6 +205,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isEmpty(indicatorCode)) {
             throw new ServiceException("指标编码不能为空");
         }
+        if (IndicatorCode.contains(indicatorCode)) {
+            throw new ServiceException("该指标编码为预置编码不可新增");
+        }
         IndicatorDTO indicatorById = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
         if (StringUtils.isNull(indicatorById)) {
             throw new ServiceException("该行业不存在");
@@ -234,7 +246,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
                 throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
             }
         }
-//        addSons(indicatorIds);
+        addSons(indicatorIds);
         // todo 引用校验
         if (isQuote(indicatorIds)) {
             throw new ServiceException("存在被引用的指标");
@@ -291,6 +303,11 @@ public class IndicatorServiceImpl implements IIndicatorService {
         IndicatorDTO dto = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
         if (StringUtils.isNull(dto)) {
             throw new ServiceException("该指标已经不存在");
+        }
+        if (IndicatorCode.contains(dto.getIndicatorCode())) {
+            dto.setIsPreset(1);
+        } else {
+            dto.setIsPreset(0);
         }
         return dto;
     }

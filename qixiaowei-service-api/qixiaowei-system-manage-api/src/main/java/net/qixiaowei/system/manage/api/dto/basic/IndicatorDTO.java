@@ -132,6 +132,10 @@ public class IndicatorDTO {
      * 子级
      */
     private List<IndustryDTO> children;
+    /**
+     * 是否预置(1-预置，0-非预置)
+     */
+    private Integer isPreset;
 
 }
 
