@@ -103,17 +103,13 @@ public class PerformancePercentageDTO {
      */
     private List<String> orgMenu;
     /**
-     * 个人菜单
+     * 个人菜单{personId,personName}
      */
-    private List<String> personMenu;
+    private List<Map<String, String>> personMenu;
     /**
      * 绩效比例信息
      */
     private List<Map<String, BigDecimal>> informationList;
-    /**
-     * 行总和
-     */
-    private BigDecimal rowSum;
     /**
      * 接收比例信息
      */

@@ -71,15 +71,19 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         Long personPerformanceRankId = performancePercentageDTO.getPersonPerformanceRankId();
         List<PerformanceRankFactorDTO> personPerformanceRankFactorDTOS = performanceRankFactorService.selectPerformanceRankFactorByPerformanceRankId(personPerformanceRankId);
         // 菜单栏
-        ArrayList<String> orgMenu = new ArrayList<>();
-        ArrayList<String> personMenu = new ArrayList<>();
+        List<String> orgMenu = new ArrayList<>();
+        List<Map<String, String>> personMenu = new ArrayList<>();
         for (PerformanceRankFactorDTO orgPerformanceRankFactorDTO : orgPerformanceRankFactorDTOS) {
             String performanceRankName = orgPerformanceRankFactorDTO.getPerformanceRankName();
             orgMenu.add(performanceRankName);
         }
         for (PerformanceRankFactorDTO personPerformanceRankFactorDTO : personPerformanceRankFactorDTOS) {
             String performanceRankName = personPerformanceRankFactorDTO.getPerformanceRankName();
-            personMenu.add(performanceRankName);
+            String performanceRankFactorId = personPerformanceRankFactorDTO.getPerformanceRankFactorId().toString();
+            personMenu.add(new HashMap<String, String>() {{
+                put("performanceRankFactorId", performanceRankFactorId);
+                put("performanceRankName", performanceRankName);
+            }});
         }
         performancePercentageDTO.setOrgMenu(orgMenu);
         performancePercentageDTO.setPersonMenu(personMenu);
@@ -90,31 +94,33 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         performancePercentageDTO.setPersonPerformanceRankName(personPerformanceRankDTO.getPerformanceRankName());
         // 数据
         List<PerformancePercentageDataDTO> performancePercentageDataDTOS = performancePercentageDataService.selectPerformancePercentageDataByPerformancePercentageId(performancePercentageId);
-        List<Map<String, BigDecimal>> informationList = new ArrayList<>();
+        List<Map<String, String>> informationList = new ArrayList<>();
         // todo 可优化
         for (PerformanceRankFactorDTO orgPerformanceRankFactorDTO : orgPerformanceRankFactorDTOS) {
             //绩效等级系数Id
             Long orgPerformanceRankFactorId = orgPerformanceRankFactorDTO.getPerformanceRankFactorId();
-            Map<String, BigDecimal> orgMap = new TreeMap<>();
-            orgMap.put("-1", BigDecimal.valueOf(orgPerformanceRankFactorId));
+            String performanceRankName = orgPerformanceRankFactorDTO.getPerformanceRankName();
+            Map<String, String> orgMap = new TreeMap<>();
+            orgMap.put("-1", orgPerformanceRankFactorId.toString());
+            orgMap.put("performanceRankName", performanceRankName);
             //排序
-            BigDecimal rowSum = new BigDecimal(0);
+            int rowSum = 0;
             for (PerformanceRankFactorDTO personPerformanceRankFactorDTO : personPerformanceRankFactorDTOS) {
                 Long personPerformanceRankFactorId = personPerformanceRankFactorDTO.getPerformanceRankFactorId();
                 for (PerformancePercentageDataDTO performancePercentageDataDTO : performancePercentageDataDTOS) {
                     if (Objects.equals(orgPerformanceRankFactorId, performancePercentageDataDTO.getOrgRankFactorId())
                             && Objects.equals(personPerformanceRankFactorId, performancePercentageDataDTO.getPersonRankFactorId())) {
                         //key 绩效等级ID
-                        orgMap.put(String.valueOf(personPerformanceRankFactorId), performancePercentageDataDTO.getValue());
-                        rowSum = rowSum.add(performancePercentageDataDTO.getValue());
+                        orgMap.put(String.valueOf(personPerformanceRankFactorId), performancePercentageDataDTO.getValue().toString());
+                        rowSum += performancePercentageDataDTO.getValue().intValue();
                         break;
                     }
                 }
             }
-            orgMap.put("rowSum", rowSum);
+            orgMap.put("rowSum", String.valueOf(rowSum));
             informationList.add(orgMap);
         }
-        performancePercentageDTO.setInformationList(informationList);
+        performancePercentageDTO.setReceiveList(informationList);
         return performancePercentageDTO;
     }
 
@@ -125,7 +131,8 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      * @return 绩效比例表
      */
     @Override
-    public List<PerformancePercentageDTO> selectPerformancePercentageList(PerformancePercentageDTO performancePercentageDTO) {
+    public List<PerformancePercentageDTO> selectPerformancePercentageList(PerformancePercentageDTO
+                                                                                  performancePercentageDTO) {
         PerformancePercentage performancePercentage = new PerformancePercentage();
         BeanUtils.copyProperties(performancePercentageDTO, performancePercentage);
         List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageList(performancePercentage);
@@ -214,7 +221,8 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      */
     @Override
     @Transactional
-    public int logicDeletePerformancePercentageByPerformancePercentageIds(List<Long> performancePercentageIds) {
+    public int logicDeletePerformancePercentageByPerformancePercentageIds
+    (List<Long> performancePercentageIds) {
         List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageByPerformancePercentageIds(performancePercentageIds);
         if (performancePercentageDTOS.size() < performancePercentageIds.size()) {
             throw new ServiceException("当前数据已不存在");
@@ -261,7 +269,8 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      */
     @Override
     @Transactional
-    public int logicDeletePerformancePercentageByPerformancePercentageId(PerformancePercentageDTO performancePercentageDTO) {
+    public int logicDeletePerformancePercentageByPerformancePercentageId(PerformancePercentageDTO
+                                                                                 performancePercentageDTO) {
         ArrayList<Long> performancePercentageIds = new ArrayList<>();
         performancePercentageIds.add(performancePercentageDTO.getPerformancePercentageId());
         return logicDeletePerformancePercentageByPerformancePercentageIds(performancePercentageIds);
@@ -275,7 +284,8 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      */
     @Override
     @Transactional
-    public int deletePerformancePercentageByPerformancePercentageId(PerformancePercentageDTO performancePercentageDTO) {
+    public int deletePerformancePercentageByPerformancePercentageId(PerformancePercentageDTO
+                                                                            performancePercentageDTO) {
         PerformancePercentage performancePercentage = new PerformancePercentage();
         BeanUtils.copyProperties(performancePercentageDTO, performancePercentage);
         return performancePercentageMapper.deletePerformancePercentageByPerformancePercentageId(performancePercentage.getPerformancePercentageId());
@@ -289,7 +299,8 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      */
     @Override
     @Transactional
-    public int deletePerformancePercentageByPerformancePercentageIds(List<PerformancePercentageDTO> performancePercentageDtos) {
+    public int deletePerformancePercentageByPerformancePercentageIds
+    (List<PerformancePercentageDTO> performancePercentageDtos) {
         List<Long> stringList = new ArrayList<>();
         for (PerformancePercentageDTO performancePercentageDTO : performancePercentageDtos) {
             stringList.add(performancePercentageDTO.getPerformancePercentageId());
