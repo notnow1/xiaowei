@@ -67,8 +67,8 @@
         on da.dictionary_data_id =p.product_id
         and da.delete_flag= 0
         WHERE p.delete_flag = 0
-        <if test="product.productUnitId != null">
-            and pu.productUnitId =#{product.productUnitId}
+        <if test="product.productUnitName != null">
+            and pu.product_unit_name =#{product.productUnitName}
         </if>
         <if test="product.productId != null">
             and p.product_id like '%${product.productId}%'
