@@ -111,7 +111,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
                     if (Objects.equals(orgPerformanceRankFactorId, performancePercentageDataDTO.getOrgRankFactorId())
                             && Objects.equals(personPerformanceRankFactorId, performancePercentageDataDTO.getPersonRankFactorId())) {
                         //key 绩效等级ID
-                        orgMap.put(String.valueOf(personPerformanceRankFactorId), performancePercentageDataDTO.getValue().toString());
+                        orgMap.put(String.valueOf(personPerformanceRankFactorId), String.valueOf(performancePercentageDataDTO.getValue().intValue()));
                         rowSum += performancePercentageDataDTO.getValue().intValue();
                         break;
                     }
