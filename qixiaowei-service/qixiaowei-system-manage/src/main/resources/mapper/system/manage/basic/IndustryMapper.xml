@@ -37,7 +37,7 @@
         <if test="industry.level != null and industry.level != ''">
             and level=#{industry.level}
         </if>
-        <if test="industry.status != null and industry.status != ''">
+        <if test="industry.status != null">
             and status=#{industry.status}
         </if>
         <if test="industry.deleteFlag != null and industry.deleteFlag != ''">
@@ -50,9 +50,6 @@
             and update_by=#{industry.updateBy}
         </if>
     </select>
-
-    <!--    唯一性校验-->
-
 
     <!--新增行业-->
     <insert id="insertIndustry" useGeneratedKeys="true" keyProperty="industryId">
