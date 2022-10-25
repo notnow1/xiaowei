@@ -41,7 +41,8 @@
 
     <!--    查询产品表列表-->
     <select id="selectProductList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
-        SELECT da.dictionary_label as product_description_name,
+        SELECT
+        da.dictionary_label as product_category_name,
         pu.product_unit_name,
         p.product_id,
         p.parent_product_id,
@@ -59,14 +60,18 @@
         p.create_time,
         p.update_by,
         p.update_time
-        FROM product p
-        left join product_unit pu
+        FROM
+        product p
+        left join
+        product_unit pu
         on p.product_unit_id =pu.product_unit_id
         and pu.delete_flag= 0
-        left join `system-manage`.dictionary_data da
-        on da.dictionary_data_id =p.product_id
+        left join
+        `system-manage`.dictionary_data da
+        on da.dictionary_data_id =p.product_category
         and da.delete_flag= 0
-        WHERE p.delete_flag = 0
+        WHERE
+        p.delete_flag = 0;
         <if test="product.productUnitName != null">
             and pu.product_unit_name =#{product.productUnitName}
         </if>
