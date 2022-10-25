@@ -1,10 +1,24 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
-import java.util.List;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.fill.FillConfig;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.FileUtil;
+import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
@@ -16,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +39,8 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -228,22 +243,115 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Override
     public void importEmployee(List<EmployeeExcel> list) {
-        List<Employee> employeeList = new ArrayList<>();
-        list.forEach(l -> {
-            Employee employee = new Employee();
-            BeanUtils.copyProperties(l, employee);
-            employee.setCreateBy(SecurityUtils.getUserId());
-            employee.setCreateTime(DateUtils.getNowDate());
-            employee.setUpdateTime(DateUtils.getNowDate());
-            employee.setUpdateBy(SecurityUtils.getUserId());
-            employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            employeeList.add(employee);
-        });
-        try {
-            employeeMapper.batchEmployee(employeeList);
-        } catch (Exception e) {
-            throw new ServiceException("导入人员失败");
+        if (StringUtils.isNotEmpty(list)){
+            //code集合
+            List<String> collect1 = this.selectEmployeeCodes(list);
+            //身份证集合
+            List<String> collect2 =this.selectEmployeeIdCard(list);
+            //插入数据库数据
+            List<Employee> employeeList = new ArrayList<>();
+            //返回报错信息
+            StringBuffer  employeeErreo = new StringBuffer();
+            for (EmployeeExcel employeeExcel : list) {
+                StringBuffer stringBuffer = this.validEmployee(employeeExcel);
+                if (stringBuffer.length()>1){
+                    employeeErreo.append(stringBuffer);
+                }
+                Employee employee = new Employee();
+                BeanUtils.copyProperties(employeeExcel, employee);
+                if (collect1.contains(employee.getEmployeeCode())){
+                    employeeErreo.append("工号"+employee.getEmployeeCode()+"已存在"+"\r\n");
+                }
+                if (collect2.contains(employee.getIdentityCard())){
+                    employeeErreo.append("身份证号"+employee.getIdentityCard()+"已存在"+"\r\n");
+                }
+                employee.setCreateBy(SecurityUtils.getUserId());
+                employee.setCreateTime(DateUtils.getNowDate());
+                employee.setUpdateTime(DateUtils.getNowDate());
+                employee.setUpdateBy(SecurityUtils.getUserId());
+                employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                employeeList.add(employee);
+            }
+            if (employeeErreo.length()>1){
+                throw new ServiceException(employeeErreo.toString());
+            }
+            try {
+                employeeMapper.batchEmployee(employeeList);
+            } catch (Exception e) {
+                throw new ServiceException("导入人员失败");
+            }
+        }else {
+            throw new ServiceException("请填写excel数据！！！");
         }
+    }
+
+    /**
+     * 检验身份证唯一
+     * @param list
+     * @return
+     */
+    private List<String> selectEmployeeIdCard(List<EmployeeExcel> list) {
+        //数据库数据保证唯一性
+        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
+        //code集合
+        List<String> collect1 = new ArrayList<>();
+        List<String> collect = list.stream().map(EmployeeExcel::getIdentityCard).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(collect)){
+            employeeDTOList = employeeMapper.selectEmployeeByIdCards(collect);
+        }
+        if (StringUtils.isNotEmpty(employeeDTOList)){
+            collect1 = employeeDTOList.stream().map(EmployeeDTO::getIdentityCard).collect(Collectors.toList());
+        }
+        return collect1;
+    }
+
+    /**
+     * 检验code唯一
+     * @param list
+     * @return
+     */
+    private List<String> selectEmployeeCodes(List<EmployeeExcel> list) {
+        //数据库数据保证唯一性
+        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
+        //code集合
+        List<String> collect1 = new ArrayList<>();
+        List<String> collect = list.stream().map(EmployeeExcel::getEmployeeCode).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(collect)){
+            employeeDTOList = employeeMapper.selectEmployeeByEmployeeCodes(collect);
+        }
+        if (StringUtils.isNotEmpty(employeeDTOList)){
+            collect1 = employeeDTOList.stream().map(EmployeeDTO::getEmployeeCode).collect(Collectors.toList());
+        }
+        return collect1;
+    }
+
+    /**
+     * 检验数据
+     * @param employeeExcel
+     */
+    private StringBuffer validEmployee(EmployeeExcel employeeExcel) {
+        StringBuffer validEmployeeErreo = new StringBuffer();
+        if (StringUtils.isNotNull(employeeExcel)){
+            if (StringUtils.isNull(employeeExcel.getEmployeeCode())){
+                validEmployeeErreo.append("工号为必填项");
+            }
+            if (StringUtils.isNull(employeeExcel.getEmployeeName())){
+                validEmployeeErreo.append("姓名为必填项");
+            }
+            if (StringUtils.isNull(employeeExcel.getEmploymentStatus())){
+                validEmployeeErreo.append("用工关系状态为必填项");
+            }
+            if (StringUtils.isNull(employeeExcel.getIdentityCard())){
+                validEmployeeErreo.append("证件号码为必填项");
+            }
+            if (StringUtils.isNull(employeeExcel.getEmploymentDate())){
+                validEmployeeErreo.append("入职日期为必填项");
+            }
+            if (StringUtils.isNull(employeeExcel.getEmployeeMobile())){
+                validEmployeeErreo.append("员工手机号为必填项");
+            }
+        }
+        return validEmployeeErreo;
     }
 
     /**
@@ -261,16 +369,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
             for (EmployeeDTO dto : employeeDTOList) {
                 EmployeeExcel employeeExcel = new EmployeeExcel();
                 BeanUtils.copyProperties(dto, employeeExcel);
-                if (dto.getEmployeeGender() == 1) {
-                    employeeExcel.setEmployeeGender("男");
-                } else {
-                    employeeExcel.setEmployeeGender("女");
+                if (StringUtils.isNotNull(dto.getEmployeeGender())){
+                    if (dto.getEmployeeGender() == 1) {
+                        employeeExcel.setEmployeeGender("男");
+                    } else {
+                        employeeExcel.setEmployeeGender("女");
+                    }
                 }
-                if (dto.getEmploymentStatus() == 1) {
-                    employeeExcel.setEmploymentStatus("在职");
-                } else {
-                    employeeExcel.setEmploymentStatus("离职");
+                if (null != dto.getEmploymentStatus()){
+                    if (dto.getEmploymentStatus() == 1) {
+                        employeeExcel.setEmploymentStatus("在职");
+                    } else {
+                        employeeExcel.setEmploymentStatus("离职");
+                    }
                 }
+
                 employeeExcelList.add(employeeExcel);
             }
         }
@@ -284,6 +397,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public List<EmployeeDTO> unallocatedUserList() {
         return employeeMapper.unallocatedUserList();
     }
+
+
 
     /**
      * 逻辑删除员工表信息

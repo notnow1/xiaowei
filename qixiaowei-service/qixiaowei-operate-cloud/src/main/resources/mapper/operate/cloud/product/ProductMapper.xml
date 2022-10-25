@@ -71,7 +71,7 @@
         on da.dictionary_data_id =p.product_category
         and da.delete_flag= 0
         WHERE
-        p.delete_flag = 0;
+        p.delete_flag = 0
         <if test="product.productUnitName != null">
             and pu.product_unit_name =#{product.productUnitName}
         </if>

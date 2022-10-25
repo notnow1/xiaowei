@@ -2,7 +2,12 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
+import org.springframework.validation.annotation.Validated;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 
 /**
@@ -123,4 +128,5 @@ public interface IEmployeeService{
      * 查询未分配用户员工列表
      */
     List<EmployeeDTO> unallocatedUserList();
+
 }

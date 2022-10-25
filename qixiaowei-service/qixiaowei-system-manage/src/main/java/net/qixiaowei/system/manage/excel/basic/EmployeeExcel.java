@@ -10,7 +10,11 @@ import com.alibaba.excel.annotation.write.style.ContentRowHeight;
 import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import lombok.Data;
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -43,6 +47,9 @@ public class EmployeeExcel {
      */
     @ExcelProperty("姓名")
     private String employeeName;
+
+    @ExcelProperty("用工关系状态")
+    private String employmentStatus;
     /**
      * 性别:1男;2女
      */
@@ -56,71 +63,63 @@ public class EmployeeExcel {
     /**
      * 证件号码
      */
-    @ExcelIgnore
     @ExcelProperty("证件号码")
     private String identityCard;
     /**
      * 出生日期
      */
-    @ExcelIgnore
     @ExcelProperty("出生日期")
     @DateTimeFormat(value = "yyyy/MM/dd")
     private Date employeeBirthday;
     /**
      * 员工手机号
      */
-    @ExcelIgnore
     @ExcelProperty("员工手机号")
     private String employeeMobile;
     /**
+     * 入职日期
+     */
+    @ExcelProperty("入职日期")
+    @DateTimeFormat(value = "yyyy/MM/dd")
+    private Date employmentDate;
+    /**
      * 员工邮箱
      */
-    @ExcelIgnore
     @ExcelProperty("员工邮箱")
     private String employeeEmail;
     /**
      * 员工部门ID
      */
-    @ExcelIgnore
+
+    @ExcelProperty("部门编码")
     private Long employeeDepartmentId;
-    @ExcelProperty("部门")
+    @ExcelIgnore
     private String employeeDepartmentName;
     /**
      * 员工岗位ID
      */
-    @ExcelIgnore
+    @ExcelProperty("岗位编码")
     private Long employeePostId;
-    @ExcelProperty("岗位")
+    @ExcelIgnore
     private String employeePostName;
     /**
      * 员工职级
      */
-    @ExcelIgnore
+    @ExcelProperty("个人职级")
     private Integer employeeRank;
     /**
      * 员工基本工资
      */
-    @ExcelIgnore
     @ExcelProperty("员工基本工资")
     private BigDecimal employeeBasicWage;
-    /**
-     * 入职日期
-     */
-    @ExcelIgnore
-    @ExcelProperty("入职日期")
-    @DateTimeFormat(value = "yyyy/MM/dd")
-    private Date employmentDate;
+
     /**
      * 离职日期
      */
-    @ExcelIgnore
     @ExcelProperty("离职日期")
     @DateTimeFormat(value = "yyyy/MM/dd")
     private Date departureDate;
 
-
-    @ExcelProperty("用工关系状态")
-    private String employmentStatus;
     /**
      * 状态:0暂存;1生效
      */

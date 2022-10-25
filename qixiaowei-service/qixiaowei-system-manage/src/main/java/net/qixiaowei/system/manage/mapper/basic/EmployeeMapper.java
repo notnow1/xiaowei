@@ -144,4 +144,18 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectEmployeePostId(@Param("employeePostId") Long employeePostId);
+
+    /**
+     * 根据code批量查询人员信息
+     * @param employeeCodes
+     * @return
+     */
+    List<EmployeeDTO> selectEmployeeByEmployeeCodes(@Param("employeeCodes")List<String> employeeCodes);
+
+    /**
+     * 根据身份证号批量查询人员信息
+     * @param identityCards
+     * @return
+     */
+    List<EmployeeDTO> selectEmployeeByIdCards(@Param("identityCards")List<String> identityCards);
 }
