@@ -48,6 +48,8 @@ public class Product extends BaseEntity {
      * 产品单位ID
      */
      private  Long  productUnitId;
+     private  String  productUnitName;
+
      /**
      * 产品类别
      */
