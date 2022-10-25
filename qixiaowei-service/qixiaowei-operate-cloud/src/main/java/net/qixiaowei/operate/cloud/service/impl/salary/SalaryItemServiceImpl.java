@@ -57,37 +57,37 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         for (SalaryItemDTO itemDTO : salaryItemDTOS) {
             Integer firstLevelItem = itemDTO.getFirstLevelItem();
             Integer secondLevelItem = itemDTO.getSecondLevelItem();
-//            switch (firstLevelItem) {
-//                case 1:
-//                    salaryItemExcel.setFirstLevelItem("总工资包");
-//                    break;
-//                case 2:
-//                    salaryItemExcel.setFirstLevelItem("总奖金包");
-//                    break;
-//                case 3:
-//                    salaryItemExcel.setFirstLevelItem("总扣减项");
-//                    break;
-//            }
-//            switch (dto.getSecondLevelItem()) {
-//                case 1:
-//                    salaryItemExcel.setSecondLevelItem("工资");
-//                    break;
-//                case 2:
-//                    salaryItemExcel.setSecondLevelItem("津贴");
-//                    break;
-//                case 3:
-//                    salaryItemExcel.setSecondLevelItem("福利");
-//                    break;
-//                case 4:
-//                    salaryItemExcel.setSecondLevelItem("奖金");
-//                    break;
-//                case 5:
-//                    salaryItemExcel.setSecondLevelItem("代扣代缴");
-//                    break;
-//                case 6:
-//                    salaryItemExcel.setSecondLevelItem("其他扣款");
-//                    break;
-//            }
+            switch (firstLevelItem) {
+                case 1:
+                    itemDTO.setFirstLevelItemValue("总工资包");
+                    break;
+                case 2:
+                    itemDTO.setFirstLevelItemValue("总奖金包");
+                    break;
+                case 3:
+                    itemDTO.setFirstLevelItemValue("总扣减项");
+                    break;
+            }
+            switch (secondLevelItem) {
+                case 1:
+                    itemDTO.setSecondLevelItemValue("工资");
+                    break;
+                case 2:
+                    itemDTO.setSecondLevelItemValue("津贴");
+                    break;
+                case 3:
+                    itemDTO.setSecondLevelItemValue("福利");
+                    break;
+                case 4:
+                    itemDTO.setSecondLevelItemValue("奖金");
+                    break;
+                case 5:
+                    itemDTO.setSecondLevelItemValue("代扣代缴");
+                    break;
+                case 6:
+                    itemDTO.setSecondLevelItemValue("其他扣款");
+                    break;
+            }
         }
         return salaryItemDTOS;
     }

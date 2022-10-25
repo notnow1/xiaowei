@@ -98,6 +98,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
             Map<String, BigDecimal> orgMap = new TreeMap<>();
             orgMap.put("-1", BigDecimal.valueOf(orgPerformanceRankFactorId));
             //排序
+            BigDecimal rowSum = new BigDecimal(0);
             for (PerformanceRankFactorDTO personPerformanceRankFactorDTO : personPerformanceRankFactorDTOS) {
                 Long personPerformanceRankFactorId = personPerformanceRankFactorDTO.getPerformanceRankFactorId();
                 for (PerformancePercentageDataDTO performancePercentageDataDTO : performancePercentageDataDTOS) {
@@ -105,10 +106,12 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
                             && Objects.equals(personPerformanceRankFactorId, performancePercentageDataDTO.getPersonRankFactorId())) {
                         //key 绩效等级ID
                         orgMap.put(String.valueOf(personPerformanceRankFactorId), performancePercentageDataDTO.getValue());
+                        rowSum = rowSum.add(performancePercentageDataDTO.getValue());
                         break;
                     }
                 }
             }
+            orgMap.put("rowSum", rowSum);
             informationList.add(orgMap);
         }
         performancePercentageDTO.setInformationList(informationList);
