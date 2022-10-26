@@ -294,6 +294,7 @@
             ors.official_rank_system_name,
             concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
             dm.department_name ,
+            dm.department_code,
             deptpost.department_post_id,
             deptpost.department_id,
             deptpost.post_id,

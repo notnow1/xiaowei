@@ -1,19 +1,15 @@
 package net.qixiaowei.system.manage.api.dto.basic;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.util.List;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
 * 部门表

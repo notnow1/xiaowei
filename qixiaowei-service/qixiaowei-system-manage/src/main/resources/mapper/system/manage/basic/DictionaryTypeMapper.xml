@@ -39,13 +39,13 @@
                     and dictionary_type=#{dictionaryType.dictionaryType}
                 </if>
                 <if test="dictionaryType.dictionaryName != null and dictionaryType.dictionaryName != ''">
-                    and dictionary_name=#{dictionaryType.dictionaryName}
+                    and dictionary_name like '%${dictionaryType.dictionaryName}%'
                 </if>
                 <if test="dictionaryType.menuZerothName != null and dictionaryType.menuZerothName != ''">
-                    and menu_zeroth_name=#{dictionaryType.menuZerothName}
+                    and menu_zeroth_name like '%${dictionaryType.menuZerothName}%'
                 </if>
                 <if test="dictionaryType.menuFirstName != null and dictionaryType.menuFirstName != ''">
-                    and menu_first_name=#{dictionaryType.menuFirstName}
+                    and menu_first_name like '%${dictionaryType.menuFirstName}%'
                 </if>
                 <if test="dictionaryType.menuSecondName != null and dictionaryType.menuSecondName != ''">
                     and menu_second_name=#{dictionaryType.menuSecondName}
