@@ -93,6 +93,7 @@
     <!--    查询员工表列表-->
     <select id="selectEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
+        DISTINCT
         c.country_name as nationality_name,
         n.nation_name,
         p.post_name as employee_post_name,
@@ -147,8 +148,41 @@
         left join nation n
         on ei.nation = n.nation_id
         and n.delete_flag =0
+        <if test="employee.residentCityName != null and employee.residentCityName != ''">
+            left join region r
+            on r.district_code=SUBSTRING_INDEX(ei.resident_city,',',-1)
+            and r.delete_flag =0
+        </if>
+        <if test="employee.insuredCityName != null and employee.insuredCityName != ''">
+            left join region r
+            on r.district_code=SUBSTRING_INDEX(ei.insured_city ,',',-1)
+            and r.delete_flag =0
+        </if>
+        <if test="employee.permanentAddressName != null and employee.permanentAddressName != ''">
+            left join region r
+            on r.district_code=SUBSTRING_INDEX(ei.permanent_address ,',',-1)
+            and r.delete_flag =0
+        </if>
+        <if test="employee.contactAddressName != null and employee.contactAddressName != ''">
+            left join region r
+            on r.district_code=SUBSTRING_INDEX(ei.contact_address ,',',-1)
+            and r.delete_flag =0
+        </if>
+
         where
         e.delete_flag = 0
+        <if test="employee.residentCityName != null and employee.residentCityName != ''">
+            and concat(r.province_name, r.city_name, r.district_name) like '%${employee.residentCityName}%'
+        </if>
+        <if test="employee.insuredCityName != null and employee.insuredCityName != ''">
+            and concat(r.province_name, r.city_name, r.district_name) like '%${employee.insuredCityName}%'
+        </if>
+        <if test="employee.permanentAddressName != null and employee.permanentAddressName != ''">
+            and concat(r.province_name, r.city_name, r.district_name) like '%${employee.permanentAddressName}%'
+        </if>
+        <if test="employee.contactAddressName != null and employee.contactAddressName != ''">
+            and concat(r.province_name, r.city_name, r.district_name) like '%${employee.contactAddressName}%'
+        </if>
         <if test="employee.nationalityName != null and employee.nationalityName != ''">
             and c.country_name like '%${employee.nationalityName}%'
         </if>

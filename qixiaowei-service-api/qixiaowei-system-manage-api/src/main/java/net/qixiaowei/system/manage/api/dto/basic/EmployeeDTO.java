@@ -116,13 +116,26 @@ public class EmployeeDTO {
 //    @NotBlank(message = "户口所在地不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private  String residentCity;
     /**
+     * 户口所在地名称
+     */
+    private  String residentCityName;
+    /**
      * 参保地
      */
     private  String insuredCity;
+
+    /**
+     * 参保地名称
+     */
+    private  String insuredCityName;
     /**
      * 常住地
      */
     private  String permanentAddress;
+    /**
+     * 常住地名称
+     */
+    private  String permanentAddressName;
 
     /**
     * 员工部门ID
@@ -205,6 +218,10 @@ public class EmployeeDTO {
      */
 //    @NotBlank(message = "通信地址不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private  String contactAddress;
+    /**
+     * 通信地址名称
+     */
+    private  String contactAddressName;
     /**
      * 通信地址详情
      */

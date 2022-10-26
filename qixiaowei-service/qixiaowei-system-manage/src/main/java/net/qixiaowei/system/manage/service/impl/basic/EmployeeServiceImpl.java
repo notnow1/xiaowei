@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -67,9 +68,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
-
         return employeeMapper.selectEmployeeList(employee);
     }
+
+
 
     /**
      * 查询员工单条信息

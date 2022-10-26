@@ -138,10 +138,28 @@ public class Employee extends BaseEntity {
      * 通信地址
      */
     private  String contactAddress;
+
     /**
      * 通信地址详情
      */
     private  String contactAddressDetail;
+
+    /**
+     * 户口所在地名称
+     */
+    private  String residentCityName;
+    /**
+     * 参保地名称
+     */
+    private  String insuredCityName;
+    /**
+     * 常住地名称
+     */
+    private  String permanentAddressName;
+    /**
+     * 通信地址名称
+     */
+    private  String contactAddressName;
     /**
      * 微信号
      */
