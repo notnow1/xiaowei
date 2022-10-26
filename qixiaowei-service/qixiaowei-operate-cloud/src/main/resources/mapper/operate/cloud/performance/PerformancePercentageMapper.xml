@@ -16,36 +16,52 @@
     <select id="selectPerformancePercentageList"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO">
         SELECT
-        performance_percentage_id, performance_percentage_name, org_performance_rank_id, person_performance_rank_id,
-        delete_flag, create_by, create_time, update_by, update_time
-        FROM performance_percentage
-        WHERE delete_flag=0
-        <if test="performancePercentage.performancePercentageId != null">
-            and performance_percentage_id=#{performancePercentage.performancePercentageId}
+        t1.performance_percentage_id, t1.performance_percentage_name, t1.delete_flag, t1.create_by, t1.create_time,
+        t1.update_by, t1.update_time,
+        t1.org_performance_rank_id,t1.person_performance_rank_id,
+        t2.performance_rank_name as org_performance_rank_name,
+        t2.delete_flag AS org_delete_flag,
+        t3.performance_rank_name as person_performance_rank_name,
+        t3.delete_flag AS person_delete_flag
+        FROM
+        performance_percentage t1
+        LEFT JOIN performance_rank t2 ON t1.org_performance_rank_id = t2.performance_rank_id
+        LEFT JOIN performance_rank t3 ON t1.person_performance_rank_id = t3.performance_rank_id
+        WHERE t1.delete_flag = 0
+<!--        AND t2.delete_flag = 0-->
+<!--        AND t3.delete_flag = 0-->
+        <if test="performancePercentageDTO.performancePercentageId != null">
+            and performance_percentage_id=#{performancePercentageDTO.performancePercentageId}
         </if>
-        <if test="performancePercentage.performancePercentageName != null and performancePercentage.performancePercentageName != ''">
-            and performance_percentage_name=#{performancePercentage.performancePercentageName}
+        <if test="performancePercentageDTO.performancePercentageName != null and performancePercentageDTO.performancePercentageName != ''">
+            and t1.performance_percentage_name like "%" #{performancePercentageDTO.performancePercentageName} "%"
         </if>
-        <if test="performancePercentage.orgPerformanceRankId != null">
-            and org_performance_rank_id=#{performancePercentage.orgPerformanceRankId}
+        <if test="performancePercentageDTO.orgPerformanceRankName != null and performancePercentageDTO.orgPerformanceRankName != ''">
+            and t2.performance_rank_name like "%" #{performancePercentageDTO.orgPerformanceRankName} "%"
         </if>
-        <if test="performancePercentage.personPerformanceRankId != null">
-            and person_performance_rank_id=#{performancePercentage.personPerformanceRankId}
+        <if test="performancePercentageDTO.personPerformanceRankName != null and performancePercentageDTO.personPerformanceRankName != ''">
+            and t3.performance_rank_name like "%" #{performancePercentageDTO.personPerformanceRankName} "%"
         </if>
-        <if test="performancePercentage.deleteFlag != null">
-            and delete_flag=#{performancePercentage.deleteFlag}
+        <if test="performancePercentageDTO.orgPerformanceRankId != null">
+            and t2.org_performance_rank_id=#{performancePercentageDTO.orgPerformanceRankId}
         </if>
-        <if test="performancePercentage.createBy != null">
-            and create_by=#{performancePercentage.createBy}
+        <if test="performancePercentageDTO.personPerformanceRankId != null">
+            and t3.person_performance_rank_id=#{performancePercentageDTO.personPerformanceRankId}
         </if>
-        <if test="performancePercentage.createTime != null">
-            and create_time=#{performancePercentage.createTime}
+        <if test="performancePercentageDTO.deleteFlag != null">
+            and delete_flag=#{performancePercentageDTO.deleteFlag}
         </if>
-        <if test="performancePercentage.updateBy != null">
-            and update_by=#{performancePercentage.updateBy}
+        <if test="performancePercentageDTO.createBy != null">
+            and create_by=#{performancePercentageDTO.createBy}
         </if>
-        <if test="performancePercentage.updateTime != null">
-            and update_time=#{performancePercentage.updateTime}
+        <if test="performancePercentageDTO.createTime != null">
+            and create_time=#{performancePercentageDTO.createTime}
+        </if>
+        <if test="performancePercentageDTO.updateBy != null">
+            and update_by=#{performancePercentageDTO.updateBy}
+        </if>
+        <if test="performancePercentageDTO.updateTime != null">
+            and update_time=#{performancePercentageDTO.updateTime}
         </if>
     </select>
     <!--performancePercentageName唯一性校验-->
@@ -76,6 +92,15 @@
         <foreach collection="performancePercentageIds" separator="," open="(" close=")" index="index" item="item">
             #{item}
         </foreach>
+    </select>
+    <select id="selectPerformancePercentageByPerformancePercentageName"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO">
+        SELECT
+        performance_percentage_id, performance_percentage_name, org_performance_rank_id, person_performance_rank_id,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_percentage
+        WHERE delete_flag=0
+        AND performance_percentage_name = #{performancePercentageName}
     </select>
     <!--新增绩效比例表-->
     <insert id="insertPerformancePercentage" useGeneratedKeys="true" keyProperty="performancePercentageId">

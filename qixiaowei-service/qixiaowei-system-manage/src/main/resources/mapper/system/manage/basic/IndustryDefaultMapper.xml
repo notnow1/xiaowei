@@ -33,16 +33,16 @@
         <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
             and industry_name like "%" #{industryDefault.industryName} "%"
         </if>
-        <if test="industryDefault.level != null and industryDefault.level != ''">
+        <if test="industryDefault.level != null">
             and level=#{industryDefault.level}
         </if>
         <if test="industryDefault.status != null">
             and status=#{industryDefault.status}
         </if>
-        <if test="industryDefault.deleteFlag != null and industryDefault.deleteFlag != ''">
+        <if test="industryDefault.deleteFlag != null">
             and delete_flag=#{industryDefault.deleteFlag}
         </if>
-        <if test="industryDefault.createBy != null and industryDefault.createBy != ''">
+        <if test="industryDefault.createBy != null">
             and create_by=#{industryDefault.createBy}
         </if>
         <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">

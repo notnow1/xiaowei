@@ -128,14 +128,16 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      * 查询绩效比例表列表
      *
      * @param performancePercentageDTO 绩效比例表
-     * @return 绩效比例表
+     * @return 绩效比例列表
      */
     @Override
-    public List<PerformancePercentageDTO> selectPerformancePercentageList(PerformancePercentageDTO
-                                                                                  performancePercentageDTO) {
-        PerformancePercentage performancePercentage = new PerformancePercentage();
-        BeanUtils.copyProperties(performancePercentageDTO, performancePercentage);
-        List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageList(performancePercentage);
+    public List<PerformancePercentageDTO> selectPerformancePercentageList(PerformancePercentageDTO performancePercentageDTO) {
+        String orgPerformanceRankName = performancePercentageDTO.getOrgPerformanceRankName();
+        String personPerformanceRankName = performancePercentageDTO.getPersonPerformanceRankName();
+        List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageList(performancePercentageDTO);
+        if (StringUtils.isEmpty(performancePercentageDTOS)) {
+            return performancePercentageDTOS;
+        }
         ArrayList<Long> orgPerformanceRankIds = new ArrayList<>();
         ArrayList<Long> personPerformanceRankIds = new ArrayList<>();
         for (PerformancePercentageDTO percentageDTO : performancePercentageDTOS) {
@@ -198,10 +200,11 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
     @Override
     @Transactional
     public int updatePerformancePercentage(PerformancePercentageDTO performancePercentageDTO) {
+        Long performancePercentageId = performancePercentageDTO.getPerformancePercentageId();
         String performancePercentageName = performancePercentageDTO.getPerformancePercentageName();
         List<Map<String, String>> receiveList = performancePercentageDTO.getReceiveList();
-        int count = performancePercentageMapper.isUnique(performancePercentageName);
-        if (count > 0) {
+        PerformancePercentageDTO percentageDTO = performancePercentageMapper.selectPerformancePercentageByPerformancePercentageName(performancePercentageName);
+        if (StringUtils.isNotNull(percentageDTO) && !percentageDTO.getPerformancePercentageId().equals(performancePercentageId)) {
             throw new ServiceException("该绩效比例名称重复");
         }
         // todo 校验组织和个人绩效等级是否存在且对应

@@ -61,7 +61,7 @@
         <if test="indicator.examineDirection != null">
             and t1.examine_direction=#{indicator.examineDirection}
         </if>
-        <if test="indicator.indicatorDefinition != null and indicator.indicatorDefinition != ''">
+        <if test="indicator.indicatorDefinition != null">
             and t1.indicator_definition=#{indicator.indicatorDefinition}
         </if>
         <if test="indicator.indicatorFormula != null and indicator.indicatorFormula != ''">

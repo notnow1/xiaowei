@@ -27,10 +27,10 @@ public interface PerformancePercentageMapper {
     /**
      * 查询绩效比例表列表
      *
-     * @param performancePercentage 绩效比例表
+     * @param performancePercentageDTO 绩效比例表
      * @return 绩效比例表集合
      */
-    List<PerformancePercentageDTO> selectPerformancePercentageList(@Param("performancePercentage") PerformancePercentage performancePercentage);
+    List<PerformancePercentageDTO> selectPerformancePercentageList(@Param("performancePercentageDTO") PerformancePercentageDTO performancePercentageDTO);
 
     /**
      * 新增绩效比例表
@@ -121,4 +121,12 @@ public interface PerformancePercentageMapper {
      * @return
      */
     List<PerformancePercentageDTO> selectPerformancePercentageByPerformancePercentageIds(@Param("performancePercentageIds") List<Long> performancePercentageIds);
+
+    /**
+     * 根据performancePercentageName查询performancePercentage
+     *
+     * @param performancePercentageName
+     * @return
+     */
+    PerformancePercentageDTO selectPerformancePercentageByPerformancePercentageName(@Param("performancePercentageName") String performancePercentageName);
 }

@@ -56,7 +56,7 @@
             AND date_format(create_time,'%y%m%d') &lt;= date_format(#{officialRankSystem.params.createTimeEnd},'%y%m%d')
         </if>
         <if test="officialRankSystem.updateBy != null">
-            and update_by like "%" #{officialRankSystem.updateBy}
+            and update_by like "%" #{officialRankSystem.updateBy} "%"
         </if>
     </select>
     <select id="officialRankByName" resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
