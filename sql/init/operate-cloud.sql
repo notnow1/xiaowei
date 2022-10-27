@@ -337,6 +337,56 @@ CREATE TABLE decompose_detail_cycles(
 )  COMMENT = '目标分解详情周期表';
 
 
+CREATE TABLE target_decompose_history(
+    target_decompose_history_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_decompose_id BIGINT    COMMENT '目标分解ID' ,
+    version VARCHAR(16)    COMMENT '版本号' ,
+    forecast_cycle VARCHAR(16)    COMMENT '预测周期' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_decompose_history_id)
+)  COMMENT = '目标分解历史版本表';
+
+
+CREATE TABLE decompose_details_snapshot(
+    decompose_details_snapshot_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_decompose_history_id BIGINT    COMMENT '目标分解历史版本ID' ,
+    employee_id BIGINT    COMMENT '员工ID' ,
+    area_id BIGINT    COMMENT '区域ID' ,
+    department_id BIGINT    COMMENT '部门ID' ,
+    product_id BIGINT    COMMENT '产品ID' ,
+    region_id BIGINT    COMMENT '省份ID' ,
+    industry_id BIGINT    COMMENT '行业ID' ,
+    principal_employee_id BIGINT    COMMENT '负责人ID' ,
+    amount_target DECIMAL(14,2)    COMMENT '汇总目标值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (decompose_details_snapshot_id)
+)  COMMENT = '目标分解详情快照表';
+
+
+CREATE TABLE detail_cycles_snapshot(
+    detail_cycles_snapshot_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    decompose_details_snapshot_id BIGINT    COMMENT '目标分解详情快照ID' ,
+    cycle_number INT    COMMENT '周期数(顺序递增)' ,
+    cycle_target DECIMAL(14,2)    COMMENT '周期目标值' ,
+    cycle_forecast DECIMAL(14,2)    COMMENT '周期预测值' ,
+    cycle_actual DECIMAL(14,2)    COMMENT '周期实际值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (detail_cycles_snapshot_id)
+)  COMMENT = '目标分解详情周期快照表';
+
+
 
 -- ----------------------------
 -- 初始化数据
