@@ -7,15 +7,19 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
+import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.mapper.basic.OfficialRankSystemMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
+import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankDecomposeService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +51,13 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     private PostMapper postMapper;
 
     @Autowired
-    private RemoteAreaService remoteAreaService;
+    private RemoteAreaService areaService;
+
+    @Autowired
+    private RemoteProductService productService;
+
+    @Autowired
+    private IDepartmentService departmentService;
 
     /**
      * 查询职级体系表
@@ -98,18 +108,51 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      * @return
      */
     @Override
-    public Map<Long, String> decomposeDrop(Integer rankDecomposeDimension) {
-        Map<Long, String> map = new HashMap<>();
+    public List<Map<String, String>> decomposeDrop(Integer rankDecomposeDimension) {
+        List<Map<String, String>> dropList = new ArrayList<>();
         switch (rankDecomposeDimension) {
             case 1:// todo 1部门
+                DepartmentDTO departmentDTO = new DepartmentDTO();
+                List<DepartmentDTO> listDepartment = departmentService.dropList(departmentDTO);
+                if (StringUtils.isNotEmpty(listDepartment)) {
+                    for (DepartmentDTO department : listDepartment) {
+                        HashMap<String, String> departmentMap = new HashMap<>();
+                        departmentMap.put("rankDecomposeDimension", department.getDepartmentId().toString());
+                        departmentMap.put("rankDecomposeDimensionName", department.getDepartmentName());
+                        dropList.add(departmentMap);
+                    }
+                    return dropList;
+                }
                 break;
             case 2:// todo 2区域
                 AreaDTO areaDTO = new AreaDTO();
-                R<List<AreaDTO>> listR = remoteAreaService.dropList(areaDTO);
+                R<List<AreaDTO>> listArea = areaService.dropList(areaDTO);
+                if (listArea.getCode() == 200 && StringUtils.isNotEmpty(listArea.getData())) {
+                    List<AreaDTO> data = listArea.getData();
+                    for (AreaDTO area : data) {
+                        HashMap<String, String> areaMap = new HashMap<>();
+                        areaMap.put("rankDecomposeDimension", area.getAreaId().toString());
+                        areaMap.put("rankDecomposeDimensionName", area.getAreaName());
+                        dropList.add(areaMap);
+                    }
+                    return dropList;
+                }
                 break;
             case 3:// todo 3省份
                 break;
             case 4:// todo 4产品
+                ProductDTO productDTO = new ProductDTO();
+                R<List<ProductDTO>> listProduct = productService.dropList(productDTO);
+                if (listProduct.getCode() == 200 && StringUtils.isNotEmpty(listProduct.getData())) {
+                    List<ProductDTO> data = listProduct.getData();
+                    for (ProductDTO product : data) {
+                        HashMap<String, String> productMap = new HashMap<>();
+                        productMap.put("rankDecomposeDimension", product.getProductId().toString());
+                        productMap.put("rankDecomposeDimensionName", product.getProductName());
+                        dropList.add(productMap);
+                    }
+                    return dropList;
+                }
                 break;
         }
         return null;
@@ -319,7 +362,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             throw new ServiceException("职级体系id列表不能为空");
         }
         List<OfficialRankSystemDTO> existByOfficialRankSystemDTOS = officialRankSystemMapper.isExistByOfficialRankSystemIds(officialRankSystemIds);
-        Map<Long, String> officialRankSystemMap = new HashMap();
+        Map<Long, String> officialRankSystemMap = new HashMap<>();
         for (OfficialRankSystemDTO existByOfficialRankSystemDTO : existByOfficialRankSystemDTOS) {
             officialRankSystemMap.put(existByOfficialRankSystemDTO.getOfficialRankSystemId(), existByOfficialRankSystemDTO.getOfficialRankSystemName());
         }

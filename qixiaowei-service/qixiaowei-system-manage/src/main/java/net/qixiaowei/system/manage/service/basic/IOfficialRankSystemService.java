@@ -124,5 +124,5 @@ public interface IOfficialRankSystemService {
      * @param rankDecomposeDimension
      * @return
      */
-    Map<Long, String> decomposeDrop(Integer rankDecomposeDimension);
+    List<Map<String, String>> decomposeDrop(Integer rankDecomposeDimension);
 }

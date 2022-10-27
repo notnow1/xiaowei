@@ -16,6 +16,7 @@ import java.util.List;
  */
 @FeignClient(contextId = "remoteProductService", value = ServiceNameConstants.OPERATE_CLOUD_SERVICE, fallbackFactory = RemoteProductFallbackFactory.class)
 public interface RemoteProductService {
+
     /**
      * 查询产品是否用到枚举
      */
@@ -25,6 +26,6 @@ public interface RemoteProductService {
     /**
      * 查询产品列表
      */
-    @GetMapping("/product/list")
-    R<List<ProductDTO>> list(@RequestBody ProductDTO productDTO);
+    @PostMapping("/product/dropList")
+    R<List<ProductDTO>> dropList(@RequestBody ProductDTO productDTO);
 }

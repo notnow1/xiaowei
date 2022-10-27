@@ -29,9 +29,9 @@ public class RemoteProductController implements RemoteProductService {
         return R.ok(productService.queryProductQuote(productDTO));
     }
     @Override
-    @InnerAuth
-    @GetMapping("/list")
-    public  R<List<ProductDTO>> list(ProductDTO productDTO){
+//    @InnerAuth
+    @PostMapping("/dropList")
+    public  R<List<ProductDTO>> dropList(@RequestBody ProductDTO productDTO){
         return R.ok(productService.selectProductList(productDTO));
     }
 }

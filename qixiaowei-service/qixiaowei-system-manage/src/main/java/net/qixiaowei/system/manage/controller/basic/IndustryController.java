@@ -23,7 +23,6 @@ import java.util.List;
 @RequestMapping("industry")
 public class IndustryController extends BaseController {
 
-
     @Autowired
     private IIndustryService industryService;
 

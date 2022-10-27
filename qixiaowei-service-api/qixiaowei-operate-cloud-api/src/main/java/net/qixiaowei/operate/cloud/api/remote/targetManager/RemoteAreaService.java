@@ -6,6 +6,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.factory.RemoteAreaFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -15,6 +16,6 @@ public interface RemoteAreaService {
     /**
      * 查询区域配置列表（ID+NAME）
      */
-    @GetMapping("/area/dropList")
+    @PostMapping("/area/dropList")
     R<List<AreaDTO>> dropList(@RequestBody AreaDTO areaDTO);
 }

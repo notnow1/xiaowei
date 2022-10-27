@@ -29,7 +29,7 @@ public  class RemoteProductFallbackFactory implements FallbackFactory<RemoteProd
             }
 
             @Override
-            public R<List<ProductDTO>> list(ProductDTO productDTO) {
+            public R<List<ProductDTO>> dropList(ProductDTO productDTO) {
                 return R.fail("获取产品列表失败:" + throwable.getMessage());
             }
         };

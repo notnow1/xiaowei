@@ -102,6 +102,19 @@ public class ProductServiceImpl implements IProductService {
     }
 
     /**
+     * 查询产品表列表-平铺下拉
+     *
+     * @param productDTO 产品表
+     * @return 产品表集合
+     */
+    @Override
+    public List<ProductDTO> selectDropList(ProductDTO productDTO) {
+        Product product = new Product();
+        BeanUtils.copyProperties(productDTO, product);
+        return productMapper.selectProductList(product);
+    }
+
+    /**
      * 树形结构
      *
      * @param lists

@@ -20,12 +20,20 @@ public interface IProductService{
     ProductDTO selectProductByProductId(Long productId);
 
     /**
-    * 查询产品表列表
+    * 查询产品表列表-树结构
     *
     * @param productDTO 产品表
     * @return 产品表集合
     */
     List<ProductDTO> selectProductList(ProductDTO productDTO);
+
+    /**
+     * 查询产品表列表-平铺下拉
+     *
+     * @param productDTO 产品表
+     * @return 产品表集合
+     */
+    List<ProductDTO> selectDropList(ProductDTO productDTO);
 
     /**
     * 新增产品表
