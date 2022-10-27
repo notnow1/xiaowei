@@ -76,7 +76,7 @@ CREATE TABLE performance_percentage_data(
     performance_percentage_id BIGINT    COMMENT '绩效比例ID' ,
     org_rank_factor_id BIGINT    COMMENT '组织绩效等级系数ID' ,
     person_rank_factor_id BIGINT    COMMENT '个人绩效等级系数ID' ,
-    value DECIMAL(4,2)    COMMENT '数值,单位:百分号%' ,
+    value DECIMAL(5,2)    COMMENT '数值,单位:百分号%' ,
     delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT    COMMENT '创建人' ,
     create_time TIMESTAMP    COMMENT '创建时间' ,
@@ -195,6 +195,147 @@ CREATE TABLE salary_item(
     update_time TIMESTAMP    COMMENT '更新时间' ,
     PRIMARY KEY (salary_item_id)
 )  COMMENT = '工资项';
+
+
+CREATE TABLE target_setting(
+    target_setting_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_setting_type TINYINT    COMMENT '目标制定类型:0自定义;1销售订单;2销售收入;3销售回款' ,
+    indicator_id BIGINT    COMMENT '指标ID' ,
+    target_year INT    COMMENT '目标年度' ,
+    percentage DECIMAL(6,2)    COMMENT '百分比(%)' ,
+    challenge_value DECIMAL(14,2)    COMMENT '挑战值' ,
+    target_value DECIMAL(14,2)    COMMENT '目标值' ,
+    guaranteed_value DECIMAL(14,2)    COMMENT '保底值' ,
+    sort INT    COMMENT '排序' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_setting_id)
+)  COMMENT = '目标制定';
+
+
+CREATE TABLE target_setting_income(
+    target_setting_income_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_setting_id BIGINT    COMMENT '目标制定ID' ,
+    money_before_one DECIMAL(14,2)    COMMENT '一年前订单金额' ,
+    money_before_two DECIMAL(14,2)    COMMENT '两年前订单金额' ,
+    money_before_three DECIMAL(14,2)    COMMENT '三年前订单金额' ,
+    conversion_before_one DECIMAL(6,2)    COMMENT '一年前订单转化率' ,
+    conversion_before_two DECIMAL(6,2)    COMMENT '两年前订单转化率' ,
+    conversion_before_three DECIMAL(6,2)    COMMENT '三年前订单转化率' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_setting_income_id)
+)  COMMENT = '目标制定收入表';
+
+
+CREATE TABLE target_setting_recoveries(
+    target_setting_recoveries_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_setting_id BIGINT    COMMENT '目标制定ID' ,
+    type TINYINT    COMMENT '类型:1:应回尽回;2:逾期清理;3:提前还款;4:销售收入目标;5:期末应收账款余额' ,
+    actual_last_year DECIMAL(14,2)    COMMENT '上年实际值' ,
+    challenge_value DECIMAL(14,2)    COMMENT '挑战值' ,
+    target_value DECIMAL(14,2)    COMMENT '目标值' ,
+    guaranteed_value DECIMAL(14,2)    COMMENT '保底值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_setting_recoveries_id)
+)  COMMENT = '目标制定回款集合表';
+
+
+CREATE TABLE target_setting_recovery(
+    target_setting_recoveries_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_setting_id BIGINT    COMMENT '目标制定ID' ,
+    balance_receivables DECIMAL(14,2)    COMMENT '上年年末应收账款余额' ,
+    baseline_value INT    COMMENT 'DSO(应收账款周转天数)基线' ,
+    improve_days INT    COMMENT 'DSO(应收账款周转天数)改进天数' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_setting_recoveries_id)
+)  COMMENT = '目标制定回款表';
+
+
+CREATE TABLE target_setting_order(
+    target_setting_order_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_setting_id BIGINT    COMMENT '目标制定ID' ,
+    history_year INT    COMMENT '历史年度' ,
+    history_actual DECIMAL(14,2)    COMMENT '历史年度实际值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_setting_order_id)
+)  COMMENT = '目标制定订单表';
+
+
+CREATE TABLE target_decompose(
+    target_decompose_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_decompose_type TINYINT    COMMENT '目标分解类型:0自定义;1销售订单;2销售收入;3销售回款' ,
+    indicator_id BIGINT    COMMENT '指标ID' ,
+    target_year INT    COMMENT '目标年度' ,
+    target_decompose_dimension_id BIGINT    COMMENT '目标分解维度ID' ,
+    decomposition_dimension VARCHAR(256)    COMMENT '分解维度' ,
+    time_dimension TINYINT    COMMENT '时间维度:1年度;2半年度;3季度;4月度;5周' ,
+    decompose_target DECIMAL(14,2)    COMMENT '分解目标值' ,
+    forecast_year DECIMAL(14,2)    COMMENT '年度预测值' ,
+    actual_total DECIMAL(14,2)    COMMENT '累计实际值' ,
+    status TINYINT    COMMENT '状态:0待录入;1已录入' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_decompose_id)
+)  COMMENT = '目标分解表';
+
+
+CREATE TABLE target_decompose_details(
+    target_decompose_details_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_decompose_id BIGINT    COMMENT '目标分解ID' ,
+    employee_id BIGINT    COMMENT '员工ID' ,
+    area_id BIGINT    COMMENT '区域ID' ,
+    department_id BIGINT    COMMENT '部门ID' ,
+    product_id BIGINT    COMMENT '产品ID' ,
+    region_id BIGINT    COMMENT '省份ID' ,
+    industry_id BIGINT    COMMENT '行业ID' ,
+    principal_employee_id BIGINT    COMMENT '负责人ID' ,
+    amount_target DECIMAL(14,2)    COMMENT '汇总目标值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_decompose_details_id)
+)  COMMENT = '目标分解详情表';
+
+
+CREATE TABLE decompose_detail_cycles(
+    decompose_detail_cycles_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_decompose_details_id BIGINT    COMMENT '目标分解详情ID' ,
+    cycle_number INT    COMMENT '周期数(顺序递增)' ,
+    cycle_target DECIMAL(14,2)    COMMENT '周期目标值' ,
+    cycle_forecast DECIMAL(14,2)    COMMENT '周期预测值' ,
+    cycle_actual DECIMAL(14,2)    COMMENT '周期实际值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (decompose_detail_cycles_id)
+)  COMMENT = '目标分解详情周期表';
+
 
 
 -- ----------------------------
