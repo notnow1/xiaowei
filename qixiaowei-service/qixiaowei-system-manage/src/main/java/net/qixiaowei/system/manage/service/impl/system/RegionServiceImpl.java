@@ -43,6 +43,17 @@ public class RegionServiceImpl implements IRegionService {
         return regionMapper.selectRegionByRegionId(regionId);
     }
 
+    /**
+     * 根据层级查询区域表
+     *
+     * @param level 区域表主键
+     * @return 区域表
+     */
+    @Override
+    public List<RegionDTO> selectRegionByLevel(Integer level) {
+        return regionMapper.selectRegionByLevel(level);
+    }
+
     @Override
     public List<RegionDTO> getRegionsByIds(Set<Long> regionIds) {
         return regionMapper.selectRegionByRegionIds(regionIds);

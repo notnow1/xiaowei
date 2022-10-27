@@ -23,6 +23,14 @@ public interface IRegionService {
     RegionDTO selectRegionByRegionId(Long regionId);
 
     /**
+     * 根据层级查询区域表
+     *
+     * @param level 区域表主键
+     * @return 区域表
+     */
+    List<RegionDTO> selectRegionByLevel(Integer level);
+
+    /**
      * 查询区域表列表
      *
      * @param regionIds 区域ids

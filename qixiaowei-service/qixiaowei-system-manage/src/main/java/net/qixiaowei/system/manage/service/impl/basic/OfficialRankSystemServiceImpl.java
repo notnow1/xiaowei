@@ -17,11 +17,13 @@ import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.mapper.basic.OfficialRankSystemMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankDecomposeService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankSystemService;
+import net.qixiaowei.system.manage.service.system.IRegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
 
     @Autowired
     private IDepartmentService departmentService;
+
+    @Autowired
+    private IRegionService regionService;
 
     /**
      * 查询职级体系表
@@ -104,7 +109,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 职级分解维度下拉框
      *
-     * @param rankDecomposeDimension
+     * @param rankDecomposeDimension 分解类型
      * @return
      */
     @Override
@@ -139,6 +144,16 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 }
                 break;
             case 3:// todo 3省份
+                List<RegionDTO> regionDTOS = regionService.selectRegionByLevel(1);
+                if (StringUtils.isNotEmpty(regionDTOS)) {
+                    for (RegionDTO region : regionDTOS) {
+                        HashMap<String, String> regionMap = new HashMap<>();
+                        regionMap.put("rankDecomposeDimension", region.getRegionId().toString());
+                        regionMap.put("rankDecomposeDimensionName", region.getRegionName());
+                        dropList.add(regionMap);
+                    }
+                    return dropList;
+                }
                 break;
             case 4:// todo 4产品
                 ProductDTO productDTO = new ProductDTO();
