@@ -93,8 +93,8 @@
         <if test="tenant.tenantLogo != null and tenant.tenantLogo != ''">
             and t.tenant_logo like '%${tenant.tenantLogo}%'
         </if>
-        <if test="tenant.tenantStatus != null and tenant.tenantStatus != ''">
-            and t.tenant_status like '%${tenant.tenantStatus}%'
+        <if test="tenant.tenantStatus != null">
+            and t.tenant_status =#{tenant.tenantStatus}
         </if>
     </select>
     <!--新增租户表-->
