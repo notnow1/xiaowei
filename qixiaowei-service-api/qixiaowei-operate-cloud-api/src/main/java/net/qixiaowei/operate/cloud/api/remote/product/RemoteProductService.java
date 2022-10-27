@@ -5,6 +5,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.factory.RemoteProductFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,4 +21,10 @@ public interface RemoteProductService {
      */
     @PostMapping("/product/queryProductQuote")
     R<List<ProductDTO>> queryProductQuote(@RequestBody ProductDTO productDTO);
+
+    /**
+     * 查询产品列表
+     */
+    @GetMapping("/product/list")
+    R<List<ProductDTO>> list(@RequestBody ProductDTO productDTO);
 }

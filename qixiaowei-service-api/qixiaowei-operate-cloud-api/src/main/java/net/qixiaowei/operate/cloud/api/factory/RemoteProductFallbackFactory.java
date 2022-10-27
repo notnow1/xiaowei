@@ -27,6 +27,11 @@ public  class RemoteProductFallbackFactory implements FallbackFactory<RemoteProd
             public R<List<ProductDTO>> queryProductQuote(ProductDTO productDTO) {
                 return R.fail("获取产品是否被引用失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<ProductDTO>> list(ProductDTO productDTO) {
+                return R.fail("获取产品列表失败:" + throwable.getMessage());
+            }
         };
     }
 }
