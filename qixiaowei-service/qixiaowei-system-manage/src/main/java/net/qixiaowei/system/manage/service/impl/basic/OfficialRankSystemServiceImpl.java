@@ -444,6 +444,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isNull(officialRankSystemDTO)) {
             throw new ServiceException("该职级体系已不存在");
         }
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = new ArrayList<>();
+        officialRankSystemDTOS.add(officialRankSystemDTO);
+        writeOfficialRank(officialRankSystemDTOS);
         List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
         officialRankSystemDTO.setOfficialRankDecomposeDTOS(officialRankDecomposeDTOS);
         return officialRankSystemDTO;
