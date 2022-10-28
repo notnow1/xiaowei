@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +26,7 @@ public class FileController {
      * 文件上传请求
      */
     @PostMapping("upload")
-    public R<FileDTO> upload(@RequestParam("file") MultipartFile file, @RequestParam(name = "source", required = false, defaultValue = "common") String source) {
+    public R<FileDTO> upload(@RequestParam("file") MultipartFile file, @RequestHeader(name = "source", required = false, defaultValue = "common") String source) {
         try {
             return R.ok(fileService.uploadFile(file, source));
         } catch (Exception e) {
