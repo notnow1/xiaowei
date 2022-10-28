@@ -381,9 +381,9 @@ public class TenantServiceImpl implements ITenantService {
         TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
         BeanUtils.copyProperties(tenantDTO, tenant);
         //租户登录背景图片URL
-        tenant.setLoginBackground("http://43.139.7.31:9800/local" + tenant.getLoginBackground());
+        tenant.setLoginBackground(tenant.getLoginBackground());
         //租户logo图片URL
-        tenant.setTenantLogo("http://43.139.7.31:9800/local" + tenant.getTenantLogo());
+        tenant.setTenantLogo(tenant.getTenantLogo());
         //查询租户数据
         TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
         if (StringUtils.isNull(tenantDTO1)){
