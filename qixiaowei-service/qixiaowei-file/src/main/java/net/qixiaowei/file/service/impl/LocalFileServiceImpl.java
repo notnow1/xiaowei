@@ -1,9 +1,11 @@
 package net.qixiaowei.file.service.impl;
 
+import net.qixiaowei.file.api.dto.FileDTO;
+import net.qixiaowei.file.logic.FileLogic;
 import net.qixiaowei.file.service.IFileService;
 import net.qixiaowei.file.utils.FileUploadUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +33,9 @@ public class LocalFileServiceImpl implements IFileService {
     @Value("${file.path}")
     private String localFilePath;
 
+    @Autowired
+    private FileLogic fileLogic;
+
     /**
      * 本地文件上传接口
      *
@@ -39,10 +44,10 @@ public class LocalFileServiceImpl implements IFileService {
      * @throws Exception
      */
     @Override
-    public String uploadFile(MultipartFile file) throws Exception {
+    public FileDTO uploadFile(MultipartFile file, String source) throws Exception {
         //todo 前面用租户id区分，区分不同租户的文件上传
-        String name = FileUploadUtils.upload(localFilePath, file);
+        String name = source + "/" + FileUploadUtils.upload(localFilePath, file);
         String url = domain + localFilePrefix + name;
-        return url;
+        return fileLogic.saveFileRecord(file, source, url);
     }
 }

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.file.mapper.FileMapper">
+    <!--    查询文件表-->
+    <select id="selectFileByFileId"
+            resultType="net.qixiaowei.file.api.dto.FileDTO">
+        SELECT
+        file_id, tenant_id, source, file_name, file_format, file_size, file_path, delete_flag, create_by, create_time, update_by, update_time
+        FROM file
+        WHERE  file_id=#{fileId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询文件表-->
+    <select id="selectFileByFileIds"
+            resultType="net.qixiaowei.file.api.dto.FileDTO">
+        SELECT
+        file_id, tenant_id, source, file_name, file_format, file_size, file_path, delete_flag, create_by, create_time, update_by, update_time
+        FROM file
+        WHERE  file_id in
+            <foreach item="item"
+                     collection="fileIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询文件表列表-->
+    <select id="selectFileList" resultType="net.qixiaowei.file.api.dto.FileDTO">
+        SELECT
+        file_id, tenant_id, source, file_name, file_format, file_size, file_path, delete_flag, create_by, create_time, update_by, update_time
+        FROM file
+        WHERE delete_flag=0
+                <if test="file.fileId != null">
+                    and file_id=#{file.fileId}
+                </if>
+                <if test="file.tenantId != null">
+                    and tenant_id=#{file.tenantId}
+                </if>
+                <if test="file.source != null and file.source != ''">
+                    and source=#{file.source}
+                </if>
+                <if test="file.fileName != null and file.fileName != ''">
+                    and file_name=#{file.fileName}
+                </if>
+                <if test="file.fileFormat != null and file.fileFormat != ''">
+                    and file_format=#{file.fileFormat}
+                </if>
+                <if test="file.fileSize != null">
+                    and file_size=#{file.fileSize}
+                </if>
+                <if test="file.filePath != null and file.filePath != ''">
+                    and file_path=#{file.filePath}
+                </if>
+                <if test="file.deleteFlag != null">
+                    and delete_flag=#{file.deleteFlag}
+                </if>
+                <if test="file.createBy != null">
+                    and create_by=#{file.createBy}
+                </if>
+                <if test="file.createTime != null">
+                    and create_time=#{file.createTime}
+                </if>
+                <if test="file.updateBy != null">
+                    and update_by=#{file.updateBy}
+                </if>
+                <if test="file.updateTime != null">
+                    and update_time=#{file.updateTime}
+                </if>
+    </select>
+    <!--新增文件表-->
+    <insert id="insertFile" useGeneratedKeys="true" keyProperty="fileId">
+        INSERT INTO file (tenant_id,source,file_name,file_format,file_size,file_path,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{file.tenantId},#{file.source},#{file.fileName},#{file.fileFormat},#{file.fileSize},#{file.filePath},#{file.deleteFlag},#{file.createBy},#{file.createTime},#{file.updateBy},#{file.updateTime})
+    </insert>
+    <!--修改文件表-->
+    <update id="updateFile">
+        UPDATE file
+        SET
+                    <if test="file.tenantId != null">
+                        tenant_id=#{file.tenantId},
+                    </if>
+                    <if test="file.source != null and file.source != ''">
+                        source=#{file.source},
+                    </if>
+                    <if test="file.fileName != null and file.fileName != ''">
+                        file_name=#{file.fileName},
+                    </if>
+                    <if test="file.fileFormat != null and file.fileFormat != ''">
+                        file_format=#{file.fileFormat},
+                    </if>
+                    <if test="file.fileSize != null">
+                        file_size=#{file.fileSize},
+                    </if>
+                    <if test="file.filePath != null and file.filePath != ''">
+                        file_path=#{file.filePath},
+                    </if>
+                    <if test="file.deleteFlag != null">
+                        delete_flag=#{file.deleteFlag},
+                    </if>
+                    <if test="file.createBy != null">
+                        create_by=#{file.createBy},
+                    </if>
+                    <if test="file.createTime != null">
+                        create_time=#{file.createTime},
+                    </if>
+                    <if test="file.updateBy != null">
+                        update_by=#{file.updateBy},
+                    </if>
+                    <if test="file.updateTime != null">
+                        update_time=#{file.updateTime}
+                    </if>
+        WHERE
+                 file_id=#{file.fileId}
+    </update>
+    <!--逻辑删除文件表-->
+    <update id="logicDeleteFileByFileId">
+        UPDATE file
+        SET     delete_flag= 1,
+                update_by=#{file.updateBy},
+                update_time=#{file.updateTime}
+        WHERE
+                file_id=#{file.fileId}
+    </update>
+    <!--逻辑批量删除文件表-->
+    <update id="logicDeleteFileByFileIds">
+        UPDATE file
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         file_id IN
+            <foreach item="item"
+                     collection="fileIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增文件表-->
+    <insert id="batchFile">
+        INSERT INTO file (tenant_id,source,file_name,file_format,file_size,file_path,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="files"
+                 separator=",">
+            (#{item.tenantId},#{item.source},#{item.fileName},#{item.fileFormat},#{item.fileSize},#{item.filePath},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除文件表-->
+    <delete id="deleteFileByFileId">
+        DELETE FROM file
+        WHERE  file_id=#{file}
+
+    </delete>
+    <!--物理批量删除文件表-->
+    <delete id="deleteFileByFileIds">
+        DELETE FROM file
+        WHERE  file_id IN
+            <foreach item="item"
+                     collection="fileIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改文件表-->
+    <update id="updateFiles">
+        update file
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="tenant_id=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.tenantId != null">
+                                    when file_id=#{item.fileId} then #{item.tenantId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="source=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.source != null and item.source != ''">
+                                    when file_id=#{item.fileId} then #{item.source}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="file_name=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.fileName != null and item.fileName != ''">
+                                    when file_id=#{item.fileId} then #{item.fileName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="file_format=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.fileFormat != null and item.fileFormat != ''">
+                                    when file_id=#{item.fileId} then #{item.fileFormat}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="file_size=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.fileSize != null">
+                                    when file_id=#{item.fileId} then #{item.fileSize}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="file_path=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.filePath != null and item.filePath != ''">
+                                    when file_id=#{item.fileId} then #{item.filePath}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when file_id=#{item.fileId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when file_id=#{item.fileId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when file_id=#{item.fileId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when file_id=#{item.fileId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="fileList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when file_id=#{item.fileId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="fileList" separator="or" item="item" index="index">
+                    file_id=#{item.fileId}
+        </foreach>
+    </update>
+</mapper>
+
+

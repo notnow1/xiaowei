@@ -1,5 +1,22 @@
 SET NAMES utf8mb4;
 
+CREATE TABLE file(
+    file_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    tenant_id BIGINT    COMMENT '租户ID' ,
+    source VARCHAR(64)    COMMENT '来源' ,
+    file_name VARCHAR(1024)    COMMENT '文件名称' ,
+    file_format VARCHAR(64)    COMMENT '文件格式' ,
+    file_size BIGINT    COMMENT '大小' ,
+    file_path VARCHAR(2048)    COMMENT '路径' ,
+    delete_flag TINYINT    COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (file_id)
+)  COMMENT = '文件表';
+
+
 CREATE TABLE product_package
 (
     product_package_id          BIGINT NOT NULL AUTO_INCREMENT COMMENT 'ID',

@@ -64,6 +64,18 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <!-- qixiaowei integration security -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-security</artifactId>
+        </dependency>
+
+        <!-- qixiaowei integration DataSource -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-datasource</artifactId>
+        </dependency>
+
     </dependencies>
 
 
