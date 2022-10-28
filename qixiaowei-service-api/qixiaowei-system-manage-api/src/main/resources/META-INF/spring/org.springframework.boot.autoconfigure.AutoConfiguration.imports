@@ -1,3 +1,4 @@
 net.qixiaowei.system.manage.api.factory.user.RemoteUserFallbackFactory
 net.qixiaowei.system.manage.api.factory.RemoteLogFallbackFactory
 net.qixiaowei.system.manage.api.factory.system.RemoteRegionFallbackFactory
+net.qixiaowei.system.manage.api.factory.basic.RemoteIndicatorFallbackFactory
