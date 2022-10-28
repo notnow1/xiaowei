@@ -1,5 +1,6 @@
 package net.qixiaowei.file.service;
 
+import net.qixiaowei.file.api.dto.FileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -13,5 +14,5 @@ public interface IFileService {
      * @return 访问地址
      * @throws Exception
      */
-    public String uploadFile(MultipartFile file) throws Exception;
+    FileDTO uploadFile(MultipartFile file, String source) throws Exception;
 }

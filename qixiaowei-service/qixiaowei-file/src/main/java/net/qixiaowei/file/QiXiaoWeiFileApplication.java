@@ -1,14 +1,18 @@
 package net.qixiaowei.file;
 
+import net.qixiaowei.integration.security.annotation.EnableCustomConfig;
+import net.qixiaowei.integration.security.annotation.EnableRyFeignClients;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+
 
 
 /**
  * 文件服务
  */
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@EnableCustomConfig
+@EnableRyFeignClients
+@SpringBootApplication
 public class QiXiaoWeiFileApplication {
     public static void main(String[] args) {
         SpringApplication.run(QiXiaoWeiFileApplication.class, args);

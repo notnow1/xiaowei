@@ -1,7 +1,7 @@
 package net.qixiaowei.file.api.factory;
 
 import net.qixiaowei.file.api.RemoteFileService;
-import net.qixiaowei.file.api.domain.File;
+import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.integration.common.domain.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class RemoteFileFallbackFactory implements FallbackFactory<RemoteFileServ
              */
             @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
             @Override
-            public R<File> upLoad(MultipartFile file) {
+            public R<FileDTO> upLoad(MultipartFile file, String source) {
                 return R.fail("上传文件失败:" + throwable.getMessage());
             }
         };

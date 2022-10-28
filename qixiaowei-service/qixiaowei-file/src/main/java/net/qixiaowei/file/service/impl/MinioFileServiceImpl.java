@@ -1,6 +1,8 @@
 package net.qixiaowei.file.service.impl;
 
+import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.file.config.MinioConfig;
+import net.qixiaowei.file.logic.FileLogic;
 import net.qixiaowei.file.service.IFileService;
 import net.qixiaowei.file.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class MinioFileServiceImpl implements IFileService {
     @Autowired
     private MinioClient client;
 
+    @Autowired
+    private FileLogic fileLogic;
+
     /**
      * 本地文件上传接口
      *
@@ -30,9 +35,9 @@ public class MinioFileServiceImpl implements IFileService {
      * @throws Exception
      */
     @Override
-    public String uploadFile(MultipartFile file) throws Exception {
+    public FileDTO uploadFile(MultipartFile file, String source) throws Exception {
         //todo 前面用租户id区分，区分不同租户的文件上传
-        String fileName = FileUploadUtils.extractFilename(file);
+        String fileName = source + "/" + FileUploadUtils.extractFilename(file);
         PutObjectArgs args = PutObjectArgs.builder()
                 .bucket(minioConfig.getBucketName())
                 .object(fileName)
@@ -40,6 +45,7 @@ public class MinioFileServiceImpl implements IFileService {
                 .contentType(file.getContentType())
                 .build();
         client.putObject(args);
-        return "/" + fileName;
+        String url = "/" + fileName;
+        return fileLogic.saveFileRecord(file, source, url);
     }
 }
