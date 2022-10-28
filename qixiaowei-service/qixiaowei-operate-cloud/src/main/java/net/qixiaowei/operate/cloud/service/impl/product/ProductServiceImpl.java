@@ -53,6 +53,8 @@ public class ProductServiceImpl implements IProductService {
         List<ProductDataDTO> productDataDTOList = new ArrayList<>();
         //产品表
         ProductDTO productDTO = productMapper.selectProductByProductId(productId);
+        //产品文件表
+        List<ProductFileDTO> productFileDTOS = productFileMapper.selectProductFileByProductId(productId);
         //产品规格参数表
         List<ProductSpecificationParamDTO> productSpecificationParamDTOS = productSpecificationParamMapper.selectProductId(productId);
 
@@ -73,6 +75,7 @@ public class ProductServiceImpl implements IProductService {
         //产品规格参数表集合
         productDTO.setProductSpecificationParamDTOList(productSpecificationParamDTOS);
         productDTO.setProductDataDTOList(productDataDTOList);
+        productDTO.setProductFileDTOList(productFileDTOS);
         return productDTO;
     }
 
