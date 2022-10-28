@@ -30,6 +30,14 @@ public interface IIndicatorService {
     List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO);
 
     /**
+     * 查询指标表列表通过指标编码
+     *
+     * @param indicatorCode 指标编码
+     * @return 指标表集合
+     */
+    IndicatorDTO selectIndicatorByCode(String indicatorCode);
+
+    /**
      * 查询指标表树状图
      *
      * @param indicatorDTO

@@ -110,7 +110,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      * 职级分解维度下拉框
      *
      * @param rankDecomposeDimension 分解类型
-     * @return
+     * @return dropList
      */
     @Override
     public List<Map<String, String>> decomposeDrop(Integer rankDecomposeDimension) {
@@ -170,13 +170,13 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 }
                 break;
         }
-        return null;
+        throw new ServiceException("请输入对应的分解维度类型");
     }
 
     /**
      * 拼接职级字段
      *
-     * @param officialRankSystemDTOS
+     * @param officialRankSystemDTOS 职级体系
      */
     private void writeOfficialRank(List<OfficialRankSystemDTO> officialRankSystemDTOS) {
         String rankPrefixCode;

@@ -462,7 +462,7 @@
         </foreach>
         and delete_flag = 0
     </select>
-    <select id="checkUnique" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">
+    <select id="getIndicatorByCode" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">
         SELECT
         indicator_id, parent_indicator_id, ancestors, indicator_type, indicator_code, indicator_name, sort, level,
         indicator_category_id, indicator_value_type, choice_flag, examine_direction, indicator_definition,

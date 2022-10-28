@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper">
+    <!--    查询目标制定-->
+    <select id="selectTargetSettingByTargetSettingId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value, guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting
+        WHERE  target_setting_id=#{targetSettingId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标制定-->
+    <select id="selectTargetSettingByTargetSettingIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value, guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting
+        WHERE  target_setting_id in
+            <foreach item="item"
+                     collection="targetSettingIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标制定列表-->
+    <select id="selectTargetSettingList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value, guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting
+        WHERE delete_flag=0
+                <if test="targetSetting.targetSettingId != null">
+                    and target_setting_id=#{targetSetting.targetSettingId}
+                </if>
+                <if test="targetSetting.targetSettingType != null">
+                    and target_setting_type=#{targetSetting.targetSettingType}
+                </if>
+                <if test="targetSetting.indicatorId != null">
+                    and indicator_id=#{targetSetting.indicatorId}
+                </if>
+                <if test="targetSetting.targetYear != null">
+                    and target_year=#{targetSetting.targetYear}
+                </if>
+                <if test="targetSetting.percentage != null">
+                    and percentage=#{targetSetting.percentage}
+                </if>
+                <if test="targetSetting.challengeValue != null">
+                    and challenge_value=#{targetSetting.challengeValue}
+                </if>
+                <if test="targetSetting.targetValue != null">
+                    and target_value=#{targetSetting.targetValue}
+                </if>
+                <if test="targetSetting.guaranteedValue != null">
+                    and guaranteed_value=#{targetSetting.guaranteedValue}
+                </if>
+                <if test="targetSetting.sort != null">
+                    and sort=#{targetSetting.sort}
+                </if>
+                <if test="targetSetting.deleteFlag != null">
+                    and delete_flag=#{targetSetting.deleteFlag}
+                </if>
+                <if test="targetSetting.createBy != null">
+                    and create_by=#{targetSetting.createBy}
+                </if>
+                <if test="targetSetting.createTime != null">
+                    and create_time=#{targetSetting.createTime}
+                </if>
+                <if test="targetSetting.updateBy != null">
+                    and update_by=#{targetSetting.updateBy}
+                </if>
+                <if test="targetSetting.updateTime != null">
+                    and update_time=#{targetSetting.updateTime}
+                </if>
+    </select>
+    <!--新增目标制定-->
+    <insert id="insertTargetSetting" useGeneratedKeys="true" keyProperty="targetSettingId">
+        INSERT INTO target_setting (target_setting_type,indicator_id,target_year,percentage,challenge_value,target_value,guaranteed_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetSetting.targetSettingType},#{targetSetting.indicatorId},#{targetSetting.targetYear},#{targetSetting.percentage},#{targetSetting.challengeValue},#{targetSetting.targetValue},#{targetSetting.guaranteedValue},#{targetSetting.sort},#{targetSetting.deleteFlag},#{targetSetting.createBy},#{targetSetting.createTime},#{targetSetting.updateBy},#{targetSetting.updateTime})
+    </insert>
+    <!--修改目标制定-->
+    <update id="updateTargetSetting">
+        UPDATE target_setting
+        SET
+                    <if test="targetSetting.targetSettingType != null">
+                        target_setting_type=#{targetSetting.targetSettingType},
+                    </if>
+                    <if test="targetSetting.indicatorId != null">
+                        indicator_id=#{targetSetting.indicatorId},
+                    </if>
+                    <if test="targetSetting.targetYear != null">
+                        target_year=#{targetSetting.targetYear},
+                    </if>
+                    <if test="targetSetting.percentage != null">
+                        percentage=#{targetSetting.percentage},
+                    </if>
+                    <if test="targetSetting.challengeValue != null">
+                        challenge_value=#{targetSetting.challengeValue},
+                    </if>
+                    <if test="targetSetting.targetValue != null">
+                        target_value=#{targetSetting.targetValue},
+                    </if>
+                    <if test="targetSetting.guaranteedValue != null">
+                        guaranteed_value=#{targetSetting.guaranteedValue},
+                    </if>
+                    <if test="targetSetting.sort != null">
+                        sort=#{targetSetting.sort},
+                    </if>
+                    <if test="targetSetting.deleteFlag != null">
+                        delete_flag=#{targetSetting.deleteFlag},
+                    </if>
+                    <if test="targetSetting.createBy != null">
+                        create_by=#{targetSetting.createBy},
+                    </if>
+                    <if test="targetSetting.createTime != null">
+                        create_time=#{targetSetting.createTime},
+                    </if>
+                    <if test="targetSetting.updateBy != null">
+                        update_by=#{targetSetting.updateBy},
+                    </if>
+                    <if test="targetSetting.updateTime != null">
+                        update_time=#{targetSetting.updateTime}
+                    </if>
+        WHERE
+                 target_setting_id=#{targetSetting.targetSettingId}
+    </update>
+    <!--逻辑删除目标制定-->
+    <update id="logicDeleteTargetSettingByTargetSettingId">
+        UPDATE target_setting
+        SET     delete_flag= 1,
+                update_by=#{targetSetting.updateBy},
+                update_time=#{targetSetting.updateTime}
+        WHERE
+                target_setting_id=#{targetSetting.targetSettingId}
+    </update>
+    <!--逻辑批量删除目标制定-->
+    <update id="logicDeleteTargetSettingByTargetSettingIds">
+        UPDATE target_setting
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         target_setting_id IN
+            <foreach item="item"
+                     collection="targetSettingIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增目标制定-->
+    <insert id="batchTargetSetting">
+        INSERT INTO target_setting (target_setting_type,indicator_id,target_year,percentage,challenge_value,target_value,guaranteed_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetSettings"
+                 separator=",">
+            (#{item.targetSettingType},#{item.indicatorId},#{item.targetYear},#{item.percentage},#{item.challengeValue},#{item.targetValue},#{item.guaranteedValue},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标制定-->
+    <delete id="deleteTargetSettingByTargetSettingId">
+        DELETE FROM target_setting
+        WHERE  target_setting_id=#{targetSetting}
+
+    </delete>
+    <!--物理批量删除目标制定-->
+    <delete id="deleteTargetSettingByTargetSettingIds">
+        DELETE FROM target_setting
+        WHERE  target_setting_id IN
+            <foreach item="item"
+                     collection="targetSettingIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改目标制定-->
+    <update id="updateTargetSettings">
+        update target_setting
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="target_setting_type=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.targetSettingType != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.targetSettingType}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="indicator_id=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.indicatorId != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.indicatorId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="target_year=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.targetYear != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.targetYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="percentage=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.percentage != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.percentage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="challenge_value=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.challengeValue != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.challengeValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="target_value=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.targetValue != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.targetValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="guaranteed_value=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.guaranteedValue != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.guaranteedValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="targetSettingList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when target_setting_id=#{item.targetSettingId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="targetSettingList" separator="or" item="item" index="index">
+                    target_setting_id=#{item.targetSettingId}
+        </foreach>
+    </update>
+</mapper>
+
+

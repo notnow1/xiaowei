@@ -64,35 +64,29 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Override
     public List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO) {
         List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
-        if (StringUtils.isEmpty(indicatorDTOS)) {
-            return indicatorDTOS;
-        }
-        Long parentIndicatorId = indicatorDTO.getParentIndicatorId();
-        if (StringUtils.isNull(parentIndicatorId)) {
-            indicatorDTO.setParentIndicatorId(0L);
-        }
-        ArrayList<Long> indicatorCategoryList = new ArrayList<>();
         for (IndicatorDTO dto : indicatorDTOS) {
-            indicatorCategoryList.add(dto.getIndicatorCategoryId());
-        }
-        // 通过categoryId集合查找对应的categoryName
-        List<IndicatorCategory> indicatorCategory = indicatorCategoryMapper.selectIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryList);
-        // 赋值
-        for (int i = 0; i < indicatorCategoryList.size(); i++) {
-            for (IndicatorCategory category : indicatorCategory) {
-                if (category.getIndicatorCategoryId().equals(indicatorCategoryList.get(i))) {
-                    indicatorDTOS.get(i).setIndicatorCategoryName(category.getIndicatorCategoryName());
-                    break;
-                }
-            }
-            String indicatorCode = indicatorDTOS.get(i).getIndicatorCode();
+            String indicatorCode = dto.getIndicatorCode();
             if (IndicatorCode.contains(indicatorCode)) {
-                indicatorDTOS.get(i).setIsPreset(1);
+                dto.setIsPreset(1);
             } else {
-                indicatorDTOS.get(i).setIsPreset(0);
+                dto.setIsPreset(0);
             }
         }
         return indicatorDTOS;
+    }
+
+    /**
+     * 查询指标表列表通过指标编码
+     *
+     * @param indicatorCode 指标编码
+     * @return
+     */
+    @Override
+    public IndicatorDTO selectIndicatorByCode(String indicatorCode) {
+        if (StringUtils.isNotEmpty(indicatorCode)) {
+            return indicatorMapper.getIndicatorByCode(indicatorCode);
+        }
+        return null;
     }
 
     /**
@@ -153,7 +147,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (IndicatorCode.contains(indicatorCode)) {
             throw new ServiceException("该指标编码为预置编码不可新增");
         }
-        IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
+        IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             throw new ServiceException("指标编码重复");
         }
@@ -218,7 +212,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (IndicatorCode.contains(indicatorById.getIndicatorCode())) {
             throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
         }
-        IndicatorDTO indicatorByCode = indicatorMapper.checkUnique(indicatorCode);
+        IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             if (!indicatorByCode.getIndicatorId().equals(indicatorId)) {
                 throw new ServiceException("更新指标" + indicatorDTO.getIndicatorName() + "失败,指标编码重复");
