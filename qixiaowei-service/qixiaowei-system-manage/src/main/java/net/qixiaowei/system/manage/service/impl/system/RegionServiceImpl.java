@@ -2,6 +2,9 @@ package net.qixiaowei.system.manage.service.impl.system;
 
 import java.util.List;
 
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -70,6 +73,25 @@ public class RegionServiceImpl implements IRegionService {
         Region region = new Region();
         BeanUtils.copyProperties(regionDTO, region);
         return regionMapper.selectRegionList(region);
+    }
+
+    /**
+     * 查询区域表树表
+     */
+    @Override
+    public List<Tree<Long>> selectRegionTreeList(RegionDTO regionDTO) {
+        Region region = new Region();
+        BeanUtils.copyProperties(regionDTO, region);
+        List<RegionVO> regionVOS = regionMapper.selectRegions(region);
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("regionId");
+        treeNodeConfig.setNameKey("regionName");
+        treeNodeConfig.setParentIdKey("parentRegionId");
+        return TreeUtil.build(regionVOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getRegionId());
+            tree.setParentId(treeNode.getParentRegionId());
+            tree.setName(treeNode.getRegionName());
+        });
     }
 
     /**

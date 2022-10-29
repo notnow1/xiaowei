@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.service.system;
 import java.util.List;
 import java.util.Set;
 
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.vo.system.RegionVO;
 
@@ -45,6 +46,14 @@ public interface IRegionService {
      * @return 区域表集合
      */
     List<RegionDTO> selectRegionList(RegionDTO regionDTO);
+
+    /**
+     * 查询区域表列表
+     *
+     * @param regionDTO 区域表
+     * @return 区域表树集合
+     */
+    List<Tree<Long>> selectRegionTreeList(RegionDTO regionDTO);
 
     /**
      * 查询区域表列表

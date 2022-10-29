@@ -52,6 +52,14 @@ public class RegionController extends BaseController {
     }
 
     /**
+     * 查询区域表树表
+     */
+    @GetMapping("/treeList")
+    public AjaxResult treeList(RegionDTO regionDTO) {
+        return AjaxResult.success(regionService.selectRegionTreeList(regionDTO));
+    }
+
+    /**
      * 查询区域表列表
      */
     @GetMapping("/list")
