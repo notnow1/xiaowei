@@ -1,22 +1,20 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSettingOrder;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingOrderMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingOrderService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import net.qixiaowei.integration.common.exception.ServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -54,9 +52,15 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
         return targetSettingOrderMapper.selectTargetSettingOrderList(targetSettingOrder);
     }
 
+    /**
+     * 获取订单目标制定
+     *
+     * @param historyNumS 历史年份
+     * @return
+     */
     @Override
-    public List<TargetSettingOrderDTO> selectTargetSettingOrderListByHistoryYears(List<Integer> historyNumS) {
-        return null;
+    public List<TargetSettingOrderDTO> selectTargetSettingOrderList(List<Integer> historyNumS) {
+        return targetSettingOrderMapper.selectTargetSettingOrderListByTargetSettingId(historyNumS);
     }
 
     /**
@@ -117,6 +121,26 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
     }
 
     /**
+     * 查询销售订单目标制定-不带主表玩
+     *
+     * @param historyNumS 历史年份
+     */
+    @Override
+    public List<TargetSettingOrderDTO> selectDropTargetSettingOrderList(List<Integer> historyNumS) {
+        return targetSettingOrderMapper.selectTargetSettingOrderByHistoryNumS(historyNumS);
+    }
+
+    /**
+     * 获取全部的订单目标制定列表
+     *
+     * @return
+     */
+    @Override
+    public List<TargetSettingOrderDTO> selectTargetSettingOrderLists() {
+        return targetSettingOrderMapper.selectTargetSettingLists();
+    }
+
+    /**
      * 逻辑删除目标制定订单表信息
      *
      * @param targetSettingOrderDTO 目标制定订单表
@@ -148,14 +172,14 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
     /**
      * 物理批量删除目标制定订单表
      *
-     * @param targetSettingOrderDtos 需要删除的目标制定订单表主键
+     * @param targetSettingOrderDtoS 需要删除的目标制定订单表主键
      * @return 结果
      */
 
     @Override
-    public int deleteTargetSettingOrderByTargetSettingOrderIds(List<TargetSettingOrderDTO> targetSettingOrderDtos) {
-        List<Long> stringList = new ArrayList();
-        for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDtos) {
+    public int deleteTargetSettingOrderByTargetSettingOrderIds(List<TargetSettingOrderDTO> targetSettingOrderDtoS) {
+        List<Long> stringList = new ArrayList<>();
+        for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDtoS) {
             stringList.add(targetSettingOrderDTO.getTargetSettingOrderId());
         }
         return targetSettingOrderMapper.deleteTargetSettingOrderByTargetSettingOrderIds(stringList);
@@ -164,19 +188,21 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
     /**
      * 批量新增目标制定订单表信息
      *
-     * @param targetSettingOrderDtos 目标制定订单表对象
+     * @param targetSettingOrderDtoS 目标制定订单表对象
      */
 
-    public int insertTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtos) {
-        List<TargetSettingOrder> targetSettingOrderList = new ArrayList();
-
-        for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDtos) {
+    public int insertTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtoS, TargetSettingDTO targetSettingDTO) {
+        List<TargetSettingOrder> targetSettingOrderList = new ArrayList<>();
+        for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDtoS) {
             TargetSettingOrder targetSettingOrder = new TargetSettingOrder();
             BeanUtils.copyProperties(targetSettingOrderDTO, targetSettingOrder);
             targetSettingOrder.setCreateBy(SecurityUtils.getUserId());
             targetSettingOrder.setCreateTime(DateUtils.getNowDate());
             targetSettingOrder.setUpdateTime(DateUtils.getNowDate());
             targetSettingOrder.setUpdateBy(SecurityUtils.getUserId());
+            if (StringUtils.isNull(targetSettingOrder.getTargetSettingId())) {
+                targetSettingOrder.setTargetSettingId(targetSettingDTO.getTargetSettingId());
+            }
             targetSettingOrder.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             targetSettingOrderList.add(targetSettingOrder);
         }
@@ -186,19 +212,20 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
     /**
      * 批量修改目标制定订单表信息
      *
-     * @param targetSettingOrderDtos 目标制定订单表对象
+     * @param targetSettingOrderDtoS 目标制定订单表对象
      */
 
-    public int updateTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtos) {
-        List<TargetSettingOrder> targetSettingOrderList = new ArrayList();
-
-        for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDtos) {
+    public int updateTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtoS, TargetSettingDTO targetSetting) {
+        List<TargetSettingOrder> targetSettingOrderList = new ArrayList<>();
+        for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDtoS) {
             TargetSettingOrder targetSettingOrder = new TargetSettingOrder();
             BeanUtils.copyProperties(targetSettingOrderDTO, targetSettingOrder);
+            targetSettingOrder.setTargetSettingId(targetSetting.getTargetSettingId());
             targetSettingOrder.setCreateBy(SecurityUtils.getUserId());
             targetSettingOrder.setCreateTime(DateUtils.getNowDate());
             targetSettingOrder.setUpdateTime(DateUtils.getNowDate());
             targetSettingOrder.setUpdateBy(SecurityUtils.getUserId());
+            targetSettingOrder.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             targetSettingOrderList.add(targetSettingOrder);
         }
         return targetSettingOrderMapper.updateTargetSettingOrders(targetSettingOrderList);

@@ -147,4 +147,12 @@ public interface IDepartmentService {
      * @return
      */
     List<DepartmentDTO> dropList(DepartmentDTO departmentDTO);
+
+    /**
+     * 通过部门ID获取列表
+     *
+     * @param departmentIds
+     * @return
+     */
+    List<DepartmentDTO> selectDepartmentByDepartmentIds(List<Long> departmentIds);
 }

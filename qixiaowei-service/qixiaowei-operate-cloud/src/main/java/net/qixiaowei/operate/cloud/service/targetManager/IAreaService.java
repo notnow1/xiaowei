@@ -108,4 +108,12 @@ public interface IAreaService {
      * @return
      */
     List<AreaDTO> selectDropList(AreaDTO areaDTO);
+
+    /**
+     * 查询区域配置列表通过IDS
+     *
+     * @param areaIds 区域表集合
+     * @return 结果
+     */
+    List<AreaDTO> selectAreaListByAreaIds(List<Long> areaIds);
 }

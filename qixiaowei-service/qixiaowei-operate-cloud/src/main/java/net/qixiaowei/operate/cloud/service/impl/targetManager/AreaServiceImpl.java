@@ -139,8 +139,8 @@ public class AreaServiceImpl implements IAreaService {
         if (StringUtils.isEmpty(areaIds)) {
             throw new ServiceException("区域id不能为空");
         }
-        List<AreaDTO> exist = areaMapper.isExist(areaIds);
-        if (exist.size() < areaIds.size()) {
+        List<AreaDTO> areaByIds = areaMapper.selectAreaListByAreaIds(areaIds);
+        if (areaByIds.size() < areaIds.size()) {
             throw new ServiceException("区域配置已不存在");
         }
         return areaMapper.logicDeleteAreaByAreaIds(areaIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -169,6 +169,17 @@ public class AreaServiceImpl implements IAreaService {
         Area area = new Area();
         BeanUtils.copyProperties(areaDTO, area);
         return areaMapper.dropList(area);
+    }
+
+    /**
+     * 查询区域配置列表通过IDS
+     *
+     * @param areaIds 区域表集合
+     * @return 结果
+     */
+    @Override
+    public List<AreaDTO> selectAreaListByAreaIds(List<Long> areaIds) {
+        return areaMapper.selectAreaListByAreaIds(areaIds);
     }
 
     /**

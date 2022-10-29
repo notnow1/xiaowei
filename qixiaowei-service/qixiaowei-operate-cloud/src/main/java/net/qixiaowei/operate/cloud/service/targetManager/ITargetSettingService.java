@@ -2,7 +2,9 @@ package net.qixiaowei.operate.cloud.service.targetManager;
 
 import java.util.List;
 
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
 
 
@@ -35,7 +37,7 @@ public interface ITargetSettingService {
      * @param targetSettingDTO 目标制定
      * @return 结果
      */
-    TargetSettingDTO insertTargetSetting(TargetSettingDTO targetSettingDTO);
+    TargetSetting insertTargetSetting(TargetSettingDTO targetSettingDTO);
 
     /**
      * 修改目标制定
@@ -123,7 +125,7 @@ public interface ITargetSettingService {
      * @param targetSettingDTO 目标制定
      * @return
      */
-    int saveOrderTargetSetting(TargetSettingDTO targetSettingDTO);
+    TargetSettingDTO saveOrderTargetSetting(TargetSettingDTO targetSettingDTO);
 
     /**
      * 查询销售订单目标制定
@@ -132,4 +134,12 @@ public interface ITargetSettingService {
      * @return
      */
     TargetSettingDTO selectOrderTargetSettingList(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 查询销售订单目标制定-不带主表玩
+     *
+     * @param targetSettingDTO 目标制定
+     * @return
+     */
+    List<TargetSettingOrderDTO> selectOrderDropTargetSettingList(TargetSettingDTO targetSettingDTO);
 }

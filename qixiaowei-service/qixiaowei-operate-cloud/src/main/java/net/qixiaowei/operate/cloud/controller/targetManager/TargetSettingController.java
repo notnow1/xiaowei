@@ -52,7 +52,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 查询目标制定详情
      */
-    @RequiresPermissions("operate:cloud:targetSetting:info")
+//    @RequiresPermissions("operate:cloud:targetSetting:info")
     @GetMapping("/info/{targetSettingId}")
     public AjaxResult info(@PathVariable Long targetSettingId) {
         TargetSettingDTO targetSettingDTO = targetSettingService.selectTargetSettingByTargetSettingId(targetSettingId);
@@ -62,7 +62,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 分页查询目标制定列表
      */
-    @RequiresPermissions("operate:cloud:targetSetting:pageList")
+//    @RequiresPermissions("operate:cloud:targetSetting:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(TargetSettingDTO targetSettingDTO) {
         startPage();
@@ -73,7 +73,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 查询目标制定列表
      */
-    @RequiresPermissions("operate:cloud:targetSetting:list")
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
     @GetMapping("/list")
     public AjaxResult list(TargetSettingDTO targetSettingDTO) {
         List<TargetSettingDTO> list = targetSettingService.selectTargetSettingList(targetSettingDTO);
@@ -83,28 +83,36 @@ public class TargetSettingController extends BaseController {
     /**
      * 查询目标制定列表
      */
-    @RequiresPermissions("operate:cloud:targetSetting:list")
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
     @GetMapping("/list/order")
     public AjaxResult listOrder(TargetSettingDTO targetSettingDTO) {
-        TargetSettingDTO targetSetting = targetSettingService.selectOrderTargetSettingList(targetSettingDTO);
-        return AjaxResult.success(targetSetting);
+        return AjaxResult.success(targetSettingService.selectOrderTargetSettingList(targetSettingDTO));
+    }
+
+    /**
+     * 查询销售订单目标制定-不带主表玩
+     */
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @GetMapping("/list/orderDrop")
+    public AjaxResult listOrderDrop(TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.selectOrderDropTargetSettingList(targetSettingDTO));
     }
 
 
     /**
      * 保存销售订单目标制定
      */
-    @RequiresPermissions("operate:cloud:targetSetting:add")
-    @Log(title = "保存销售订单目标制定", businessType = BusinessType.INSERT)
+//    @RequiresPermissions("operate:cloud:targetSetting:add")
+    @Log(title = "保存销售订单目标制定", businessType = BusinessType.UPDATE)
     @PostMapping("/save/order")
     public AjaxResult saveOrder(@RequestBody TargetSettingDTO targetSettingDTO) {
-        return toAjax(targetSettingService.saveOrderTargetSetting(targetSettingDTO));
+        return AjaxResult.success(targetSettingService.saveOrderTargetSetting(targetSettingDTO));
     }
 
     /**
      * 新增目标制定
      */
-    @RequiresPermissions("operate:cloud:targetSetting:add")
+//    @RequiresPermissions("operate:cloud:targetSetting:add")
     @Log(title = "保存销售收入目标制定", businessType = BusinessType.INSERT)
     @PostMapping("/save/income")
     public AjaxResult saveIncome(@RequestBody TargetSettingDTO targetSettingDTO) {
@@ -114,7 +122,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 新增目标制定
      */
-    @RequiresPermissions("operate:cloud:targetSetting:add")
+//    @RequiresPermissions("operate:cloud:targetSetting:add")
     @Log(title = "保存销售回款目标制定", businessType = BusinessType.INSERT)
     @PostMapping("/save/recoveries")
     public AjaxResult saveRecoveries(@RequestBody TargetSettingDTO targetSettingDTO) {
@@ -125,7 +133,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 修改目标制定
      */
-    @RequiresPermissions("operate:cloud:targetSetting:edit")
+//    @RequiresPermissions("operate:cloud:targetSetting:edit")
     @Log(title = "修改目标制定", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody TargetSettingDTO targetSettingDTO) {
@@ -135,7 +143,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 逻辑删除目标制定
      */
-    @RequiresPermissions("operate:cloud:targetSetting:remove")
+//    @RequiresPermissions("operate:cloud:targetSetting:remove")
     @Log(title = "删除目标制定", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody TargetSettingDTO targetSettingDTO) {
@@ -145,7 +153,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 批量修改目标制定
      */
-    @RequiresPermissions("operate:cloud:targetSetting:edits")
+//    @RequiresPermissions("operate:cloud:targetSetting:edits")
     @Log(title = "批量修改目标制定", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<TargetSettingDTO> targetSettingDtos) {
@@ -155,7 +163,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 批量新增目标制定
      */
-    @RequiresPermissions("operate:cloud:targetSetting:insertTargetSettings")
+//    @RequiresPermissions("operate:cloud:targetSetting:insertTargetSettings")
     @Log(title = "批量新增目标制定", businessType = BusinessType.INSERT)
     @PostMapping("/insertTargetSettings")
     public AjaxResult insertTargetSettings(@RequestBody List<TargetSettingDTO> targetSettingDtos) {
@@ -165,7 +173,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 逻辑批量删除目标制定
      */
-    @RequiresPermissions("operate:cloud:targetSetting:removes")
+//    @RequiresPermissions("operate:cloud:targetSetting:removes")
     @Log(title = "批量删除目标制定", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> targetSettingIds) {

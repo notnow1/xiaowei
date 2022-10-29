@@ -1,22 +1,30 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
+import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
+import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.mapper.basic.OfficialRankDecomposeMapper;
+import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankDecomposeService;
+import net.qixiaowei.system.manage.service.system.IRegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -27,8 +35,21 @@ import java.util.List;
  */
 @Service
 public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeService {
+
     @Autowired
     private OfficialRankDecomposeMapper officialRankDecomposeMapper;
+
+    @Autowired
+    private RemoteAreaService areaService;
+
+    @Autowired
+    private RemoteProductService productService;
+
+    @Autowired
+    private IDepartmentService departmentService;
+
+    @Autowired
+    private IRegionService regionService;
 
     /**
      * 查询职级分解表
@@ -131,6 +152,83 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
             throw new ServiceException("职级体系ID不能为空");
         }
         return officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
+    }
+
+    /**
+     * 通过officialRankSystemId查找职级分解
+     *
+     * @param officialRankSystemId 职级体系ID
+     * @return
+     */
+    @Override
+    public List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeAndNameByOfficialRankSystemId(Long officialRankSystemId, Integer rankDecomposeDimension) {
+        if (StringUtils.isNull(officialRankSystemId)) {
+            throw new ServiceException("职级体系ID不能为空");
+        }
+        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialRankDecomposeMapper.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
+        List<Long> decomposeDimensions = new ArrayList<>();
+        for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+            decomposeDimensions.add(officialRankDecomposeDTO.getDecomposeDimension());
+        }
+        if (StringUtils.isEmpty(decomposeDimensions)) {
+            return officialRankDecomposeDTOS;
+        }
+        switch (rankDecomposeDimension) {
+            case 1:
+                List<DepartmentDTO> listDepartment = departmentService.selectDepartmentByDepartmentIds(decomposeDimensions);
+                if (StringUtils.isNotEmpty(listDepartment) && listDepartment.size() == decomposeDimensions.size()) {
+                    for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+                        for (DepartmentDTO departmentDTO : listDepartment) {
+                            if (departmentDTO.getDepartmentId().equals(officialRankDecomposeDTO.getDecomposeDimension())) {
+                                officialRankDecomposeDTO.setDecomposeDimensionName(departmentDTO.getDepartmentName());
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            case 2:
+                R<List<AreaDTO>> listArea = areaService.getName(decomposeDimensions);
+                if (listArea.getCode() == 200 && StringUtils.isNotEmpty(listArea.getData()) && listArea.getData().size() == decomposeDimensions.size()) {
+                    for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+                        for (AreaDTO areaDTO : listArea.getData()) {
+                            if (areaDTO.getAreaId().equals(officialRankDecomposeDTO.getDecomposeDimension())) {
+                                officialRankDecomposeDTO.setDecomposeDimensionName(areaDTO.getAreaName());
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            case 3:
+                Set<Long> decomposeDimensionSet = new HashSet<>(decomposeDimensions);
+                List<RegionDTO> regionsByIds = regionService.getRegionsByIds(decomposeDimensionSet);
+                if (StringUtils.isNotEmpty(regionsByIds) && regionsByIds.size() == decomposeDimensions.size()) {
+                    for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+                        for (RegionDTO regionDTO : regionsByIds) {
+                            if (regionDTO.getRegionId().equals(officialRankDecomposeDTO.getDecomposeDimension())) {
+                                officialRankDecomposeDTO.setDecomposeDimensionName(regionDTO.getRegionName());
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            case 4:
+                R<List<ProductDTO>> listProduct = productService.getName(decomposeDimensions);
+                if (listProduct.getCode() == 200 && StringUtils.isNotEmpty(listProduct.getData()) && listProduct.getData().size() == decomposeDimensions.size()) {
+                    for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+                        for (ProductDTO productDTO : listProduct.getData()) {
+                            if (productDTO.getProductId().equals(officialRankDecomposeDTO.getDecomposeDimension())) {
+                                officialRankDecomposeDTO.setDecomposeDimensionName(productDTO.getProductName());
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+        }
+        return officialRankDecomposeDTOS;
     }
 
     /**

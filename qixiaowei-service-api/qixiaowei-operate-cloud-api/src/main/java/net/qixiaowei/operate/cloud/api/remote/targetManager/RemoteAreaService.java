@@ -18,4 +18,7 @@ public interface RemoteAreaService {
      */
     @PostMapping("/area/dropList")
     R<List<AreaDTO>> dropList(@RequestBody AreaDTO areaDTO);
+
+    @PostMapping("/area/getName")
+    R<List<AreaDTO>> getName(@RequestBody List<Long> areaIds);
 }

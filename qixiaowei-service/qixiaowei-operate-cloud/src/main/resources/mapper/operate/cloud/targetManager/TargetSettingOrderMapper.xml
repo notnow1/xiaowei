@@ -5,9 +5,10 @@
     <select id="selectTargetSettingOrderByTargetSettingOrderId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
         SELECT
-        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time, update_by, update_time
+        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,
+        update_by, update_time
         FROM target_setting_order
-        WHERE  target_setting_order_id=#{targetSettingOrderId}
+        WHERE target_setting_order_id=#{targetSettingOrderId}
         and delete_flag=0
     </select>
 
@@ -15,54 +16,91 @@
     <select id="selectTargetSettingOrderByTargetSettingOrderIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
         SELECT
-        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time, update_by, update_time
+        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,
+        update_by, update_time
         FROM target_setting_order
-        WHERE  target_setting_order_id in
-            <foreach item="item"
-                     collection="targetSettingOrderIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE target_setting_order_id in
+        <foreach item="item"
+                 collection="targetSettingOrderIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询目标制定订单表列表-->
-    <select id="selectTargetSettingOrderList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
+    <select id="selectTargetSettingOrderList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
         SELECT
-        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time, update_by, update_time
+        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,
+        update_by, update_time
         FROM target_setting_order
         WHERE delete_flag=0
-                <if test="targetSettingOrder.targetSettingOrderId != null">
-                    and target_setting_order_id=#{targetSettingOrder.targetSettingOrderId}
-                </if>
-                <if test="targetSettingOrder.targetSettingId != null">
-                    and target_setting_id=#{targetSettingOrder.targetSettingId}
-                </if>
-                <if test="targetSettingOrder.historyYear != null">
-                    and history_year=#{targetSettingOrder.historyYear}
-                </if>
-                <if test="targetSettingOrder.historyActual != null">
-                    and history_actual=#{targetSettingOrder.historyActual}
-                </if>
-                <if test="targetSettingOrder.deleteFlag != null">
-                    and delete_flag=#{targetSettingOrder.deleteFlag}
-                </if>
-                <if test="targetSettingOrder.createBy != null">
-                    and create_by=#{targetSettingOrder.createBy}
-                </if>
-                <if test="targetSettingOrder.createTime != null">
-                    and create_time=#{targetSettingOrder.createTime}
-                </if>
-                <if test="targetSettingOrder.updateBy != null">
-                    and update_by=#{targetSettingOrder.updateBy}
-                </if>
-                <if test="targetSettingOrder.updateTime != null">
-                    and update_time=#{targetSettingOrder.updateTime}
-                </if>
+        <if test="targetSettingOrder.targetSettingOrderId != null">
+            and target_setting_order_id=#{targetSettingOrder.targetSettingOrderId}
+        </if>
+        <if test="targetSettingOrder.targetSettingId != null">
+            and target_setting_id=#{targetSettingOrder.targetSettingId}
+        </if>
+        <if test="targetSettingOrder.historyYear != null">
+            and history_year=#{targetSettingOrder.historyYear}
+        </if>
+        <if test="targetSettingOrder.historyActual != null">
+            and history_actual=#{targetSettingOrder.historyActual}
+        </if>
+        <if test="targetSettingOrder.deleteFlag != null">
+            and delete_flag=#{targetSettingOrder.deleteFlag}
+        </if>
+        <if test="targetSettingOrder.createBy != null">
+            and create_by=#{targetSettingOrder.createBy}
+        </if>
+        <if test="targetSettingOrder.createTime != null">
+            and create_time=#{targetSettingOrder.createTime}
+        </if>
+        <if test="targetSettingOrder.updateBy != null">
+            and update_by=#{targetSettingOrder.updateBy}
+        </if>
+        <if test="targetSettingOrder.updateTime != null">
+            and update_time=#{targetSettingOrder.updateTime}
+        </if>
+    </select>
+    <select id="selectTargetSettingOrderListByTargetSettingId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
+        SELECT
+        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM target_setting_order
+        WHERE delete_flag=0
+        AND history_year IN
+        <foreach collection="historyNumS" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <!--通过历史年度查找目标制定列表-->
+    <select id="selectTargetSettingOrderByHistoryNumS"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
+        SELECT
+        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM target_setting_order
+        WHERE delete_flag=0
+        AND history_year IN
+        <foreach collection="historyNumS" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectTargetSettingLists"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
+        SELECT
+        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM target_setting_order
+        WHERE delete_flag=0
     </select>
     <!--新增目标制定订单表-->
     <insert id="insertTargetSettingOrder" useGeneratedKeys="true" keyProperty="targetSettingOrderId">
-        INSERT INTO target_setting_order (target_setting_id,history_year,history_actual,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO target_setting_order
+        (target_setting_id,history_year,history_actual,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{targetSettingOrder.targetSettingId},#{targetSettingOrder.historyYear},#{targetSettingOrder.historyActual},#{targetSettingOrder.deleteFlag},#{targetSettingOrder.createBy},#{targetSettingOrder.createTime},#{targetSettingOrder.updateBy},#{targetSettingOrder.updateTime})
     </insert>
@@ -70,59 +108,60 @@
     <update id="updateTargetSettingOrder">
         UPDATE target_setting_order
         SET
-                    <if test="targetSettingOrder.targetSettingId != null">
-                        target_setting_id=#{targetSettingOrder.targetSettingId},
-                    </if>
-                    <if test="targetSettingOrder.historyYear != null">
-                        history_year=#{targetSettingOrder.historyYear},
-                    </if>
-                    <if test="targetSettingOrder.historyActual != null">
-                        history_actual=#{targetSettingOrder.historyActual},
-                    </if>
-                    <if test="targetSettingOrder.deleteFlag != null">
-                        delete_flag=#{targetSettingOrder.deleteFlag},
-                    </if>
-                    <if test="targetSettingOrder.createBy != null">
-                        create_by=#{targetSettingOrder.createBy},
-                    </if>
-                    <if test="targetSettingOrder.createTime != null">
-                        create_time=#{targetSettingOrder.createTime},
-                    </if>
-                    <if test="targetSettingOrder.updateBy != null">
-                        update_by=#{targetSettingOrder.updateBy},
-                    </if>
-                    <if test="targetSettingOrder.updateTime != null">
-                        update_time=#{targetSettingOrder.updateTime}
-                    </if>
+        <if test="targetSettingOrder.targetSettingId != null">
+            target_setting_id=#{targetSettingOrder.targetSettingId},
+        </if>
+        <if test="targetSettingOrder.historyYear != null">
+            history_year=#{targetSettingOrder.historyYear},
+        </if>
+        <if test="targetSettingOrder.historyActual != null">
+            history_actual=#{targetSettingOrder.historyActual},
+        </if>
+        <if test="targetSettingOrder.deleteFlag != null">
+            delete_flag=#{targetSettingOrder.deleteFlag},
+        </if>
+        <if test="targetSettingOrder.createBy != null">
+            create_by=#{targetSettingOrder.createBy},
+        </if>
+        <if test="targetSettingOrder.createTime != null">
+            create_time=#{targetSettingOrder.createTime},
+        </if>
+        <if test="targetSettingOrder.updateBy != null">
+            update_by=#{targetSettingOrder.updateBy},
+        </if>
+        <if test="targetSettingOrder.updateTime != null">
+            update_time=#{targetSettingOrder.updateTime}
+        </if>
         WHERE
-                 target_setting_order_id=#{targetSettingOrder.targetSettingOrderId}
+        target_setting_order_id=#{targetSettingOrder.targetSettingOrderId}
     </update>
     <!--逻辑删除目标制定订单表-->
     <update id="logicDeleteTargetSettingOrderByTargetSettingOrderId">
         UPDATE target_setting_order
-        SET     delete_flag= 1,
-                update_by=#{targetSettingOrder.updateBy},
-                update_time=#{targetSettingOrder.updateTime}
+        SET delete_flag= 1,
+        update_by=#{targetSettingOrder.updateBy},
+        update_time=#{targetSettingOrder.updateTime}
         WHERE
-                target_setting_order_id=#{targetSettingOrder.targetSettingOrderId}
+        target_setting_order_id=#{targetSettingOrder.targetSettingOrderId}
     </update>
     <!--逻辑批量删除目标制定订单表-->
     <update id="logicDeleteTargetSettingOrderByTargetSettingOrderIds">
         UPDATE target_setting_order
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         target_setting_order_id IN
-            <foreach item="item"
-                     collection="targetSettingOrderIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        target_setting_order_id IN
+        <foreach item="item"
+                 collection="targetSettingOrderIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增目标制定订单表-->
     <insert id="batchTargetSettingOrder">
-        INSERT INTO target_setting_order (target_setting_id,history_year,history_actual,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO target_setting_order
+        (target_setting_id,history_year,history_actual,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="targetSettingOrders"
@@ -134,83 +173,76 @@
     <!--物理删除目标制定订单表-->
     <delete id="deleteTargetSettingOrderByTargetSettingOrderId">
         DELETE FROM target_setting_order
-        WHERE  target_setting_order_id=#{targetSettingOrder}
+        WHERE target_setting_order_id=#{targetSettingOrder}
 
     </delete>
     <!--物理批量删除目标制定订单表-->
     <delete id="deleteTargetSettingOrderByTargetSettingOrderIds">
         DELETE FROM target_setting_order
-        WHERE  target_setting_order_id IN
-            <foreach item="item"
-                     collection="targetSettingOrderIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE target_setting_order_id IN
+        <foreach item="item"
+                 collection="targetSettingOrderIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改目标制定订单表-->
     <update id="updateTargetSettingOrders">
         update target_setting_order
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="target_setting_id=case" suffix="end,">
-                        <foreach collection="targetSettingOrderList" item="item" index="index">
-                                <if test="item.targetSettingId != null">
-                                    when target_setting_order_id=#{item.targetSettingOrderId} then #{item.targetSettingId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="history_year=case" suffix="end,">
-                        <foreach collection="targetSettingOrderList" item="item" index="index">
-                                <if test="item.historyYear != null">
-                                    when target_setting_order_id=#{item.targetSettingOrderId} then #{item.historyYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="history_actual=case" suffix="end,">
-                        <foreach collection="targetSettingOrderList" item="item" index="index">
-                                <if test="item.historyActual != null">
-                                    when target_setting_order_id=#{item.targetSettingOrderId} then #{item.historyActual}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="targetSettingOrderList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when target_setting_order_id=#{item.targetSettingOrderId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="targetSettingOrderList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when target_setting_order_id=#{item.targetSettingOrderId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="targetSettingOrderList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when target_setting_order_id=#{item.targetSettingOrderId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="targetSettingOrderList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when target_setting_order_id=#{item.targetSettingOrderId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="targetSettingOrderList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when target_setting_order_id=#{item.targetSettingOrderId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <!--            <trim prefix="target_setting_id=case" suffix="end,">-->
+            <!--                <foreach collection="targetSettingOrderList" item="item" index="index">-->
+            <!--                    <if test="item.targetSettingId != null">-->
+            <!--                        when history_year=#{item.historyYear} then #{item.targetSettingId}-->
+            <!--                    </if>-->
+            <!--                </foreach>-->
+            <!--            </trim>-->
+            <trim prefix="history_actual=case" suffix="end,">
+                <foreach collection="targetSettingOrderList" item="item" index="index">
+                    <if test="item.historyActual != null">
+                        when history_year=#{item.historyYear} then #{item.historyActual}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="targetSettingOrderList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when history_year=#{item.historyYear} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="targetSettingOrderList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when history_year=#{item.historyYear} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="targetSettingOrderList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when history_year=#{item.historyYear} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="targetSettingOrderList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when history_year=#{item.historyYear} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="targetSettingOrderList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when history_year=#{item.historyYear} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="targetSettingOrderList" separator="or" item="item" index="index">
-                    target_setting_order_id=#{item.targetSettingOrderId}
+            history_year=#{item.historyYear}
         </foreach>
     </update>
 </mapper>

@@ -5,38 +5,38 @@
     <select id="selectProductByProductId"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-            da.dictionary_label as product_category_name,
-            p.product_id,
-            p.parent_product_id,
-            pu.product_unit_name,
-            p.ancestors,
-            p.product_code,
-            p.product_name,
-            p.level,
-            p.product_unit_id,
-            p.product_category,
-            p.product_description,
-            p.list_price,
-            p.listing_flag,
-            p.delete_flag,
-            p.create_by,
-            p.create_time,
-            p.update_by,
-            p.update_time
+        da.dictionary_label as product_category_name,
+        p.product_id,
+        p.parent_product_id,
+        pu.product_unit_name,
+        p.ancestors,
+        p.product_code,
+        p.product_name,
+        p.level,
+        p.product_unit_id,
+        p.product_category,
+        p.product_description,
+        p.list_price,
+        p.listing_flag,
+        p.delete_flag,
+        p.create_by,
+        p.create_time,
+        p.update_by,
+        p.update_time
         FROM
-            product p
-                left join product_unit pu
-                          on
-                                      pu.product_unit_id = p.product_unit_id
-                                  and pu.delete_flag = 0
-                left join `system-manage`.dictionary_data da
-                          on
-                                      da.dictionary_data_id = p.product_category
-                                  and da.default_flag = 0
+        product p
+        left join product_unit pu
+        on
+        pu.product_unit_id = p.product_unit_id
+        and pu.delete_flag = 0
+        left join `system-manage`.dictionary_data da
+        on
+        da.dictionary_data_id = p.product_category
+        and da.default_flag = 0
         WHERE
-                p.product_id =
-                #{productId}
-          and p.delete_flag = 0
+        p.product_id =
+        #{productId}
+        and p.delete_flag = 0
     </select>
 
     <!--    查询产品表列表-->
@@ -109,66 +109,86 @@
             and p.listing_flag =#{product.listingFlag}
         </if>
     </select>
-<!--    根据产品编码查询产品表-->
+    <!--    根据产品编码查询产品表-->
     <select id="selectProductByProductCode"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
+        product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
         FROM product
-        WHERE  product_code=#{productCode}
-          and delete_flag=0
+        WHERE product_code=#{productCode}
+        and delete_flag=0
     </select>
     <select id="selectProductByParentProductId"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
+        product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
         FROM product
         WHERE parent_product_id=#{parentProductId}
-          and delete_flag=0
+        and delete_flag=0
     </select>
-<!--    根据产品单位ID查询产品表-->
+    <!--    根据产品单位ID查询产品表-->
     <select id="selectProductByProductUnitId"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
+        product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
         FROM product
-        WHERE  product_unit_id=#{productUnitId}
-          and delete_flag=0
+        WHERE product_unit_id=#{productUnitId}
+        and delete_flag=0
     </select>
-<!--    根据产品单位ID批量查询产品表-->
+    <!--    根据产品单位ID批量查询产品表-->
     <select id="selectProductByProductUnitIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
+        product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
         FROM product
-        WHERE  product_unit_id in
+        WHERE product_unit_id in
         <foreach item="item"
                  collection="productUnitIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-          and delete_flag=0
+        and delete_flag=0
     </select>
-<!--    查询产品是否用到枚举-->
+    <!--    查询产品是否用到枚举-->
     <select id="queryProductQuote" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-            product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category, product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
+        product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
         FROM product
-        WHERE  product_description=#{product.productCategory}
-          or listing_flag = #{product.listingFlag}
-          and delete_flag=0
+        WHERE product_description=#{product.productCategory}
+        or listing_flag = #{product.listingFlag}
+        and delete_flag=0
     </select>
-<!--    返回产品层级-->
+    <!--    返回产品层级-->
     <select id="selectLevel" resultType="java.lang.Integer">
         SELECT
-           level
+        level
         FROM product
-        WHERE   delete_flag=0
+        WHERE delete_flag=0
         group by level
+    </select>
+    <!--    根据产品IDS返回列表-->
+    <select id="selectProductListByProductIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+        SELECT
+        product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
+        product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
+        FROM product
+        WHERE delete_flag=0
+        AND product_id
+        IN
+        <foreach collection="productIds" separator="," open="(" close=")" item="item" index="index">
+            #{item}
+        </foreach>
     </select>
     <!--新增产品表-->
     <insert id="insertProduct" useGeneratedKeys="true" keyProperty="productId">
-        INSERT INTO product (parent_product_id,ancestors,product_code,product_name,level,product_unit_id,product_category,product_description,list_price,listing_flag,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO product
+        (parent_product_id,ancestors,product_code,product_name,level,product_unit_id,product_category,product_description,list_price,listing_flag,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{product.parentProductId},#{product.ancestors},#{product.productCode},#{product.productName},#{product.level},#{product.productUnitId},#{product.productCategory},#{product.productDescription},#{product.listPrice},#{product.listingFlag},#{product.deleteFlag},#{product.createBy},#{product.createTime},#{product.updateBy},#{product.updateTime})
     </insert>
@@ -176,80 +196,81 @@
     <update id="updateProduct">
         UPDATE product
         SET
-                    <if test="product.parentProductId != null">
-                        parent_product_id=#{product.parentProductId},
-                    </if>
-                    <if test="product.ancestors != null and product.ancestors != ''">
-                        ancestors=#{product.ancestors},
-                    </if>
-                    <if test="product.productCode != null and product.productCode != ''">
-                        product_code=#{product.productCode},
-                    </if>
-                    <if test="product.productName != null and product.productName != ''">
-                        product_name=#{product.productName},
-                    </if>
-                    <if test="product.level != null">
-                        level=#{product.level},
-                    </if>
-                    <if test="product.productUnitId != null">
-                        product_unit_id=#{product.productUnitId},
-                    </if>
-                    <if test="product.productCategory != null and product.productCategory != ''">
-                        product_category=#{product.productCategory},
-                    </if>
-                    <if test="product.productDescription != null and product.productDescription != ''">
-                        product_description=#{product.productDescription},
-                    </if>
-                    <if test="product.listPrice != null">
-                        list_price=#{product.listPrice},
-                    </if>
-                    <if test="product.listingFlag != null">
-                        listing_flag=#{product.listingFlag},
-                    </if>
-                    <if test="product.deleteFlag != null">
-                        delete_flag=#{product.deleteFlag},
-                    </if>
-                    <if test="product.createBy != null">
-                        create_by=#{product.createBy},
-                    </if>
-                    <if test="product.createTime != null">
-                        create_time=#{product.createTime},
-                    </if>
-                    <if test="product.updateBy != null">
-                        update_by=#{product.updateBy},
-                    </if>
-                    <if test="product.updateTime != null">
-                        update_time=#{product.updateTime}
-                    </if>
+        <if test="product.parentProductId != null">
+            parent_product_id=#{product.parentProductId},
+        </if>
+        <if test="product.ancestors != null and product.ancestors != ''">
+            ancestors=#{product.ancestors},
+        </if>
+        <if test="product.productCode != null and product.productCode != ''">
+            product_code=#{product.productCode},
+        </if>
+        <if test="product.productName != null and product.productName != ''">
+            product_name=#{product.productName},
+        </if>
+        <if test="product.level != null">
+            level=#{product.level},
+        </if>
+        <if test="product.productUnitId != null">
+            product_unit_id=#{product.productUnitId},
+        </if>
+        <if test="product.productCategory != null and product.productCategory != ''">
+            product_category=#{product.productCategory},
+        </if>
+        <if test="product.productDescription != null and product.productDescription != ''">
+            product_description=#{product.productDescription},
+        </if>
+        <if test="product.listPrice != null">
+            list_price=#{product.listPrice},
+        </if>
+        <if test="product.listingFlag != null">
+            listing_flag=#{product.listingFlag},
+        </if>
+        <if test="product.deleteFlag != null">
+            delete_flag=#{product.deleteFlag},
+        </if>
+        <if test="product.createBy != null">
+            create_by=#{product.createBy},
+        </if>
+        <if test="product.createTime != null">
+            create_time=#{product.createTime},
+        </if>
+        <if test="product.updateBy != null">
+            update_by=#{product.updateBy},
+        </if>
+        <if test="product.updateTime != null">
+            update_time=#{product.updateTime}
+        </if>
         WHERE
-                 product_id=#{product.productId}
+        product_id=#{product.productId}
     </update>
     <!--逻辑删除产品表-->
     <update id="logicDeleteProductByProductId">
         UPDATE product
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-                product_id=#{product.productId}
+        product_id=#{product.productId}
     </update>
     <!--逻辑批量删除产品表-->
     <update id="logicDeleteProductByProductIds">
         UPDATE product
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         product_id IN
-            <foreach item="item"
-                     collection="productIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        product_id IN
+        <foreach item="item"
+                 collection="productIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增产品表-->
     <insert id="batchProduct">
-        INSERT INTO product (parent_product_id,ancestors,product_code,product_name,level,product_unit_id,product_category,product_description,list_price,listing_flag,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO product
+        (parent_product_id,ancestors,product_code,product_name,level,product_unit_id,product_category,product_description,list_price,listing_flag,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="products"
@@ -261,132 +282,132 @@
     <!--物理删除产品表-->
     <delete id="deleteProductByProductId">
         DELETE FROM product
-        WHERE  product_id=#{product}
+        WHERE product_id=#{product}
 
     </delete>
     <!--物理批量删除产品表-->
     <delete id="deleteProductByProductIds">
         DELETE FROM product
-        WHERE  product_id IN
-            <foreach item="item"
-                     collection="productIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE product_id IN
+        <foreach item="item"
+                 collection="productIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改产品表-->
     <update id="updateProducts">
         update product
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="parent_product_id=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.parentProductId != null">
-                                    when product_id=#{item.productId} then #{item.parentProductId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="ancestors=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.ancestors != null and item.ancestors != ''">
-                                    when product_id=#{item.productId} then #{item.ancestors}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_code=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.productCode != null and item.productCode != ''">
-                                    when product_id=#{item.productId} then #{item.productCode}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_name=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.productName != null and item.productName != ''">
-                                    when product_id=#{item.productId} then #{item.productName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="level=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.level != null">
-                                    when product_id=#{item.productId} then #{item.level}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_unit_id=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.productUnitId != null">
-                                    when product_id=#{item.productId} then #{item.productUnitId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_category=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.productCategory != null and item.productCategory != ''">
-                                    when product_id=#{item.productId} then #{item.productCategory}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_description=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.productDescription != null and item.productDescription != ''">
-                                    when product_id=#{item.productId} then #{item.productDescription}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="list_price=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.listPrice != null">
-                                    when product_id=#{item.productId} then #{item.listPrice}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="listing_flag=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.listingFlag != null">
-                                    when product_id=#{item.productId} then #{item.listingFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when product_id=#{item.productId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when product_id=#{item.productId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when product_id=#{item.productId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when product_id=#{item.productId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="productList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when product_id=#{item.productId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="parent_product_id=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.parentProductId != null">
+                        when product_id=#{item.productId} then #{item.parentProductId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="ancestors=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.ancestors != null and item.ancestors != ''">
+                        when product_id=#{item.productId} then #{item.ancestors}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_code=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.productCode != null and item.productCode != ''">
+                        when product_id=#{item.productId} then #{item.productCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_name=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.productName != null and item.productName != ''">
+                        when product_id=#{item.productId} then #{item.productName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="level=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.level != null">
+                        when product_id=#{item.productId} then #{item.level}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_unit_id=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.productUnitId != null">
+                        when product_id=#{item.productId} then #{item.productUnitId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_category=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.productCategory != null and item.productCategory != ''">
+                        when product_id=#{item.productId} then #{item.productCategory}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_description=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.productDescription != null and item.productDescription != ''">
+                        when product_id=#{item.productId} then #{item.productDescription}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="list_price=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.listPrice != null">
+                        when product_id=#{item.productId} then #{item.listPrice}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="listing_flag=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.listingFlag != null">
+                        when product_id=#{item.productId} then #{item.listingFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when product_id=#{item.productId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when product_id=#{item.productId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when product_id=#{item.productId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when product_id=#{item.productId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="productList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when product_id=#{item.productId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="productList" separator="or" item="item" index="index">
-                    product_id=#{item.productId}
+            product_id=#{item.productId}
         </foreach>
     </update>
 </mapper>

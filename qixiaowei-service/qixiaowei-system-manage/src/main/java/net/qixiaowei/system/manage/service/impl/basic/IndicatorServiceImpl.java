@@ -116,6 +116,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.putExtra("drivingFactorFlag", treeNode.getDrivingFactorFlag());
             tree.putExtra("indicatorCategoryId", treeNode.getIndicatorCategoryId());
             tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
+            tree.putExtra("isPreset", treeNode.getIsPreset());
         });
     }
 

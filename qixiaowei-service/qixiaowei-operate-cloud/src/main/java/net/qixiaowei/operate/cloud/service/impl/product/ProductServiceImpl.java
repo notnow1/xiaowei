@@ -861,6 +861,17 @@ public class ProductServiceImpl implements IProductService {
     }
 
     /**
+     * 根据产品IDS获取产品列表
+     *
+     * @param productIds 产品IDS
+     * @return
+     */
+    @Override
+    public List<ProductDTO> selectProductList(List<Long> productIds) {
+        return productMapper.selectProductListByProductIds(productIds);
+    }
+
+    /**
      * 逻辑删除产品表信息
      *
      * @param productDTO 产品表

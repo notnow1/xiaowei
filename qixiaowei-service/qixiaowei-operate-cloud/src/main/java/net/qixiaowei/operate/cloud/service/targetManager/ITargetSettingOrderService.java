@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 
 import java.util.List;
@@ -29,12 +30,12 @@ public interface ITargetSettingOrderService {
     List<TargetSettingOrderDTO> selectTargetSettingOrderList(TargetSettingOrderDTO targetSettingOrderDTO);
 
     /**
-     * 查询销售订单目标制定列表
+     * 获取订单目标制定
      *
-     * @param historyNumS
+     * @param historyNumS 历史年份
      * @return
      */
-    List<TargetSettingOrderDTO> selectTargetSettingOrderListByHistoryYears(List<Integer> historyNumS);
+    public List<TargetSettingOrderDTO> selectTargetSettingOrderList(List<Integer> historyNumS);
 
     /**
      * 新增目标制定订单表
@@ -55,18 +56,18 @@ public interface ITargetSettingOrderService {
     /**
      * 批量修改目标制定订单表
      *
-     * @param targetSettingOrderDtos 目标制定订单表
+     * @param targetSettingOrderDtoS 目标制定订单表
      * @return 结果
      */
-    int updateTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtos);
+    int updateTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtoS, TargetSettingDTO targetSetting);
 
     /**
      * 批量新增目标制定订单表
      *
-     * @param targetSettingOrderDtos 目标制定订单表
+     * @param targetSettingOrderDtoS 目标制定订单表
      * @return 结果
      */
-    int insertTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtos);
+    int insertTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtoS, TargetSettingDTO targetSetting);
 
     /**
      * 逻辑批量删除目标制定订单表
@@ -108,5 +109,18 @@ public interface ITargetSettingOrderService {
      * @return 结果
      */
     int deleteTargetSettingOrderByTargetSettingOrderId(Long targetSettingOrderId);
-    
+
+    /**
+     * 查询销售订单目标制定-不带主表玩
+     *
+     * @param historyNumS 历史年份
+     */
+    List<TargetSettingOrderDTO> selectDropTargetSettingOrderList(List<Integer> historyNumS);
+
+    /**
+     * 获取全部的订单目标制定列表
+     *
+     * @return
+     */
+    List<TargetSettingOrderDTO> selectTargetSettingOrderLists();
 }

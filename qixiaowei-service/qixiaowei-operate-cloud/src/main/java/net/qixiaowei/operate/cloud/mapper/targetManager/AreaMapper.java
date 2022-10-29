@@ -111,7 +111,7 @@ public interface AreaMapper {
      * @param areaIds
      * @return
      */
-    List<AreaDTO> isExist(@Param("areaIds") List<Long> areaIds);
+    List<AreaDTO> selectAreaListByAreaIds(@Param("areaIds") List<Long> areaIds);
 
     /**
      * 获取地区/名称

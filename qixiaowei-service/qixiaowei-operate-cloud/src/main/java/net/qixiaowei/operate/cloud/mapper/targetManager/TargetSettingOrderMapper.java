@@ -1,12 +1,11 @@
 package net.qixiaowei.operate.cloud.mapper.targetManager;
 
-import java.util.List;
-
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSettingOrder;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -105,4 +104,26 @@ public interface TargetSettingOrderMapper {
      * @return 结果
      */
     int batchTargetSettingOrder(@Param("targetSettingOrders") List<TargetSettingOrder> TargetSettingOrders);
+
+    /**
+     * 查询销售订单目标制定列表根据目标制定Id
+     *
+     * @param historyNumS 历史年度集合
+     * @return
+     */
+    List<TargetSettingOrderDTO> selectTargetSettingOrderListByTargetSettingId(@Param("historyNumS") List<Integer> historyNumS);
+
+    /**
+     * 通过历史年度查找目标制定列表
+     *
+     * @param historyNumS
+     */
+    List<TargetSettingOrderDTO> selectTargetSettingOrderByHistoryNumS(List<Integer> historyNumS);
+
+    /**
+     * 获取全部的订单
+     *
+     * @return
+     */
+    List<TargetSettingOrderDTO> selectTargetSettingLists();
 }

@@ -288,9 +288,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 throw new ServiceException("职级体系级别前缀重复");
         }
         // 分解为度校验
-        List<Integer> decomposeDimensions = new ArrayList<>();
+        List<Long> decomposeDimensions = new ArrayList<>();
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
-            Integer decomposeDimension = officialRankDecomposeDTO.getDecomposeDimension();
+            Long decomposeDimension = officialRankDecomposeDTO.getDecomposeDimension();
             if (decomposeDimensions.contains(decomposeDimension)) {
                 throw new ServiceException("分解维度不能重复");
             }
@@ -325,8 +325,8 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 更新操作
      *
-     * @param officialRankDecomposeDTOSBefore
-     * @param officialRankDecomposeDTOAfter
+     * @param officialRankDecomposeDTOSBefore 以前的
+     * @param officialRankDecomposeDTOAfter   以后的
      * @return
      */
     private int operateRankDecompose(List<OfficialRankDecomposeDTO> officialRankDecomposeDTOSBefore, List<OfficialRankDecomposeDTO> officialRankDecomposeDTOAfter, OfficialRankSystem officialRankSystem) {
@@ -432,7 +432,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 职级体系表详情
      *
-     * @param officialRankSystemId
+     * @param officialRankSystemId 职级体系ID
      * @return
      */
     @Override
@@ -444,10 +444,11 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isNull(officialRankSystemDTO)) {
             throw new ServiceException("该职级体系已不存在");
         }
+        Integer rankDecomposeDimension = officialRankSystemDTO.getRankDecomposeDimension();
         List<OfficialRankSystemDTO> officialRankSystemDTOS = new ArrayList<>();
         officialRankSystemDTOS.add(officialRankSystemDTO);
         writeOfficialRank(officialRankSystemDTOS);
-        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialRankDecomposeService.selectOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
+        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialRankDecomposeService.selectOfficialRankDecomposeAndNameByOfficialRankSystemId(officialRankSystemId, rankDecomposeDimension);
         officialRankSystemDTO.setOfficialRankDecomposeDTOS(officialRankDecomposeDTOS);
         return officialRankSystemDTO;
     }

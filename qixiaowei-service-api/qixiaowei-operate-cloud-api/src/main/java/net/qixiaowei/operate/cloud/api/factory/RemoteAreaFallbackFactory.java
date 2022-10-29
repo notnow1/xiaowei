@@ -22,6 +22,11 @@ public class RemoteAreaFallbackFactory implements FallbackFactory<RemoteAreaServ
             public R<List<AreaDTO>> dropList(AreaDTO areaDTO) {
                 return R.fail("获取区域配置失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<AreaDTO>> getName(List<Long> areaIds) {
+                return R.fail("获取区域配置失败:" + throwable.getMessage());
+            }
         };
     }
 }

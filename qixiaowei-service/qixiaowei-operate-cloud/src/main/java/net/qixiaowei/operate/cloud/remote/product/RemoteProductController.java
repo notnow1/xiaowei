@@ -22,16 +22,24 @@ public class RemoteProductController implements RemoteProductService {
 
     @Autowired
     private IProductService productService;
+
     @Override
     @InnerAuth
     @PostMapping("/queryProductQuote")
     public R<List<ProductDTO>> queryProductQuote(ProductDTO productDTO) {
         return R.ok(productService.queryProductQuote(productDTO));
     }
+
     @Override
 //    @InnerAuth
     @PostMapping("/dropList")
-    public  R<List<ProductDTO>> dropList(@RequestBody ProductDTO productDTO){
+    public R<List<ProductDTO>> dropList(@RequestBody ProductDTO productDTO) {
         return R.ok(productService.selectProductList(productDTO));
+    }
+
+    @Override
+    @PostMapping("/getName")
+    public R<List<ProductDTO>> getName(List<Long> productIds) {
+        return R.ok(productService.selectProductList(productIds));
     }
 }

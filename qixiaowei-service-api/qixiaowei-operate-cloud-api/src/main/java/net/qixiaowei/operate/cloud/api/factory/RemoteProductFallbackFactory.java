@@ -15,7 +15,7 @@ import java.util.List;
  * 服务降级处理
  */
 @Component
-public  class RemoteProductFallbackFactory implements FallbackFactory<RemoteProductService> {
+public class RemoteProductFallbackFactory implements FallbackFactory<RemoteProductService> {
     private static final Logger log = LoggerFactory.getLogger(RemoteProductFallbackFactory.class);
 
     @Override
@@ -30,6 +30,11 @@ public  class RemoteProductFallbackFactory implements FallbackFactory<RemoteProd
 
             @Override
             public R<List<ProductDTO>> dropList(ProductDTO productDTO) {
+                return R.fail("获取产品列表失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<ProductDTO>> getName(List<Long> decomposeDimensions) {
                 return R.fail("获取产品列表失败:" + throwable.getMessage());
             }
         };

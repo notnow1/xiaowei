@@ -115,6 +115,15 @@ public interface IOfficialRankDecomposeService {
     /**
      * 通过officialRankSystemId查找职级分解
      *
+     * @param officialRankSystemId   职级体系id
+     * @param rankDecomposeDimension 职级维度
+     * @return
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialRankDecomposeAndNameByOfficialRankSystemId(Long officialRankSystemId, Integer rankDecomposeDimension);
+
+    /**
+     * 通过officialRankSystemId查找职级分解
+     *
      * @param officialRankSystemIds
      * @return
      */

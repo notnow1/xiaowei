@@ -34,4 +34,14 @@ public class RemoteArea implements RemoteAreaService {
         return R.ok(areaService.selectDropList(areaDTO));
     }
 
+    /**
+     * 查询区域配置列表通过IDS
+     */
+    @Override
+//    @InnerAuth
+    @PostMapping("/getName")
+    public R<List<AreaDTO>> getName(List<Long> areaIds) {
+        return R.ok(areaService.selectAreaListByAreaIds(areaIds));
+    }
+
 }

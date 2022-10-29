@@ -28,4 +28,10 @@ public interface RemoteProductService {
      */
     @PostMapping("/product/dropList")
     R<List<ProductDTO>> dropList(@RequestBody ProductDTO productDTO);
+
+    /**
+     * 查询产品列表根绝productIds
+     */
+    @PostMapping("/product/getName")
+    R<List<ProductDTO>> getName(List<Long> decomposeDimensions);
 }
