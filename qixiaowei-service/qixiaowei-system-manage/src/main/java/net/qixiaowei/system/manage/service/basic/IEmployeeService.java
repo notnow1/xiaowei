@@ -122,7 +122,7 @@ public interface IEmployeeService{
      * @param employeeDTO
      * @return
      */
-    List<EmployeeExcel> exportUser(EmployeeDTO employeeDTO);
+    List<EmployeeExcel> exportEmployee(EmployeeDTO employeeDTO);
 
     /**
      * 查询未分配用户员工列表

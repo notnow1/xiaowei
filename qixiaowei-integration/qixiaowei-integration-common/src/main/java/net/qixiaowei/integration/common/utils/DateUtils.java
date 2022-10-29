@@ -6,6 +6,7 @@ import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -122,6 +123,23 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         {
             return null;
         }
+    }
+    /**
+     * 今年的第几天
+     */
+    public static int getDayOfWeek(Object str) {
+        int week = 7;
+        int dayOfYear = DateUtils.getDayOfYear();
+        return dayOfYear/week;
+    }
+    /**
+     * 今年的第几天
+     */
+    public static int getDayOfYear() {
+        Calendar calendar = Calendar.getInstance();
+        Date nowDate = DateUtils.getNowDate();
+        calendar.setTime(nowDate);
+        return calendar.get(Calendar.DAY_OF_YEAR);
     }
 
     /**

@@ -347,7 +347,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @return
      */
     @Override
-    public List<EmployeeExcel> exportUser(EmployeeDTO employeeDTO) {
+    public List<EmployeeExcel> exportEmployee(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeList(employee);

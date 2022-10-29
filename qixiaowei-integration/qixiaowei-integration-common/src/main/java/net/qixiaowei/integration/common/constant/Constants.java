@@ -139,5 +139,37 @@ public interface Constants {
      */
     String COMMA_EN = ",";
 
+    /**
+     * 数字常量0
+     */
+    Integer ZERO = 0;
+    /**
+     * 数字常量1
+     */
+    Integer ONE = 1;
 
+    /**
+     * 数字常量2
+     */
+    Integer TWO = 2;
+
+    /**
+     * 数字常量3
+     */
+    Integer THREE = 3;
+
+    /**
+     * 数字常量4
+     */
+    Integer FOUR = 4;
+
+    /**
+     * 数字常量5
+     */
+    Integer FIVE = 5;
+
+    /**
+     * 数字常量6
+     */
+    Integer SIX = 6;
 }

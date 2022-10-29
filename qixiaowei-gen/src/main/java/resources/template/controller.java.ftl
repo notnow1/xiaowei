@@ -152,7 +152,7 @@ public class ${table.controllerName} extends BaseController
     * 导入${table.comment!}
     */
     @PostMapping("import")
-    public AjaxResult importEmployee(MultipartFile file) {
+    public AjaxResult import${entity}(MultipartFile file) {
     String filename = file.getOriginalFilename();
     if (StringUtils.isBlank(filename)) {
     throw new RuntimeException("请上传文件!");
@@ -177,7 +177,7 @@ public class ${table.controllerName} extends BaseController
     */
     @SneakyThrows
     @GetMapping("export")
-    public void exportUser(@RequestParam Map<String, Object> ${entity?uncap_first},${entity}DTO ${entity?uncap_first}DTO, HttpServletResponse response) {
+    public void export${entity}(@RequestParam Map<String, Object> ${entity?uncap_first},${entity}DTO ${entity?uncap_first}DTO, HttpServletResponse response) {
     List<${entity}Excel> ${entity?uncap_first}ExcelList = ${entity?uncap_first}Service.export${entity}(${entity?uncap_first}DTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);

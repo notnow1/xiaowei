@@ -71,8 +71,8 @@ public class EmployeeController extends BaseController {
      */
     @SneakyThrows
     @GetMapping("export")
-    public void exportUser(@RequestParam Map<String, Object> employee,EmployeeDTO employeeDTO, HttpServletResponse response) {
-        List<EmployeeExcel> employeeExcelList = employeeService.exportUser(employeeDTO);
+    public void exportEmployee(@RequestParam Map<String, Object> employee,EmployeeDTO employeeDTO, HttpServletResponse response) {
+        List<EmployeeExcel> employeeExcelList = employeeService.exportEmployee(employeeDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("人员信息配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)

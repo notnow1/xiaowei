@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDetailsMapper">
+    <!--    查询目标分解详情表-->
+    <select id="selectTargetDecomposeDetailsByTargetDecomposeDetailsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
+        SELECT
+        target_decompose_details_id, target_decompose_id, employee_id, area_id, department_id, product_id, region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_details
+        WHERE  target_decompose_details_id=#{targetDecomposeDetailsId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标分解详情表-->
+    <select id="selectTargetDecomposeDetailsByTargetDecomposeDetailsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
+        SELECT
+        target_decompose_details_id, target_decompose_id, employee_id, area_id, department_id, product_id, region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_details
+        WHERE  target_decompose_details_id in
+            <foreach item="item"
+                     collection="targetDecomposeDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标分解详情表列表-->
+    <select id="selectTargetDecomposeDetailsList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
+        SELECT
+        target_decompose_details_id, target_decompose_id, employee_id, area_id, department_id, product_id, region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_details
+        WHERE delete_flag=0
+                <if test="targetDecomposeDetails.targetDecomposeDetailsId != null">
+                    and target_decompose_details_id=#{targetDecomposeDetails.targetDecomposeDetailsId}
+                </if>
+                <if test="targetDecomposeDetails.targetDecomposeId != null">
+                    and target_decompose_id=#{targetDecomposeDetails.targetDecomposeId}
+                </if>
+                <if test="targetDecomposeDetails.employeeId != null">
+                    and employee_id=#{targetDecomposeDetails.employeeId}
+                </if>
+                <if test="targetDecomposeDetails.areaId != null">
+                    and area_id=#{targetDecomposeDetails.areaId}
+                </if>
+                <if test="targetDecomposeDetails.departmentId != null">
+                    and department_id=#{targetDecomposeDetails.departmentId}
+                </if>
+                <if test="targetDecomposeDetails.productId != null">
+                    and product_id=#{targetDecomposeDetails.productId}
+                </if>
+                <if test="targetDecomposeDetails.regionId != null">
+                    and region_id=#{targetDecomposeDetails.regionId}
+                </if>
+                <if test="targetDecomposeDetails.industryId != null">
+                    and industry_id=#{targetDecomposeDetails.industryId}
+                </if>
+                <if test="targetDecomposeDetails.principalEmployeeId != null">
+                    and principal_employee_id=#{targetDecomposeDetails.principalEmployeeId}
+                </if>
+                <if test="targetDecomposeDetails.amountTarget != null">
+                    and amount_target=#{targetDecomposeDetails.amountTarget}
+                </if>
+                <if test="targetDecomposeDetails.deleteFlag != null">
+                    and delete_flag=#{targetDecomposeDetails.deleteFlag}
+                </if>
+                <if test="targetDecomposeDetails.createBy != null">
+                    and create_by=#{targetDecomposeDetails.createBy}
+                </if>
+                <if test="targetDecomposeDetails.createTime != null">
+                    and create_time=#{targetDecomposeDetails.createTime}
+                </if>
+                <if test="targetDecomposeDetails.updateBy != null">
+                    and update_by=#{targetDecomposeDetails.updateBy}
+                </if>
+                <if test="targetDecomposeDetails.updateTime != null">
+                    and update_time=#{targetDecomposeDetails.updateTime}
+                </if>
+    </select>
+<!--    根据分解id查询目标分解详情表-->
+    <select id="selectTargetDecomposeDetailsByTargetDecomposeId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
+        SELECT tdd.target_decompose_details_id,
+               tdd.target_decompose_id,
+               tdd.employee_id,
+               e.employee_name,
+               tdd.area_id,
+               a.area_name,
+               tdd.department_id,
+               d.department_name,
+               tdd.product_id,
+               p.product_name,
+               tdd.region_id,
+               r.region_name,
+               tdd.industry_id,
+               isy.industry_name,
+               tdd.principal_employee_id,
+               e2.employee_name as principal_employee_name,
+               tdd.amount_target,
+               tdd.delete_flag,
+               tdd.create_by,
+               tdd.create_time,
+               tdd.update_by,
+               tdd.update_time
+        FROM target_decompose_details tdd
+                 left join `system-manage`.employee e
+                           on e.employee_id=tdd.employee_id
+                               and e.delete_flag = 0
+                 left join area a on tdd.area_id = a.area_id
+            and a.delete_flag = 0
+                 left join `system-manage`.department d
+                           on d.department_id = tdd.department_id
+                               and d.delete_flag=0
+                 left join product p on tdd.product_id = p.product_id
+            and p.delete_flag=0
+                 left join `system-manage`.region r
+                           on r.region_id = tdd.region_id
+                               and r.delete_flag = 0
+                 left join  `system-manage`.industry isy
+                            on isy.industry_id=tdd.industry_id
+                                and isy.delete_flag=0
+                 left join `system-manage`.employee e2
+                           on e2.employee_id=tdd.principal_employee_id
+                               and e2.delete_flag = 0
+        WHERE tdd.target_decompose_id=#{targetDecomposeId}
+          and tdd.delete_flag = 0
+    </select>
+<!--    根据分解id批量查询目标分解详情表-->
+    <select id="selectTargetDecomposeDetailsByTargetDecomposeIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
+        SELECT
+        target_decompose_details_id, target_decompose_id, employee_id, area_id, department_id, product_id, region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_details
+        WHERE  target_decompose_id in
+        <foreach item="item"
+                 collection="targetDecomposeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+    <!--新增目标分解详情表-->
+    <insert id="insertTargetDecomposeDetails" useGeneratedKeys="true" keyProperty="targetDecomposeDetailsId">
+        INSERT INTO target_decompose_details (target_decompose_id,employee_id,area_id,department_id,product_id,region_id,industry_id,principal_employee_id,amount_target,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetDecomposeDetails.targetDecomposeId},#{targetDecomposeDetails.employeeId},#{targetDecomposeDetails.areaId},#{targetDecomposeDetails.departmentId},#{targetDecomposeDetails.productId},#{targetDecomposeDetails.regionId},#{targetDecomposeDetails.industryId},#{targetDecomposeDetails.principalEmployeeId},#{targetDecomposeDetails.amountTarget},#{targetDecomposeDetails.deleteFlag},#{targetDecomposeDetails.createBy},#{targetDecomposeDetails.createTime},#{targetDecomposeDetails.updateBy},#{targetDecomposeDetails.updateTime})
+    </insert>
+    <!--修改目标分解详情表-->
+    <update id="updateTargetDecomposeDetails">
+        UPDATE target_decompose_details
+        SET
+                    <if test="targetDecomposeDetails.targetDecomposeId != null">
+                        target_decompose_id=#{targetDecomposeDetails.targetDecomposeId},
+                    </if>
+                    <if test="targetDecomposeDetails.employeeId != null">
+                        employee_id=#{targetDecomposeDetails.employeeId},
+                    </if>
+                    <if test="targetDecomposeDetails.areaId != null">
+                        area_id=#{targetDecomposeDetails.areaId},
+                    </if>
+                    <if test="targetDecomposeDetails.departmentId != null">
+                        department_id=#{targetDecomposeDetails.departmentId},
+                    </if>
+                    <if test="targetDecomposeDetails.productId != null">
+                        product_id=#{targetDecomposeDetails.productId},
+                    </if>
+                    <if test="targetDecomposeDetails.regionId != null">
+                        region_id=#{targetDecomposeDetails.regionId},
+                    </if>
+                    <if test="targetDecomposeDetails.industryId != null">
+                        industry_id=#{targetDecomposeDetails.industryId},
+                    </if>
+                    <if test="targetDecomposeDetails.principalEmployeeId != null">
+                        principal_employee_id=#{targetDecomposeDetails.principalEmployeeId},
+                    </if>
+                    <if test="targetDecomposeDetails.amountTarget != null">
+                        amount_target=#{targetDecomposeDetails.amountTarget},
+                    </if>
+                    <if test="targetDecomposeDetails.deleteFlag != null">
+                        delete_flag=#{targetDecomposeDetails.deleteFlag},
+                    </if>
+                    <if test="targetDecomposeDetails.createBy != null">
+                        create_by=#{targetDecomposeDetails.createBy},
+                    </if>
+                    <if test="targetDecomposeDetails.createTime != null">
+                        create_time=#{targetDecomposeDetails.createTime},
+                    </if>
+                    <if test="targetDecomposeDetails.updateBy != null">
+                        update_by=#{targetDecomposeDetails.updateBy},
+                    </if>
+                    <if test="targetDecomposeDetails.updateTime != null">
+                        update_time=#{targetDecomposeDetails.updateTime}
+                    </if>
+        WHERE
+                 target_decompose_details_id=#{targetDecomposeDetails.targetDecomposeDetailsId}
+    </update>
+    <!--逻辑删除目标分解详情表-->
+    <update id="logicDeleteTargetDecomposeDetailsByTargetDecomposeDetailsId">
+        UPDATE target_decompose_details
+        SET     delete_flag= 1,
+                update_by=#{targetDecomposeDetails.updateBy},
+                update_time=#{targetDecomposeDetails.updateTime}
+        WHERE
+                target_decompose_details_id=#{targetDecomposeDetails.targetDecomposeDetailsId}
+    </update>
+    <!--逻辑批量删除目标分解详情表-->
+    <update id="logicDeleteTargetDecomposeDetailsByTargetDecomposeDetailsIds">
+        UPDATE target_decompose_details
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         target_decompose_details_id IN
+            <foreach item="item"
+                     collection="targetDecomposeDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增目标分解详情表-->
+    <insert id="batchTargetDecomposeDetails" useGeneratedKeys="true" keyProperty="targetDecomposeDetailsId">
+        INSERT INTO target_decompose_details (target_decompose_id,employee_id,area_id,department_id,product_id,region_id,industry_id,principal_employee_id,amount_target,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetDecomposeDetailss"
+                 separator=",">
+            (#{item.targetDecomposeId},#{item.employeeId},#{item.areaId},#{item.departmentId},#{item.productId},#{item.regionId},#{item.industryId},#{item.principalEmployeeId},#{item.amountTarget},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标分解详情表-->
+    <delete id="deleteTargetDecomposeDetailsByTargetDecomposeDetailsId">
+        DELETE FROM target_decompose_details
+        WHERE  target_decompose_details_id=#{targetDecomposeDetails}
+
+    </delete>
+    <!--物理批量删除目标分解详情表-->
+    <delete id="deleteTargetDecomposeDetailsByTargetDecomposeDetailsIds">
+        DELETE FROM target_decompose_details
+        WHERE  target_decompose_details_id IN
+            <foreach item="item"
+                     collection="targetDecomposeDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改目标分解详情表-->
+    <update id="updateTargetDecomposeDetailss">
+        update target_decompose_details
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="target_decompose_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.targetDecomposeId != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.targetDecomposeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="employee_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.employeeId != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.employeeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="area_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.areaId != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.areaId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="product_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.productId != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.productId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="region_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.regionId != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.regionId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="industry_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.industryId != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.industryId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="principal_employee_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.principalEmployeeId != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.principalEmployeeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="amount_target=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.amountTarget != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.amountTarget}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="targetDecomposeDetailsList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when target_decompose_details_id=#{item.targetDecomposeDetailsId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="targetDecomposeDetailsList" separator="or" item="item" index="index">
+                    target_decompose_details_id=#{item.targetDecomposeDetailsId}
+        </foreach>
+    </update>
+</mapper>
+
+

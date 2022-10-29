@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
- * @author 周鑫(玖枭)
+ * @author TANGMICHI
  */
 public class CheckObjectIsNullUtils {
 
