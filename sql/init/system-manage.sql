@@ -1,3 +1,7 @@
+DROP DATABASE IF EXISTS `system-manage`;
+CREATE DATABASE `system-manage` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+use `system-manage`;
+
 SET NAMES utf8mb4;
 
 CREATE TABLE file(
