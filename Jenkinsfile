@@ -119,7 +119,7 @@ pipeline {
             container('maven') {
               withCredentials([usernamePassword(credentialsId : 'deploy' ,passwordVariable : 'HARBOR_PWD_VAR' ,usernameVariable : 'HARBOR_USER_VAR' ,)]) {
                 sh 'echo "$HARBOR_PWD_VAR" | docker login $REGISTRY -u "$HARBOR_USER_VAR" --password-stdin'
-                sh 'docker tag qixiaowei-auth:latest $REGISTRY/$HARBOR_PROJECT/qixiaowei-file:SNAPSHOT-$BUILD_NUMBER'
+                sh 'docker tag qixiaowei-file:latest $REGISTRY/$HARBOR_PROJECT/qixiaowei-file:SNAPSHOT-$BUILD_NUMBER'
                 sh 'docker push $REGISTRY/$HARBOR_PROJECT/qixiaowei-file:SNAPSHOT-$BUILD_NUMBER'
               }
 
