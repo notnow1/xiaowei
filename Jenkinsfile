@@ -194,7 +194,7 @@ pipeline {
           steps {
             container('maven') {
               withCredentials([kubeconfigFile(credentialsId : 'kubeconfig-id' ,variable : 'KUBECONFIG' ,)]) {
-                sh 'envsubst < qixiaowei-file/deploy/deploy.yaml | kubectl apply -f -'
+                sh 'envsubst < qixiaowei-service/qixiaowei-file/deploy/deploy.yaml | kubectl apply -f -'
               }
 
             }
@@ -207,7 +207,7 @@ pipeline {
           steps {
             container('maven') {
               withCredentials([kubeconfigFile(credentialsId : 'kubeconfig-id' ,variable : 'KUBECONFIG' ,)]) {
-                sh 'envsubst < qixiaowei-system-manage/deploy/deploy.yaml | kubectl apply -f -'
+                sh 'envsubst < qixiaowei-service/qixiaowei-system-manage/deploy/deploy.yaml | kubectl apply -f -'
               }
 
             }
@@ -220,7 +220,7 @@ pipeline {
           steps {
             container('maven') {
               withCredentials([kubeconfigFile(credentialsId : 'kubeconfig-id' ,variable : 'KUBECONFIG' ,)]) {
-                sh 'envsubst < qixiaowei-operate-cloud/deploy/deploy.yaml | kubectl apply -f -'
+                sh 'envsubst < qixiaowei-service/qixiaowei-operate-cloud/deploy/deploy.yaml | kubectl apply -f -'
               }
 
             }
