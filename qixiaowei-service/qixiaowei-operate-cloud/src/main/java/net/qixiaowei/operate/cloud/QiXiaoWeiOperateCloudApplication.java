@@ -10,7 +10,7 @@ import net.qixiaowei.integration.security.annotation.EnableRyFeignClients;
  */
 @EnableCustomConfig
 @EnableRyFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"net.qixiaowei.operate.cloud", "net.qixiaowei.integration.common.config"})
 public class QiXiaoWeiOperateCloudApplication {
     public static void main(String[] args) {
         SpringApplication.run(QiXiaoWeiOperateCloudApplication.class, args);
