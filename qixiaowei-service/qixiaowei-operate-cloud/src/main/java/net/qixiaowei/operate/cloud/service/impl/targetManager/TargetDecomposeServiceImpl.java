@@ -118,9 +118,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
         }
 
-        if (StringUtils.isNull(targetDecomposeDTO)){
+        if (StringUtils.isNull(targetDecomposeDTO)) {
             return null;
-        }else {
+        } else {
             return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
         }
 
@@ -224,7 +224,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode());
-        if (StringUtils.isNull(indicatorDTOR.getData())){
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
         //指标id
@@ -265,7 +265,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.EARNING.getCode());
-        if (StringUtils.isNull(indicatorDTOR.getData())){
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
         //指标id
@@ -306,7 +306,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode());
-        if (StringUtils.isNull(indicatorDTOR.getData())){
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
         //指标id
@@ -375,7 +375,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //汇总金额
             BigDecimal amountTarget = targetDecomposeDetailsDTO.getAmountTarget();
             if (null != amountTarget) {
-                validDecomposeTarget= validDecomposeTarget.add(amountTarget);
+                validDecomposeTarget = validDecomposeTarget.add(amountTarget);
             }
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
             //行的汇总金额
@@ -383,7 +383,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                 BigDecimal cycleForecast = decomposeDetailCyclesDTO.getCycleForecast();
                 if (null != cycleForecast) {
-                    validAmountTarget=validAmountTarget.add(cycleForecast);
+                    validAmountTarget = validAmountTarget.add(cycleForecast);
                 }
             }
             if (null != amountTarget) {
@@ -825,6 +825,15 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     public int packLogicDeleteTargetDecomposeByTargetDecomposeId(TargetDecomposeDTO targetDecomposeDTO) {
+        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+        //是否引用
+        if (StringUtils.isNotNull(targetDecomposeDTO1)) {
+            if (targetDecomposeDTO1.getStatus() == 1) {
+                throw new ServiceException("数据已被引用无法删除！");
+            }
+        } else {
+            throw new ServiceException("数据不存在，无法删除！");
+        }
         TargetDecompose targetDecompose = new TargetDecompose();
         targetDecompose.setTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -855,6 +864,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     public int packLogicDeleteTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
+        //是否引用
+        for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
+            if (StringUtils.isNotNull(targetDecomposeDTO)) {
+                if (targetDecomposeDTO.getStatus() == 1) {
+                    throw new ServiceException("数据已被引用无法删除！");
+                }
+            } else {
+                throw new ServiceException("数据不存在，无法删除！");
+            }
+        }
+
         //目标分解详情表
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeIds(targetDecomposeIds);
         //目标分解详情表主键id集合
@@ -974,6 +995,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeExcel> exportReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         return this.packExportOrderTargetDecompose(targetDecomposeDTO);
     }
+
     /**
      * 目标分解(自定义)导出列表Excel
      *
@@ -1016,7 +1038,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 }
                 BigDecimal decomposeTarget = targetDecomposeExcel.getDecomposeTarget();
                 BigDecimal targetValue = targetDecomposeExcel.getTargetValue();
-                if (null != decomposeTarget && null != targetValue){
+                if (null != decomposeTarget && null != targetValue) {
                     //目标差异
                     targetDecomposeExcel.setTargetDifference(decomposeTarget.subtract(targetValue));
                 }
@@ -1025,7 +1047,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         return targetDecomposeExcelList;
     }
-
 
 
 }
