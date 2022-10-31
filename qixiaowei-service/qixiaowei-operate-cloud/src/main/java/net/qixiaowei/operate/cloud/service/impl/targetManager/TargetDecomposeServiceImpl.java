@@ -825,15 +825,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     public int packLogicDeleteTargetDecomposeByTargetDecomposeId(TargetDecomposeDTO targetDecomposeDTO) {
-        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
-        //是否引用
-        if (StringUtils.isNotNull(targetDecomposeDTO1)) {
-            if (targetDecomposeDTO1.getStatus() == 1) {
-                throw new ServiceException("数据已被引用无法删除！");
-            }
-        } else {
-            throw new ServiceException("数据不存在，无法删除！");
-        }
         TargetDecompose targetDecompose = new TargetDecompose();
         targetDecompose.setTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -864,18 +855,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     public int packLogicDeleteTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
-        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
-        //是否引用
-        for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
-            if (StringUtils.isNotNull(targetDecomposeDTO)) {
-                if (targetDecomposeDTO.getStatus() == 1) {
-                    throw new ServiceException("数据已被引用无法删除！");
-                }
-            } else {
-                throw new ServiceException("数据不存在，无法删除！");
-            }
-        }
-
         //目标分解详情表
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeIds(targetDecomposeIds);
         //目标分解详情表主键id集合
