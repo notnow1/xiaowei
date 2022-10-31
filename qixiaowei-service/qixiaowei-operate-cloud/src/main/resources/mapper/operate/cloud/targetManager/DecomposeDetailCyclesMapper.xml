@@ -269,7 +269,7 @@
         update_by=#{updateBy},
         update_time=#{updateTime}
         WHERE
-        decompose_detail_cycles_id IN
+        target_decompose_details_id IN
         <foreach item="item"
                  collection="targetDecomposeDetailsIdS"
                  index="index" open="(" separator="," close=")">

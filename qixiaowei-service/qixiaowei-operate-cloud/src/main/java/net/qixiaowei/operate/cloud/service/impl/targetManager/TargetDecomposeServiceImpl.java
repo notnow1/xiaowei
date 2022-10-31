@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 
 import net.qixiaowei.integration.common.constant.Constants;
@@ -9,6 +10,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.operate.cloud.api.domain.product.ProductSpecificationParam;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.DecomposeDetailCycles;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDetails;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
@@ -531,8 +533,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         targetDecomposeDetailsAllList.addAll(targetDecomposeDetailsAddList);
         targetDecomposeDetailsAllList.addAll(targetDecomposeDetailsUpdateList);
-        //todo 排序
-       // targetDecomposeDetailsAllList.addAll(targetDecomposeDetailsUpdateList);
+        targetDecomposeDetailsAllList.sort(Comparator.comparing(TargetDecomposeDetails::getTargetDecomposeDetailsId));
         //修改目标分解详细信息周期表
         for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
             //删除不存在的数据
