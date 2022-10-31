@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.alibaba.excel.write.builder.ExcelWriterBuilder;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -187,7 +189,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:add")
     //@Log(title = "新增目标分解(销售订单)表", businessType = BusinessType.INSERT)
     @PostMapping("/order/add")
-    public AjaxResult orderAddSave(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult orderAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.insertOrderTargetDecompose(targetDecomposeDTO));
     }
 
@@ -197,7 +199,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:add")
     //@Log(title = "新增目标分解(销售收入)表", businessType = BusinessType.INSERT)
     @PostMapping("/income/add")
-    public AjaxResult incomeAddSave(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult incomeAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.insertIncomeTargetDecompose(targetDecomposeDTO));
     }
 
@@ -207,7 +209,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:add")
     //@Log(title = "新增目标分解(销售回款)表", businessType = BusinessType.INSERT)
     @PostMapping("/returned/add")
-    public AjaxResult returnedAddSave(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult returnedAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.insertReturnedTargetDecompose(targetDecomposeDTO));
     }
 
@@ -217,7 +219,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:add")
     //@Log(title = "新增目标分解(自定义)表", businessType = BusinessType.INSERT)
     @PostMapping("/custom/add")
-    public AjaxResult customAddSave(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult customAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.insertCustomTargetDecompose(targetDecomposeDTO));
     }
 
@@ -227,7 +229,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:edit")
     //@Log(title = "修改目标分解(销售订单)表", businessType = BusinessType.UPDATE)
     @PostMapping("/order/edit")
-    public AjaxResult orderEditSave(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult orderEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateOrderTargetDecompose(targetDecomposeDTO));
     }
 
@@ -237,7 +239,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:edit")
     //@Log(title = "修改目标分解(销售收入)表", businessType = BusinessType.UPDATE)
     @PostMapping("/income/edit")
-    public AjaxResult incomeEditSave(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult incomeEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateIncomeTargetDecompose(targetDecomposeDTO));
     }
 
@@ -247,7 +249,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:edit")
     //@Log(title = "修改目标分解(销售回款)表", businessType = BusinessType.UPDATE)
     @PostMapping("/returned/edit")
-    public AjaxResult returnedEditSave(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult returnedEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateReturnedTargetDecompose(targetDecomposeDTO));
     }
 
@@ -257,7 +259,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:edit")
     //@Log(title = "修改目标分解(自定义)表", businessType = BusinessType.UPDATE)
     @PostMapping("/custom/edit")
-    public AjaxResult customEditSave(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult customEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateCustomTargetDecompose(targetDecomposeDTO));
     }
 
@@ -267,7 +269,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:remove")
     //@Log(title = "删除目标分解(销售订单)表", businessType = BusinessType.DELETE)
     @PostMapping("/order/remove")
-    public AjaxResult orderRemove(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult orderRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.logicDeleteOrderTargetDecomposeByTargetDecomposeId(targetDecomposeDTO));
     }
 
@@ -277,7 +279,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:remove")
     //@Log(title = "删除目标分解(销售收入)表", businessType = BusinessType.DELETE)
     @PostMapping("/income/remove")
-    public AjaxResult incomeRemove(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult incomeRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.logicDeleteIncomeTargetDecomposeByTargetDecomposeId(targetDecomposeDTO));
     }
 
@@ -287,7 +289,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:remove")
     //@Log(title = "删除目标分解(销售回款)表", businessType = BusinessType.DELETE)
     @PostMapping("/returned/remove")
-    public AjaxResult returnedRemove(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult returnedRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.logicDeleteReturnedTargetDecomposeByTargetDecomposeId(targetDecomposeDTO));
     }
 
@@ -297,7 +299,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:remove")
     //@Log(title = "删除目标分解(自定义)表", businessType = BusinessType.DELETE)
     @PostMapping("/custom/remove")
-    public AjaxResult customRemove(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult customRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.logicDeleteCustomTargetDecomposeByTargetDecomposeId(targetDecomposeDTO));
     }
 

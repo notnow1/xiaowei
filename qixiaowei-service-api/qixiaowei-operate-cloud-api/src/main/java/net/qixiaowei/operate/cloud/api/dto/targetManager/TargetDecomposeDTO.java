@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -38,6 +41,7 @@ public class TargetDecomposeDTO {
     /**
     * ID
     */
+    @NotNull(message = "ID不能为空",groups = {TargetDecomposeDTO.DeleteTargetDecomposeDTO.class})
     private  Long targetDecomposeId;
     /**
     * 目标分解类型:0自定义;1销售订单;2销售收入;3销售回款
@@ -50,14 +54,17 @@ public class TargetDecomposeDTO {
     /**
     * 目标年度
     */
+    @NotNull(message = "目标年度不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})
     private  Integer targetYear;
     /**
     * 目标分解维度ID
     */
+    @NotNull(message = "目标分解维度ID不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})
     private  Long targetDecomposeDimensionId;
     /**
     * 分解维度
     */
+    @NotBlank(message = "分解维度名称不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})
     private  String decompositionDimension;
     /**
      * 指标名称
@@ -78,6 +85,7 @@ public class TargetDecomposeDTO {
     /**
     * 时间维度:1年度;2半年度;3季度;4月度;5周
     */
+    @NotNull(message = "时间维度不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})
     private  Integer timeDimension;
     /**
     * 分解目标值
@@ -98,6 +106,7 @@ public class TargetDecomposeDTO {
     /**
      * 目标分解详情信息
      */
+    @NotEmpty(message = "目标分解详情信息不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})
     private List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS;
 
     /**
