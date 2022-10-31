@@ -11,12 +11,9 @@ import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.ProductSpecificationParam;
-import net.qixiaowei.operate.cloud.api.domain.targetManager.DecomposeDetailCycles;
-import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDetails;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
-import net.qixiaowei.operate.cloud.mapper.targetManager.DecomposeDetailCyclesMapper;
-import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDetailsMapper;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.*;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
+import net.qixiaowei.operate.cloud.mapper.targetManager.*;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +24,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
-import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -53,6 +47,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     private DecomposeDetailCyclesMapper decomposeDetailCyclesMapper;
     @Autowired
     private TargetDecomposeDetailsMapper targetDecomposeDetailsMapper;
+
+    @Autowired
+    private TargetDecomposeHistoryMapper targetDecomposeHistoryMapper;
+    @Autowired
+    private DecomposeDetailsSnapshotMapper decomposeDetailsSnapshotMapper;
+    @Autowired
+    private DetailCyclesSnapshotMapper detailCyclesSnapshotMapper;
 
 
     /**
@@ -845,7 +846,55 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 throw new ServiceException("删除目标分解周期表失败");
             }
         }
+        //删除历史版本数据
+        this.packLogicDeleteTargetDecomposeHistoryData(targetDecomposeDTO);
         return targetDecomposeMapper.logicDeleteTargetDecomposeByTargetDecomposeId(targetDecompose);
+    }
+    /**
+     * 封装统一删除历史版本数据
+     */
+    private void packLogicDeleteTargetDecomposeHistoryData(TargetDecomposeDTO targetDecomposeDTO) {
+        //目标分解历史版本表集合
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = new ArrayList<>();
+        //目标分解详情快照表集合
+        List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = new ArrayList<>();
+        try {
+            TargetDecomposeHistory targetDecomposeHistory = new TargetDecomposeHistory();
+            targetDecomposeHistory.setTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+            targetDecomposeHistory.setUpdateTime(DateUtils.getNowDate());
+            targetDecomposeHistory.setUpdateBy(SecurityUtils.getUserId());
+            targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryList(targetDecomposeHistory);
+            //删除历史版本
+            targetDecomposeHistoryMapper.logicDeleteTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeHistory);
+        } catch (Exception e) {
+            throw new ServiceException("删除关联历史版本失败");
+        }
+
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
+            List<Long> collect1 = targetDecomposeHistoryDTOS.stream().map(TargetDecomposeHistoryDTO::getTargetDecomposeHistoryId).collect(Collectors.toList());
+            try {
+
+                if (StringUtils.isNotEmpty(collect1)) {
+                    decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1);
+                    //删除历史版本
+                    decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                }
+
+            } catch (Exception e) {
+                throw new ServiceException("删除关联历史版本详情失败");
+            }
+        }
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+            List<Long> collect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDecomposeDetailsSnapshotId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                try {
+                    detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("删除目标分解详情周期快照失败");
+                }
+            }
+
+        }
     }
 
     /**
@@ -871,7 +920,52 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 throw new ServiceException("删除目标分解周期表失败");
             }
         }
+        this.packLogicDeleteTargetDecomposeHistoryDatas(targetDecomposeIds);
         return targetDecomposeMapper.logicDeleteTargetDecomposeByTargetDecomposeIds(targetDecomposeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * 封装统一批量删除历史版本数据
+     * @param targetDecomposeIds
+     */
+    private void packLogicDeleteTargetDecomposeHistoryDatas(List<Long> targetDecomposeIds) {
+        //目标分解历史版本表集合
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = new ArrayList<>();
+        //目标分解详情快照表集合
+        List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = new ArrayList<>();
+        try {
+            targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeIds(targetDecomposeIds);
+            //删除历史版本
+            targetDecomposeHistoryMapper.logicDeleteTargetDecomposeHistoryByTargetDecomposeIds(targetDecomposeIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除关联历史版本失败");
+        }
+
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
+            List<Long> collect1 = targetDecomposeHistoryDTOS.stream().map(TargetDecomposeHistoryDTO::getTargetDecomposeHistoryId).collect(Collectors.toList());
+            try {
+
+                if (StringUtils.isNotEmpty(collect1)) {
+                    decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1);
+                    //删除历史版本
+                    decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                }
+
+            } catch (Exception e) {
+                throw new ServiceException("删除关联历史版本详情失败");
+            }
+        }
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+            List<Long> collect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDecomposeDetailsSnapshotId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                try {
+                    detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("删除目标分解详情周期快照失败");
+                }
+            }
+
+        }
     }
 
     /**

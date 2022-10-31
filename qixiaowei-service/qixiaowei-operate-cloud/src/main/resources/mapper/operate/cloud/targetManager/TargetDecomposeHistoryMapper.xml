@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeHistoryMapper">
+    <!--    查询目标分解历史版本表-->
+    <select id="selectTargetDecomposeHistoryByTargetDecomposeHistoryId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeHistoryDTO">
+        SELECT
+        target_decompose_history_id, target_decompose_id, version, forecast_cycle, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_history
+        WHERE  target_decompose_history_id=#{targetDecomposeHistoryId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标分解历史版本表-->
+    <select id="selectTargetDecomposeHistoryByTargetDecomposeHistoryIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeHistoryDTO">
+        SELECT
+        target_decompose_history_id, target_decompose_id, version, forecast_cycle, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_history
+        WHERE  target_decompose_history_id in
+            <foreach item="item"
+                     collection="targetDecomposeHistoryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标分解历史版本表列表-->
+    <select id="selectTargetDecomposeHistoryList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeHistoryDTO">
+        SELECT
+        target_decompose_history_id, target_decompose_id, version, forecast_cycle, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_history
+        WHERE delete_flag=0
+                <if test="targetDecomposeHistory.targetDecomposeHistoryId != null">
+                    and target_decompose_history_id=#{targetDecomposeHistory.targetDecomposeHistoryId}
+                </if>
+                <if test="targetDecomposeHistory.targetDecomposeId != null">
+                    and target_decompose_id=#{targetDecomposeHistory.targetDecomposeId}
+                </if>
+                <if test="targetDecomposeHistory.version != null and targetDecomposeHistory.version != ''">
+                    and version=#{targetDecomposeHistory.version}
+                </if>
+                <if test="targetDecomposeHistory.forecastCycle != null and targetDecomposeHistory.forecastCycle != ''">
+                    and forecast_cycle=#{targetDecomposeHistory.forecastCycle}
+                </if>
+                <if test="targetDecomposeHistory.deleteFlag != null">
+                    and delete_flag=#{targetDecomposeHistory.deleteFlag}
+                </if>
+                <if test="targetDecomposeHistory.createBy != null">
+                    and create_by=#{targetDecomposeHistory.createBy}
+                </if>
+                <if test="targetDecomposeHistory.createTime != null">
+                    and create_time=#{targetDecomposeHistory.createTime}
+                </if>
+                <if test="targetDecomposeHistory.updateBy != null">
+                    and update_by=#{targetDecomposeHistory.updateBy}
+                </if>
+                <if test="targetDecomposeHistory.updateTime != null">
+                    and update_time=#{targetDecomposeHistory.updateTime}
+                </if>
+    </select>
+<!--    工具目标分解id集合批量查询目标分解历史版本表-->
+    <select id="selectTargetDecomposeHistoryByTargetDecomposeIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeHistoryDTO">
+        SELECT
+        target_decompose_history_id, target_decompose_id, version, forecast_cycle, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_history
+        WHERE  target_decompose_id in
+        <foreach item="item"
+                 collection="targetDecomposeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+    <!--新增目标分解历史版本表-->
+    <insert id="insertTargetDecomposeHistory" useGeneratedKeys="true" keyProperty="targetDecomposeHistoryId">
+        INSERT INTO target_decompose_history (target_decompose_id,version,forecast_cycle,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetDecomposeHistory.targetDecomposeId},#{targetDecomposeHistory.version},#{targetDecomposeHistory.forecastCycle},#{targetDecomposeHistory.deleteFlag},#{targetDecomposeHistory.createBy},#{targetDecomposeHistory.createTime},#{targetDecomposeHistory.updateBy},#{targetDecomposeHistory.updateTime})
+    </insert>
+    <!--修改目标分解历史版本表-->
+    <update id="updateTargetDecomposeHistory">
+        UPDATE target_decompose_history
+        SET
+                    <if test="targetDecomposeHistory.targetDecomposeId != null">
+                        target_decompose_id=#{targetDecomposeHistory.targetDecomposeId},
+                    </if>
+                    <if test="targetDecomposeHistory.version != null and targetDecomposeHistory.version != ''">
+                        version=#{targetDecomposeHistory.version},
+                    </if>
+                    <if test="targetDecomposeHistory.forecastCycle != null and targetDecomposeHistory.forecastCycle != ''">
+                        forecast_cycle=#{targetDecomposeHistory.forecastCycle},
+                    </if>
+                    <if test="targetDecomposeHistory.deleteFlag != null">
+                        delete_flag=#{targetDecomposeHistory.deleteFlag},
+                    </if>
+                    <if test="targetDecomposeHistory.createBy != null">
+                        create_by=#{targetDecomposeHistory.createBy},
+                    </if>
+                    <if test="targetDecomposeHistory.createTime != null">
+                        create_time=#{targetDecomposeHistory.createTime},
+                    </if>
+                    <if test="targetDecomposeHistory.updateBy != null">
+                        update_by=#{targetDecomposeHistory.updateBy},
+                    </if>
+                    <if test="targetDecomposeHistory.updateTime != null">
+                        update_time=#{targetDecomposeHistory.updateTime}
+                    </if>
+        WHERE
+                 target_decompose_history_id=#{targetDecomposeHistory.targetDecomposeHistoryId}
+    </update>
+    <!--逻辑删除目标分解历史版本表-->
+    <update id="logicDeleteTargetDecomposeHistoryByTargetDecomposeHistoryId">
+        UPDATE target_decompose_history
+        SET     delete_flag= 1,
+                update_by=#{targetDecomposeHistory.updateBy},
+                update_time=#{targetDecomposeHistory.updateTime}
+        WHERE
+                target_decompose_history_id=#{targetDecomposeHistory.targetDecomposeHistoryId}
+    </update>
+    <!--逻辑批量删除目标分解历史版本表-->
+    <update id="logicDeleteTargetDecomposeHistoryByTargetDecomposeHistoryIds">
+        UPDATE target_decompose_history
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         target_decompose_history_id IN
+            <foreach item="item"
+                     collection="targetDecomposeHistoryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增目标分解历史版本表-->
+    <insert id="batchTargetDecomposeHistory">
+        INSERT INTO target_decompose_history (target_decompose_id,version,forecast_cycle,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetDecomposeHistorys"
+                 separator=",">
+            (#{item.targetDecomposeId},#{item.version},#{item.forecastCycle},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标分解历史版本表-->
+    <delete id="deleteTargetDecomposeHistoryByTargetDecomposeHistoryId">
+        DELETE FROM target_decompose_history
+        WHERE  target_decompose_history_id=#{targetDecomposeHistory}
+
+    </delete>
+    <!--物理批量删除目标分解历史版本表-->
+    <delete id="deleteTargetDecomposeHistoryByTargetDecomposeHistoryIds">
+        DELETE FROM target_decompose_history
+        WHERE  target_decompose_history_id IN
+            <foreach item="item"
+                     collection="targetDecomposeHistoryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改目标分解历史版本表-->
+    <update id="updateTargetDecomposeHistorys">
+        update target_decompose_history
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="target_decompose_id=case" suffix="end,">
+                        <foreach collection="targetDecomposeHistoryList" item="item" index="index">
+                                <if test="item.targetDecomposeId != null">
+                                    when target_decompose_history_id=#{item.targetDecomposeHistoryId} then #{item.targetDecomposeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="version=case" suffix="end,">
+                        <foreach collection="targetDecomposeHistoryList" item="item" index="index">
+                                <if test="item.version != null and item.version != ''">
+                                    when target_decompose_history_id=#{item.targetDecomposeHistoryId} then #{item.version}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="forecast_cycle=case" suffix="end,">
+                        <foreach collection="targetDecomposeHistoryList" item="item" index="index">
+                                <if test="item.forecastCycle != null and item.forecastCycle != ''">
+                                    when target_decompose_history_id=#{item.targetDecomposeHistoryId} then #{item.forecastCycle}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="targetDecomposeHistoryList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when target_decompose_history_id=#{item.targetDecomposeHistoryId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="targetDecomposeHistoryList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when target_decompose_history_id=#{item.targetDecomposeHistoryId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="targetDecomposeHistoryList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when target_decompose_history_id=#{item.targetDecomposeHistoryId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="targetDecomposeHistoryList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when target_decompose_history_id=#{item.targetDecomposeHistoryId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="targetDecomposeHistoryList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when target_decompose_history_id=#{item.targetDecomposeHistoryId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="targetDecomposeHistoryList" separator="or" item="item" index="index">
+                    target_decompose_history_id=#{item.targetDecomposeHistoryId}
+        </foreach>
+    </update>
+<!--    根据目标分解id逻辑删除目标分解历史版本表-->
+    <update id="logicDeleteTargetDecomposeHistoryByTargetDecomposeId">
+        UPDATE target_decompose_history
+        SET     delete_flag= 1,
+                update_by=#{targetDecomposeHistory.updateBy},
+                update_time=#{targetDecomposeHistory.updateTime}
+        WHERE
+            target_decompose_id=#{targetDecomposeHistory.targetDecomposeId}
+    </update>
+<!--    根据目标分解id集合逻辑批量删除目标分解历史版本表-->
+    <update id="logicDeleteTargetDecomposeHistoryByTargetDecomposeIds">
+        UPDATE target_decompose_history
+        SET     delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        target_decompose_id IN
+        <foreach item="item"
+                 collection="targetDecomposeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>
+
+
