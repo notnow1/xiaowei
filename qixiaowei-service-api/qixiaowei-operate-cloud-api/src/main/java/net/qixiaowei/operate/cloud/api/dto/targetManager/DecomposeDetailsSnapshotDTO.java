@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.api.dto.targetManager;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -72,7 +73,7 @@ public class DecomposeDetailsSnapshotDTO {
     /**
     * 汇总目标值
     */
-    private  BigDecimal amountTarget;
+    private BigDecimal amountTarget;
     /**
     * 删除标记:0未删除;1已删除
     */

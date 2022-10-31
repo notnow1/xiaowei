@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.api.dto.targetManager;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -48,7 +49,7 @@ public class DetailCyclesSnapshotDTO {
     /**
     * 周期目标值
     */
-    private  BigDecimal cycleTarget;
+    private BigDecimal cycleTarget;
     /**
     * 周期预测值
     */

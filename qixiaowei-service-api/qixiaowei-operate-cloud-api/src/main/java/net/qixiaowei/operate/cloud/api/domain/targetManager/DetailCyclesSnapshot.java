@@ -5,6 +5,8 @@ package net.qixiaowei.operate.cloud.api.domain.targetManager;
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -33,7 +35,7 @@ public class DetailCyclesSnapshot extends BaseEntity {
      /**
      * 周期目标值
      */
-     private  BigDecimal  cycleTarget;
+     private BigDecimal cycleTarget;
      /**
      * 周期预测值
      */
