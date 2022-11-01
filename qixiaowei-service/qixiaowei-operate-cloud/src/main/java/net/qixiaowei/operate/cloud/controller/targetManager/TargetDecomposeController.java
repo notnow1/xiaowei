@@ -54,6 +54,27 @@ public class TargetDecomposeController extends BaseController {
     private ITargetDecomposeService targetDecomposeService;
 
 
+
+    /**
+     * 分页查询滚动预测表列表
+     */
+    //@RequiresPermissions("operate:cloud:targetDecompose:pageList")
+    @GetMapping("/roll/pageList")
+    public TableDataInfo rollPageList(TargetDecomposeDTO targetDecomposeDTO) {
+        startPage();
+        List<TargetDecomposeDTO> list = targetDecomposeService.rollPageList(targetDecomposeDTO);
+        return getDataTable(list);
+    }
+
+    /**
+     * 移交预测负责人
+     */
+    //@RequiresPermissions("operate:cloud:targetDecompose:edit")
+    //@Log(title = "移交预测负责人", businessType = BusinessType.UPDATE)
+    @PostMapping("/turnOver/edit")
+    public AjaxResult turnOverPrincipalEmployee(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+        return toAjax(targetDecomposeService.turnOverPrincipalEmployee(targetDecomposeDTO));
+    }
     /**
      * 查询目标分解(销售订单)表详情
      */

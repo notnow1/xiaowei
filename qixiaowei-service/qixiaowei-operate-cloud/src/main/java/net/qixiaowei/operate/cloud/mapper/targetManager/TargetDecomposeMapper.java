@@ -42,13 +42,21 @@ public interface TargetDecomposeMapper {
     List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(@Param("targetDecomposeIds") List<Long> targetDecomposeIds);
 
     /**
-     * 查询目标分解(销售订单)表列表
+     * 查询目标分解表列表
      *
-     * @param targetDecompose 目标分解(销售订单)表
-     * @return 目标分解(销售订单)表集合
+     * @param targetDecompose 目标分解表
+     * @return 目标分解表集合
      */
     List<TargetDecomposeDTO> selectTargetDecomposeList(@Param("targetDecompose") TargetDecompose targetDecompose);
 
+
+    /**
+     * 查询滚动预测列表
+     *
+     * @param targetDecompose 目标分解表
+     * @return 滚动预测列表集合
+     */
+    List<TargetDecomposeDTO> selectRollPageList(@Param("targetDecompose") TargetDecompose targetDecompose);
     /**
      * 新增目标分解(销售订单)表
      *

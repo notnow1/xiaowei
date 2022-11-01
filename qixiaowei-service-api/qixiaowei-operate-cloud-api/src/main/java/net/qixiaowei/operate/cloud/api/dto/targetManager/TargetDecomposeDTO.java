@@ -67,6 +67,14 @@ public class TargetDecomposeDTO {
     @NotBlank(message = "分解维度名称不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})
     private  String decompositionDimension;
     /**
+     * 负责人ID
+     */
+    private  Long principalEmployeeId;
+    /**
+     * 负责人名称
+     */
+    private  String principalEmployeeName;
+    /**
      * 指标名称
      */
     private  String indicatorName;

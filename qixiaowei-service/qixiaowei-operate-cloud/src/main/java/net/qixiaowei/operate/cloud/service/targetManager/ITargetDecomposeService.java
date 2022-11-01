@@ -55,6 +55,14 @@ public interface ITargetDecomposeService {
     List<TargetDecomposeDTO> selectOrderList(TargetDecomposeDTO targetDecomposeDTO);
 
     /**
+     * 分页查询滚动预测表列表
+     *
+     * @param targetDecomposeDTO 滚动预测表列表
+     * @return 滚动预测表列表集合
+     */
+    List<TargetDecomposeDTO> rollPageList(TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
      * 查询目标分解(销售收入)表列表
      *
      * @param targetDecomposeDTO 目标分解(销售收入)表
@@ -259,4 +267,11 @@ public interface ITargetDecomposeService {
      * @return
      */
     List<TargetDecomposeExcel> exportCustomTargetDecompose(TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
+     * 移交预测负责人
+     * @param targetDecomposeDTO
+     * @return
+     */
+    int turnOverPrincipalEmployee(TargetDecomposeDTO targetDecomposeDTO);
 }

@@ -135,6 +135,78 @@
           and time_dimension=#{targetDecompose.timeDimension}
           and delete_flag=0
     </select>
+<!--    查询滚动预测列表-->
+    <select id="selectRollPageList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
+        SELECT
+        td.target_year,
+        i.indicator_name,
+        td.decomposition_dimension,
+        td.time_dimension,
+        ts.target_value,
+        td.decompose_target,
+        td.target_decompose_id,
+        td.target_decompose_type,
+        td.indicator_id,
+        td.target_decompose_dimension_id,
+        td.forecast_year,
+        td.actual_total,
+        td.status
+        FROM target_decompose td
+        left join target_setting ts
+        on td.target_year = ts.target_year
+        and td.indicator_id = ts.indicator_id
+        and ts.delete_flag= 0
+        left join `system-manage`.indicator i
+        on i.indicator_id =td.indicator_id
+        and i.delete_flag =0
+        WHERE td.delete_flag = 0
+        <if test="targetDecompose.targetDecomposeId != null">
+            and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
+        </if>
+        <if test="targetDecompose.targetDecomposeType != null">
+            and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
+        </if>
+        <if test="targetDecompose.targetYear != null">
+            and td.target_year like '%${targetDecompose.targetYear}%'
+        </if>
+        <if test="targetDecompose.targetDecomposeDimensionId != null">
+            and td.target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
+        </if>
+        <if test="targetDecompose.decompositionDimension != null and targetDecompose.decompositionDimension != ''">
+            and td.decomposition_dimension like '%$#{targetDecompose.decompositionDimension}%'
+        </if>
+        <if test="targetDecompose.timeDimension != null">
+            and td.time_dimension like '%${targetDecompose.timeDimension}%'
+        </if>
+        <if test="targetDecompose.decomposeTarget != null">
+            and td.decompose_target=#{targetDecompose.decomposeTarget}
+        </if>
+        <if test="targetDecompose.forecastYear != null">
+            and td.forecast_year=#{targetDecompose.forecastYear}
+        </if>
+        <if test="targetDecompose.actualTotal != null">
+            and td.actual_total=#{targetDecompose.actualTotal}
+        </if>
+        <if test="targetDecompose.status != null">
+            and td.status=#{targetDecompose.status}
+        </if>
+        <if test="targetDecompose.deleteFlag != null">
+            and td.delete_flag=#{targetDecompose.deleteFlag}
+        </if>
+        <if test="targetDecompose.createBy != null">
+            and td.create_by=#{targetDecompose.createBy}
+        </if>
+        <if test="targetDecompose.createTime != null">
+            and td.create_time=#{targetDecompose.createTime}
+        </if>
+        <if test="targetDecompose.updateBy != null">
+            and td.update_by=#{targetDecompose.updateBy}
+        </if>
+        <if test="targetDecompose.updateTime != null">
+            and td.update_time=#{targetDecompose.updateTime}
+        </if>
+    </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">
         INSERT INTO target_decompose (target_decompose_type,indicator_id,target_year,target_decompose_dimension_id,decomposition_dimension,time_dimension,decompose_target,forecast_year,actual_total,status,delete_flag,create_by,create_time,update_by,update_time)
