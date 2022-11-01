@@ -56,6 +56,16 @@ public class TargetDecomposeHistoryController extends BaseController
 
 
     /**
+    * 查询目标分解历史版本表详情
+    */
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:info")
+    @GetMapping("/infohistordecomposey/{targetDecomposeHistoryId}")
+    public AjaxResult info(@PathVariable Long targetDecomposeHistoryId){
+    TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryService.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
+        return AjaxResult.success(targetDecomposeHistoryDTO);
+    }
+
+    /**
     * 分页查询目标分解历史版本表列表
     */
     //@RequiresPermissions("operate:cloud:targetDecomposeHistory:pageList")
@@ -80,7 +90,7 @@ public class TargetDecomposeHistoryController extends BaseController
      * 根据目标分解id查询目标分解历史版本表详情
      */
     //@RequiresPermissions("operate:cloud:targetDecomposeHistory:info")
-    @GetMapping("/info/{targetDecomposeId}")
+    @GetMapping("/infodecompose/{targetDecomposeId}")
     public AjaxResult targetDecomposeIdInfo(@PathVariable Long targetDecomposeId){
         return AjaxResult.success(targetDecomposeHistoryService.targetDecomposeIdInfo(targetDecomposeId));
     }

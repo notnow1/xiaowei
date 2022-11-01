@@ -414,11 +414,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDTO
      */
     private void validTargetDecomposeData(TargetDecomposeDTO targetDecomposeDTO) {
+        //分解目标值
+        BigDecimal decomposeTarget = targetDecomposeDTO.getDecomposeTarget();
+        //分解目标值比对
+        BigDecimal validDecomposeTarget = new BigDecimal("0");
+
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
         for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
             //汇总金额
             BigDecimal amountTarget = targetDecomposeDetailsDTO.getAmountTarget();
-
+            if (null != amountTarget) {
+                validDecomposeTarget = validDecomposeTarget.add(amountTarget);
+            }
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
             //行的汇总金额
             BigDecimal validAmountTarget = new BigDecimal("0");
@@ -434,6 +441,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 }
             }
 
+        }
+        if (null != decomposeTarget) {
+            if (decomposeTarget.compareTo(validDecomposeTarget) != 0) {
+                throw new ServiceException("分解目标值与汇总金额总值不匹配！！！");
+            }
         }
 
     }

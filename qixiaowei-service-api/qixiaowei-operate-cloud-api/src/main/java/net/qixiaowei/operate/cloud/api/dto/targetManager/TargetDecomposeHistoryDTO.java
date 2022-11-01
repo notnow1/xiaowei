@@ -4,6 +4,8 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -49,6 +51,11 @@ public class TargetDecomposeHistoryDTO {
     * 预测周期
     */
     private  String forecastCycle;
+    /**
+     * 目标分解详情信息
+     */
+    @NotEmpty(message = "目标分解详情信息不能为空",groups = {TargetDecomposeHistoryDTO.UpdateTargetDecomposeHistoryDTO.class})
+    private List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS;
     /**
     * 删除标记:0未删除;1已删除
     */
