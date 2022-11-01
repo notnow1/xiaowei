@@ -38,10 +38,15 @@ public class TargetDecomposeDTO {
     public interface UpdateTargetDecomposeDTO extends Default{
 
     }
+
+    //修改检验
+    public interface RollUpdateTargetDecomposeDTO extends Default{
+
+    }
     /**
     * ID
     */
-    @NotNull(message = "ID不能为空",groups = {TargetDecomposeDTO.DeleteTargetDecomposeDTO.class})
+    @NotNull(message = "ID不能为空",groups = {TargetDecomposeDTO.DeleteTargetDecomposeDTO.class,TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class})
     private  Long targetDecomposeId;
     /**
     * 目标分解类型:0自定义;1销售订单;2销售收入;3销售回款
@@ -69,6 +74,7 @@ public class TargetDecomposeDTO {
     /**
      * 负责人ID
      */
+    @NotNull(message = "负责人ID不能为空",groups = {TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class})
     private  Long principalEmployeeId;
     /**
      * 负责人名称

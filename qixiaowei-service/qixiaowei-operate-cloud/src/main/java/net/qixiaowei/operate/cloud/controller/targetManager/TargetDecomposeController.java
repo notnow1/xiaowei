@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.alibaba.excel.write.builder.ExcelWriterBuilder;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -56,6 +57,25 @@ public class TargetDecomposeController extends BaseController {
 
 
     /**
+     * 修改滚动预测详情
+     */
+    //@RequiresPermissions("operate:cloud:targetDecompose:edit")
+    //@Log(title = "修改目标分解(销售订单)表", businessType = BusinessType.UPDATE)
+    @PostMapping("/roll/edit")
+    public AjaxResult rollEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+        return toAjax(targetDecomposeService.updateRollTargetDecompose(targetDecomposeDTO));
+    }
+
+    /**
+     * 查询滚动预测表详情
+     */
+    //@RequiresPermissions("operate:cloud:targetDecompose:info")
+    @GetMapping("/roll/info/{targetDecomposeId}")
+    public AjaxResult rollInfo(@PathVariable Long targetDecomposeId) {
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        return AjaxResult.success(targetDecomposeDTO);
+    }
+    /**
      * 分页查询滚动预测表列表
      */
     //@RequiresPermissions("operate:cloud:targetDecompose:pageList")
@@ -72,7 +92,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:edit")
     //@Log(title = "移交预测负责人", businessType = BusinessType.UPDATE)
     @PostMapping("/turnOver/edit")
-    public AjaxResult turnOverPrincipalEmployee(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult turnOverPrincipalEmployee(@RequestBody @Validated(TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.turnOverPrincipalEmployee(targetDecomposeDTO));
     }
     /**
@@ -210,7 +230,7 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:add")
     //@Log(title = "新增目标分解(销售订单)表", businessType = BusinessType.INSERT)
     @PostMapping("/order/add")
-    public AjaxResult orderAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult orderAddSave(@RequestBody @Validated({TargetDecomposeDTO.AddTargetDecomposeDTO.class}) TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.insertOrderTargetDecompose(targetDecomposeDTO));
     }
 

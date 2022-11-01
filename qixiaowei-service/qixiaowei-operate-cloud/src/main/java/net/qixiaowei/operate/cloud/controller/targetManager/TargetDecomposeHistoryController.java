@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
 import java.util.List;
+
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +27,8 @@ import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,19 +56,9 @@ public class TargetDecomposeHistoryController extends BaseController
 
 
     /**
-    * 查询目标分解历史版本表详情
-    */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:info")
-    @GetMapping("/info/{targetDecomposeHistoryId}")
-    public AjaxResult info(@PathVariable Long targetDecomposeHistoryId){
-    TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryService.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
-        return AjaxResult.success(targetDecomposeHistoryDTO);
-    }
-
-    /**
     * 分页查询目标分解历史版本表列表
     */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:pageList")
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(TargetDecomposeHistoryDTO targetDecomposeHistoryDTO){
     startPage();
@@ -75,18 +69,25 @@ public class TargetDecomposeHistoryController extends BaseController
     /**
     * 查询目标分解历史版本表列表
     */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:list")
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:list")
     @GetMapping("/list")
     public AjaxResult list(TargetDecomposeHistoryDTO targetDecomposeHistoryDTO){
     List<TargetDecomposeHistoryDTO> list = targetDecomposeHistoryService.selectTargetDecomposeHistoryList(targetDecomposeHistoryDTO);
     return AjaxResult.success(list);
     }
 
-
+    /**
+     * 根据目标分解id查询目标分解历史版本表详情
+     */
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:info")
+    @GetMapping("/info/{targetDecomposeId}")
+    public AjaxResult targetDecomposeIdInfo(@PathVariable Long targetDecomposeId){
+        return AjaxResult.success(targetDecomposeHistoryService.targetDecomposeIdInfo(targetDecomposeId));
+    }
     /**
     * 新增目标分解历史版本表
     */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:add")
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:add")
     @Log(title = "新增目标分解历史版本表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody TargetDecomposeHistoryDTO targetDecomposeHistoryDTO) {
@@ -97,7 +98,7 @@ public class TargetDecomposeHistoryController extends BaseController
     /**
     * 修改目标分解历史版本表
     */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:edit")
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:edit")
     @Log(title = "修改目标分解历史版本表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody TargetDecomposeHistoryDTO targetDecomposeHistoryDTO)
@@ -108,7 +109,7 @@ public class TargetDecomposeHistoryController extends BaseController
     /**
     * 逻辑删除目标分解历史版本表
     */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:remove")
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:remove")
     @Log(title = "删除目标分解历史版本表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody TargetDecomposeHistoryDTO targetDecomposeHistoryDTO)
@@ -118,7 +119,7 @@ public class TargetDecomposeHistoryController extends BaseController
     /**
     * 批量修改目标分解历史版本表
     */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:edits")
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:edits")
     @Log(title = "批量修改目标分解历史版本表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDtos)
@@ -129,7 +130,7 @@ public class TargetDecomposeHistoryController extends BaseController
     /**
     * 批量新增目标分解历史版本表
     */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:insertTargetDecomposeHistorys")
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:insertTargetDecomposeHistorys")
     @Log(title = "批量新增目标分解历史版本表", businessType = BusinessType.INSERT)
     @PostMapping("/insertTargetDecomposeHistorys")
     public AjaxResult insertTargetDecomposeHistorys(@RequestBody List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDtos)
@@ -140,7 +141,7 @@ public class TargetDecomposeHistoryController extends BaseController
     /**
     * 逻辑批量删除目标分解历史版本表
     */
-    @RequiresPermissions("operate:cloud:targetDecomposeHistory:removes")
+    //@RequiresPermissions("operate:cloud:targetDecomposeHistory:removes")
     @Log(title = "批量删除目标分解历史版本表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  targetDecomposeHistoryIds)

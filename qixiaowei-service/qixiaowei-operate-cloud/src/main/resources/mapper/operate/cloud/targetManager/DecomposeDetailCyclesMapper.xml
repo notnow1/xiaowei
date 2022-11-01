@@ -74,6 +74,7 @@
         FROM decompose_detail_cycles
         WHERE  target_decompose_details_id=#{targetDecomposeDetailsId}
           and delete_flag=0
+        order by cycle_number
     </select>
 <!--    根据详情分解id批量查询目标分解详情周期表-->
     <select id="selectDecomposeDetailCyclesByTargetDecomposeDetailsIds"

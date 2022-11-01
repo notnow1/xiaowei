@@ -123,4 +123,11 @@ public interface TargetDecomposeHistoryMapper{
     * @return 结果
     */
     int batchTargetDecomposeHistory(@Param("targetDecomposeHistorys")List<TargetDecomposeHistory> TargetDecomposeHistorys);
+
+    /**
+     * 根据目标分解id查询目标分解历史版本表列表
+     * @param targetDecomposeId
+     * @return
+     */
+    List<TargetDecomposeHistoryDTO> selectTargetDecomposeHistoryByTargetDecomposeId(@Param("targetDecomposeId")Long targetDecomposeId);
 }

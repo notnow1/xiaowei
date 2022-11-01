@@ -54,6 +54,16 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     }
 
     /**
+     * 根据目标分解id查询目标分解历史版本表列表
+     * @param targetDecomposeId 目标分解历史版本表
+     * @return
+     */
+    @Override
+    public List<TargetDecomposeHistoryDTO> targetDecomposeIdInfo(Long targetDecomposeId) {
+        return targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeId);
+    }
+
+    /**
     * 新增目标分解历史版本表
     *
     * @param targetDecomposeHistoryDTO 目标分解历史版本表

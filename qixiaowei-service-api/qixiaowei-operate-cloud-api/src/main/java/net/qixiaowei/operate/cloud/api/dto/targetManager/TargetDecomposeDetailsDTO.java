@@ -97,7 +97,7 @@ public class TargetDecomposeDetailsDTO {
     /**
     * 负责人ID
     */
-    @NotNull(message = "滚动预测负责人ID不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})
+    @NotNull(message = "滚动预测负责人ID不能为空",groups = {TargetDecomposeDetailsDTO.AddTargetDecomposeDetailsDTO.class,TargetDecomposeDetailsDTO.UpdateTargetDecomposeDetailsDTO.class})
     private  Long principalEmployeeId;
     /**
      * 负责人名称

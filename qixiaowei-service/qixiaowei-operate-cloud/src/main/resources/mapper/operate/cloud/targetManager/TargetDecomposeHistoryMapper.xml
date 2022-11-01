@@ -74,6 +74,15 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    根据目标分解id查询目标分解历史版本表列表-->
+    <select id="selectTargetDecomposeHistoryByTargetDecomposeId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeHistoryDTO">
+        SELECT
+            target_decompose_history_id, target_decompose_id, version, forecast_cycle, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_decompose_history
+        WHERE  target_decompose_id=#{targetDecomposeId}
+          and delete_flag=0
+    </select>
     <!--新增目标分解历史版本表-->
     <insert id="insertTargetDecomposeHistory" useGeneratedKeys="true" keyProperty="targetDecomposeHistoryId">
         INSERT INTO target_decompose_history (target_decompose_id,version,forecast_cycle,delete_flag,create_by,create_time,update_by,update_time)

@@ -13,6 +13,14 @@ import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
  * @since 2022-10-27
  */
 public interface ITargetDecomposeService {
+
+    /**
+     * 查询滚动预测表详情
+     *
+     * @param targetDecomposeId 目标分解表主键
+     * @return 目标分解表
+     */
+    TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId);
     /**
      * 查询目标分解(销售订单)表
      *
@@ -118,6 +126,14 @@ public interface ITargetDecomposeService {
      */
     TargetDecomposeDTO insertCustomTargetDecompose(TargetDecomposeDTO targetDecomposeDTO);
 
+
+    /**
+     * 修改滚动预测详情
+     *
+     * @param targetDecomposeDTO 修改滚动预测详情
+     * @return 结果
+     */
+    int updateRollTargetDecompose(TargetDecomposeDTO targetDecomposeDTO);
     /**
      * 修改目标分解(销售订单)表
      *

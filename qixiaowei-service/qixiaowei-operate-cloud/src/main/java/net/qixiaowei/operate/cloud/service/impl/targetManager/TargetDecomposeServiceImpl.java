@@ -1,9 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.domain.R;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -55,6 +52,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Autowired
     private DetailCyclesSnapshotMapper detailCyclesSnapshotMapper;
 
+    /**
+     * 查询滚动预测表详情
+     *
+     * @param targetDecomposeId 目标分解表主键
+     * @return
+     */
+    @Override
+    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
+        return this.packSelectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+    }
 
     /**
      * 查询目标分解(销售订单)表
@@ -148,6 +155,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
     /**
      * 分页查询滚动预测表列表
+     *
      * @param targetDecomposeDTO 滚动预测表列表
      * @return
      */
@@ -374,6 +382,30 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         // todo 发送通知
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
+    }
+
+    /**
+     * 修改滚动预测详情
+     *
+     * @param targetDecomposeDTO 修改滚动预测详情
+     * @return
+     */
+    @Override
+    public int updateRollTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
+        int i = 0;
+        TargetDecompose targetDecompose = new TargetDecompose();
+        BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        targetDecompose.setUpdateTime(DateUtils.getNowDate());
+        targetDecompose.setUpdateBy(SecurityUtils.getUserId());
+        //修改周期表和详细信息表
+        this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
+        try {
+            i = targetDecomposeMapper.updateTargetDecompose(targetDecompose);
+        } catch (Exception e) {
+            throw new ServiceException("修改目标分解主表失败");
+        }
+        // todo 发送通知
+        return i;
     }
 
     /**
@@ -640,12 +672,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         try {
-             i = targetDecomposeMapper.updateTargetDecompose(targetDecompose);
+            i = targetDecomposeMapper.updateTargetDecompose(targetDecompose);
         } catch (Exception e) {
             throw new ServiceException("修改目标分解主表失败");
         }
         // todo 发送通知
-        return  i;
+        return i;
     }
 
     /**
@@ -670,7 +702,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         try {
-            i= targetDecomposeMapper.updateTargetDecompose(targetDecompose);
+            i = targetDecomposeMapper.updateTargetDecompose(targetDecompose);
         } catch (Exception e) {
             throw new ServiceException("修改目标分解主表失败");
         }
@@ -687,7 +719,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Override
     @Transactional
     public int updateReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
-        int i =0;
+        int i = 0;
         //校检数据
         this.validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
@@ -700,7 +732,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         try {
-             i=targetDecomposeMapper.updateTargetDecompose(targetDecompose);
+            i = targetDecomposeMapper.updateTargetDecompose(targetDecompose);
         } catch (Exception e) {
             throw new ServiceException("修改目标分解主表失败");
         }
@@ -1100,15 +1132,35 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
     /**
      * 移交预测负责人
+     *
      * @param targetDecomposeDTO
      * @return
      */
     @Override
     public int turnOverPrincipalEmployee(TargetDecomposeDTO targetDecomposeDTO) {
-        TargetDecompose targetDecompose = new TargetDecompose();
-        targetDecompose.setTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
-        targetDecompose.setPrincipalEmployeeId(targetDecomposeDTO.getPrincipalEmployeeId());
-        return targetDecomposeMapper.updateTargetDecompose(targetDecompose);
+        List<TargetDecomposeDetails> targetDecomposeDetailsList = new ArrayList<>();
+        //目标分解详情集合
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+            for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+                //比对人员id 只移交自己的 todo 修改为人员
+                if (targetDecomposeDetailsDTO.getPrincipalEmployeeId() == 66) {
+                    TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
+                    targetDecomposeDetails.setTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                    targetDecomposeDetails.setPrincipalEmployeeId(targetDecomposeDTO.getPrincipalEmployeeId());
+                    targetDecomposeDetailsList.add(targetDecomposeDetails);
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsList)) {
+            try {
+                return targetDecomposeDetailsMapper.updateTargetDecomposeDetailss(targetDecomposeDetailsList);
+            } catch (Exception e) {
+                throw new ServiceException("移交预测负责人失败");
+            }
+        } else {
+            throw new ServiceException("暂无可移交的数据！");
+        }
     }
 
     /**
