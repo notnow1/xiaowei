@@ -157,7 +157,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.EARNING.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -265,7 +265,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //待录入
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.EARNING.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
         if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
@@ -850,6 +850,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         this.packLogicDeleteTargetDecomposeHistoryData(targetDecomposeDTO);
         return targetDecomposeMapper.logicDeleteTargetDecomposeByTargetDecomposeId(targetDecompose);
     }
+
     /**
      * 封装统一删除历史版本数据
      */
@@ -877,18 +878,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(collect1)) {
                     decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1);
                     //删除历史版本
-                    decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                    decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 }
 
             } catch (Exception e) {
                 throw new ServiceException("删除关联历史版本详情失败");
             }
         }
-        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)) {
             List<Long> collect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDecomposeDetailsSnapshotId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(collect)){
+            if (StringUtils.isNotEmpty(collect)) {
                 try {
-                    detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                    detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(collect, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 } catch (Exception e) {
                     throw new ServiceException("删除目标分解详情周期快照失败");
                 }
@@ -926,6 +927,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
     /**
      * 封装统一批量删除历史版本数据
+     *
      * @param targetDecomposeIds
      */
     private void packLogicDeleteTargetDecomposeHistoryDatas(List<Long> targetDecomposeIds) {
@@ -936,7 +938,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         try {
             targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeIds(targetDecomposeIds);
             //删除历史版本
-            targetDecomposeHistoryMapper.logicDeleteTargetDecomposeHistoryByTargetDecomposeIds(targetDecomposeIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+            targetDecomposeHistoryMapper.logicDeleteTargetDecomposeHistoryByTargetDecomposeIds(targetDecomposeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
         } catch (Exception e) {
             throw new ServiceException("删除关联历史版本失败");
         }
@@ -948,18 +950,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(collect1)) {
                     decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1);
                     //删除历史版本
-                    decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                    decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 }
 
             } catch (Exception e) {
                 throw new ServiceException("删除关联历史版本详情失败");
             }
         }
-        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)) {
             List<Long> collect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDecomposeDetailsSnapshotId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(collect)){
+            if (StringUtils.isNotEmpty(collect)) {
                 try {
-                    detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                    detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(collect, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 } catch (Exception e) {
                     throw new ServiceException("删除目标分解详情周期快照失败");
                 }
