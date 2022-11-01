@@ -5,6 +5,8 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -38,6 +40,7 @@ public class DecomposeDetailsSnapshotDTO {
     * ID
     */
     private  Long decomposeDetailsSnapshotId;
+
     /**
     * 目标分解历史版本ID
     */
@@ -71,9 +74,30 @@ public class DecomposeDetailsSnapshotDTO {
     */
     private  Long principalEmployeeId;
     /**
+     * 分解目标值
+     */
+    private BigDecimal decomposeTarget;
+    /**
+     * 年度预测值
+     */
+    private  BigDecimal forecastYear;
+    /**
+     * 累计实际值
+     */
+    private  BigDecimal actualTotal;
+    /**
+     * 目标完成率
+     */
+    private  BigDecimal targetPercentageComplete;
+    /**
     * 汇总目标值
     */
     private BigDecimal amountTarget;
+    /**
+     * 目标分解详情信息
+     */
+    @NotEmpty(message = "目标分解详情周期信息不能为空",groups = {TargetDecomposeHistoryDTO.UpdateTargetDecomposeHistoryDTO.class})
+    private List<DetailCyclesSnapshotDTO> detailCyclesSnapshotDTOS;
     /**
     * 删除标记:0未删除;1已删除
     */

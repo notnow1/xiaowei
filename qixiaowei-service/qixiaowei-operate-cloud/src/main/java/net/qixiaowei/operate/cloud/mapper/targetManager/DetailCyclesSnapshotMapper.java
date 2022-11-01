@@ -21,6 +21,13 @@ public interface DetailCyclesSnapshotMapper{
     */
     DetailCyclesSnapshotDTO selectDetailCyclesSnapshotByDetailCyclesSnapshotId(@Param("detailCyclesSnapshotId")Long detailCyclesSnapshotId);
 
+    /**
+     * 根据历史目标分解id查询目标分解详情周期快照表
+     *
+     * @param targetDecomposeHistoryId 目标分解详情周期快照表主键
+     * @return 目标分解详情周期快照表
+     */
+    List<DetailCyclesSnapshotDTO> selectDetailCyclesSnapshotByTargetDecomposeHistoryId(@Param("targetDecomposeHistoryId")Long targetDecomposeHistoryId);
 
     /**
     * 批量查询目标分解详情周期快照表

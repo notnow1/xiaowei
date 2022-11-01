@@ -66,6 +66,15 @@
                     and update_time=#{detailCyclesSnapshot.updateTime}
                 </if>
     </select>
+<!--    根据历史目标分解id查询目标分解详情周期快照表-->
+    <select id="selectDetailCyclesSnapshotByTargetDecomposeHistoryId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DetailCyclesSnapshotDTO">
+        SELECT
+            detail_cycles_snapshot_id, decompose_details_snapshot_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        FROM detail_cycles_snapshot
+        WHERE  decompose_details_snapshot_id=#{targetDecomposeHistoryId}
+          and delete_flag=0
+    </select>
     <!--新增目标分解详情周期快照表-->
     <insert id="insertDetailCyclesSnapshot" useGeneratedKeys="true" keyProperty="detailCyclesSnapshotId">
         INSERT INTO detail_cycles_snapshot (decompose_details_snapshot_id,cycle_number,cycle_target,cycle_forecast,cycle_actual,delete_flag,create_by,create_time,update_by,update_time)

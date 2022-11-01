@@ -59,7 +59,7 @@ public class TargetDecomposeHistoryController extends BaseController
     * 查询目标分解历史版本表详情
     */
     //@RequiresPermissions("operate:cloud:targetDecomposeHistory:info")
-    @GetMapping("/infohistordecomposey/{targetDecomposeHistoryId}")
+    @GetMapping("/infoHistordecomposey/{targetDecomposeHistoryId}")
     public AjaxResult info(@PathVariable Long targetDecomposeHistoryId){
     TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryService.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
         return AjaxResult.success(targetDecomposeHistoryDTO);

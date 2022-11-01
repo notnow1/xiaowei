@@ -4,87 +4,107 @@
     <!--    查询目标分解详情快照表-->
     <select id="selectDecomposeDetailsSnapshotByDecomposeDetailsSnapshotId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailsSnapshotDTO">
-        SELECT
-        decompose_details_snapshot_id, target_decompose_history_id, employee_id, area_id, department_id, product_id, region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by, update_time
+        SELECT decompose_details_snapshot_id,
+               target_decompose_history_id,
+               employee_id,
+               area_id,
+               department_id,
+               product_id,
+               region_id,
+               industry_id,
+               principal_employee_id,
+               amount_target,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM decompose_details_snapshot
-        WHERE  decompose_details_snapshot_id=#{decomposeDetailsSnapshotId}
-        and delete_flag=0
+        WHERE decompose_details_snapshot_id = #{decomposeDetailsSnapshotId}
+          and delete_flag = 0
     </select>
 
     <!--    批量查询目标分解详情快照表-->
     <select id="selectDecomposeDetailsSnapshotByDecomposeDetailsSnapshotIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailsSnapshotDTO">
         SELECT
-        decompose_details_snapshot_id, target_decompose_history_id, employee_id, area_id, department_id, product_id, region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by, update_time
+        decompose_details_snapshot_id, target_decompose_history_id, employee_id, area_id, department_id, product_id,
+        region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by,
+        update_time
         FROM decompose_details_snapshot
-        WHERE  decompose_details_snapshot_id in
-            <foreach item="item"
-                     collection="decomposeDetailsSnapshotIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE decompose_details_snapshot_id in
+        <foreach item="item"
+                 collection="decomposeDetailsSnapshotIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询目标分解详情快照表列表-->
-    <select id="selectDecomposeDetailsSnapshotList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailsSnapshotDTO">
+    <select id="selectDecomposeDetailsSnapshotList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailsSnapshotDTO">
         SELECT
-        decompose_details_snapshot_id, target_decompose_history_id, employee_id, area_id, department_id, product_id, region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by, update_time
+        decompose_details_snapshot_id, target_decompose_history_id, employee_id, area_id, department_id, product_id,
+        region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by,
+        update_time
         FROM decompose_details_snapshot
         WHERE delete_flag=0
-                <if test="decomposeDetailsSnapshot.decomposeDetailsSnapshotId != null">
-                    and decompose_details_snapshot_id=#{decomposeDetailsSnapshot.decomposeDetailsSnapshotId}
-                </if>
-                <if test="decomposeDetailsSnapshot.targetDecomposeHistoryId != null">
-                    and target_decompose_history_id=#{decomposeDetailsSnapshot.targetDecomposeHistoryId}
-                </if>
-                <if test="decomposeDetailsSnapshot.employeeId != null">
-                    and employee_id=#{decomposeDetailsSnapshot.employeeId}
-                </if>
-                <if test="decomposeDetailsSnapshot.areaId != null">
-                    and area_id=#{decomposeDetailsSnapshot.areaId}
-                </if>
-                <if test="decomposeDetailsSnapshot.departmentId != null">
-                    and department_id=#{decomposeDetailsSnapshot.departmentId}
-                </if>
-                <if test="decomposeDetailsSnapshot.productId != null">
-                    and product_id=#{decomposeDetailsSnapshot.productId}
-                </if>
-                <if test="decomposeDetailsSnapshot.regionId != null">
-                    and region_id=#{decomposeDetailsSnapshot.regionId}
-                </if>
-                <if test="decomposeDetailsSnapshot.industryId != null">
-                    and industry_id=#{decomposeDetailsSnapshot.industryId}
-                </if>
-                <if test="decomposeDetailsSnapshot.principalEmployeeId != null">
-                    and principal_employee_id=#{decomposeDetailsSnapshot.principalEmployeeId}
-                </if>
-                <if test="decomposeDetailsSnapshot.amountTarget != null">
-                    and amount_target=#{decomposeDetailsSnapshot.amountTarget}
-                </if>
-                <if test="decomposeDetailsSnapshot.deleteFlag != null">
-                    and delete_flag=#{decomposeDetailsSnapshot.deleteFlag}
-                </if>
-                <if test="decomposeDetailsSnapshot.createBy != null">
-                    and create_by=#{decomposeDetailsSnapshot.createBy}
-                </if>
-                <if test="decomposeDetailsSnapshot.createTime != null">
-                    and create_time=#{decomposeDetailsSnapshot.createTime}
-                </if>
-                <if test="decomposeDetailsSnapshot.updateBy != null">
-                    and update_by=#{decomposeDetailsSnapshot.updateBy}
-                </if>
-                <if test="decomposeDetailsSnapshot.updateTime != null">
-                    and update_time=#{decomposeDetailsSnapshot.updateTime}
-                </if>
+        <if test="decomposeDetailsSnapshot.decomposeDetailsSnapshotId != null">
+            and decompose_details_snapshot_id=#{decomposeDetailsSnapshot.decomposeDetailsSnapshotId}
+        </if>
+        <if test="decomposeDetailsSnapshot.targetDecomposeHistoryId != null">
+            and target_decompose_history_id=#{decomposeDetailsSnapshot.targetDecomposeHistoryId}
+        </if>
+        <if test="decomposeDetailsSnapshot.employeeId != null">
+            and employee_id=#{decomposeDetailsSnapshot.employeeId}
+        </if>
+        <if test="decomposeDetailsSnapshot.areaId != null">
+            and area_id=#{decomposeDetailsSnapshot.areaId}
+        </if>
+        <if test="decomposeDetailsSnapshot.departmentId != null">
+            and department_id=#{decomposeDetailsSnapshot.departmentId}
+        </if>
+        <if test="decomposeDetailsSnapshot.productId != null">
+            and product_id=#{decomposeDetailsSnapshot.productId}
+        </if>
+        <if test="decomposeDetailsSnapshot.regionId != null">
+            and region_id=#{decomposeDetailsSnapshot.regionId}
+        </if>
+        <if test="decomposeDetailsSnapshot.industryId != null">
+            and industry_id=#{decomposeDetailsSnapshot.industryId}
+        </if>
+        <if test="decomposeDetailsSnapshot.principalEmployeeId != null">
+            and principal_employee_id=#{decomposeDetailsSnapshot.principalEmployeeId}
+        </if>
+        <if test="decomposeDetailsSnapshot.amountTarget != null">
+            and amount_target=#{decomposeDetailsSnapshot.amountTarget}
+        </if>
+        <if test="decomposeDetailsSnapshot.deleteFlag != null">
+            and delete_flag=#{decomposeDetailsSnapshot.deleteFlag}
+        </if>
+        <if test="decomposeDetailsSnapshot.createBy != null">
+            and create_by=#{decomposeDetailsSnapshot.createBy}
+        </if>
+        <if test="decomposeDetailsSnapshot.createTime != null">
+            and create_time=#{decomposeDetailsSnapshot.createTime}
+        </if>
+        <if test="decomposeDetailsSnapshot.updateBy != null">
+            and update_by=#{decomposeDetailsSnapshot.updateBy}
+        </if>
+        <if test="decomposeDetailsSnapshot.updateTime != null">
+            and update_time=#{decomposeDetailsSnapshot.updateTime}
+        </if>
     </select>
-<!--    根据目标分解历史id批量查询目标分解详情快照表-->
+    <!--    根据目标分解历史id批量查询目标分解详情快照表-->
     <select id="selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailsSnapshotDTO">
         SELECT
-        decompose_details_snapshot_id, target_decompose_history_id, employee_id, area_id, department_id, product_id, region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by, update_time
+        decompose_details_snapshot_id, target_decompose_history_id, employee_id, area_id, department_id, product_id,
+        region_id, industry_id, principal_employee_id, amount_target, delete_flag, create_by, create_time, update_by,
+        update_time
         FROM decompose_details_snapshot
-        WHERE  target_decompose_history_id in
+        WHERE target_decompose_history_id in
         <foreach item="item"
                  collection="targetDecomposeHistoryIds"
                  index="index" open="(" separator="," close=")">
@@ -92,87 +112,124 @@
         </foreach>
         and delete_flag=0
     </select>
+    <!--    根据历史目标分解主键id查询目标分解详情快照表-->
+    <select id="selectDecomposeDetailsSnapshotByTargetDecomposeHistoryId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailsSnapshotDTO">
+        SELECT td.decompose_target,
+               tds.decompose_details_snapshot_id,
+               tds.target_decompose_history_id,
+               tds.employee_id,
+               tds.area_id,
+               tds.department_id,
+               tds.product_id,
+               tds.region_id,
+               tds.industry_id,
+               tds.principal_employee_id,
+               tds.amount_target,
+               tds.delete_flag,
+               tds.create_by,
+               tds.create_time,
+               tds.update_by,
+               tds.update_time
+        FROM decompose_details_snapshot tds
+                 left join target_decompose_history tes
+                           on tes.target_decompose_history_id = tds.target_decompose_history_id
+                               and tes.delete_flag = 0
+                 left join target_decompose td
+                           on td.target_decompose_id = tes.target_decompose_id
+                               and td.delete_flag = 0
+        WHERE target_decompose_history_id = #{targetDecomposeHistoryId}
+          and tds.delete_flag = 0
+    </select>
     <!--新增目标分解详情快照表-->
     <insert id="insertDecomposeDetailsSnapshot" useGeneratedKeys="true" keyProperty="decomposeDetailsSnapshotId">
-        INSERT INTO decompose_details_snapshot (target_decompose_history_id,employee_id,area_id,department_id,product_id,region_id,industry_id,principal_employee_id,amount_target,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-        (#{decomposeDetailsSnapshot.targetDecomposeHistoryId},#{decomposeDetailsSnapshot.employeeId},#{decomposeDetailsSnapshot.areaId},#{decomposeDetailsSnapshot.departmentId},#{decomposeDetailsSnapshot.productId},#{decomposeDetailsSnapshot.regionId},#{decomposeDetailsSnapshot.industryId},#{decomposeDetailsSnapshot.principalEmployeeId},#{decomposeDetailsSnapshot.amountTarget},#{decomposeDetailsSnapshot.deleteFlag},#{decomposeDetailsSnapshot.createBy},#{decomposeDetailsSnapshot.createTime},#{decomposeDetailsSnapshot.updateBy},#{decomposeDetailsSnapshot.updateTime})
+        INSERT INTO decompose_details_snapshot (target_decompose_history_id, employee_id, area_id, department_id,
+                                                product_id, region_id, industry_id, principal_employee_id,
+                                                amount_target, delete_flag, create_by, create_time, update_by,
+                                                update_time)
+        VALUES (#{decomposeDetailsSnapshot.targetDecomposeHistoryId}, #{decomposeDetailsSnapshot.employeeId},
+                #{decomposeDetailsSnapshot.areaId}, #{decomposeDetailsSnapshot.departmentId},
+                #{decomposeDetailsSnapshot.productId}, #{decomposeDetailsSnapshot.regionId},
+                #{decomposeDetailsSnapshot.industryId}, #{decomposeDetailsSnapshot.principalEmployeeId},
+                #{decomposeDetailsSnapshot.amountTarget}, #{decomposeDetailsSnapshot.deleteFlag},
+                #{decomposeDetailsSnapshot.createBy}, #{decomposeDetailsSnapshot.createTime},
+                #{decomposeDetailsSnapshot.updateBy}, #{decomposeDetailsSnapshot.updateTime})
     </insert>
     <!--修改目标分解详情快照表-->
     <update id="updateDecomposeDetailsSnapshot">
         UPDATE decompose_details_snapshot
         SET
-                    <if test="decomposeDetailsSnapshot.targetDecomposeHistoryId != null">
-                        target_decompose_history_id=#{decomposeDetailsSnapshot.targetDecomposeHistoryId},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.employeeId != null">
-                        employee_id=#{decomposeDetailsSnapshot.employeeId},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.areaId != null">
-                        area_id=#{decomposeDetailsSnapshot.areaId},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.departmentId != null">
-                        department_id=#{decomposeDetailsSnapshot.departmentId},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.productId != null">
-                        product_id=#{decomposeDetailsSnapshot.productId},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.regionId != null">
-                        region_id=#{decomposeDetailsSnapshot.regionId},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.industryId != null">
-                        industry_id=#{decomposeDetailsSnapshot.industryId},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.principalEmployeeId != null">
-                        principal_employee_id=#{decomposeDetailsSnapshot.principalEmployeeId},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.amountTarget != null">
-                        amount_target=#{decomposeDetailsSnapshot.amountTarget},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.deleteFlag != null">
-                        delete_flag=#{decomposeDetailsSnapshot.deleteFlag},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.createBy != null">
-                        create_by=#{decomposeDetailsSnapshot.createBy},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.createTime != null">
-                        create_time=#{decomposeDetailsSnapshot.createTime},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.updateBy != null">
-                        update_by=#{decomposeDetailsSnapshot.updateBy},
-                    </if>
-                    <if test="decomposeDetailsSnapshot.updateTime != null">
-                        update_time=#{decomposeDetailsSnapshot.updateTime}
-                    </if>
+        <if test="decomposeDetailsSnapshot.targetDecomposeHistoryId != null">
+            target_decompose_history_id=#{decomposeDetailsSnapshot.targetDecomposeHistoryId},
+        </if>
+        <if test="decomposeDetailsSnapshot.employeeId != null">
+            employee_id=#{decomposeDetailsSnapshot.employeeId},
+        </if>
+        <if test="decomposeDetailsSnapshot.areaId != null">
+            area_id=#{decomposeDetailsSnapshot.areaId},
+        </if>
+        <if test="decomposeDetailsSnapshot.departmentId != null">
+            department_id=#{decomposeDetailsSnapshot.departmentId},
+        </if>
+        <if test="decomposeDetailsSnapshot.productId != null">
+            product_id=#{decomposeDetailsSnapshot.productId},
+        </if>
+        <if test="decomposeDetailsSnapshot.regionId != null">
+            region_id=#{decomposeDetailsSnapshot.regionId},
+        </if>
+        <if test="decomposeDetailsSnapshot.industryId != null">
+            industry_id=#{decomposeDetailsSnapshot.industryId},
+        </if>
+        <if test="decomposeDetailsSnapshot.principalEmployeeId != null">
+            principal_employee_id=#{decomposeDetailsSnapshot.principalEmployeeId},
+        </if>
+        <if test="decomposeDetailsSnapshot.amountTarget != null">
+            amount_target=#{decomposeDetailsSnapshot.amountTarget},
+        </if>
+        <if test="decomposeDetailsSnapshot.deleteFlag != null">
+            delete_flag=#{decomposeDetailsSnapshot.deleteFlag},
+        </if>
+        <if test="decomposeDetailsSnapshot.createBy != null">
+            create_by=#{decomposeDetailsSnapshot.createBy},
+        </if>
+        <if test="decomposeDetailsSnapshot.createTime != null">
+            create_time=#{decomposeDetailsSnapshot.createTime},
+        </if>
+        <if test="decomposeDetailsSnapshot.updateBy != null">
+            update_by=#{decomposeDetailsSnapshot.updateBy},
+        </if>
+        <if test="decomposeDetailsSnapshot.updateTime != null">
+            update_time=#{decomposeDetailsSnapshot.updateTime}
+        </if>
         WHERE
-                 decompose_details_snapshot_id=#{decomposeDetailsSnapshot.decomposeDetailsSnapshotId}
+        decompose_details_snapshot_id=#{decomposeDetailsSnapshot.decomposeDetailsSnapshotId}
     </update>
     <!--逻辑删除目标分解详情快照表-->
     <update id="logicDeleteDecomposeDetailsSnapshotByDecomposeDetailsSnapshotId">
         UPDATE decompose_details_snapshot
-        SET     delete_flag= 1,
-                update_by=#{decomposeDetailsSnapshot.updateBy},
-                update_time=#{decomposeDetailsSnapshot.updateTime}
-        WHERE
-                decompose_details_snapshot_id=#{decomposeDetailsSnapshot.decomposeDetailsSnapshotId}
+        SET delete_flag= 1,
+            update_by=#{decomposeDetailsSnapshot.updateBy},
+            update_time=#{decomposeDetailsSnapshot.updateTime}
+        WHERE decompose_details_snapshot_id = #{decomposeDetailsSnapshot.decomposeDetailsSnapshotId}
     </update>
     <!--逻辑批量删除目标分解详情快照表-->
     <update id="logicDeleteDecomposeDetailsSnapshotByDecomposeDetailsSnapshotIds">
         UPDATE decompose_details_snapshot
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         decompose_details_snapshot_id IN
-            <foreach item="item"
-                     collection="decomposeDetailsSnapshotIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        decompose_details_snapshot_id IN
+        <foreach item="item"
+                 collection="decomposeDetailsSnapshotIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增目标分解详情快照表-->
     <insert id="batchDecomposeDetailsSnapshot">
-        INSERT INTO decompose_details_snapshot (target_decompose_history_id,employee_id,area_id,department_id,product_id,region_id,industry_id,principal_employee_id,amount_target,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO decompose_details_snapshot
+        (target_decompose_history_id,employee_id,area_id,department_id,product_id,region_id,industry_id,principal_employee_id,amount_target,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="decomposeDetailsSnapshots"
@@ -183,132 +240,135 @@
 
     <!--物理删除目标分解详情快照表-->
     <delete id="deleteDecomposeDetailsSnapshotByDecomposeDetailsSnapshotId">
-        DELETE FROM decompose_details_snapshot
-        WHERE  decompose_details_snapshot_id=#{decomposeDetailsSnapshot}
+        DELETE
+        FROM decompose_details_snapshot
+        WHERE decompose_details_snapshot_id = #{decomposeDetailsSnapshot}
 
     </delete>
     <!--物理批量删除目标分解详情快照表-->
     <delete id="deleteDecomposeDetailsSnapshotByDecomposeDetailsSnapshotIds">
         DELETE FROM decompose_details_snapshot
-        WHERE  decompose_details_snapshot_id IN
-            <foreach item="item"
-                     collection="decomposeDetailsSnapshotIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE decompose_details_snapshot_id IN
+        <foreach item="item"
+                 collection="decomposeDetailsSnapshotIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改目标分解详情快照表-->
     <update id="updateDecomposeDetailsSnapshots">
         update decompose_details_snapshot
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="target_decompose_history_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.targetDecomposeHistoryId != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.targetDecomposeHistoryId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="employee_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.employeeId != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.employeeId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="area_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.areaId != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.areaId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.departmentId != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.departmentId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.productId != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.productId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="region_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.regionId != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.regionId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="industry_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.industryId != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.industryId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="principal_employee_id=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.principalEmployeeId != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.principalEmployeeId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="amount_target=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.amountTarget != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.amountTarget}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="target_decompose_history_id=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.targetDecomposeHistoryId != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then
+                        #{item.targetDecomposeHistoryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="employee_id=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.employeeId != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.employeeId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="area_id=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.areaId != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.areaId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_id=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.productId != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.productId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="region_id=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.regionId != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.regionId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="industry_id=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.industryId != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.industryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="principal_employee_id=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.principalEmployeeId != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then
+                        #{item.principalEmployeeId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="amount_target=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.amountTarget != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.amountTarget}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="decomposeDetailsSnapshotList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="decomposeDetailsSnapshotList" separator="or" item="item" index="index">
-                    decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId}
+            decompose_details_snapshot_id=#{item.decomposeDetailsSnapshotId}
         </foreach>
     </update>
-<!--    根据分解历史详情id删除逻辑批量删除目标分解详情快照表-->
+    <!--    根据分解历史详情id删除逻辑批量删除目标分解详情快照表-->
     <update id="logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds">
         UPDATE decompose_details_snapshot
-        SET     delete_flag= 1,
+        SET delete_flag= 1,
         update_by=#{updateBy},
         update_time=#{updateTime}
         WHERE

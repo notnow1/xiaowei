@@ -125,13 +125,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 targetDecomposeDetailsDTO.setDecomposeDetailCyclesDTOS(decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId()));
             }
         }
-
-        if (StringUtils.isNull(targetDecomposeDTO)) {
-            return null;
-        } else {
-            return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
-        }
-
+        return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
     }
 
     /**

@@ -23,6 +23,13 @@ public interface DecomposeDetailsSnapshotMapper{
 
 
     /**
+     * 根据历史目标分解主键id查询目标分解详情快照表
+     *
+     * @param targetDecomposeHistoryId 目标分解详情快照表主键
+     * @return 目标分解详情快照表
+     */
+    List<DecomposeDetailsSnapshotDTO> selectDecomposeDetailsSnapshotByTargetDecomposeHistoryId(@Param("targetDecomposeHistoryId")Long targetDecomposeHistoryId);
+    /**
     * 批量查询目标分解详情快照表
     *
     * @param decomposeDetailsSnapshotIds 目标分解详情快照表主键集合

@@ -1,11 +1,13 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
+import net.qixiaowei.operate.cloud.mapper.targetManager.DecomposeDetailsSnapshotMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.DetailCyclesSnapshotMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeHistory;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeHistoryExcel;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeHistoryDTO;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeHistoryMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeHistoryService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
@@ -33,6 +34,10 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistoryService {
     @Autowired
     private TargetDecomposeHistoryMapper targetDecomposeHistoryMapper;
+    @Autowired
+    private DecomposeDetailsSnapshotMapper decomposeDetailsSnapshotMapper;
+    @Autowired
+    private DetailCyclesSnapshotMapper detailCyclesSnapshotMapper;
 
     /**
      * 查询目标分解历史版本表
@@ -42,7 +47,35 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      */
     @Override
     public TargetDecomposeHistoryDTO selectTargetDecomposeHistoryByTargetDecomposeHistoryId(Long targetDecomposeHistoryId) {
-        return targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
+        //历史目标分解主表数据
+        TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
+
+        List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryId(targetDecomposeHistoryId);
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+            for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
+                //年度预测值
+                BigDecimal forecastYear = new BigDecimal("0");
+                //累计实际值
+                BigDecimal actualTotal = new BigDecimal("0");
+                //目标完成率
+                BigDecimal targetPercentageComplete = new BigDecimal("0");
+                //周期表数据
+                List<DetailCyclesSnapshotDTO> detailCyclesSnapshotDTOS = detailCyclesSnapshotMapper.selectDetailCyclesSnapshotByTargetDecomposeHistoryId(decomposeDetailsSnapshotDTO.getTargetDecomposeHistoryId());
+                for (DetailCyclesSnapshotDTO detailCyclesSnapshotDTO : detailCyclesSnapshotDTOS) {
+                    //预测值
+                    forecastYear=forecastYear.add(detailCyclesSnapshotDTO.getCycleForecast());
+                    //实际值
+                    actualTotal=actualTotal.add(detailCyclesSnapshotDTO.getCycleActual());
+                }
+                //保留一位小数
+                targetPercentageComplete=targetPercentageComplete.divide(decomposeDetailsSnapshotDTO.getDecomposeTarget()).setScale(1);
+                decomposeDetailsSnapshotDTO.setForecastYear(forecastYear);
+                decomposeDetailsSnapshotDTO.setActualTotal(actualTotal);
+                decomposeDetailsSnapshotDTO.setTargetPercentageComplete(targetPercentageComplete);
+                decomposeDetailsSnapshotDTO.setDetailCyclesSnapshotDTOS(detailCyclesSnapshotDTOS);
+            }
+        }
+            return targetDecomposeHistoryDTO.setDecomposeDetailsSnapshotDTOS(decomposeDetailsSnapshotDTOS);
     }
 
     /**
