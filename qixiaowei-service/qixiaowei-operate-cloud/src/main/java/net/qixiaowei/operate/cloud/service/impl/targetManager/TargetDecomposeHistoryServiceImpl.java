@@ -51,7 +51,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
 
         List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryId(targetDecomposeHistoryId);
-        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)) {
             for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
                 //年度预测值
                 BigDecimal forecastYear = new BigDecimal("0");
@@ -63,19 +63,22 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 List<DetailCyclesSnapshotDTO> detailCyclesSnapshotDTOS = detailCyclesSnapshotMapper.selectDetailCyclesSnapshotByTargetDecomposeHistoryId(decomposeDetailsSnapshotDTO.getTargetDecomposeHistoryId());
                 for (DetailCyclesSnapshotDTO detailCyclesSnapshotDTO : detailCyclesSnapshotDTOS) {
                     //预测值
-                    forecastYear=forecastYear.add(detailCyclesSnapshotDTO.getCycleForecast());
+                    forecastYear = forecastYear.add(detailCyclesSnapshotDTO.getCycleForecast());
                     //实际值
-                    actualTotal=actualTotal.add(detailCyclesSnapshotDTO.getCycleActual());
+                    actualTotal = actualTotal.add(detailCyclesSnapshotDTO.getCycleActual());
                 }
                 //保留一位小数
-                targetPercentageComplete=targetPercentageComplete.divide(decomposeDetailsSnapshotDTO.getDecomposeTarget()).setScale(1);
+                targetPercentageComplete = targetPercentageComplete.divide(decomposeDetailsSnapshotDTO.getDecomposeTarget()).setScale(1);
                 decomposeDetailsSnapshotDTO.setForecastYear(forecastYear);
                 decomposeDetailsSnapshotDTO.setActualTotal(actualTotal);
                 decomposeDetailsSnapshotDTO.setTargetPercentageComplete(targetPercentageComplete);
                 decomposeDetailsSnapshotDTO.setDetailCyclesSnapshotDTOS(detailCyclesSnapshotDTOS);
             }
-        }
             return targetDecomposeHistoryDTO.setDecomposeDetailsSnapshotDTOS(decomposeDetailsSnapshotDTOS);
+        } else {
+            return targetDecomposeHistoryDTO;
+        }
+
     }
 
     /**

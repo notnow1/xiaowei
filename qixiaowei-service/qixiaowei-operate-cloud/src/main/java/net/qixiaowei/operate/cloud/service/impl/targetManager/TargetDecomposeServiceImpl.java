@@ -124,8 +124,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 //目标分解周欺数据集合
                 targetDecomposeDetailsDTO.setDecomposeDetailCyclesDTOS(decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId()));
             }
+            return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
+        }else {
+            return targetDecomposeDTO;
         }
-        return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
     }
 
     /**
