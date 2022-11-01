@@ -33,14 +33,6 @@ public interface TargetSettingOrderMapper {
     List<TargetSettingOrderDTO> selectTargetSettingOrderByTargetSettingOrderIds(@Param("targetSettingOrderIds") List<Long> targetSettingOrderIds);
 
     /**
-     * 查询目标制定订单表列表
-     *
-     * @param targetSettingOrder 目标制定订单表
-     * @return 目标制定订单表集合
-     */
-    List<TargetSettingOrderDTO> selectTargetSettingOrderList(@Param("targetSettingOrder") TargetSettingOrder targetSettingOrder);
-
-    /**
      * 新增目标制定订单表
      *
      * @param targetSettingOrder 目标制定订单表
@@ -111,19 +103,12 @@ public interface TargetSettingOrderMapper {
      * @param historyNumS 历史年度集合
      * @return
      */
-    List<TargetSettingOrderDTO> selectTargetSettingOrderListByTargetSettingId(@Param("historyNumS") List<Integer> historyNumS);
-
-    /**
-     * 通过历史年度查找目标制定列表
-     *
-     * @param historyNumS
-     */
-    List<TargetSettingOrderDTO> selectTargetSettingOrderByHistoryNumS(List<Integer> historyNumS);
+    List<TargetSettingOrderDTO> selectTargetSettingOrderListByTargetSettingId(@Param("targetSettingId") Long targetSettingId, @Param("historyNumS") List<Integer> historyNumS);
 
     /**
      * 获取全部的订单
      *
      * @return
      */
-    List<TargetSettingOrderDTO> selectTargetSettingLists();
+    List<TargetSettingOrderDTO> selectTargetSettingOrderByTargetSettingId(@Param("targetSettingId") Long targetSettingId);
 }

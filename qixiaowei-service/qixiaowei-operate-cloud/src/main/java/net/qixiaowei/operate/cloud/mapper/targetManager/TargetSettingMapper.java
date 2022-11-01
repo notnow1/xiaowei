@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -113,4 +114,10 @@ public interface TargetSettingMapper {
      */
     TargetSettingDTO selectTargetSettingByTargetYearAndIndicator(@Param("targetYear") Integer targetYear, @Param("indicatorId") Long indicatorId);
 
+    /**
+     * @param historyNumS 历史年度list
+     * @param indicatorId 指标id
+     * @return
+     */
+    List<TargetSettingDTO> selectOrderTargetSettingByIndicator(@Param("historyNumS") List<Integer> historyNumS, @Param("indicatorId") Long indicatorId);
 }

@@ -22,20 +22,12 @@ public interface ITargetSettingOrderService {
     TargetSettingOrderDTO selectTargetSettingOrderByTargetSettingOrderId(Long targetSettingOrderId);
 
     /**
-     * 查询目标制定订单表列表
-     *
-     * @param targetSettingOrderDTO 目标制定订单表
-     * @return 目标制定订单表集合
-     */
-    List<TargetSettingOrderDTO> selectTargetSettingOrderList(TargetSettingOrderDTO targetSettingOrderDTO);
-
-    /**
      * 获取订单目标制定
      *
      * @param historyNumS 历史年份
      * @return
      */
-    public List<TargetSettingOrderDTO> selectTargetSettingOrderList(List<Integer> historyNumS);
+    public List<TargetSettingOrderDTO> selectTargetSettingOrderList(Long TargetSettingId, List<Integer> historyNumS);
 
     /**
      * 新增目标制定订单表
@@ -111,16 +103,10 @@ public interface ITargetSettingOrderService {
     int deleteTargetSettingOrderByTargetSettingOrderId(Long targetSettingOrderId);
 
     /**
-     * 查询销售订单目标制定-不带主表玩
-     *
-     * @param historyNumS 历史年份
-     */
-    List<TargetSettingOrderDTO> selectDropTargetSettingOrderList(List<Integer> historyNumS);
-
-    /**
      * 获取全部的订单目标制定列表
      *
      * @return
      */
-    List<TargetSettingOrderDTO> selectTargetSettingOrderLists();
+    List<TargetSettingOrderDTO> selectTargetSettingOrderByTargetSettingId(Long targetSettingId);
+
 }

@@ -13,6 +13,7 @@ import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 
 /**
  * 目标制定
@@ -115,9 +116,13 @@ public class TargetSettingDTO {
     @NotBlank(message = "历史年度数不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.QueryTargetSettingDTO.class})
     private Integer historyNum;
     /**
-     * 销售订单历史年度实际值列表
+     * 销售订单List
      */
     private List<TargetSettingOrderDTO> targetSettingOrderDTOS;
+    /**
+     * 销售收入List
+     */
+    private List<TargetSettingIncomeVO> targetSettingIncomeVOS;
 
 }
 

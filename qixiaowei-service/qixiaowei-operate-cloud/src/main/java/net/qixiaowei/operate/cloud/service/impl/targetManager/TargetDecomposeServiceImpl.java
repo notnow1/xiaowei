@@ -147,7 +147,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.EARNING.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -246,7 +246,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //待录入
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.EARNING.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -631,7 +631,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.EARNING.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -947,6 +947,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeExcel> exportReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         return this.packExportOrderTargetDecompose(targetDecomposeDTO);
     }
+
     /**
      * 目标分解(自定义)导出列表Excel
      *
@@ -989,7 +990,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 }
                 BigDecimal decomposeTarget = targetDecomposeExcel.getDecomposeTarget();
                 BigDecimal targetValue = targetDecomposeExcel.getTargetValue();
-                if (null != decomposeTarget && null != targetValue){
+                if (null != decomposeTarget && null != targetValue) {
                     //目标差异
                     targetDecomposeExcel.setTargetDifference(decomposeTarget.subtract(targetValue));
                 }
@@ -998,7 +999,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         return targetDecomposeExcelList;
     }
-
 
 
 }

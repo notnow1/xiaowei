@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingIncomeMapper">
+    <!--    查询目标制定收入表-->
+    <select id="selectTargetSettingIncomeByTargetSettingIncomeId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO">
+        SELECT
+        target_setting_income_id, target_setting_id, money_before_one, money_before_two, money_before_three,
+        conversion_before_one, conversion_before_two, conversion_before_three, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM target_setting_income
+        WHERE target_setting_income_id=#{targetSettingIncomeId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标制定收入表-->
+    <select id="selectTargetSettingIncomeByTargetSettingIncomeIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO">
+        SELECT
+        target_setting_income_id, target_setting_id, money_before_one, money_before_two, money_before_three,
+        conversion_before_one, conversion_before_two, conversion_before_three, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM target_setting_income
+        WHERE target_setting_income_id in
+        <foreach item="item"
+                 collection="targetSettingIncomeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标制定收入表列表-->
+    <select id="selectTargetSettingIncomeList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO">
+        SELECT
+        target_setting_income_id, target_setting_id, money_before_one, money_before_two, money_before_three,
+        conversion_before_one, conversion_before_two, conversion_before_three, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM target_setting_income
+        WHERE delete_flag=0
+        <if test="targetSettingIncome.targetSettingIncomeId != null">
+            and target_setting_income_id=#{targetSettingIncome.targetSettingIncomeId}
+        </if>
+        <if test="targetSettingIncome.targetSettingId != null">
+            and target_setting_id=#{targetSettingIncome.targetSettingId}
+        </if>
+        <if test="targetSettingIncome.moneyBeforeOne != null">
+            and money_before_one=#{targetSettingIncome.moneyBeforeOne}
+        </if>
+        <if test="targetSettingIncome.moneyBeforeTwo != null">
+            and money_before_two=#{targetSettingIncome.moneyBeforeTwo}
+        </if>
+        <if test="targetSettingIncome.moneyBeforeThree != null">
+            and money_before_three=#{targetSettingIncome.moneyBeforeThree}
+        </if>
+        <if test="targetSettingIncome.conversionBeforeOne != null">
+            and conversion_before_one=#{targetSettingIncome.conversionBeforeOne}
+        </if>
+        <if test="targetSettingIncome.conversionBeforeTwo != null">
+            and conversion_before_two=#{targetSettingIncome.conversionBeforeTwo}
+        </if>
+        <if test="targetSettingIncome.conversionBeforeThree != null">
+            and conversion_before_three=#{targetSettingIncome.conversionBeforeThree}
+        </if>
+        <if test="targetSettingIncome.deleteFlag != null">
+            and delete_flag=#{targetSettingIncome.deleteFlag}
+        </if>
+        <if test="targetSettingIncome.createBy != null">
+            and create_by=#{targetSettingIncome.createBy}
+        </if>
+        <if test="targetSettingIncome.createTime != null">
+            and create_time=#{targetSettingIncome.createTime}
+        </if>
+        <if test="targetSettingIncome.updateBy != null">
+            and update_by=#{targetSettingIncome.updateBy}
+        </if>
+        <if test="targetSettingIncome.updateTime != null">
+            and update_time=#{targetSettingIncome.updateTime}
+        </if>
+    </select>
+    <select id="selectTargetSettingIncomeByHistoryNumS"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO">
+        SELECT
+        target_setting_income_id, target_setting_id, money_before_one, money_before_two, money_before_three,
+        conversion_before_one, conversion_before_two, conversion_before_three, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM target_setting_income
+        WHERE target_setting_id=#{targetSettingId}
+        AND delete_flag=0
+    </select>
+    <!--新增目标制定收入表-->
+    <insert id="insertTargetSettingIncome" useGeneratedKeys="true" keyProperty="targetSettingIncomeId">
+        INSERT INTO target_setting_income
+        (target_setting_id,money_before_one,money_before_two,money_before_three,conversion_before_one,conversion_before_two,conversion_before_three,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetSettingIncome.targetSettingId},#{targetSettingIncome.moneyBeforeOne},#{targetSettingIncome.moneyBeforeTwo},#{targetSettingIncome.moneyBeforeThree},#{targetSettingIncome.conversionBeforeOne},#{targetSettingIncome.conversionBeforeTwo},#{targetSettingIncome.conversionBeforeThree},#{targetSettingIncome.deleteFlag},#{targetSettingIncome.createBy},#{targetSettingIncome.createTime},#{targetSettingIncome.updateBy},#{targetSettingIncome.updateTime})
+    </insert>
+    <!--修改目标制定收入表-->
+    <update id="updateTargetSettingIncome">
+        UPDATE target_setting_income
+        SET
+        <if test="targetSettingIncome.targetSettingId != null">
+            target_setting_id=#{targetSettingIncome.targetSettingId},
+        </if>
+        <if test="targetSettingIncome.moneyBeforeOne != null">
+            money_before_one=#{targetSettingIncome.moneyBeforeOne},
+        </if>
+        <if test="targetSettingIncome.moneyBeforeTwo != null">
+            money_before_two=#{targetSettingIncome.moneyBeforeTwo},
+        </if>
+        <if test="targetSettingIncome.moneyBeforeThree != null">
+            money_before_three=#{targetSettingIncome.moneyBeforeThree},
+        </if>
+        <if test="targetSettingIncome.conversionBeforeOne != null">
+            conversion_before_one=#{targetSettingIncome.conversionBeforeOne},
+        </if>
+        <if test="targetSettingIncome.conversionBeforeTwo != null">
+            conversion_before_two=#{targetSettingIncome.conversionBeforeTwo},
+        </if>
+        <if test="targetSettingIncome.conversionBeforeThree != null">
+            conversion_before_three=#{targetSettingIncome.conversionBeforeThree},
+        </if>
+        <if test="targetSettingIncome.deleteFlag != null">
+            delete_flag=#{targetSettingIncome.deleteFlag},
+        </if>
+        <if test="targetSettingIncome.createBy != null">
+            create_by=#{targetSettingIncome.createBy},
+        </if>
+        <if test="targetSettingIncome.createTime != null">
+            create_time=#{targetSettingIncome.createTime},
+        </if>
+        <if test="targetSettingIncome.updateBy != null">
+            update_by=#{targetSettingIncome.updateBy},
+        </if>
+        <if test="targetSettingIncome.updateTime != null">
+            update_time=#{targetSettingIncome.updateTime}
+        </if>
+        WHERE
+        target_setting_income_id=#{targetSettingIncome.targetSettingIncomeId}
+    </update>
+    <!--逻辑删除目标制定收入表-->
+    <update id="logicDeleteTargetSettingIncomeByTargetSettingIncomeId">
+        UPDATE target_setting_income
+        SET delete_flag= 1,
+        update_by=#{targetSettingIncome.updateBy},
+        update_time=#{targetSettingIncome.updateTime}
+        WHERE
+        target_setting_income_id=#{targetSettingIncome.targetSettingIncomeId}
+    </update>
+    <!--逻辑批量删除目标制定收入表-->
+    <update id="logicDeleteTargetSettingIncomeByTargetSettingIncomeIds">
+        UPDATE target_setting_income
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        target_setting_income_id IN
+        <foreach item="item"
+                 collection="targetSettingIncomeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增目标制定收入表-->
+    <insert id="batchTargetSettingIncome">
+        INSERT INTO target_setting_income
+        (target_setting_id,money_before_one,money_before_two,money_before_three,conversion_before_one,conversion_before_two,conversion_before_three,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetSettingIncomes"
+                 separator=",">
+            (#{item.targetSettingId},#{item.moneyBeforeOne},#{item.moneyBeforeTwo},#{item.moneyBeforeThree},#{item.conversionBeforeOne},#{item.conversionBeforeTwo},#{item.conversionBeforeThree},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标制定收入表-->
+    <delete id="deleteTargetSettingIncomeByTargetSettingIncomeId">
+        DELETE FROM target_setting_income
+        WHERE target_setting_income_id=#{targetSettingIncome}
+
+    </delete>
+    <!--物理批量删除目标制定收入表-->
+    <delete id="deleteTargetSettingIncomeByTargetSettingIncomeIds">
+        DELETE FROM target_setting_income
+        WHERE target_setting_income_id IN
+        <foreach item="item"
+                 collection="targetSettingIncomeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改目标制定收入表-->
+    <update id="updateTargetSettingIncomes">
+        update target_setting_income
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="target_setting_id=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.targetSettingId != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.targetSettingId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="money_before_one=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.moneyBeforeOne != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.moneyBeforeOne}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="money_before_two=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.moneyBeforeTwo != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.moneyBeforeTwo}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="money_before_three=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.moneyBeforeThree != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.moneyBeforeThree}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="conversion_before_one=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.conversionBeforeOne != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.conversionBeforeOne}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="conversion_before_two=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.conversionBeforeTwo != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.conversionBeforeTwo}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="conversion_before_three=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.conversionBeforeThree != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.conversionBeforeThree}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="targetSettingIncomeList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when target_setting_income_id=#{item.targetSettingIncomeId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="targetSettingIncomeList" separator="or" item="item" index="index">
+            target_setting_income_id=#{item.targetSettingIncomeId}
+        </foreach>
+    </update>
+</mapper>
+
+

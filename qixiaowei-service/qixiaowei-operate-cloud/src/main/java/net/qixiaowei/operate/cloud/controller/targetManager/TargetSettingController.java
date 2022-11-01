@@ -81,12 +81,21 @@ public class TargetSettingController extends BaseController {
     }
 
     /**
-     * 查询目标制定列表
+     * 查询销售订单目标制定列表
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
     @GetMapping("/list/order")
     public AjaxResult listOrder(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectOrderTargetSettingList(targetSettingDTO));
+    }
+
+    /**
+     * 查询销售收入目标制定列表
+     */
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @GetMapping("/list/income")
+    public AjaxResult listIncome(TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.selectIncomeTargetSettingList(targetSettingDTO));
     }
 
     /**
@@ -97,7 +106,6 @@ public class TargetSettingController extends BaseController {
     public AjaxResult listOrderDrop(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectOrderDropTargetSettingList(targetSettingDTO));
     }
-
 
     /**
      * 保存销售订单目标制定
@@ -116,7 +124,7 @@ public class TargetSettingController extends BaseController {
     @Log(title = "保存销售收入目标制定", businessType = BusinessType.INSERT)
     @PostMapping("/save/income")
     public AjaxResult saveIncome(@RequestBody TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.insertTargetSetting(targetSettingDTO));
+        return AjaxResult.success(targetSettingService.saveIncomeTargetSetting(targetSettingDTO));
     }
 
     /**

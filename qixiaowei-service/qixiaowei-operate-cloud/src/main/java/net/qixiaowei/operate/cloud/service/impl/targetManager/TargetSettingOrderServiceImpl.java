@@ -40,27 +40,15 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
     }
 
     /**
-     * 查询目标制定订单表列表
-     *
-     * @param targetSettingOrderDTO 目标制定订单表
-     * @return 目标制定订单表
-     */
-    @Override
-    public List<TargetSettingOrderDTO> selectTargetSettingOrderList(TargetSettingOrderDTO targetSettingOrderDTO) {
-        TargetSettingOrder targetSettingOrder = new TargetSettingOrder();
-        BeanUtils.copyProperties(targetSettingOrderDTO, targetSettingOrder);
-        return targetSettingOrderMapper.selectTargetSettingOrderList(targetSettingOrder);
-    }
-
-    /**
      * 获取订单目标制定
      *
-     * @param historyNumS 历史年份
+     * @param historyNumS     历史年份
+     * @param targetSettingId 目标制定ID
      * @return
      */
     @Override
-    public List<TargetSettingOrderDTO> selectTargetSettingOrderList(List<Integer> historyNumS) {
-        return targetSettingOrderMapper.selectTargetSettingOrderListByTargetSettingId(historyNumS);
+    public List<TargetSettingOrderDTO> selectTargetSettingOrderList(Long targetSettingId, List<Integer> historyNumS) {
+        return targetSettingOrderMapper.selectTargetSettingOrderListByTargetSettingId(targetSettingId, historyNumS);
     }
 
     /**
@@ -121,23 +109,13 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
     }
 
     /**
-     * 查询销售订单目标制定-不带主表玩
-     *
-     * @param historyNumS 历史年份
-     */
-    @Override
-    public List<TargetSettingOrderDTO> selectDropTargetSettingOrderList(List<Integer> historyNumS) {
-        return targetSettingOrderMapper.selectTargetSettingOrderByHistoryNumS(historyNumS);
-    }
-
-    /**
      * 获取全部的订单目标制定列表
      *
      * @return
      */
     @Override
-    public List<TargetSettingOrderDTO> selectTargetSettingOrderLists() {
-        return targetSettingOrderMapper.selectTargetSettingLists();
+    public List<TargetSettingOrderDTO> selectTargetSettingOrderByTargetSettingId(Long targetSettingId) {
+        return targetSettingOrderMapper.selectTargetSettingOrderByTargetSettingId(targetSettingId);
     }
 
     /**

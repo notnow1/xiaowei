@@ -7,56 +7,73 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
- * 目标制定订单表
+ * 目标制定收入表
  *
  * @author Graves
- * @since 2022-10-27
+ * @since 2022-10-31
  */
 @Data
 @Accessors(chain = true)
-public class TargetSettingOrderDTO {
+public class TargetSettingIncomeDTO {
 
     //查询检验
-    public interface QueryTargetSettingOrderDTO extends Default {
+    public interface QueryTargetSettingIncomeDTO extends Default {
 
     }
 
     //新增检验
-    public interface AddTargetSettingOrderDTO extends Default {
+    public interface AddTargetSettingIncomeDTO extends Default {
 
     }
 
     //删除检验
-    public interface DeleteTargetSettingOrderDTO extends Default {
+    public interface DeleteTargetSettingIncomeDTO extends Default {
 
     }
 
     //修改检验
-    public interface UpdateTargetSettingOrderDTO extends Default {
+    public interface UpdateTargetSettingIncomeDTO extends Default {
 
     }
 
     /**
      * ID
      */
-    private Long targetSettingOrderId;
+    private Long targetSettingIncomeId;
     /**
      * 目标制定ID
      */
     private Long targetSettingId;
     /**
-     * 历史年度
+     * 一年前订单金额
      */
-    private Integer historyYear;
+    private BigDecimal moneyBeforeOne;
     /**
-     * 历史年度实际值
+     * 两年前订单金额
      */
-    private BigDecimal historyActual;
+    private BigDecimal moneyBeforeTwo;
+    /**
+     * 三年前订单金额
+     */
+    private BigDecimal moneyBeforeThree;
+    /**
+     * 一年前订单转化率
+     */
+    private BigDecimal conversionBeforeOne;
+    /**
+     * 两年前订单转化率
+     */
+    private BigDecimal conversionBeforeTwo;
+    /**
+     * 三年前订单转化率
+     */
+    private BigDecimal conversionBeforeThree;
     /**
      * 删除标记:0未删除;1已删除
      */
@@ -79,10 +96,6 @@ public class TargetSettingOrderDTO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Date updateTime;
-    /**
-     * 年增长率
-     */
-    private BigDecimal growthRate;
 
 }
 

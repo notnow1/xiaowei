@@ -90,6 +90,20 @@
         AND target_year = #{targetYear}
         AND indicator_id = #{indicatorId}
     </select>
+    <select id="selectOrderTargetSettingByIndicator"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value,
+        guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting
+        WHERE delete_flag = 0
+        AND indicator_id = #{indicatorId}
+        AND target_year
+        IN
+        <foreach collection="historyNumS" separator="," index="index" item="item" open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--新增目标制定-->
     <insert id="insertTargetSetting" useGeneratedKeys="true" keyProperty="targetSettingId">
         INSERT INTO target_setting

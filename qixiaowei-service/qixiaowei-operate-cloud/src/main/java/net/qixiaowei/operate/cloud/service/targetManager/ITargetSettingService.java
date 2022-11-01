@@ -142,4 +142,20 @@ public interface ITargetSettingService {
      * @return
      */
     List<TargetSettingOrderDTO> selectOrderDropTargetSettingList(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 保存销售收入目标制定
+     *
+     * @param targetSettingDTO 目标制定
+     * @return
+     */
+    TargetSettingDTO saveIncomeTargetSetting(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 查询销售收入目标制定列表
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    TargetSettingDTO selectIncomeTargetSettingList(TargetSettingDTO targetSettingDTO);
 }
