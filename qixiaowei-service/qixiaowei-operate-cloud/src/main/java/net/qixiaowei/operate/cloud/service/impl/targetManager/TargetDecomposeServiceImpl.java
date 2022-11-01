@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 
 import net.qixiaowei.integration.common.constant.Constants;
@@ -8,12 +10,10 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.operate.cloud.api.domain.targetManager.DecomposeDetailCycles;
-import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDetails;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
-import net.qixiaowei.operate.cloud.mapper.targetManager.DecomposeDetailCyclesMapper;
-import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeDetailsMapper;
+import net.qixiaowei.operate.cloud.api.domain.product.ProductSpecificationParam;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.*;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
+import net.qixiaowei.operate.cloud.mapper.targetManager.*;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,11 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
-import net.qixiaowei.operate.cloud.mapper.targetManager.TargetDecomposeMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -49,6 +47,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     private DecomposeDetailCyclesMapper decomposeDetailCyclesMapper;
     @Autowired
     private TargetDecomposeDetailsMapper targetDecomposeDetailsMapper;
+
+    @Autowired
+    private TargetDecomposeHistoryMapper targetDecomposeHistoryMapper;
+    @Autowired
+    private DecomposeDetailsSnapshotMapper decomposeDetailsSnapshotMapper;
+    @Autowired
+    private DetailCyclesSnapshotMapper detailCyclesSnapshotMapper;
 
 
     /**
@@ -114,7 +119,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
         }
 
-        return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
+        if (StringUtils.isNull(targetDecomposeDTO)) {
+            return null;
+        } else {
+            return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
+        }
+
     }
 
     /**
@@ -147,7 +157,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.EARNING.getCode());
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -196,11 +206,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public TargetDecomposeDTO insertOrderTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
         validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
+        if (StringUtils.isNotNull(targetDecomposeDTO1)) {
+            throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
+        }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -210,6 +225,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode());
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
+            throw new ServiceException("指标不存在！请联系管理员");
+        }
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -233,6 +251,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public TargetDecomposeDTO insertIncomeTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
         validTargetDecomposeData(targetDecomposeDTO);
@@ -246,7 +265,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //待录入
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.EARNING.getCode());
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
+            throw new ServiceException("指标不存在！请联系管理员");
+        }
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -270,6 +292,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public TargetDecomposeDTO insertReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
         validTargetDecomposeData(targetDecomposeDTO);
@@ -284,6 +307,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode());
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
+            throw new ServiceException("指标不存在！请联系管理员");
+        }
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -307,6 +333,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public TargetDecomposeDTO insertCustomTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
         validTargetDecomposeData(targetDecomposeDTO);
@@ -349,7 +376,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //汇总金额
             BigDecimal amountTarget = targetDecomposeDetailsDTO.getAmountTarget();
             if (null != amountTarget) {
-                validDecomposeTarget.add(amountTarget);
+                validDecomposeTarget = validDecomposeTarget.add(amountTarget);
             }
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
             //行的汇总金额
@@ -357,15 +384,15 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                 BigDecimal cycleForecast = decomposeDetailCyclesDTO.getCycleForecast();
                 if (null != cycleForecast) {
-                    validAmountTarget.add(cycleForecast);
+                    validAmountTarget = validAmountTarget.add(cycleForecast);
                 }
-
             }
             if (null != amountTarget) {
                 if (amountTarget.compareTo(validAmountTarget) != 0) {
                     throw new ServiceException("汇总金额与行的预测总值不匹配！！！");
                 }
             }
+
         }
         if (null != decomposeTarget) {
             if (decomposeTarget.compareTo(validDecomposeTarget) != 0) {
@@ -382,22 +409,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecompose
      */
     public void packInsertTargetDecomposeData(TargetDecomposeDTO targetDecomposeDTO, TargetDecompose targetDecompose) {
-        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
-        if (StringUtils.isNotNull(targetDecomposeDTO1)) {
-            throw new ServiceException(DateUtils.getNowDate().getYear() + "年已创建该维度目标分解，无需重复创建。");
-        }
-        //目标分解详情表
-        TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
+
+
         //目标分解详情表集合
         List<TargetDecomposeDetails> targetDecomposeDetailsList = new ArrayList<>();
-        //目标分解详细信息周期表
-        DecomposeDetailCycles decomposeDetailCycles = new DecomposeDetailCycles();
         //目标分解详细信息周期表集合
         List<DecomposeDetailCycles> decomposeDetailCyclesList = new ArrayList<>();
 
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
         //插入目标分解详情表
         for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+            //目标分解详情表
+            TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
             BeanUtils.copyProperties(targetDecomposeDetailsDTOS.get(i), targetDecomposeDetails);
             //目标分解id
             targetDecomposeDetails.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
@@ -422,6 +445,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //目标分解详细信息周期
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
             for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
+                //目标分解详细信息周期表
+                DecomposeDetailCycles decomposeDetailCycles = new DecomposeDetailCycles();
                 BeanUtils.copyProperties(decomposeDetailCyclesDTO, decomposeDetailCycles);
                 decomposeDetailCycles.setCycleNumber(cycleNumber);
                 //目标分解id
@@ -452,8 +477,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecompose
      */
     public void packUpdateTargetDecomposeData(TargetDecomposeDTO targetDecomposeDTO, TargetDecompose targetDecompose) {
-        //目标分解详情表
-        TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
+
         //新增目标分解详情表集合
         List<TargetDecomposeDetails> targetDecomposeDetailsAddList = new ArrayList<>();
         //修改目标分解详情表集合
@@ -461,8 +485,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //目标分解详情表所有集合
         List<TargetDecomposeDetails> targetDecomposeDetailsAllList = new ArrayList<>();
 
-        //目标分解详细信息周期表
-        DecomposeDetailCycles decomposeDetailCycles = new DecomposeDetailCycles();
+
         //新增目标分解详细信息周期表集合
         List<DecomposeDetailCycles> decomposeDetailCyclesAddList = new ArrayList<>();
         //修改目标分解详细信息周期表集合
@@ -473,6 +496,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
         //插入目标分解详情表
         for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+            //目标分解详情表
+            TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
             BeanUtils.copyProperties(targetDecomposeDetailsDTOS.get(i), targetDecomposeDetails);
             //目标分解id
             targetDecomposeDetails.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
@@ -509,6 +534,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         targetDecomposeDetailsAllList.addAll(targetDecomposeDetailsAddList);
         targetDecomposeDetailsAllList.addAll(targetDecomposeDetailsUpdateList);
+        targetDecomposeDetailsAllList.sort(Comparator.comparing(TargetDecomposeDetails::getTargetDecomposeDetailsId));
         //修改目标分解详细信息周期表
         for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
             //删除不存在的数据
@@ -523,6 +549,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //接收目标分解详细信息周期数据
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
             for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
+                //目标分解详细信息周期表
+                DecomposeDetailCycles decomposeDetailCycles = new DecomposeDetailCycles();
                 BeanUtils.copyProperties(decomposeDetailCyclesDTO, decomposeDetailCycles);
                 decomposeDetailCycles.setCycleNumber(cycleNumber);
                 if (null == targetDecomposeDetailsDTOS.get(i).getTargetDecomposeDetailsId()) {
@@ -593,6 +621,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateOrderTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
         this.validTargetDecomposeData(targetDecomposeDTO);
@@ -600,10 +629,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
-        //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode());
-        //指标id
-        targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
         targetDecompose.setTargetDecomposeType(Constants.ONE);
 
@@ -623,6 +648,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateIncomeTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
         this.validTargetDecomposeData(targetDecomposeDTO);
@@ -630,10 +656,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
-        //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
-        //指标id
-        targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
         targetDecompose.setTargetDecomposeType(Constants.TWO);
 
@@ -653,6 +675,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
         this.validTargetDecomposeData(targetDecomposeDTO);
@@ -660,10 +683,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
-        //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode());
-        //指标id
-        targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
         targetDecompose.setTargetDecomposeType(Constants.THREE);
 
@@ -683,6 +702,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateCustomTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
         this.validTargetDecomposeData(targetDecomposeDTO);
@@ -709,6 +729,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteOrderTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
         return this.packLogicDeleteTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
     }
@@ -720,6 +741,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteIncomeTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
         return this.packLogicDeleteTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
     }
@@ -731,6 +753,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteReturnedTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
         return this.packLogicDeleteTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
     }
@@ -742,6 +765,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteCustomTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
         return this.packLogicDeleteTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
     }
@@ -754,6 +778,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteOrderTargetDecomposeByTargetDecomposeId(TargetDecomposeDTO targetDecomposeDTO) {
         return this.packLogicDeleteTargetDecomposeByTargetDecomposeId(targetDecomposeDTO);
     }
@@ -765,6 +790,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteIncomeTargetDecomposeByTargetDecomposeId(TargetDecomposeDTO targetDecomposeDTO) {
         return this.packLogicDeleteTargetDecomposeByTargetDecomposeId(targetDecomposeDTO);
     }
@@ -776,6 +802,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteReturnedTargetDecomposeByTargetDecomposeId(TargetDecomposeDTO targetDecomposeDTO) {
         return this.packLogicDeleteTargetDecomposeByTargetDecomposeId(targetDecomposeDTO);
     }
@@ -787,6 +814,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteCustomTargetDecomposeByTargetDecomposeId(TargetDecomposeDTO targetDecomposeDTO) {
         return this.packLogicDeleteTargetDecomposeByTargetDecomposeId(targetDecomposeDTO);
     }
@@ -818,7 +846,55 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 throw new ServiceException("删除目标分解周期表失败");
             }
         }
+        //删除历史版本数据
+        this.packLogicDeleteTargetDecomposeHistoryData(targetDecomposeDTO);
         return targetDecomposeMapper.logicDeleteTargetDecomposeByTargetDecomposeId(targetDecompose);
+    }
+    /**
+     * 封装统一删除历史版本数据
+     */
+    private void packLogicDeleteTargetDecomposeHistoryData(TargetDecomposeDTO targetDecomposeDTO) {
+        //目标分解历史版本表集合
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = new ArrayList<>();
+        //目标分解详情快照表集合
+        List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = new ArrayList<>();
+        try {
+            TargetDecomposeHistory targetDecomposeHistory = new TargetDecomposeHistory();
+            targetDecomposeHistory.setTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+            targetDecomposeHistory.setUpdateTime(DateUtils.getNowDate());
+            targetDecomposeHistory.setUpdateBy(SecurityUtils.getUserId());
+            targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryList(targetDecomposeHistory);
+            //删除历史版本
+            targetDecomposeHistoryMapper.logicDeleteTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeHistory);
+        } catch (Exception e) {
+            throw new ServiceException("删除关联历史版本失败");
+        }
+
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
+            List<Long> collect1 = targetDecomposeHistoryDTOS.stream().map(TargetDecomposeHistoryDTO::getTargetDecomposeHistoryId).collect(Collectors.toList());
+            try {
+
+                if (StringUtils.isNotEmpty(collect1)) {
+                    decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1);
+                    //删除历史版本
+                    decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                }
+
+            } catch (Exception e) {
+                throw new ServiceException("删除关联历史版本详情失败");
+            }
+        }
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+            List<Long> collect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDecomposeDetailsSnapshotId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                try {
+                    detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("删除目标分解详情周期快照失败");
+                }
+            }
+
+        }
     }
 
     /**
@@ -844,7 +920,52 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 throw new ServiceException("删除目标分解周期表失败");
             }
         }
+        this.packLogicDeleteTargetDecomposeHistoryDatas(targetDecomposeIds);
         return targetDecomposeMapper.logicDeleteTargetDecomposeByTargetDecomposeIds(targetDecomposeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * 封装统一批量删除历史版本数据
+     * @param targetDecomposeIds
+     */
+    private void packLogicDeleteTargetDecomposeHistoryDatas(List<Long> targetDecomposeIds) {
+        //目标分解历史版本表集合
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = new ArrayList<>();
+        //目标分解详情快照表集合
+        List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = new ArrayList<>();
+        try {
+            targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeIds(targetDecomposeIds);
+            //删除历史版本
+            targetDecomposeHistoryMapper.logicDeleteTargetDecomposeHistoryByTargetDecomposeIds(targetDecomposeIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除关联历史版本失败");
+        }
+
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
+            List<Long> collect1 = targetDecomposeHistoryDTOS.stream().map(TargetDecomposeHistoryDTO::getTargetDecomposeHistoryId).collect(Collectors.toList());
+            try {
+
+                if (StringUtils.isNotEmpty(collect1)) {
+                    decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1);
+                    //删除历史版本
+                    decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                }
+
+            } catch (Exception e) {
+                throw new ServiceException("删除关联历史版本详情失败");
+            }
+        }
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+            List<Long> collect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDecomposeDetailsSnapshotId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                try {
+                    detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("删除目标分解详情周期快照失败");
+                }
+            }
+
+        }
     }
 
     /**

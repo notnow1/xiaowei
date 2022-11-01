@@ -10,7 +10,7 @@ import net.qixiaowei.integration.security.annotation.EnableRyFeignClients;
  */
 @EnableCustomConfig
 @EnableRyFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"net.qixiaowei.system.manage", "net.qixiaowei.integration.common.config"})
 public class QiXiaoWeiSystemManageApplication {
     public static void main(String[] args) {
         SpringApplication.run(QiXiaoWeiSystemManageApplication.class, args);

@@ -79,52 +79,49 @@
         and i.delete_flag =0
         WHERE td.delete_flag = 0
                 <if test="targetDecompose.targetDecomposeId != null">
-                    and target_decompose_id=#{targetDecompose.targetDecomposeId}
+                    and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
                 </if>
                 <if test="targetDecompose.targetDecomposeType != null">
-                    and target_decompose_type=#{targetDecompose.targetDecomposeType}
-                </if>
-                <if test="targetDecompose.indicatorId != null">
-                    and indicator_id=#{targetDecompose.indicatorId}
+                    and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
                 </if>
                 <if test="targetDecompose.targetYear != null">
-                    and target_year like '%${targetDecompose.targetYear}%'
+                    and td.target_year like '%${targetDecompose.targetYear}%'
                 </if>
                 <if test="targetDecompose.targetDecomposeDimensionId != null">
-                    and target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
+                    and td.target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
                 </if>
                 <if test="targetDecompose.decompositionDimension != null and targetDecompose.decompositionDimension != ''">
-                    and decomposition_dimension like '%$#{targetDecompose.decompositionDimension}%'
+                    and td.decomposition_dimension like '%$#{targetDecompose.decompositionDimension}%'
                 </if>
                 <if test="targetDecompose.timeDimension != null">
-                    and time_dimension like '%${targetDecompose.timeDimension}%'
+                    and td.time_dimension like '%${targetDecompose.timeDimension}%'
                 </if>
                 <if test="targetDecompose.decomposeTarget != null">
-                    and decompose_target=#{targetDecompose.decomposeTarget}
+                    and td.decompose_target=#{targetDecompose.decomposeTarget}
                 </if>
                 <if test="targetDecompose.forecastYear != null">
-                    and forecast_year=#{targetDecompose.forecastYear}
+                    and td.forecast_year=#{targetDecompose.forecastYear}
                 </if>
                 <if test="targetDecompose.actualTotal != null">
-                    and actual_total=#{targetDecompose.actualTotal}
+                    and td.actual_total=#{targetDecompose.actualTotal}
                 </if>
                 <if test="targetDecompose.status != null">
-                    and status=#{targetDecompose.status}
+                    and td.status=#{targetDecompose.status}
                 </if>
                 <if test="targetDecompose.deleteFlag != null">
-                    and delete_flag=#{targetDecompose.deleteFlag}
+                    and td.delete_flag=#{targetDecompose.deleteFlag}
                 </if>
                 <if test="targetDecompose.createBy != null">
-                    and create_by=#{targetDecompose.createBy}
+                    and td.create_by=#{targetDecompose.createBy}
                 </if>
                 <if test="targetDecompose.createTime != null">
-                    and create_time=#{targetDecompose.createTime}
+                    and td.create_time=#{targetDecompose.createTime}
                 </if>
                 <if test="targetDecompose.updateBy != null">
-                    and update_by=#{targetDecompose.updateBy}
+                    and td.update_by=#{targetDecompose.updateBy}
                 </if>
                 <if test="targetDecompose.updateTime != null">
-                    and update_time=#{targetDecompose.updateTime}
+                    and td.update_time=#{targetDecompose.updateTime}
                 </if>
     </select>
 <!--    联合主键查询目标分解表-->

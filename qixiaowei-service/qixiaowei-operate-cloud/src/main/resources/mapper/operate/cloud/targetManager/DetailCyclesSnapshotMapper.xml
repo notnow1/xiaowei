@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.DetailCyclesSnapshotMapper">
+    <!--    查询目标分解详情周期快照表-->
+    <select id="selectDetailCyclesSnapshotByDetailCyclesSnapshotId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DetailCyclesSnapshotDTO">
+        SELECT
+        detail_cycles_snapshot_id, decompose_details_snapshot_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        FROM detail_cycles_snapshot
+        WHERE  detail_cycles_snapshot_id=#{detailCyclesSnapshotId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标分解详情周期快照表-->
+    <select id="selectDetailCyclesSnapshotByDetailCyclesSnapshotIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DetailCyclesSnapshotDTO">
+        SELECT
+        detail_cycles_snapshot_id, decompose_details_snapshot_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        FROM detail_cycles_snapshot
+        WHERE  detail_cycles_snapshot_id in
+            <foreach item="item"
+                     collection="detailCyclesSnapshotIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标分解详情周期快照表列表-->
+    <select id="selectDetailCyclesSnapshotList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.DetailCyclesSnapshotDTO">
+        SELECT
+        detail_cycles_snapshot_id, decompose_details_snapshot_id, cycle_number, cycle_target, cycle_forecast, cycle_actual, delete_flag, create_by, create_time, update_by, update_time
+        FROM detail_cycles_snapshot
+        WHERE delete_flag=0
+                <if test="detailCyclesSnapshot.detailCyclesSnapshotId != null">
+                    and detail_cycles_snapshot_id=#{detailCyclesSnapshot.detailCyclesSnapshotId}
+                </if>
+                <if test="detailCyclesSnapshot.decomposeDetailsSnapshotId != null">
+                    and decompose_details_snapshot_id=#{detailCyclesSnapshot.decomposeDetailsSnapshotId}
+                </if>
+                <if test="detailCyclesSnapshot.cycleNumber != null">
+                    and cycle_number=#{detailCyclesSnapshot.cycleNumber}
+                </if>
+                <if test="detailCyclesSnapshot.cycleTarget != null">
+                    and cycle_target=#{detailCyclesSnapshot.cycleTarget}
+                </if>
+                <if test="detailCyclesSnapshot.cycleForecast != null">
+                    and cycle_forecast=#{detailCyclesSnapshot.cycleForecast}
+                </if>
+                <if test="detailCyclesSnapshot.cycleActual != null">
+                    and cycle_actual=#{detailCyclesSnapshot.cycleActual}
+                </if>
+                <if test="detailCyclesSnapshot.deleteFlag != null">
+                    and delete_flag=#{detailCyclesSnapshot.deleteFlag}
+                </if>
+                <if test="detailCyclesSnapshot.createBy != null">
+                    and create_by=#{detailCyclesSnapshot.createBy}
+                </if>
+                <if test="detailCyclesSnapshot.createTime != null">
+                    and create_time=#{detailCyclesSnapshot.createTime}
+                </if>
+                <if test="detailCyclesSnapshot.updateBy != null">
+                    and update_by=#{detailCyclesSnapshot.updateBy}
+                </if>
+                <if test="detailCyclesSnapshot.updateTime != null">
+                    and update_time=#{detailCyclesSnapshot.updateTime}
+                </if>
+    </select>
+    <!--新增目标分解详情周期快照表-->
+    <insert id="insertDetailCyclesSnapshot" useGeneratedKeys="true" keyProperty="detailCyclesSnapshotId">
+        INSERT INTO detail_cycles_snapshot (decompose_details_snapshot_id,cycle_number,cycle_target,cycle_forecast,cycle_actual,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{detailCyclesSnapshot.decomposeDetailsSnapshotId},#{detailCyclesSnapshot.cycleNumber},#{detailCyclesSnapshot.cycleTarget},#{detailCyclesSnapshot.cycleForecast},#{detailCyclesSnapshot.cycleActual},#{detailCyclesSnapshot.deleteFlag},#{detailCyclesSnapshot.createBy},#{detailCyclesSnapshot.createTime},#{detailCyclesSnapshot.updateBy},#{detailCyclesSnapshot.updateTime})
+    </insert>
+    <!--修改目标分解详情周期快照表-->
+    <update id="updateDetailCyclesSnapshot">
+        UPDATE detail_cycles_snapshot
+        SET
+                    <if test="detailCyclesSnapshot.decomposeDetailsSnapshotId != null">
+                        decompose_details_snapshot_id=#{detailCyclesSnapshot.decomposeDetailsSnapshotId},
+                    </if>
+                    <if test="detailCyclesSnapshot.cycleNumber != null">
+                        cycle_number=#{detailCyclesSnapshot.cycleNumber},
+                    </if>
+                    <if test="detailCyclesSnapshot.cycleTarget != null">
+                        cycle_target=#{detailCyclesSnapshot.cycleTarget},
+                    </if>
+                    <if test="detailCyclesSnapshot.cycleForecast != null">
+                        cycle_forecast=#{detailCyclesSnapshot.cycleForecast},
+                    </if>
+                    <if test="detailCyclesSnapshot.cycleActual != null">
+                        cycle_actual=#{detailCyclesSnapshot.cycleActual},
+                    </if>
+                    <if test="detailCyclesSnapshot.deleteFlag != null">
+                        delete_flag=#{detailCyclesSnapshot.deleteFlag},
+                    </if>
+                    <if test="detailCyclesSnapshot.createBy != null">
+                        create_by=#{detailCyclesSnapshot.createBy},
+                    </if>
+                    <if test="detailCyclesSnapshot.createTime != null">
+                        create_time=#{detailCyclesSnapshot.createTime},
+                    </if>
+                    <if test="detailCyclesSnapshot.updateBy != null">
+                        update_by=#{detailCyclesSnapshot.updateBy},
+                    </if>
+                    <if test="detailCyclesSnapshot.updateTime != null">
+                        update_time=#{detailCyclesSnapshot.updateTime}
+                    </if>
+        WHERE
+                 detail_cycles_snapshot_id=#{detailCyclesSnapshot.detailCyclesSnapshotId}
+    </update>
+    <!--逻辑删除目标分解详情周期快照表-->
+    <update id="logicDeleteDetailCyclesSnapshotByDetailCyclesSnapshotId">
+        UPDATE detail_cycles_snapshot
+        SET     delete_flag= 1,
+                update_by=#{detailCyclesSnapshot.updateBy},
+                update_time=#{detailCyclesSnapshot.updateTime}
+        WHERE
+                detail_cycles_snapshot_id=#{detailCyclesSnapshot.detailCyclesSnapshotId}
+    </update>
+    <!--逻辑批量删除目标分解详情周期快照表-->
+    <update id="logicDeleteDetailCyclesSnapshotByDetailCyclesSnapshotIds">
+        UPDATE detail_cycles_snapshot
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         detail_cycles_snapshot_id IN
+            <foreach item="item"
+                     collection="detailCyclesSnapshotIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增目标分解详情周期快照表-->
+    <insert id="batchDetailCyclesSnapshot">
+        INSERT INTO detail_cycles_snapshot (decompose_details_snapshot_id,cycle_number,cycle_target,cycle_forecast,cycle_actual,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="detailCyclesSnapshots"
+                 separator=",">
+            (#{item.decomposeDetailsSnapshotId},#{item.cycleNumber},#{item.cycleTarget},#{item.cycleForecast},#{item.cycleActual},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标分解详情周期快照表-->
+    <delete id="deleteDetailCyclesSnapshotByDetailCyclesSnapshotId">
+        DELETE FROM detail_cycles_snapshot
+        WHERE  detail_cycles_snapshot_id=#{detailCyclesSnapshot}
+
+    </delete>
+    <!--物理批量删除目标分解详情周期快照表-->
+    <delete id="deleteDetailCyclesSnapshotByDetailCyclesSnapshotIds">
+        DELETE FROM detail_cycles_snapshot
+        WHERE  detail_cycles_snapshot_id IN
+            <foreach item="item"
+                     collection="detailCyclesSnapshotIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改目标分解详情周期快照表-->
+    <update id="updateDetailCyclesSnapshots">
+        update detail_cycles_snapshot
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="decompose_details_snapshot_id=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.decomposeDetailsSnapshotId != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.decomposeDetailsSnapshotId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="cycle_number=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.cycleNumber != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.cycleNumber}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="cycle_target=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.cycleTarget != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.cycleTarget}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="cycle_forecast=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.cycleForecast != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.cycleForecast}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="cycle_actual=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.cycleActual != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.cycleActual}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="detailCyclesSnapshotList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="detailCyclesSnapshotList" separator="or" item="item" index="index">
+                    detail_cycles_snapshot_id=#{item.detailCyclesSnapshotId}
+        </foreach>
+    </update>
+<!--    根据目标分解详情历史id逻辑批量删除目标分解详情周期快照表-->
+    <update id="logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds">
+        UPDATE detail_cycles_snapshot
+        SET     delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        decompose_details_snapshot_id IN
+        <foreach item="item"
+                 collection="decomposeDetailsSnapshotIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>
+
+
