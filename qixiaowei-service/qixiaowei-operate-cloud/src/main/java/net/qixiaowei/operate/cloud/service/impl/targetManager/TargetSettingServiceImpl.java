@@ -473,7 +473,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             BigDecimal historyActual = targetSettingOrderDTO.getHistoryActual();
             if (StringUtils.isNotNull(historyActual)) {
                 BigDecimal subtract = historyActual.subtract(beforeRate);
-                BigDecimal divide = subtract.divide(historyActual, 2, RoundingMode.HALF_UP);
+                BigDecimal divide;
+                if (!historyActual.equals(BigDecimal.ZERO)) {
+                    divide = subtract.divide(historyActual, 2, RoundingMode.HALF_UP);
+                } else {
+                    divide = BigDecimal.ZERO;
+                }
                 targetSettingOrderDTO.setGrowthRate(divide);
                 beforeRate = targetSettingOrderDTO.getHistoryActual();
             } else {
@@ -717,7 +722,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.INCOME.getCode());
         TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorReceivableDTO.getIndicatorId());
         TargetSettingDTO targetIncomeByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorIncomeDTO.getIndicatorId());
-
         List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = new ArrayList<>();
         List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS = new ArrayList<>();
         BigDecimal zero = new BigDecimal(0);
@@ -730,7 +734,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
             recoveryDTO.setAddRate(percentage);
             targetSettingByIndicator.setTargetSettingRecoveryDTO(recoveryDTO);
-            // todo 查询销售回款列表--recoveries
+            BigDecimal DSOValue = new BigDecimal(recoveryDTO.getBaselineValue() + recoveryDTO.getImproveDays());
+//               todo 查询销售回款列表--recoveries
+//              【DSO（应收账款周转天数）】：公式=DSO基线-DSO改进天数。
+//              【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额。
+//              【回款总目标】：公式=上年年末应收账款余额+销售收入目标*（1+平均增值税率）-期末应收账款余额。
+
             List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOS = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
             if (targetSettingRecoveriesDTOS.size() > 5) {
                 for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDTOS) {
@@ -754,20 +763,27 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     }
                 }
                 TargetSettingRecoveriesDTO targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+                targetSettingRecoveriesDTO.setPrefixType("合计");
+                targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+
+                targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                 targetSettingRecoveriesDTO.setPrefixType("DSO");
-                BigDecimal DSOValue = new BigDecimal(recoveryDTO.getBaselineValue() + recoveryDTO.getImproveDays());
                 targetSettingRecoveriesDTO.setChallengeValue(DSOValue);
                 targetSettingRecoveriesDTO.setTargetValue(DSOValue);
                 targetSettingRecoveriesDTO.setGuaranteedValue(DSOValue);
                 targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
                 targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                 targetSettingRecoveriesDTO.setPrefixType("回款总目标");
-                targetSettingRecoveriesDTO.setChallengeValue(DSOValue);
-                targetSettingRecoveriesDTO.setTargetValue(DSOValue);
-                targetSettingRecoveriesDTO.setGuaranteedValue(DSOValue);
+                //回款总目标-1.挑战值，目标值，保底值
+                BigDecimal challengeGoal = recoveryDTO.getBalanceReceivables().add(targetIncomeByIndicator.getChallengeValue().multiply(targetSettingByIndicator.getPercentage().add(new BigDecimal(1))));
+                BigDecimal targetGoal = recoveryDTO.getBalanceReceivables().add(targetIncomeByIndicator.getTargetValue().multiply(targetSettingByIndicator.getPercentage().add(new BigDecimal(1))));
+                BigDecimal guaranteedGoal = recoveryDTO.getBalanceReceivables().add(targetIncomeByIndicator.getGuaranteedValue().multiply(targetSettingByIndicator.getPercentage().add(new BigDecimal(1))));
+                targetSettingRecoveriesDTO.setChallengeValue(challengeGoal);
+                targetSettingRecoveriesDTO.setTargetValue(targetGoal);
+                targetSettingRecoveriesDTO.setGuaranteedValue(guaranteedGoal);
                 targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
             } else {
-                setRecoveriesZero(targetSettingTypeDTOS, targetSettingIndicatorDTOS, zero);
+                setRecoveriesZero(targetSettingTypeDTOS, targetSettingIndicatorDTOS, zero, targetIncomeByIndicator);
             }
         } else {
             targetSettingByIndicator = new TargetSettingDTO();
@@ -776,7 +792,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingByIndicator.setGuaranteedValue(zero);
             TargetSettingRecoveryDTO recoveryDTO = setRecoveryZero(zero);
             targetSettingByIndicator.setTargetSettingRecoveryDTO(recoveryDTO);
-            setRecoveriesZero(targetSettingTypeDTOS, targetSettingIndicatorDTOS, zero);
+            setRecoveriesZero(targetSettingTypeDTOS, targetSettingIndicatorDTOS, zero, targetIncomeByIndicator);
         }
         targetSettingByIndicator.setTargetSettingTypeDTOS(targetSettingTypeDTOS);
         targetSettingByIndicator.setTargetSettingIndicatorDTOS(targetSettingIndicatorDTOS);
@@ -804,7 +820,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param targetSettingTypeDTOS
      * @param targetSettingIndicatorDTOS
      */
-    private static void setRecoveriesZero(List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS, List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS, BigDecimal zero) {
+    private static void setRecoveriesZero(List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS, List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS, BigDecimal zero, TargetSettingDTO targetIncomeByIndicator) {
         TargetSettingRecoveriesDTO targetSettingRecoveriesDTO;
         for (int i = 0; i < 5; i++) {
             switch (i) {
@@ -829,7 +845,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 case 4:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("销售收入目标");
-                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingRecoveriesDTO.setTargetValue(targetIncomeByIndicator.getTargetValue());
+                    targetSettingRecoveriesDTO.setGuaranteedValue(targetIncomeByIndicator.getGuaranteedValue());
+                    targetSettingRecoveriesDTO.setChallengeValue(targetIncomeByIndicator.getChallengeValue());
+
+//                    targetIncomeByIndicator.getChallengeValue()
                     targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
                 case 5:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
