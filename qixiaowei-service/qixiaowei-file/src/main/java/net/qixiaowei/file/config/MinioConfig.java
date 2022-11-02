@@ -1,6 +1,7 @@
 package net.qixiaowei.file.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import io.minio.MinioClient;
@@ -10,6 +11,7 @@ import io.minio.MinioClient;
  */
 @Configuration
 @ConfigurationProperties(prefix = "minio")
+@RefreshScope
 public class MinioConfig {
     /**
      * 服务地址

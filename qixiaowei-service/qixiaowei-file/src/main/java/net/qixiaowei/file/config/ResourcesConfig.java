@@ -3,6 +3,7 @@ package net.qixiaowei.file.config;
 import java.io.File;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * 通用映射配置
  */
 @Configuration
+@RefreshScope
 public class ResourcesConfig implements WebMvcConfigurer {
     /**
      * 上传文件存储在本地的根路径

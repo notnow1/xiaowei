@@ -6,13 +6,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
-
 /**
  * 文件服务
  */
 @EnableCustomConfig
 @EnableRyFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"net.qixiaowei.file", "net.qixiaowei.integration.common.config"})
 public class QiXiaoWeiFileApplication {
     public static void main(String[] args) {
         SpringApplication.run(QiXiaoWeiFileApplication.class, args);

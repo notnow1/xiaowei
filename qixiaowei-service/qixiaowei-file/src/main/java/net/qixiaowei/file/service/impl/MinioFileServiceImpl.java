@@ -5,12 +5,15 @@ import net.qixiaowei.file.config.MinioConfig;
 import net.qixiaowei.file.logic.FileLogic;
 import net.qixiaowei.file.service.IFileService;
 import net.qixiaowei.file.utils.FileUploadUtils;
+import net.qixiaowei.integration.common.config.FileConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+
+import javax.annotation.Resource;
 
 /**
  * Minio 文件存储
@@ -26,6 +29,9 @@ public class MinioFileServiceImpl implements IFileService {
 
     @Autowired
     private FileLogic fileLogic;
+
+    @Resource
+    private FileConfig fileConfig;
 
     /**
      * 本地文件上传接口
@@ -46,6 +52,8 @@ public class MinioFileServiceImpl implements IFileService {
                 .build();
         client.putObject(args);
         String url = "/" + fileName;
-        return fileLogic.saveFileRecord(file, source, url);
+        FileDTO fileDTO = fileLogic.saveFileRecord(file, source, url);
+        fileDTO.setFilePath(fileConfig.getDomain() + url);
+        return fileDTO;
     }
 }

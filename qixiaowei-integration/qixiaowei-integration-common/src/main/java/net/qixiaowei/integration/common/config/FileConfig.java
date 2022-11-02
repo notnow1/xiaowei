@@ -29,4 +29,13 @@ public class FileConfig {
     public String getFullDomain(String url) {
         return StringUtils.isEmpty(url) ? this.getDomain() : url.toLowerCase().startsWith("http") ? url : this.getDomain() + url;
     }
+
+    /**
+     * @param fullUrl
+     * @return path
+     */
+    public String getPathOfRemoveDomain(String fullUrl) {
+        return StringUtils.isEmpty(fullUrl) ? "" : fullUrl.toLowerCase().startsWith("http") ? fullUrl.replace(this.getDomain(), "") : fullUrl;
+    }
+
 }
