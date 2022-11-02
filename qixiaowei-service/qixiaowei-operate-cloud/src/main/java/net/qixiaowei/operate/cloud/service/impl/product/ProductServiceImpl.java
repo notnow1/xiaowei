@@ -440,12 +440,11 @@ public class ProductServiceImpl implements IProductService {
             this.updateProductSpecificationData(productDataDTOS, productSpecificationParamList, productDTO);
         }
 
-        if (StringUtils.isNotEmpty(productDTO.getProductFileDTOList())) {
             //修改产品文件表
             List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
             //修改产品文件表数据
             this.updateProductFile(productFileDTOList, productDTO);
-        }
+
 
 
         //修改产品表
