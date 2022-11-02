@@ -59,6 +59,14 @@ public class SecurityContextHolder {
         set(SecurityConstants.DETAILS_TENANT_ID, tenantId);
     }
 
+    public static Long getEmployeeId() {
+        return Convert.toLong(get(SecurityConstants.DETAILS_EMPLOYEE_ID), 0L);
+    }
+
+    public static void setEmployeeId(String employeeId) {
+        set(SecurityConstants.DETAILS_EMPLOYEE_ID, employeeId);
+    }
+
     public static String getUserAccount() {
         return get(SecurityConstants.DETAILS_USER_ACCOUNT);
     }

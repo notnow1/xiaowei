@@ -36,6 +36,13 @@ public class SecurityUtils {
     }
 
     /**
+     * 获取员工ID
+     */
+    public static Long getEmployeeId() {
+        return SecurityContextHolder.getEmployeeId();
+    }
+
+    /**
      * 获取登录用户信息
      */
     public static LoginUserVO getLoginUser() {
