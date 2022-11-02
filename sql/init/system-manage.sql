@@ -563,94 +563,251 @@ VALUES (1, 1, 1, 0, 0, sysdate(), 0, sysdate());
 
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(1, 0, 1, '系统管理', NULL, 1, 'system', NULL, NULL, 0, 0, 1, NULL, 'system', 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(1, 0, 1, '系统管理', NULL, 0, 'system', NULL, NULL, 0, 0, 1, NULL, 'shezhi', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-27 19:02:50');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(2, 1, 1, '设置管理', NULL, 1, 'settingsManager', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, sysdate(), 1, sysdate());
+VALUES(2, 1, 1, '设置管理', NULL, 1, 'settingsManager', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(3, 2, 2, '权限设置', NULL, 1, 'roleSetting', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, sysdate(), 1, sysdate());
+VALUES(3, 2, 2, '权限设置', NULL, 1, 'roleSetting', NULL, NULL, 0, 1, 1, NULL, 'system', 1, 1, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(4, 1, 2, '菜单管理', NULL, 1, 'menu', 'system/menu/index', NULL, 0, 1, 1, NULL, 'tree-table', 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(4, 1, 2, '菜单管理', NULL, 1, 'menu', 'system/menu/index', NULL, 0, 1, 1, NULL, 'tree-table', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(5, 0, 1, '经营云', NULL, 2, 'manage', NULL, NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(5, 0, 1, '经营云', 1, 2, 'manage', NULL, NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-27 19:02:56');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(6, 0, 1, '配置管理', NULL, 1, 'setting', NULL, NULL, 0, 0, 1, NULL, 'svg8', 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(6, 0, 1, '配置管理', NULL, 1, 'setting', NULL, NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(7, 9, 2, '企业信息', NULL, 0, 'enterpriseInfo', 'setting/basics/enterpriseInfo/index', NULL, 0, 0, 1, NULL, 'qiyexinxi', 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(7, 6, 2, '企业信息', NULL, 0, 'enterpriseInfo', 'setting/enterpriseInfo/index', NULL, 0, 0, 1, NULL, 'qiyexinxi', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-27 18:55:50');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(8, 6, 1, '权限配置', NULL, 2, 'auth', NULL, NULL, 0, 0, 1, NULL, 'quanxuan', 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(8, 6, 1, '权限配置', NULL, 2, 'auth', NULL, NULL, 0, 0, 1, NULL, 'quanxuan', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-27 18:58:56');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(9, 6, 1, '基础配置', NULL, 3, 'basics', NULL, NULL, 0, 0, 1, NULL, 'jichupeizhi', 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(9, 6, 1, '基础配置', NULL, 3, 'basics', NULL, NULL, 0, 0, 1, NULL, 'jichupeizhi', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-27 19:01:59');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(10, 8, 2, '账号角色', NULL, 1, 'account', 'setting/auth/account/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(10, 8, 2, '账号角色', NULL, 1, 'account', 'setting/auth/account/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-31 14:34:11');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(11, 8, 2, '角色权限', NULL, 2, 'role', 'setting/auth/role/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(11, 8, 2, '角色权限', NULL, 2, 'role', 'setting/auth/role/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-31 14:34:44');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(12, 9, 2, '组织配置', NULL, 1, 'organization', 'setting/basics/organization/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(12, 9, 2, '组织信息配置', NULL, 1, 'organization', 'setting/basics/organization/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(13, 6, 2, '租户管理', NULL, 1, 'tenant', 'tenant/index', NULL, 0, 0, 1, NULL, 'gerenjixiao', 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(13, 6, 2, '租户管理', NULL, 1, 'tenant', 'system/tenant/index', NULL, 0, 0, 1, NULL, 'gerenjixiao', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-28 19:06:26');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(14, 9, 2, '人员配置', NULL, 2, 'personnel', 'setting/basics/personnel/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(14, 9, 2, '人员信息配置', NULL, 2, 'personnel', 'setting/basics/personnel/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(15, 9, 2, '岗位配置', NULL, 3, 'post', 'setting/basics/post/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(15, 9, 2, '岗位配置', NULL, 3, 'post', 'setting/basics/post/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(16, 9, 2, '职级配置', NULL, 4, 'rank', 'setting/basics/rank/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(16, 9, 2, '职级配置', NULL, 4, 'rank', 'setting/basics/rank/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(17, 9, 2, '行业配置', NULL, 5, 'industry', 'setting/basics/industry/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(17, 9, 2, '行业配置', NULL, 5, 'industry', 'setting/basics/industry/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(18, 9, 2, '指标配置', NULL, 6, 'indicator', 'setting/basics/indicator/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(18, 9, 2, '指标配置', NULL, 6, 'indicator', 'setting/basics/indicator/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(19, 9, 2, '指标类型配置', NULL, 6, 'indicatorType', 'setting/basics/indicatorType/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(19, 9, 2, '指标类型配置', NULL, 6, 'indicatorType', 'setting/basics/indicatorType/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(20, 9, 2, '枚举值配置', NULL, 8, 'dict', 'setting/basics/dict/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(20, 9, 2, '枚举值配置', NULL, 8, 'dict', 'setting/basics/dict/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(21, 13, 2, '新建租户', NULL, 1, 'tenantAdd', 'tenant/components/tenantAdd', NULL, 0, 1, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(21, 13, 2, '租户管理新增', NULL, 1, 'tenantAdd', 'system/tenant/components/tenantAdd', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-31 14:33:25');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(22, 6, 2, '新建租户', NULL, 3, 'tenantAdd', 'tenant/components/tenantAdd', NULL, 0, 1, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(22, 6, 2, '新建租户', NULL, 3, 'tenantAdd', 'tenant/components/tenantAdd', NULL, 0, 1, 1, NULL, 'transparent', 1, 1, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(23, 6, 1, '经营云配置', NULL, 4, 'manage', NULL, NULL, 0, 0, 1, NULL, 'jingyingyunpeizhi', 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(23, 6, 1, '经营云配置', NULL, 4, 'manage', NULL, NULL, 0, 0, 1, NULL, 'jingyingyunpeizhi', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-27 19:02:13');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(24, 23, 2, '分解维度配置', NULL, 1, 'dimensionality', 'setting/manage/dimensionality/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(24, 23, 2, '分解维度配置', NULL, 1, 'dimensionality', 'setting/manage/dimensionality/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(25, 23, 2, '区域配置', NULL, 2, 'regional', 'setting/manage/regional/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(25, 23, 2, '区域配置', NULL, 2, 'regional', 'setting/manage/regional/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(26, 23, 2, '产品配置', NULL, 3, 'productconfiguration', 'setting/manage/productconfiguration/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(26, 23, 2, '产品配置', NULL, 3, 'productconfiguration', 'setting/manage/productconfiguration/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(27, 23, 2, '产品单位配置', NULL, 4, 'productUnit', 'setting/manage/productUnit/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(27, 23, 2, '产品单位配置', NULL, 4, 'productUnit', 'setting/manage/productUnit/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(28, 23, 2, '绩效等级配置', NULL, 5, 'performanceRating', 'setting/manage/performanceRating/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(28, 23, 2, '绩效等级配置', NULL, 5, 'performanceRank', 'setting/manage/performanceRank/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-21 16:16:36');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(29, 23, 2, '绩效比率配置', NULL, 6, 'performanceRatio', 'setting/manage/performanceRatio/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(29, 23, 2, '绩效比率配置', NULL, 6, 'performanceRatio', 'setting/manage/performanceRatio/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
 INSERT INTO menu
 (menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
-VALUES(30, 23, 2, '工资条配置', NULL, 7, 'articleWages', 'setting/manage/articleWages/index', NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
+VALUES(30, 23, 2, '工资条配置', NULL, 7, 'articleWages', 'setting/manage/articleWages/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(31, 12, 2, '组织信息配置编辑', NULL, 1, 'organizationEdit', 'setting/basics/organization/components/edit', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(32, 7, 2, '查看组织信息配置', NULL, 2, 'organizationDetail', 'setting/basics/organization/components/detail', NULL, 0, 0, 1, NULL, 'transparent', 1, 1, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(33, 12, 2, '组织信息配置详情', NULL, 2, 'organizationDetail', 'setting/basics/organization/components/detail', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(34, 15, 2, '岗位配置新增', NULL, 1, 'postAdd', 'setting/basics/post/components/add', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(35, 15, 2, '岗位配置编辑', NULL, 2, 'postEdit', 'setting/basics/post/components/edit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(36, 15, 2, '岗位配置详情', NULL, 3, 'postDetail', 'setting/basics/post/components/detail', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:23:39', 1, '2022-10-14 11:23:39');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(37, 16, 2, '职级配置新增', NULL, 1, 'rankAdd', 'setting/basics/rank/components/add', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 11:47:50', 1, '2022-10-14 13:43:21');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(38, 16, 2, '职级配置编辑', NULL, 2, 'rankEdit', 'setting/basics/rank/components/edit', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 01:44:56', 1, '2022-10-14 13:45:45');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(39, 16, 2, '职级配置详情', NULL, 3, 'rankDetail', 'setting/basics/rank/components/detail', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 13:45:41', 1, '2022-10-14 13:45:41');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(40, 14, 2, '人员信息配置新增', NULL, 1, 'personnelAdd', 'setting/basics/personnel/components/add', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 14:06:05', 1, '2022-10-14 14:06:05');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(41, 18, 2, '指标配置新增', NULL, 1, 'indicatorAdd', 'setting/basics/indicator/components/add', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 17:17:11', 1, '2022-10-14 17:17:11');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(42, 18, 2, '指标配置编辑', NULL, 2, 'indicatorEdit', 'setting/basics/indicator/components/edit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 05:17:54', 1, '2022-10-14 17:21:32');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(43, 18, 2, '指标配置详情', NULL, 3, 'indicatorDetail', 'setting/basics/indicator/components/detail', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 05:19:11', 1, '2022-10-14 17:21:40');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(44, 14, 2, '人员信息配置修改', NULL, 2, 'personnelEdit', 'setting/basics/personnel/components/edit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 19:03:28', 1, '2022-10-14 19:03:28');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(45, 10, 2, '账号角色新增', NULL, 1, 'accountAdd', 'setting/auth/account/components/add', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 07:03:46', 1, '2022-10-31 14:34:18');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(46, 10, 2, '账号角色编辑', NULL, 2, 'accountEdit', 'setting/auth/account/components/edit', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 07:04:47', 1, '2022-10-31 14:34:23');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(47, 10, 2, '账号角色详情', NULL, 3, 'accountDetail', 'setting/auth/account/components/detail', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 07:06:08', 1, '2022-10-31 14:34:33');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(48, 11, 2, '角色权限新增', NULL, 1, 'roleAdd', 'setting/auth/role/components/add', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 07:06:56', 1, '2022-10-31 14:34:50');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(49, 11, 2, '角色权限编辑', NULL, 2, 'roleEdit', 'setting/auth/role/components/edit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 07:09:26', 1, '2022-10-14 19:09:54');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(50, 11, 2, '角色权限详情', NULL, 3, 'roleDetail', 'setting/auth/role/components/detail', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 19:11:15', 1, '2022-10-14 19:11:15');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(51, 14, 2, '人员信息配置详情', NULL, 3, 'personnelDetail', 'setting/basics/personnel/components/detail', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-14 19:17:43', 1, '2022-10-14 19:17:43');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(52, 13, 2, '租户管理详情', NULL, 2, 'tenantDetail', 'system/tenant/components/tenantDetail', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-17 06:07:13', 1, '2022-10-31 14:33:43');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(53, 13, 2, '租户管理编辑', NULL, 3, 'tenantEdit', 'system/tenant/components/tenantEdit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-17 06:13:47', 1, '2022-10-31 14:33:57');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(54, 20, 2, '枚举值字典', NULL, 1, 'dictValue', 'setting/basics/dictValue/index', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-18 07:15:09', 1, '2022-10-18 19:16:27');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(55, 87, 1, '公司目标生成', 1, 1, 'create', NULL, NULL, 0, 0, 1, NULL, 'mubiaozhiding', 1, 0, 1, '2022-10-18 07:52:38', 1, '2022-10-31 19:40:50');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(56, 5, 1, '过程管理', 1, 3, 'process', NULL, NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-18 07:54:15', 1, '2022-10-31 15:37:45');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(57, 5, 1, '绩效考核', 1, 4, 'assess', NULL, NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-19 10:04:26', 1, '2022-10-31 15:37:51');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(58, 5, 1, '结果应用', 1, 5, 'result', NULL, NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-19 10:05:18', 1, '2022-10-31 15:38:01');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(59, 0, 1, '销售云', 2, 3, 'sales', NULL, NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-19 10:06:36', 1, '2022-10-27 19:03:01');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(60, 59, 1, '测试菜单1', 2, 1, 'aaa', NULL, NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-19 10:07:48', 1, '2022-10-19 10:07:48');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(61, 26, 2, '产品新增', NULL, 1, 'ProductAdd', 'setting/manage/productconfiguration/components/add', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-20 19:21:23', 1, '2022-10-20 19:21:23');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(62, 26, 2, '产品编辑', NULL, 2, 'ProductEdit', 'setting/manage/productconfiguration/components/edit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-20 19:23:38', 1, '2022-10-20 19:23:38');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(63, 26, 2, '产品详情', NULL, 3, 'ProductDetail', 'setting/manage/productconfiguration/components/detail', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-20 19:24:53', 1, '2022-10-20 19:24:53');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(64, 28, 2, '绩效等级配置编辑', NULL, 1, 'performanceRankEdit', 'setting/manage/performanceRank/components/edit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-21 16:18:50', 1, '2022-10-21 16:18:50');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(65, 28, 2, '绩效等级详情', NULL, 2, 'performanceRankDetail', 'setting/manage/performanceRank/components/detail', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-21 16:20:47', 1, '2022-10-21 16:20:47');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(66, 29, 2, '绩效比例配置详情', NULL, 3, 'performanceRatioDetail', 'setting/manage/performanceRatio/components/detail', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-24 10:18:43', 1, '2022-10-24 10:21:07');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(67, 29, 2, '绩效比例配置新增', NULL, 1, 'performanceRatioAdd', 'setting/manage/performanceRatio/components/add', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-24 10:19:58', 1, '2022-10-24 10:19:58');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(68, 29, 2, '绩效比例配置编辑', NULL, 2, 'performanceRatioEdit', 'setting/manage/performanceRatio/components/edit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-24 10:20:55', 1, '2022-10-24 10:20:55');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(69, 55, 2, '销售订单目标制定', NULL, 1, 'salesOrder', 'manage/formulate/create/salesOrder/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-26 02:03:34', 1, '2022-10-31 19:43:51');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(70, 55, 2, '销售收入目标制定', NULL, 2, 'revenue', 'manage/formulate/create/revenue/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-26 02:46:11', 1, '2022-10-31 19:43:59');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(71, 55, 2, '销售回款目标制定', NULL, 3, 'receivable', 'manage/formulate/create/receivable/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-26 02:47:55', 1, '2022-10-31 19:44:07');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(72, 55, 2, '关键经营目标制定', NULL, 4, 'keyOperation', 'manage/formulate/create/keyOperation/index', NULL, 0, 0, 1, NULL, 'transparent', 1, 0, 1, '2022-10-26 02:58:07', 1, '2022-10-31 19:44:14');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(73, 75, 2, '销售订单目标分解', NULL, 5, 'orderDecomposition', 'manage/formulate/decomposition/orderDecomposition/index', NULL, 0, 1, 1, NULL, 'transparent', 1, 0, 1, '2022-10-28 10:47:01', 1, '2022-10-31 19:44:56');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(74, 73, 2, '销售订单目标分解新增', NULL, 1, 'orderDecompositionAdd', 'manage/formulate/decomposition/orderDecomposition/components/add', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-28 01:51:15', 1, '2022-11-01 09:19:01');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(75, 87, 1, '目标分解', NULL, 2, 'decomposition', NULL, NULL, 0, 0, 1, NULL, 'mubiaofenjie', 1, 0, 1, '2022-10-28 07:27:02', 1, '2022-10-31 19:41:04');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(76, 73, 2, '销售订单目标分解详情', NULL, 6, 'orderDecompositionDetail', 'manage/formulate/decomposition/orderDecomposition/components/detail', NULL, 0, 0, 0, NULL, 'transparent', 1, 0, 1, '2022-10-29 04:39:55', 1, '2022-11-01 09:19:07');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(77, 73, 2, '销售订单目标分解编辑', NULL, 6, 'orderDecompositionEdit', 'manage/formulate/decomposition/orderDecomposition/components/edit', NULL, 0, 1, 0, NULL, 'transparent', 1, 0, 1, '2022-10-29 04:58:23', 1, '2022-11-01 09:19:13');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(83, 56, 2, '滚动预测管理', NULL, 1, 'forecast', 'manage/process/forecast/index', NULL, 0, 0, 1, NULL, 'yuce', 1, 0, 1, '2022-10-31 03:40:05', 1, '2022-10-31 16:29:30');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(84, 56, 2, '经营分析报表', NULL, 2, 'analytical', 'manage/process/forecast/index', NULL, 0, 0, 1, NULL, 'jingyingfenxibaobiao', 1, 0, 1, '2022-10-31 03:41:04', 1, '2022-10-31 16:29:52');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(85, 56, 2, '关键经营结果', NULL, 3, 'result', 'manage/process/result/index', NULL, 0, 0, 1, NULL, 'guanjianjingying', 1, 0, 1, '2022-10-31 03:42:07', 1, '2022-10-31 16:30:24');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(86, 83, 2, '滚动预测管理编辑', NULL, 1, 'forecastEdit', 'manage/process/forecast/components/edit', NULL, 0, 1, 0, NULL, NULL, 1, 0, 1, '2022-10-31 03:48:29', 1, '2022-10-31 16:04:54');
+INSERT INTO menu
+(menu_id, parent_menu_id, menu_type, menu_name, product_package_id, sort, `path`, component, query, external_link_flag, cache_flag, visible_flag, permission_code, icon, status, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(87, 5, 1, '目标制定', NULL, 1, 'formulate', NULL, NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-31 19:33:14', 1, '2022-10-31 19:33:14');
+
 
 
 INSERT INTO config
