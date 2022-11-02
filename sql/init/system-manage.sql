@@ -809,7 +809,7 @@ INSERT INTO menu
 VALUES(87, 5, 1, '目标制定', NULL, 1, 'formulate', NULL, NULL, 0, 0, 1, NULL, NULL, 1, 0, 1, '2022-10-31 19:33:14', 1, '2022-10-31 19:33:14');
 
 
-INSERT INTO `system-manage`.nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
+INSERT INTO nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
 VALUES ('汉族', 1, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('蒙古族', 2, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('回族', 3, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -820,7 +820,7 @@ VALUES ('汉族', 1, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('壮族', 8, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('布依族', 9, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('朝鲜族', 10, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
+INSERT INTO nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
 VALUES ('满族', 11, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('侗族', 12, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('瑶族', 13, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -831,7 +831,7 @@ VALUES ('满族', 11, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('傣族', 18, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('黎族', 19, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('傈僳族', 20, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
+INSERT INTO nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
 VALUES ('佤族', 21, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('畲族', 22, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('高山族', 23, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -842,7 +842,7 @@ VALUES ('佤族', 21, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('景颇族', 28, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('柯尔克孜族', 29, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('土族', 30, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
+INSERT INTO nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
 VALUES ('达翰尔族', 31, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('么佬族', 32, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('羌族', 33, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -853,7 +853,7 @@ VALUES ('达翰尔族', 31, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51
        ('锡伯族', 38, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('阿昌族', 39, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('普米族', 40, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
+INSERT INTO nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
 VALUES ('塔吉克族', 41, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('怒族', 42, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('乌孜别克族', 43, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -864,7 +864,7 @@ VALUES ('塔吉克族', 41, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51
        ('裕固族', 48, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('京族', 49, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('塔塔尔族', 50, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
+INSERT INTO nation (nation_name, sort, delete_flag, create_by, create_time, update_by, update_time)
 VALUES ('独龙族', 51, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('鄂伦春族', 52, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        ('赫哲族', 53, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -875,7 +875,7 @@ VALUES ('独龙族', 51, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
 INSERT INTO config
 (config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time)
 VALUES(1, 0, '', 'basic', NULL, '基础配置', 1, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO `system-manage`.config
+INSERT INTO config
 (config_id, parent_config_id, path_code, config_code, config_value, remark, status, delete_flag, create_by, create_time, update_by, update_time)
 VALUES(2, 1, 'basic', 'industry_enable', '1', '行业启用：1系统；2自定义', 1, 0, 1, sysdate(), 1, sysdate());
 
@@ -885,7 +885,7 @@ INSERT INTO `indicator` VALUES (1, 0, '', NULL, 'CW001', '订单（不含税）'
 INSERT INTO `indicator` VALUES (2, 0, '', NULL, 'CW002', '销售收入', 0, 1, 1, 1, 1, 1, '从销售收入目标制定模块引入数据，不可改', '', 1, '', 0, 0, '2022-10-25 11:10:32', 0, '2022-10-25 11:10:32');
 INSERT INTO `indicator` VALUES (22, 0, '', NULL, 'CW022', '回款金额（含税）', 0, 1, 1, 1, 1, 1, '从销售回款目标制定模块引入数据，不可改', '', 1, '', 0, 0, '2022-10-25 11:11:32', 0, '2022-10-25 11:11:32');
 
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (0, '亚洲', 1, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (0, '欧洲', 2, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -897,7 +897,7 @@ VALUES (0, '亚洲', 1, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '阿联酋', 8, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '阿曼', 9, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '阿塞拜疆', 10, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (1, '巴基斯坦', 11, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '巴勒斯坦', 12, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -909,7 +909,7 @@ VALUES (1, '巴基斯坦', 11, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37
        (1, '格鲁吉亚', 18, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '哈萨克斯坦', 19, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '韩国', 20, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (1, '吉尔吉斯斯坦', 21, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '柬埔寨', 22, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -921,7 +921,7 @@ VALUES (1, '吉尔吉斯斯坦', 21, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19
        (1, '马来西亚', 28, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '蒙古', 29, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '孟加拉国', 30, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (1, '缅甸', 31, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '尼泊尔', 32, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -933,7 +933,7 @@ VALUES (1, '缅甸', 31, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '土耳其', 38, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '土库曼斯坦', 39, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '文莱', 40, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (1, '乌兹别克斯坦', 41, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '新加坡', 42, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -945,7 +945,7 @@ VALUES (1, '乌兹别克斯坦', 41, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19
        (1, '以色列', 48, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '印度', 49, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '印度尼西亚', 50, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (1, '约旦', 51, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (1, '越南', 52, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -957,7 +957,7 @@ VALUES (1, '约旦', 51, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '冰岛', 58, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '丹麦 ', 59, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '爱沙尼亚', 60, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (2, '拉脱维亚', 61, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '立陶宛', 62, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -969,7 +969,7 @@ VALUES (2, '拉脱维亚', 61, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37
        (2, '捷克', 68, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '斯洛伐克', 69, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '匈牙利', 70, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (2, '德国', 71, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '奥地利', 72, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -981,7 +981,7 @@ VALUES (2, '德国', 71, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '比利时', 78, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '卢森堡', 79, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '法国', 80, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (2, '摩纳哥', 81, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '罗马尼亚', 82, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -993,7 +993,7 @@ VALUES (2, '摩纳哥', 81, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51
        (2, '黑山', 88, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '波斯尼亚', 89, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '黑塞哥维那', 90, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (2, '阿尔巴尼亚', 91, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '希腊', 92, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -1005,7 +1005,7 @@ VALUES (2, '阿尔巴尼亚', 91, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14
        (2, '葡萄牙', 98, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '安道尔', 99, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (2, '直布罗陀', 100, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (3, '埃及', 101, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '利比亚', 102, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -1017,7 +1017,7 @@ VALUES (3, '埃及', 101, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51')
        (3, '马里', 108, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '毛里塔尼亚', 109, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '尼日利亚', 110, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (3, '贝宁', 111, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '多哥', 112, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -1029,7 +1029,7 @@ VALUES (3, '贝宁', 111, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51')
        (3, '几内亚比绍', 118, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '塞内加尔', 119, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '冈比亚', 120, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (3, '佛得角', 121, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '乍得', 122, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -1041,7 +1041,7 @@ VALUES (3, '佛得角', 121, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:5
        (3, '赤道几内亚', 128, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '圣多美和普林西比', 129, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '吉布提', 130, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (3, '索马里', 131, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '厄立特里亚', 132, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -1053,7 +1053,7 @@ VALUES (3, '索马里', 131, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:5
        (3, '乌干达', 138, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '卢旺达', 139, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '布隆迪', 140, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (3, '塞舌尔', 141, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '安哥拉', 142, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -1065,7 +1065,7 @@ VALUES (3, '塞舌尔', 141, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:5
        (3, '津巴布韦', 148, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '南非', 149, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '斯威士兰', 150, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (3, '莱索托', 151, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
        (3, '马达加斯加', 152, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:51'),
@@ -1077,7 +1077,7 @@ VALUES (3, '莱索托', 151, 0, 0, '2022-10-19 14:37:51', 0, '2022-10-19 14:37:5
        (4, '密克罗尼西亚联邦', 158, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:47:51'),
        (4, '马绍尔群岛 ', 159, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:47:51'),
        (4, '瑙鲁', 160, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:47:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (4, '基里巴斯', 161, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:47:51'),
        (4, '巴布亚新几内亚', 162, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:47:51'),
@@ -1089,7 +1089,7 @@ VALUES (4, '基里巴斯', 161, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:4
        (4, '汤加', 168, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:47:51'),
        (4, '纽埃', 169, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:47:51'),
        (4, '库克群岛', 170, 0, 0, '2022-10-19 14:47:51', 0, '2022-10-19 14:47:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (5, '加拿大', 171, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (5, '美国', 172, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
@@ -1101,7 +1101,7 @@ VALUES (5, '加拿大', 171, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:5
        (5, '尼加拉瓜', 178, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (5, '哥斯达黎加', 179, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (5, '巴拿马', 180, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (5, '巴哈马', 181, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (5, '古巴', 182, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
@@ -1113,7 +1113,7 @@ VALUES (5, '巴哈马', 181, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:5
        (5, '多米尼克', 188, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (5, '圣卢西亚', 189, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (5, '巴巴多斯', 190, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (5, '圣文森特和格林纳丁斯', 191, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (5, '格林纳达', 192, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
@@ -1125,7 +1125,7 @@ VALUES (5, '圣文森特和格林纳丁斯', 191, 0, 0, '2022-10-19 15:57:51', 0
        (6, '苏里南', 198, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (6, '厄瓜多尔 ', 199, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (6, '秘鲁', 200, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51');
-INSERT INTO `system-manage`.country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
+INSERT INTO country (parent_country_id, country_name, sort, delete_flag, create_by, create_time,
                                      update_by, update_time)
 VALUES (6, '玻利维亚', 201, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (6, '巴西', 202, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
@@ -1134,7 +1134,7 @@ VALUES (6, '玻利维亚', 201, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:5
        (6, '乌拉圭', 205, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (6, '巴拉圭', 206, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51');
 
-INSERT INTO `system-manage`.dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort,
+INSERT INTO system-manage.dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort,
                                              remark, status, delete_flag, create_by, create_time, update_by,
                                              update_time)
 VALUES (2, '通用件', '1', 0, 1, '', 0, 0, 1, '2022-10-08 10:02:14', 1, '2022-10-19 16:22:16'),
@@ -1144,7 +1144,7 @@ VALUES (2, '通用件', '1', 0, 1, '', 0, 0, 1, '2022-10-08 10:02:14', 1, '2022-
        (2, '外协件', '5', 0, 5, '', 0, 0, 1, '2022-10-08 10:02:14', 1, '2022-10-20 19:32:09'),
        (2, '原材料', '6', 0, 6, '', 0, 0, 1, '2022-10-08 10:02:14', 1, '2022-10-20 19:32:09');
 
-INSERT INTO `system-manage`.dictionary_type (dictionary_type,dictionary_name,menu_zeroth_name,menu_first_name,menu_second_name,remark,status,delete_flag,create_by,create_time,update_by,update_time) VALUES
+INSERT INTO system-manage.dictionary_type (dictionary_type,dictionary_name,menu_zeroth_name,menu_first_name,menu_second_name,remark,status,delete_flag,create_by,create_time,update_by,update_time) VALUES
     ('PRODUCT_CATEGORY','产品类别','设置管理','经营云配置','产品配置','',0,0,0,'2022-10-07 17:07:59',1,'2022-10-21 13:49:01');
 
 
