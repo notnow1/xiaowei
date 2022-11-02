@@ -6,13 +6,11 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 
 /**
@@ -123,6 +121,18 @@ public class TargetSettingDTO {
      * 销售收入List
      */
     private List<TargetSettingIncomeVO> targetSettingIncomeVOS;
+    /**
+     * 目标制定销售回款表
+     */
+    private TargetSettingRecoveryDTO targetSettingRecoveryDTO;
+    /**
+     * 目标制定销售回款集合表
+     */
+    private List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS;
+    /**
+     * 目标制定销售回款集合表
+     */
+    private List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS;
 
 }
 

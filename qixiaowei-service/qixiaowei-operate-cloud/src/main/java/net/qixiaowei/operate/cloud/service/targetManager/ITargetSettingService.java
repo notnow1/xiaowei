@@ -158,4 +158,20 @@ public interface ITargetSettingService {
      * @return
      */
     TargetSettingDTO selectIncomeTargetSettingList(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 查询销售回款目标制定列表
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    TargetSettingDTO selectRecoveryTargetSettingList(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 保存销售回款目标制定列表
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    TargetSettingDTO saveRecoveryTargetSetting(TargetSettingDTO targetSettingDTO);
 }

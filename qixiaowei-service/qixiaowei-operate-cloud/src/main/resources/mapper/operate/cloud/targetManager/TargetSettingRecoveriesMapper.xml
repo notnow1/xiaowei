@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingRecoveriesMapper">
+    <!--    查询目标制定回款集合表-->
+    <select id="selectTargetSettingRecoveriesByTargetSettingRecoveriesId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveriesDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, type, actual_last_year, challenge_value, target_value,
+        guaranteed_value, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting_recoveries
+        WHERE target_setting_recoveries_id=#{targetSettingRecoveriesId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标制定回款集合表-->
+    <select id="selectTargetSettingRecoveriesByTargetSettingRecoveriesIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveriesDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, type, actual_last_year, challenge_value, target_value,
+        guaranteed_value, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting_recoveries
+        WHERE target_setting_recoveries_id in
+        <foreach item="item"
+                 collection="targetSettingRecoveriesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标制定回款集合表列表-->
+    <select id="selectTargetSettingRecoveriesList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveriesDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, type, actual_last_year, challenge_value, target_value,
+        guaranteed_value, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting_recoveries
+        WHERE delete_flag=0
+        <if test="targetSettingRecoveries.targetSettingRecoveriesId != null">
+            and target_setting_recoveries_id=#{targetSettingRecoveries.targetSettingRecoveriesId}
+        </if>
+        <if test="targetSettingRecoveries.targetSettingId != null">
+            and target_setting_id=#{targetSettingRecoveries.targetSettingId}
+        </if>
+        <if test="targetSettingRecoveries.type != null">
+            and type=#{targetSettingRecoveries.type}
+        </if>
+        <if test="targetSettingRecoveries.actualLastYear != null">
+            and actual_last_year=#{targetSettingRecoveries.actualLastYear}
+        </if>
+        <if test="targetSettingRecoveries.challengeValue != null">
+            and challenge_value=#{targetSettingRecoveries.challengeValue}
+        </if>
+        <if test="targetSettingRecoveries.targetValue != null">
+            and target_value=#{targetSettingRecoveries.targetValue}
+        </if>
+        <if test="targetSettingRecoveries.guaranteedValue != null">
+            and guaranteed_value=#{targetSettingRecoveries.guaranteedValue}
+        </if>
+        <if test="targetSettingRecoveries.deleteFlag != null">
+            and delete_flag=#{targetSettingRecoveries.deleteFlag}
+        </if>
+        <if test="targetSettingRecoveries.createBy != null">
+            and create_by=#{targetSettingRecoveries.createBy}
+        </if>
+        <if test="targetSettingRecoveries.createTime != null">
+            and create_time=#{targetSettingRecoveries.createTime}
+        </if>
+        <if test="targetSettingRecoveries.updateBy != null">
+            and update_by=#{targetSettingRecoveries.updateBy}
+        </if>
+        <if test="targetSettingRecoveries.updateTime != null">
+            and update_time=#{targetSettingRecoveries.updateTime}
+        </if>
+    </select>
+    <select id="selectTargetSettingRecoveriesByTargetSettingId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveriesDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, type, actual_last_year, challenge_value, target_value,
+        guaranteed_value, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting_recoveries
+        WHERE target_setting_id=#{targetSettingId}
+        and delete_flag=0
+    </select>
+    <!--新增目标制定回款集合表-->
+    <insert id="insertTargetSettingRecoveries" useGeneratedKeys="true" keyProperty="targetSettingRecoveriesId">
+        INSERT INTO target_setting_recoveries
+        (target_setting_id,type,actual_last_year,challenge_value,target_value,guaranteed_value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetSettingRecoveries.targetSettingId},#{targetSettingRecoveries.type},#{targetSettingRecoveries.actualLastYear},#{targetSettingRecoveries.challengeValue},#{targetSettingRecoveries.targetValue},#{targetSettingRecoveries.guaranteedValue},#{targetSettingRecoveries.deleteFlag},#{targetSettingRecoveries.createBy},#{targetSettingRecoveries.createTime},#{targetSettingRecoveries.updateBy},#{targetSettingRecoveries.updateTime})
+    </insert>
+    <!--修改目标制定回款集合表-->
+    <update id="updateTargetSettingRecoveries">
+        UPDATE target_setting_recoveries
+        SET
+        <if test="targetSettingRecoveries.targetSettingId != null">
+            target_setting_id=#{targetSettingRecoveries.targetSettingId},
+        </if>
+        <if test="targetSettingRecoveries.type != null">
+            type=#{targetSettingRecoveries.type},
+        </if>
+        <if test="targetSettingRecoveries.actualLastYear != null">
+            actual_last_year=#{targetSettingRecoveries.actualLastYear},
+        </if>
+        <if test="targetSettingRecoveries.challengeValue != null">
+            challenge_value=#{targetSettingRecoveries.challengeValue},
+        </if>
+        <if test="targetSettingRecoveries.targetValue != null">
+            target_value=#{targetSettingRecoveries.targetValue},
+        </if>
+        <if test="targetSettingRecoveries.guaranteedValue != null">
+            guaranteed_value=#{targetSettingRecoveries.guaranteedValue},
+        </if>
+        <if test="targetSettingRecoveries.deleteFlag != null">
+            delete_flag=#{targetSettingRecoveries.deleteFlag},
+        </if>
+        <if test="targetSettingRecoveries.createBy != null">
+            create_by=#{targetSettingRecoveries.createBy},
+        </if>
+        <if test="targetSettingRecoveries.createTime != null">
+            create_time=#{targetSettingRecoveries.createTime},
+        </if>
+        <if test="targetSettingRecoveries.updateBy != null">
+            update_by=#{targetSettingRecoveries.updateBy},
+        </if>
+        <if test="targetSettingRecoveries.updateTime != null">
+            update_time=#{targetSettingRecoveries.updateTime}
+        </if>
+        WHERE
+        target_setting_recoveries_id=#{targetSettingRecoveries.targetSettingRecoveriesId}
+    </update>
+    <!--逻辑删除目标制定回款集合表-->
+    <update id="logicDeleteTargetSettingRecoveriesByTargetSettingRecoveriesId">
+        UPDATE target_setting_recoveries
+        SET delete_flag= 1,
+        update_by=#{targetSettingRecoveries.updateBy},
+        update_time=#{targetSettingRecoveries.updateTime}
+        WHERE
+        target_setting_recoveries_id=#{targetSettingRecoveries.targetSettingRecoveriesId}
+    </update>
+    <!--逻辑批量删除目标制定回款集合表-->
+    <update id="logicDeleteTargetSettingRecoveriesByTargetSettingRecoveriesIds">
+        UPDATE target_setting_recoveries
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        target_setting_recoveries_id IN
+        <foreach item="item"
+                 collection="targetSettingRecoveriesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增目标制定回款集合表-->
+    <insert id="batchTargetSettingRecoveries">
+        INSERT INTO target_setting_recoveries
+        (target_setting_id,type,actual_last_year,challenge_value,target_value,guaranteed_value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetSettingRecoveriess"
+                 separator=",">
+            (#{item.targetSettingId},#{item.type},#{item.actualLastYear},#{item.challengeValue},#{item.targetValue},#{item.guaranteedValue},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标制定回款集合表-->
+    <delete id="deleteTargetSettingRecoveriesByTargetSettingRecoveriesId">
+        DELETE FROM target_setting_recoveries
+        WHERE target_setting_recoveries_id=#{targetSettingRecoveries}
+
+    </delete>
+    <!--物理批量删除目标制定回款集合表-->
+    <delete id="deleteTargetSettingRecoveriesByTargetSettingRecoveriesIds">
+        DELETE FROM target_setting_recoveries
+        WHERE target_setting_recoveries_id IN
+        <foreach item="item"
+                 collection="targetSettingRecoveriesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改目标制定回款集合表-->
+    <update id="updateTargetSettingRecoveriess">
+        update target_setting_recoveries
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="target_setting_id=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.targetSettingId != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.targetSettingId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="type=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.type != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.type}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="actual_last_year=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.actualLastYear != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.actualLastYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="challenge_value=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.challengeValue != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.challengeValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="target_value=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.targetValue != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.targetValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="guaranteed_value=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.guaranteedValue != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.guaranteedValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="targetSettingRecoveriesList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="targetSettingRecoveriesList" separator="or" item="item" index="index">
+            target_setting_recoveries_id=#{item.targetSettingRecoveriesId}
+        </foreach>
+    </update>
+</mapper>
+
+

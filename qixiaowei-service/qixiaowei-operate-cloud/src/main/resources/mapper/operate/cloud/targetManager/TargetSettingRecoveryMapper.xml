@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingRecoveryMapper">
+    <!--    查询目标制定回款表-->
+    <select id="selectTargetSettingRecoveryByTargetSettingRecoveriesId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveryDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, balance_receivables, baseline_value, improve_days, delete_flag,
+        create_by, create_time, update_by, update_time
+        FROM target_setting_recovery
+        WHERE target_setting_recoveries_id=#{targetSettingRecoveriesId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标制定回款表-->
+    <select id="selectTargetSettingRecoveryByTargetSettingRecoveriesIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveryDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, balance_receivables, baseline_value, improve_days, delete_flag,
+        create_by, create_time, update_by, update_time
+        FROM target_setting_recovery
+        WHERE target_setting_recoveries_id in
+        <foreach item="item"
+                 collection="targetSettingRecoveriesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标制定回款表列表-->
+    <select id="selectTargetSettingRecoveryList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveryDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, balance_receivables, baseline_value, improve_days, delete_flag,
+        create_by, create_time, update_by, update_time
+        FROM target_setting_recovery
+        WHERE delete_flag=0
+        <if test="targetSettingRecovery.targetSettingRecoveriesId != null">
+            and target_setting_recoveries_id=#{targetSettingRecovery.targetSettingRecoveriesId}
+        </if>
+        <if test="targetSettingRecovery.targetSettingId != null">
+            and target_setting_id=#{targetSettingRecovery.targetSettingId}
+        </if>
+        <if test="targetSettingRecovery.balanceReceivables != null">
+            and balance_receivables=#{targetSettingRecovery.balanceReceivables}
+        </if>
+        <if test="targetSettingRecovery.baselineValue != null">
+            and baseline_value=#{targetSettingRecovery.baselineValue}
+        </if>
+        <if test="targetSettingRecovery.improveDays != null">
+            and improve_days=#{targetSettingRecovery.improveDays}
+        </if>
+        <if test="targetSettingRecovery.deleteFlag != null">
+            and delete_flag=#{targetSettingRecovery.deleteFlag}
+        </if>
+        <if test="targetSettingRecovery.createBy != null">
+            and create_by=#{targetSettingRecovery.createBy}
+        </if>
+        <if test="targetSettingRecovery.createTime != null">
+            and create_time=#{targetSettingRecovery.createTime}
+        </if>
+        <if test="targetSettingRecovery.updateBy != null">
+            and update_by=#{targetSettingRecovery.updateBy}
+        </if>
+        <if test="targetSettingRecovery.updateTime != null">
+            and update_time=#{targetSettingRecovery.updateTime}
+        </if>
+    </select>
+    <!--通过目标制定ID获取目标制定回款-->
+    <select id="selectTargetSettingRecoveryByTargetSettingId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveryDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, balance_receivables,
+        baseline_value,improve_days, delete_flag,
+        create_by, create_time, update_by, update_time
+        FROM target_setting_recovery
+        WHERE delete_flag=0
+        AND target_setting_id=#{targetSettingId}
+    </select>
+    <!--新增目标制定回款表-->
+    <insert id="insertTargetSettingRecovery" useGeneratedKeys="true" keyProperty="targetSettingRecoveriesId">
+        INSERT INTO target_setting_recovery
+        (target_setting_id,balance_receivables,baseline_value,improve_days,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetSettingRecovery.targetSettingId},#{targetSettingRecovery.balanceReceivables},#{targetSettingRecovery.baselineValue},#{targetSettingRecovery.improveDays},#{targetSettingRecovery.deleteFlag},#{targetSettingRecovery.createBy},#{targetSettingRecovery.createTime},#{targetSettingRecovery.updateBy},#{targetSettingRecovery.updateTime})
+    </insert>
+    <!--修改目标制定回款表-->
+    <update id="updateTargetSettingRecovery">
+        UPDATE target_setting_recovery
+        SET
+        <if test="targetSettingRecovery.targetSettingId != null">
+            target_setting_id=#{targetSettingRecovery.targetSettingId},
+        </if>
+        <if test="targetSettingRecovery.balanceReceivables != null">
+            balance_receivables=#{targetSettingRecovery.balanceReceivables},
+        </if>
+        <if test="targetSettingRecovery.baselineValue != null">
+            baseline_value=#{targetSettingRecovery.baselineValue},
+        </if>
+        <if test="targetSettingRecovery.improveDays != null">
+            improve_days=#{targetSettingRecovery.improveDays},
+        </if>
+        <if test="targetSettingRecovery.deleteFlag != null">
+            delete_flag=#{targetSettingRecovery.deleteFlag},
+        </if>
+        <if test="targetSettingRecovery.createBy != null">
+            create_by=#{targetSettingRecovery.createBy},
+        </if>
+        <if test="targetSettingRecovery.createTime != null">
+            create_time=#{targetSettingRecovery.createTime},
+        </if>
+        <if test="targetSettingRecovery.updateBy != null">
+            update_by=#{targetSettingRecovery.updateBy},
+        </if>
+        <if test="targetSettingRecovery.updateTime != null">
+            update_time=#{targetSettingRecovery.updateTime}
+        </if>
+        WHERE
+        target_setting_recoveries_id=#{targetSettingRecovery.targetSettingRecoveriesId}
+    </update>
+    <!--逻辑删除目标制定回款表-->
+    <update id="logicDeleteTargetSettingRecoveryByTargetSettingRecoveriesId">
+        UPDATE target_setting_recovery
+        SET delete_flag= 1,
+        update_by=#{targetSettingRecovery.updateBy},
+        update_time=#{targetSettingRecovery.updateTime}
+        WHERE
+        target_setting_recoveries_id=#{targetSettingRecovery.targetSettingRecoveriesId}
+    </update>
+    <!--逻辑批量删除目标制定回款表-->
+    <update id="logicDeleteTargetSettingRecoveryByTargetSettingRecoveriesIds">
+        UPDATE target_setting_recovery
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        target_setting_recoveries_id IN
+        <foreach item="item"
+                 collection="targetSettingRecoveriesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增目标制定回款表-->
+    <insert id="batchTargetSettingRecovery">
+        INSERT INTO target_setting_recovery
+        (target_setting_id,balance_receivables,baseline_value,improve_days,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetSettingRecoverys"
+                 separator=",">
+            (#{item.targetSettingId},#{item.balanceReceivables},#{item.baselineValue},#{item.improveDays},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标制定回款表-->
+    <delete id="deleteTargetSettingRecoveryByTargetSettingRecoveriesId">
+        DELETE FROM target_setting_recovery
+        WHERE target_setting_recoveries_id=#{targetSettingRecovery}
+
+    </delete>
+    <!--物理批量删除目标制定回款表-->
+    <delete id="deleteTargetSettingRecoveryByTargetSettingRecoveriesIds">
+        DELETE FROM target_setting_recovery
+        WHERE target_setting_recoveries_id IN
+        <foreach item="item"
+                 collection="targetSettingRecoveriesIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改目标制定回款表-->
+    <update id="updateTargetSettingRecoverys">
+        update target_setting_recovery
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="target_setting_id=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.targetSettingId != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.targetSettingId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="balance_receivables=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.balanceReceivables != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then
+                        #{item.balanceReceivables}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="baseline_value=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.baselineValue != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.baselineValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="improve_days=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.improveDays != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.improveDays}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="targetSettingRecoveryList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when target_setting_recoveries_id=#{item.targetSettingRecoveriesId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="targetSettingRecoveryList" separator="or" item="item" index="index">
+            target_setting_recoveries_id=#{item.targetSettingRecoveriesId}
+        </foreach>
+    </update>
+</mapper>
+
+

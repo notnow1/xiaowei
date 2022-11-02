@@ -99,6 +99,15 @@ public class TargetSettingController extends BaseController {
     }
 
     /**
+     * 查询销售收入目标制定列表
+     */
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @GetMapping("/list/recovery")
+    public AjaxResult listRecovery(TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.selectRecoveryTargetSettingList(targetSettingDTO));
+    }
+
+    /**
      * 查询销售订单目标制定-不带主表玩
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
@@ -132,9 +141,9 @@ public class TargetSettingController extends BaseController {
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:add")
     @Log(title = "保存销售回款目标制定", businessType = BusinessType.INSERT)
-    @PostMapping("/save/recoveries")
+        @PostMapping("/save/recovery")
     public AjaxResult saveRecoveries(@RequestBody TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.insertTargetSetting(targetSettingDTO));
+        return AjaxResult.success(targetSettingService.saveRecoveryTargetSetting(targetSettingDTO));
     }
 
 

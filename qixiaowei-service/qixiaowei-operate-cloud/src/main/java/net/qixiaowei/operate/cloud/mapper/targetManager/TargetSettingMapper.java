@@ -119,5 +119,5 @@ public interface TargetSettingMapper {
      * @param indicatorId 指标id
      * @return
      */
-    List<TargetSettingDTO> selectOrderTargetSettingByIndicator(@Param("historyNumS") List<Integer> historyNumS, @Param("indicatorId") Long indicatorId);
+    List<TargetSettingDTO> selectTargetSettingByIndicator(@Param("historyNumS") List<Integer> historyNumS, @Param("indicatorId") Long indicatorId);
 }

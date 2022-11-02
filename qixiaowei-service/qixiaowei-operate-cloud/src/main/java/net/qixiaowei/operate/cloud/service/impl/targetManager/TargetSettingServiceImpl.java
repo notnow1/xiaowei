@@ -9,15 +9,11 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
-import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingIncomeService;
-import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingOrderService;
-import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingService;
+import net.qixiaowei.operate.cloud.service.targetManager.*;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +43,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
 
     @Autowired
     private ITargetSettingIncomeService targetSettingIncomeService;
+
+    @Autowired
+    private ITargetSettingRecoveryService targetSettingRecoveryService;
+
+    @Autowired
+    private ITargetSettingRecoveriesService targetSettingRecoveriesServices;
 
     @Autowired
     private RemoteIndicatorService indicatorService;
@@ -518,9 +520,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param targetSettingOrderDTOS 目标订单列表
      */
     private static void insertOrderRow(List<Integer> historyNumS, List<TargetSettingOrderDTO> targetSettingOrderDTOS) {
+        BigDecimal zero = new BigDecimal(0);
         for (Integer history : historyNumS) {
             TargetSettingOrderDTO targetSettingOrderDTO = new TargetSettingOrderDTO();
             targetSettingOrderDTO.setHistoryYear(history);
+            targetSettingOrderDTO.setHistoryActual(zero);
             targetSettingOrderDTOS.add(targetSettingOrderDTO);
         }
     }
@@ -553,7 +557,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
             targetSetting = new TargetSettingDTO();
             targetSetting.setTargetSettingId(setting.getTargetSettingId());
-            return targetSetting;
         } else {
             updateTargetSetting(targetSettingDTO);
             Long targetSettingId = targetSetting.getTargetSettingId();
@@ -562,8 +565,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingIncomeDTO.setTargetSettingId(targetSettingId);
                 targetSettingIncomeService.updateTargetSettingIncome(targetSettingIncomeDTO);
             }
-            return targetSetting;
         }
+        return targetSetting;
     }
 
     /**
@@ -610,35 +613,43 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSetting.setTargetSettingType(2);
         targetSetting.setTargetYear(targetYear);
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingList(targetSetting);// 当年份销售收入的目标制定list
-        // 当年份销售订单的目标制定List-当年与前三年
-        List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectOrderTargetSettingByIndicator(historyNumS, indicatorOrderDTO.getIndicatorId());
-        insertNewAndSort(historyNumS, targetSettingDTOList);
+        // 当年份销售订单的目标制定-当年
+        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorOrderDTO.getIndicatorId());
+        BigDecimal zero = new BigDecimal(0);
         if (StringUtils.isEmpty(targetSettingDTOS)) {
             List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();
             for (int i = 0; i < historyNumS.size(); i++) {
                 TargetSettingIncomeVO targetSettingIncomeVO = new TargetSettingIncomeVO();
-                BigDecimal zero = new BigDecimal(0);
-                if (i == 0) {//当年  // 目标值 挑战值 保底值
+                if (i == 0) {//当年  // 目标值 挑战值 保底值  //本年增量订单-订单金额:从经营云-目标制定-公司目标生成-销售订单目标制定中获取当年目标值
+                    if (StringUtils.isNotNull(targetSettingByIndicator)) {
+                        BigDecimal targetValue = targetSettingByIndicator.getTargetValue();
+                        targetSettingIncomeVO.setMoney(targetValue);
+                    } else {
+                        targetSettingIncomeVO.setMoney(zero);
+                    }
                     targetSettingDTO.setChallengeValue(zero);
                     targetSettingDTO.setTargetValue(zero);
                     targetSettingDTO.setGuaranteedValue(zero);
-                    targetSettingIncomeVO.setMoney(zero);
                     targetSettingIncomeVO.setConversion(zero);
+                    targetSettingIncomeVO.setIncome(zero);
                     targetSettingIncomeVO.setYearName("本年增量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 } else if (i == 1) {//前一年
                     targetSettingIncomeVO.setMoney(zero);
                     targetSettingIncomeVO.setConversion(zero);
+                    targetSettingIncomeVO.setIncome(zero);
                     targetSettingIncomeVO.setYearName(targetYear - i + "年存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 } else if (i == 2) {//前两年
                     targetSettingIncomeVO.setMoney(zero);
                     targetSettingIncomeVO.setConversion(zero);
+                    targetSettingIncomeVO.setIncome(zero);
                     targetSettingIncomeVO.setYearName(targetYear - i + "年存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
-                } else if (i == 4) {//前三年
+                } else if (i == 3) {//前三年
                     targetSettingIncomeVO.setMoney(zero);
                     targetSettingIncomeVO.setConversion(zero);
+                    targetSettingIncomeVO.setIncome(zero);
                     targetSettingIncomeVO.setYearName(targetYear - i + "年及以前存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 }
@@ -655,6 +666,15 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         for (int i = 0; i < historyNumS.size(); i++) {
             TargetSettingIncomeVO targetSettingIncomeVO = new TargetSettingIncomeVO();
             if (i == 0) {//当年
+                targetSettingDTO.setChallengeValue(zero);
+                targetSettingDTO.setTargetValue(zero);
+                targetSettingDTO.setGuaranteedValue(zero);
+                if (StringUtils.isNotNull(targetSettingByIndicator)) {
+                    BigDecimal targetValue = targetSettingByIndicator.getTargetValue();
+                    targetSettingIncomeVO.setMoney(targetValue);
+                } else {
+                    targetSettingIncomeVO.setMoney(zero);
+                }
                 targetSettingIncomeVO.setYearName("本年增量订单");
                 targetSettingIncomeVOS.add(targetSettingIncomeVO);
             } else if (i == 1) {//前一年
@@ -685,20 +705,246 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     }
 
     /**
-     * 新增对象和排序
+     * 查询销售回款目标制定列表
      *
-     * @param historyNumS          历史年度
-     * @param targetSettingDTOList 目标制定List
+     * @param targetSettingDTO 目标制定列表s
+     * @return
      */
-    private static void insertNewAndSort(List<Integer> historyNumS, List<TargetSettingDTO> targetSettingDTOList) {
-        for (Integer history : historyNumS) {
-            TargetSettingDTO settingDTO = new TargetSettingDTO();
-            settingDTO.setTargetYear(history);
-            targetSettingDTOList.add(settingDTO);
+    @Override
+    public TargetSettingDTO selectRecoveryTargetSettingList(TargetSettingDTO targetSettingDTO) {
+        Integer targetYear = targetSettingDTO.getTargetYear();
+        IndicatorDTO indicatorReceivableDTO = getIndicator(IndicatorCode.RECEIVABLE.getCode());
+        IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.INCOME.getCode());
+        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorReceivableDTO.getIndicatorId());
+        TargetSettingDTO targetIncomeByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorIncomeDTO.getIndicatorId());
+
+        List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = new ArrayList<>();
+        List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS = new ArrayList<>();
+        BigDecimal zero = new BigDecimal(0);
+        if (StringUtils.isNotNull(targetSettingByIndicator)) {
+            Long targetSettingId = targetSettingByIndicator.getTargetSettingId();
+            BigDecimal percentage = targetSettingByIndicator.getPercentage();
+            TargetSettingRecoveryDTO recoveryDTO = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
+            if (StringUtils.isNull(recoveryDTO)) {
+                recoveryDTO = setRecoveryZero(zero);
+            }
+            recoveryDTO.setAddRate(percentage);
+            targetSettingByIndicator.setTargetSettingRecoveryDTO(recoveryDTO);
+            // todo 查询销售回款列表--recoveries
+            List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOS = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
+            if (targetSettingRecoveriesDTOS.size() > 5) {
+                for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDTOS) {
+                    switch (targetSettingRecoveriesDTO.getType()) {
+                        case 1:
+                            targetSettingRecoveriesDTO.setPrefixType("1.应回尽回");
+                            targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                        case 2:
+                            targetSettingRecoveriesDTO.setPrefixType("2.逾期清理");
+                            targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                        case 3:
+                            targetSettingRecoveriesDTO.setPrefixType("3.提前回款");
+                            targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                        case 4:
+                            targetSettingRecoveriesDTO.setPrefixType("销售收入目标");
+
+                            targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+                        case 5:
+                            targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
+                            targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+                    }
+                }
+                TargetSettingRecoveriesDTO targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+                targetSettingRecoveriesDTO.setPrefixType("DSO");
+                BigDecimal DSOValue = new BigDecimal(recoveryDTO.getBaselineValue() + recoveryDTO.getImproveDays());
+                targetSettingRecoveriesDTO.setChallengeValue(DSOValue);
+                targetSettingRecoveriesDTO.setTargetValue(DSOValue);
+                targetSettingRecoveriesDTO.setGuaranteedValue(DSOValue);
+                targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+                targetSettingRecoveriesDTO.setPrefixType("回款总目标");
+                targetSettingRecoveriesDTO.setChallengeValue(DSOValue);
+                targetSettingRecoveriesDTO.setTargetValue(DSOValue);
+                targetSettingRecoveriesDTO.setGuaranteedValue(DSOValue);
+                targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+            } else {
+                setRecoveriesZero(targetSettingTypeDTOS, targetSettingIndicatorDTOS, zero);
+            }
+        } else {
+            targetSettingByIndicator = new TargetSettingDTO();
+            targetSettingByIndicator.setChallengeValue(zero);
+            targetSettingByIndicator.setTargetValue(zero);
+            targetSettingByIndicator.setGuaranteedValue(zero);
+            TargetSettingRecoveryDTO recoveryDTO = setRecoveryZero(zero);
+            targetSettingByIndicator.setTargetSettingRecoveryDTO(recoveryDTO);
+            setRecoveriesZero(targetSettingTypeDTOS, targetSettingIndicatorDTOS, zero);
         }
-        targetSettingDTOList.sort((TargetSettingDTO o1, TargetSettingDTO o2) -> {
-            return o2.getTargetYear() - o1.getTargetYear();
-        });
+        targetSettingByIndicator.setTargetSettingTypeDTOS(targetSettingTypeDTOS);
+        targetSettingByIndicator.setTargetSettingIndicatorDTOS(targetSettingIndicatorDTOS);
+        return targetSettingByIndicator;
+    }
+
+    /**
+     * 销售回款给null赋值0
+     *
+     * @param zero
+     * @return
+     */
+    private static TargetSettingRecoveryDTO setRecoveryZero(BigDecimal zero) {
+        TargetSettingRecoveryDTO recoveryDTO;
+        recoveryDTO = new TargetSettingRecoveryDTO();
+        recoveryDTO.setBalanceReceivables(zero);
+        recoveryDTO.setBaselineValue(0);
+        recoveryDTO.setImproveDays(0);
+        return recoveryDTO;
+    }
+
+    /**
+     * 空值赋0
+     *
+     * @param targetSettingTypeDTOS
+     * @param targetSettingIndicatorDTOS
+     */
+    private static void setRecoveriesZero(List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS, List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS, BigDecimal zero) {
+        TargetSettingRecoveriesDTO targetSettingRecoveriesDTO;
+        for (int i = 0; i < 5; i++) {
+            switch (i) {
+                case 1:
+                    targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+                    targetSettingRecoveriesDTO.setPrefixType("1.应回尽回");
+                    targetSettingRecoveriesDTO.setActualLastYear(zero);
+                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                case 2:
+                    targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+                    targetSettingRecoveriesDTO.setPrefixType("2.逾期清理");
+                    targetSettingRecoveriesDTO.setActualLastYear(zero);
+                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                case 3:
+                    targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+                    targetSettingRecoveriesDTO.setPrefixType("3.提前回款");
+                    targetSettingRecoveriesDTO.setActualLastYear(zero);
+                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                case 4:
+                    targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+                    targetSettingRecoveriesDTO.setPrefixType("销售收入目标");
+                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+                case 5:
+                    targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+                    targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
+                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+            }
+        }
+        targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+        targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
+        setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+        targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+        targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+        targetSettingRecoveriesDTO.setPrefixType("汇款总目标");
+        setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+        targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+    }
+
+    private static void setRecoveriesValue(TargetSettingRecoveriesDTO targetSettingRecoveriesDTO, BigDecimal zero) {
+        targetSettingRecoveriesDTO.setTargetValue(zero);
+        targetSettingRecoveriesDTO.setGuaranteedValue(zero);
+        targetSettingRecoveriesDTO.setChallengeValue(zero);
+    }
+
+    /**
+     * 保存销售回款目标制定列表
+     *
+     * @param targetSettingDTO 目标制定列表
+     * @return
+     */
+    @Override
+    @Transactional
+    public TargetSettingDTO saveRecoveryTargetSetting(TargetSettingDTO targetSettingDTO) {
+        IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.RECEIVABLE.getCode());
+        Integer targetYear = targetSettingDTO.getTargetYear();
+        List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS = targetSettingDTO.getTargetSettingIndicatorDTOS();
+        List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = targetSettingDTO.getTargetSettingTypeDTOS();
+        TargetSettingRecoveryDTO targetSettingRecoveryDTO = targetSettingDTO.getTargetSettingRecoveryDTO();
+        targetSettingDTO.setSort(0);
+        targetSettingDTO.setTargetSettingType(3);
+        targetSettingDTO.setIndicatorId(indicatorIncomeDTO.getIndicatorId());
+        targetSettingDTO.setPercentage(targetSettingRecoveryDTO.getAddRate());
+        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorIncomeDTO.getIndicatorId());
+        Long targetSettingId;
+        if (StringUtils.isNull(targetSettingByIndicator)) {
+            TargetSetting targetSetting = insertTargetSetting(targetSettingDTO);
+            targetSettingId = targetSetting.getTargetSettingId();
+        } else {
+            targetSettingId = targetSettingByIndicator.getTargetSettingId();
+            targetSettingDTO.setTargetSettingId(targetSettingId);
+            updateTargetSetting(targetSettingDTO);
+        }
+        TargetSettingRecoveryDTO recovery = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
+        targetSettingRecoveryDTO.setTargetSettingId(targetSettingId);
+        if (StringUtils.isNull(recovery)) {
+            TargetSettingRecoveryDTO targetSettingRecovery = targetSettingRecoveryService.insertTargetSettingRecovery(targetSettingRecoveryDTO);
+        } else {
+            Long targetSettingRecoveriesId = recovery.getTargetSettingRecoveriesId();
+            targetSettingRecoveryDTO.setTargetSettingRecoveriesId(targetSettingRecoveriesId);
+            targetSettingRecoveryService.updateTargetSettingRecovery(targetSettingRecoveryDTO);
+        }
+        List<TargetSettingRecoveriesDTO> recoveries = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
+        List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
+        if (StringUtils.isNotEmpty(recoveries) && recoveries.size() > 5) {
+            targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
+        } else {// 新增
+            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
+        }
+        targetSettingDTO.setTargetSettingId(targetSettingId);
+        return targetSettingDTO;
+    }
+
+    /**
+     * 整合两个表
+     *
+     * @param targetSettingIndicatorDTOS 指标表
+     * @param targetSettingTypeDTOS      类型表
+     * @param targetSettingId            目标制定ID
+     * @return
+     */
+    private List<TargetSettingRecoveriesDTO> integration(List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS, List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS, Long targetSettingId) {
+        List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOS = new ArrayList<>();
+        if (StringUtils.isNotEmpty(targetSettingIndicatorDTOS)) {
+            for (TargetSettingRecoveriesDTO targetSettingIndicatorDTO : targetSettingIndicatorDTOS) {
+                if (targetSettingIndicatorDTO.getPrefixType().equals("销售收入目标")) {
+                    targetSettingIndicatorDTO.setType(4);
+                    targetSettingIndicatorDTO.setTargetSettingId(targetSettingId);
+                    targetSettingRecoveriesDTOS.add(targetSettingIndicatorDTO);
+                } else if (targetSettingIndicatorDTO.getPrefixType().equals("期末应收账款余额")) {
+                    targetSettingIndicatorDTO.setType(5);
+                    targetSettingIndicatorDTO.setTargetSettingId(targetSettingId);
+                    targetSettingRecoveriesDTOS.add(targetSettingIndicatorDTO);
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(targetSettingTypeDTOS)) {
+            for (TargetSettingRecoveriesDTO targetSettingTypeDTO : targetSettingTypeDTOS) {
+                TargetSettingRecoveriesDTO recoveriesDTO = new TargetSettingRecoveriesDTO();
+                switch (targetSettingTypeDTO.getPrefixType()) {
+                    case "1.应回尽回":
+                        targetSettingTypeDTO.setType(1);
+                        targetSettingTypeDTO.setTargetSettingId(targetSettingId);
+                        targetSettingRecoveriesDTOS.add(targetSettingTypeDTO);
+                    case "2.逾期清理":
+                        targetSettingTypeDTO.setType(2);
+                        targetSettingTypeDTO.setTargetSettingId(targetSettingId);
+                        targetSettingRecoveriesDTOS.add(targetSettingTypeDTO);
+                    case "3.提前回款":
+                        targetSettingTypeDTO.setType(3);
+                        targetSettingTypeDTO.setTargetSettingId(targetSettingId);
+                        targetSettingRecoveriesDTOS.add(targetSettingTypeDTO);
+                }
+            }
+        }
+        return targetSettingRecoveriesDTOS;
     }
 
 }
