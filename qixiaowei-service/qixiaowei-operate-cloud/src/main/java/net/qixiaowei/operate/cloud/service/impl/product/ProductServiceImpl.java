@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.product;
 
+import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -41,6 +42,8 @@ public class ProductServiceImpl implements IProductService {
     private ProductSpecificationDataMapper productSpecificationDataMapper;
     @Autowired
     private ProductFileMapper productFileMapper;
+    @Autowired
+    private    FileConfig fileConfig;
 
     /**
      * 查询产品表
@@ -55,6 +58,10 @@ public class ProductServiceImpl implements IProductService {
         ProductDTO productDTO = productMapper.selectProductByProductId(productId);
         //产品文件表
         List<ProductFileDTO> productFileDTOS = productFileMapper.selectProductFileByProductId(productId);
+        //拼接文件路径
+        for (ProductFileDTO productFileDTO : productFileDTOS) {
+            productFileDTO.setProductFilePath(fileConfig.getFullDomain(productFileDTO.getProductFilePath()));
+        }
         //产品规格参数表
         List<ProductSpecificationParamDTO> productSpecificationParamDTOS = productSpecificationParamMapper.selectProductId(productId);
 
