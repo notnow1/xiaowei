@@ -150,8 +150,6 @@ public class TenantDTO {
     /**
      * 租户联系人表
      */
-    @NotEmpty(message = "租户联系人不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
-    @Valid
     private List<TenantContactsDTO> tenantContactsDTOList;
     /**
      * 租户合同信息表
