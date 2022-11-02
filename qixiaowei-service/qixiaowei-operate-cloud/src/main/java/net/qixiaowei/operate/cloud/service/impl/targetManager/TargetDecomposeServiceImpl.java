@@ -75,10 +75,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                 for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
-                    //预测值
-                    forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
-                    //实际值
-                    actualTotal = actualTotal.add(decomposeDetailCyclesDTO.getCycleActual());
+                    if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO)!=0){
+                        //预测值
+                        forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                    }
+                    if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO)!=0){
+                        //实际值
+                        actualTotal = actualTotal.add(decomposeDetailCyclesDTO.getCycleActual());
+                    }
                 }
                 BigDecimal decomposeTarget = targetDecomposeDetailsDTO.getDecomposeTarget();
                 //被除数 不能为0和空

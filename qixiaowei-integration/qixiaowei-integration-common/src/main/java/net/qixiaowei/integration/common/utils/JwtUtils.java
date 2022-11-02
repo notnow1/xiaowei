@@ -100,6 +100,26 @@ public class JwtUtils {
     }
 
     /**
+     * 根据身份信息获取租户ID
+     *
+     * @param claims 身份信息
+     * @return 用户ID
+     */
+    public static String getTenantId(Claims claims) {
+        return getValue(claims, SecurityConstants.DETAILS_TENANT_ID);
+    }
+
+    /**
+     * 根据身份信息获取员工ID
+     *
+     * @param claims 身份信息
+     * @return 用户ID
+     */
+    public static String getEmployeeId(Claims claims) {
+        return getValue(claims, SecurityConstants.DETAILS_EMPLOYEE_ID);
+    }
+
+    /**
      * 根据身份信息获取键值
      *
      * @param claims 身份信息

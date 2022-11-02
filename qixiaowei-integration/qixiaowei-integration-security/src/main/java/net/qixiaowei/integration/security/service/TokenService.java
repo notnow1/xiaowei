@@ -46,6 +46,7 @@ public class TokenService {
         Long userId = userDTO.getUserId();
         String userAccount = userDTO.getUserAccount();
         String userName = userDTO.getUserName();
+        Long employeeId = userDTO.getEmployeeId();
         loginUserVO.setToken(token);
         loginUserVO.setUserid(userId);
         loginUserVO.setUsername(userName);
@@ -58,6 +59,8 @@ public class TokenService {
         claimsMap.put(SecurityConstants.USER_KEY, token);
         claimsMap.put(SecurityConstants.DETAILS_USER_ID, userId);
         claimsMap.put(SecurityConstants.DETAILS_USER_ACCOUNT, userAccount);
+//        claimsMap.put(SecurityConstants.DETAILS_TENANT_ID, tenantId);
+        claimsMap.put(SecurityConstants.DETAILS_EMPLOYEE_ID, employeeId);
 
         // 接口返回信息
         Map<String, Object> rspMap = new HashMap<String, Object>();

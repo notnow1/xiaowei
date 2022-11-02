@@ -15,6 +15,11 @@ public interface SecurityConstants {
     String DETAILS_TENANT_ID = "tenant_id";
 
     /**
+     * 员工ID字段
+     */
+    String DETAILS_EMPLOYEE_ID = "employee_id";
+
+    /**
      * 用户帐号字段
      */
     String DETAILS_USER_ACCOUNT = "user_account";
@@ -22,7 +27,7 @@ public interface SecurityConstants {
     /**
      * 授权信息字段
      */
-    String AUTHORIZATION_HEADER = "authorization";
+    String AUTHORIZATION_HEADER = "accessToken";
 
     /**
      * 请求来源
