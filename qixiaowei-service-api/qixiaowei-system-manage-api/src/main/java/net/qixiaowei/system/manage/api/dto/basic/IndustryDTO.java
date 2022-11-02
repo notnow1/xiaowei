@@ -84,7 +84,7 @@ public class IndustryDTO {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy/MM/dd hh:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     /**
      * 更新人
@@ -93,7 +93,7 @@ public class IndustryDTO {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy/MM/dd hh:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     /**
      * 启用类型（0-默认，1-自定义）
