@@ -60,7 +60,42 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
-        return this.packSelectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        //目标分解主表数据
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        //目标分解详情数据
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
+
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+            for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+                //年度预测值
+                BigDecimal forecastYear = new BigDecimal("0");
+                //累计实际值
+                BigDecimal actualTotal = new BigDecimal("0");
+                //目标完成率
+                BigDecimal targetPercentageComplete = new BigDecimal("0");
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
+                    //预测值
+                    forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                    //实际值
+                    actualTotal = actualTotal.add(decomposeDetailCyclesDTO.getCycleActual());
+                }
+                BigDecimal decomposeTarget = targetDecomposeDetailsDTO.getDecomposeTarget();
+                //被除数 不能为0和空
+                if (null != decomposeTarget && decomposeTarget.compareTo(BigDecimal.ZERO)!=0){
+                    //保留一位小数
+                    targetPercentageComplete = targetPercentageComplete.divide(targetDecomposeDetailsDTO.getDecomposeTarget()).setScale(1);
+                }
+                targetDecomposeDetailsDTO.setForecastYear(forecastYear);
+                targetDecomposeDetailsDTO.setActualTotal(actualTotal);
+                targetDecomposeDetailsDTO.setTargetPercentageComplete(targetPercentageComplete);
+                //目标分解周欺数据集合
+                targetDecomposeDetailsDTO.setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOList);
+            }
+            return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
+        }else {
+            return targetDecomposeDTO;
+        }
     }
 
     /**

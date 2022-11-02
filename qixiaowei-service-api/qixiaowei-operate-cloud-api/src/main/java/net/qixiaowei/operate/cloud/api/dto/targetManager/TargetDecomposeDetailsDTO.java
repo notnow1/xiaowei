@@ -105,6 +105,22 @@ public class TargetDecomposeDetailsDTO {
      */
     private  String principalEmployeeName;
     /**
+     * 分解目标值
+     */
+    private BigDecimal decomposeTarget;
+    /**
+     * 年度预测值
+     */
+    private  BigDecimal forecastYear;
+    /**
+     * 累计实际值
+     */
+    private  BigDecimal actualTotal;
+    /**
+     * 目标完成率
+     */
+    private  BigDecimal targetPercentageComplete;
+    /**
     * 汇总目标值
     */
     private BigDecimal amountTarget;

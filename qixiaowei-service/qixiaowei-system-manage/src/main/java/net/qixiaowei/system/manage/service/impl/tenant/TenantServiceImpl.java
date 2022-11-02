@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.tenant;
 
+import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -65,6 +66,9 @@ public class TenantServiceImpl implements ITenantService {
     @Autowired
     private ProductPackageMapper productPackageMapper;
 
+    @Autowired
+    private FileConfig fileConfig;
+
     /**
      * 查询租户表
      *
@@ -81,6 +85,10 @@ public class TenantServiceImpl implements ITenantService {
         if (StringUtils.isNull(tenantDTO)){
             throw new ServiceException("租户数据不存在");
         }
+        //租户登录背景图片URL
+        tenantDTO.setLoginBackground(fileConfig.getFullDomain(tenantDTO.getLoginBackground()));
+        //租户logo图片URL
+        tenantDTO.setTenantLogo(fileConfig.getFullDomain(tenantDTO.getTenantLogo()));
         //行业
         IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantDTO.getTenantIndustry());
         //客服人员
@@ -380,10 +388,11 @@ public class TenantServiceImpl implements ITenantService {
         //
         TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
         BeanUtils.copyProperties(tenantDTO, tenant);
+
         //租户登录背景图片URL
-        tenant.setLoginBackground(tenant.getLoginBackground());
+        tenant.setLoginBackground(fileConfig.getPathOfRemoveDomain(tenant.getLoginBackground()));
         //租户logo图片URL
-        tenant.setTenantLogo(tenant.getTenantLogo());
+        tenant.setTenantLogo(fileConfig.getPathOfRemoveDomain(tenant.getTenantLogo()));
         //查询租户数据
         TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
         if (StringUtils.isNull(tenantDTO1)){

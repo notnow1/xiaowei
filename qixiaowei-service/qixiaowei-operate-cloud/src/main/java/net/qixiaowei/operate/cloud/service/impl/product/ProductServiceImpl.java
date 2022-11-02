@@ -350,6 +350,8 @@ public class ProductServiceImpl implements IProductService {
                 BeanUtils.copyProperties(productFileDTO, productFile);
                 //产品id
                 productFile.setProductId(product.getProductId());
+                //产品文件路径
+                productFile.setProductFilePath(fileConfig.getPathOfRemoveDomain(productFileDTO.getProductFilePath()));
                 //排序
                 productFile.setSort(i);
                 //删除标识
