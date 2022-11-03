@@ -391,7 +391,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSetting.setTargetSettingType(1);
         targetSetting.setTargetYear(targetYear);
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingList(targetSetting);
-        List<Integer> historyNumS = getHistoryYearList(targetYear, historyNum);
+        List<Integer> historyNumS = null;
+        if (StringUtils.isNotNull(historyNum)) {
+            historyNumS = getHistoryYearList(targetYear, historyNum);
+        }
         if (StringUtils.isEmpty(targetSettingDTOS)) {
             List<TargetSettingOrderDTO> targetSettingOrderDTOS = new ArrayList<>();
             BigDecimal zero = new BigDecimal(0);
@@ -399,10 +402,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingDTO.setChallengeValue(zero);
             targetSettingDTO.setGuaranteedValue(zero);
             targetSettingDTO.setPercentage(zero);
+            targetSettingDTO.setTargetSettingId(null);
             if (StringUtils.isNotNull(historyNum) && historyNum != 0) {
                 insertOrderRow(historyNumS, targetSettingOrderDTOS);
                 targetSettingDTO.setTargetSettingOrderDTOS(targetSettingOrderDTOS);
-                targetSettingDTO.setTargetSettingId(null);
                 return targetSettingDTO;
             }
             return targetSettingDTO;
@@ -972,6 +975,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
     }
 
+    /**
+     * 销售回款list的null→0
+     *
+     * @param targetSettingRecoveriesDTO
+     * @param zero
+     */
     private static void setRecoveriesValue(TargetSettingRecoveriesDTO targetSettingRecoveriesDTO, BigDecimal zero) {
         targetSettingRecoveriesDTO.setTargetValue(zero);
         targetSettingRecoveriesDTO.setGuaranteedValue(zero);
