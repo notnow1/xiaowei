@@ -85,6 +85,35 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     }
 
     /**
+     * 查询经营分析报表列表
+     * @param targetSettingDTO 目标制定
+     * @return
+     */
+    @Override
+    public List<TargetSettingDTO> analyseList(TargetSettingDTO targetSettingDTO) {
+        TargetSetting targetSetting = new TargetSetting();
+        targetSetting.setTargetYear(targetSettingDTO.getTargetYear());
+        //指标code集合
+        List<String> list = new ArrayList<>();
+        //订单（不含税）
+        list.add(IndicatorCode.ORDER.getCode());
+        //销售收入
+        list.add(IndicatorCode.INCOME.getCode());
+        //回款金额（含税）
+        list.add(IndicatorCode.RECEIVABLE.getCode());
+        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list);
+        if (StringUtils.isNotEmpty(listR.getData())){
+            throw new ServiceException("指标不存在 请联系管理员！");
+        }else {
+            //回款金额指标id
+            targetSetting.getIndicatorIds().addAll(listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList()));
+        }
+
+        List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
+        return null;
+    }
+
+    /**
      * 新增目标制定
      *
      * @param targetSettingDTO 目标制定

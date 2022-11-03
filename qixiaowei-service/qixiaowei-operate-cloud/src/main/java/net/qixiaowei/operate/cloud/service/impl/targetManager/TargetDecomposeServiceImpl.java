@@ -6,6 +6,7 @@ import java.util.*;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
+import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeDimensionCode;
 import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -66,6 +67,25 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！");
         } else {
+            List<Map<String, String>> fileNameList = new ArrayList<>();
+            StringBuilder targetDecomposeDimensionName = new StringBuilder();
+            //分解维度
+            String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
+            //截取循环封装map
+            for (String dimension : decompositionDimension.split(",")) {
+                String info = TargetDecomposeDimensionCode.selectInfo(dimension);
+                String filedName = TargetDecomposeDimensionCode.selectFiledName(dimension);
+                if (StringUtils.isNotNull(info)) {
+                    targetDecomposeDimensionName.append(info).append("+");
+                }
+                Map<String, String> fileNameMap = new HashMap<>();
+                fileNameMap.put("label", info);
+                fileNameMap.put("value", filedName);
+                fileNameList.add(fileNameMap);
+            }
+            String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
+            targetDecomposeDTO.setFileNameList(fileNameList);
+            targetDecomposeDTO.setDecompositionDimension(substring);
             String forecastCycle = this.packForecastCycle(targetDecomposeDTO);
             targetDecomposeDTO.setForecastCycle(forecastCycle);
         }
@@ -118,10 +138,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     private String packForecastCycle(TargetDecomposeDTO targetDecomposeDTO) {
         String forecastCycle = null;
         if (targetDecomposeDTO.getTimeDimension() == 1) {
-            int year = DateUtils.getNowDate().getYear();
+            int year = DateUtils.getYear();
             forecastCycle=year+"年";
         } else if (targetDecomposeDTO.getTimeDimension() == 2) {
-            if (DateUtils.getNowDate().getMonth()<=6){
+            if (DateUtils.getMonth()<=6){
                 forecastCycle="上半年";
             }else {
                 forecastCycle="下半年";
@@ -129,7 +149,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         } else if (targetDecomposeDTO.getTimeDimension() == 3) {
             forecastCycle= Convert.int2chineseNum(DateUtils.getQuarter())+"季度";
         } else if (targetDecomposeDTO.getTimeDimension() == 4) {
-            forecastCycle= Convert.int2chineseNum(DateUtils.getNowDate().getMonth())+"月";
+            forecastCycle= Convert.int2chineseNum(DateUtils.getMonth())+"月";
         } else if (targetDecomposeDTO.getTimeDimension() == 5) {
             forecastCycle= Convert.int2chineseNum(DateUtils.getDayOfWeek())+"周";
         }
@@ -189,6 +209,26 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public TargetDecomposeDTO packSelectTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        List<Map<String, String>> fileNameList = new ArrayList<>();
+        StringBuilder targetDecomposeDimensionName = new StringBuilder();
+        //分解维度
+        String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
+        //截取循环封装map
+        for (String dimension : decompositionDimension.split(",")) {
+            String info = TargetDecomposeDimensionCode.selectInfo(dimension);
+            String filedName = TargetDecomposeDimensionCode.selectFiledName(dimension);
+            if (StringUtils.isNotNull(info)) {
+                targetDecomposeDimensionName.append(info).append("+");
+            }
+            Map<String, String> fileNameMap = new HashMap<>();
+            fileNameMap.put("label", info);
+            fileNameMap.put("value", filedName);
+            fileNameList.add(fileNameMap);
+        }
+        String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
+        targetDecomposeDTO.setFileNameList(fileNameList);
+        targetDecomposeDTO.setDecompositionDimension(substring);
+
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
 
@@ -215,6 +255,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode());
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
+            throw new ServiceException("指标不存在！请联系管理员");
+        }
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -247,6 +290,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
+            throw new ServiceException("指标不存在！请联系管理员");
+        }
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
@@ -266,6 +312,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode());
+        if (StringUtils.isNull(indicatorDTOR.getData())) {
+            throw new ServiceException("指标不存在！请联系管理员");
+        }
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型

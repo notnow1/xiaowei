@@ -48,7 +48,15 @@ public class TargetSettingController extends BaseController {
     @Autowired
     private ITargetSettingService targetSettingService;
 
-
+    /**
+     * 查询目标制定列表
+     */
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @GetMapping("/analyse/list")
+    public AjaxResult analyseList(TargetSettingDTO targetSettingDTO) {
+        List<TargetSettingDTO> list = targetSettingService.analyseList(targetSettingDTO);
+        return AjaxResult.success(list);
+    }
     /**
      * 查询目标制定详情
      */

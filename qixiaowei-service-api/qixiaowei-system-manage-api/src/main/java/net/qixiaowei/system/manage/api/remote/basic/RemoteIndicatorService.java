@@ -36,5 +36,4 @@ public interface RemoteIndicatorService {
     @GetMapping(API_PREFIX_INDICATOR + "/listByCodes")
     R<List<IndicatorDTO>> selectIndicatorByCodeList(@RequestParam("indicatorCodes") List<String> indicatorCodes);
 
-
 }

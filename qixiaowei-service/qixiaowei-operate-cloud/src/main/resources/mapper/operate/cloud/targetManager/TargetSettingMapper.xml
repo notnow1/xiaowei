@@ -104,6 +104,36 @@
             #{item}
         </foreach>
     </select>
+<!--    查询经营分析报表列表-->
+    <select id="selectAnalyseList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT target_setting_id,
+        target_setting_type,
+        indicator_id,
+        target_year,
+        IFNULL(percentage, 0) as percentage,
+        challenge_value,
+        target_value,
+        guaranteed_value,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM target_setting
+        WHERE delete_flag = 0
+        and indicator_id in
+        <foreach item="item"
+                 collection="targetSetting.indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="targetSetting.targetYear != null">
+            and target_year=#{targetSetting.targetYear}
+        </if>
+
+    </select>
     <!--新增目标制定-->
     <insert id="insertTargetSetting" useGeneratedKeys="true" keyProperty="targetSettingId">
         INSERT INTO target_setting
