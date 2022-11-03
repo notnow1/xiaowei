@@ -190,13 +190,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
             String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
             String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
             for (EmployeeDTO employeeDTO : employeeDTOList) {
-                if (null != username) {
+                if (StringUtils.isNotBlank(username)) {
                     userErreo.append("人员" + employeeDTO.getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
                 }
-                if (null != employeeDepartmentName) {
+                if (StringUtils.isNotBlank(employeeDepartmentName)) {
                     deptErreo.append("人员" + employeeDTO.getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
                 }
-                if (null != employeePostName) {
+                if (StringUtils.isNotBlank(employeePostName)) {
                     postErreo.append("人员" + employeeDTO.getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
                 }
             }
@@ -424,13 +424,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
         String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
         String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
         for (EmployeeDTO employeeDTO2 : employeeDTOList) {
-            if (null != username) {
+            if (StringUtils.isNotBlank(username)) {
                 userErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
             }
-            if (null != employeeDepartmentName) {
+            if (StringUtils.isNotBlank(employeeDepartmentName)) {
                 deptErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
             }
-            if (null != employeePostName) {
+            if (StringUtils.isNotBlank(employeePostName)) {
                 postErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
             }
         }

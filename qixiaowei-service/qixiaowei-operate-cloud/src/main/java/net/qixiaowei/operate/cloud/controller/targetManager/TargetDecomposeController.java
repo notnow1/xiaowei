@@ -57,6 +57,15 @@ public class TargetDecomposeController extends BaseController {
 
 
     /**
+     * 查询经营结果分析报表列表
+     */
+    //@RequiresPermissions("operate:cloud:targetDecompose:list")
+    @GetMapping("/result/list")
+    public AjaxResult resultList(TargetDecomposeDTO targetDecomposeDTO) {
+        List<TargetDecomposeDTO> list = targetDecomposeService.resultList(targetDecomposeDTO);
+        return AjaxResult.success(list);
+    }
+    /**
      * 修改滚动预测详情
      */
     //@RequiresPermissions("operate:cloud:targetDecompose:edit")

@@ -25,6 +25,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -115,9 +116,25 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
 
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
-        return null;
+        if (StringUtils.isNotEmpty(targetSettingDTOS)){
+            for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+                //年度目标值
+                BigDecimal targetValue = settingDTO.getTargetValue();
+                //todo 可能设计新表 年度实际值
+                BigDecimal yearCycleActual = settingDTO.getYearCycleActual();
+                //目标完成率
+                BigDecimal targetPercentageComplete = settingDTO.getTargetPercentageComplete();
+                if (yearCycleActual != null && yearCycleActual.compareTo(new BigDecimal("0")) != 0){
+                    if (targetValue.compareTo(new BigDecimal("0")) != 0 ){
+                        targetPercentageComplete = yearCycleActual.divide(targetValue);
+                    }
+                }
+                settingDTO.setTargetPercentageComplete(targetPercentageComplete);
+                //todo 返回同比 公式=（目标年度年度实际/上年年度实际）-1
+            }
+        }
+        return targetSettingDTOS;
     }
-
     /**
      * 新增目标制定
      *

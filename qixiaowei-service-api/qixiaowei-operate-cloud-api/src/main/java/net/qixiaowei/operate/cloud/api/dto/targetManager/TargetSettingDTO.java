@@ -87,6 +87,15 @@ public class TargetSettingDTO {
     @NotBlank(message = "保底值不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private BigDecimal guaranteedValue;
     /**
+     * 年度实际值
+     */
+    private BigDecimal yearCycleActual;
+
+    /**
+     * 目标完成率
+     */
+    private  BigDecimal targetPercentageComplete;
+    /**
      * 排序
      */
     private Integer sort;

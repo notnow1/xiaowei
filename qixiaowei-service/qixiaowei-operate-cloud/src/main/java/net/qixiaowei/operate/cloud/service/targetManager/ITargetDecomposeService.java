@@ -55,6 +55,14 @@ public interface ITargetDecomposeService {
 
 
     /**
+     * 查询经营结果分析报表列表
+     *
+     * @param targetDecomposeDTO 目标分解(经营结果分析)表
+     * @return 目标分解(经营结果分析)表集合
+     */
+    List<TargetDecomposeDTO> resultList(TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
      * 查询目标分解(销售订单)表列表
      *
      * @param targetDecomposeDTO 目标分解(销售订单)表
