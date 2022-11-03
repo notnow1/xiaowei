@@ -49,7 +49,7 @@ public class TargetSettingController extends BaseController {
     private ITargetSettingService targetSettingService;
 
     /**
-     * 查询目标制定列表
+     * 查询经营分析报表列表
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
     @GetMapping("/analyse/list")

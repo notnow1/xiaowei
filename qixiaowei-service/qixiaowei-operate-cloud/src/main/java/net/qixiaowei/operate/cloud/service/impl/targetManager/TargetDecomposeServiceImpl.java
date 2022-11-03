@@ -219,6 +219,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     }
 
     /**
+     * 查询经营结果分析报表列表
+     * @param targetDecomposeDTO 目标分解(经营结果分析)表
+     * @return
+     */
+    @Override
+    public List<TargetDecomposeDTO> resultList(TargetDecomposeDTO targetDecomposeDTO) {
+        return null;
+    }
+
+    /**
      * 封装统一查询
      *
      * @param targetDecomposeId
