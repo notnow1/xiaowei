@@ -391,6 +391,42 @@ CREATE TABLE detail_cycles_snapshot(
 )  COMMENT = '目标分解详情周期快照表';
 
 
+CREATE TABLE target_outcome(
+    target_outcome_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_year INT    COMMENT '目标年度' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_outcome_id)
+)  COMMENT = '目标结果表';
+
+
+CREATE TABLE target_outcome_details(
+    target_outcome_details_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    target_outcome_id BIGINT NOT NULL   COMMENT '目标结果ID' ,
+    indicator_id BIGINT NOT NULL   COMMENT '指标ID' ,
+    actual_total DECIMAL(14,2)    COMMENT '累计实际值' ,
+    actual_january DECIMAL(14,2)    COMMENT '一月实际值' ,
+    actual_february DECIMAL(14,2)    COMMENT '二月实际值' ,
+    actual_march DECIMAL(14,2)    COMMENT '三月实际值' ,
+    actual_april DECIMAL(14,2)    COMMENT '四月实际值' ,
+    actual_may DECIMAL(14,2)    COMMENT '五月实际值' ,
+    actual_june DECIMAL(14,2)    COMMENT '六月实际值' ,
+    actual_july DECIMAL(14,2)    COMMENT '七月实际值' ,
+    actual_august DECIMAL(14,2)    COMMENT '八月实际值' ,
+    actual_september DECIMAL(14,2)    COMMENT '九月实际值' ,
+    actual_october DECIMAL(14,2)    COMMENT '十月实际值' ,
+    actual_november DECIMAL(14,2)    COMMENT '十一月实际值' ,
+    actual_december DECIMAL(14,2)    COMMENT '十二月实际值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (target_outcome_details_id)
+)  COMMENT = '目标结果详情表';
 
 -- ----------------------------
 -- 初始化数据
