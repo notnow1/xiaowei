@@ -12,7 +12,7 @@ public enum TargetDecomposeDimensionCode {
 
     PROVINCE("province", "省份", "regionId"),
 
-    INDUSTRY("industry", "行业", "regionId");
+    INDUSTRY("industry", "行业", "industryId");
 
     private final String code;
     private final String info;

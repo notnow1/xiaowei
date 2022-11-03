@@ -352,24 +352,34 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         Integer targetYear = targetSettingDTO.getTargetYear();
         Integer historyNum = targetSettingDTO.getHistoryNum();
         IndicatorDTO indicatorDTO = getIndicator(IndicatorCode.ORDER.getCode());
-        List<Integer> historyNumS = getHistoryYearList(targetYear, historyNum);
         TargetSetting targetSetting = new TargetSetting();
         BeanUtils.copyProperties(targetSettingDTO, targetSetting);
         targetSetting.setTargetSettingType(1);
         targetSetting.setTargetYear(targetYear);
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingList(targetSetting);
+        List<Integer> historyNumS = getHistoryYearList(targetYear, historyNum);
         if (StringUtils.isEmpty(targetSettingDTOS)) {
             List<TargetSettingOrderDTO> targetSettingOrderDTOS = new ArrayList<>();
-            insertOrderRow(historyNumS, targetSettingOrderDTOS);
-            targetSettingDTO.setTargetSettingOrderDTOS(targetSettingOrderDTOS);
+            BigDecimal zero = new BigDecimal(0);
+            targetSettingDTO.setTargetValue(zero);
+            targetSettingDTO.setChallengeValue(zero);
+            targetSettingDTO.setGuaranteedValue(zero);
+            targetSettingDTO.setPercentage(zero);
+            if (StringUtils.isNotNull(historyNum) && historyNum != 0) {
+                insertOrderRow(historyNumS, targetSettingOrderDTOS);
+                targetSettingDTO.setTargetSettingOrderDTOS(targetSettingOrderDTOS);
+                return targetSettingDTO;
+            }
             return targetSettingDTO;
         }
         TargetSettingDTO settingDTO = targetSettingDTOS.get(0);
+        if (StringUtils.isEmpty(historyNumS)) {
+            return settingDTO;
+        }
         List<TargetSettingOrderDTO> targetSettingOrderDTOS = targetSettingOrderService.selectTargetSettingOrderList(settingDTO.getTargetSettingId(), historyNumS);
         if (StringUtils.isEmpty(targetSettingDTOS)) {
             return getTargetSettingDTO(historyNum, indicatorDTO, historyNumS, targetSettingOrderDTOS, targetSettingDTO);
         }
-
         Long targetSettingId = settingDTO.getTargetSettingId();
         return getTargetSettingDTO(historyNum, indicatorDTO, historyNumS, targetSettingOrderDTOS, settingDTO);
     }
@@ -740,43 +750,78 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
 //               todo 查询销售回款列表--recoveries
 //              【DSO（应收账款周转天数）】：公式=DSO基线-DSO改进天数。
 //              【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额。
-//              【回款总目标】：公式=上年年末应收账款余额+销售收入目标*（1+平均增值税率）-期末应收账款余额。
-
             List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOS = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
-            if (targetSettingRecoveriesDTOS.size() > 5) {
+            if (targetSettingRecoveriesDTOS.size() > 4) {
+                //销售收入目标
+                TargetSettingRecoveriesDTO saleIncomeGoal = new TargetSettingRecoveriesDTO();
+                BigDecimal targetSum = new BigDecimal(0);
+                BigDecimal challengeSum = new BigDecimal(0);
+                BigDecimal guaranteedSum = new BigDecimal(0);
+                BigDecimal actualLastSum = new BigDecimal(0);
                 for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDTOS) {
                     switch (targetSettingRecoveriesDTO.getType()) {
                         case 1:
                             targetSettingRecoveriesDTO.setPrefixType("1.应回尽回");
+                            targetSum = targetSum.add(targetSettingRecoveriesDTO.getTargetValue());
+                            challengeSum = challengeSum.add(targetSettingRecoveriesDTO.getChallengeValue());
+                            guaranteedSum = guaranteedSum.add(targetSettingRecoveriesDTO.getGuaranteedValue());
+                            actualLastSum = actualLastSum.add(targetSettingRecoveriesDTO.getActualLastYear());
                             targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                            break;
                         case 2:
                             targetSettingRecoveriesDTO.setPrefixType("2.逾期清理");
+                            targetSum = targetSum.add(targetSettingRecoveriesDTO.getTargetValue());
+                            challengeSum = challengeSum.add(targetSettingRecoveriesDTO.getChallengeValue());
+                            guaranteedSum = guaranteedSum.add(targetSettingRecoveriesDTO.getGuaranteedValue());
+                            actualLastSum = actualLastSum.add(targetSettingRecoveriesDTO.getActualLastYear());
                             targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                            break;
                         case 3:
                             targetSettingRecoveriesDTO.setPrefixType("3.提前回款");
+                            targetSum = targetSum.add(targetSettingRecoveriesDTO.getTargetValue());
+                            challengeSum = challengeSum.add(targetSettingRecoveriesDTO.getChallengeValue());
+                            guaranteedSum = guaranteedSum.add(targetSettingRecoveriesDTO.getGuaranteedValue());
+                            actualLastSum = actualLastSum.add(targetSettingRecoveriesDTO.getActualLastYear());
                             targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+                            break;
                         case 4:
                             targetSettingRecoveriesDTO.setPrefixType("销售收入目标");
-
+                            saleIncomeGoal = targetSettingRecoveriesDTO;
                             targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+                            break;
                         case 5:
+//                            【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额
                             targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
+                            BigDecimal targetDivide = saleIncomeGoal.getTargetValue().multiply(DSOValue).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP);
+                            targetSettingRecoveriesDTO.setTargetValue(targetDivide.subtract(recoveryDTO.getBalanceReceivables()));
+                            BigDecimal challengeDivide = saleIncomeGoal.getChallengeValue().multiply(DSOValue).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP);
+                            targetSettingRecoveriesDTO.setChallengeValue(challengeDivide.subtract(recoveryDTO.getBalanceReceivables()));
+                            BigDecimal guaranteedDivide = saleIncomeGoal.getGuaranteedValue().multiply(DSOValue).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP);
+                            targetSettingRecoveriesDTO.setGuaranteedValue(guaranteedDivide.subtract(recoveryDTO.getBalanceReceivables()));
                             targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+                            break;
                     }
                 }
-                TargetSettingRecoveriesDTO targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
-                targetSettingRecoveriesDTO.setPrefixType("合计");
-                targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
 
+                TargetSettingRecoveriesDTO targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+//                总和
+                targetSettingRecoveriesDTO.setPrefixType("合计");
+                targetSettingRecoveriesDTO.setChallengeValue(challengeSum);
+                targetSettingRecoveriesDTO.setTargetValue(targetSum);
+                targetSettingRecoveriesDTO.setGuaranteedValue(guaranteedSum);
+                targetSettingRecoveriesDTO.setActualLastYear(actualLastSum);
+                targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+//                DSO
                 targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                 targetSettingRecoveriesDTO.setPrefixType("DSO");
                 targetSettingRecoveriesDTO.setChallengeValue(DSOValue);
                 targetSettingRecoveriesDTO.setTargetValue(DSOValue);
                 targetSettingRecoveriesDTO.setGuaranteedValue(DSOValue);
                 targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
+//              【回款总目标】：公式=上年年末应收账款余额+销售收入目标*（1+平均增值税率）-期末应收账款余额。
+                //回款总目标-1.挑战值，目标值，保底值
                 targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                 targetSettingRecoveriesDTO.setPrefixType("回款总目标");
-                //回款总目标-1.挑战值，目标值，保底值
                 BigDecimal challengeGoal = recoveryDTO.getBalanceReceivables().add(targetIncomeByIndicator.getChallengeValue().multiply(targetSettingByIndicator.getPercentage().add(new BigDecimal(1))));
                 BigDecimal targetGoal = recoveryDTO.getBalanceReceivables().add(targetIncomeByIndicator.getTargetValue().multiply(targetSettingByIndicator.getPercentage().add(new BigDecimal(1))));
                 BigDecimal guaranteedGoal = recoveryDTO.getBalanceReceivables().add(targetIncomeByIndicator.getGuaranteedValue().multiply(targetSettingByIndicator.getPercentage().add(new BigDecimal(1))));
@@ -826,40 +871,46 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         TargetSettingRecoveriesDTO targetSettingRecoveriesDTO;
         for (int i = 0; i < 5; i++) {
             switch (i) {
-                case 1:
+                case 0:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("1.应回尽回");
                     targetSettingRecoveriesDTO.setActualLastYear(zero);
                     setRecoveriesValue(targetSettingRecoveriesDTO, zero);
                     targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
-                case 2:
+                    break;
+                case 1:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("2.逾期清理");
                     targetSettingRecoveriesDTO.setActualLastYear(zero);
                     setRecoveriesValue(targetSettingRecoveriesDTO, zero);
                     targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
-                case 3:
+                    break;
+                case 2:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("3.提前回款");
                     targetSettingRecoveriesDTO.setActualLastYear(zero);
                     setRecoveriesValue(targetSettingRecoveriesDTO, zero);
                     targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
-                case 4:
+                    break;
+                case 3:
+//                    【销售收入指标】：从经营云-目标制定-公司目标生成-销售收入目标制定中获取当年目标值，可以编辑。
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("销售收入目标");
                     targetSettingRecoveriesDTO.setTargetValue(targetIncomeByIndicator.getTargetValue());
                     targetSettingRecoveriesDTO.setGuaranteedValue(targetIncomeByIndicator.getGuaranteedValue());
                     targetSettingRecoveriesDTO.setChallengeValue(targetIncomeByIndicator.getChallengeValue());
-
 //                    targetIncomeByIndicator.getChallengeValue()
                     targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
-                case 5:
+                    break;
+                case 4:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
                     setRecoveriesValue(targetSettingRecoveriesDTO, zero);
                     targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+                    break;
             }
         }
+
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
         targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
         setRecoveriesValue(targetSettingRecoveriesDTO, zero);
@@ -915,7 +966,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
         List<TargetSettingRecoveriesDTO> recoveries = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
         List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
-        if (StringUtils.isNotEmpty(recoveries) && recoveries.size() > 5) {
+        if (StringUtils.isNotEmpty(recoveries) && recoveries.size() > 4) {
             targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
         } else {// 新增
             targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
@@ -955,14 +1006,17 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                         targetSettingTypeDTO.setType(1);
                         targetSettingTypeDTO.setTargetSettingId(targetSettingId);
                         targetSettingRecoveriesDTOS.add(targetSettingTypeDTO);
+                        break;
                     case "2.逾期清理":
                         targetSettingTypeDTO.setType(2);
                         targetSettingTypeDTO.setTargetSettingId(targetSettingId);
                         targetSettingRecoveriesDTOS.add(targetSettingTypeDTO);
+                        break;
                     case "3.提前回款":
                         targetSettingTypeDTO.setType(3);
                         targetSettingTypeDTO.setTargetSettingId(targetSettingId);
                         targetSettingRecoveriesDTOS.add(targetSettingTypeDTO);
+                        break;
                 }
             }
         }

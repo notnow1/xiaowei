@@ -12,7 +12,6 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
-import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
@@ -318,6 +317,17 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Override
     public List<Integer> getLevel() {
         return indicatorMapper.selectLevel();
+    }
+
+    /**
+     * 通过CodeList查找指标列表
+     *
+     * @param indicatorCodes
+     * @return
+     */
+    @Override
+    public List<IndicatorDTO> selectIndicatorByCodeList(List<String> indicatorCodes) {
+        return indicatorMapper.selectIndicatorByCodeList(indicatorCodes);
     }
 
     /**

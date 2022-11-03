@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @Author hzk
  * @Date 2022-10-20 20:39
@@ -26,5 +28,11 @@ public class RemoteIndicator implements RemoteIndicatorService {
     @GetMapping("/listByCode")
     public R<IndicatorDTO> selectIndicatorByCode(@RequestParam("indicatorCode") String indicatorCode) {
         return R.ok(indicatorService.selectIndicatorByCode(indicatorCode));
+    }
+
+    @Override
+    @GetMapping("/listByCodes")
+    public R<List<IndicatorDTO>> selectIndicatorByCodeList(List<String> indicatorCodes) {
+        return R.ok(indicatorService.selectIndicatorByCodeList(indicatorCodes));
     }
 }

@@ -4,7 +4,6 @@ import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -157,4 +156,12 @@ public interface IndicatorMapper {
      * 获取指标最大层级
      */
     List<Integer> selectLevel();
+
+    /**
+     * 通过CodeList查找指标列表
+     *
+     * @param indicatorCodes
+     * @return
+     */
+    List<IndicatorDTO> selectIndicatorByCodeList(@Param("indicatorCodes") List<String> indicatorCodes);
 }

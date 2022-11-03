@@ -8,6 +8,8 @@ public enum IndicatorCode {
     ORDER("CW001", "订单（不含税）"),
     INCOME("CW002", "销售收入"),
     RECEIVABLE("CW022", "回款金额（含税）");
+//    INCOME("CW002", "销售收入");
+//    RECEIVABLE("CW022", "回款金额（含税）");
 
     private final String code;
     private final String info;

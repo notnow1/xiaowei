@@ -9,7 +9,6 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 区域服务降级处理
@@ -24,6 +23,11 @@ public class RemoteIndicatorFallbackFactory implements FallbackFactory<RemoteInd
         return new RemoteIndicatorService() {
             @Override
             public R<IndicatorDTO> selectIndicatorByCode(String indicatorCode) {
+                return R.fail("获取指标失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<IndicatorDTO>> selectIndicatorByCodeList(List<String> indicatorCodes) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }
         };

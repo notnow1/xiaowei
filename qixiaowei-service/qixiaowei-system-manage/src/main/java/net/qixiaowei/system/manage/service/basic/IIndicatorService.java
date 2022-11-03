@@ -132,4 +132,12 @@ public interface IIndicatorService {
      * @return
      */
     List<Integer> getLevel();
+
+    /**
+     * 通过CodeList查找指标列表
+     *
+     * @param indicatorCodes
+     * @return
+     */
+    List<IndicatorDTO> selectIndicatorByCodeList(List<String> indicatorCodes);
 }
