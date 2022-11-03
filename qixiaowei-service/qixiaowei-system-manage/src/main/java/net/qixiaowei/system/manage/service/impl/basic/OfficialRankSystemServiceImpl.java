@@ -228,9 +228,12 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isNotNull(officialRankByName)) {
             throw new ServiceException("职级体系名称重复");
         }
-        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
-            throw new ServiceException("职级体系级别前缀重复");
+        if (rankPrefixCode.length() > 5) {
+            throw new ServiceException("职级体系级别前缀长度不能大于5");
         }
+//        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
+//            throw new ServiceException("职级体系级别前缀重复");
+//        }
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();
         BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
         officialRankSystem.setCreateBy(SecurityUtils.getUserId());
@@ -283,10 +286,13 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 throw new ServiceException("职级体系名称重复");
             }
         }
-        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
-            if (!officialRankByPrefixCode.getOfficialRankSystemId().equals(officialRankSystemId))
-                throw new ServiceException("职级体系级别前缀重复");
+        if (rankPrefixCode.length() > 5) {
+            throw new ServiceException("职级体系级别前缀长度不能大于5");
         }
+//        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
+//            if (!officialRankByPrefixCode.getOfficialRankSystemId().equals(officialRankSystemId))
+//                throw new ServiceException("职级体系级别前缀重复");
+//        }
         // 分解为度校验
         List<Long> decomposeDimensions = new ArrayList<>();
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
