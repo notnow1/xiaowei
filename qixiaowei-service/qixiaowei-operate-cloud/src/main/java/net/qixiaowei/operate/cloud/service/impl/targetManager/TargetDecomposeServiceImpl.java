@@ -53,6 +53,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     private DecomposeDetailsSnapshotMapper decomposeDetailsSnapshotMapper;
     @Autowired
     private DetailCyclesSnapshotMapper detailCyclesSnapshotMapper;
+    @Autowired
+    private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
 
     /**
      * 查询滚动预测表详情
@@ -67,25 +69,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！");
         } else {
-            List<Map<String, String>> fileNameList = new ArrayList<>();
-            StringBuilder targetDecomposeDimensionName = new StringBuilder();
-            //分解维度
-            String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
-            //截取循环封装map
-            for (String dimension : decompositionDimension.split(",")) {
-                String info = TargetDecomposeDimensionCode.selectInfo(dimension);
-                String filedName = TargetDecomposeDimensionCode.selectFiledName(dimension);
-                if (StringUtils.isNotNull(info)) {
-                    targetDecomposeDimensionName.append(info).append("+");
-                }
-                Map<String, String> fileNameMap = new HashMap<>();
-                fileNameMap.put("label", info);
-                fileNameMap.put("value", filedName);
-                fileNameList.add(fileNameMap);
-            }
-            String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
-            targetDecomposeDTO.setFileNameList(fileNameList);
-            targetDecomposeDTO.setDecompositionDimension(substring);
+            this.packDecompositionDimension(targetDecomposeDTO);
             String forecastCycle = this.packForecastCycle(targetDecomposeDTO);
             targetDecomposeDTO.setForecastCycle(forecastCycle);
         }
@@ -126,6 +110,37 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
         } else {
             return targetDecomposeDTO;
+        }
+    }
+
+    /**
+     * 封装分解维度
+     * @param targetDecomposeDTO
+     */
+    private void packDecompositionDimension(TargetDecomposeDTO targetDecomposeDTO) {
+        TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionList(targetDecomposeDimension);
+        StringBuilder targetDecomposeDimensionName;
+        for (TargetDecomposeDimensionDTO decomposeDimensionDTO : targetDecomposeDimensionDTOS) {
+            targetDecomposeDimensionName = new StringBuilder("");
+            List<Map<String, String>> fileNameList = new ArrayList<>();
+            String decompositionDimension = decomposeDimensionDTO.getDecompositionDimension();
+            if (StringUtils.isNotEmpty(decompositionDimension)) {
+                for (String dimension : decompositionDimension.split(",")) {
+                    String info = TargetDecomposeDimensionCode.selectInfo(dimension);
+                    String filedName = TargetDecomposeDimensionCode.selectFiledName(dimension);
+                    if (StringUtils.isNotNull(info)) {
+                        targetDecomposeDimensionName.append(info).append("+");
+                    }
+                    Map<String, String> fileNameMap = new HashMap<>();
+                    fileNameMap.put("label", info);
+                    fileNameMap.put("value", filedName);
+                    fileNameList.add(fileNameMap);
+                }
+                String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
+                targetDecomposeDTO.setFileNameList(fileNameList);
+                targetDecomposeDTO.setDecompositionDimension(substring);
+            }
         }
     }
 
@@ -209,26 +224,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public TargetDecomposeDTO packSelectTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
-        List<Map<String, String>> fileNameList = new ArrayList<>();
-        StringBuilder targetDecomposeDimensionName = new StringBuilder();
-        //分解维度
-        String decompositionDimension = targetDecomposeDTO.getDecompositionDimension();
-        //截取循环封装map
-        for (String dimension : decompositionDimension.split(",")) {
-            String info = TargetDecomposeDimensionCode.selectInfo(dimension);
-            String filedName = TargetDecomposeDimensionCode.selectFiledName(dimension);
-            if (StringUtils.isNotNull(info)) {
-                targetDecomposeDimensionName.append(info).append("+");
-            }
-            Map<String, String> fileNameMap = new HashMap<>();
-            fileNameMap.put("label", info);
-            fileNameMap.put("value", filedName);
-            fileNameList.add(fileNameMap);
-        }
-        String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
-        targetDecomposeDTO.setFileNameList(fileNameList);
-        targetDecomposeDTO.setDecompositionDimension(substring);
-
+        this.packDecompositionDimension(targetDecomposeDTO);
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
 
@@ -262,7 +258,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
         targetDecompose.setTargetDecomposeType(Constants.ONE);
-        return targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        if (StringUtils.isNotEmpty(targetDecomposeDTOS)){
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                this.packDecompositionDimension(decomposeDTO);
+            }
+        }
+        return targetDecomposeDTOS;
     }
 
     /**
@@ -275,14 +277,20 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeDTO> rollPageList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
-        return targetDecomposeMapper.selectRollPageList(targetDecompose);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectRollPageList(targetDecompose);
+        if (StringUtils.isNotEmpty(targetDecomposeDTOS)){
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                this.packDecompositionDimension(decomposeDTO);
+            }
+        }
+        return targetDecomposeDTOS;
     }
 
     /**
      * 查询目标分解(销售收入)表列表
      *
-     * @param targetDecomposeDTO 目标分解(销售订单)表
-     * @return 目标分解(销售订单)表
+     * @param targetDecomposeDTO 目标分解(销售收入)表
+     * @return 目标分解(销售收入)表
      */
     @Override
     public List<TargetDecomposeDTO> selectIncomeList(TargetDecomposeDTO targetDecomposeDTO) {
@@ -297,7 +305,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
         targetDecompose.setTargetDecomposeType(Constants.TWO);
-        return targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        if (StringUtils.isNotEmpty(targetDecomposeDTOS)){
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                this.packDecompositionDimension(decomposeDTO);
+            }
+        }
+        return targetDecomposeDTOS;
     }
 
     /**
@@ -319,7 +333,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
         targetDecompose.setTargetDecomposeType(Constants.THREE);
-        return targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        if (StringUtils.isNotEmpty(targetDecomposeDTOS)){
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                this.packDecompositionDimension(decomposeDTO);
+            }
+        }
+        return targetDecomposeDTOS;
     }
 
     /**
@@ -334,7 +354,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //分解类型
         targetDecompose.setTargetDecomposeType(Constants.ZERO);
-        return targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+        if (StringUtils.isNotEmpty(targetDecomposeDTOS)){
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                this.packDecompositionDimension(decomposeDTO);
+            }
+        }
+        return targetDecomposeDTOS;
     }
 
     /**
