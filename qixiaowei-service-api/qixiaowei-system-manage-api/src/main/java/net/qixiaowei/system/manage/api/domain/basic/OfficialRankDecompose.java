@@ -35,7 +35,7 @@ public class OfficialRankDecompose extends BaseEntity {
     /**
      * 具体分解维度的ID
      */
-    private Integer decomposeDimension;
+    private Long decomposeDimension;
     /**
      * 工资系数
      */

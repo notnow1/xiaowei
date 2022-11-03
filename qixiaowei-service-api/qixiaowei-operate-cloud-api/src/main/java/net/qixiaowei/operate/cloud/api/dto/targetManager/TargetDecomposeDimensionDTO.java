@@ -1,12 +1,12 @@
 package net.qixiaowei.operate.cloud.api.dto.targetManager;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 目标分解维度配置
@@ -55,5 +55,9 @@ public class TargetDecomposeDimensionDTO {
      * 分解维度名称(区域，销售员，部门，产品，省份，行业)
      */
     private String decompositionDimensionName;
+    /**
+     * 字段名称
+     */
+    private List<Map<String, String>> fileNameList;
 }
 

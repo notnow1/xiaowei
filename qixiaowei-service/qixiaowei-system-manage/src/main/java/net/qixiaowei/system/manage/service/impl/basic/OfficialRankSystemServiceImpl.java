@@ -349,14 +349,14 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                                 .collect(Collectors.toList()).contains(officialRankDecomposeDTO.getOfficialRankDecomposeId())
                 ).collect(Collectors.toList());
         try {
+            if (StringUtils.isNotEmpty(delOfficialRankDecompose)) {
+                officialRankDecomposeService.deleteOfficialRankDecomposeByOfficialRankDecomposeIds(delOfficialRankDecompose);
+            }
             if (StringUtils.isNotEmpty(addOfficialRankDecompose)) {
                 officialRankDecomposeService.insertOfficialRankDecomposes(addOfficialRankDecompose, officialRankSystem);
             }
             if (StringUtils.isNotEmpty(updateOfficialRankDecompose)) {
                 officialRankDecomposeService.updateOfficialRankDecomposes(updateOfficialRankDecompose, officialRankSystem);
-            }
-            if (StringUtils.isNotEmpty(delOfficialRankDecompose)) {
-                officialRankDecomposeService.deleteOfficialRankDecomposeByOfficialRankDecomposeIds(delOfficialRankDecompose);
             }
         } catch (ServiceException e) {
             throw new ServiceException(e.toString());

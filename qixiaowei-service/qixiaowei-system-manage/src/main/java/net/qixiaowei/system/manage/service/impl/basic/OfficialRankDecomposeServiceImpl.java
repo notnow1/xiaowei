@@ -336,7 +336,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
         if (officialRankDecomposeMapper.isExist(officialRankDecomposeIds) != officialRankDecomposeIds.size()) {
             throw new ServiceException("当前的职级分解已不存在");
         }
-        return officialRankDecomposeMapper.deleteOfficialRankDecomposeByOfficialRankDecomposeIds(officialRankDecomposeIds);
+        return officialRankDecomposeMapper.logicDeleteOfficialRankDecomposeByOfficialRankDecomposeIds(officialRankDecomposeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**

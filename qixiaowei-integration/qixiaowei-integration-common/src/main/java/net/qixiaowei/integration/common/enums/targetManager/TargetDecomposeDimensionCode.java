@@ -1,27 +1,27 @@
 package net.qixiaowei.integration.common.enums.targetManager;
 
-import net.qixiaowei.integration.common.enums.salary.ThirdLevelSalaryCode;
-
 public enum TargetDecomposeDimensionCode {
 
-    REGION("region", "区域"),
+    REGION("region", "区域", "areaId"),
 
-    SALESMAN("salesman", "销售员"),
+    SALESMAN("salesman", "销售员", "employeeId"),
 
-    DEPARTMENT("department", "部门"),
+    DEPARTMENT("department", "部门", "departmentId"),
 
-    PRODUCT("product", "产品"),
+    PRODUCT("product", "产品", "productId"),
 
-    PROVINCE("province", "省份"),
+    PROVINCE("province", "省份", "regionId"),
 
-    INDUSTRY("industry", "行业");
+    INDUSTRY("industry", "行业", "regionId");
 
     private final String code;
     private final String info;
+    private final String fieldName;
 
-    TargetDecomposeDimensionCode(String code, String info) {
+    TargetDecomposeDimensionCode(String code, String info, String fieldName) {
         this.code = code;
         this.info = info;
+        this.fieldName = fieldName;
     }
 
     public String getCode() {
@@ -30,6 +30,10 @@ public enum TargetDecomposeDimensionCode {
 
     public String getInfo() {
         return info;
+    }
+
+    public String getFieldName() {
+        return fieldName;
     }
 
     public static Boolean containCode(String code) {
@@ -45,6 +49,15 @@ public enum TargetDecomposeDimensionCode {
         for (TargetDecomposeDimensionCode targetDecomposeDimensionCode : TargetDecomposeDimensionCode.values()) {
             if (targetDecomposeDimensionCode.getCode().equals(code)) {
                 return targetDecomposeDimensionCode.getInfo();
+            }
+        }
+        return "";
+    }
+
+    public static String selectFiledName(String code) {
+        for (TargetDecomposeDimensionCode targetDecomposeDimensionCode : TargetDecomposeDimensionCode.values()) {
+            if (targetDecomposeDimensionCode.getCode().equals(code)) {
+                return targetDecomposeDimensionCode.getFieldName();
             }
         }
         return "";

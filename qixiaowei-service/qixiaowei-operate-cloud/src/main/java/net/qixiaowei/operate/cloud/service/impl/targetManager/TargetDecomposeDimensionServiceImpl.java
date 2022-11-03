@@ -56,17 +56,25 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
         BeanUtils.copyProperties(targetDecomposeDimensionDTO, targetDecomposeDimension);
         List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionList(targetDecomposeDimension);
         StringBuilder targetDecomposeDimensionName;
+
         for (TargetDecomposeDimensionDTO decomposeDimensionDTO : targetDecomposeDimensionDTOS) {
             targetDecomposeDimensionName = new StringBuilder("");
+            List<Map<String, String>> fileNameList = new ArrayList<>();
             String decompositionDimension = decomposeDimensionDTO.getDecompositionDimension();
             if (StringUtils.isNotEmpty(decompositionDimension)) {
                 for (String dimension : decompositionDimension.split(",")) {
                     String info = TargetDecomposeDimensionCode.selectInfo(dimension);
+                    String filedName = TargetDecomposeDimensionCode.selectFiledName(dimension);
                     if (StringUtils.isNotNull(info)) {
                         targetDecomposeDimensionName.append(info).append("+");
                     }
+                    Map<String, String> fileNameMap = new HashMap<>();
+                    fileNameMap.put("label", info);
+                    fileNameMap.put("value", filedName);
+                    fileNameList.add(fileNameMap);
                 }
                 String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
+                decomposeDimensionDTO.setFileNameList(fileNameList);
                 decomposeDimensionDTO.setDecompositionDimensionName(substring);
             }
         }

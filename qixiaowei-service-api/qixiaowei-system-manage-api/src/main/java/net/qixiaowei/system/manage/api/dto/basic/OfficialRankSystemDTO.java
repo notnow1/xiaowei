@@ -72,6 +72,10 @@ public class OfficialRankSystemDTO {
      */
     private Integer status;
     /**
+     * ID集合
+     */
+    private Map<String, String> idMap;
+    /**
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
