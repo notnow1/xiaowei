@@ -144,7 +144,7 @@
             </foreach>
     </update>
     <!--批量新增目标分解历史版本表-->
-    <insert id="batchTargetDecomposeHistory">
+    <insert id="batchTargetDecomposeHistory" useGeneratedKeys="true" keyProperty="targetDecomposeHistoryId">
         INSERT INTO target_decompose_history (target_decompose_id,version,forecast_cycle,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

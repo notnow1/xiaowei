@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
@@ -159,6 +161,8 @@ public class DepartmentDTO {
     /**
      * 部门岗位关联表
      */
+    @NotEmpty(message = "组织岗位信息不能为空",groups = {DepartmentDTO.UpdateDepartmentDTO.class})
+    @Valid
     private List<DepartmentPostDTO>  departmentPostDTOList;
 
 

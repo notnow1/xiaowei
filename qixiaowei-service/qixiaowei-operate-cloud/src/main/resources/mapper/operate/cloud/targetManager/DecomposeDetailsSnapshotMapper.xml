@@ -227,7 +227,7 @@
         </foreach>
     </update>
     <!--批量新增目标分解详情快照表-->
-    <insert id="batchDecomposeDetailsSnapshot">
+    <insert id="batchDecomposeDetailsSnapshot" useGeneratedKeys="true" keyProperty="decomposeDetailsSnapshotId">
         INSERT INTO decompose_details_snapshot
         (target_decompose_history_id,employee_id,area_id,department_id,product_id,region_id,industry_id,principal_employee_id,amount_target,delete_flag,create_by,create_time,update_by,update_time)
         VALUES

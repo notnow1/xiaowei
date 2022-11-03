@@ -6,6 +6,7 @@ import java.util.*;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
+import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.ProductSpecificationParam;
@@ -62,6 +63,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        if (StringUtils.isNull(targetDecomposeDTO)) {
+            throw new ServiceException("数据不存在！");
+        } else {
+            String forecastCycle = this.packForecastCycle(targetDecomposeDTO);
+            targetDecomposeDTO.setForecastCycle(forecastCycle);
+        }
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
 
@@ -75,18 +82,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                 for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
-                    if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO)!=0){
+                    if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
                         //预测值
                         forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
                     }
-                    if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO)!=0){
+                    if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
                         //实际值
                         actualTotal = actualTotal.add(decomposeDetailCyclesDTO.getCycleActual());
                     }
                 }
                 BigDecimal decomposeTarget = targetDecomposeDetailsDTO.getDecomposeTarget();
                 //被除数 不能为0和空
-                if (null != decomposeTarget && decomposeTarget.compareTo(BigDecimal.ZERO)!=0){
+                if (null != decomposeTarget && decomposeTarget.compareTo(BigDecimal.ZERO) != 0) {
                     //保留一位小数
                     targetPercentageComplete = targetPercentageComplete.divide(targetDecomposeDetailsDTO.getDecomposeTarget()).setScale(1);
                 }
@@ -97,9 +104,36 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 targetDecomposeDetailsDTO.setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOList);
             }
             return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
-        }else {
+        } else {
             return targetDecomposeDTO;
         }
+    }
+
+    /**
+     * 返回预测周期字段
+     *
+     * @param targetDecomposeDTO
+     * @return
+     */
+    private String packForecastCycle(TargetDecomposeDTO targetDecomposeDTO) {
+        String forecastCycle = null;
+        if (targetDecomposeDTO.getTimeDimension() == 1) {
+            int year = DateUtils.getNowDate().getYear();
+            forecastCycle=year+"年";
+        } else if (targetDecomposeDTO.getTimeDimension() == 2) {
+            if (DateUtils.getNowDate().getMonth()<=6){
+                forecastCycle="上半年";
+            }else {
+                forecastCycle="下半年";
+            }
+        } else if (targetDecomposeDTO.getTimeDimension() == 3) {
+            forecastCycle= Convert.int2chineseNum(DateUtils.getQuarter())+"季度";
+        } else if (targetDecomposeDTO.getTimeDimension() == 4) {
+            forecastCycle= Convert.int2chineseNum(DateUtils.getNowDate().getMonth())+"月";
+        } else if (targetDecomposeDTO.getTimeDimension() == 5) {
+            forecastCycle= Convert.int2chineseNum(DateUtils.getDayOfWeek())+"周";
+        }
+        return forecastCycle;
     }
 
     /**
@@ -164,7 +198,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 targetDecomposeDetailsDTO.setDecomposeDetailCyclesDTOS(decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId()));
             }
             return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
-        }else {
+        } else {
             return targetDecomposeDTO;
         }
     }

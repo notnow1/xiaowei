@@ -125,12 +125,69 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         }
     }
     /**
-     * 今年的第几天
+     * 获取当前月
      */
-    public static int getDayOfWeek(Object str) {
+    public static int getMonth() {
+        Calendar calendar = Calendar.getInstance();
+        // 获取当前月
+        return calendar.get(Calendar.MONTH) + 1;
+    }
+
+    /**
+     * 获取当前年
+     */
+    public static int getYear() {
+        Calendar calendar = Calendar.getInstance();
+        // 获取当前年
+       return calendar.get(Calendar.YEAR);
+    }
+    /**
+     * 获取当前日期所在季度
+     */
+    public static int getQuarter() {
+        int month = DateUtils.getMonth();
+        return month%3==0?month/3:month/3+1;
+    }
+    /**
+     * 今年的第几周
+     */
+    public static int getDayOfWeek() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(YYYY_MM_DD);
         int week = 7;
         int dayOfYear = DateUtils.getDayOfYear();
+        String format = simpleDateFormat.format(DateUtils.getNowDate());
+        String format1 = simpleDateFormat.format(DateUtils.getCurrYearLast());
+        if (StringUtils.equals(format,format1)){
+            return dayOfYear/week-1;
+        }
         return dayOfYear/week;
+    }
+
+    /**
+     * 获取今年最后一天日期
+     *            年份
+     * @return Date
+     */
+    public static Date getCurrYearLast(){
+        Calendar currCal=Calendar.getInstance();
+        int currentYear = currCal.get(Calendar.YEAR);
+        return getYearLast(currentYear);
+
+    }
+
+    /**
+     * 获取某年最后一天日期
+     * @param year 年份
+     * @return Date
+     */
+    public static Date getYearLast(int year){
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR,year);
+        calendar.roll(Calendar.DAY_OF_YEAR,-1);
+        Date currYearLast = calendar.getTime();
+        return currYearLast;
+
     }
     /**
      * 今年的第几天

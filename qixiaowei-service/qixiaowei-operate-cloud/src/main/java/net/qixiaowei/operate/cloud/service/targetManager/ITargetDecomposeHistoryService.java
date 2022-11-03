@@ -117,4 +117,9 @@ public interface ITargetDecomposeHistoryService{
     * @return
     */
     List<TargetDecomposeHistoryExcel> exportTargetDecomposeHistory(TargetDecomposeHistoryDTO targetDecomposeHistoryDTO);
+
+    /**
+     * 定时任务生成目标分解历史数据
+     */
+    void cronCreateHistoryList(int timeDimension);
 }

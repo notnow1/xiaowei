@@ -4,35 +4,34 @@
     <!--    查询销售订单目标分解表-->
     <select id="selectTargetDecomposeByTargetDecomposeId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
-        SELECT
-            i.indicator_name,
-            ts.challenge_value,
-            ts.guaranteed_value,
-            ts.target_value,
-            td.target_decompose_id,
-            td.target_decompose_type,
-            td.indicator_id,
-            td.target_year,
-            td.target_decompose_dimension_id,
-            td.decomposition_dimension,
-            td.time_dimension,
-            td.decompose_target,
-            td.forecast_year,
-            td.actual_total,
-            td.status,
-            td.delete_flag,
-            td.create_by,
-            td.create_time,
-            td.update_by,
-            td.update_time
+        SELECT i.indicator_name,
+               ts.challenge_value,
+               ts.guaranteed_value,
+               ts.target_value,
+               td.target_decompose_id,
+               td.target_decompose_type,
+               td.indicator_id,
+               td.target_year,
+               td.target_decompose_dimension_id,
+               td.decomposition_dimension,
+               td.time_dimension,
+               td.decompose_target,
+               td.forecast_year,
+               td.actual_total,
+               td.status,
+               td.delete_flag,
+               td.create_by,
+               td.create_time,
+               td.update_by,
+               td.update_time
         FROM target_decompose td
                  left join target_setting ts
                            on td.indicator_id = ts.indicator_id
                                and td.target_year = ts.target_year
                                and ts.delete_flag = 0
                  left join `system-manage`.indicator i
-                           on i.indicator_id =td.indicator_id
-                               and i.delete_flag =0
+                           on i.indicator_id = td.indicator_id
+                               and i.delete_flag = 0
         WHERE td.target_decompose_id = #{targetDecomposeId}
           and td.delete_flag = 0
     </select>
@@ -41,19 +40,22 @@
     <select id="selectTargetDecomposeByTargetDecomposeIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
         SELECT
-        target_decompose_id, target_decompose_type, indicator_id, target_year, target_decompose_dimension_id, decomposition_dimension, time_dimension, decompose_target, forecast_year, actual_total, status, delete_flag, create_by, create_time, update_by, update_time
+        target_decompose_id, target_decompose_type, indicator_id, target_year, target_decompose_dimension_id,
+        decomposition_dimension, time_dimension, decompose_target, forecast_year, actual_total, status, delete_flag,
+        create_by, create_time, update_by, update_time
         FROM target_decompose
-        WHERE  target_decompose_id in
-            <foreach item="item"
-                     collection="targetDecomposeIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE target_decompose_id in
+        <foreach item="item"
+                 collection="targetDecomposeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询销售订单目标分解表列表-->
-    <select id="selectTargetDecomposeList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
+    <select id="selectTargetDecomposeList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
         SELECT
         td.target_year,
         i.indicator_name,
@@ -78,64 +80,78 @@
         on i.indicator_id =td.indicator_id
         and i.delete_flag =0
         WHERE td.delete_flag = 0
-                <if test="targetDecompose.targetDecomposeId != null">
-                    and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
-                </if>
-                <if test="targetDecompose.targetDecomposeType != null">
-                    and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
-                </if>
-                <if test="targetDecompose.targetYear != null">
-                    and td.target_year like '%${targetDecompose.targetYear}%'
-                </if>
-                <if test="targetDecompose.targetDecomposeDimensionId != null">
-                    and td.target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
-                </if>
-                <if test="targetDecompose.decompositionDimension != null and targetDecompose.decompositionDimension != ''">
-                    and td.decomposition_dimension like '%$#{targetDecompose.decompositionDimension}%'
-                </if>
-                <if test="targetDecompose.timeDimension != null">
-                    and td.time_dimension like '%${targetDecompose.timeDimension}%'
-                </if>
-                <if test="targetDecompose.decomposeTarget != null">
-                    and td.decompose_target=#{targetDecompose.decomposeTarget}
-                </if>
-                <if test="targetDecompose.forecastYear != null">
-                    and td.forecast_year=#{targetDecompose.forecastYear}
-                </if>
-                <if test="targetDecompose.actualTotal != null">
-                    and td.actual_total=#{targetDecompose.actualTotal}
-                </if>
-                <if test="targetDecompose.status != null">
-                    and td.status=#{targetDecompose.status}
-                </if>
-                <if test="targetDecompose.deleteFlag != null">
-                    and td.delete_flag=#{targetDecompose.deleteFlag}
-                </if>
-                <if test="targetDecompose.createBy != null">
-                    and td.create_by=#{targetDecompose.createBy}
-                </if>
-                <if test="targetDecompose.createTime != null">
-                    and td.create_time=#{targetDecompose.createTime}
-                </if>
-                <if test="targetDecompose.updateBy != null">
-                    and td.update_by=#{targetDecompose.updateBy}
-                </if>
-                <if test="targetDecompose.updateTime != null">
-                    and td.update_time=#{targetDecompose.updateTime}
-                </if>
+        <if test="targetDecompose.targetDecomposeId != null">
+            and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
+        </if>
+        <if test="targetDecompose.targetDecomposeType != null">
+            and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
+        </if>
+        <if test="targetDecompose.targetYear != null">
+            and td.target_year like '%${targetDecompose.targetYear}%'
+        </if>
+        <if test="targetDecompose.targetDecomposeDimensionId != null">
+            and td.target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
+        </if>
+        <if test="targetDecompose.decompositionDimension != null and targetDecompose.decompositionDimension != ''">
+            and td.decomposition_dimension like '%$#{targetDecompose.decompositionDimension}%'
+        </if>
+        <if test="targetDecompose.timeDimension != null">
+            and td.time_dimension like '%${targetDecompose.timeDimension}%'
+        </if>
+        <if test="targetDecompose.decomposeTarget != null">
+            and td.decompose_target=#{targetDecompose.decomposeTarget}
+        </if>
+        <if test="targetDecompose.forecastYear != null">
+            and td.forecast_year=#{targetDecompose.forecastYear}
+        </if>
+        <if test="targetDecompose.actualTotal != null">
+            and td.actual_total=#{targetDecompose.actualTotal}
+        </if>
+        <if test="targetDecompose.status != null">
+            and td.status=#{targetDecompose.status}
+        </if>
+        <if test="targetDecompose.deleteFlag != null">
+            and td.delete_flag=#{targetDecompose.deleteFlag}
+        </if>
+        <if test="targetDecompose.createBy != null">
+            and td.create_by=#{targetDecompose.createBy}
+        </if>
+        <if test="targetDecompose.createTime != null">
+            and td.create_time=#{targetDecompose.createTime}
+        </if>
+        <if test="targetDecompose.updateBy != null">
+            and td.update_by=#{targetDecompose.updateBy}
+        </if>
+        <if test="targetDecompose.updateTime != null">
+            and td.update_time=#{targetDecompose.updateTime}
+        </if>
     </select>
-<!--    联合主键查询目标分解表-->
+    <!--    联合主键查询目标分解表-->
     <select id="selectTargetDecomposeUniteId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
-        SELECT
-            target_decompose_id, target_decompose_type, indicator_id, target_year, target_decompose_dimension_id, decomposition_dimension, time_dimension, decompose_target, forecast_year, actual_total, status, delete_flag, create_by, create_time, update_by, update_time
+        SELECT target_decompose_id,
+               target_decompose_type,
+               indicator_id,
+               target_year,
+               target_decompose_dimension_id,
+               decomposition_dimension,
+               time_dimension,
+               decompose_target,
+               forecast_year,
+               actual_total,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM target_decompose
-        WHERE  target_year=#{targetDecompose.targetYear}
-          and target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
-          and time_dimension=#{targetDecompose.timeDimension}
-          and delete_flag=0
+        WHERE target_year = #{targetDecompose.targetYear}
+          and target_decompose_dimension_id = #{targetDecompose.targetDecomposeDimensionId}
+          and time_dimension = #{targetDecompose.timeDimension}
+          and delete_flag = 0
     </select>
-<!--    查询滚动预测列表-->
+    <!--    查询滚动预测列表-->
     <select id="selectRollPageList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
         SELECT
@@ -210,90 +226,118 @@
             and td.update_time=#{targetDecompose.updateTime}
         </if>
     </select>
+    <!--    根据时间维度查询目标分解所有数据-->
+    <select id="selectCronCreateHistoryList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
+        SELECT target_decompose_id,
+               target_decompose_type,
+               indicator_id,
+               target_year,
+               target_decompose_dimension_id,
+               decomposition_dimension,
+               time_dimension,
+               decompose_target,
+               forecast_year,
+               actual_total,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM target_decompose
+        where time_dimension =#{timeDimension}
+    </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">
-        INSERT INTO target_decompose (target_decompose_type,indicator_id,target_year,target_decompose_dimension_id,decomposition_dimension,time_dimension,decompose_target,forecast_year,actual_total,status,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-        (#{targetDecompose.targetDecomposeType},#{targetDecompose.indicatorId},#{targetDecompose.targetYear},#{targetDecompose.targetDecomposeDimensionId},#{targetDecompose.decompositionDimension},#{targetDecompose.timeDimension},#{targetDecompose.decomposeTarget},#{targetDecompose.forecastYear},#{targetDecompose.actualTotal},#{targetDecompose.status},#{targetDecompose.deleteFlag},#{targetDecompose.createBy},#{targetDecompose.createTime},#{targetDecompose.updateBy},#{targetDecompose.updateTime})
+        INSERT INTO target_decompose (target_decompose_type, indicator_id, target_year, target_decompose_dimension_id,
+                                      decomposition_dimension, time_dimension, decompose_target, forecast_year,
+                                      actual_total, status, delete_flag, create_by, create_time, update_by, update_time)
+        VALUES (#{targetDecompose.targetDecomposeType}, #{targetDecompose.indicatorId}, #{targetDecompose.targetYear},
+                #{targetDecompose.targetDecomposeDimensionId}, #{targetDecompose.decompositionDimension},
+                #{targetDecompose.timeDimension}, #{targetDecompose.decomposeTarget}, #{targetDecompose.forecastYear},
+                #{targetDecompose.actualTotal}, #{targetDecompose.status}, #{targetDecompose.deleteFlag},
+                #{targetDecompose.createBy}, #{targetDecompose.createTime}, #{targetDecompose.updateBy},
+                #{targetDecompose.updateTime})
     </insert>
     <!--修改销售订单目标分解表-->
     <update id="updateTargetDecompose">
         UPDATE target_decompose
         SET
-                    <if test="targetDecompose.targetDecomposeType != null">
-                        target_decompose_type=#{targetDecompose.targetDecomposeType},
-                    </if>
-                    <if test="targetDecompose.indicatorId != null">
-                        indicator_id=#{targetDecompose.indicatorId},
-                    </if>
-                    <if test="targetDecompose.targetYear != null">
-                        target_year=#{targetDecompose.targetYear},
-                    </if>
-                    <if test="targetDecompose.targetDecomposeDimensionId != null">
-                        target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId},
-                    </if>
-                    <if test="targetDecompose.decompositionDimension != null and targetDecompose.decompositionDimension != ''">
-                        decomposition_dimension=#{targetDecompose.decompositionDimension},
-                    </if>
-                    <if test="targetDecompose.timeDimension != null">
-                        time_dimension=#{targetDecompose.timeDimension},
-                    </if>
-                    <if test="targetDecompose.decomposeTarget != null">
-                        decompose_target=#{targetDecompose.decomposeTarget},
-                    </if>
-                    <if test="targetDecompose.forecastYear != null">
-                        forecast_year=#{targetDecompose.forecastYear},
-                    </if>
-                    <if test="targetDecompose.actualTotal != null">
-                        actual_total=#{targetDecompose.actualTotal},
-                    </if>
-                    <if test="targetDecompose.status != null">
-                        status=#{targetDecompose.status},
-                    </if>
-                    <if test="targetDecompose.deleteFlag != null">
-                        delete_flag=#{targetDecompose.deleteFlag},
-                    </if>
-                    <if test="targetDecompose.createBy != null">
-                        create_by=#{targetDecompose.createBy},
-                    </if>
-                    <if test="targetDecompose.createTime != null">
-                        create_time=#{targetDecompose.createTime},
-                    </if>
-                    <if test="targetDecompose.updateBy != null">
-                        update_by=#{targetDecompose.updateBy},
-                    </if>
-                    <if test="targetDecompose.updateTime != null">
-                        update_time=#{targetDecompose.updateTime}
-                    </if>
+        <if test="targetDecompose.targetDecomposeType != null">
+            target_decompose_type=#{targetDecompose.targetDecomposeType},
+        </if>
+        <if test="targetDecompose.indicatorId != null">
+            indicator_id=#{targetDecompose.indicatorId},
+        </if>
+        <if test="targetDecompose.targetYear != null">
+            target_year=#{targetDecompose.targetYear},
+        </if>
+        <if test="targetDecompose.targetDecomposeDimensionId != null">
+            target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId},
+        </if>
+        <if test="targetDecompose.decompositionDimension != null and targetDecompose.decompositionDimension != ''">
+            decomposition_dimension=#{targetDecompose.decompositionDimension},
+        </if>
+        <if test="targetDecompose.timeDimension != null">
+            time_dimension=#{targetDecompose.timeDimension},
+        </if>
+        <if test="targetDecompose.decomposeTarget != null">
+            decompose_target=#{targetDecompose.decomposeTarget},
+        </if>
+        <if test="targetDecompose.forecastYear != null">
+            forecast_year=#{targetDecompose.forecastYear},
+        </if>
+        <if test="targetDecompose.actualTotal != null">
+            actual_total=#{targetDecompose.actualTotal},
+        </if>
+        <if test="targetDecompose.status != null">
+            status=#{targetDecompose.status},
+        </if>
+        <if test="targetDecompose.deleteFlag != null">
+            delete_flag=#{targetDecompose.deleteFlag},
+        </if>
+        <if test="targetDecompose.createBy != null">
+            create_by=#{targetDecompose.createBy},
+        </if>
+        <if test="targetDecompose.createTime != null">
+            create_time=#{targetDecompose.createTime},
+        </if>
+        <if test="targetDecompose.updateBy != null">
+            update_by=#{targetDecompose.updateBy},
+        </if>
+        <if test="targetDecompose.updateTime != null">
+            update_time=#{targetDecompose.updateTime}
+        </if>
         WHERE
-                 target_decompose_id=#{targetDecompose.targetDecomposeId}
+        target_decompose_id=#{targetDecompose.targetDecomposeId}
     </update>
     <!--逻辑删除销售订单目标分解表-->
     <update id="logicDeleteTargetDecomposeByTargetDecomposeId">
         UPDATE target_decompose
-        SET     delete_flag= 1,
-                update_by=#{targetDecompose.updateBy},
-                update_time=#{targetDecompose.updateTime}
-        WHERE
-                target_decompose_id=#{targetDecompose.targetDecomposeId}
+        SET delete_flag= 1,
+            update_by=#{targetDecompose.updateBy},
+            update_time=#{targetDecompose.updateTime}
+        WHERE target_decompose_id = #{targetDecompose.targetDecomposeId}
     </update>
     <!--逻辑批量删除销售订单目标分解表-->
     <update id="logicDeleteTargetDecomposeByTargetDecomposeIds">
         UPDATE target_decompose
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         target_decompose_id IN
-            <foreach item="item"
-                     collection="targetDecomposeIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        target_decompose_id IN
+        <foreach item="item"
+                 collection="targetDecomposeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增销售订单目标分解表-->
     <insert id="batchTargetDecompose">
-        INSERT INTO target_decompose (target_decompose_type,indicator_id,target_year,target_decompose_dimension_id,decomposition_dimension,time_dimension,decompose_target,forecast_year,actual_total,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO target_decompose
+        (target_decompose_type,indicator_id,target_year,target_decompose_dimension_id,decomposition_dimension,time_dimension,decompose_target,forecast_year,actual_total,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="targetDecomposes"
@@ -306,115 +350,115 @@
     <update id="updateTargetDecomposes">
         update target_decompose
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="target_decompose_type=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.targetDecomposeType != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.targetDecomposeType}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="indicator_id=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.indicatorId != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.indicatorId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="target_year=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.targetYear != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.targetYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="target_decompose_dimension_id=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.targetDecomposeDimensionId != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.targetDecomposeDimensionId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="decomposition_dimension=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.decompositionDimension != null and item.decompositionDimension != ''">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.decompositionDimension}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="time_dimension=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.timeDimension != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.timeDimension}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="decompose_target=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.decomposeTarget != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.decomposeTarget}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="forecast_year=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.forecastYear != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.forecastYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="actual_total=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.actualTotal != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.actualTotal}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="status=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.status != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.status}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="targetDecomposeList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when target_decompose_id=#{item.targetDecomposeId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="target_decompose_type=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.targetDecomposeType != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.targetDecomposeType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_id=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.indicatorId != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.indicatorId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="target_year=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.targetYear != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.targetYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="target_decompose_dimension_id=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.targetDecomposeDimensionId != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.targetDecomposeDimensionId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="decomposition_dimension=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.decompositionDimension != null and item.decompositionDimension != ''">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.decompositionDimension}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="time_dimension=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.timeDimension != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.timeDimension}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="decompose_target=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.decomposeTarget != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.decomposeTarget}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="forecast_year=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.forecastYear != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.forecastYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="actual_total=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.actualTotal != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.actualTotal}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.status != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="targetDecomposeList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when target_decompose_id=#{item.targetDecomposeId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="targetDecomposeList" separator="or" item="item" index="index">
-                    target_decompose_id=#{item.targetDecomposeId}
+            target_decompose_id=#{item.targetDecomposeId}
         </foreach>
     </update>
 </mapper>

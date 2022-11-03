@@ -42,13 +42,20 @@ public interface TargetDecomposeMapper {
     List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(@Param("targetDecomposeIds") List<Long> targetDecomposeIds);
 
     /**
+     * 根据时间维度查询目标分解所有数据
+     *
+     * @param timeDimension 目标分解表
+     * @return 目标分解表集合
+     */
+    List<TargetDecomposeDTO> selectCronCreateHistoryList(@Param("timeDimension") int timeDimension);
+
+    /**
      * 查询目标分解表列表
      *
      * @param targetDecompose 目标分解表
      * @return 目标分解表集合
      */
     List<TargetDecomposeDTO> selectTargetDecomposeList(@Param("targetDecompose") TargetDecompose targetDecompose);
-
 
     /**
      * 查询滚动预测列表

@@ -5,7 +5,9 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -121,8 +123,13 @@ public class TargetDecomposeDTO {
      * 目标分解详情信息
      */
     @NotEmpty(message = "目标分解详情信息不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})
+    @Valid
     private List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS;
 
+    /**
+     * 预测周期
+     */
+    private  String  forecastCycle;
     /**
     * 删除标记:0未删除;1已删除
     */
