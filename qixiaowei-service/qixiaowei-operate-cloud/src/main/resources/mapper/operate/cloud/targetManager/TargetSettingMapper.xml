@@ -33,8 +33,7 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
         target_setting_id, target_setting_type, indicator_id, target_year, IFNULL(percentage,0) as percentage,
-        IFNULL(challenge_value,0),IFNULL(target_value,0),
-        IFNULL(guaranteed_value,0),sort, delete_flag, create_by, create_time, update_by, update_time
+        challenge_value,target_value, guaranteed_value,sort, delete_flag, create_by, create_time, update_by, update_time
         FROM target_setting
         WHERE delete_flag=0
         <if test="targetSetting.targetSettingId != null">

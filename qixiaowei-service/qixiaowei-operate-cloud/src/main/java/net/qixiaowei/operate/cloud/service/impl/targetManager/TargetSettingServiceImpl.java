@@ -392,6 +392,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             return targetSettingOrderDTOS;
         }
         if (targetSettingOrderDTOS.size() == historyNum) {
+            historyNumS = new ArrayList<>();
             getDropTargetSettingDTO(indicatorDTO, historyNumS, targetSettingOrderDTOS);
             return targetSettingOrderDTOS;
         }
@@ -454,7 +455,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     private void getDropTargetSettingDTO(IndicatorDTO indicatorDTO, List<Integer> historyNumS, List<TargetSettingOrderDTO> targetSettingOrderDTOS) {
         // todo 通过目标年度直接去找滚动越策管理,获取历史年度实际值
-        List<TargetSettingOrderDTO> settingOrderDTOS = selectRollForecastManagementByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
+        List<TargetSettingOrderDTO> settingOrderDTOS = null;
+        if (StringUtils.isNotEmpty(historyNumS)) {
+            settingOrderDTOS = selectRollForecastManagementByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
+        }
         if (settingOrderDTOS != null) {
             targetSettingOrderDTOS.addAll(settingOrderDTOS);
             for (TargetSettingOrderDTO settingOrderDTO : settingOrderDTOS) {
