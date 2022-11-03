@@ -102,6 +102,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         list.add(IndicatorCode.INCOME.getCode());
         //回款金额（含税）
         list.add(IndicatorCode.RECEIVABLE.getCode());
+        //销售毛利
+        list.add(IndicatorCode.GROSS.getCode());
+        //净利润
+        list.add(IndicatorCode.PROFITS.getCode());
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list);
         if (StringUtils.isNotEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
