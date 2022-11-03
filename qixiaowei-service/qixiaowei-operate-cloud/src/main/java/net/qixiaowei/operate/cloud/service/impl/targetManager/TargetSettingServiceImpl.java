@@ -392,8 +392,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             return targetSettingOrderDTOS;
         }
         if (targetSettingOrderDTOS.size() == historyNum) {
-            historyNumS = new ArrayList<>();
-            getDropTargetSettingDTO(indicatorDTO, historyNumS, targetSettingOrderDTOS);
             return targetSettingOrderDTOS;
         }
         for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDTOS) {
