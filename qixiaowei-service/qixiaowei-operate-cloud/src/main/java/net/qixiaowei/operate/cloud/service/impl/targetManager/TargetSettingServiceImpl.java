@@ -402,6 +402,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     public TargetSettingDTO selectOrderTargetSettingList(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
         Integer historyNum = targetSettingDTO.getHistoryNum();
+        if (StringUtils.isNull(targetSettingDTO.getTargetSettingId())) {
+            targetSettingDTO.setTargetSettingId(null);
+        }
         IndicatorDTO indicatorDTO = getIndicator(IndicatorCode.ORDER.getCode());
         TargetSetting targetSetting = new TargetSetting();
         BeanUtils.copyProperties(targetSettingDTO, targetSetting);
