@@ -129,12 +129,15 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 for (String dimension : decompositionDimension.split(",")) {
                     String info = TargetDecomposeDimensionCode.selectInfo(dimension);
                     String filedName = TargetDecomposeDimensionCode.selectFiledName(dimension);
+                    String filedValue = TargetDecomposeDimensionCode.selectFiledValue(dimension);
+                    TargetDecomposeDimensionCode.selectFiledName(dimension);
                     if (StringUtils.isNotNull(info)) {
                         targetDecomposeDimensionName.append(info).append("+");
                     }
                     Map<String, String> fileNameMap = new HashMap<>();
                     fileNameMap.put("label", info);
                     fileNameMap.put("value", filedName);
+                    fileNameMap.put("name", filedValue);
                     fileNameList.add(fileNameMap);
                 }
                 String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
