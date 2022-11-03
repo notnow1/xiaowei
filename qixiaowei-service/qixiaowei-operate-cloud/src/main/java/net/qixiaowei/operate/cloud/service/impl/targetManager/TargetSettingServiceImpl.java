@@ -950,10 +950,15 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
 //                    【销售收入指标】：从经营云-目标制定-公司目标生成-销售收入目标制定中获取当年目标值，可以编辑。
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("销售收入目标");
-                    targetSettingRecoveriesDTO.setTargetValue(targetIncomeByIndicator.getTargetValue());
-                    targetSettingRecoveriesDTO.setGuaranteedValue(targetIncomeByIndicator.getGuaranteedValue());
-                    targetSettingRecoveriesDTO.setChallengeValue(targetIncomeByIndicator.getChallengeValue());
-//                    targetIncomeByIndicator.getChallengeValue()
+                    if (StringUtils.isNotNull(targetIncomeByIndicator)) {
+                        targetSettingRecoveriesDTO.setTargetValue(targetIncomeByIndicator.getTargetValue());
+                        targetSettingRecoveriesDTO.setGuaranteedValue(targetIncomeByIndicator.getGuaranteedValue());
+                        targetSettingRecoveriesDTO.setChallengeValue(targetIncomeByIndicator.getChallengeValue());
+                    } else {
+                        targetSettingRecoveriesDTO.setTargetValue(zero);
+                        targetSettingRecoveriesDTO.setGuaranteedValue(zero);
+                        targetSettingRecoveriesDTO.setChallengeValue(zero);
+                    }
                     targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
                     break;
                 case 4:
@@ -964,15 +969,18 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     break;
             }
         }
-
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
-        targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
+        targetSettingRecoveriesDTO.setPrefixType("DSO");
         setRecoveriesValue(targetSettingRecoveriesDTO, zero);
         targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
         targetSettingRecoveriesDTO.setPrefixType("回款总目标");
         setRecoveriesValue(targetSettingRecoveriesDTO, zero);
         targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
+        targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
+        targetSettingRecoveriesDTO.setPrefixType("合计");
+        setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+        targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
     }
 
     /**
