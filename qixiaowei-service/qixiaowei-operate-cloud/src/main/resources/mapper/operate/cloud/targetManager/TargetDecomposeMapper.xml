@@ -34,6 +34,7 @@
                                and i.delete_flag = 0
         WHERE td.target_decompose_id = #{targetDecomposeId}
           and td.delete_flag = 0
+          and i.indicator_code in ('CW001','CW002','CW022')
     </select>
 
     <!--    批量查询销售订单目标分解表-->

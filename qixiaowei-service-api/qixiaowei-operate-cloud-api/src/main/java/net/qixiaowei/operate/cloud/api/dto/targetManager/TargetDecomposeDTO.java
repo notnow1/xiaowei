@@ -1,12 +1,11 @@
 package net.qixiaowei.operate.cloud.api.dto.targetManager;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -126,6 +125,10 @@ public class TargetDecomposeDTO {
     @Valid
     private List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS;
 
+    /**
+     * 字段名称
+     */
+    private List<Map<String, String>> fileNameList;
     /**
      * 预测周期
      */

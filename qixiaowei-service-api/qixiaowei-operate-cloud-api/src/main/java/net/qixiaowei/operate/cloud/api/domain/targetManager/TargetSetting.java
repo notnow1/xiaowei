@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
 * 目标制定
@@ -32,6 +33,10 @@ public class TargetSetting extends BaseEntity {
      * 指标ID
      */
      private  Long  indicatorId;
+     /**
+      * 指标ID集合
+      */
+     private List<Long> indicatorIds;
      /**
      * 目标年度
      */

@@ -32,6 +32,14 @@ public interface ITargetSettingService {
     List<TargetSettingDTO> selectTargetSettingList(TargetSettingDTO targetSettingDTO);
 
     /**
+     * 查询经营分析报表列表
+     *
+     * @param targetSettingDTO 目标制定
+     * @return 目标制定集合
+     */
+    List<TargetSettingDTO> analyseList(TargetSettingDTO targetSettingDTO);
+
+    /**
      * 新增目标制定
      *
      * @param targetSettingDTO 目标制定

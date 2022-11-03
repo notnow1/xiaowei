@@ -120,4 +120,11 @@ public interface TargetSettingMapper {
      * @return
      */
     List<TargetSettingDTO> selectTargetSettingByIndicator(@Param("historyNumS") List<Integer> historyNumS, @Param("indicatorId") Long indicatorId);
+
+    /**
+     * 查询经营分析报表列表
+     * @param targetSetting
+     * @return
+     */
+    List<TargetSettingDTO> selectAnalyseList(@Param("targetSetting") TargetSetting targetSetting);
 }

@@ -58,6 +58,10 @@ public class TargetSettingDTO {
      */
     private Long indicatorId;
     /**
+     * 指标ID集合
+     */
+    private List<Long> indicatorIds;
+    /**
      * 目标年度
      */
     @NotBlank(message = "目标制定类型不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
