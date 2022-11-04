@@ -10,6 +10,7 @@ import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 目标制定
@@ -137,9 +138,13 @@ public class TargetSettingDTO {
      */
     private List<TargetSettingIncomeVO> targetSettingIncomeVOS;
     /**
-     * 目标制定销售回款表
+     * 目标制定销售回款表LIST
      */
-    private TargetSettingRecoveryDTO targetSettingRecoveryDTO;
+    private List<Map<String, Object>> targetSettingRecoveryList;
+    /**
+     * 目标制定销售回款表DTO
+     */
+    TargetSettingRecoveryDTO targetSettingRecoveryDTO;
     /**
      * 目标制定销售回款集合表
      */
