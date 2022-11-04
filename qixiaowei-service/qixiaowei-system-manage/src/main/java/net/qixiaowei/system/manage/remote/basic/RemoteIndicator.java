@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.remote.basic;
 
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
@@ -34,5 +35,17 @@ public class RemoteIndicator implements RemoteIndicatorService {
     @GetMapping("/listByCodes")
     public R<List<IndicatorDTO>> selectIndicatorByCodeList(List<String> indicatorCodes) {
         return R.ok(indicatorService.selectIndicatorByCodeList(indicatorCodes));
+    }
+
+    @Override
+    @GetMapping("/remoteTreeList")
+    public R<List<Tree<Long>>> selectIndicatorTreeList(@RequestParam("indicatorDTO") IndicatorDTO indicatorDTO) {
+        return R.ok(indicatorService.selectTreeList(indicatorDTO));
+    }
+
+    @Override
+    @GetMapping("/remoteList")
+    public R<List<IndicatorDTO>> selectIndicatorList(IndicatorDTO indicatorDTO) {
+        return R.ok(indicatorService.selectIndicatorList(indicatorDTO));
     }
 }

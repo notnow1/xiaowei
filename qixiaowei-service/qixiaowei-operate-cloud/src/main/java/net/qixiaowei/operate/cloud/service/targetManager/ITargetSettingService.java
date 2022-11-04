@@ -1,11 +1,12 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
-import java.util.List;
-
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
+
+import java.util.List;
 
 
 /**
@@ -24,12 +25,20 @@ public interface ITargetSettingService {
     TargetSettingDTO selectTargetSettingByTargetSettingId(Long targetSettingId);
 
     /**
-     * 查询目标制定列表
+     * 查询目标制定列表-树结构
      *
      * @param targetSettingDTO 目标制定
      * @return 目标制定集合
      */
     List<TargetSettingDTO> selectTargetSettingList(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 查询目标制定列表
+     *
+     * @param targetSettingDTO 目标制定
+     * @return 目标制定集合
+     */
+    List<TargetSettingDTO> selectTargetSettingTreeList(TargetSettingDTO targetSettingDTO);
 
     /**
      * 查询经营分析报表列表
@@ -182,4 +191,11 @@ public interface ITargetSettingService {
      * @return
      */
     TargetSettingDTO saveRecoveryTargetSetting(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 获取指标列表
+     *
+     * @return
+     */
+    List<Tree<Long>> selectIndicatorList();
 }

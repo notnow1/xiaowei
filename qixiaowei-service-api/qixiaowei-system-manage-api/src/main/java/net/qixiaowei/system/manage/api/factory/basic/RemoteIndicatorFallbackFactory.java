@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.api.factory.basic;
 
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
@@ -28,6 +29,16 @@ public class RemoteIndicatorFallbackFactory implements FallbackFactory<RemoteInd
 
             @Override
             public R<List<IndicatorDTO>> selectIndicatorByCodeList(List<String> indicatorCodes) {
+                return R.fail("获取指标失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<Tree<Long>>> selectIndicatorTreeList(IndicatorDTO indicatorDTO) {
+                return R.fail("获取指标失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<IndicatorDTO>> selectIndicatorList(IndicatorDTO indicatorDTO) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }
         };

@@ -1,17 +1,15 @@
 package net.qixiaowei.operate.cloud.api.dto.targetManager;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 
-import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.groups.Default;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 目标制定
@@ -94,7 +92,7 @@ public class TargetSettingDTO {
     /**
      * 目标完成率
      */
-    private  BigDecimal targetPercentageComplete;
+    private BigDecimal targetPercentageComplete;
     /**
      * 排序
      */
@@ -126,6 +124,10 @@ public class TargetSettingDTO {
      */
     @NotBlank(message = "历史年度数不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.QueryTargetSettingDTO.class})
     private Integer historyNum;
+    /**
+     * 订单目标制定
+     */
+    private TargetSettingDTO orderTargetSetting;
     /**
      * 销售订单List
      */

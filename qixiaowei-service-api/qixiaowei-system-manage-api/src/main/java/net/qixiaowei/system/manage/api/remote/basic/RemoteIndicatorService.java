@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.api.remote.basic;
 
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -35,5 +36,23 @@ public interface RemoteIndicatorService {
      */
     @GetMapping(API_PREFIX_INDICATOR + "/listByCodes")
     R<List<IndicatorDTO>> selectIndicatorByCodeList(@RequestParam("indicatorCodes") List<String> indicatorCodes);
+
+    /**
+     * 查找指标列表-树结构
+     *
+     * @param indicatorDTO 指标DTO
+     * @return 结果
+     */
+    @GetMapping(API_PREFIX_INDICATOR + "/remoteTreeList")
+    R<List<Tree<Long>>> selectIndicatorTreeList(@RequestParam("indicatorDTO") IndicatorDTO indicatorDTO);
+
+    /**
+     * 查找指标列表结构
+     *
+     * @param indicatorDTO 指标DTO
+     * @return 结果
+     */
+    @GetMapping(API_PREFIX_INDICATOR + "/remoteList")
+    R<List<IndicatorDTO>> selectIndicatorList(@RequestParam("indicatorDTO") IndicatorDTO indicatorDTO);
 
 }

@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
+import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
@@ -23,9 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**
@@ -86,6 +87,65 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     }
 
     /**
+     * 获取指标列表
+     *
+     * @return
+     */
+    @Override
+    public List<Tree<Long>> selectIndicatorList() {
+        IndicatorDTO indicatorDTO = new IndicatorDTO();
+        R<List<Tree<Long>>> listR = indicatorService.selectIndicatorTreeList(indicatorDTO);
+        if (StringUtils.isNotEmpty(listR.getData())) {
+            throw new ServiceException("指标不存在 请联系管理员！");
+        } else {
+            return listR.getData();
+        }
+    }
+
+    /**
+     * 查询目标制定树结构列表-树结构
+     *
+     * @param targetSettingDTO 目标制定
+     * @return 目标制定
+     */
+    @Override
+    public List<TargetSettingDTO> selectTargetSettingTreeList(TargetSettingDTO targetSettingDTO) {
+        Integer targetYear = targetSettingDTO.getTargetYear();
+        if (StringUtils.isNull(targetYear)) {
+            throw new ServiceException("请输入目标年度");
+        }
+        TargetSetting targetSetting = new TargetSetting();
+        BeanUtils.copyProperties(targetSettingDTO, targetSetting);
+        List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingList(targetSetting);
+        IndicatorDTO indicatorDTO = new IndicatorDTO();
+        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO);
+        if (StringUtils.isNotEmpty(listR.getData())) {
+            throw new ServiceException("指标不存在 请联系管理员！");
+        }
+        List<IndicatorDTO> indicatorList = listR.getData();
+        if (StringUtils.isEmpty(targetSettingDTOS)) {
+            return targetSettingDTOS;
+        }
+
+//                List<PerformanceRankFactorDTO> updatePerformanceRankFactor =
+//                performanceRankFactorAfter.stream().filter(performanceRankFactorDTO ->
+//                        performanceRankFactorBefore.stream().map(PerformanceRankFactorDTO::getPerformanceRankFactorId)
+//                                .collect(Collectors.toList()).contains(performanceRankFactorDTO.getPerformanceRankFactorId())
+//                ).collect(Collectors.toList());
+
+        List<IndicatorDTO> update =
+                indicatorList.stream().filter(indicator ->
+                        targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId)
+                                .collect(Collectors.toList()).contains(indicatorDTO.getIndicatorId())
+                ).collect(Collectors.toList());
+
+        for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+            Long indicatorId = settingDTO.getIndicatorId();
+        }
+        return null;
+    }
+
+    /**
      * 查询经营分析报表列表
      *
      * @param targetSettingDTO 目标制定
@@ -116,7 +176,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
 
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
-        if (StringUtils.isNotEmpty(targetSettingDTOS)){
+        if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             for (TargetSettingDTO settingDTO : targetSettingDTOS) {
                 //年度目标值
                 BigDecimal targetValue = settingDTO.getTargetValue();
@@ -124,8 +184,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 BigDecimal yearCycleActual = settingDTO.getYearCycleActual();
                 //目标完成率
                 BigDecimal targetPercentageComplete = settingDTO.getTargetPercentageComplete();
-                if (yearCycleActual != null && yearCycleActual.compareTo(new BigDecimal("0")) != 0){
-                    if (targetValue.compareTo(new BigDecimal("0")) != 0 ){
+                if (yearCycleActual != null && yearCycleActual.compareTo(new BigDecimal("0")) != 0) {
+                    if (targetValue.compareTo(new BigDecimal("0")) != 0) {
                         targetPercentageComplete = yearCycleActual.divide(targetValue);
                     }
                 }
@@ -135,6 +195,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
         return targetSettingDTOS;
     }
+
     /**
      * 新增目标制定
      *
@@ -237,7 +298,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param targetSettingDtos 需要删除的目标制定主键
      * @return 结果
      */
-
     @Override
     public int deleteTargetSettingByTargetSettingIds(List<TargetSettingDTO> targetSettingDtos) {
         List<Long> stringList = new ArrayList<>();
@@ -372,7 +432,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     private void operate(List<TargetSettingOrderDTO> targetSettingOrderAfter, TargetSettingDTO targetSetting) {
         List<TargetSettingOrderDTO> targetSettingOrderBefore = targetSettingOrderService.selectTargetSettingOrderByTargetSettingId(targetSetting.getTargetSettingId());
-        // 交集  更新
+        // system-manage  更新
         List<TargetSettingOrderDTO> updateTargetSettingOrder =
                 targetSettingOrderAfter.stream().filter(targetSettingOrderDTO ->
                         targetSettingOrderBefore.stream().map(TargetSettingOrderDTO::getHistoryYear)
@@ -402,9 +462,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     public TargetSettingDTO selectOrderTargetSettingList(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
         Integer historyNum = targetSettingDTO.getHistoryNum();
-        if (StringUtils.isNull(targetSettingDTO.getTargetSettingId())) {
-            targetSettingDTO.setTargetSettingId(null);
-        }
+        targetSettingDTO.setTargetSettingId(null);
         IndicatorDTO indicatorDTO = getIndicator(IndicatorCode.ORDER.getCode());
         TargetSetting targetSetting = new TargetSetting();
         BeanUtils.copyProperties(targetSettingDTO, targetSetting);
@@ -574,7 +632,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     }
 
     /**
-     * 获取历史年份列表
+     * 获取历史年份列表-倒顺
      *
      * @param targetYear 目标年度
      * @param historyNum 历史年份数
@@ -583,6 +641,21 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     private static List<Integer> getHistoryYearList(Integer targetYear, Integer historyNum) {
         List<Integer> historyNumS = new ArrayList<>();
         for (int i = 1; i <= historyNum; i++) {
+            historyNumS.add(targetYear - i);
+        }
+        return historyNumS;
+    }
+
+    /**
+     * 获取历史年份列表-顺序
+     *
+     * @param targetYear 目标年度
+     * @param historyNum 历史年份数
+     * @return
+     */
+    private static List<Integer> getHistoryYearOppositeList(Integer targetYear, Integer historyNum) {
+        List<Integer> historyNumS = new ArrayList<>();
+        for (int i = historyNum; i >= 1; i--) {
             historyNumS.add(targetYear - i);
         }
         return historyNumS;
@@ -615,7 +688,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     public TargetSettingDTO saveIncomeTargetSetting(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
         Long indicatorId = getIndicator(IndicatorCode.INCOME.getCode()).getIndicatorId();
-        List<Integer> historyNumS = getHistoryYearList(targetYear, 3);
         List<TargetSettingIncomeVO> targetSettingIncomeVOS = targetSettingDTO.getTargetSettingIncomeVOS();
         TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorId);
         targetSettingDTO.setTargetSettingType(2);
@@ -681,7 +753,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         Integer targetYear = targetSettingDTO.getTargetYear();
         IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.INCOME.getCode());
         IndicatorDTO indicatorOrderDTO = getIndicator(IndicatorCode.ORDER.getCode());
-        List<Integer> historyNumS = getHistoryYearList(targetYear + 1, 4);
+        List<Integer> historyNumS = getHistoryYearOppositeList(targetYear + 1, 4);
         TargetSetting targetSetting = new TargetSetting();
         BeanUtils.copyProperties(targetSettingDTO, targetSetting);
         targetSetting.setIndicatorId(indicatorIncomeDTO.getIndicatorId());
@@ -695,7 +767,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();
             for (int i = 0; i < historyNumS.size(); i++) {
                 TargetSettingIncomeVO targetSettingIncomeVO = new TargetSettingIncomeVO();
-                if (i == 0) {//当年  // 目标值 挑战值 保底值  //本年增量订单-订单金额:从经营云-目标制定-公司目标生成-销售订单目标制定中获取当年目标值
+                if (i == 3) {//当年  // 目标值 挑战值 保底值  //本年增量订单-订单金额:从经营云-目标制定-公司目标生成-销售订单目标制定中获取当年目标值
                     if (StringUtils.isNotNull(targetSettingByIndicator)) {
                         BigDecimal targetValue = targetSettingByIndicator.getTargetValue();
                         targetSettingIncomeVO.setMoney(targetValue);
@@ -709,38 +781,38 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     targetSettingIncomeVO.setIncome(zero);
                     targetSettingIncomeVO.setYearName("本年增量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
-                } else if (i == 1) {//前一年
+                } else if (i == 2) {//前一年
                     targetSettingIncomeVO.setMoney(zero);
                     targetSettingIncomeVO.setConversion(zero);
                     targetSettingIncomeVO.setIncome(zero);
-                    targetSettingIncomeVO.setYearName(targetYear - i + "年存量订单");
+                    targetSettingIncomeVO.setYearName(targetYear - 1 + "年存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
-                } else if (i == 2) {//前两年
+                } else if (i == 1) {//前两年
                     targetSettingIncomeVO.setMoney(zero);
                     targetSettingIncomeVO.setConversion(zero);
                     targetSettingIncomeVO.setIncome(zero);
-                    targetSettingIncomeVO.setYearName(targetYear - i + "年存量订单");
+                    targetSettingIncomeVO.setYearName(targetYear - 2 + "年存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
-                } else if (i == 3) {//前三年
+                } else if (i == 0) {//前三年
                     targetSettingIncomeVO.setMoney(zero);
                     targetSettingIncomeVO.setConversion(zero);
                     targetSettingIncomeVO.setIncome(zero);
-                    targetSettingIncomeVO.setYearName(targetYear - i + "年及以前存量订单");
+                    targetSettingIncomeVO.setYearName(targetYear - 3 + "年及以前存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 }
             }
             targetSettingDTO.setTargetSettingIncomeVOS(targetSettingIncomeVOS);
             return targetSettingDTO;
         }
-        TargetSettingDTO TargetSetting = targetSettingDTOS.get(0);
-        Long targetSettingId = TargetSetting.getTargetSettingId();
+        TargetSettingDTO setting = targetSettingDTOS.get(0);
+        Long targetSettingId = setting.getTargetSettingId();
         List<TargetSettingIncomeDTO> targetSettingIncomeDTOS = targetSettingIncomeService.selectTargetSettingIncomeByHistoryNumS(targetSettingId);
         TargetSettingIncomeDTO targetSettingIncomeDTO = targetSettingIncomeDTOS.get(0);
         List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();
         // dtoToVo
         for (int i = 0; i < historyNumS.size(); i++) {
             TargetSettingIncomeVO targetSettingIncomeVO = new TargetSettingIncomeVO();
-            if (i == 0) {//当年
+            if (i == 3) {//当年
                 targetSettingDTO.setChallengeValue(zero);
                 targetSettingDTO.setTargetValue(zero);
                 targetSettingDTO.setGuaranteedValue(zero);
@@ -752,31 +824,32 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 }
                 targetSettingIncomeVO.setYearName("本年增量订单");
                 targetSettingIncomeVOS.add(targetSettingIncomeVO);
-            } else if (i == 1) {//前一年
+            } else if (i == 2) {//前一年
                 BigDecimal income = targetSettingIncomeDTO.getMoneyBeforeOne().multiply(targetSettingIncomeDTO.getConversionBeforeOne());
                 targetSettingIncomeVO.setIncome(income);
                 targetSettingIncomeVO.setMoney(targetSettingIncomeDTO.getMoneyBeforeOne());
                 targetSettingIncomeVO.setConversion(targetSettingIncomeDTO.getConversionBeforeOne());
-                targetSettingIncomeVO.setYearName(targetYear - i + "年存量订单");
+                targetSettingIncomeVO.setYearName(targetYear - 1 + "年存量订单");
                 targetSettingIncomeVOS.add(targetSettingIncomeVO);
-            } else if (i == 2) {//前两年
+            } else if (i == 1) {//前两年
                 BigDecimal income = targetSettingIncomeDTO.getMoneyBeforeTwo().multiply(targetSettingIncomeDTO.getConversionBeforeTwo());
                 targetSettingIncomeVO.setIncome(income);
                 targetSettingIncomeVO.setMoney(targetSettingIncomeDTO.getMoneyBeforeTwo());
                 targetSettingIncomeVO.setConversion(targetSettingIncomeDTO.getConversionBeforeTwo());
-                targetSettingIncomeVO.setYearName(targetYear - i + "年存量订单");
+                targetSettingIncomeVO.setYearName(targetYear - 2 + "年存量订单");
                 targetSettingIncomeVOS.add(targetSettingIncomeVO);
-            } else if (i == 3) {//前三年
+            } else if (i == 0) {//前三年
                 BigDecimal income = targetSettingIncomeDTO.getMoneyBeforeThree().multiply(targetSettingIncomeDTO.getConversionBeforeThree());
                 targetSettingIncomeVO.setIncome(income);
                 targetSettingIncomeVO.setMoney(targetSettingIncomeDTO.getMoneyBeforeThree());
                 targetSettingIncomeVO.setConversion(targetSettingIncomeDTO.getConversionBeforeThree());
-                targetSettingIncomeVO.setYearName(targetYear - i + "年及以前存量订单");
+                targetSettingIncomeVO.setYearName(targetYear - 3 + "年及以前存量订单");
                 targetSettingIncomeVOS.add(targetSettingIncomeVO);
             }
         }
-        TargetSetting.setTargetSettingIncomeVOS(targetSettingIncomeVOS);
-        return TargetSetting;
+        setting.setOrderTargetSetting(targetSettingByIndicator);
+        setting.setTargetSettingIncomeVOS(targetSettingIncomeVOS);
+        return setting;
     }
 
     /**
