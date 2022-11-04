@@ -1146,7 +1146,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         Integer targetYear = targetSettingDTO.getTargetYear();
         List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS = targetSettingDTO.getTargetSettingIndicatorDTOS();
         List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = targetSettingDTO.getTargetSettingTypeDTOS();
-        TargetSettingRecoveryDTO targetSettingRecoveryDTO = targetSettingDTO.getTargetSettingRecoveryDTO();
+//        TargetSettingRecoveryDTO targetSettingRecoveryDTO = targetSettingDTO.getTargetSettingRecoveryDTO();
+        List<Map<String, Object>> targetSettingRecoveryList = targetSettingDTO.getTargetSettingRecoveryList();
+        TargetSettingRecoveryDTO targetSettingRecoveryDTO = recoveryListToDto(targetSettingRecoveryList, targetSettingDTO);
         targetSettingDTO.setSort(0);
         targetSettingDTO.setTargetSettingType(3);
         targetSettingDTO.setIndicatorId(indicatorIncomeDTO.getIndicatorId());
@@ -1187,6 +1189,41 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     }
 
     /**
+     * Recovery List → DTO
+     *
+     * @param targetSettingRecoveryList
+     * @param targetSettingDTO
+     * @return
+     */
+    private TargetSettingRecoveryDTO recoveryListToDto(List<Map<String, Object>> targetSettingRecoveryList, TargetSettingDTO targetSettingDTO) {
+        TargetSettingRecoveryDTO targetSettingRecoveryDTO = new TargetSettingRecoveryDTO();
+        if (StringUtils.isEmpty(targetSettingRecoveryList)) {
+            return targetSettingRecoveryDTO;
+        } else {
+            for (Map<String, Object> stringObjectMap : targetSettingRecoveryList) {
+                if (StringUtils.isNotNull(stringObjectMap)) {
+                    String s = stringObjectMap.get("name").toString();
+                    switch (s) {
+                        case "上年年末应收账款余额":
+                            targetSettingRecoveryDTO.setBalanceReceivables(new BigDecimal(stringObjectMap.get("value").toString()));
+                            break;
+                        case "DSO基线":
+                            targetSettingRecoveryDTO.setBaselineValue(Integer.valueOf(stringObjectMap.get("value").toString()));
+                            break;
+                        case "DSO改进天数":
+                            targetSettingRecoveryDTO.setImproveDays(Integer.valueOf(stringObjectMap.get("value").toString()));
+                            break;
+                        case "平均增值税率（%）":
+                            targetSettingRecoveryDTO.setAddRate(new BigDecimal(stringObjectMap.get("value").toString()));
+                            break;
+                    }
+                }
+            }
+        }
+        return targetSettingRecoveryDTO;
+    }
+
+    /**
      * 整合两个表
      *
      * @param targetSettingIndicatorDTOS 指标表
@@ -1194,7 +1231,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param targetSettingId            目标制定ID
      * @return
      */
-    private List<TargetSettingRecoveriesDTO> integration(List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS, List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS, Long targetSettingId) {
+    private List<TargetSettingRecoveriesDTO> integration
+    (List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS, List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS, Long targetSettingId) {
         List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOS = new ArrayList<>();
         if (StringUtils.isNotEmpty(targetSettingIndicatorDTOS)) {
             for (TargetSettingRecoveriesDTO targetSettingIndicatorDTO : targetSettingIndicatorDTOS) {
