@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -763,6 +762,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         // 当年份销售订单的目标制定-当年
         TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorOrderDTO.getIndicatorId());
         BigDecimal zero = new BigDecimal(0);
+        if (StringUtils.isNull(targetSettingByIndicator)) {
+            targetSettingByIndicator = new TargetSettingDTO();
+            targetSettingByIndicator.setChallengeValue(zero);
+            targetSettingByIndicator.setGuaranteedValue(zero);
+            targetSettingByIndicator.setTargetValue(zero);
+        }
         if (StringUtils.isEmpty(targetSettingDTOS)) {
             List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();
             for (int i = 0; i < historyNumS.size(); i++) {
@@ -801,6 +806,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 }
             }
+            targetSettingDTO.setOrderTargetSetting(targetSettingByIndicator);
             targetSettingDTO.setTargetSettingIncomeVOS(targetSettingIncomeVOS);
             return targetSettingDTO;
         }
