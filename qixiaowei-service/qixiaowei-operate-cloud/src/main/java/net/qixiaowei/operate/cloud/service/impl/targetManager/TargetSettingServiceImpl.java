@@ -1,6 +1,9 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
@@ -127,22 +130,22 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         if (StringUtils.isEmpty(targetSettingDTOS)) {
             return targetSettingDTOS;
         }
-
-//                List<PerformanceRankFactorDTO> updatePerformanceRankFactor =
-//                performanceRankFactorAfter.stream().filter(performanceRankFactorDTO ->
-//                        performanceRankFactorBefore.stream().map(PerformanceRankFactorDTO::getPerformanceRankFactorId)
-//                                .collect(Collectors.toList()).contains(performanceRankFactorDTO.getPerformanceRankFactorId())
-//                ).collect(Collectors.toList());
-
-        List<IndicatorDTO> update =
-                indicatorList.stream().filter(indicator ->
-                        targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId)
-                                .collect(Collectors.toList()).contains(indicatorDTO.getIndicatorId())
-                ).collect(Collectors.toList());
-
         for (TargetSettingDTO settingDTO : targetSettingDTOS) {
-            Long indicatorId = settingDTO.getIndicatorId();
+            for (IndicatorDTO dto : indicatorList) {
+                if (dto.getIndicatorId().equals(settingDTO.getIndicatorId())) {
+                    settingDTO.setParentIndicatorId(dto.getParentIndicatorId());
+                    settingDTO.setIndicatorName(dto.getIndicatorName());
+                    settingDTO.setChoiceFlag(dto.getChoiceFlag());
+                }
+            }
         }
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("indicatorId");
+        treeNodeConfig.setNameKey("indicatorName");
+        treeNodeConfig.setParentIdKey("parentIndicatorId");
+        TreeUtil.build(targetSettingDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+
+        });
         return null;
     }
 
@@ -550,6 +553,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
         if (targetSettingOrderDTOS.size() == historyNum) {
             settingDTO.setTargetSettingOrderDTOS(targetSettingOrderDTOS);
+            calculateGrowthRate(targetSettingOrderDTOS);
             return settingDTO;
         }
         for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDTOS) {
@@ -567,6 +571,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         } else {
             insertOrderRow(historyNumS, targetSettingOrderDTOS);
         }
+        calculateGrowthRate(targetSettingOrderDTOS);
         settingDTO.setTargetSettingOrderDTOS(targetSettingOrderDTOS);
         return settingDTO;
     }
@@ -597,6 +602,15 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingOrderDTOS.sort((TargetSettingOrderDTO o1, TargetSettingOrderDTO o2) -> {
             return o2.getHistoryYear() - o1.getHistoryYear();
         });
+        calculateGrowthRate(targetSettingOrderDTOS);
+    }
+
+    /**
+     * 计算年度增长率
+     *
+     * @param targetSettingOrderDTOS
+     */
+    private static void calculateGrowthRate(List<TargetSettingOrderDTO> targetSettingOrderDTOS) {
         BigDecimal beforeRate = new BigDecimal(0);
         for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDTOS) {
             BigDecimal historyActual = targetSettingOrderDTO.getHistoryActual();
@@ -604,7 +618,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 BigDecimal subtract = historyActual.subtract(beforeRate);
                 BigDecimal divide;
                 if (!historyActual.equals(BigDecimal.ZERO)) {
-                    divide = subtract.divide(historyActual, 2, RoundingMode.HALF_UP);
+                    divide = subtract.divide(historyActual, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
                 } else {
                     divide = BigDecimal.ZERO;
                 }
@@ -613,7 +627,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             } else {
                 beforeRate = new BigDecimal(0);
             }
-            targetSettingOrderDTO.setGrowthRate(beforeRate);
         }
     }
 
@@ -1146,7 +1159,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         Integer targetYear = targetSettingDTO.getTargetYear();
         List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS = targetSettingDTO.getTargetSettingIndicatorDTOS();
         List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = targetSettingDTO.getTargetSettingTypeDTOS();
-//        TargetSettingRecoveryDTO targetSettingRecoveryDTO = targetSettingDTO.getTargetSettingRecoveryDTO();
         List<Map<String, Object>> targetSettingRecoveryList = targetSettingDTO.getTargetSettingRecoveryList();
         TargetSettingRecoveryDTO targetSettingRecoveryDTO = recoveryListToDto(targetSettingRecoveryList, targetSettingDTO);
         targetSettingDTO.setSort(0);

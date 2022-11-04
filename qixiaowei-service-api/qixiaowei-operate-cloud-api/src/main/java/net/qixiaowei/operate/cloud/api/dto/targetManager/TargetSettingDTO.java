@@ -57,6 +57,14 @@ public class TargetSettingDTO {
      */
     private Long indicatorId;
     /**
+     * 指标ID
+     */
+    private String indicatorName;
+    /**
+     * 必选标记:0非必选;1必选
+     */
+    private Integer choiceFlag;
+    /**
      * 指标ID集合
      */
     private List<Long> indicatorIds;
@@ -149,6 +157,9 @@ public class TargetSettingDTO {
      * 目标制定销售回款集合表
      */
     private List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS;
-
+    /**
+     * 父节点ID
+     */
+    private Long parentIndicatorId;
 }
 
