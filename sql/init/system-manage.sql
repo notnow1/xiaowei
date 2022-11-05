@@ -1136,7 +1136,7 @@ VALUES (6, '玻利维亚', 201, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:5
        (6, '乌拉圭', 205, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51'),
        (6, '巴拉圭', 206, 0, 0, '2022-10-19 15:57:51', 0, '2022-10-19 15:57:51');
 
-INSERT INTO system-manage.dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort,
+INSERT INTO dictionary_data (dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort,
                                              remark, status, delete_flag, create_by, create_time, update_by,
                                              update_time)
 VALUES (2, '通用件', '1', 0, 1, '', 0, 0, 1, '2022-10-08 10:02:14', 1, '2022-10-19 16:22:16'),
@@ -1146,8 +1146,23 @@ VALUES (2, '通用件', '1', 0, 1, '', 0, 0, 1, '2022-10-08 10:02:14', 1, '2022-
        (2, '外协件', '5', 0, 5, '', 0, 0, 1, '2022-10-08 10:02:14', 1, '2022-10-20 19:32:09'),
        (2, '原材料', '6', 0, 6, '', 0, 0, 1, '2022-10-08 10:02:14', 1, '2022-10-20 19:32:09');
 
-INSERT INTO system-manage.dictionary_type (dictionary_type,dictionary_name,menu_zeroth_name,menu_first_name,menu_second_name,remark,status,delete_flag,create_by,create_time,update_by,update_time) VALUES
+INSERT INTO dictionary_type (dictionary_type,dictionary_name,menu_zeroth_name,menu_first_name,menu_second_name,remark,status,delete_flag,create_by,create_time,update_by,update_time) VALUES
     ('PRODUCT_CATEGORY','产品类别','设置管理','经营云配置','产品配置','',0,0,0,'2022-10-07 17:07:59',1,'2022-10-21 13:49:01');
 
+INSERT INTO product_package
+(product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(1, '经营云', NULL, NULL, 1, 0, 1, '2022-10-15 17:01:31', 1, '2022-10-15 17:01:37');
+INSERT INTO product_package
+(product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(2, '销售云', NULL, NULL, 2, 0, 1, '2022-10-15 17:01:31', 1, '2022-10-15 17:01:37');
+INSERT INTO product_package
+(product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(3, '财务云', NULL, NULL, 3, 0, 1, '2022-10-15 17:01:31', 1, '2022-10-15 17:01:37');
+INSERT INTO product_package
+(product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(4, '人才云', NULL, NULL, 4, 0, 1, '2022-10-15 17:01:31', 1, '2022-10-15 17:01:37');
+INSERT INTO product_package
+(product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time)
+VALUES(5, '智慧云', NULL, NULL, 5, 0, 1, '2022-10-15 17:03:03', 1, '2022-10-15 17:03:04');
 
 
