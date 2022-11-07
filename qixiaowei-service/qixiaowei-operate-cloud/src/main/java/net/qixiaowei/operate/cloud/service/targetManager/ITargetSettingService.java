@@ -33,12 +33,12 @@ public interface ITargetSettingService {
     List<TargetSettingDTO> selectTargetSettingList(TargetSettingDTO targetSettingDTO);
 
     /**
-     * 查询目标制定列表
+     * 查询目标制定列表 - 树结构
      *
      * @param targetSettingDTO 目标制定
      * @return 目标制定集合
      */
-    List<TargetSettingDTO> selectTargetSettingTreeList(TargetSettingDTO targetSettingDTO);
+    List<Tree<Long>> selectTargetSettingTreeList(TargetSettingDTO targetSettingDTO);
 
     /**
      * 查询经营分析报表列表
@@ -62,7 +62,7 @@ public interface ITargetSettingService {
      * @param targetSettingDTO 目标制定
      * @return 结果
      */
-    int updateTargetSetting(TargetSettingDTO targetSettingDTO);
+    int saveTargetSetting(TargetSettingDTO targetSettingDTO);
 
     /**
      * 批量修改目标制定
@@ -73,20 +73,12 @@ public interface ITargetSettingService {
     int updateTargetSettings(List<TargetSettingDTO> targetSettingDtos);
 
     /**
-     * 批量新增目标制定
-     *
-     * @param targetSettingDtos 目标制定
-     * @return 结果
-     */
-    int insertTargetSettings(List<TargetSettingDTO> targetSettingDtos);
-
-    /**
      * 逻辑批量删除目标制定
      *
      * @param targetSettingIds 需要删除的目标制定集合
      * @return 结果
      */
-    int logicDeleteTargetSettingByTargetSettingIds(List<Long> targetSettingIds);
+    int logicDeleteTargetSettingByTargetSettingIds(List<TargetSettingDTO> targetSettingIds);
 
     /**
      * 逻辑删除目标制定信息
@@ -95,31 +87,6 @@ public interface ITargetSettingService {
      * @return 结果
      */
     int logicDeleteTargetSettingByTargetSettingId(TargetSettingDTO targetSettingDTO);
-
-    /**
-     * 批量删除目标制定
-     *
-     * @param TargetSettingDtos
-     * @return 结果
-     */
-    int deleteTargetSettingByTargetSettingIds(List<TargetSettingDTO> TargetSettingDtos);
-
-    /**
-     * 逻辑删除目标制定信息
-     *
-     * @param targetSettingDTO
-     * @return 结果
-     */
-    int deleteTargetSettingByTargetSettingId(TargetSettingDTO targetSettingDTO);
-
-
-    /**
-     * 删除目标制定信息
-     *
-     * @param targetSettingId 目标制定主键
-     * @return 结果
-     */
-    int deleteTargetSettingByTargetSettingId(Long targetSettingId);
 
     /**
      * 导入Excel
@@ -198,4 +165,12 @@ public interface ITargetSettingService {
      * @return
      */
     List<Tree<Long>> selectIndicatorList();
+
+    /**
+     * 批量保存目标制定
+     *
+     * @param targetSettingDTOS
+     * @return
+     */
+    TargetSettingDTO saveTargetSettings(List<TargetSettingDTO> targetSettingDTOS);
 }

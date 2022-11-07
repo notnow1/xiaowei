@@ -78,6 +78,7 @@
         <if test="targetSetting.updateTime != null">
             and update_time=#{targetSetting.updateTime}
         </if>
+        ORDER BY sort ASC
     </select>
     <!--通过目标年份与指标获取目标制定-->
     <select id="selectTargetSettingByTargetYearAndIndicator"
@@ -104,7 +105,7 @@
             #{item}
         </foreach>
     </select>
-<!--    查询经营分析报表列表-->
+    <!--    查询经营分析报表列表-->
     <select id="selectAnalyseList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT target_setting_id,

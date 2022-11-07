@@ -41,6 +41,11 @@ public class RemoteIndicatorFallbackFactory implements FallbackFactory<RemoteInd
             public R<List<IndicatorDTO>> selectIndicatorList(IndicatorDTO indicatorDTO) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<IndicatorDTO>> selectIndicatorByIds(List<Long> indicatorIds) {
+                return R.fail("获取指标失败:" + throwable.getMessage());
+            }
         };
     }
 }

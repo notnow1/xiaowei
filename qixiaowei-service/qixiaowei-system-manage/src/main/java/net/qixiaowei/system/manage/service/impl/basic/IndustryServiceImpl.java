@@ -368,9 +368,9 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
-        // todo 0-默认,1-自定义
+        // todo 行业启用：1系统；2自定义
         int enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
-        if (enableType == 1) {
+        if (enableType == 2) {
             return selectIndustryTreeList(industryDTO);
         } else {
             IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();

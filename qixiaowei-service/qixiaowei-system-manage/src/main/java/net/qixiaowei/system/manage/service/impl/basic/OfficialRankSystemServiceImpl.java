@@ -310,7 +310,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         // ~先判断officialRankSystemDTO中的officialRankDecomposeDTOS是否为空，若是不为空则进行以下操作
         // 1需要根据officialRankSystemId查询之前的数据
         // 2判断分解rankDecomposeDimension有没有改动
-        // 3.1没有改动直接进行operate，operate需要进行跟获取到的BeforeDTO进行取交集和差集
+        // 3.1没有改动直接进行operate，operate需要进行跟获取到的BeforeDTO进行取system-manage和差集
         // 3.2改动了进行新增，并根据officialRankSystemId和rankDecomposeDimension删除之前在official_rank_decompose中的数据
         if (StringUtils.isEmpty(officialRankDecomposeDTOAfter)) {
             return 1;

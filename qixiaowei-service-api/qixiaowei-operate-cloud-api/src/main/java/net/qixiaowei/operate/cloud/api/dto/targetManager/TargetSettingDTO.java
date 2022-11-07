@@ -57,7 +57,7 @@ public class TargetSettingDTO {
      */
     private Long indicatorId;
     /**
-     * 指标ID
+     * 指标名称
      */
     private String indicatorName;
     /**
@@ -65,9 +65,21 @@ public class TargetSettingDTO {
      */
     private Integer choiceFlag;
     /**
+     * 指标编码
+     */
+    private String indicatorCode;
+    /**
+     * 父节点ID
+     */
+    private Long parentIndicatorId;
+    /**
      * 指标ID集合
      */
     private List<Long> indicatorIds;
+    /**
+     * 标识（1-不可编辑和删除，2-可编辑不可删除，3-可编辑可删除,0-非预置数据）
+     */
+    private Integer isPreset;
     /**
      * 目标年度
      */
@@ -106,6 +118,10 @@ public class TargetSettingDTO {
      * 排序
      */
     private Integer sort;
+    /**
+     * 子级
+     */
+    private List<TargetSettingDTO> children;
     /**
      * 删除标记:0未删除;1已删除
      */
@@ -157,9 +173,5 @@ public class TargetSettingDTO {
      * 目标制定销售回款集合表
      */
     private List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS;
-    /**
-     * 父节点ID
-     */
-    private Long parentIndicatorId;
-}
 
+}

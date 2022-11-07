@@ -6,10 +6,7 @@ import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,20 +29,26 @@ public class RemoteIndicator implements RemoteIndicatorService {
     }
 
     @Override
-    @GetMapping("/listByCodes")
-    public R<List<IndicatorDTO>> selectIndicatorByCodeList(List<String> indicatorCodes) {
+    @PostMapping("/listByCodes")
+    public R<List<IndicatorDTO>> selectIndicatorByCodeList(@RequestBody List<String> indicatorCodes) {
         return R.ok(indicatorService.selectIndicatorByCodeList(indicatorCodes));
     }
 
     @Override
-    @GetMapping("/remoteTreeList")
-    public R<List<Tree<Long>>> selectIndicatorTreeList(@RequestParam("indicatorDTO") IndicatorDTO indicatorDTO) {
+    @PostMapping("/remoteTreeList")
+    public R<List<Tree<Long>>> selectIndicatorTreeList(@RequestBody IndicatorDTO indicatorDTO) {
         return R.ok(indicatorService.selectTreeList(indicatorDTO));
     }
 
     @Override
-    @GetMapping("/remoteList")
-    public R<List<IndicatorDTO>> selectIndicatorList(IndicatorDTO indicatorDTO) {
-        return R.ok(indicatorService.selectIndicatorList(indicatorDTO));
+    @PostMapping("/remoteList")
+    public R<List<IndicatorDTO>> selectIndicatorList(@RequestBody IndicatorDTO indicatorDTO) {
+        return R.ok(indicatorService.selectTargetIndicatorList(indicatorDTO));
+    }
+
+    @Override
+    @PostMapping("/listByIds")
+    public R<List<IndicatorDTO>> selectIndicatorByIds(@RequestBody List<Long> indicatorIds) {
+        return R.ok(indicatorService.selectIndicatorByIds(indicatorIds));
     }
 }

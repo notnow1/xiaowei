@@ -164,4 +164,20 @@ public interface IndicatorMapper {
      * @return
      */
     List<IndicatorDTO> selectIndicatorByCodeList(@Param("indicatorCodes") List<String> indicatorCodes);
+
+    /**
+     * 查找目标制定指标列表
+     *
+     * @param indicatorDTO
+     * @return
+     */
+    List<IndicatorDTO> selectTargetIndicatorList(@Param("indicatorDTO") IndicatorDTO indicatorDTO);
+
+    /**
+     * 通过指标IDS查找指标
+     *
+     * @param indicatorIds
+     * @return
+     */
+    List<IndicatorDTO> selectIndicatorByIds(@Param("indicatorIds") List<Long> indicatorIds);
 }

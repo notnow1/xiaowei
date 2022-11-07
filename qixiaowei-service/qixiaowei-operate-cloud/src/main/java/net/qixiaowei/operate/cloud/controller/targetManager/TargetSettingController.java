@@ -83,29 +83,28 @@ public class TargetSettingController extends BaseController {
      * 修改目标制定
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:edit")
-    @Log(title = "修改目标制定", businessType = BusinessType.UPDATE)
-    @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody TargetSettingDTO targetSettingDTO) {
-        return toAjax(targetSettingService.updateTargetSetting(targetSettingDTO));
+//    @Log(title = "修改目标制定", businessType = BusinessType.UPDATE)
+    @PostMapping("/edits")
+    public AjaxResult editSaves(@RequestBody List<TargetSettingDTO> targetSettingDTOS) {
+        return AjaxResult.success(targetSettingService.saveTargetSettings(targetSettingDTOS));
     }
 
     /**
      * 逻辑删除目标制定
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:remove")
-    @Log(title = "删除目标制定", businessType = BusinessType.DELETE)
+//    @Log(title = "删除目标制定", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody TargetSettingDTO targetSettingDTO) {
         return toAjax(targetSettingService.logicDeleteTargetSettingByTargetSettingId(targetSettingDTO));
     }
 
     /**
-     * 逻辑删除目标制定
+     * 获取指标列表
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:remove")
-    @Log(title = "目标制定详情", businessType = BusinessType.DELETE)
     @GetMapping("/indicator")
-    public AjaxResult indicator(@RequestBody TargetSettingDTO targetSettingDTO) {
+    public AjaxResult indicator(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectIndicatorList());
     }
 

@@ -75,6 +75,17 @@ public class IndicatorServiceImpl implements IIndicatorService {
     }
 
     /**
+     * 关键经营结果获取Indicator
+     *
+     * @param indicatorDTO 指标表
+     * @return
+     */
+    @Override
+    public List<IndicatorDTO> selectTargetIndicatorList(IndicatorDTO indicatorDTO) {
+        return indicatorMapper.selectTargetIndicatorList(indicatorDTO);
+    }
+
+    /**
      * 查询指标表列表通过指标编码
      *
      * @param indicatorCode 指标编码
@@ -328,6 +339,17 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Override
     public List<IndicatorDTO> selectIndicatorByCodeList(List<String> indicatorCodes) {
         return indicatorMapper.selectIndicatorByCodeList(indicatorCodes);
+    }
+
+    /**
+     * 通过指标IDS查找指标
+     *
+     * @param indicatorIds
+     * @return
+     */
+    @Override
+    public List<IndicatorDTO> selectIndicatorByIds(List<Long> indicatorIds) {
+        return indicatorMapper.selectIndicatorByIds(indicatorIds);
     }
 
     /**

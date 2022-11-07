@@ -30,6 +30,14 @@ public interface IIndicatorService {
     List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO);
 
     /**
+     * 关键经营结果获取Indicator
+     *
+     * @param indicatorDTO 指标表
+     * @return 指标表集合
+     */
+    List<IndicatorDTO> selectTargetIndicatorList(IndicatorDTO indicatorDTO);
+
+    /**
      * 查询指标表列表通过指标编码
      *
      * @param indicatorCode 指标编码
@@ -140,4 +148,13 @@ public interface IIndicatorService {
      * @return
      */
     List<IndicatorDTO> selectIndicatorByCodeList(List<String> indicatorCodes);
+
+    /**
+     * 通过指标IDS查找指标
+     *
+     * @param indicatorIds
+     * @return
+     */
+    List<IndicatorDTO> selectIndicatorByIds(List<Long> indicatorIds);
+
 }
