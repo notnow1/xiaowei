@@ -1,0 +1,112 @@
+package net.qixiaowei.operate.cloud.service.targetManager;
+
+import java.util.List;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
+
+
+/**
+* TargetOutcomeService接口
+* @author TANGMICHI
+* @since 2022-11-07
+*/
+public interface ITargetOutcomeService{
+    /**
+    * 查询目标结果表
+    *
+    * @param targetOutcomeId 目标结果表主键
+    * @return 目标结果表
+    */
+    TargetOutcomeDTO selectTargetOutcomeByTargetOutcomeId(Long targetOutcomeId);
+
+    /**
+    * 查询目标结果表列表
+    *
+    * @param targetOutcomeDTO 目标结果表
+    * @return 目标结果表集合
+    */
+    List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO);
+
+    /**
+    * 新增目标结果表
+    *
+    * @param targetOutcomeDTO 目标结果表
+    * @return 结果
+    */
+    TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO);
+
+    /**
+    * 修改目标结果表
+    *
+    * @param targetOutcomeDTO 目标结果表
+    * @return 结果
+    */
+    int updateTargetOutcome(TargetOutcomeDTO targetOutcomeDTO);
+
+    /**
+    * 批量修改目标结果表
+    *
+    * @param targetOutcomeDtos 目标结果表
+    * @return 结果
+    */
+    int updateTargetOutcomes(List<TargetOutcomeDTO> targetOutcomeDtos);
+
+    /**
+    * 批量新增目标结果表
+    *
+    * @param targetOutcomeDtos 目标结果表
+    * @return 结果
+    */
+    int insertTargetOutcomes(List<TargetOutcomeDTO> targetOutcomeDtos);
+
+    /**
+    * 逻辑批量删除目标结果表
+    *
+    * @param targetOutcomeIds 需要删除的目标结果表集合
+    * @return 结果
+    */
+    int logicDeleteTargetOutcomeByTargetOutcomeIds(List<Long> targetOutcomeIds);
+
+    /**
+    * 逻辑删除目标结果表信息
+    *
+    * @param targetOutcomeDTO
+    * @return 结果
+    */
+    int logicDeleteTargetOutcomeByTargetOutcomeId(TargetOutcomeDTO targetOutcomeDTO);
+    /**
+    * 批量删除目标结果表
+    *
+    * @param TargetOutcomeDtos
+    * @return 结果
+    */
+    int deleteTargetOutcomeByTargetOutcomeIds(List<TargetOutcomeDTO> TargetOutcomeDtos);
+
+    /**
+    * 逻辑删除目标结果表信息
+    *
+    * @param targetOutcomeDTO
+    * @return 结果
+    */
+    int deleteTargetOutcomeByTargetOutcomeId(TargetOutcomeDTO targetOutcomeDTO);
+
+
+    /**
+    * 删除目标结果表信息
+    *
+    * @param targetOutcomeId 目标结果表主键
+    * @return 结果
+    */
+    int deleteTargetOutcomeByTargetOutcomeId(Long targetOutcomeId);
+    /**
+    * 导入Excel
+    * @param list
+    */
+    void importTargetOutcome(List<TargetOutcomeExcel> list);
+    /**
+    * 导出Excel
+    * @param targetOutcomeDTO
+    * @return
+    */
+    List<TargetOutcomeExcel> exportTargetOutcome(TargetOutcomeDTO targetOutcomeDTO);
+}

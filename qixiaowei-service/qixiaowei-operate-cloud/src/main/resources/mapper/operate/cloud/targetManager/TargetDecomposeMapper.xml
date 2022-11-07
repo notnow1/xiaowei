@@ -150,6 +150,7 @@
         WHERE target_year = #{targetDecompose.targetYear}
           and target_decompose_dimension_id = #{targetDecompose.targetDecomposeDimensionId}
           and time_dimension = #{targetDecompose.timeDimension}
+          and target_decompose_type=#{targetDecompose.targetDecomposeType}
           and delete_flag = 0
     </select>
     <!--    查询滚动预测列表-->
@@ -182,7 +183,7 @@
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
         </if>
         <if test="targetDecompose.targetDecomposeType != null">
-            and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
+            and td.target_decompose_type in (1,2,3)
         </if>
         <if test="targetDecompose.targetYear != null">
             and td.target_year like '%${targetDecompose.targetYear}%'
@@ -248,6 +249,7 @@
                update_time
         FROM target_decompose
         where time_dimension =#{timeDimension}
+        and target_decompose_type in (1,2,3)
     </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">
