@@ -227,8 +227,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeDTO> resultList(TargetDecomposeDTO targetDecomposeDTO) {
-
-        return null;
+        TargetDecompose targetDecompose = new TargetDecompose();
+        BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectResultList(targetDecompose);
+        return targetDecomposeDTOS;
     }
 
     /**

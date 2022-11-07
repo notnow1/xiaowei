@@ -19,7 +19,7 @@ public interface TargetDecomposeMapper {
     /**
      * 查询目标分解表
      *
-     * @param targetDecomposeId 目标分解(销售订单)表主键
+     * @param targetDecomposeId 目标分解表主键
      * @return 目标分解表
      */
     TargetDecomposeDTO selectTargetDecomposeByTargetDecomposeId(@Param("targetDecomposeId") Long targetDecomposeId);
@@ -112,4 +112,11 @@ public interface TargetDecomposeMapper {
      * @return 结果
      */
     int batchTargetDecompose(@Param("targetDecomposes") List<TargetDecompose> TargetDecomposes);
+
+    /**
+     * 查询经营结果分析报表列表
+     * @param targetDecompose
+     * @return
+     */
+    List<TargetDecomposeDTO> selectResultList(@Param("targetDecompose") TargetDecompose targetDecompose);
 }

@@ -412,11 +412,26 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      * @return
      */
     private void packTargetDecomposeHistory(TargetDecomposeDTO targetDecomposeDTO, List<TargetDecomposeHistory> targetDecomposeHistories, int i) {
+        String verNum = null;
+        //查询是否有生成之前的历史数据 取得版本号
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)){
+            TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryDTOS.get(targetDecomposeHistoryDTOS.size() - 1);
+            String version = targetDecomposeHistoryDTO.getVersion();
+            String substring = version.substring(1, 2);
+            int veri = Integer.parseInt(substring);
+            verNum = String.valueOf(veri+1);
+        }
         TargetDecomposeHistory targetDecomposeHistory = new TargetDecomposeHistory();
         //目标分解id
         targetDecomposeHistory.setTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
-        //版本号
-        targetDecomposeHistory.setVersion("V" + i + ".0");
+        if (verNum != null){
+            //版本号
+            targetDecomposeHistory.setVersion("V" + verNum + ".0");
+        }else {
+            //版本号
+            targetDecomposeHistory.setVersion("V" + i + ".0");
+        }
         //预测周期
         targetDecomposeHistory.setForecastCycle(this.packForecastCycle(targetDecomposeDTO));
         targetDecomposeHistory.setCreateBy(SecurityUtils.getUserId());
