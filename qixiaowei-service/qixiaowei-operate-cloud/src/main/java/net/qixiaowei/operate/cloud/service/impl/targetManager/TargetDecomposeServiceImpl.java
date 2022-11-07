@@ -72,6 +72,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             this.packDecompositionDimension(targetDecomposeDTO);
             String forecastCycle = this.packForecastCycle(targetDecomposeDTO);
             targetDecomposeDTO.setForecastCycle(forecastCycle);
+           this.packversion(targetDecomposeDTO);
         }
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
@@ -111,6 +112,31 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         } else {
             return targetDecomposeDTO;
         }
+    }
+
+    /**
+     * 封装版本号
+     * @param targetDecomposeDTO
+     * @return
+     */
+    private void packversion(TargetDecomposeDTO targetDecomposeDTO) {
+        String versionNum = "V";
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)){
+            if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)){
+                TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryDTOS.get(targetDecomposeHistoryDTOS.size() - 1);
+                String version = targetDecomposeHistoryDTO.getVersion();
+                String substring = version.substring(1, 2);
+                int veri = Integer.parseInt(substring);
+                versionNum = version+(veri+1)+".0";
+            }
+        }
+        if (StringUtils.equals(versionNum,"V")){
+            targetDecomposeDTO.setVersion("V1.0");
+        }else {
+            targetDecomposeDTO.setVersion(versionNum);
+        }
+
     }
 
     /**
@@ -229,6 +255,25 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeDTO> resultList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        //指标code集合
+        List<String> list = new ArrayList<>();
+        //订单（不含税）
+        list.add(IndicatorCode.ORDER.getCode());
+        //销售收入
+        list.add(IndicatorCode.INCOME.getCode());
+        //回款金额（含税）
+        list.add(IndicatorCode.RECEIVABLE.getCode());
+        //销售毛利
+        list.add(IndicatorCode.GROSS.getCode());
+        //净利润
+        list.add(IndicatorCode.PROFITS.getCode());
+        R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByCodeList(list);
+        if (StringUtils.isEmpty(listR.getData())) {
+            throw new ServiceException("指标不存在 请联系管理员！");
+        } else {
+            List<Long> collect = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+            targetDecompose.setIndicatorIds(collect);
+        }
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectResultList(targetDecompose);
         return targetDecomposeDTOS;
     }
@@ -1331,8 +1376,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                //比对人员id 只移交自己的 todo 修改为人员
-                if (targetDecomposeDetailsDTO.getPrincipalEmployeeId() == 66) {
+                //比对人员id 只移交自己的
+                if (targetDecomposeDetailsDTO.getPrincipalEmployeeId() == SecurityUtils.getEmployeeId()) {
                     TargetDecomposeDetails targetDecomposeDetails = new TargetDecomposeDetails();
                     targetDecomposeDetails.setTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                     targetDecomposeDetails.setPrincipalEmployeeId(targetDecomposeDTO.getPrincipalEmployeeId());

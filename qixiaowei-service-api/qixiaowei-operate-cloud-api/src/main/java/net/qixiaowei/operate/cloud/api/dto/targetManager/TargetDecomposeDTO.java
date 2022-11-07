@@ -58,6 +58,10 @@ public class TargetDecomposeDTO {
     */
     private  Long indicatorId;
     /**
+     * 版本号
+     */
+    private  String  version;
+    /**
     * 目标年度
     */
     @NotNull(message = "目标年度不能为空",groups = {TargetDecomposeDTO.AddTargetDecomposeDTO.class,TargetDecomposeDTO.UpdateTargetDecomposeDTO.class})

@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 目标分解表
@@ -48,6 +49,11 @@ public class TargetDecompose extends BaseEntity {
      * 分解维度
      */
     private String decompositionDimension;
+
+    /**
+     * 指标ID集合
+     */
+    private List<Long> indicatorIds;
 
     /**
      * 负责人ID
