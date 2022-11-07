@@ -48,6 +48,7 @@ public class TargetDecompose extends BaseEntity {
      * 分解维度
      */
     private String decompositionDimension;
+
     /**
      * 负责人ID
      */

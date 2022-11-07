@@ -227,6 +227,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeDTO> resultList(TargetDecomposeDTO targetDecomposeDTO) {
+
         return null;
     }
 
@@ -391,6 +392,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        //分解类型
+        targetDecompose.setTargetDecomposeType(Constants.ONE);
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
             throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
@@ -409,8 +412,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
-        //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.ONE);
+
         try {
             targetDecomposeMapper.insertTargetDecompose(targetDecompose);
         } catch (Exception e) {
@@ -437,6 +439,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        //分解类型
+        targetDecompose.setTargetDecomposeType(Constants.TWO);
+        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
+        if (StringUtils.isNotNull(targetDecomposeDTO1)) {
+            throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
+        }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -451,8 +459,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
-        //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.TWO);
+
         try {
             targetDecomposeMapper.insertTargetDecompose(targetDecompose);
         } catch (Exception e) {
@@ -479,6 +486,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        targetDecompose.setTargetDecomposeType(Constants.THREE);
+        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
+        if (StringUtils.isNotNull(targetDecomposeDTO1)) {
+            throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
+        }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -521,6 +533,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        targetDecompose.setTargetDecomposeType(Constants.ZERO);
+        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
+        if (StringUtils.isNotNull(targetDecomposeDTO1)) {
+            throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
+        }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -528,8 +545,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         //待录入
         targetDecompose.setStatus(Constants.ZERO);
-        //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.ZERO);
         try {
             targetDecomposeMapper.insertTargetDecompose(targetDecompose);
         } catch (Exception e) {
