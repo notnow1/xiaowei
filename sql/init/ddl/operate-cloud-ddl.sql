@@ -1,7 +1,6 @@
 DROP DATABASE IF EXISTS `operate-cloud`;
 CREATE DATABASE `operate-cloud` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-use `operate-cloud`;
-
+USE `operate-cloud`;
 SET NAMES utf8mb4;
 
 CREATE TABLE area(
@@ -427,7 +426,3 @@ CREATE TABLE target_outcome_details(
     update_time TIMESTAMP    COMMENT '更新时间' ,
     PRIMARY KEY (target_outcome_details_id)
 )  COMMENT = '目标结果详情表';
-
--- ----------------------------
--- 初始化数据
--- ----------------------------

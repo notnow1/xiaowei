@@ -1,7 +1,6 @@
 DROP DATABASE IF EXISTS `qxw_seata`;
 CREATE DATABASE `qxw_seata` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `qxw_seata`;
-
 SET NAMES utf8mb4;
 
 -- -------------------------------- The script used when storeMode is 'db' --------------------------------
@@ -68,8 +67,3 @@ CREATE TABLE IF NOT EXISTS `distributed_lock`
     `expire`         BIGINT,
     primary key (`lock_key`)
 ) ENGINE = InnoDB;
-
-INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('AsyncCommitting', ' ', 0);
-INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('RetryCommitting', ' ', 0);
-INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('RetryRollbacking', ' ', 0);
-INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('TxTimeoutCheck', ' ', 0);
