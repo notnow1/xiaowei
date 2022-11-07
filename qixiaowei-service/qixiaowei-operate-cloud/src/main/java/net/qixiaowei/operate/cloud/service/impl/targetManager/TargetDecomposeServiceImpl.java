@@ -119,6 +119,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     private void packDecompositionDimension(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
+        targetDecomposeDimension.setTargetDecomposeDimensionId(targetDecomposeDTO.getTargetDecomposeDimensionId());
+
         List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionList(targetDecomposeDimension);
         StringBuilder targetDecomposeDimensionName;
         for (TargetDecomposeDimensionDTO decomposeDimensionDTO : targetDecomposeDimensionDTOS) {
