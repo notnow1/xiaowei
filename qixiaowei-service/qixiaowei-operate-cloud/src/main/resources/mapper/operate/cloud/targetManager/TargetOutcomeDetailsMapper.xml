@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeDetailsMapper">
+    <!--    查询目标结果详情表-->
+    <select id="selectTargetOutcomeDetailsByTargetOutcomeDetailsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO">
+        SELECT
+        target_outcome_details_id, target_outcome_id, indicator_id, actual_total, actual_january, actual_february, actual_march, actual_april, actual_may, actual_june, actual_july, actual_august, actual_september, actual_october, actual_november, actual_december, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_outcome_details
+        WHERE  target_outcome_details_id=#{targetOutcomeDetailsId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标结果详情表-->
+    <select id="selectTargetOutcomeDetailsByTargetOutcomeDetailsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO">
+        SELECT
+        target_outcome_details_id, target_outcome_id, indicator_id, actual_total, actual_january, actual_february, actual_march, actual_april, actual_may, actual_june, actual_july, actual_august, actual_september, actual_october, actual_november, actual_december, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_outcome_details
+        WHERE  target_outcome_details_id in
+            <foreach item="item"
+                     collection="targetOutcomeDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标结果详情表列表-->
+    <select id="selectTargetOutcomeDetailsList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO">
+        SELECT
+        target_outcome_details_id, target_outcome_id, indicator_id, actual_total, actual_january, actual_february, actual_march, actual_april, actual_may, actual_june, actual_july, actual_august, actual_september, actual_october, actual_november, actual_december, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_outcome_details
+        WHERE delete_flag=0
+                <if test="targetOutcomeDetails.targetOutcomeDetailsId != null">
+                    and target_outcome_details_id=#{targetOutcomeDetails.targetOutcomeDetailsId}
+                </if>
+                <if test="targetOutcomeDetails.targetOutcomeId != null">
+                    and target_outcome_id=#{targetOutcomeDetails.targetOutcomeId}
+                </if>
+                <if test="targetOutcomeDetails.indicatorId != null">
+                    and indicator_id=#{targetOutcomeDetails.indicatorId}
+                </if>
+                <if test="targetOutcomeDetails.actualTotal != null">
+                    and actual_total=#{targetOutcomeDetails.actualTotal}
+                </if>
+                <if test="targetOutcomeDetails.actualJanuary != null">
+                    and actual_january=#{targetOutcomeDetails.actualJanuary}
+                </if>
+                <if test="targetOutcomeDetails.actualFebruary != null">
+                    and actual_february=#{targetOutcomeDetails.actualFebruary}
+                </if>
+                <if test="targetOutcomeDetails.actualMarch != null">
+                    and actual_march=#{targetOutcomeDetails.actualMarch}
+                </if>
+                <if test="targetOutcomeDetails.actualApril != null">
+                    and actual_april=#{targetOutcomeDetails.actualApril}
+                </if>
+                <if test="targetOutcomeDetails.actualMay != null">
+                    and actual_may=#{targetOutcomeDetails.actualMay}
+                </if>
+                <if test="targetOutcomeDetails.actualJune != null">
+                    and actual_june=#{targetOutcomeDetails.actualJune}
+                </if>
+                <if test="targetOutcomeDetails.actualJuly != null">
+                    and actual_july=#{targetOutcomeDetails.actualJuly}
+                </if>
+                <if test="targetOutcomeDetails.actualAugust != null">
+                    and actual_august=#{targetOutcomeDetails.actualAugust}
+                </if>
+                <if test="targetOutcomeDetails.actualSeptember != null">
+                    and actual_september=#{targetOutcomeDetails.actualSeptember}
+                </if>
+                <if test="targetOutcomeDetails.actualOctober != null">
+                    and actual_october=#{targetOutcomeDetails.actualOctober}
+                </if>
+                <if test="targetOutcomeDetails.actualNovember != null">
+                    and actual_november=#{targetOutcomeDetails.actualNovember}
+                </if>
+                <if test="targetOutcomeDetails.actualDecember != null">
+                    and actual_december=#{targetOutcomeDetails.actualDecember}
+                </if>
+                <if test="targetOutcomeDetails.deleteFlag != null">
+                    and delete_flag=#{targetOutcomeDetails.deleteFlag}
+                </if>
+                <if test="targetOutcomeDetails.createBy != null">
+                    and create_by=#{targetOutcomeDetails.createBy}
+                </if>
+                <if test="targetOutcomeDetails.createTime != null">
+                    and create_time=#{targetOutcomeDetails.createTime}
+                </if>
+                <if test="targetOutcomeDetails.updateBy != null">
+                    and update_by=#{targetOutcomeDetails.updateBy}
+                </if>
+                <if test="targetOutcomeDetails.updateTime != null">
+                    and update_time=#{targetOutcomeDetails.updateTime}
+                </if>
+    </select>
+    <!--新增目标结果详情表-->
+    <insert id="insertTargetOutcomeDetails" useGeneratedKeys="true" keyProperty="targetOutcomeDetailsId">
+        INSERT INTO target_outcome_details (target_outcome_id,indicator_id,actual_total,actual_january,actual_february,actual_march,actual_april,actual_may,actual_june,actual_july,actual_august,actual_september,actual_october,actual_november,actual_december,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetOutcomeDetails.targetOutcomeId},#{targetOutcomeDetails.indicatorId},#{targetOutcomeDetails.actualTotal},#{targetOutcomeDetails.actualJanuary},#{targetOutcomeDetails.actualFebruary},#{targetOutcomeDetails.actualMarch},#{targetOutcomeDetails.actualApril},#{targetOutcomeDetails.actualMay},#{targetOutcomeDetails.actualJune},#{targetOutcomeDetails.actualJuly},#{targetOutcomeDetails.actualAugust},#{targetOutcomeDetails.actualSeptember},#{targetOutcomeDetails.actualOctober},#{targetOutcomeDetails.actualNovember},#{targetOutcomeDetails.actualDecember},#{targetOutcomeDetails.deleteFlag},#{targetOutcomeDetails.createBy},#{targetOutcomeDetails.createTime},#{targetOutcomeDetails.updateBy},#{targetOutcomeDetails.updateTime})
+    </insert>
+    <!--修改目标结果详情表-->
+    <update id="updateTargetOutcomeDetails">
+        UPDATE target_outcome_details
+        SET
+                    <if test="targetOutcomeDetails.targetOutcomeId != null">
+                        target_outcome_id=#{targetOutcomeDetails.targetOutcomeId},
+                    </if>
+                    <if test="targetOutcomeDetails.indicatorId != null">
+                        indicator_id=#{targetOutcomeDetails.indicatorId},
+                    </if>
+                    <if test="targetOutcomeDetails.actualTotal != null">
+                        actual_total=#{targetOutcomeDetails.actualTotal},
+                    </if>
+                    <if test="targetOutcomeDetails.actualJanuary != null">
+                        actual_january=#{targetOutcomeDetails.actualJanuary},
+                    </if>
+                    <if test="targetOutcomeDetails.actualFebruary != null">
+                        actual_february=#{targetOutcomeDetails.actualFebruary},
+                    </if>
+                    <if test="targetOutcomeDetails.actualMarch != null">
+                        actual_march=#{targetOutcomeDetails.actualMarch},
+                    </if>
+                    <if test="targetOutcomeDetails.actualApril != null">
+                        actual_april=#{targetOutcomeDetails.actualApril},
+                    </if>
+                    <if test="targetOutcomeDetails.actualMay != null">
+                        actual_may=#{targetOutcomeDetails.actualMay},
+                    </if>
+                    <if test="targetOutcomeDetails.actualJune != null">
+                        actual_june=#{targetOutcomeDetails.actualJune},
+                    </if>
+                    <if test="targetOutcomeDetails.actualJuly != null">
+                        actual_july=#{targetOutcomeDetails.actualJuly},
+                    </if>
+                    <if test="targetOutcomeDetails.actualAugust != null">
+                        actual_august=#{targetOutcomeDetails.actualAugust},
+                    </if>
+                    <if test="targetOutcomeDetails.actualSeptember != null">
+                        actual_september=#{targetOutcomeDetails.actualSeptember},
+                    </if>
+                    <if test="targetOutcomeDetails.actualOctober != null">
+                        actual_october=#{targetOutcomeDetails.actualOctober},
+                    </if>
+                    <if test="targetOutcomeDetails.actualNovember != null">
+                        actual_november=#{targetOutcomeDetails.actualNovember},
+                    </if>
+                    <if test="targetOutcomeDetails.actualDecember != null">
+                        actual_december=#{targetOutcomeDetails.actualDecember},
+                    </if>
+                    <if test="targetOutcomeDetails.deleteFlag != null">
+                        delete_flag=#{targetOutcomeDetails.deleteFlag},
+                    </if>
+                    <if test="targetOutcomeDetails.createBy != null">
+                        create_by=#{targetOutcomeDetails.createBy},
+                    </if>
+                    <if test="targetOutcomeDetails.createTime != null">
+                        create_time=#{targetOutcomeDetails.createTime},
+                    </if>
+                    <if test="targetOutcomeDetails.updateBy != null">
+                        update_by=#{targetOutcomeDetails.updateBy},
+                    </if>
+                    <if test="targetOutcomeDetails.updateTime != null">
+                        update_time=#{targetOutcomeDetails.updateTime}
+                    </if>
+        WHERE
+                 target_outcome_details_id=#{targetOutcomeDetails.targetOutcomeDetailsId}
+    </update>
+    <!--逻辑删除目标结果详情表-->
+    <update id="logicDeleteTargetOutcomeDetailsByTargetOutcomeDetailsId">
+        UPDATE target_outcome_details
+        SET     delete_flag= 1,
+                update_by=#{targetOutcomeDetails.updateBy},
+                update_time=#{targetOutcomeDetails.updateTime}
+        WHERE
+                target_outcome_details_id=#{targetOutcomeDetails.targetOutcomeDetailsId}
+    </update>
+    <!--逻辑批量删除目标结果详情表-->
+    <update id="logicDeleteTargetOutcomeDetailsByTargetOutcomeDetailsIds">
+        UPDATE target_outcome_details
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         target_outcome_details_id IN
+            <foreach item="item"
+                     collection="targetOutcomeDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增目标结果详情表-->
+    <insert id="batchTargetOutcomeDetails">
+        INSERT INTO target_outcome_details (target_outcome_id,indicator_id,actual_total,actual_january,actual_february,actual_march,actual_april,actual_may,actual_june,actual_july,actual_august,actual_september,actual_october,actual_november,actual_december,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetOutcomeDetailss"
+                 separator=",">
+            (#{item.targetOutcomeId},#{item.indicatorId},#{item.actualTotal},#{item.actualJanuary},#{item.actualFebruary},#{item.actualMarch},#{item.actualApril},#{item.actualMay},#{item.actualJune},#{item.actualJuly},#{item.actualAugust},#{item.actualSeptember},#{item.actualOctober},#{item.actualNovember},#{item.actualDecember},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标结果详情表-->
+    <delete id="deleteTargetOutcomeDetailsByTargetOutcomeDetailsId">
+        DELETE FROM target_outcome_details
+        WHERE  target_outcome_details_id=#{targetOutcomeDetails}
+
+    </delete>
+    <!--物理批量删除目标结果详情表-->
+    <delete id="deleteTargetOutcomeDetailsByTargetOutcomeDetailsIds">
+        DELETE FROM target_outcome_details
+        WHERE  target_outcome_details_id IN
+            <foreach item="item"
+                     collection="targetOutcomeDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改目标结果详情表-->
+    <update id="updateTargetOutcomeDetailss">
+        update target_outcome_details
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="target_outcome_id=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.targetOutcomeId != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.targetOutcomeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="indicator_id=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.indicatorId != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.indicatorId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_total=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualTotal != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualTotal}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_january=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualJanuary != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualJanuary}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_february=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualFebruary != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualFebruary}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_march=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualMarch != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualMarch}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_april=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualApril != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualApril}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_may=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualMay != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualMay}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_june=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualJune != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualJune}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_july=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualJuly != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualJuly}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_august=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualAugust != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualAugust}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_september=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualSeptember != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualSeptember}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_october=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualOctober != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualOctober}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_november=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualNovember != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualNovember}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_december=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.actualDecember != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.actualDecember}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="targetOutcomeDetailsList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when target_outcome_details_id=#{item.targetOutcomeDetailsId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="targetOutcomeDetailsList" separator="or" item="item" index="index">
+                    target_outcome_details_id=#{item.targetOutcomeDetailsId}
+        </foreach>
+    </update>
+</mapper>
+
+

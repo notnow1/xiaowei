@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper">
+    <!--    查询目标结果表-->
+    <select id="selectTargetOutcomeByTargetOutcomeId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
+        SELECT
+        target_outcome_id, target_year, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_outcome
+        WHERE  target_outcome_id=#{targetOutcomeId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询目标结果表-->
+    <select id="selectTargetOutcomeByTargetOutcomeIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
+        SELECT
+        target_outcome_id, target_year, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_outcome
+        WHERE  target_outcome_id in
+            <foreach item="item"
+                     collection="targetOutcomeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询目标结果表列表-->
+    <select id="selectTargetOutcomeList" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
+        SELECT
+        target_outcome_id, target_year, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_outcome
+        WHERE delete_flag=0
+                <if test="targetOutcome.targetOutcomeId != null">
+                    and target_outcome_id=#{targetOutcome.targetOutcomeId}
+                </if>
+                <if test="targetOutcome.targetYear != null">
+                    and target_year=#{targetOutcome.targetYear}
+                </if>
+                <if test="targetOutcome.deleteFlag != null">
+                    and delete_flag=#{targetOutcome.deleteFlag}
+                </if>
+                <if test="targetOutcome.createBy != null">
+                    and create_by=#{targetOutcome.createBy}
+                </if>
+                <if test="targetOutcome.createTime != null">
+                    and create_time=#{targetOutcome.createTime}
+                </if>
+                <if test="targetOutcome.updateBy != null">
+                    and update_by=#{targetOutcome.updateBy}
+                </if>
+                <if test="targetOutcome.updateTime != null">
+                    and update_time=#{targetOutcome.updateTime}
+                </if>
+    </select>
+    <!--新增目标结果表-->
+    <insert id="insertTargetOutcome" useGeneratedKeys="true" keyProperty="targetOutcomeId">
+        INSERT INTO target_outcome (target_year,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{targetOutcome.targetYear},#{targetOutcome.deleteFlag},#{targetOutcome.createBy},#{targetOutcome.createTime},#{targetOutcome.updateBy},#{targetOutcome.updateTime})
+    </insert>
+    <!--修改目标结果表-->
+    <update id="updateTargetOutcome">
+        UPDATE target_outcome
+        SET
+                    <if test="targetOutcome.targetYear != null">
+                        target_year=#{targetOutcome.targetYear},
+                    </if>
+                    <if test="targetOutcome.deleteFlag != null">
+                        delete_flag=#{targetOutcome.deleteFlag},
+                    </if>
+                    <if test="targetOutcome.createBy != null">
+                        create_by=#{targetOutcome.createBy},
+                    </if>
+                    <if test="targetOutcome.createTime != null">
+                        create_time=#{targetOutcome.createTime},
+                    </if>
+                    <if test="targetOutcome.updateBy != null">
+                        update_by=#{targetOutcome.updateBy},
+                    </if>
+                    <if test="targetOutcome.updateTime != null">
+                        update_time=#{targetOutcome.updateTime}
+                    </if>
+        WHERE
+                 target_outcome_id=#{targetOutcome.targetOutcomeId}
+    </update>
+    <!--逻辑删除目标结果表-->
+    <update id="logicDeleteTargetOutcomeByTargetOutcomeId">
+        UPDATE target_outcome
+        SET     delete_flag= 1,
+                update_by=#{targetOutcome.updateBy},
+                update_time=#{targetOutcome.updateTime}
+        WHERE
+                target_outcome_id=#{targetOutcome.targetOutcomeId}
+    </update>
+    <!--逻辑批量删除目标结果表-->
+    <update id="logicDeleteTargetOutcomeByTargetOutcomeIds">
+        UPDATE target_outcome
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         target_outcome_id IN
+            <foreach item="item"
+                     collection="targetOutcomeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增目标结果表-->
+    <insert id="batchTargetOutcome">
+        INSERT INTO target_outcome (target_year,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="targetOutcomes"
+                 separator=",">
+            (#{item.targetYear},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除目标结果表-->
+    <delete id="deleteTargetOutcomeByTargetOutcomeId">
+        DELETE FROM target_outcome
+        WHERE  target_outcome_id=#{targetOutcome}
+
+    </delete>
+    <!--物理批量删除目标结果表-->
+    <delete id="deleteTargetOutcomeByTargetOutcomeIds">
+        DELETE FROM target_outcome
+        WHERE  target_outcome_id IN
+            <foreach item="item"
+                     collection="targetOutcomeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改目标结果表-->
+    <update id="updateTargetOutcomes">
+        update target_outcome
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="target_year=case" suffix="end,">
+                        <foreach collection="targetOutcomeList" item="item" index="index">
+                                <if test="item.targetYear != null">
+                                    when target_outcome_id=#{item.targetOutcomeId} then #{item.targetYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="targetOutcomeList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when target_outcome_id=#{item.targetOutcomeId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="targetOutcomeList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when target_outcome_id=#{item.targetOutcomeId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="targetOutcomeList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when target_outcome_id=#{item.targetOutcomeId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="targetOutcomeList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when target_outcome_id=#{item.targetOutcomeId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="targetOutcomeList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when target_outcome_id=#{item.targetOutcomeId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="targetOutcomeList" separator="or" item="item" index="index">
+                    target_outcome_id=#{item.targetOutcomeId}
+        </foreach>
+    </update>
+</mapper>
+
+

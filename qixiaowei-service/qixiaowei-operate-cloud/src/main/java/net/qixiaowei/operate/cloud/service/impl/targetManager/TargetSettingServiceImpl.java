@@ -172,11 +172,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         //净利润
         list.add(IndicatorCode.PROFITS.getCode());
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list);
-        if (StringUtils.isNotEmpty(listR.getData())) {
+        if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
         } else {
-            //回款金额指标id
-            targetSetting.getIndicatorIds().addAll(listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList()));
+            List<Long> collect = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+            targetSetting.setIndicatorIds(collect);
         }
 
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
@@ -184,17 +184,29 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             for (TargetSettingDTO settingDTO : targetSettingDTOS) {
                 //年度目标值
                 BigDecimal targetValue = settingDTO.getTargetValue();
-                //todo 可能设计新表 年度实际值
-                BigDecimal yearCycleActual = settingDTO.getYearCycleActual();
+                //年度实际值
+                BigDecimal   actualTotal= settingDTO.getActualTotal();
+
+                //上年年度实际值
+                BigDecimal lastActualTotal = settingDTO.getLastActualTotal();
                 //目标完成率
                 BigDecimal targetPercentageComplete = settingDTO.getTargetPercentageComplete();
-                if (yearCycleActual != null && yearCycleActual.compareTo(new BigDecimal("0")) != 0) {
-                    if (targetValue.compareTo(new BigDecimal("0")) != 0) {
-                        targetPercentageComplete = yearCycleActual.divide(targetValue);
+
+                //同比
+                BigDecimal onBasis = settingDTO.getOnBasis();
+                if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
+                    if (targetValue != null && targetValue.compareTo(new BigDecimal("0")) != 0) {
+                        targetPercentageComplete = actualTotal.divide(targetValue).setScale(2);
                     }
                 }
                 settingDTO.setTargetPercentageComplete(targetPercentageComplete);
-                //todo 返回同比 公式=（目标年度年度实际/上年年度实际）-1
+                //同比 公式=（目标年度年度实际/上年年度实际）-1
+                if (lastActualTotal != null && lastActualTotal.compareTo(new BigDecimal("0")) != 0) {
+                    if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
+                        onBasis = actualTotal.divide(lastActualTotal).subtract(new BigDecimal("1")).setScale(2);
+                    }
+                }
+                settingDTO.setOnBasis(onBasis);
             }
         }
         return targetSettingDTOS;

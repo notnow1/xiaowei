@@ -96,7 +96,18 @@ public class TargetSettingDTO {
     /**
      * 年度实际值
      */
-    private BigDecimal yearCycleActual;
+    private BigDecimal actualTotal;
+
+    /**
+     * 去年实际值
+     */
+    private BigDecimal lastActualTotal;
+
+    /**
+     * 同比
+     */
+    private BigDecimal onBasis;
+
 
     /**
      * 目标完成率
