@@ -73,4 +73,14 @@ public enum IndicatorCode {
         }
         return indicatorCodes;
     }
+
+    public static List<String> getCodesByIsPreset(Integer isPreset) {
+        ArrayList<String> indicatorCodes = new ArrayList<>();
+        for (IndicatorCode indicatorCode : IndicatorCode.values()) {
+            if (indicatorCode.getIsPreset().equals(isPreset)) {
+                indicatorCodes.add(indicatorCode.code);
+            }
+        }
+        return indicatorCodes;
+    }
 }

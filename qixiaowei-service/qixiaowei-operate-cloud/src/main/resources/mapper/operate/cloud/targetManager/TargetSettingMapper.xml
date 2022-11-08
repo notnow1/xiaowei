@@ -32,7 +32,7 @@
     <select id="selectTargetSettingList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
-        target_setting_id, target_setting_type, indicator_id, target_year, IFNULL(percentage,0) as percentage,
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage,
         challenge_value,target_value, guaranteed_value,sort, delete_flag, create_by, create_time, update_by, update_time
         FROM target_setting
         WHERE delete_flag=0
@@ -89,7 +89,7 @@
         FROM target_setting
         WHERE delete_flag = 0
         AND target_year = #{targetYear}
-        AND indicator_id = #{indicatorId}
+        AND target_setting_type = #{targetSettingType}
     </select>
     <select id="selectTargetSettingByIndicator"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
@@ -109,15 +109,15 @@
     <select id="selectAnalyseList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT tod.actual_august,
-        tod2.actual_august as last_actual_august,
+        tod2.actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
         ts.target_year,
-        IFNULL(ts.percentage, 0) as percentage,
-        IFNULL(ts.challenge_value, 0) as challenge_value,
-        IFNULL(ts.target_value, 0) as target_value,
-        IFNULL(ts.guaranteed_value, 0) as guaranteed_value,
+        ts.percentage,
+        ts.challenge_value,
+        ts.target_value,
+        ts.guaranteed_value,
         ts.sort,
         ts.delete_flag,
         ts.create_by,
@@ -132,7 +132,8 @@
         on ts.indicator_id = tod.indicator_id
         and tod.delete_flag = 0
         left join target_outcome_details tod2
-        on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag = 0) = tod2.target_outcome_id
+        on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
+        = 0) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id in
@@ -145,6 +146,20 @@
             and ts.target_year=#{targetSetting.targetYear}
         </if>
 
+    </select>
+    <select id="selectTargetSettingByTypes"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value,
+        guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting
+        WHERE delete_flag = 0
+        AND target_year = #{targetYear}
+        AND target_setting_type
+        IN
+        <foreach collection="targetSettingType" separator="," index="index" item="item" open="(" close=")">
+            #{item}
+        </foreach>
     </select>
     <!--新增目标制定-->
     <insert id="insertTargetSetting" useGeneratedKeys="true" keyProperty="targetSettingId">

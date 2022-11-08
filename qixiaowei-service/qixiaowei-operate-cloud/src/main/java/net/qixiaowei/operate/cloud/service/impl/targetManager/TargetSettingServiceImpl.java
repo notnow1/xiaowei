@@ -151,17 +151,45 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
             for (String indicatorCode : indicatorCodes) {
                 TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, zero, indicatorByCode);
-                targetSettingDTOS.add(zeroDto);
+                if (StringUtils.isNotNull(zeroDto)) {
+                    targetSettingDTOS.add(zeroDto);
+                }
             }
             return listToTree(targetSettingDTOS);
         }
+        List<String> codesByIsPreset1 = IndicatorCode.getCodesByIsPreset(1);
+        R<List<IndicatorDTO>> indicatorByCode1R = indicatorService.selectIndicatorByCodeList(codesByIsPreset1);
+        List<IndicatorDTO> indicatorByCode1 = indicatorByCode1R.getData();
+        if (StringUtils.isEmpty(indicatorByCode1) || indicatorByCode1.size() != 3) {
+            throw new ServiceException("指标预置数据异常 请联系管理员");
+        }
+        // 提取没有预置的数据
+        for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+            for (int i = indicatorByCode1.size() - 1; i >= 0; i--) {
+                IndicatorDTO indicatorDTO = indicatorByCode1.get(0);
+                if (indicatorDTO.getIndicatorId().equals(settingDTO.getIndicatorId())) {
+                    indicatorByCode1.remove(indicatorDTO);
+                    break;
+                }
+            }
+        }
+        List<TargetSettingDTO> targetSettingDTO1 = new ArrayList<>();
+        //如果那三个需要赋值 0
+        for (String indicatorCode : codesByIsPreset1) {
+            TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, zero, indicatorByCode1);
+            if (StringUtils.isNotNull(zeroDto)) {
+                targetSettingDTO1.add(zeroDto);
+            }
+        }
+        targetSettingDTO1.addAll(targetSettingDTOS);
         IndicatorDTO indicatorDTO = new IndicatorDTO();
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO);
         List<IndicatorDTO> indicatorList = listR.getData();
         if (StringUtils.isEmpty(indicatorList)) {
             throw new ServiceException("指标不存在 请联系管理员！");
         }
-        for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+        //处理数据 给数据赋上一些指标的值
+        for (TargetSettingDTO settingDTO : targetSettingDTO1) {
             for (IndicatorDTO dto : indicatorList) {
                 if (dto.getIndicatorId().equals(settingDTO.getIndicatorId())) {
                     settingDTO.setParentIndicatorId(dto.getParentIndicatorId());
@@ -171,6 +199,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     if (dto.getIndicatorValueType() == 2) {
                         dto.setIndicatorName(dto.getIndicatorName() + "(%)");
                     }
+                    break;
                 }
             }
             String indicatorCode = settingDTO.getIndicatorCode();
@@ -187,26 +216,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                         settingDTO.setIsPreset(0);
                     }
                 }
-                for (int i = 0; i < indicatorCodes.size(); i++) {
-                    if (indicatorCodes.get(i).equals(indicatorCode)) {
-                        indicatorCodes.remove(i);
-                        break;
-                    }
-                }
             }
         }
-        if (StringUtils.isNotEmpty(indicatorCodes)) {
-            R<List<IndicatorDTO>> indicatorByCodeR = indicatorService.selectIndicatorByCodeList(indicatorCodes);
-            List<IndicatorDTO> indicatorByCode = indicatorByCodeR.getData();
-            if (StringUtils.isEmpty(indicatorByCode) || indicatorByCode.size() != indicatorCodes.size()) {
-                throw new ServiceException("指标预置数据异常 请联系管理员");
-            }
-            for (String indicatorCode : indicatorCodes) {
-                TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, zero, indicatorByCode);
-                targetSettingDTOS.add(zeroDto);
-            }
-        }
-        return listToTree(targetSettingDTOS);
+        return listToTree(targetSettingDTO1);
     }
 
     /**
@@ -225,6 +237,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             tree.setParentId(treeNode.getParentIndicatorId());
             tree.setName(treeNode.getIndicatorName());
             tree.putExtra("targetSettingId", treeNode.getTargetSettingId());
+            tree.putExtra("isPreset", treeNode.getIsPreset());
             tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
             tree.putExtra("choiceFlag", treeNode.getChoiceFlag());
             tree.putExtra("targetValue", treeNode.getTargetValue());
@@ -246,6 +259,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         dto.setTargetValue(zero);
         dto.setGuaranteedValue(zero);
         dto.setChallengeValue(zero);
+        boolean t = true;//若为ture，则表明整个循环没有进入执行过方法
         for (IndicatorDTO indicatorDTO : indicatorByCode) {
             if (indicatorDTO.getIndicatorCode().equals(indicatorCode)) {
                 dto.setIndicatorName(indicatorDTO.getIndicatorName());
@@ -253,7 +267,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 dto.setParentIndicatorId(indicatorDTO.getParentIndicatorId());
                 dto.setIndicatorCode(indicatorDTO.getIndicatorCode());
                 dto.setChoiceFlag(indicatorDTO.getChoiceFlag());
+                t = false;
             }
+        }
+        if (t) {
+            return null;
         }
         Integer isPreset = IndicatorCode.selectIsPreset(indicatorCode);
         if (isPreset == 1) {
@@ -398,11 +416,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @return
      */
     public List<TargetSettingDTO> treeToList(List<TargetSettingDTO> targetSettingDTOList, List<TargetSettingDTO> targetSettingRespList, Integer targetYear, List<Long> indicators) {
-        Integer i = 0;
+        Integer sort = 0;
         for (TargetSettingDTO targetSettingDTO : targetSettingDTOList) {
-            ++i;
+            ++sort;
             targetSettingDTO.setTargetYear(targetYear);
-            targetSettingDTO.setSort(i);
+            targetSettingDTO.setSort(sort);
             targetSettingRespList.add(targetSettingDTO);
             indicators.add(targetSettingDTO.getIndicatorId());
             if (StringUtils.isNotEmpty(targetSettingDTO.getChildren())) {
@@ -494,7 +512,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 //年度目标值
                 BigDecimal targetValue = settingDTO.getTargetValue();
                 //年度实际值
-                BigDecimal   actualTotal= settingDTO.getActualTotal();
+                BigDecimal actualTotal = settingDTO.getActualTotal();
 
                 //上年年度实际值
                 BigDecimal lastActualTotal = settingDTO.getLastActualTotal();
@@ -622,11 +640,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Transactional
     public TargetSettingDTO saveOrderTargetSetting(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
-        Long indicatorId = getIndicator(IndicatorCode.ORDER.getCode()).getIndicatorId();
+//        Long indicatorId = getIndicator(IndicatorCode.ORDER.getCode()).getIndicatorId();
         List<TargetSettingOrderDTO> targetSettingOrderAfter = targetSettingDTO.getTargetSettingOrderDTOS();
-        TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorId);
+        TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
         targetSettingDTO.setTargetSettingType(1);
-        targetSettingDTO.setIndicatorId(indicatorId);
         targetSettingDTO.setSort(0);
         if (StringUtils.isNull(targetSetting)) {//新增
             TargetSetting setting = insertTargetSetting(targetSettingDTO);
@@ -922,9 +939,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         Integer targetYear = targetSettingDTO.getTargetYear();
         Long indicatorId = getIndicator(IndicatorCode.INCOME.getCode()).getIndicatorId();
         List<TargetSettingIncomeVO> targetSettingIncomeVOS = targetSettingDTO.getTargetSettingIncomeVOS();
-        TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorId);
+        TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 2);
         targetSettingDTO.setTargetSettingType(2);
-        targetSettingDTO.setIndicatorId(indicatorId);
+//        targetSettingDTO.setIndicatorId(indicatorId);
         targetSettingDTO.setSort(0);
         TargetSetting setting;
         if (StringUtils.isNull(targetSetting)) {//新增
@@ -1004,7 +1021,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSetting.setTargetYear(targetYear);
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingList(targetSetting);// 当年份销售收入的目标制定list
         // 当年份销售订单的目标制定-当年
-        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorOrderDTO.getIndicatorId());
+        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
         BigDecimal zero = new BigDecimal(0);
         if (StringUtils.isNull(targetSettingByIndicator)) {
             targetSettingByIndicator = new TargetSettingDTO();
@@ -1105,9 +1122,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     public TargetSettingDTO selectRecoveryTargetSettingList(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
         IndicatorDTO indicatorReceivableDTO = getIndicator(IndicatorCode.RECEIVABLE.getCode());
-        IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.INCOME.getCode());
-        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorReceivableDTO.getIndicatorId());
-        TargetSettingDTO targetIncomeByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorIncomeDTO.getIndicatorId());
+//        IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.INCOME.getCode());
+        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
+        TargetSettingDTO targetIncomeByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 2);
         List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = new ArrayList<>();
         List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS = new ArrayList<>();
         BigDecimal zero = new BigDecimal(0);
@@ -1388,7 +1405,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingDTO.setTargetSettingType(3);
         targetSettingDTO.setIndicatorId(indicatorIncomeDTO.getIndicatorId());
         targetSettingDTO.setPercentage(targetSettingRecoveryDTO.getAddRate());
-        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, indicatorIncomeDTO.getIndicatorId());
+        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 3);
         Long targetSettingId;
         if (StringUtils.isNull(targetSettingByIndicator)) {
             TargetSettingRecoveriesDTO recoveriesDTO = targetSettingIndicatorDTOS.stream().filter(f -> f.getPrefixType().equals("回款总目标")).collect(Collectors.toList()).get(0);

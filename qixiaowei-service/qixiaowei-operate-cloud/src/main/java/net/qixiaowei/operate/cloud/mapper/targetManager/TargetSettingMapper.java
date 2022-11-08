@@ -1,13 +1,11 @@
 package net.qixiaowei.operate.cloud.mapper.targetManager;
 
-import java.util.List;
-
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -112,7 +110,7 @@ public interface TargetSettingMapper {
      *
      * @return
      */
-    TargetSettingDTO selectTargetSettingByTargetYearAndIndicator(@Param("targetYear") Integer targetYear, @Param("indicatorId") Long indicatorId);
+    TargetSettingDTO selectTargetSettingByTargetYearAndIndicator(@Param("targetYear") Integer targetYear, @Param("targetSettingType") Integer targetSettingType);
 
     /**
      * @param historyNumS 历史年度list
@@ -123,8 +121,16 @@ public interface TargetSettingMapper {
 
     /**
      * 查询经营分析报表列表
+     *
      * @param targetSetting
      * @return
      */
     List<TargetSettingDTO> selectAnalyseList(@Param("targetSetting") TargetSetting targetSetting);
+
+    /**
+     * 通过Types-List查询
+     *
+     * @return
+     */
+    List<TargetSettingDTO> selectTargetSettingByTypes(@Param("targetSettingType") List<Integer> targetSettingType, @Param("targetYear") Integer targetYear);
 }
