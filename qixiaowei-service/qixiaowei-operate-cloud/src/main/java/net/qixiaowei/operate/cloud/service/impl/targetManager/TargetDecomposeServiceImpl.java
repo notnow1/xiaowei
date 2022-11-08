@@ -835,7 +835,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         return i;
     }
-
+    /**
+     * 修改经营结果分析报表详情
+     * @param targetDecomposeDTO 修改滚动预测详情
+     * @return
+     */
     @Override
     @Transactional
     public int updateResultTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
