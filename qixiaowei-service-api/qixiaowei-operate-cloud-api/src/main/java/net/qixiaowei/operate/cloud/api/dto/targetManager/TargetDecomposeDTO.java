@@ -47,8 +47,14 @@ public class TargetDecomposeDTO {
     /**
     * ID
     */
-    @NotNull(message = "ID不能为空",groups = {TargetDecomposeDTO.DeleteTargetDecomposeDTO.class,TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class})
+    @NotNull(message = "ID不能为空",groups = {TargetDecomposeDTO.DeleteTargetDecomposeDTO.class})
     private  Long targetDecomposeId;
+    /**
+     * ID集合
+     */
+    @NotEmpty(message = "ID集合不能为空",groups = {TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class})
+    @Valid
+    private  List<Long> targetDecomposeIds;
     /**
     * 目标分解类型:0自定义;1销售订单;2销售收入;3销售回款
     */

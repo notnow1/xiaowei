@@ -1581,8 +1581,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public int turnOverPrincipalEmployee(TargetDecomposeDTO targetDecomposeDTO) {
         List<TargetDecomposeDetails> targetDecomposeDetailsList = new ArrayList<>();
+        List<Long> targetDecomposeIds = targetDecomposeDTO.getTargetDecomposeIds();
         //目标分解详情集合
-        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeIds(targetDecomposeIds);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                 //比对人员id 只移交自己的
