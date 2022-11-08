@@ -108,7 +108,9 @@
     <!--    查询经营分析报表列表-->
     <select id="selectAnalyseList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
-        SELECT tod.actual_august,
+        SELECT
+        i.indicator_name,
+        tod.actual_august,
         tod2.actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
@@ -135,6 +137,9 @@
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
         = 0) = tod2.target_outcome_id
         and tod2.delete_flag = 0
+        left join `system-manage`.indicator i
+        on i.indicator_id = ts.indicator_id
+        and i.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id in
         <foreach item="item"
