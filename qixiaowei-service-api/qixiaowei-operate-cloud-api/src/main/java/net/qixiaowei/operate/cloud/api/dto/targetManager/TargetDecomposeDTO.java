@@ -115,9 +115,25 @@ public class TargetDecomposeDTO {
     */
     private  BigDecimal forecastYear;
     /**
+     * 预测偏差
+     */
+    private  BigDecimal forecastDeviation;
+    /**
+     * 预测与目标偏差率
+     */
+    private  BigDecimal forecastDeviationRate;
+    /**
     * 累计实际值
     */
     private  BigDecimal actualTotal;
+    /**
+     * 目标完成率
+     */
+    private BigDecimal targetPercentageComplete;
+    /**
+     * 目标完成率平均值
+     */
+    private BigDecimal targetPercentageCompleteAve;
     /**
     * 状态:0待录入;1已录入
     */

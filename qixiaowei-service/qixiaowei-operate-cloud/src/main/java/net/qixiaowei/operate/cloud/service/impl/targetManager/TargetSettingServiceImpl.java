@@ -537,9 +537,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 BigDecimal actualTotal = settingDTO.getActualTotal();
 
                 //上年年度实际值
-                BigDecimal lastActualTotal = settingDTO.getLastActualTotal();
+                BigDecimal lastActualTotal = new BigDecimal("0");
                 //目标完成率
-                BigDecimal targetPercentageComplete = settingDTO.getTargetPercentageComplete();
+                BigDecimal targetPercentageComplete = new BigDecimal("0");
 
                 //同比
                 BigDecimal onBasis = settingDTO.getOnBasis();

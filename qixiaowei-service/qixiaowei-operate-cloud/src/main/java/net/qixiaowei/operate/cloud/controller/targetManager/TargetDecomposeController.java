@@ -55,7 +55,15 @@ public class TargetDecomposeController extends BaseController {
     private ITargetDecomposeService targetDecomposeService;
 
 
-
+    /**
+     * 查询经营结果分析报表详情
+     */
+    //@RequiresPermissions("operate:cloud:targetDecompose:info")
+    @GetMapping("/result/info/{targetDecomposeId}")
+    public AjaxResult resultInfo(@PathVariable Long targetDecomposeId) {
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectResultTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        return AjaxResult.success(targetDecomposeDTO);
+    }
     /**
      * 查询经营结果分析报表列表
      */

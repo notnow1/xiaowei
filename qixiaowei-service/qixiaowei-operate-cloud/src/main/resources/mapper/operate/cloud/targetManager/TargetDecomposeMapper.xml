@@ -178,6 +178,12 @@
         on i.indicator_id =td.indicator_id
         and i.delete_flag =0
         WHERE td.delete_flag = 0
+        and td.indicator_id in
+        <foreach item="item"
+                 collection="targetDecompose.indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
         </if>
@@ -258,14 +264,14 @@
         i.indicator_name,
         td.decomposition_dimension,
         td.time_dimension,
-        ts.target_value,
-        td.decompose_target,
+        IFNULL(ts.target_value,0) as target_value,
+        IFNULL(td.decompose_target,0) as decompose_target,
         td.target_decompose_id,
         td.target_decompose_type,
         td.indicator_id,
         td.target_decompose_dimension_id,
-        td.forecast_year,
-        td.actual_total,
+        IFNULL(td.forecast_year,0) as forecast_year,
+        IFNULL(td.actual_total,0) as actual_total,
         td.status
         FROM target_decompose td
         left join target_setting ts
@@ -276,6 +282,12 @@
         on i.indicator_id =td.indicator_id
         and i.delete_flag =0
         WHERE td.delete_flag = 0
+        and td.indicator_id in
+        <foreach item="item"
+                 collection="targetDecompose.indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
         </if>

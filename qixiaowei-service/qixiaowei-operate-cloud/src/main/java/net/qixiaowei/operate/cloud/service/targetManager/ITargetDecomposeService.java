@@ -15,6 +15,13 @@ import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
 public interface ITargetDecomposeService {
 
     /**
+     * 查询经营结果分析报表详情
+     *
+     * @param targetDecomposeId 目标分解表主键
+     * @return 目标分解表
+     */
+    TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId);
+    /**
      * 查询滚动预测表详情
      *
      * @param targetDecomposeId 目标分解表主键

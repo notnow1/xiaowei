@@ -113,6 +113,11 @@ public class TargetDecomposeDetailsDTO {
      * 年度预测值
      */
     private  BigDecimal forecastYear;
+
+    /**
+     * 预测与目标偏差率平均值
+     */
+    private  BigDecimal forecastDeviationRateAve;
     /**
      * 累计实际值
      */
@@ -121,6 +126,10 @@ public class TargetDecomposeDetailsDTO {
      * 目标完成率
      */
     private  BigDecimal targetPercentageComplete;
+    /**
+     * 目标完成率平均值
+     */
+    private BigDecimal targetPercentageCompleteAve;
     /**
     * 汇总目标值
     */

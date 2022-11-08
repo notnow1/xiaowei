@@ -58,6 +58,19 @@ public class DecomposeDetailCyclesDTO {
     * 周期实际值
     */
     private  BigDecimal cycleActual;
+
+    /**
+     * 预测偏差
+     */
+    private  BigDecimal cycleForecastDeviation;
+    /**
+     * 预测与目标偏差率
+     */
+    private  BigDecimal cycleForecastDeviationRate;
+    /**
+     * 目标完成率
+     */
+    private  BigDecimal cyclePercentageComplete;
     /**
     * 删除标记:0未删除;1已删除
     */
