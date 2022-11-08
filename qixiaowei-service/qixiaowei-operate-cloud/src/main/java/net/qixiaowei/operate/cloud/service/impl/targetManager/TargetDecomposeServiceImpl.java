@@ -124,8 +124,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //预测偏差
                     decomposeDetailCyclesDTO.setCycleForecastDeviation(cycleForecastDeviation);
 
-                    if (cycleForecastDeviation != null && cycleForecastDeviation.compareTo(new BigDecimal("0")) != 0) {
-                        if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
+                    if (cycleForecastDeviation != null ) {
+                        if (cycleTarget != null ) {
                             cycleForecastDeviationRate = cycleForecastDeviation.divide(cycleTarget,BigDecimal.ROUND_CEILING);
                         }
                     }
@@ -422,8 +422,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 }
                 //预测偏差
                 decomposeDTO.setForecastDeviation(forecastDeviation);
-                if (forecastDeviation != null && forecastDeviation.compareTo(new BigDecimal("0")) != 0) {
-                    if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
+                if (forecastDeviation != null ) {
+                    if (decomposeTarget != null ) {
                         forecastDeviationRate = forecastDeviation.divide(decomposeTarget,BigDecimal.ROUND_CEILING);
                     }
                 }
