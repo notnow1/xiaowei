@@ -136,6 +136,10 @@ public class IndicatorDTO {
      * 是否预置(1-预置，0-非预置)
      */
     private Integer isPreset;
+    /**
+     * 是否在targetSetting被选中了（1-选中，0-未选中）
+     */
+    private Integer isTarget;
 
 }
 

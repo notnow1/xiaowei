@@ -90,7 +90,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @return indicatorList
      */
     @Override
-    public List<Tree<Long>> selectIndicatorList() {
+    public List<Tree<Long>> selectIndicatorList(TargetSettingDTO targetSettingDTO) {
+        TargetSetting targetSetting = new TargetSetting();
+        BeanUtils.copyProperties(targetSettingDTO, targetSetting);
+        List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingList(targetSetting);
         IndicatorDTO indicatorDTO = new IndicatorDTO();
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO);
         List<IndicatorDTO> indicatorList = listR.getData();
@@ -108,6 +111,14 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 } else {
                     dto.setIsPreset(0);
                 }
+                for (TargetSettingDTO settingDTO : targetSettingDTOList) {
+                    Long indicatorId = settingDTO.getIndicatorId();
+                    if (dto.getIndicatorId().equals(indicatorId)) {
+                        dto.setIsTarget(1);
+                    } else {
+                        dto.setIsTarget(0);
+                    }
+                }
             }
             TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
             treeNodeConfig.setIdKey("indicatorId");
@@ -121,6 +132,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 tree.putExtra("isPreset", treeNode.getIsPreset());
                 tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
                 tree.putExtra("choiceFlag", treeNode.getChoiceFlag());
+                tree.putExtra("isTarget", treeNode.getIsTarget());
             });
         }
     }
@@ -205,17 +217,15 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             String indicatorCode = settingDTO.getIndicatorCode();
             if (IndicatorCode.contains(indicatorCode)) {
                 Integer isPreset = IndicatorCode.selectIsPreset(indicatorCode);
-                if (StringUtils.isNotNull(isPreset)) {
-                    if (isPreset.equals(1)) {
-                        settingDTO.setIsPreset(1);
-                    } else if (isPreset.equals(2)) {
-                        settingDTO.setIsPreset(2);
-                    } else if (isPreset.equals(3)) {
-                        settingDTO.setIsPreset(3);
-                    } else {
-                        settingDTO.setIsPreset(0);
-                    }
+                if (isPreset.equals(1)) {
+                    settingDTO.setIsPreset(1);
+                } else if (isPreset.equals(2)) {
+                    settingDTO.setIsPreset(2);
+                } else if (isPreset.equals(3)) {
+                    settingDTO.setIsPreset(3);
                 }
+            } else {
+                settingDTO.setIsPreset(0);
             }
         }
         return listToTree(targetSettingDTO1);
@@ -416,11 +426,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @return
      */
     public List<TargetSettingDTO> treeToList(List<TargetSettingDTO> targetSettingDTOList, List<TargetSettingDTO> targetSettingRespList, Integer targetYear, List<Long> indicators) {
-        Integer sort = 0;
+        int sort = 0;
         for (TargetSettingDTO targetSettingDTO : targetSettingDTOList) {
-            ++sort;
-            targetSettingDTO.setTargetYear(targetYear);
+            sort += 1;
             targetSettingDTO.setSort(sort);
+            targetSettingDTO.setTargetYear(targetYear);
             targetSettingRespList.add(targetSettingDTO);
             indicators.add(targetSettingDTO.getIndicatorId());
             if (StringUtils.isNotEmpty(targetSettingDTO.getChildren())) {

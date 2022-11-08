@@ -105,7 +105,7 @@ public class TargetSettingController extends BaseController {
 //    @RequiresPermissions("operate:cloud:targetSetting:remove")
     @GetMapping("/indicator")
     public AjaxResult indicator(TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.selectIndicatorList());
+        return AjaxResult.success(targetSettingService.selectIndicatorList(targetSettingDTO));
     }
 
     /**

@@ -164,7 +164,7 @@ public interface ITargetSettingService {
      *
      * @return
      */
-    List<Tree<Long>> selectIndicatorList();
+    List<Tree<Long>> selectIndicatorList(TargetSettingDTO targetSettingDTO);
 
     /**
      * 批量保存目标制定
