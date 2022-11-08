@@ -97,7 +97,7 @@
                isy.industry_name,
                tdd.principal_employee_id,
                e2.employee_name as principal_employee_name,
-               tdd.amount_target,
+               IFNULL(tdd.amount_target,0) AS amount_target,
                tdd.delete_flag,
                tdd.create_by,
                tdd.create_time,
