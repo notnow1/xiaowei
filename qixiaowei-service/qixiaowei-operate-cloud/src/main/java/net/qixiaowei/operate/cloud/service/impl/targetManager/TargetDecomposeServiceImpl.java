@@ -126,7 +126,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                     if (cycleForecastDeviation != null && cycleForecastDeviation.compareTo(new BigDecimal("0")) != 0) {
                         if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
-                            cycleForecastDeviationRate = cycleForecastDeviation.divide(cycleTarget).setScale(2);
+                            cycleForecastDeviationRate = cycleForecastDeviation.divide(cycleTarget,BigDecimal.ROUND_CEILING);
                         }
                     }
                     //预测与目标偏差率
@@ -134,7 +134,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                     if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0) {
                         if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
-                            cyclePercentageComplete = cycleActual.divide(cycleTarget).setScale(2);
+                            cyclePercentageComplete = cycleActual.divide(cycleTarget,BigDecimal.ROUND_CEILING);
                         }
                     }
                     //目标完成率
@@ -154,16 +154,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //被除数 不能为0和空
                     if (null != decomposeTarget && decomposeTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget()).setScale(2);
+                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(),BigDecimal.ROUND_CEILING);
                     }
                 }
                 //预测平均数
                 if (null != forecastDeviationRateSum && forecastDeviationRateSum.compareTo(BigDecimal.ZERO) != 0) {
-                    forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1))).setScale(2);
+                    forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)),BigDecimal.ROUND_CEILING);
                 }
                 //目标完成平均数
                 if (null != targetPercentageCompleteAve && targetPercentageCompleteAve.compareTo(BigDecimal.ZERO) != 0) {
-                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1))).setScale(2);
+                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)),BigDecimal.ROUND_CEILING);
                 }
                 targetDecomposeDetailsDTO.setForecastDeviationRateAve(forecastDeviationRateAve);
                 targetDecomposeDetailsDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
@@ -428,14 +428,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 decomposeDTO.setForecastDeviation(forecastDeviation);
                 if (forecastDeviation != null && forecastDeviation.compareTo(new BigDecimal("0")) != 0) {
                     if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
-                        forecastDeviationRate = forecastDeviation.divide(decomposeTarget).setScale(2);
+                        forecastDeviationRate = forecastDeviation.divide(decomposeTarget,BigDecimal.ROUND_CEILING);
                     }
                 }
                 //预测与目标偏差率
                 decomposeDTO.setForecastDeviationRate(forecastDeviationRate);
                 if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
                     if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
-                        targetPercentageComplete = actualTotal.divide(decomposeTarget).setScale(2);
+                        targetPercentageComplete = actualTotal.divide(decomposeTarget,BigDecimal.ROUND_CEILING);
                     }
                 }
                 //目标完成率
@@ -455,7 +455,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 .filter(friend -> friend.getTargetPercentageComplete() != null)
                                 .map(TargetDecomposeDTO::getTargetPercentageComplete)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1))).setScale(2);
+                        targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1)),BigDecimal.ROUND_CEILING);
                         //目标完成率平均值
                         for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS1) {
                             decomposeDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
