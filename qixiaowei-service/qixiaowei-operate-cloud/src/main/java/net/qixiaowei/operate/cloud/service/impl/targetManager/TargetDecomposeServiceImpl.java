@@ -116,16 +116,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
 
 
-                    if (cycleForecast != null && cycleForecast.compareTo(new BigDecimal("0")) != 0) {
-                        if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
+                    if (cycleForecast != null ) {
+                        if (cycleTarget != null ) {
                             cycleForecastDeviation = cycleForecast.subtract(cycleTarget).setScale(2);
                         }
                     }
                     //预测偏差
                     decomposeDetailCyclesDTO.setCycleForecastDeviation(cycleForecastDeviation);
 
-                    if (cycleForecastDeviation != null ) {
-                        if (cycleTarget != null ) {
+                    if (cycleForecastDeviation != null && cycleForecastDeviation.compareTo(new BigDecimal("0")) != 0) {
+                        if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
                             cycleForecastDeviationRate = cycleForecastDeviation.divide(cycleTarget,BigDecimal.ROUND_CEILING);
                         }
                     }
@@ -415,15 +415,15 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 BigDecimal forecastDeviationRate = new BigDecimal("0");
                 //目标完成率
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
-                if (forecastYear != null && forecastYear.compareTo(new BigDecimal("0")) != 0) {
-                    if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
+                if (forecastYear != null ) {
+                    if (decomposeTarget != null ) {
                         forecastDeviation = forecastYear.subtract(decomposeTarget).setScale(2);
                     }
                 }
                 //预测偏差
                 decomposeDTO.setForecastDeviation(forecastDeviation);
-                if (forecastDeviation != null ) {
-                    if (decomposeTarget != null ) {
+                if (forecastDeviation != null && forecastDeviation.compareTo(new BigDecimal("0")) != 0) {
+                    if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
                         forecastDeviationRate = forecastDeviation.divide(decomposeTarget,BigDecimal.ROUND_CEILING);
                     }
                 }
