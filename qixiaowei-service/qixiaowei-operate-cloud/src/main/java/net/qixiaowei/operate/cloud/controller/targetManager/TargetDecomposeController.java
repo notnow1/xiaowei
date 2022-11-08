@@ -64,6 +64,16 @@ public class TargetDecomposeController extends BaseController {
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectResultTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         return AjaxResult.success(targetDecomposeDTO);
     }
+
+    /**
+     * 修改经营结果分析报表详情
+     */
+    //@RequiresPermissions("operate:cloud:targetDecompose:edit")
+    //@Log(title = "修改目标分解(销售订单)表", businessType = BusinessType.UPDATE)
+    @PostMapping("/result/edit")
+    public AjaxResult resultEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+        return toAjax(targetDecomposeService.updateResultTargetDecompose(targetDecomposeDTO));
+    }
     /**
      * 查询经营结果分析报表列表
      */

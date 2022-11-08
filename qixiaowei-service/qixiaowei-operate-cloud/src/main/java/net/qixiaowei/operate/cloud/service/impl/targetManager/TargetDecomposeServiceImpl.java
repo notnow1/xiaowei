@@ -833,7 +833,24 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         } catch (Exception e) {
             throw new ServiceException("修改目标分解主表失败");
         }
-        // todo 发送通知
+        return i;
+    }
+
+    @Override
+    @Transactional
+    public int updateResultTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
+        int i = 0;
+        TargetDecompose targetDecompose = new TargetDecompose();
+        BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        targetDecompose.setUpdateTime(DateUtils.getNowDate());
+        targetDecompose.setUpdateBy(SecurityUtils.getUserId());
+        //修改周期表和详细信息表
+        this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
+        try {
+            i = targetDecomposeMapper.updateTargetDecompose(targetDecompose);
+        } catch (Exception e) {
+            throw new ServiceException("修改目标分解主表失败");
+        }
         return i;
     }
 
@@ -1598,6 +1615,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         if (StringUtils.isNotEmpty(targetDecomposeDetailsList)) {
             try {
                 return targetDecomposeDetailsMapper.updateTargetDecomposeDetailss(targetDecomposeDetailsList);
+                // todo 发送通知
             } catch (Exception e) {
                 throw new ServiceException("移交预测负责人失败");
             }

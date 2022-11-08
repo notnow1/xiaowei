@@ -149,6 +149,14 @@ public interface ITargetDecomposeService {
      * @return 结果
      */
     int updateRollTargetDecompose(TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
+     * 修改经营结果分析报表详情
+     *
+     * @param targetDecomposeDTO 修改滚动预测详情
+     * @return 结果
+     */
+    int updateResultTargetDecompose(TargetDecomposeDTO targetDecomposeDTO);
     /**
      * 修改目标分解(销售订单)表
      *
