@@ -51,29 +51,57 @@ public class DecomposeDetailsSnapshotDTO {
     */
     private  Long employeeId;
     /**
+     * 员工名称
+     */
+    private  String employeeName;
+    /**
     * 区域ID
     */
     private  Long areaId;
+    /**
+     * 区域名称
+     */
+    private  String areaName;
     /**
     * 部门ID
     */
     private  Long departmentId;
     /**
+     * 部门名称
+     */
+    private  String departmentName;
+    /**
     * 产品ID
     */
     private  Long productId;
+    /**
+     * 产品名称
+     */
+    private  String productName;
     /**
     * 省份ID
     */
     private  Long regionId;
     /**
+     * 省份名称
+     */
+    private  String regionName;
+    /**
     * 行业ID
     */
     private  Long industryId;
     /**
+     * 行业名称
+     */
+    private  String industryName;
+    /**
     * 负责人ID
     */
     private  Long principalEmployeeId;
+    /**
+     * 负责人名称
+     */
+    private  String principalEmployeeName;
     /**
      * 分解目标值
      */

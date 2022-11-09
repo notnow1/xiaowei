@@ -119,12 +119,19 @@
                tds.decompose_details_snapshot_id,
                tds.target_decompose_history_id,
                tds.employee_id,
+               e.employee_name,
                tds.area_id,
+               a.area_name,
                tds.department_id,
+               d.department_name,
                tds.product_id,
+               p.product_name,
                tds.region_id,
+               r.region_name,
                tds.industry_id,
+               isy.industry_name,
                tds.principal_employee_id,
+               e2.employee_name as principal_employee_name,
                tds.amount_target,
                tds.delete_flag,
                tds.create_by,
@@ -138,6 +145,25 @@
                  left join target_decompose td
                            on td.target_decompose_id = tes.target_decompose_id
                                and td.delete_flag = 0
+                 left join `system-manage`.employee e
+                           on e.employee_id=tds.employee_id
+                               and e.delete_flag = 0
+                 left join area a on tds.area_id = a.area_id
+            and a.delete_flag = 0
+                 left join `system-manage`.department d
+                           on d.department_id = tds.department_id
+                               and d.delete_flag=0
+                 left join product p on tds.product_id = p.product_id
+            and p.delete_flag=0
+                 left join `system-manage`.region r
+                           on r.region_id = tds.region_id
+                               and r.delete_flag = 0
+                 left join  `system-manage`.industry isy
+                            on isy.industry_id=tds.industry_id
+                                and isy.delete_flag=0
+                 left join `system-manage`.employee e2
+                           on e2.employee_id=tds.principal_employee_id
+                               and e2.delete_flag = 0
         WHERE tds.target_decompose_history_id = #{targetDecomposeHistoryId}
           and tds.delete_flag = 0
     </select>
