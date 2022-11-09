@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -59,7 +60,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             Long createBy = targetOutcomeDetailsDTO.getCreateBy();
             indicatorIds.add(indicatorId);
         }
-        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds);
+        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
         List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
         if (indicatorR.getCode() != 200 || StringUtils.isEmpty(indicatorDTOS)) {
             throw new ServiceException("远程调用指标失败 请咨询管理员");
