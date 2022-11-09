@@ -97,7 +97,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @return indicatorList
      */
     @Override
-    public List<Tree<Long>> selectIndicatorList(TargetSettingDTO targetSettingDTO) {
+    public List<IndicatorDTO> selectIndicatorList(TargetSettingDTO targetSettingDTO) {
         TargetSetting targetSetting = new TargetSetting();
         BeanUtils.copyProperties(targetSettingDTO, targetSetting);
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingList(targetSetting);
@@ -132,20 +132,21 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     }
                 }
             }
-            TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
-            treeNodeConfig.setIdKey("indicatorId");
-            treeNodeConfig.setNameKey("indicatorName");
-            treeNodeConfig.setParentIdKey("parentIndicatorId");
-            return TreeUtil.build(indicatorList, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
-                tree.setId(treeNode.getIndicatorId());
-                tree.setParentId(treeNode.getParentIndicatorId());
-                tree.setName(treeNode.getIndicatorName());
-                tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
-                tree.putExtra("isPreset", treeNode.getIsPreset());
-                tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
-                tree.putExtra("choiceFlag", treeNode.getChoiceFlag());
-                tree.putExtra("isTarget", treeNode.getIsTarget());
-            });
+            return indicatorList;
+//            TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+//            treeNodeConfig.setIdKey("indicatorId");
+//            treeNodeConfig.setNameKey("indicatorName");
+//            treeNodeConfig.setParentIdKey("parentIndicatorId");
+//            return TreeUtil.build(indicatorList, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+//                tree.setId(treeNode.getIndicatorId());
+//                tree.setParentId(treeNode.getParentIndicatorId());
+//                tree.setName(treeNode.getIndicatorName());
+//                tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
+//                tree.putExtra("isPreset", treeNode.getIsPreset());
+//                tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
+//                tree.putExtra("choiceFlag", treeNode.getChoiceFlag());
+//                tree.putExtra("isTarget", treeNode.getIsTarget());
+//            });
         }
     }
 
@@ -664,15 +665,19 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     private List<TargetSettingOrderDTO> selectOutcomeDetailByTargetYear(List<Integer> historyNumS, Long indicatorId) {
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.selectTargetOutcomeByTargetYears(historyNumS, indicatorId);
+        List<TargetSettingOrderDTO> targetSettingOrderDTOS = new ArrayList<>();
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
             Integer targetYear = targetOutcomeDetailsDTO.getTargetYear();
-//            for (int i = historyNumS.size() - 1; i >= 0; i--) {
-//                if (historyNumS.get(i).equals(targetYear)) {
-//                    historyNumS.remove(i);
-//                }
-//            }
+            BigDecimal historyActual = targetOutcomeDetailsDTO.getActualTotal();
+            TargetSettingOrderDTO targetSettingOrderDTO = new TargetSettingOrderDTO();
+            targetSettingOrderDTO.setHistoryActual(historyActual);
+            targetSettingOrderDTO.setHistoryYear(targetYear);
+            targetSettingOrderDTOS.add(targetSettingOrderDTO);
             historyNumS.remove(targetYear);
         }
+
+
+        insertOrderRow(historyNumS, targetSettingOrderDTOS);
         return null;
     }
 
@@ -681,7 +686,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      *
      * @param targetSettingDtos 目标制定对象
      */
-
     public int insertTargetSettings(List<TargetSettingDTO> targetSettingDtos) {
         List<TargetSetting> targetSettingList = new ArrayList<>();
         for (TargetSettingDTO targetSettingDTO : targetSettingDtos) {
@@ -908,10 +912,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         if (StringUtils.isEmpty(targetSettingOrderDTOS)) {
             // todo 通过目标结果详情获取历史年度实际值
             List<TargetSettingOrderDTO> maps = selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
+            calculateGrowthRate(maps);
             if (StringUtils.isNotEmpty(maps)) {
-                return settingDTO.setTargetSettingOrderDTOS(maps);
+                TargetSettingDTO targetSettingDTO = settingDTO.setTargetSettingOrderDTOS(maps);
+                return settingDTO;
             }
-            return settingDTO;
+            throw new ServiceException("获取失败");
         }
         if (targetSettingOrderDTOS.size() == historyNum) {
             settingDTO.setTargetSettingOrderDTOS(targetSettingOrderDTOS);
@@ -974,20 +980,22 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     private static void calculateGrowthRate(List<TargetSettingOrderDTO> targetSettingOrderDTOS) {
         BigDecimal beforeRate = new BigDecimal(0);
-        for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDTOS) {
-            BigDecimal historyActual = targetSettingOrderDTO.getHistoryActual();
-            if (StringUtils.isNotNull(historyActual)) {
-                BigDecimal subtract = historyActual.subtract(beforeRate);
-                BigDecimal divide;
-                if (!historyActual.equals(BigDecimal.ZERO)) {
-                    divide = subtract.divide(historyActual, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+        if (StringUtils.isNotEmpty(targetSettingOrderDTOS)) {
+            for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDTOS) {
+                BigDecimal historyActual = targetSettingOrderDTO.getHistoryActual();
+                if (StringUtils.isNotNull(historyActual)) {
+                    BigDecimal subtract = historyActual.subtract(beforeRate);
+                    BigDecimal divide;
+                    if (!historyActual.equals(BigDecimal.ZERO)) {
+                        divide = subtract.divide(historyActual, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                    } else {
+                        divide = BigDecimal.ZERO;
+                    }
+                    targetSettingOrderDTO.setGrowthRate(divide);
+                    beforeRate = targetSettingOrderDTO.getHistoryActual();
                 } else {
-                    divide = BigDecimal.ZERO;
+                    beforeRate = new BigDecimal(0);
                 }
-                targetSettingOrderDTO.setGrowthRate(divide);
-                beforeRate = targetSettingOrderDTO.getHistoryActual();
-            } else {
-                beforeRate = new BigDecimal(0);
             }
         }
     }
