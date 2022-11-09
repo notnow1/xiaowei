@@ -1,16 +1,23 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcomeDetails;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeDetailsMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +32,9 @@ import java.util.List;
 public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsService {
     @Autowired
     private TargetOutcomeDetailsMapper targetOutcomeDetailsMapper;
+
+    @Autowired
+    private RemoteIndicatorService indicatorService;
 
     /**
      * 查询目标结果详情表
@@ -97,6 +107,18 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
     }
 
     /**
+     * 逻辑批量删除目标结果详情表根据指标ID和OutComeID
+     *
+     * @param indicators      指标IDs
+     * @param targetOutcomeId
+     * @return
+     */
+    @Override
+    public int logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(List<Long> indicators, Long targetOutcomeId) {
+        return targetOutcomeDetailsMapper.logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(indicators, targetOutcomeId);
+    }
+
+    /**
      * 物理删除目标结果详情表信息
      *
      * @param targetOutcomeDetailsId 目标结果详情表主键
@@ -105,6 +127,83 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
     @Override
     public int deleteTargetOutcomeDetailsByTargetOutcomeDetailsId(Long targetOutcomeDetailsId) {
         return targetOutcomeDetailsMapper.deleteTargetOutcomeDetailsByTargetOutcomeDetailsId(targetOutcomeDetailsId);
+    }
+
+    /**
+     * 根据outId查找目标结果详情表
+     *
+     * @param targetOutcomeId
+     * @return
+     */
+    @Override
+    public List<TargetOutcomeDetailsDTO> selectTargetOutcomeDetailsByOutcomeId(Long targetOutcomeId) {
+        return targetOutcomeDetailsMapper.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
+    }
+
+    /**
+     * 新增outCome
+     *
+     * @param indicatorIds
+     * @param targetOutcomeId
+     * @return
+     */
+    @Override
+    public int addTargetOutcomeDetailsS(List<Long> indicatorIds, Long targetOutcomeId) {
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = new ArrayList<>();
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOByIndicators = targetOutcomeDetailsMapper.selectTargetOutcomeDetailsByIndicatorIds(indicatorIds, targetOutcomeId);
+        List<String> codesByIsPreset = IndicatorCode.getCodesByIsPreset(1);
+        codesByIsPreset.addAll(IndicatorCode.getCodesByIsPreset(2));
+        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByCodeList(codesByIsPreset);
+        if (indicatorR.getCode() != 200 && StringUtils.isEmpty(indicatorR.getData())) {
+            throw new ServiceException("获取预置指标失败 请联系管理员");
+        }
+        List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
+        for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+            if (!indicatorIds.contains(indicatorDTO.getIndicatorId())) {
+                indicatorIds.add(indicatorDTO.getIndicatorId());
+            }
+        }
+        // 筛选掉已经存在的目标结果详情列表
+        if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOByIndicators)) {
+            for (int i = indicatorIds.size() - 1; i >= 0; i--) {
+                for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTOByIndicator : targetOutcomeDetailsDTOByIndicators) {
+                    if (targetOutcomeDetailsDTOByIndicator.getIndicatorId().equals(indicatorIds.get(i))) {
+                        indicatorIds.remove(i);
+                    }
+                }
+            }
+        }
+        BigDecimal zero = new BigDecimal(0);
+        for (Long indicatorId : indicatorIds) {
+            TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
+            targetOutcomeDetailsDTO.setIndicatorId(indicatorId);
+            targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcomeId);
+            targetOutcomeDetailsDTO.setActualTotal(zero);//总值
+            setMonthValue(zero, targetOutcomeDetailsDTO);
+            targetOutcomeDetailsDTOList.add(targetOutcomeDetailsDTO);
+        }
+        return insertTargetOutcomeDetailss(targetOutcomeDetailsDTOList);
+    }
+
+    /**
+     * 给月份赋值
+     *
+     * @param value
+     * @param targetOutcomeDetailsDTO
+     */
+    private static void setMonthValue(BigDecimal value, TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
+        targetOutcomeDetailsDTO.setActualJanuary(value);
+        targetOutcomeDetailsDTO.setActualFebruary(value);
+        targetOutcomeDetailsDTO.setActualMarch(value);
+        targetOutcomeDetailsDTO.setActualApril(value);
+        targetOutcomeDetailsDTO.setActualMay(value);
+        targetOutcomeDetailsDTO.setActualJune(value);
+        targetOutcomeDetailsDTO.setActualJuly(value);
+        targetOutcomeDetailsDTO.setActualAugust(value);
+        targetOutcomeDetailsDTO.setActualSeptember(value);
+        targetOutcomeDetailsDTO.setActualOctober(value);
+        targetOutcomeDetailsDTO.setActualNovember(value);
+        targetOutcomeDetailsDTO.setActualDecember(value);
     }
 
     /**
@@ -160,7 +259,6 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
 
     public int insertTargetOutcomeDetailss(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDtos) {
         List<TargetOutcomeDetails> targetOutcomeDetailsList = new ArrayList<>();
-
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDtos) {
             TargetOutcomeDetails targetOutcomeDetails = new TargetOutcomeDetails();
             BeanUtils.copyProperties(targetOutcomeDetailsDTO, targetOutcomeDetails);

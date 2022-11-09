@@ -3,15 +3,20 @@ package net.qixiaowei.operate.cloud.service.impl.targetManager;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
+import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,9 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Autowired
     private TargetOutcomeMapper targetOutcomeMapper;
 
+    @Autowired
+    private ITargetOutcomeDetailsService targetOutcomeDetailsService;
+
     /**
      * 查询目标结果表
      *
@@ -36,7 +44,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      */
     @Override
     public TargetOutcomeDTO selectTargetOutcomeByTargetOutcomeId(Long targetOutcomeId) {
-        return targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
+        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
+        targetOutcomeDTO.setTargetOutcomeDetailsDTOList(targetOutcomeDetailsDTOList);
+        return targetOutcomeDTO;
     }
 
     /**
@@ -59,6 +70,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO) {
         TargetOutcome targetOutcome = new TargetOutcome();
         BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
@@ -79,11 +91,20 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateTargetOutcome(TargetOutcomeDTO targetOutcomeDTO) {
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDTO.getTargetOutcomeDetailsDTOList();
         TargetOutcome targetOutcome = new TargetOutcome();
         BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
         targetOutcome.setUpdateTime(DateUtils.getNowDate());
         targetOutcome.setUpdateBy(SecurityUtils.getUserId());
+        // todo 更新 targetOutcomeDetail
+        if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList)) {
+            for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
+            }
+            targetOutcomeDetailsService.updateTargetOutcomeDetailss(targetOutcomeDetailsDTOList);
+        }
         return targetOutcomeMapper.updateTargetOutcome(targetOutcome);
     }
 
@@ -94,6 +115,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteTargetOutcomeByTargetOutcomeIds(List<Long> targetOutcomeIds) {
         return targetOutcomeMapper.logicDeleteTargetOutcomeByTargetOutcomeIds(targetOutcomeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
@@ -105,6 +127,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteTargetOutcomeByTargetOutcomeId(Long targetOutcomeId) {
         return targetOutcomeMapper.deleteTargetOutcomeByTargetOutcomeId(targetOutcomeId);
     }
@@ -116,6 +139,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteTargetOutcomeByTargetOutcomeId(TargetOutcomeDTO targetOutcomeDTO) {
         TargetOutcome targetOutcome = new TargetOutcome();
         targetOutcome.setTargetOutcomeId(targetOutcomeDTO.getTargetOutcomeId());
@@ -235,6 +259,45 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         List<TargetOutcomeDTO> targetOutcomeDTOList = targetOutcomeMapper.selectTargetOutcomeList(targetOutcome);
         List<TargetOutcomeExcel> targetOutcomeExcelList = new ArrayList<>();
         return targetOutcomeExcelList;
+    }
+
+    /**
+     * 通过targetYear查找Target Outcome DTO
+     *
+     * @param targetYear
+     * @return
+     */
+    @Override
+    public TargetOutcomeDTO selectTargetOutcomeByTargetYear(Integer targetYear) {
+        return targetOutcomeMapper.selectTargetOutcomeByTargetYear(targetYear);
+    }
+
+    /**
+     * 通过targetSetting列表更新目标结果表
+     *
+     * @param updateTargetSetting
+     * @param targetYear
+     * @return
+     */
+    @Override
+    public int changeTargetOutcome(List<TargetSettingDTO> updateTargetSetting, Integer targetYear) {
+        TargetOutcomeDTO targetOutcomeDTO = selectTargetOutcomeByTargetYear(targetYear);
+        updateTargetOutcome(targetOutcomeDTO);
+        Long targetOutcomeId = targetOutcomeDTO.getTargetOutcomeId();
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
+        return 0;
+    }
+
+    /**
+     * 通过targetYear列表查找Target Outcome DTO
+     *
+     * @param targetYears 目标年度列表
+     * @param indicatorId
+     * @return
+     */
+    @Override
+    public List<TargetOutcomeDetailsDTO> selectTargetOutcomeByTargetYears(List<Integer> targetYears, Long indicatorId) {
+        return targetOutcomeMapper.selectTargetOutcomeByTargetYears(targetYears, indicatorId);
     }
 }
 

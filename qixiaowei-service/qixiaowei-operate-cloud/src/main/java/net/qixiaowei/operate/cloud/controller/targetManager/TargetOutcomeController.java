@@ -75,18 +75,6 @@ public class TargetOutcomeController extends BaseController {
         return AjaxResult.success(list);
     }
 
-
-    /**
-     * 新增目标结果表
-     */
-    //@RequiresPermissions("operate:cloud:targetOutcome:add")
-    @Log(title = "新增目标结果表", businessType = BusinessType.INSERT)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody TargetOutcomeDTO targetOutcomeDTO) {
-        return AjaxResult.success(targetOutcomeService.insertTargetOutcome(targetOutcomeDTO));
-    }
-
-
     /**
      * 修改目标结果表
      */
@@ -95,46 +83,6 @@ public class TargetOutcomeController extends BaseController {
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody TargetOutcomeDTO targetOutcomeDTO) {
         return toAjax(targetOutcomeService.updateTargetOutcome(targetOutcomeDTO));
-    }
-
-    /**
-     * 逻辑删除目标结果表
-     */
-    //@RequiresPermissions("operate:cloud:targetOutcome:remove")
-    @Log(title = "删除目标结果表", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody TargetOutcomeDTO targetOutcomeDTO) {
-        return toAjax(targetOutcomeService.logicDeleteTargetOutcomeByTargetOutcomeId(targetOutcomeDTO));
-    }
-
-    /**
-     * 批量修改目标结果表
-     */
-    //@RequiresPermissions("operate:cloud:targetOutcome:edits")
-    @Log(title = "批量修改目标结果表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<TargetOutcomeDTO> targetOutcomeDtos) {
-        return toAjax(targetOutcomeService.updateTargetOutcomes(targetOutcomeDtos));
-    }
-
-    /**
-     * 批量新增目标结果表
-     */
-    //@RequiresPermissions("operate:cloud:targetOutcome:insertTargetOutcomes")
-    @Log(title = "批量新增目标结果表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertTargetOutcomes")
-    public AjaxResult insertTargetOutcomes(@RequestBody List<TargetOutcomeDTO> targetOutcomeDtos) {
-        return toAjax(targetOutcomeService.insertTargetOutcomes(targetOutcomeDtos));
-    }
-
-    /**
-     * 逻辑批量删除目标结果表
-     */
-    //@RequiresPermissions("operate:cloud:targetOutcome:removes")
-    @Log(title = "批量删除目标结果表", businessType = BusinessType.DELETE)
-    @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<Long> targetOutcomeIds) {
-        return toAjax(targetOutcomeService.logicDeleteTargetOutcomeByTargetOutcomeIds(targetOutcomeIds));
     }
 
     /**

@@ -4,6 +4,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -63,6 +64,10 @@ public class TargetOutcomeDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
+    /**
+     * 目标结果列表
+     */
+    private List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList;
 
 }
 

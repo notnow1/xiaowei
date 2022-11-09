@@ -54,6 +54,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     private ITargetSettingRecoveriesService targetSettingRecoveriesServices;
 
     @Autowired
+    private ITargetOutcomeService targetOutcomeService;
+
+    @Autowired
+    private ITargetOutcomeDetailsService targetOutcomeDetailsService;
+
+    @Autowired
     private RemoteIndicatorService indicatorService;
 
     /**
@@ -198,6 +204,18 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingDTO1.add(zeroDto);
             }
         }
+        setIndicatorValue(targetSettingDTOS, targetSettingDTO1, sort);
+        return listToTree(targetSettingDTO1);
+    }
+
+    /**
+     * 处理数据 给数据赋上一些指标的值
+     *
+     * @param targetSettingDTOS
+     * @param targetSettingDTO1
+     * @param sort
+     */
+    private void setIndicatorValue(List<TargetSettingDTO> targetSettingDTOS, List<TargetSettingDTO> targetSettingDTO1, int sort) {
         //给targetSettingDTOS排序 ,然后放进targetSettingDTO1
         for (TargetSettingDTO settingDTO : targetSettingDTOS) {
             sort += 1;
@@ -238,7 +256,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 settingDTO.setIsPreset(0);
             }
         }
-        return listToTree(targetSettingDTO1);
     }
 
     /**
@@ -366,6 +383,28 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         TargetSetting targetSetting = new TargetSetting();
         targetSetting.setTargetYear(targetYear);
         List<TargetSettingDTO> targetSettingDTOBefore = targetSettingMapper.selectTargetSettingList(targetSetting);
+        //更新操作
+        List<TargetSettingDTO> updateTargetSetting = updateOperate(targetSettingDTOAfter, noEdit, targetSettingDTOBefore);
+        //删除操作
+        List<TargetSettingDTO> delTargetSetting = delOperate(targetSettingDTOAfter, noDelete, targetSettingDTOBefore, updateTargetSetting);
+        //新增操作
+        List<TargetSettingDTO> addTargetSetting = addOperate(targetYear, targetSettingDTOAfter, targetSettingDTOBefore);
+        //存值
+        storageValue(targetYear, noEdit, updateTargetSetting, delTargetSetting, addTargetSetting);
+        TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
+        targetSettingDTO.setTargetYear(targetYear);
+        return targetSettingDTO;
+    }
+
+    /**
+     * 更新操作
+     *
+     * @param targetSettingDTOAfter
+     * @param noEdit
+     * @param targetSettingDTOBefore
+     * @return
+     */
+    private static List<TargetSettingDTO> updateOperate(List<TargetSettingDTO> targetSettingDTOAfter, List<Long> noEdit, List<TargetSettingDTO> targetSettingDTOBefore) {
         // Before里After的交集
         List<TargetSettingDTO> updateTargetSetting =
                 targetSettingDTOAfter.stream().filter(targetSettingDTO ->
@@ -382,6 +421,19 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 break;
             }
         }
+        return updateTargetSetting;
+    }
+
+    /**
+     * 删除操作
+     *
+     * @param targetSettingDTOAfter
+     * @param noDelete
+     * @param targetSettingDTOBefore
+     * @param updateTargetSetting
+     * @return
+     */
+    private static List<TargetSettingDTO> delOperate(List<TargetSettingDTO> targetSettingDTOAfter, List<Long> noDelete, List<TargetSettingDTO> targetSettingDTOBefore, List<TargetSettingDTO> updateTargetSetting) {
         // After里Before的交集
         List<TargetSettingDTO> delTargetSetting =
                 targetSettingDTOBefore.stream().filter(targetSettingDTO ->
@@ -391,7 +443,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         // 删除筛选校验
         for (int i = delTargetSetting.size() - 1; i >= 0; i--) {
             TargetSettingDTO targetSettingDTO = delTargetSetting.get(i);
-            String indicatorCode = targetSettingDTO.getIndicatorCode();
             if (noDelete.contains(targetSettingDTO.getIndicatorId())) {
                 updateTargetSetting.remove(i);
             }
@@ -399,12 +450,53 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 break;
             }
         }
+        return delTargetSetting;
+    }
+
+    /**
+     * 新增操作
+     *
+     * @param targetYear
+     * @param targetSettingDTOAfter
+     * @param targetSettingDTOBefore
+     * @return
+     */
+    private List<TargetSettingDTO> addOperate(Integer targetYear, List<TargetSettingDTO> targetSettingDTOAfter, List<TargetSettingDTO> targetSettingDTOBefore) {
         // 差集 After中Before的补集
         List<TargetSettingDTO> addTargetSetting =
                 targetSettingDTOAfter.stream().filter(targetSettingDTO ->
                         !targetSettingDTOBefore.stream().map(TargetSettingDTO::getIndicatorId)
                                 .collect(Collectors.toList()).contains(targetSettingDTO.getIndicatorId())
                 ).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(addTargetSetting)) {
+            // 如果查不到结果表，就新增
+            TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetYear(targetYear);
+            if (StringUtils.isNull(targetOutcomeDTO)) {
+                TargetOutcomeDTO dto = new TargetOutcomeDTO();
+                dto.setTargetYear(targetYear);
+                targetOutcomeDTO = targetOutcomeService.insertTargetOutcome(dto);
+            }
+            //通过年份查找ID，然后通过outComeID和指标ID集合批量新增outDetail
+            List<Long> indicatorIds = new ArrayList<>();
+            for (TargetSettingDTO targetSettingDTO : addTargetSetting) {
+                indicatorIds.add(targetSettingDTO.getIndicatorId());
+            }
+            targetOutcomeDetailsService.addTargetOutcomeDetailsS(indicatorIds, targetOutcomeDTO.getTargetOutcomeId());
+        }
+        return addTargetSetting;
+    }
+
+    /**
+     * 向库存值
+     *
+     * @param targetYear
+     * @param noEdit
+     * @param updateTargetSetting
+     * @param delTargetSetting
+     * @param addTargetSetting
+     */
+    private void storageValue(Integer targetYear, List<Long> noEdit, List<TargetSettingDTO> updateTargetSetting, List<TargetSettingDTO> delTargetSetting, List<TargetSettingDTO> addTargetSetting) {
+        // 对新增进行筛选，讲新增的预置数据数据删除
         for (int i = addTargetSetting.size() - 1; i >= 0; i--) {
             TargetSettingDTO targetSettingDTO = addTargetSetting.get(i);
             if (noEdit.contains(targetSettingDTO.getIndicatorId())) {
@@ -416,16 +508,21 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
         if (StringUtils.isNotEmpty(delTargetSetting)) {
             logicDeleteTargetSettingByTargetSettingIds(delTargetSetting);
+            //通过年份查找ID，然后通过outComeID和指标ID集合逻辑删除outDetail
+            TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetYear(targetYear);
+            List<Long> indicatorIds = new ArrayList<>();
+            for (TargetSettingDTO targetSettingDTO : delTargetSetting) {
+                indicatorIds.add(targetSettingDTO.getIndicatorId());
+            }
+            targetOutcomeDetailsService.logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(indicatorIds, targetOutcomeDTO.getTargetOutcomeId());
         }
         if (StringUtils.isNotEmpty(updateTargetSetting)) {
             updateTargetSettings(updateTargetSetting);
+            //通过年份来更新创建日期和创建人，然后更新detail表
         }
         if (StringUtils.isNotEmpty(addTargetSetting)) {
             insertTargetSettings(addTargetSetting);
         }
-        TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
-        targetSettingDTO.setTargetYear(targetYear);
-        return targetSettingDTO;
     }
 
     /**
@@ -558,13 +655,23 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     }
 
     /**
-     * todo 在滚动预测管理找到order分表的值，若没有则返回空
+     * todo 通过目标结果详情获取历史年度实际值，若没有则返回空
      *
      * @param historyNumS 历史年度list
      * @param indicatorId 指标ID
      * @return
      */
-    private List<TargetSettingOrderDTO> selectRollForecastManagementByTargetYear(List<Integer> historyNumS, Long indicatorId) {
+    private List<TargetSettingOrderDTO> selectOutcomeDetailByTargetYear(List<Integer> historyNumS, Long indicatorId) {
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.selectTargetOutcomeByTargetYears(historyNumS, indicatorId);
+        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            Integer targetYear = targetOutcomeDetailsDTO.getTargetYear();
+//            for (int i = historyNumS.size() - 1; i >= 0; i--) {
+//                if (historyNumS.get(i).equals(targetYear)) {
+//                    historyNumS.remove(i);
+//                }
+//            }
+            historyNumS.remove(targetYear);
+        }
         return null;
     }
 
@@ -798,8 +905,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     private TargetSettingDTO getTargetSettingDTO(Integer historyNum, IndicatorDTO indicatorDTO, List<Integer> historyNumS, List<TargetSettingOrderDTO> targetSettingOrderDTOS, TargetSettingDTO settingDTO) {
         Integer targetYear = settingDTO.getTargetYear();
         if (StringUtils.isEmpty(targetSettingOrderDTOS)) {
-            // todo 通过目标年度直接去找滚动越策管理,获取历史年度实际值
-            List<TargetSettingOrderDTO> maps = selectRollForecastManagementByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
+            // todo 通过目标结果详情获取历史年度实际值
+            List<TargetSettingOrderDTO> maps = selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
             if (StringUtils.isNotEmpty(maps)) {
                 return settingDTO.setTargetSettingOrderDTOS(maps);
             }
@@ -813,7 +920,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDTOS) {
             historyNumS.remove(targetSettingOrderDTO.getHistoryYear());
         }
-        List<TargetSettingOrderDTO> settingOrderDTOS = selectRollForecastManagementByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
+        List<TargetSettingOrderDTO> settingOrderDTOS = selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
         if (StringUtils.isNotNull(settingOrderDTOS)) {
             targetSettingOrderDTOS.addAll(settingOrderDTOS);
             for (TargetSettingOrderDTO settingOrderDTO : settingOrderDTOS) {
@@ -841,7 +948,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         // todo 通过目标年度直接去找滚动越策管理,获取历史年度实际值
         List<TargetSettingOrderDTO> settingOrderDTOS = null;
         if (StringUtils.isNotEmpty(historyNumS)) {
-            settingOrderDTOS = selectRollForecastManagementByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
+            settingOrderDTOS = selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
         }
         if (settingOrderDTOS != null) {
             targetSettingOrderDTOS.addAll(settingOrderDTOS);
