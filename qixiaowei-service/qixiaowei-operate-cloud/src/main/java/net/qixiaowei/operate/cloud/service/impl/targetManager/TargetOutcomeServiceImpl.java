@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -14,10 +15,13 @@ import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +38,9 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     private TargetOutcomeMapper targetOutcomeMapper;
 
     @Autowired
+    private RemoteIndicatorService indicatorService;
+
+    @Autowired
     private ITargetOutcomeDetailsService targetOutcomeDetailsService;
 
     /**
@@ -46,8 +53,151 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     public TargetOutcomeDTO selectTargetOutcomeByTargetOutcomeId(Long targetOutcomeId) {
         TargetOutcomeDTO targetOutcomeDTO = targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);
-        targetOutcomeDTO.setTargetOutcomeDetailsDTOList(targetOutcomeDetailsDTOList);
+        List<Long> indicatorIds = new ArrayList<>();
+        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            Long indicatorId = targetOutcomeDetailsDTO.getIndicatorId();
+            Long createBy = targetOutcomeDetailsDTO.getCreateBy();
+            indicatorIds.add(indicatorId);
+        }
+        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds);
+        List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
+        if (indicatorR.getCode() != 200 || StringUtils.isEmpty(indicatorDTOS)) {
+            throw new ServiceException("远程调用指标失败 请咨询管理员");
+        }
+        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+                if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())) {
+                    targetOutcomeDetailsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+                    break;
+                }
+            }
+        }
+        // 判断当前年月,然后从targetOutcomeDetailsDTOList转向targetOutcomeDetailsDTOS
+        int year = DateUtils.getYear();
+        int month = DateUtils.getMonth();
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = new ArrayList<>();
+        List<BigDecimal> monthValue = new ArrayList<>();
+        if (targetOutcomeDTO.getTargetYear() < year) {
+            setAllMonth(targetOutcomeDetailsDTOList, monthValue, targetOutcomeDetailsDTOS);// 存放所有月份
+        } else if (targetOutcomeDTO.getTargetYear() == year) {
+            setSomeMonth(targetOutcomeDetailsDTOList, month, monthValue, targetOutcomeDetailsDTOS);//存放部分月份
+        } else {
+            setOtherValue(targetOutcomeDetailsDTOList, targetOutcomeDetailsDTOS);//不存放月份
+        }
+        targetOutcomeDTO.setTargetOutcomeDetailsDTOList(targetOutcomeDetailsDTOS);
         return targetOutcomeDTO;
+    }
+
+    private void setOtherValue(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS) {
+        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            TargetOutcomeDetailsDTO targetOutcomeDetails = new TargetOutcomeDetailsDTO();
+            targetOutcomeDetails.setActualTotal(targetOutcomeDetailsDTO.getActualTotal());
+            targetOutcomeDetails.setIndicatorName(targetOutcomeDetailsDTO.getIndicatorName());
+            targetOutcomeDetails.setIndicatorId(targetOutcomeDetailsDTO.getIndicatorId());
+            targetOutcomeDetails.setTargetOutcomeId(targetOutcomeDetailsDTO.getTargetOutcomeId());
+            targetOutcomeDetails.setTargetOutcomeDetailsId(targetOutcomeDetailsDTO.getTargetOutcomeDetailsId());
+            targetOutcomeDetails.setCreateBy(targetOutcomeDetailsDTO.getCreateBy());
+            targetOutcomeDetails.setCreateTime(targetOutcomeDetailsDTO.getCreateTime());
+            targetOutcomeDetailsDTOS.add(targetOutcomeDetails);
+        }
+    }
+
+    /**
+     * 存放部分月份
+     *
+     * @param targetOutcomeDetailsDTOList
+     * @param month
+     * @param monthValue
+     * @param targetOutcomeDetailsDTOS
+     */
+    private void setSomeMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, int month, List<BigDecimal> monthValue, List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS) {
+        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            monthValue = new ArrayList<>();
+            TargetOutcomeDetailsDTO targetOutcomeDetails = new TargetOutcomeDetailsDTO();
+            targetOutcomeDetails.setActualTotal(targetOutcomeDetailsDTO.getActualTotal());
+            targetOutcomeDetails.setIndicatorName(targetOutcomeDetailsDTO.getIndicatorName());
+            targetOutcomeDetails.setIndicatorId(targetOutcomeDetailsDTO.getIndicatorId());
+            targetOutcomeDetails.setTargetOutcomeId(targetOutcomeDetailsDTO.getTargetOutcomeId());
+            targetOutcomeDetails.setTargetOutcomeDetailsId(targetOutcomeDetailsDTO.getTargetOutcomeDetailsId());
+            targetOutcomeDetails.setCreateBy(targetOutcomeDetailsDTO.getCreateBy());
+            targetOutcomeDetails.setCreateTime(targetOutcomeDetailsDTO.getCreateTime());
+            int i = 1;
+            while (i < month) {
+                switch (i) {
+                    case 1:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualJanuary());
+                        break;
+                    case 2:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualFebruary());
+                        break;
+                    case 3:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualMarch());
+                        break;
+                    case 4:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualApril());
+                        break;
+                    case 5:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualMay());
+                        break;
+                    case 6:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualJune());
+                        break;
+                    case 7:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualJuly());
+                        break;
+                    case 8:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualAugust());
+                        break;
+                    case 9:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualSeptember());
+                        break;
+                    case 10:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualOctober());
+                        break;
+                    case 11:
+                        monthValue.add(targetOutcomeDetailsDTO.getActualNovember());
+                        break;
+                }
+                i++;
+            }
+            targetOutcomeDetails.setMonthValue(monthValue);
+            targetOutcomeDetailsDTOS.add(targetOutcomeDetails);
+        }
+    }
+
+    /**
+     * 存放所有月份
+     *
+     * @param targetOutcomeDetailsDTOList
+     * @param monthValue
+     * @param targetOutcomeDetailsDTOS
+     */
+    private void setAllMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, List<BigDecimal> monthValue, List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS) {
+        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            monthValue = new ArrayList<>();
+            TargetOutcomeDetailsDTO targetOutcomeDetails = new TargetOutcomeDetailsDTO();
+            targetOutcomeDetails.setActualTotal(targetOutcomeDetailsDTO.getActualTotal());
+            targetOutcomeDetails.setIndicatorName(targetOutcomeDetailsDTO.getIndicatorName());
+            targetOutcomeDetails.setIndicatorId(targetOutcomeDetailsDTO.getIndicatorId());
+            targetOutcomeDetails.setTargetOutcomeId(targetOutcomeDetailsDTO.getTargetOutcomeId());
+            targetOutcomeDetails.setTargetOutcomeDetailsId(targetOutcomeDetailsDTO.getTargetOutcomeDetailsId());
+            targetOutcomeDetails.setCreateBy(targetOutcomeDetailsDTO.getCreateBy());
+            targetOutcomeDetails.setCreateTime(targetOutcomeDetailsDTO.getCreateTime());
+            monthValue.add(targetOutcomeDetailsDTO.getActualJanuary());
+            monthValue.add(targetOutcomeDetailsDTO.getActualFebruary());
+            monthValue.add(targetOutcomeDetailsDTO.getActualMarch());
+            monthValue.add(targetOutcomeDetailsDTO.getActualApril());
+            monthValue.add(targetOutcomeDetailsDTO.getActualMay());
+            monthValue.add(targetOutcomeDetailsDTO.getActualJune());
+            monthValue.add(targetOutcomeDetailsDTO.getActualJuly());
+            monthValue.add(targetOutcomeDetailsDTO.getActualAugust());
+            monthValue.add(targetOutcomeDetailsDTO.getActualSeptember());
+            monthValue.add(targetOutcomeDetailsDTO.getActualOctober());
+            monthValue.add(targetOutcomeDetailsDTO.getActualNovember());
+            monthValue.add(targetOutcomeDetailsDTO.getActualDecember());
+            targetOutcomeDetails.setMonthValue(monthValue);
+            targetOutcomeDetailsDTOS.add(targetOutcomeDetails);
+        }
     }
 
     /**
@@ -60,7 +210,13 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     public List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO) {
         TargetOutcome targetOutcome = new TargetOutcome();
         BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
-        return targetOutcomeMapper.selectTargetOutcomeList(targetOutcome);
+        List<Long> createBys = new ArrayList<>();
+        List<TargetOutcomeDTO> targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeList(targetOutcome);
+        for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
+            createBys.add(outcomeDTO.getCreateBy());
+        }
+        // todo 根据createBys获取创建人名称  setCreateByName
+        return targetOutcomeDTOS;
     }
 
     /**

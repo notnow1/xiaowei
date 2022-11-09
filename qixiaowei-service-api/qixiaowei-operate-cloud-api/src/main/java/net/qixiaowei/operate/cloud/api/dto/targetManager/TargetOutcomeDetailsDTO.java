@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 目标结果详情表
@@ -50,6 +51,10 @@ public class TargetOutcomeDetailsDTO {
      * 指标ID
      */
     private Long indicatorId;
+    /**
+     * 指标名称
+     */
+    private String indicatorName;
     /**
      * 累计实际值
      */
@@ -128,6 +133,8 @@ public class TargetOutcomeDetailsDTO {
      * 目标年度
      */
     private Integer targetYear;
-
+    /**
+     * 针对性的月份值
+     */
+    private List<BigDecimal> monthValue;
 }
-

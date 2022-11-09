@@ -5,6 +5,7 @@ import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 
 import java.util.List;
 
@@ -164,7 +165,7 @@ public interface ITargetSettingService {
      *
      * @return
      */
-    List<Tree<Long>> selectIndicatorList(TargetSettingDTO targetSettingDTO);
+    List<IndicatorDTO> selectIndicatorList(TargetSettingDTO targetSettingDTO);
 
     /**
      * 批量保存目标制定
