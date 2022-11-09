@@ -8,7 +8,6 @@ import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeDimensionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

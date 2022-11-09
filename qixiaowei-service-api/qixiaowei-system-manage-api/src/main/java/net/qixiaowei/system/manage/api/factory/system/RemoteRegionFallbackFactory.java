@@ -23,7 +23,7 @@ public class RemoteRegionFallbackFactory implements FallbackFactory<RemoteRegion
         log.error("区域服务调用失败:{}", throwable.getMessage());
         return new RemoteRegionService() {
             @Override
-            public R<List<RegionDTO>> getRegionsByIds(Set<Long> regionIds) {
+            public R<List<RegionDTO>> getRegionsByIds(Set<Long> regionIds, String source) {
                 return R.fail("获取区域失败:" + throwable.getMessage());
             }
         };

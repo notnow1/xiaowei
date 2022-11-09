@@ -1,15 +1,13 @@
 package net.qixiaowei.system.manage.api.remote.basic;
 
 import cn.hutool.core.lang.tree.Tree;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteIndicatorFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,7 +26,7 @@ public interface RemoteIndicatorService {
      * @return 结果
      */
     @GetMapping(API_PREFIX_INDICATOR + "/listByCode")
-    R<IndicatorDTO> selectIndicatorByCode(@RequestParam("indicatorCode") String indicatorCode);
+    R<IndicatorDTO> selectIndicatorByCode(@RequestParam("indicatorCode") String indicatorCode, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 查找指标列表-树结构
@@ -37,7 +35,7 @@ public interface RemoteIndicatorService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_INDICATOR + "/remoteTreeList")
-    R<List<Tree<Long>>> selectIndicatorTreeList(@RequestBody IndicatorDTO indicatorDTO);
+    R<List<Tree<Long>>> selectIndicatorTreeList(@RequestBody IndicatorDTO indicatorDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过CodeList查找指标列表
@@ -46,7 +44,7 @@ public interface RemoteIndicatorService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_INDICATOR + "/listByCodes")
-    R<List<IndicatorDTO>> selectIndicatorByCodeList(@RequestBody List<String> indicatorCodes);
+    R<List<IndicatorDTO>> selectIndicatorByCodeList(@RequestBody List<String> indicatorCodes, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 查找指标列表结构
@@ -54,7 +52,7 @@ public interface RemoteIndicatorService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_INDICATOR + "/remoteList")
-    R<List<IndicatorDTO>> selectIndicatorList(@RequestBody IndicatorDTO indicatorDTO);
+    R<List<IndicatorDTO>> selectIndicatorList(@RequestBody IndicatorDTO indicatorDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过IdsList查找指标列表
@@ -63,5 +61,5 @@ public interface RemoteIndicatorService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_INDICATOR + "/listByIds")
-    R<List<IndicatorDTO>> selectIndicatorByIds(@RequestBody List<Long> indicatorIds);
+    R<List<IndicatorDTO>> selectIndicatorByIds(@RequestBody List<Long> indicatorIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

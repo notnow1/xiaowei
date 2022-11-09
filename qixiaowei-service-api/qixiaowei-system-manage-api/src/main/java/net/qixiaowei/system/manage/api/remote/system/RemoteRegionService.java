@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.api.remote.system;
 
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
@@ -25,7 +26,7 @@ public interface RemoteRegionService {
      * @return 结果
      */
     @GetMapping(API_PREFIX_REGION + "/getRegionsByIds")
-    R<List<RegionDTO>> getRegionsByIds(@RequestParam("regionIds") Set<Long> regionIds);
+    R<List<RegionDTO>> getRegionsByIds(@RequestParam("regionIds") Set<Long> regionIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 
 }

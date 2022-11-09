@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -131,7 +132,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 break;
             case 2:// todo 2区域
                 AreaDTO areaDTO = new AreaDTO();
-                R<List<AreaDTO>> listArea = areaService.dropList(areaDTO);
+                R<List<AreaDTO>> listArea = areaService.dropList(areaDTO, SecurityConstants.INNER);
                 if (listArea.getCode() == 200 && StringUtils.isNotEmpty(listArea.getData())) {
                     List<AreaDTO> data = listArea.getData();
                     for (AreaDTO area : data) {
@@ -157,7 +158,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 break;
             case 4:// todo 4产品
                 ProductDTO productDTO = new ProductDTO();
-                R<List<ProductDTO>> listProduct = productService.dropList(productDTO);
+                R<List<ProductDTO>> listProduct = productService.dropList(productDTO, SecurityConstants.INNER);
                 if (listProduct.getCode() == 200 && StringUtils.isNotEmpty(listProduct.getData())) {
                     List<ProductDTO> data = listProduct.getData();
                     for (ProductDTO product : data) {

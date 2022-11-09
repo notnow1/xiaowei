@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductFileDTO;
 import net.qixiaowei.operate.cloud.service.product.IProductFileService;

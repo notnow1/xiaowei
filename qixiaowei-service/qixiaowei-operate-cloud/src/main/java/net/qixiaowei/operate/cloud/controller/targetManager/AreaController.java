@@ -7,7 +7,6 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
-import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

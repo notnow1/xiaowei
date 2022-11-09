@@ -7,12 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.service.basic.IDictionaryDataService;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 

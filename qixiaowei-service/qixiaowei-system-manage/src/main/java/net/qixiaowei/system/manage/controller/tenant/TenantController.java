@@ -3,18 +3,14 @@ package net.qixiaowei.system.manage.controller.tenant;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.alibaba.excel.EasyExcel;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.text.CharsetKit;
-import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,16 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.service.tenant.ITenantService;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 
 /**

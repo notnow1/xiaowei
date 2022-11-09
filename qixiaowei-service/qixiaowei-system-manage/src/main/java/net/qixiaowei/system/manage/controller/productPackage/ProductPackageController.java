@@ -12,7 +12,6 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
 import net.qixiaowei.system.manage.service.productPackage.IProductPackageService;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 

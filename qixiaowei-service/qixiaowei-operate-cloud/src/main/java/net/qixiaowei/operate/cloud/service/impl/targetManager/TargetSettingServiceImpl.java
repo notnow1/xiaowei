@@ -5,6 +5,7 @@ import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -101,7 +102,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         BeanUtils.copyProperties(targetSettingDTO, targetSetting);
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingList(targetSetting);
         IndicatorDTO indicatorDTO = new IndicatorDTO();
-        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO);
+        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO, SecurityConstants.INNER);
         List<IndicatorDTO> indicatorList = listR.getData();
         if (StringUtils.isEmpty(indicatorList)) {
             throw new ServiceException("指标不存在 请联系管理员！");
@@ -165,7 +166,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         BeanUtils.copyProperties(targetSettingDTO, targetSetting);
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingList(targetSetting);
         List<String> indicatorCodes = new ArrayList<>(IndicatorCode.getAllCodes());
-        R<List<IndicatorDTO>> indicatorByCodeR = indicatorService.selectIndicatorByCodeList(indicatorCodes);
+        R<List<IndicatorDTO>> indicatorByCodeR = indicatorService.selectIndicatorByCodeList(indicatorCodes, SecurityConstants.INNER);
         List<IndicatorDTO> indicatorByCode = indicatorByCodeR.getData();
         if (StringUtils.isEmpty(indicatorByCode) || indicatorByCode.size() != indicatorCodes.size()) {
             throw new ServiceException("指标预置数据异常 请联系管理员");
@@ -223,7 +224,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
         targetSettingDTO1.addAll(targetSettingDTOS);
         IndicatorDTO indicatorDTO = new IndicatorDTO();
-        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO);
+        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO, SecurityConstants.INNER);
         List<IndicatorDTO> indicatorList = listR.getData();
         if (StringUtils.isEmpty(indicatorList)) {
             throw new ServiceException("指标不存在 请联系管理员！");
@@ -355,7 +356,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         List<Long> indicators = new ArrayList<>();
         int sort = 0;
         List<TargetSettingDTO> targetSettingDTOAfter = treeToList(targetSettingDTOS, TargetSettingRespList, targetYear, indicators, sort);
-        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicators);
+        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicators, SecurityConstants.INNER);
         if (indicatorR.getCode() != 200) {
             throw new ServiceException(indicatorR.getMsg());
         }
@@ -613,7 +614,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         list.add(IndicatorCode.INCOME.getCode());
         //回款金额（含税）
         list.add(IndicatorCode.RECEIVABLE.getCode());
-        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list);
+        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
         if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
         } else {
@@ -995,7 +996,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * 获取指标
      */
     private IndicatorDTO getIndicator(String code) {
-        R<IndicatorDTO> indicatorDTOR = indicatorService.selectIndicatorByCode(code);
+        R<IndicatorDTO> indicatorDTOR = indicatorService.selectIndicatorByCode(code, SecurityConstants.INNER);
         if (indicatorDTOR.getCode() != 200) {
             throw new ServiceException("远程获取指标信息失败");
         }

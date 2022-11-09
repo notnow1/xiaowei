@@ -10,7 +10,6 @@ import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.service.performance.IPerformancePercentageService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankFactorService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankService;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

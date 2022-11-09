@@ -476,10 +476,11 @@ CREATE TABLE official_rank_decompose
 
 CREATE TABLE config(
     config_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
-    parent_config_id BIGINT    COMMENT '父级配置ID' ,
+    parent_config_id BIGINT NOT NULL   COMMENT '父级配置ID' ,
     path_code VARCHAR(256)    COMMENT '节点路径code,用英文.做连接' ,
     config_code VARCHAR(128)    COMMENT '配置编码' ,
     config_value VARCHAR(64)    COMMENT '配置值' ,
+    remark VARCHAR(256)    COMMENT '备注' ,
     status TINYINT    COMMENT '状态:0失效;1生效' ,
     delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT    COMMENT '创建人' ,

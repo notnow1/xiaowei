@@ -23,27 +23,27 @@ public class RemoteIndicatorFallbackFactory implements FallbackFactory<RemoteInd
         log.error("指标服务调用失败:{}", throwable.getMessage());
         return new RemoteIndicatorService() {
             @Override
-            public R<IndicatorDTO> selectIndicatorByCode(String indicatorCode) {
+            public R<IndicatorDTO> selectIndicatorByCode(String indicatorCode, String source) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<List<IndicatorDTO>> selectIndicatorByCodeList(List<String> indicatorCodes) {
+            public R<List<IndicatorDTO>> selectIndicatorByCodeList(List<String> indicatorCodes, String source) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<List<Tree<Long>>> selectIndicatorTreeList(IndicatorDTO indicatorDTO) {
+            public R<List<Tree<Long>>> selectIndicatorTreeList(IndicatorDTO indicatorDTO, String source) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<List<IndicatorDTO>> selectIndicatorList(IndicatorDTO indicatorDTO) {
+            public R<List<IndicatorDTO>> selectIndicatorList(IndicatorDTO indicatorDTO, String source) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<List<IndicatorDTO>> selectIndicatorByIds(List<Long> indicatorIds) {
+            public R<List<IndicatorDTO>> selectIndicatorByIds(List<Long> indicatorIds, String source) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }
         };
