@@ -116,8 +116,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
 
 
-                    if (cycleForecast != null && cycleForecast.compareTo(new BigDecimal("0")) != 0) {
-                        if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
+                    if (cycleForecast != null ) {
+                        if (cycleTarget != null ) {
                             cycleForecastDeviation = cycleForecast.subtract(cycleTarget).setScale(2);
                         }
                     }
@@ -415,8 +415,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 BigDecimal forecastDeviationRate = new BigDecimal("0");
                 //目标完成率
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
-                if (forecastYear != null && forecastYear.compareTo(new BigDecimal("0")) != 0) {
-                    if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
+                if (forecastYear != null ) {
+                    if (decomposeTarget != null ) {
                         forecastDeviation = forecastYear.subtract(decomposeTarget).setScale(2);
                     }
                 }
