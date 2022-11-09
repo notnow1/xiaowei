@@ -28,9 +28,9 @@ public class RemoteArea implements RemoteAreaService {
      * 查询分解维度区域下拉列表
      */
     @Override
-//    @InnerAuth
+    @InnerAuth
     @PostMapping("/dropList")
-    public R<List<AreaDTO>> dropList(AreaDTO areaDTO) {
+    public R<List<AreaDTO>> dropList(AreaDTO areaDTO, String source) {
         return R.ok(areaService.selectDropList(areaDTO));
     }
 
@@ -38,9 +38,9 @@ public class RemoteArea implements RemoteAreaService {
      * 查询区域配置列表通过IDS
      */
     @Override
-//    @InnerAuth
+    @InnerAuth
     @PostMapping("/getName")
-    public R<List<AreaDTO>> getName(List<Long> areaIds) {
+    public R<List<AreaDTO>> getName(List<Long> areaIds, String source) {
         return R.ok(areaService.selectAreaListByAreaIds(areaIds));
     }
 

@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.impl.basic;
 
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -167,7 +168,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
                 ProductDTO productDTO = new ProductDTO();
                 productDTO.setProductCategory(dictionaryDataDTO.getDictionaryDataId().toString());
                 productDTO.setListingFlag(Integer.parseInt(dictionaryDataDTO.getDictionaryDataId().toString()));
-                R<List<ProductDTO>> listR = remoteDictionaryService.queryProductQuote(productDTO);
+                R<List<ProductDTO>> listR = remoteDictionaryService.queryProductQuote(productDTO, SecurityConstants.INNER);
                 if (null != listR) {
                     List<ProductDTO> data = listR.getData();
                     if (!StringUtils.isEmpty(data)) {

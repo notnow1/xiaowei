@@ -1,7 +1,6 @@
 package net.qixiaowei.operate.cloud.remote.product;
 
 import net.qixiaowei.integration.common.domain.R;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
@@ -18,7 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("product")
-public class RemoteProductController implements RemoteProductService {
+public class RemoteProduct implements RemoteProductService {
 
     @Autowired
     private IProductService productService;
@@ -26,20 +25,21 @@ public class RemoteProductController implements RemoteProductService {
     @Override
     @InnerAuth
     @PostMapping("/queryProductQuote")
-    public R<List<ProductDTO>> queryProductQuote(ProductDTO productDTO) {
+    public R<List<ProductDTO>> queryProductQuote(ProductDTO productDTO, String source) {
         return R.ok(productService.queryProductQuote(productDTO));
     }
 
     @Override
-//    @InnerAuth
+    @InnerAuth
     @PostMapping("/dropList")
-    public R<List<ProductDTO>> dropList(@RequestBody ProductDTO productDTO) {
+    public R<List<ProductDTO>> dropList(@RequestBody ProductDTO productDTO, String source) {
         return R.ok(productService.selectProductList(productDTO));
     }
 
     @Override
+    @InnerAuth
     @PostMapping("/getName")
-    public R<List<ProductDTO>> getName(List<Long> productIds) {
+    public R<List<ProductDTO>> getName(List<Long> productIds, String source) {
         return R.ok(productService.selectProductList(productIds));
     }
 }

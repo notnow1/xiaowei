@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -188,7 +189,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
                 }
                 break;
             case 2:
-                R<List<AreaDTO>> listArea = areaService.getName(decomposeDimensions);
+                R<List<AreaDTO>> listArea = areaService.getName(decomposeDimensions, SecurityConstants.INNER);
                 if (listArea.getCode() == 200 && StringUtils.isNotEmpty(listArea.getData()) && listArea.getData().size() == decomposeDimensions.size()) {
                     for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
                         for (AreaDTO areaDTO : listArea.getData()) {
@@ -215,7 +216,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
                 }
                 break;
             case 4:
-                R<List<ProductDTO>> listProduct = productService.getName(decomposeDimensions);
+                R<List<ProductDTO>> listProduct = productService.getName(decomposeDimensions, SecurityConstants.INNER);
                 if (listProduct.getCode() == 200 && StringUtils.isNotEmpty(listProduct.getData()) && listProduct.getData().size() == decomposeDimensions.size()) {
                     for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
                         for (ProductDTO productDTO : listProduct.getData()) {

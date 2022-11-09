@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.api.factory;
+package net.qixiaowei.operate.cloud.api.factory.targetManager;
 
 
 import net.qixiaowei.integration.common.domain.R;
@@ -19,12 +19,12 @@ public class RemoteAreaFallbackFactory implements FallbackFactory<RemoteAreaServ
         log.error("区域服务调用失败:{}", throwable.getMessage());
         return new RemoteAreaService() {
             @Override
-            public R<List<AreaDTO>> dropList(AreaDTO areaDTO) {
+            public R<List<AreaDTO>> dropList(AreaDTO areaDTO, String source) {
                 return R.fail("获取区域配置失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<List<AreaDTO>> getName(List<Long> areaIds) {
+            public R<List<AreaDTO>> getName(List<Long> areaIds, String source) {
                 return R.fail("获取区域配置失败:" + throwable.getMessage());
             }
         };

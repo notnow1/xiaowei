@@ -11,7 +11,6 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeImportListener;

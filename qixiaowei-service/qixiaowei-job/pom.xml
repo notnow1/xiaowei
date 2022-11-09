@@ -33,40 +33,21 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
-        <!-- SpringCloud Alibaba Sentinel -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-        </dependency>
-
-        <!-- SpringBoot Actuator -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <!-- Mysql Connector -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-
-        <!-- qixiaowei integration DataSource -->
+        <!-- qixiaowei integration job -->
         <dependency>
             <groupId>net.qixiaowei</groupId>
-            <artifactId>qixiaowei-integration-datasource</artifactId>
+            <artifactId>qixiaowei-integration-job</artifactId>
         </dependency>
 
-        <!-- qixiaowei integration DataScope -->
+        <!-- qixiaowei integration security -->
         <dependency>
             <groupId>net.qixiaowei</groupId>
-            <artifactId>qixiaowei-integration-datascope</artifactId>
+            <artifactId>qixiaowei-integration-security</artifactId>
         </dependency>
 
-        <!-- qixiaowei integration Log -->
         <dependency>
             <groupId>net.qixiaowei</groupId>
-            <artifactId>qixiaowei-integration-log</artifactId>
+            <artifactId>qixiaowei-operate-cloud-api</artifactId>
         </dependency>
 
     </dependencies>

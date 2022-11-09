@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.api.factory;
+package net.qixiaowei.operate.cloud.api.factory.product;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
@@ -24,17 +24,17 @@ public class RemoteProductFallbackFactory implements FallbackFactory<RemoteProdu
         return new RemoteProductService() {
 
             @Override
-            public R<List<ProductDTO>> queryProductQuote(ProductDTO productDTO) {
+            public R<List<ProductDTO>> queryProductQuote(ProductDTO productDTO, String source) {
                 return R.fail("获取产品是否被引用失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<List<ProductDTO>> dropList(ProductDTO productDTO) {
+            public R<List<ProductDTO>> dropList(ProductDTO productDTO, String source) {
                 return R.fail("获取产品列表失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<List<ProductDTO>> getName(List<Long> decomposeDimensions) {
+            public R<List<ProductDTO>> getName(List<Long> decomposeDimensions, String source) {
                 return R.fail("获取产品列表失败:" + throwable.getMessage());
             }
         };

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import net.qixiaowei.integration.common.constant.Constants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeDimensionCode;
@@ -116,8 +117,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
 
 
-                    if (cycleForecast != null ) {
-                        if (cycleTarget != null ) {
+                    if (cycleForecast != null) {
+                        if (cycleTarget != null) {
                             cycleForecastDeviation = cycleForecast.subtract(cycleTarget).setScale(2);
                         }
                     }
@@ -126,7 +127,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                     if (cycleForecastDeviation != null && cycleForecastDeviation.compareTo(new BigDecimal("0")) != 0) {
                         if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
-                            cycleForecastDeviationRate = cycleForecastDeviation.divide(cycleTarget,BigDecimal.ROUND_CEILING);
+                            cycleForecastDeviationRate = cycleForecastDeviation.divide(cycleTarget, BigDecimal.ROUND_CEILING);
                         }
                     }
                     //预测与目标偏差率
@@ -134,7 +135,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                     if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0) {
                         if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
-                            cyclePercentageComplete = cycleActual.divide(cycleTarget,BigDecimal.ROUND_CEILING);
+                            cyclePercentageComplete = cycleActual.divide(cycleTarget, BigDecimal.ROUND_CEILING);
                         }
                     }
                     //目标完成率
@@ -154,16 +155,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //被除数 不能为0和空
                     if (null != decomposeTarget && decomposeTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(),BigDecimal.ROUND_CEILING);
+                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(), BigDecimal.ROUND_CEILING);
                     }
                 }
                 //预测平均数
                 if (null != forecastDeviationRateSum && forecastDeviationRateSum.compareTo(BigDecimal.ZERO) != 0) {
-                    forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)),BigDecimal.ROUND_CEILING);
+                    forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), BigDecimal.ROUND_CEILING);
                 }
                 //目标完成平均数
                 if (null != targetPercentageCompleteAve && targetPercentageCompleteAve.compareTo(BigDecimal.ZERO) != 0) {
-                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)),BigDecimal.ROUND_CEILING);
+                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), BigDecimal.ROUND_CEILING);
                 }
                 targetDecomposeDetailsDTO.setForecastDeviationRateAve(forecastDeviationRateAve);
                 targetDecomposeDetailsDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
@@ -393,7 +394,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         list.add(IndicatorCode.INCOME.getCode());
         //回款金额（含税）
         list.add(IndicatorCode.RECEIVABLE.getCode());
-        R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByCodeList(list);
+        R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
         if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
         } else {
@@ -415,8 +416,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 BigDecimal forecastDeviationRate = new BigDecimal("0");
                 //目标完成率
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
-                if (forecastYear != null ) {
-                    if (decomposeTarget != null ) {
+                if (forecastYear != null) {
+                    if (decomposeTarget != null) {
                         forecastDeviation = forecastYear.subtract(decomposeTarget).setScale(2);
                     }
                 }
@@ -424,14 +425,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 decomposeDTO.setForecastDeviation(forecastDeviation);
                 if (forecastDeviation != null && forecastDeviation.compareTo(new BigDecimal("0")) != 0) {
                     if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
-                        forecastDeviationRate = forecastDeviation.divide(decomposeTarget,BigDecimal.ROUND_CEILING);
+                        forecastDeviationRate = forecastDeviation.divide(decomposeTarget, BigDecimal.ROUND_CEILING);
                     }
                 }
                 //预测与目标偏差率
                 decomposeDTO.setForecastDeviationRate(forecastDeviationRate);
                 if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
                     if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
-                        targetPercentageComplete = actualTotal.divide(decomposeTarget,BigDecimal.ROUND_CEILING);
+                        targetPercentageComplete = actualTotal.divide(decomposeTarget, BigDecimal.ROUND_CEILING);
                     }
                 }
                 //目标完成率
@@ -451,7 +452,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 .filter(friend -> friend.getTargetPercentageComplete() != null)
                                 .map(TargetDecomposeDTO::getTargetPercentageComplete)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1)),BigDecimal.ROUND_CEILING);
+                        targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1)), BigDecimal.ROUND_CEILING);
                         //目标完成率平均值
                         for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS1) {
                             decomposeDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
@@ -501,7 +502,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode(), SecurityConstants.INNER);
         if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
@@ -536,7 +537,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         list.add(IndicatorCode.INCOME.getCode());
         //回款金额（含税）
         list.add(IndicatorCode.RECEIVABLE.getCode());
-        R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByCodeList(list);
+        R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
         if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
         } else {
@@ -563,7 +564,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode(), SecurityConstants.INNER);
         if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
@@ -591,7 +592,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode(), SecurityConstants.INNER);
         if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
@@ -656,7 +657,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //待录入
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode(), SecurityConstants.INNER);
         if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
@@ -703,7 +704,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //待录入
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode(), SecurityConstants.INNER);
         if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
@@ -749,7 +750,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //待录入
         targetDecompose.setStatus(Constants.ZERO);
         //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode());
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode(), SecurityConstants.INNER);
         if (StringUtils.isNull(indicatorDTOR.getData())) {
             throw new ServiceException("指标不存在！请联系管理员");
         }
@@ -831,8 +832,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         return i;
     }
+
     /**
      * 修改经营结果分析报表详情
+     *
      * @param targetDecomposeDTO 修改滚动预测详情
      * @return
      */

@@ -22,6 +22,7 @@
         <module>qixiaowei-integration-datascope</module>
         <module>qixiaowei-integration-log</module>
         <module>qixiaowei-integration-datasource</module>
+        <module>qixiaowei-integration-job</module>
     </modules>
 
 </project>

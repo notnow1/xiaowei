@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -153,7 +154,7 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOByIndicators = targetOutcomeDetailsMapper.selectTargetOutcomeDetailsByIndicatorIds(indicatorIds, targetOutcomeId);
         List<String> codesByIsPreset = IndicatorCode.getCodesByIsPreset(1);
         codesByIsPreset.addAll(IndicatorCode.getCodesByIsPreset(2));
-        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByCodeList(codesByIsPreset);
+        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByCodeList(codesByIsPreset, SecurityConstants.INNER);
         if (indicatorR.getCode() != 200 && StringUtils.isEmpty(indicatorR.getData())) {
             throw new ServiceException("获取预置指标失败 请联系管理员");
         }
