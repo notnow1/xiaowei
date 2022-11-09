@@ -150,6 +150,60 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
     }
 
+    @Override
+    public List<Tree<Long>> selectIndicatorTree(TargetSettingDTO targetSettingDTO) {
+        TargetSetting targetSetting = new TargetSetting();
+        BeanUtils.copyProperties(targetSettingDTO, targetSetting);
+        List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingList(targetSetting);
+        IndicatorDTO indicatorDTO = new IndicatorDTO();
+        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO, SecurityConstants.INNER);
+        List<IndicatorDTO> indicatorList = listR.getData();
+        if (StringUtils.isEmpty(indicatorList)) {
+            throw new ServiceException("指标不存在 请联系管理员！");
+        } else {
+            for (IndicatorDTO dto : indicatorList) {
+                Integer isPreset = IndicatorCode.selectIsPreset(dto.getIndicatorCode());
+                if (isPreset == 1) {
+                    dto.setIsPreset(1);
+                } else if (isPreset == 2) {
+                    dto.setIsPreset(2);
+                } else if (isPreset == 3) {
+                    dto.setIsPreset(3);
+                } else {
+                    dto.setIsPreset(0);
+                }
+                for (TargetSettingDTO settingDTO : targetSettingDTOList) {
+                    String indicatorCode = dto.getIndicatorCode();
+                    if (IndicatorCode.selectIsPreset(indicatorCode) == 1) {
+                        dto.setIsTarget(1);
+                        break;
+                    }
+                    Long indicatorId = settingDTO.getIndicatorId();
+                    if (dto.getIndicatorId().equals(indicatorId)) {
+                        dto.setIsTarget(1);
+                    } else {
+                        dto.setIsTarget(0);
+                    }
+                }
+            }
+            TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+            treeNodeConfig.setIdKey("indicatorId");
+            treeNodeConfig.setNameKey("indicatorName");
+            treeNodeConfig.setParentIdKey("parentIndicatorId");
+            return TreeUtil.build(indicatorList, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+                tree.setId(treeNode.getIndicatorId());
+                tree.setParentId(treeNode.getParentIndicatorId());
+                tree.setName(treeNode.getIndicatorName());
+                tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
+                tree.putExtra("isPreset", treeNode.getIsPreset());
+                tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
+                tree.putExtra("choiceFlag", treeNode.getChoiceFlag());
+                tree.putExtra("isTarget", treeNode.getIsTarget());
+            });
+        }
+    }
+
+
     /**
      * 查询目标制定树结构列表-树结构
      *
@@ -675,10 +729,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingOrderDTOS.add(targetSettingOrderDTO);
             historyNumS.remove(targetYear);
         }
-
-
         insertOrderRow(historyNumS, targetSettingOrderDTOS);
-        return null;
+        return targetSettingOrderDTOS;
     }
 
     /**
@@ -844,19 +896,16 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             historyNumS = getHistoryYearList(targetYear, historyNum);
         }
         if (StringUtils.isEmpty(targetSettingDTOS)) {
-            List<TargetSettingOrderDTO> targetSettingOrderDTOS = new ArrayList<>();
             BigDecimal zero = new BigDecimal(0);
             targetSettingDTO.setTargetValue(zero);
             targetSettingDTO.setChallengeValue(zero);
             targetSettingDTO.setGuaranteedValue(zero);
             targetSettingDTO.setPercentage(zero);
             targetSettingDTO.setTargetSettingId(null);
+            List<TargetSettingOrderDTO> targetSettingOrderDTOS = new ArrayList<>();
             if (StringUtils.isNotNull(historyNum) && historyNum != 0) {
-                insertOrderRow(historyNumS, targetSettingOrderDTOS);
-                targetSettingDTO.setTargetSettingOrderDTOS(targetSettingOrderDTOS);
-                return targetSettingDTO;
+                return getTargetSettingDTO(historyNum, indicatorDTO, historyNumS, targetSettingOrderDTOS, targetSettingDTO);
             }
-            return targetSettingDTO;
         }
         TargetSettingDTO settingDTO = targetSettingDTOS.get(0);
         if (StringUtils.isEmpty(historyNumS)) {
@@ -874,7 +923,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * 查询销售订单目标制定-不带主表玩
      *
      * @param targetSettingDTO 目标制定DTO
-     * @return
+     * @return targetSettingOrderDTOS
      */
     @Override
     public List<TargetSettingOrderDTO> selectOrderDropTargetSettingList(TargetSettingDTO targetSettingDTO) {
@@ -884,8 +933,16 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         List<Integer> historyNumS = getHistoryYearList(targetYear, historyNum);
         List<TargetSettingOrderDTO> targetSettingOrderDTOS = targetSettingOrderService.selectTargetSettingOrderList(targetSettingDTO.getTargetSettingId(), historyNumS);
         if (StringUtils.isEmpty(targetSettingOrderDTOS)) {
-            insertOrderRow(historyNumS, targetSettingOrderDTOS);
-            return targetSettingOrderDTOS;
+            List<TargetSettingOrderDTO> maps = selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
+            if (StringUtils.isNotEmpty(maps)) {
+                maps.sort((TargetSettingOrderDTO o1, TargetSettingOrderDTO o2) -> {//排序
+                    return o2.getHistoryYear() - o1.getHistoryYear();
+                });
+                calculateGrowthRate(maps);
+                return maps;
+            }
+            //此处已经对空的历史年度实际值做了处理，所以还是空的话就是报错了
+            throw new ServiceException("获取失败");
         }
         if (targetSettingOrderDTOS.size() == historyNum) {
             return targetSettingOrderDTOS;
@@ -893,8 +950,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDTOS) {
             historyNumS.remove(targetSettingOrderDTO.getHistoryYear());
         }
-        getDropTargetSettingDTO(indicatorDTO, historyNumS, targetSettingOrderDTOS);
-        return targetSettingOrderDTOS;
+        return getDropTargetSettingDTO(indicatorDTO, historyNumS, targetSettingOrderDTOS);
     }
 
     /**
@@ -912,11 +968,15 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         if (StringUtils.isEmpty(targetSettingOrderDTOS)) {
             // todo 通过目标结果详情获取历史年度实际值
             List<TargetSettingOrderDTO> maps = selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
-            calculateGrowthRate(maps);
             if (StringUtils.isNotEmpty(maps)) {
-                TargetSettingDTO targetSettingDTO = settingDTO.setTargetSettingOrderDTOS(maps);
+                maps.sort((TargetSettingOrderDTO o1, TargetSettingOrderDTO o2) -> {//排序
+                    return o2.getHistoryYear() - o1.getHistoryYear();
+                });
+                calculateGrowthRate(maps);
+                settingDTO.setTargetSettingOrderDTOS(maps);
                 return settingDTO;
             }
+            //此处已经对空的历史年度实际值做了处理，所以还是空的话就是报错了
             throw new ServiceException("获取失败");
         }
         if (targetSettingOrderDTOS.size() == historyNum) {
@@ -928,18 +988,16 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             historyNumS.remove(targetSettingOrderDTO.getHistoryYear());
         }
         List<TargetSettingOrderDTO> settingOrderDTOS = selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
-        if (StringUtils.isNotNull(settingOrderDTOS)) {
+        if (StringUtils.isNotEmpty(settingOrderDTOS)) {
             targetSettingOrderDTOS.addAll(settingOrderDTOS);
-            for (TargetSettingOrderDTO settingOrderDTO : settingOrderDTOS) {
-                historyNumS.remove(settingOrderDTO.getHistoryYear());
-            }
-            if (StringUtils.isNotEmpty(historyNumS)) {
-                insertOrderRow(historyNumS, targetSettingOrderDTOS);
-            }
+            targetSettingOrderDTOS.sort((TargetSettingOrderDTO o1, TargetSettingOrderDTO o2) -> {//排序
+                return o2.getHistoryYear() - o1.getHistoryYear();
+            });
+            calculateGrowthRate(targetSettingOrderDTOS);
         } else {
-            insertOrderRow(historyNumS, targetSettingOrderDTOS);
+            //此处已经对空的历史年度实际值做了处理，所以还是空的话就是报错了
+            throw new ServiceException("获取失败");
         }
-        calculateGrowthRate(targetSettingOrderDTOS);
         settingDTO.setTargetSettingOrderDTOS(targetSettingOrderDTOS);
         return settingDTO;
     }
@@ -951,26 +1009,16 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param historyNumS            历史年份list
      * @param targetSettingOrderDTOS 销售订单目标制定列表
      */
-    private void getDropTargetSettingDTO(IndicatorDTO indicatorDTO, List<Integer> historyNumS, List<TargetSettingOrderDTO> targetSettingOrderDTOS) {
+    private List<TargetSettingOrderDTO> getDropTargetSettingDTO(IndicatorDTO indicatorDTO, List<Integer> historyNumS, List<TargetSettingOrderDTO> targetSettingOrderDTOS) {
         // todo 通过目标年度直接去找滚动越策管理,获取历史年度实际值
         List<TargetSettingOrderDTO> settingOrderDTOS = null;
-        if (StringUtils.isNotEmpty(historyNumS)) {
-            settingOrderDTOS = selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId());
-        }
-        if (settingOrderDTOS != null) {
-            targetSettingOrderDTOS.addAll(settingOrderDTOS);
-            for (TargetSettingOrderDTO settingOrderDTO : settingOrderDTOS) {
-                historyNumS.remove(settingOrderDTO.getHistoryYear());
-            }
-        }
-        if (StringUtils.isNotEmpty(historyNumS)) {
-            insertOrderRow(historyNumS, targetSettingOrderDTOS);
-        }
+        targetSettingOrderDTOS.addAll(selectOutcomeDetailByTargetYear(historyNumS, indicatorDTO.getIndicatorId()));
         // 排序，然后赋值年度长率
         targetSettingOrderDTOS.sort((TargetSettingOrderDTO o1, TargetSettingOrderDTO o2) -> {
             return o2.getHistoryYear() - o1.getHistoryYear();
         });
         calculateGrowthRate(targetSettingOrderDTOS);
+        return targetSettingOrderDTOS;
     }
 
     /**

@@ -68,7 +68,9 @@
     <select id="selectTargetOutcomeByTargetYears"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO">
         SELECT
-        target_outcome_id, target_year, delete_flag, create_by, create_time, update_by, update_time
+        come.target_outcome_id,
+        come.target_year,
+        detail.actual_total
         FROM target_outcome_details detail
         LEFT JOIN target_outcome come ON come.target_outcome_id = detail.target_outcome_id
         WHERE

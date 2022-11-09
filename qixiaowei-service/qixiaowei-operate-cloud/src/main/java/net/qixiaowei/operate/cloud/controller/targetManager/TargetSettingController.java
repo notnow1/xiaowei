@@ -109,6 +109,15 @@ public class TargetSettingController extends BaseController {
     }
 
     /**
+     * 获取指标列表
+     */
+//    @RequiresPermissions("operate:cloud:targetSetting:remove")
+    @GetMapping("/indicatorTree")
+    public AjaxResult indicatorTree(TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.selectIndicatorTree(targetSettingDTO));
+    }
+
+    /**
      * 导入目标制定
      */
     @PostMapping("import")

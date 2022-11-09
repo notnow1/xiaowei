@@ -168,6 +168,13 @@ public interface ITargetSettingService {
     List<IndicatorDTO> selectIndicatorList(TargetSettingDTO targetSettingDTO);
 
     /**
+     * 获取指标树结构列表
+     *
+     * @return
+     */
+    List<Tree<Long>> selectIndicatorTree(TargetSettingDTO targetSettingDTO);
+
+    /**
      * 批量保存目标制定
      *
      * @param targetSettingDTOS
