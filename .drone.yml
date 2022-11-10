@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: qixiaowei-cloud-pipeline
+name: qixiaowei-cloud-compile
 
 steps:
   - name: compile
@@ -12,21 +12,59 @@ steps:
     commands:
       - mvn clean package -Ptest -DskipTests=true
 
-  - name: builid qixiaowei-file image
+volumes:
+  - name: mavenrepo
+    host:
+      path: /tmp/mavenrepo
+
+---
+kind: pipeline
+type: docker
+name: build-qixiaowei-file-image
+
+steps:
+  - name: build-qixiaowei-file-image
     pull: if-not-exists
     image: plugins/docker
     settings:
       registry: harbor.qixiaowei.net
-      username: deploy
+      username:
+        from_secret: username
       password:
-        from_secret: deploypwd
+        from_secret: password
       insecure: true
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
       dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
         - latest
+    trigger:
+      status:
+        - success
+    depends_on:
+      qixiaowei-cloud-compile
 
-volumes:
-  - name: mavenrepo
-    host:
-      path: /tmp/mavenrepo
+---
+kind: pipeline
+type: docker
+name: build-qixiaowei-auth-image
+
+steps:
+  - name: build-qixiaowei-auth-image
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username:
+        from_secret: username
+      password:
+        from_secret: password
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
+      dockerfile: qixiaowei-auth/Dockerfile
+      tags:
+        - latest
+    trigger:
+      status:
+        - success
+    depends_on:
+      qixiaowei-cloud-compile
