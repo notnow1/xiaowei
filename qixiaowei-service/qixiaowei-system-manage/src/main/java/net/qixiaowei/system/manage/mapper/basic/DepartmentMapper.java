@@ -1,6 +1,8 @@
 package net.qixiaowei.system.manage.mapper.basic;
 
 import java.util.List;
+
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
@@ -176,4 +178,9 @@ public interface DepartmentMapper{
      */
     List<Integer> selectLevel();
 
+    /**
+     * 目标分解是否被引用
+     * @param departmentId
+     */
+    List<TargetDecompose> queryDeptDecompose(@Param("departmentId") Long departmentId);
 }

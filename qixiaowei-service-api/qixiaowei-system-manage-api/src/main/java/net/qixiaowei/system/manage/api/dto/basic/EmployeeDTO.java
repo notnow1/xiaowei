@@ -55,6 +55,10 @@ public class EmployeeDTO {
     @NotBlank(message = "工号不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private  String employeeCode;
     /**
+     * 指标名称
+     */
+    private String indicatorName;
+    /**
     * 姓名
     */
     @NotBlank(message = "姓名不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})

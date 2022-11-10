@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -442,6 +443,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public int logicDeleteDepartmentByDepartmentId(DepartmentDTO departmentDTO) {
         StringBuffer posterreo = new StringBuffer();
         StringBuffer emplerreo = new StringBuffer();
+        StringBuffer decomposesErreo = new StringBuffer();
         StringBuffer depterreo = new StringBuffer();
         int i = 0;
         Department department = new Department();
@@ -450,22 +452,24 @@ public class DepartmentServiceImpl implements IDepartmentService {
         department.setUpdateBy(SecurityUtils.getUserId());
         //岗位是否被引用
         List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(departmentDTO.getDepartmentId());
-        if (null != departmentPostDTOS) {
-            posterreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\n");
+        List<String> collect1 = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).distinct().collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(departmentPostDTOS)) {
+            posterreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被岗位"+collect1+"引用\n");
         }
         //人员是否被引用
         List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(departmentDTO.getDepartmentId());
+        List<String> collect2 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).distinct().collect(Collectors.toList());
         if (!StringUtils.isEmpty(employeeDTOS)) {
-            emplerreo.append("组织编码" + departmentDTO.getDepartmentCode() + "\n");
+            emplerreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被人员"+collect2+"引用\n");
         }
-        if (posterreo.length() > 0) {
-            posterreo.append("组织已被岗位引用，无法删除！" + "\n");
-        }
-        if (emplerreo.length() > 0) {
-            emplerreo.append("组织已被人员引用，无法删除！");
+        //目标分解是否被引用
+        List<TargetDecompose> targetDecomposes = departmentMapper.queryDeptDecompose(departmentDTO.getDepartmentId());
+        List<String> collect = targetDecomposes.stream().map(TargetDecompose::getIndicatorName).distinct().collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(targetDecomposes)) {
+            decomposesErreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被目标分解" + collect + "引用\n");
         }
         //将错误信息放在一个字符串中
-        depterreo.append(posterreo).append(emplerreo);
+        depterreo.append(posterreo).append(emplerreo).append(decomposesErreo);
         if (depterreo.length() > 0) {
             throw new ServiceException(depterreo.toString());
         } else {
@@ -492,6 +496,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public int logicDeleteDepartmentByDepartmentIds(DepartmentDTO departmentDTO) {
         StringBuffer posterreo = new StringBuffer();
         StringBuffer emplerreo = new StringBuffer();
+        StringBuffer decomposesErreo = new StringBuffer();
         StringBuffer depterreo = new StringBuffer();
         int i = 0;
         Department department = new Department();
@@ -513,11 +518,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
             List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
             String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
             if (!StringUtils.isEmpty(employeeDTOS)) {
-                posterreo.append("组织名称" + dto.getDepartmentName() + "已被人员" + s1 + "引用\n");
+                emplerreo.append("组织名称" + dto.getDepartmentName() + "已被人员" + s1 + "引用\n");
+            }
+            //目标分解是否被引用
+            List<TargetDecompose> targetDecomposes = departmentMapper.queryDeptDecompose(dto.getDepartmentId());
+            List<String> collect = targetDecomposes.stream().map(TargetDecompose::getIndicatorName).distinct().collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(targetDecomposes)) {
+                decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解" + collect + "引用\n");
             }
         }
         //将错误信息放在一个字符串中
-        depterreo.append(posterreo).append(emplerreo);
+        depterreo.append(posterreo).append(emplerreo).append(decomposesErreo);
         if (depterreo.length() > 0) {
             throw new ServiceException(depterreo.toString());
         } else {

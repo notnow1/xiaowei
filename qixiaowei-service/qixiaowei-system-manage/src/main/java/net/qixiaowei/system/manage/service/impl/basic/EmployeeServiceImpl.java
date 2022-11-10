@@ -182,6 +182,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
         StringBuffer postErreo = new StringBuffer();
         //用户引用
         StringBuffer userErreo = new StringBuffer();
+        //目标分解引用
+        StringBuffer decomposeErreo = new StringBuffer();
         StringBuffer erreoEmp = new StringBuffer();
         // todo 校检是否被引用 被引用无法删除
         for (Long employeeId : employeeIds) {
@@ -189,6 +191,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).distinct().collect(Collectors.toList()).toString();
             String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
             String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
+            String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
             for (EmployeeDTO employeeDTO : employeeDTOList) {
                 if (StringUtils.isNotBlank(username)) {
                     userErreo.append("人员" + employeeDTO.getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
@@ -199,11 +202,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 if (StringUtils.isNotBlank(employeePostName)) {
                     postErreo.append("人员" + employeeDTO.getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
                 }
+                if (StringUtils.isNotBlank(indicatorName)) {
+                    decomposeErreo.append("人员" + employeeDTO.getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
+                }
             }
 
         }
 
-        erreoEmp.append(deptErreo).append(postErreo).append(userErreo);
+        erreoEmp.append(deptErreo).append(postErreo).append(userErreo).append(decomposeErreo);
         if (erreoEmp.length() > 0) {
             throw new ServiceException(erreoEmp.toString());
         }
@@ -403,6 +409,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
         StringBuffer postErreo = new StringBuffer();
         //用户引用
         StringBuffer userErreo = new StringBuffer();
+        //目标分解引用
+        StringBuffer decomposeErreo = new StringBuffer();
         StringBuffer erreoEmp = new StringBuffer();
         //员工表
         Employee employee = new Employee();
@@ -423,6 +431,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).distinct().collect(Collectors.toList()).toString();
         String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
         String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
+        String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
         for (EmployeeDTO employeeDTO2 : employeeDTOList) {
             if (StringUtils.isNotBlank(username)) {
                 userErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
@@ -433,9 +442,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (StringUtils.isNotBlank(employeePostName)) {
                 postErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
             }
+            if (StringUtils.isNotBlank(indicatorName)) {
+                decomposeErreo.append("人员" + employeeDTO.getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
+            }
         }
 
-        erreoEmp.append(deptErreo).append(postErreo).append(userErreo);
+        erreoEmp.append(deptErreo).append(postErreo).append(userErreo).append(decomposeErreo);
         if (erreoEmp.length() > 0) {
             throw new ServiceException(erreoEmp.toString());
         }
