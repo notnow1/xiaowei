@@ -26,6 +26,7 @@ steps:
       tags:
         - latest
 
+
 volumes:
   - name: mavenrepo
     host:
