@@ -1319,7 +1319,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             recoveryDTO.setAddRate(percentage);
             List<Map<String, Object>> recoveryList = setRecoveryList(zero, recoveryDTO);
             targetSettingByIndicator.setTargetSettingRecoveryList(recoveryList);
-            BigDecimal DSOValue = new BigDecimal(recoveryDTO.getBaselineValue() + recoveryDTO.getImproveDays());
+            BigDecimal DSOValue = new BigDecimal(recoveryDTO.getBaselineValue() - recoveryDTO.getImproveDays());
 //               todo 查询销售回款列表--recoveries
 //              【DSO（应收账款周转天数）】：公式=DSO基线-DSO改进天数。
 //              【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额。
