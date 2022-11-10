@@ -12,6 +12,17 @@ steps:
     commands:
       - mvn clean package -Ptest -DskipTests=true
 
+volumes:
+  - name: mavenrepo
+    host:
+      path: /tmp/mavenrepo
+
+---
+kind: pipeline
+type: docker
+name: builid-qixiaowei-file-image
+
+steps:
   - name: builid qixiaowei-file image
     pull: if-not-exists
     image: plugins/docker
@@ -25,9 +36,21 @@ steps:
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
       dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
-        - latest
         - ${DRONE_BUILD_NUMBER}
+trigger:
+  status:
+    - success
 
+depends_on:
+  - qixiaowei-cloud-compile
+
+
+---
+kind: pipeline
+type: docker
+name: builid-qixiaowei-auth-image
+
+steps:
   - name: builid qixiaowei-auth image
     pull: if-not-exists
     image: plugins/docker
@@ -41,10 +64,10 @@ steps:
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
       dockerfile: qixiaowei-auth/Dockerfile
       tags:
-        - latest
         - ${DRONE_BUILD_NUMBER}
+trigger:
+  status:
+    - success
 
-volumes:
-  - name: mavenrepo
-    host:
-      path: /tmp/mavenrepo
+depends_on:
+  - qixiaowei-cloud-compile
