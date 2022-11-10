@@ -6,14 +6,5 @@ steps:
   - name: compile
     pull: if-not-exists
     image: maven:3-jdk-8
-    volumes:
-      - name: cache
-        path: /root/.m2
     commands:
-      - mvn clean package -Ptest -DskipTests=true
       - ls /root/.m2/
-
-volumes:
-  - name: cache
-    host:
-      path: /tmp/cache
