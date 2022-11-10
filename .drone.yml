@@ -1,10 +1,5 @@
-kind: pipeline
-type: docker
-name: qixiaowei-cloud-compile
-
-steps:
-  - name: compile
-    pull: if-not-exists
+pipeline:
+  compile:
     image: maven:3-jdk-8
     volumes:
       - name: maven-repo
@@ -12,22 +7,7 @@ steps:
     commands:
       - mvn clean package -Ptest -DskipTests=true
 
-volumes:
-  - name: maven-repo
-    host:
-      path: /tmp/mavenrepo
-
----
-kind: pipeline
-type: docker
-name: builid-qixiaowei-file-image
-
-clone:
-  disable: false
-
-steps:
-  - name: builid qixiaowei-file image
-    pull: if-not-exists
+  build:
     image: plugins/docker
     settings:
       registry: harbor.qixiaowei.net
@@ -40,9 +20,14 @@ steps:
       dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
         - ${DRONE_BUILD_NUMBER}
-trigger:
-  status:
-    - success
+    trigger:
+      status:
+        - success
 
-depends_on:
-  - qixiaowei-cloud-compile
+    depends_on:
+      - compile
+
+volumes:
+  - name: maven-repo
+    host:
+      path: /tmp/mavenrepo
