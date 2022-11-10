@@ -1397,13 +1397,13 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingRecoveriesDTO.setPrefixType("回款总目标");
                 if (StringUtils.isNull(targetIncomeByIndicator)) {
                     BigDecimal recoveryTargetSum = recoveryDTO.getBalanceReceivables()
-                            .add((saleIncomeGoal.getTargetValue().multiply((targetSettingByIndicator.getPercentage().add(BigDecimal.valueOf(1))))))
+                            .add((saleIncomeGoal.getTargetValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
                             .subtract(periodReceivables.getTargetValue());
                     BigDecimal recoveryGuaranteedSum = recoveryDTO.getBalanceReceivables()
-                            .add((saleIncomeGoal.getGuaranteedValue().multiply((targetSettingByIndicator.getPercentage().add(BigDecimal.valueOf(1))))))
+                            .add((saleIncomeGoal.getGuaranteedValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
                             .subtract(periodReceivables.getGuaranteedValue());
                     BigDecimal recoveryChallengeSum = recoveryDTO.getBalanceReceivables()
-                            .add((saleIncomeGoal.getChallengeValue().multiply((targetSettingByIndicator.getPercentage().add(BigDecimal.valueOf(1))))))
+                            .add((saleIncomeGoal.getChallengeValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
                             .subtract(periodReceivables.getChallengeValue());
                     targetIncomeByIndicator = new TargetSettingDTO();
                     targetIncomeByIndicator.setTargetValue(recoveryTargetSum);
