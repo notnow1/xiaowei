@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: compile
+name: qixiaowei-cloud-compile
 
 steps:
   - name: compile
@@ -17,9 +17,10 @@ volumes:
     host:
       path: /tmp/mavenrepo
 
+---
 kind: pipeline
 type: docker
-name: build
+name: qixiaowei-cloud-build
 
 steps:
   - name: build-qixiaowei-file-image
@@ -42,9 +43,10 @@ steps:
     depends_on:
       qixiaowei-cloud-compile
 
+---
 kind: pipeline
 type: docker
-name: build2
+name: qixiaowei-cloud-build
 
 steps:
   - name: build-qixiaowei-auth-image
