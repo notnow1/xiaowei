@@ -7,20 +7,31 @@ steps:
     pull: if-not-exists
     image: maven:3-jdk-8
     volumes:
-      - name: mavenrepo
+      - name: maven-repo
         path: /root/.m2
+      - name: maven-build
+        path: /app/build
     commands:
       - mvn clean package -Ptest -DskipTests=true
+      - ls qixiaowei-service/qixiaowei-file/
+      - rm -rf /app/build/*
+      - cp -r . /app/build/
 
 volumes:
-  - name: mavenrepo
+  - name: maven-repo
     host:
       path: /tmp/mavenrepo
+  - name: maven-build
+    host:
+      path: /tmp/mavenbuild
 
 ---
 kind: pipeline
 type: docker
 name: builid-qixiaowei-file-image
+
+clone:
+  disable: true
 
 steps:
   - name: builid qixiaowei-file image
@@ -35,34 +46,6 @@ steps:
       insecure: true
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
       dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
-      tags:
-        - ${DRONE_BUILD_NUMBER}
-trigger:
-  status:
-    - success
-
-depends_on:
-  - qixiaowei-cloud-compile
-
-
----
-kind: pipeline
-type: docker
-name: builid-qixiaowei-auth-image
-
-steps:
-  - name: builid qixiaowei-auth image
-    pull: if-not-exists
-    image: plugins/docker
-    settings:
-      registry: harbor.qixiaowei.net
-      username:
-        from_secret: username
-      password:
-        from_secret: password
-      insecure: true
-      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
-      dockerfile: qixiaowei-auth/Dockerfile
       tags:
         - ${DRONE_BUILD_NUMBER}
 trigger:
