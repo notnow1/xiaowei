@@ -11,6 +11,7 @@ steps:
         path: /root/.m2
     commands:
       - mvn clean package -Ptest -DskipTests=true
+      - ls /root/.m2/
 
 volumes:
   - name: cache
