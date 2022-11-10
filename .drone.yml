@@ -17,7 +17,6 @@ volumes:
     host:
       path: /tmp/mavenrepo
 
----
 kind: pipeline
 type: docker
 name: build
@@ -43,7 +42,6 @@ steps:
     depends_on:
       qixiaowei-cloud-compile
 
----
 kind: pipeline
 type: docker
 name: build2
