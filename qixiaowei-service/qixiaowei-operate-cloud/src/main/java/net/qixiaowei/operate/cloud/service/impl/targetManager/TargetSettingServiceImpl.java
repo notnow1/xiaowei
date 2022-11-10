@@ -1024,7 +1024,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     BigDecimal subtract = historyActual.subtract(beforeRate);
                     BigDecimal divide;
                     if (!historyActual.equals(BigDecimal.ZERO)) {
-                        divide = subtract.divide(historyActual, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                        divide = subtract.divide(beforeRate, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
                     } else {
                         divide = BigDecimal.ZERO;
                     }
@@ -1392,7 +1392,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 periodReceivables = targetSettingRecoveriesDTO;
                 targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
 //              【回款总目标】：公式=上年年末应收账款余额+销售收入目标*（1+平均增值税率）-期末应收账款余额。
-                // 47 + 1.04*29  - （-48.61） =   125.77
+                //        1,328.125   1000
                 //回款总目标-1.挑战值，目标值，保底值
                 targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                 targetSettingRecoveriesDTO.setPrefixType("回款总目标");
@@ -1406,14 +1406,14 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
 //                BigDecimal targetGoal = recoveryDTO.getBalanceReceivables().add(targetIncomeByIndicator.getTargetValue().multiply(targetSettingByIndicator.getPercentage().add(new BigDecimal(1))));
 //                BigDecimal guaranteedGoal = recoveryDTO.getBalanceReceivables().add(targetIncomeByIndicator.getGuaranteedValue().multiply(targetSettingByIndicator.getPercentage().add(new BigDecimal(1))));
                 BigDecimal challengeGoal = recoveryDTO.getBalanceReceivables()
-                        .add((saleIncomeGoal.getTargetValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
-                        .subtract(periodReceivables.getTargetValue());
-                BigDecimal targetGoal = recoveryDTO.getBalanceReceivables()
-                        .add((saleIncomeGoal.getGuaranteedValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
-                        .subtract(periodReceivables.getGuaranteedValue());
-                BigDecimal guaranteedGoal = recoveryDTO.getBalanceReceivables()
                         .add((saleIncomeGoal.getChallengeValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
                         .subtract(periodReceivables.getChallengeValue());
+                BigDecimal targetGoal = recoveryDTO.getBalanceReceivables()
+                        .add((saleIncomeGoal.getTargetValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
+                        .subtract(periodReceivables.getTargetValue());
+                BigDecimal guaranteedGoal = recoveryDTO.getBalanceReceivables()
+                        .add((saleIncomeGoal.getGuaranteedValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
+                        .subtract(periodReceivables.getGuaranteedValue());
                 targetSettingRecoveriesDTO.setChallengeValue(challengeGoal);
                 targetSettingRecoveriesDTO.setTargetValue(targetGoal);
                 targetSettingRecoveriesDTO.setGuaranteedValue(guaranteedGoal);
