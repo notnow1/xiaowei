@@ -5,10 +5,28 @@
     <select id="selectTargetDecomposeHistoryByTargetDecomposeHistoryId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeHistoryDTO">
         SELECT
-        target_decompose_history_id, target_decompose_id, version, forecast_cycle, delete_flag, create_by, create_time, update_by, update_time
-        FROM target_decompose_history
-        WHERE  target_decompose_history_id=#{targetDecomposeHistoryId}
-        and delete_flag=0
+            tds.target_decompose_history_id,
+            tds.target_decompose_id,
+            i.indicator_name,
+            td.target_year,
+            td.decomposition_dimension,
+            td.time_dimension,
+            tds.version,
+            tds.forecast_cycle,
+            tds.delete_flag,
+            tds.create_by,
+            tds.create_time,
+            tds.update_by,
+            tds.update_time
+        FROM target_decompose_history tds
+                 left join  target_decompose td
+                            on td.target_decompose_id = tds.target_decompose_id
+                                and td.delete_flag = 0
+                 left join `system-manage`.indicator i
+                           on i.indicator_id = td.indicator_id
+                               and i.delete_flag = 0
+        WHERE  tds.target_decompose_history_id=#{targetDecomposeHistoryId}
+          and tds.delete_flag=0
     </select>
 
     <!--    批量查询目标分解历史版本表-->

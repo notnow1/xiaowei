@@ -893,7 +893,11 @@ public class ProductServiceImpl implements IProductService {
         product.setProductId(productDTO.getProductId());
         product.setUpdateTime(DateUtils.getNowDate());
         product.setUpdateBy(SecurityUtils.getUserId());
+        //目标分解是否被引用
+
         //todo 是否被引用
+        List<ProductDTO> productDTOList = productMapper.selectProductQuote(product.getProductId());
+
         i = productMapper.logicDeleteProductByProductId(product, SecurityUtils.getUserId(), DateUtils.getNowDate());
         //产品id
         Long productId = product.getProductId();
