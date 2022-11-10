@@ -39,7 +39,7 @@ steps:
         from_secret: password
       insecure: true
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
-      dockerfile: `pwd`/qixiaowei-cloud/qixiaowei-service/qixiaowei-file/Dockerfile
+      dockerfile: /drone/src/qixiaowei-cloud/qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
         - ${DRONE_BUILD_NUMBER}
 trigger:
