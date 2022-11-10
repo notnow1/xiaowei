@@ -15,6 +15,9 @@ steps:
   - name: builid qixiaowei-file image
     pull: if-not-exists
     image: plugins/docker
+    volumes:
+      - name: dockercache
+        path: /var/lib/docker/
     settings:
       registry: harbor.qixiaowei.net
       username: deploy
@@ -31,3 +34,6 @@ volumes:
   - name: mavenrepo
     host:
       path: /tmp/mavenrepo
+  - name: dockercache
+    host:
+      path: /tmp/dockercache
