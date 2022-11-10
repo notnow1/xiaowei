@@ -212,10 +212,10 @@ public class TargetSettingController extends BaseController {
         List<TargetSettingExcel> targetSettingExcelList = targetSettingService.exportOrderTargetSetting(targetSettingDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+        String fileName = URLEncoder.encode("销售订单目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetSettingExcel.class).sheet("目标制定").doWrite(targetSettingExcelList);
+        EasyExcel.write(response.getOutputStream(), TargetSettingExcel.class).sheet("销售订单目标制定").doWrite(targetSettingExcelList);
     }
 
     /**

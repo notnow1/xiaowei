@@ -4,6 +4,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -120,8 +121,11 @@ public interface ITargetSettingOrderService {
     /**
      * 导出Excel
      *
-     * @param targetSettingOrderDTO
+     * @param startYear
+     * @param endYear
+     * @param targetSettingId
+     * @param percentage
      * @return
      */
-    List<TargetSettingOrderExcel> exportTargetSettingOrder(TargetSettingOrderDTO targetSettingOrderDTO);
+    List<TargetSettingOrderExcel> exportTargetSettingOrder(Integer startYear, Integer endYear, Long targetSettingId, BigDecimal percentage);
 }

@@ -542,7 +542,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     private void storageValue(Integer targetYear, List<Long> noEdit, List<TargetSettingDTO> updateTargetSetting, List<TargetSettingDTO> delTargetSetting, List<TargetSettingDTO> addTargetSetting) {
         // 对新增进行筛选，讲新增的预置数据数据删除
-        for (int i = addTargetSetting.size() - 1; i >= 0; i--) {
+            for (int i = addTargetSetting.size() - 1; i >= 0; i--) {
             TargetSettingDTO targetSettingDTO = addTargetSetting.get(i);
             if (noEdit.contains(targetSettingDTO.getIndicatorId())) {
                 addTargetSetting.remove(i);
@@ -1106,8 +1106,18 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     @Override
     public List<TargetSettingExcel> exportOrderTargetSetting(TargetSettingDTO targetSettingDTO) {
+        Integer startYear = targetSettingDTO.getStartYear();
+        Integer endYear = targetSettingDTO.getEndYear();
+        Long targetSettingId = targetSettingDTO.getTargetSettingId();
+        TargetSettingDTO settingDTO = new TargetSettingDTO();
+        settingDTO.setTargetSettingId(targetSettingId);
         TargetSettingOrderDTO targetSettingOrderDTO = new TargetSettingOrderDTO();
-        targetSettingOrderService.exportTargetSettingOrder(targetSettingOrderDTO);
+        List<TargetSettingDTO> targetSettingDTOList = this.selectTargetSettingList(settingDTO);
+        if (StringUtils.isNotEmpty(targetSettingDTOList)) {
+            throw new ServiceException("当前目标制定不存在");
+        }
+        BigDecimal percentage = targetSettingDTOList.get(0).getPercentage();
+        targetSettingOrderService.exportTargetSettingOrder(startYear, endYear, targetSettingId, percentage);
         return null;
     }
 

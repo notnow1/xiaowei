@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -117,7 +118,9 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
      */
     @Override
     public int logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(List<Long> indicators, Long targetOutcomeId) {
-        return targetOutcomeDetailsMapper.logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(indicators, targetOutcomeId);
+        Long updateBy = SecurityUtils.getUserId();
+        Date updateTime = DateUtils.getNowDate();
+        return targetOutcomeDetailsMapper.logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(updateBy,updateTime,indicators, targetOutcomeId);
     }
 
     /**

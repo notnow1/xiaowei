@@ -158,8 +158,15 @@ public class TargetSettingDTO {
     /**
      * 历史年度数
      */
-    @NotBlank(message = "历史年度数不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.QueryTargetSettingDTO.class})
     private Integer historyNum;
+    /**
+     * 开始年度
+     */
+    private Integer startYear;
+    /**
+     * 结束年度
+     */
+    private Integer endYear;
     /**
      * 订单目标制定
      */

@@ -108,11 +108,13 @@ public interface TargetOutcomeDetailsMapper {
     /**
      * 逻辑批量删除目标结果详情表根据指标ID和OutComeID
      *
+     * @param updateBy
+     * @param updateTime
      * @param indicators
      * @param targetOutcomeId
      * @return
      */
-    int logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(@Param("indicators") List<Long> indicators, @Param("targetOutcomeId") Long targetOutcomeId);
+    int logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(@Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime, @Param("indicators") List<Long> indicators, @Param("targetOutcomeId") Long targetOutcomeId);
 
     /**
      * 根据outId查找目标结果详情表
