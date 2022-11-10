@@ -10,8 +10,6 @@ steps:
       - name: maven-repo
         path: /root/.m2
     commands:
-      - ls -al
-      - pwd
       - mvn clean package -Ptest -DskipTests=true
 
 volumes:
@@ -25,7 +23,7 @@ type: docker
 name: builid-qixiaowei-file-image
 
 clone:
-  disable: true
+  disable: false
 
 steps:
   - name: builid qixiaowei-file image
@@ -39,7 +37,7 @@ steps:
         from_secret: password
       insecure: true
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
-      dockerfile: /drone/src/qixiaowei-cloud/qixiaowei-service/qixiaowei-file/Dockerfile
+      dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
         - ${DRONE_BUILD_NUMBER}
 trigger:
