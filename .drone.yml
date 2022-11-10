@@ -9,21 +9,15 @@ steps:
     volumes:
       - name: maven-repo
         path: /root/.m2
-      - name: maven-build
-        path: /app/build
     commands:
+      - ls -al
+      - pwd
       - mvn clean package -Ptest -DskipTests=true
-      - ls qixiaowei-service/qixiaowei-file/
-      - rm -rf /app/build/*
-      - cp -r . /app/build/
 
 volumes:
   - name: maven-repo
     host:
       path: /tmp/mavenrepo
-  - name: maven-build
-    host:
-      path: /tmp/mavenbuild
 
 ---
 kind: pipeline
@@ -45,7 +39,7 @@ steps:
         from_secret: password
       insecure: true
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
-      dockerfile: qixiaowei-cloud/qixiaowei-service/qixiaowei-file/Dockerfile
+      dockerfile: `pwd`/qixiaowei-cloud/qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
         - ${DRONE_BUILD_NUMBER}
 trigger:
