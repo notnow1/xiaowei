@@ -185,6 +185,38 @@
             #{item}
         </foreach>
     </select>
+<!--    产品是否被引用-->
+    <select id="selectProductQuote" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+        SELECT i.indicator_name,
+                p.product_id,
+               p.parent_product_id,
+               p.ancestors,
+               p.product_code,
+               p.product_name,
+               p.`level`,
+               p.product_unit_id,
+               p.product_category,
+               p.product_description,
+               p.list_price,
+               p.listing_flag,
+               p.delete_flag,
+               p.create_by,
+               p.create_time,
+               p.update_by,
+               p.update_time
+        FROM `operate-cloud`.product p
+                 left join `operate-cloud`.target_decompose_details tdd
+                           on p.product_id = tdd.product_id
+                               and tdd.delete_flag = 0
+                 left join `operate-cloud`.target_decompose td
+                           on td.target_decompose_id = tdd.target_decompose_id
+                               and td.delete_flag = 0
+                 left join `system-manage`.`indicator` i
+                           on i.indicator_id = td.indicator_id
+                               and i.delete_flag = 0
+        where p.product_id = #{productId}
+        and p.delete_flag = 0
+    </select>
     <!--新增产品表-->
     <insert id="insertProduct" useGeneratedKeys="true" keyProperty="productId">
         INSERT INTO product

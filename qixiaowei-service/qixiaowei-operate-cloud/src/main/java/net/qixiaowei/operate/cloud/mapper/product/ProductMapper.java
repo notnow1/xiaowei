@@ -153,4 +153,11 @@ public interface ProductMapper {
      * @return
      */
     List<Integer> selectLevel();
+
+    /**
+     * 是否被引用
+     * @param productId
+     * @return
+     */
+    List<ProductDTO> selectProductQuote(@Param("productId") Long productId);
 }

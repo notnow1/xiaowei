@@ -6,7 +6,9 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -44,6 +46,25 @@ public class TargetDecomposeHistoryDTO {
     * 目标分解ID
     */
     private  Long targetDecomposeId;
+    /**
+     * 目标年度
+     */
+    private  Integer targetYear;
+
+    /**
+     * 指标名称
+     */
+    private  String indicatorName;
+
+    /**
+     * 分解维度
+     */
+    private  String decompositionDimension;
+
+    /**
+     * 时间维度:1年度;2半年度;3季度;4月度;5周
+     */
+    private  Integer timeDimension;
     /**
     * 版本号
     */

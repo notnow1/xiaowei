@@ -62,6 +62,10 @@ public class ProductDTO {
     @NotBlank(message = "产品名称不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  String productName;
     /**
+     * 指标名称
+     */
+    private String indicatorName;
+    /**
     * 层级
     */
     @NotNull(message = "层级不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
