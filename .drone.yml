@@ -3,35 +3,14 @@ type: docker
 name: qixiaowei-cloud-pipeline
 
 steps:
-  - name: restore-cache
-    pull: if-not-exists
-    image: drillster/drone-volume-cache
-    volumes:
-      - name: cache
-        path: /cache
-    settings:
-      restore: true
-      mount:
-        - /root/.m2/
-
   - name: compile
     pull: if-not-exists
     image: maven:3-jdk-8
-    commands:
-      - ls -al
-      - mvn clean package -Ptest -DskipTests=true
-      - ls -al
-
-  - name: rebuild-cache
-    pull: if-not-exists
-    image: drillster/drone-volume-cache
     volumes:
       - name: cache
-        path: /cache
-    settings:
-      rebuild: true
-      mount:
-        - /root/.m2/
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests=true
 
 volumes:
   - name: cache
