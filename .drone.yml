@@ -8,5 +8,4 @@ steps:
     image: maven:3-jdk-8
     commands:
       - mvn version
-      - mvn clean
       - ls /root/.m2
