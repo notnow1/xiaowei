@@ -13,13 +13,15 @@ steps:
       - mvn clean package -Ptest -DskipTests=true
 
   - name: builid qixiaowei-file image
+    pull: if-not-exists
     image: plugins/docker
     settings:
       registry: harbor.qixiaowei.net
       username: deploy
       password:
         from_secret: deploypwd
-      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
+      insecure: true
+      repo: qixiaowei-cloud/qixiaowei-file
       tags:
         - latest
       build_args:
