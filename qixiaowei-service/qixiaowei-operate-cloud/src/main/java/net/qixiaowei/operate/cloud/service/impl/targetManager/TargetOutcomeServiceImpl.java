@@ -251,6 +251,49 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Transactional
     public int updateTargetOutcome(TargetOutcomeDTO targetOutcomeDTO) {
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDTO.getTargetOutcomeDetailsDTOList();
+        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            List<BigDecimal> monthValue = targetOutcomeDetailsDTO.getMonthValue();
+            for (int i = 0; i < monthValue.size(); i++) {
+                switch (i) {
+                    case 0:
+                        targetOutcomeDetailsDTO.setActualJanuary(monthValue.get(i));
+                        break;
+                    case 1:
+                        targetOutcomeDetailsDTO.setActualFebruary(monthValue.get(i));
+                        break;
+                    case 2:
+                        targetOutcomeDetailsDTO.setActualMarch(monthValue.get(i));
+                        break;
+                    case 3:
+                        targetOutcomeDetailsDTO.setActualApril(monthValue.get(i));
+                        break;
+                    case 4:
+                        targetOutcomeDetailsDTO.setActualMay(monthValue.get(i));
+                        break;
+                    case 5:
+                        targetOutcomeDetailsDTO.setActualJune(monthValue.get(i));
+                        break;
+                    case 6:
+                        targetOutcomeDetailsDTO.setActualJuly(monthValue.get(i));
+                        break;
+                    case 7:
+                        targetOutcomeDetailsDTO.setActualAugust(monthValue.get(i));
+                        break;
+                    case 8:
+                        targetOutcomeDetailsDTO.setActualSeptember(monthValue.get(i));
+                        break;
+                    case 9:
+                        targetOutcomeDetailsDTO.setActualOctober(monthValue.get(i));
+                        break;
+                    case 10:
+                        targetOutcomeDetailsDTO.setActualNovember(monthValue.get(i));
+                        break;
+                    case 11:
+                        targetOutcomeDetailsDTO.setActualDecember(monthValue.get(i));
+                        break;
+                }
+            }
+        }
         TargetOutcome targetOutcome = new TargetOutcome();
         BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
         targetOutcome.setUpdateTime(DateUtils.getNowDate());
