@@ -7,4 +7,6 @@ steps:
     pull: if-not-exists
     image: maven:3-jdk-8
     commands:
-      - ls /root/.m2/
+      - mvn version
+      - mvn clean
+      - ls /root/.m2
