@@ -133,20 +133,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 }
             }
             return indicatorList;
-//            TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
-//            treeNodeConfig.setIdKey("indicatorId");
-//            treeNodeConfig.setNameKey("indicatorName");
-//            treeNodeConfig.setParentIdKey("parentIndicatorId");
-//            return TreeUtil.build(indicatorList, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
-//                tree.setId(treeNode.getIndicatorId());
-//                tree.setParentId(treeNode.getParentIndicatorId());
-//                tree.setName(treeNode.getIndicatorName());
-//                tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
-//                tree.putExtra("isPreset", treeNode.getIsPreset());
-//                tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
-//                tree.putExtra("choiceFlag", treeNode.getChoiceFlag());
-//                tree.putExtra("isTarget", treeNode.getIsTarget());
-//            });
         }
     }
 
@@ -177,6 +163,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     if (IndicatorCode.selectIsPreset(indicatorCode) == 1) {
                         dto.setIsTarget(1);
                         break;
+                    }
+                    if (dto.getChoiceFlag().equals(1)) {
+                        dto.setIsTarget(1);
                     }
                     Long indicatorId = settingDTO.getIndicatorId();
                     if (dto.getIndicatorId().equals(indicatorId)) {
@@ -1110,6 +1099,19 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     }
 
     /**
+     * 导出销售订单目标制定
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    @Override
+    public List<TargetSettingExcel> exportOrderTargetSetting(TargetSettingDTO targetSettingDTO) {
+        TargetSettingOrderDTO targetSettingOrderDTO = new TargetSettingOrderDTO();
+        targetSettingOrderService.exportTargetSettingOrder(targetSettingOrderDTO);
+        return null;
+    }
+
+    /**
      * 保存销售收入目标制定
      *
      * @param targetSettingDTO 目标制定
@@ -1305,7 +1307,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         Integer targetYear = targetSettingDTO.getTargetYear();
         IndicatorDTO indicatorReceivableDTO = getIndicator(IndicatorCode.RECEIVABLE.getCode());
 //        IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.INCOME.getCode());
-        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
+        TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 3);
         TargetSettingDTO targetIncomeByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 2);
         List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = new ArrayList<>();
         List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS = new ArrayList<>();

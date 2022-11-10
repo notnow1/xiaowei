@@ -1,24 +1,20 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
-import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSettingIncome;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
+import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingIncomeMapper;
+import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingIncomeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-
-import org.springframework.transaction.annotation.Transactional;
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSettingIncome;
-//import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO;
-import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingIncomeMapper;
-import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingIncomeService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import net.qixiaowei.integration.common.exception.ServiceException;
+import java.util.List;
 
 
 /**
@@ -210,44 +206,44 @@ public class TargetSettingIncomeServiceImpl implements ITargetSettingIncomeServi
         return targetSettingIncomeMapper.updateTargetSettingIncomes(targetSettingIncomeList);
     }
 
-//    /**
-//     * 导入Excel
-//     *
-//     * @param list
-//     */
-//    @Override
-//    public void importTargetSettingIncome(List<TargetSettingIncomeExcel> list) {
-//        List<TargetSettingIncome> targetSettingIncomeList = new ArrayList<>();
-//        list.forEach(l -> {
-//            TargetSettingIncome targetSettingIncome = new TargetSettingIncome();
-//            BeanUtils.copyProperties(l, targetSettingIncome);
-//            targetSettingIncome.setCreateBy(SecurityUtils.getUserId());
-//            targetSettingIncome.setCreateTime(DateUtils.getNowDate());
-//            targetSettingIncome.setUpdateTime(DateUtils.getNowDate());
-//            targetSettingIncome.setUpdateBy(SecurityUtils.getUserId());
-//            targetSettingIncome.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-//            targetSettingIncomeList.add(targetSettingIncome);
-//        });
-//        try {
-//            targetSettingIncomeMapper.batchTargetSettingIncome(targetSettingIncomeList);
-//        } catch (Exception e) {
-//            throw new ServiceException("导入目标制定收入表失败");
-//        }
-//    }
-//
-//    /**
-//     * 导出Excel
-//     *
-//     * @param targetSettingIncomeDTO
-//     * @return
-//     */
-//    @Override
-//    public List<TargetSettingIncomeExcel> exportTargetSettingIncome(TargetSettingIncomeDTO targetSettingIncomeDTO) {
-//        TargetSettingIncome targetSettingIncome = new TargetSettingIncome();
-//        BeanUtils.copyProperties(targetSettingIncomeDTO, targetSettingIncome);
-//        List<TargetSettingIncomeDTO> targetSettingIncomeDTOList = targetSettingIncomeMapper.selectTargetSettingIncomeList(targetSettingIncome);
-//        List<TargetSettingIncomeExcel> targetSettingIncomeExcelList = new ArrayList<>();
-//        return targetSettingIncomeExcelList;
-//    }
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    @Override
+    public void importTargetSettingIncome(List<TargetSettingIncomeExcel> list) {
+        List<TargetSettingIncome> targetSettingIncomeList = new ArrayList<>();
+        list.forEach(l -> {
+            TargetSettingIncome targetSettingIncome = new TargetSettingIncome();
+            BeanUtils.copyProperties(l, targetSettingIncome);
+            targetSettingIncome.setCreateBy(SecurityUtils.getUserId());
+            targetSettingIncome.setCreateTime(DateUtils.getNowDate());
+            targetSettingIncome.setUpdateTime(DateUtils.getNowDate());
+            targetSettingIncome.setUpdateBy(SecurityUtils.getUserId());
+            targetSettingIncome.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            targetSettingIncomeList.add(targetSettingIncome);
+        });
+        try {
+            targetSettingIncomeMapper.batchTargetSettingIncome(targetSettingIncomeList);
+        } catch (Exception e) {
+            throw new ServiceException("导入目标制定收入表失败");
+        }
+    }
+
+    /**
+     * 导出Excel
+     *
+     * @param targetSettingIncomeDTO
+     * @return
+     */
+    @Override
+    public List<TargetSettingIncomeExcel> exportTargetSettingIncome(TargetSettingIncomeDTO targetSettingIncomeDTO) {
+        TargetSettingIncome targetSettingIncome = new TargetSettingIncome();
+        BeanUtils.copyProperties(targetSettingIncomeDTO, targetSettingIncome);
+        List<TargetSettingIncomeDTO> targetSettingIncomeDTOList = targetSettingIncomeMapper.selectTargetSettingIncomeList(targetSettingIncome);
+        List<TargetSettingIncomeExcel> targetSettingIncomeExcelList = new ArrayList<>();
+        return targetSettingIncomeExcelList;
+    }
 }
 

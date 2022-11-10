@@ -1,11 +1,13 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSettingRecoveries;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveriesDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingRecoveriesExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingRecoveriesMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingRecoveriesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,42 +196,46 @@ public class TargetSettingRecoveriesServiceImpl implements ITargetSettingRecover
         }
         return targetSettingRecoveriesMapper.updateTargetSettingRecoveriess(targetSettingRecoveriesList);
     }
-//    /**
-//    * 导入Excel
-//    * @param list
-//    */
-//    @Override
-//    public void importTargetSettingRecoveries(List<TargetSettingRecoveriesExcel> list) {
-//    List<TargetSettingRecoveries> targetSettingRecoveriesList = new ArrayList<>();
-//        list.forEach(l -> {
-//        TargetSettingRecoveries targetSettingRecoveries = new TargetSettingRecoveries();
-//        BeanUtils.copyProperties(l, targetSettingRecoveries);
-//        targetSettingRecoveries.setCreateBy(SecurityUtils.getUserId());
-//        targetSettingRecoveries.setCreateTime(DateUtils.getNowDate());
-//        targetSettingRecoveries.setUpdateTime(DateUtils.getNowDate());
-//        targetSettingRecoveries.setUpdateBy(SecurityUtils.getUserId());
-//        targetSettingRecoveries.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-//        targetSettingRecoveriesList.add(targetSettingRecoveries);
-//        });
-//        try {
-//        targetSettingRecoveriesMapper.batchTargetSettingRecoveries(targetSettingRecoveriesList);
-//        } catch (Exception e) {
-//        throw new ServiceException("导入目标制定回款集合表失败");
-//        }
-//    }
-//    /**
-//    * 导出Excel
-//    * @param targetSettingRecoveriesDTO
-//    * @return
-//    */
-//    @Override
-//    public List<TargetSettingRecoveriesExcel> exportTargetSettingRecoveries(TargetSettingRecoveriesDTO targetSettingRecoveriesDTO) {
-//        TargetSettingRecoveries targetSettingRecoveries = new TargetSettingRecoveries();
-//        BeanUtils.copyProperties(targetSettingRecoveriesDTO, targetSettingRecoveries);
-//        List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOList = targetSettingRecoveriesMapper.selectTargetSettingRecoveriesList(targetSettingRecoveries);
-//        List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcelList = new ArrayList<>();
-//        return targetSettingRecoveriesExcelList;
-//    }
+
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    @Override
+    public void importTargetSettingRecoveries(List<TargetSettingRecoveriesExcel> list) {
+        List<TargetSettingRecoveries> targetSettingRecoveriesList = new ArrayList<>();
+        list.forEach(l -> {
+            TargetSettingRecoveries targetSettingRecoveries = new TargetSettingRecoveries();
+            BeanUtils.copyProperties(l, targetSettingRecoveries);
+            targetSettingRecoveries.setCreateBy(SecurityUtils.getUserId());
+            targetSettingRecoveries.setCreateTime(DateUtils.getNowDate());
+            targetSettingRecoveries.setUpdateTime(DateUtils.getNowDate());
+            targetSettingRecoveries.setUpdateBy(SecurityUtils.getUserId());
+            targetSettingRecoveries.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            targetSettingRecoveriesList.add(targetSettingRecoveries);
+        });
+        try {
+            targetSettingRecoveriesMapper.batchTargetSettingRecoveries(targetSettingRecoveriesList);
+        } catch (Exception e) {
+            throw new ServiceException("导入目标制定回款集合表失败");
+        }
+    }
+
+    /**
+     * 导出Excel
+     *
+     * @param targetSettingRecoveriesDTO
+     * @return
+     */
+    @Override
+    public List<TargetSettingRecoveriesExcel> exportTargetSettingRecoveries(TargetSettingRecoveriesDTO targetSettingRecoveriesDTO) {
+        TargetSettingRecoveries targetSettingRecoveries = new TargetSettingRecoveries();
+        BeanUtils.copyProperties(targetSettingRecoveriesDTO, targetSettingRecoveries);
+        List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOList = targetSettingRecoveriesMapper.selectTargetSettingRecoveriesList(targetSettingRecoveries);
+        List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcelList = new ArrayList<>();
+        return targetSettingRecoveriesExcelList;
+    }
 
     /**
      * 通过目标制定ID查找目标回款列表

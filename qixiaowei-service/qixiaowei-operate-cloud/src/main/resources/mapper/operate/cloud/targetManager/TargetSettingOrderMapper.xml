@@ -49,6 +49,42 @@
         WHERE delete_flag=0
         AND target_setting_id = #{targetSettingId}
     </select>
+    <!--    查询目标制定订单表列表-->
+    <select id="selectTargetSettingOrderList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
+        SELECT
+        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM target_setting_order
+        WHERE delete_flag=0
+        <if test="targetSettingOrder.targetSettingOrderId != null">
+            and target_setting_order_id=#{targetSettingOrder.targetSettingOrderId}
+        </if>
+        <if test="targetSettingOrder.targetSettingId != null">
+            and target_setting_id=#{targetSettingOrder.targetSettingId}
+        </if>
+        <if test="targetSettingOrder.historyYear != null">
+            and history_year=#{targetSettingOrder.historyYear}
+        </if>
+        <if test="targetSettingOrder.historyActual != null">
+            and history_actual=#{targetSettingOrder.historyActual}
+        </if>
+        <if test="targetSettingOrder.deleteFlag != null">
+            and delete_flag=#{targetSettingOrder.deleteFlag}
+        </if>
+        <if test="targetSettingOrder.createBy != null">
+            and create_by=#{targetSettingOrder.createBy}
+        </if>
+        <if test="targetSettingOrder.createTime != null">
+            and create_time=#{targetSettingOrder.createTime}
+        </if>
+        <if test="targetSettingOrder.updateBy != null">
+            and update_by=#{targetSettingOrder.updateBy}
+        </if>
+        <if test="targetSettingOrder.updateTime != null">
+            and update_time=#{targetSettingOrder.updateTime}
+        </if>
+    </select>
     <!--新增目标制定订单表-->
     <insert id="insertTargetSettingOrder" useGeneratedKeys="true" keyProperty="targetSettingOrderId">
         INSERT INTO target_setting_order

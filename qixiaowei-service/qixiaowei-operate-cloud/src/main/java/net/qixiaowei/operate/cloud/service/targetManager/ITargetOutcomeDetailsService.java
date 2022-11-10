@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeDetailsExcel;
 
 import java.util.List;
 
@@ -124,15 +125,15 @@ public interface ITargetOutcomeDetailsService {
      * @param targetOutcomeId
      */
     int addTargetOutcomeDetailsS(List<Long> indicatorIds, Long targetOutcomeId);
-//    /**
-//    * 导入Excel
-//    * @param list
-//    */
-//    void importTargetOutcomeDetails(List<TargetOutcomeDetailsExcel> list);
-//    /**
-//    * 导出Excel
-//    * @param targetOutcomeDetailsDTO
-//    * @return
-//    */
-//    List<TargetOutcomeDetailsExcel> exportTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO);
+    /**
+    * 导入Excel
+    * @param list
+    */
+    void importTargetOutcomeDetails(List<TargetOutcomeDetailsExcel> list);
+    /**
+    * 导出Excel
+    * @param targetOutcomeDetailsDTO
+    * @return
+    */
+    List<TargetOutcomeDetailsExcel> exportTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO);
 }

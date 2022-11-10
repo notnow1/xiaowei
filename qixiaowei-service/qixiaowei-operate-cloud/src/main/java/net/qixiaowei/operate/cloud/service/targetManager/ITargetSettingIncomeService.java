@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO;
 import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
 //import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
 
 
@@ -109,18 +110,18 @@ public interface ITargetSettingIncomeService {
      */
     List<TargetSettingIncomeDTO> selectTargetSettingIncomeByHistoryNumS(Long targetSettingId);
 
-//    /**
-//     * 导入Excel
-//     *
-//     * @param list
-//     */
-//    void importTargetSettingIncome(List<TargetSettingIncomeExcel> list);
-//
-//    /**
-//     * 导出Excel
-//     *
-//     * @param targetSettingIncomeDTO
-//     * @return
-//     */
-//    List<TargetSettingIncomeExcel> exportTargetSettingIncome(TargetSettingIncomeDTO targetSettingIncomeDTO);
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    void importTargetSettingIncome(List<TargetSettingIncomeExcel> list);
+
+    /**
+     * 导出Excel
+     *
+     * @param targetSettingIncomeDTO
+     * @return
+     */
+    List<TargetSettingIncomeExcel> exportTargetSettingIncome(TargetSettingIncomeDTO targetSettingIncomeDTO);
 }

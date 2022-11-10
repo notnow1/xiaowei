@@ -129,6 +129,14 @@ public interface ITargetSettingService {
     List<TargetSettingOrderDTO> selectOrderDropTargetSettingList(TargetSettingDTO targetSettingDTO);
 
     /**
+     * 导出销售订单目标制定
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    List<TargetSettingExcel> exportOrderTargetSetting(TargetSettingDTO targetSettingDTO);
+
+    /**
      * 保存销售收入目标制定
      *
      * @param targetSettingDTO 目标制定
@@ -181,4 +189,5 @@ public interface ITargetSettingService {
      * @return
      */
     TargetSettingDTO saveTargetSettings(List<TargetSettingDTO> targetSettingDTOS);
+
 }

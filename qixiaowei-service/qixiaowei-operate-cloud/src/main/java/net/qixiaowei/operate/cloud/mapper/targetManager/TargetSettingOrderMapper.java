@@ -33,6 +33,14 @@ public interface TargetSettingOrderMapper {
     List<TargetSettingOrderDTO> selectTargetSettingOrderByTargetSettingOrderIds(@Param("targetSettingOrderIds") List<Long> targetSettingOrderIds);
 
     /**
+     * 查询目标制定订单表列表
+     *
+     * @param targetSettingOrder 目标制定订单表
+     * @return 目标制定订单表集合
+     */
+    List<TargetSettingOrderDTO> selectTargetSettingOrderList(@Param("targetSettingOrder") TargetSettingOrder targetSettingOrder);
+
+    /**
      * 新增目标制定订单表
      *
      * @param targetSettingOrder 目标制定订单表

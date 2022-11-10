@@ -120,7 +120,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 导入目标制定
      */
-    @PostMapping("import")
+    @PostMapping("/import")
     public AjaxResult importEmployee(MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
@@ -145,7 +145,7 @@ public class TargetSettingController extends BaseController {
      * 导出目标制定
      */
     @SneakyThrows
-    @GetMapping("export")
+    @GetMapping("/export")
     public void exportUser(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
         List<TargetSettingExcel> targetSettingExcelList = targetSettingService.exportTargetSetting(targetSettingDTO);
         response.setContentType("application/vnd.ms-excel");
@@ -200,6 +200,22 @@ public class TargetSettingController extends BaseController {
     @PostMapping("/save/order")
     public AjaxResult saveOrder(@RequestBody TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveOrderTargetSetting(targetSettingDTO));
+    }
+
+    /**
+     * 导出目标制定
+     */
+    @SneakyThrows
+    @GetMapping("/export/order")
+    public void exportOrder(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+
+        List<TargetSettingExcel> targetSettingExcelList = targetSettingService.exportOrderTargetSetting(targetSettingDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetSettingExcel.class).sheet("目标制定").doWrite(targetSettingExcelList);
     }
 
     /**

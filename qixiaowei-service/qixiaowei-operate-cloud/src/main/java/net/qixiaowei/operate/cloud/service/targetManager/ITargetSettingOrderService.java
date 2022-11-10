@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.targetManager;
 
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
 
 import java.util.List;
 
@@ -109,4 +110,18 @@ public interface ITargetSettingOrderService {
      */
     List<TargetSettingOrderDTO> selectTargetSettingOrderByTargetSettingId(Long targetSettingId);
 
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    void importTargetSettingOrder(List<TargetSettingOrderExcel> list);
+
+    /**
+     * 导出Excel
+     *
+     * @param targetSettingOrderDTO
+     * @return
+     */
+    List<TargetSettingOrderExcel> exportTargetSettingOrder(TargetSettingOrderDTO targetSettingOrderDTO);
 }

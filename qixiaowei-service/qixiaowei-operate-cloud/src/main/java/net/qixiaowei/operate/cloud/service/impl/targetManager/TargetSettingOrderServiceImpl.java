@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -8,6 +9,7 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSettingOrder;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingOrderMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,4 +211,43 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
         return targetSettingOrderMapper.updateTargetSettingOrders(targetSettingOrderList);
     }
 
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    @Override
+    public void importTargetSettingOrder(List<TargetSettingOrderExcel> list) {
+        List<TargetSettingOrder> targetSettingOrderList = new ArrayList<>();
+        list.forEach(l -> {
+            TargetSettingOrder targetSettingOrder = new TargetSettingOrder();
+            BeanUtils.copyProperties(l, targetSettingOrder);
+            targetSettingOrder.setCreateBy(SecurityUtils.getUserId());
+            targetSettingOrder.setCreateTime(DateUtils.getNowDate());
+            targetSettingOrder.setUpdateTime(DateUtils.getNowDate());
+            targetSettingOrder.setUpdateBy(SecurityUtils.getUserId());
+            targetSettingOrder.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            targetSettingOrderList.add(targetSettingOrder);
+        });
+        try {
+            targetSettingOrderMapper.batchTargetSettingOrder(targetSettingOrderList);
+        } catch (Exception e) {
+            throw new ServiceException("导入目标制定订单表失败");
+        }
+    }
+
+    /**
+     * 导出Excel
+     *
+     * @param targetSettingOrderDTO
+     * @return
+     */
+    @Override
+    public List<TargetSettingOrderExcel> exportTargetSettingOrder(TargetSettingOrderDTO targetSettingOrderDTO) {
+        TargetSettingOrder targetSettingOrder = new TargetSettingOrder();
+        BeanUtils.copyProperties(targetSettingOrderDTO, targetSettingOrder);
+        List<TargetSettingOrderDTO> targetSettingOrderDTOList = targetSettingOrderMapper.selectTargetSettingOrderList(targetSettingOrder);
+        List<TargetSettingOrderExcel> targetSettingOrderExcelList = new ArrayList<>();
+        return targetSettingOrderExcelList;
+    }
 }

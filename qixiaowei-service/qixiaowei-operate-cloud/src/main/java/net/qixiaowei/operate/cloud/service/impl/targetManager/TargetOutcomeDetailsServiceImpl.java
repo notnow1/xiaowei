@@ -11,6 +11,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcomeDetails;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeDetailsExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeDetailsMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -294,44 +295,44 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
         return targetOutcomeDetailsMapper.updateTargetOutcomeDetailss(targetOutcomeDetailsList);
     }
 
-//    /**
-//     * 导入Excel
-//     *
-//     * @param list
-//     */
-//    @Override
-//    public void importTargetOutcomeDetails(List<TargetOutcomeDetailsExcel> list) {
-//        List<TargetOutcomeDetails> targetOutcomeDetailsList = new ArrayList<>();
-//        list.forEach(l -> {
-//            TargetOutcomeDetails targetOutcomeDetails = new TargetOutcomeDetails();
-//            BeanUtils.copyProperties(l, targetOutcomeDetails);
-//            targetOutcomeDetails.setCreateBy(SecurityUtils.getUserId());
-//            targetOutcomeDetails.setCreateTime(DateUtils.getNowDate());
-//            targetOutcomeDetails.setUpdateTime(DateUtils.getNowDate());
-//            targetOutcomeDetails.setUpdateBy(SecurityUtils.getUserId());
-//            targetOutcomeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-//            targetOutcomeDetailsList.add(targetOutcomeDetails);
-//        });
-//        try {
-//            targetOutcomeDetailsMapper.batchTargetOutcomeDetails(targetOutcomeDetailsList);
-//        } catch (Exception e) {
-//            throw new ServiceException("导入目标结果详情表失败");
-//        }
-//    }
-//
-//    /**
-//     * 导出Excel
-//     *
-//     * @param targetOutcomeDetailsDTO
-//     * @return
-//     */
-//    @Override
-//    public List<TargetOutcomeDetailsExcel> exportTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
-//        TargetOutcomeDetails targetOutcomeDetails = new TargetOutcomeDetails();
-//        BeanUtils.copyProperties(targetOutcomeDetailsDTO, targetOutcomeDetails);
-//        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsMapper.selectTargetOutcomeDetailsList(targetOutcomeDetails);
-//        List<TargetOutcomeDetailsExcel> targetOutcomeDetailsExcelList = new ArrayList<>();
-//        return targetOutcomeDetailsExcelList;
-//    }
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    @Override
+    public void importTargetOutcomeDetails(List<TargetOutcomeDetailsExcel> list) {
+        List<TargetOutcomeDetails> targetOutcomeDetailsList = new ArrayList<>();
+        list.forEach(l -> {
+            TargetOutcomeDetails targetOutcomeDetails = new TargetOutcomeDetails();
+            BeanUtils.copyProperties(l, targetOutcomeDetails);
+            targetOutcomeDetails.setCreateBy(SecurityUtils.getUserId());
+            targetOutcomeDetails.setCreateTime(DateUtils.getNowDate());
+            targetOutcomeDetails.setUpdateTime(DateUtils.getNowDate());
+            targetOutcomeDetails.setUpdateBy(SecurityUtils.getUserId());
+            targetOutcomeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            targetOutcomeDetailsList.add(targetOutcomeDetails);
+        });
+        try {
+            targetOutcomeDetailsMapper.batchTargetOutcomeDetails(targetOutcomeDetailsList);
+        } catch (Exception e) {
+            throw new ServiceException("导入目标结果详情表失败");
+        }
+    }
+
+    /**
+     * 导出Excel
+     *
+     * @param targetOutcomeDetailsDTO
+     * @return
+     */
+    @Override
+    public List<TargetOutcomeDetailsExcel> exportTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
+        TargetOutcomeDetails targetOutcomeDetails = new TargetOutcomeDetails();
+        BeanUtils.copyProperties(targetOutcomeDetailsDTO, targetOutcomeDetails);
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsMapper.selectTargetOutcomeDetailsList(targetOutcomeDetails);
+        List<TargetOutcomeDetailsExcel> targetOutcomeDetailsExcelList = new ArrayList<>();
+        return targetOutcomeDetailsExcelList;
+    }
 }
 

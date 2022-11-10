@@ -1,11 +1,13 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSettingRecovery;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveryDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingRecoveryExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingRecoveryMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingRecoveryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,42 +196,46 @@ public class TargetSettingRecoveryServiceImpl implements ITargetSettingRecoveryS
         }
         return targetSettingRecoveryMapper.updateTargetSettingRecoverys(targetSettingRecoveryList);
     }
-//    /**
-//    * 导入Excel
-//    * @param list
-//    */
-//    @Override
-//    public void importTargetSettingRecovery(List<TargetSettingRecoveryExcel> list) {
-//    List<TargetSettingRecovery> targetSettingRecoveryList = new ArrayList<>();
-//        list.forEach(l -> {
-//        TargetSettingRecovery targetSettingRecovery = new TargetSettingRecovery();
-//        BeanUtils.copyProperties(l, targetSettingRecovery);
-//        targetSettingRecovery.setCreateBy(SecurityUtils.getUserId());
-//        targetSettingRecovery.setCreateTime(DateUtils.getNowDate());
-//        targetSettingRecovery.setUpdateTime(DateUtils.getNowDate());
-//        targetSettingRecovery.setUpdateBy(SecurityUtils.getUserId());
-//        targetSettingRecovery.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-//        targetSettingRecoveryList.add(targetSettingRecovery);
-//        });
-//        try {
-//        targetSettingRecoveryMapper.batchTargetSettingRecovery(targetSettingRecoveryList);
-//        } catch (Exception e) {
-//        throw new ServiceException("导入目标制定回款表失败");
-//        }
-//    }
-//    /**
-//    * 导出Excel
-//    * @param targetSettingRecoveryDTO
-//    * @return
-//    */
-//    @Override
-//    public List<TargetSettingRecoveryExcel> exportTargetSettingRecovery(TargetSettingRecoveryDTO targetSettingRecoveryDTO) {
-//        TargetSettingRecovery targetSettingRecovery = new TargetSettingRecovery();
-//        BeanUtils.copyProperties(targetSettingRecoveryDTO, targetSettingRecovery);
-//        List<TargetSettingRecoveryDTO> targetSettingRecoveryDTOList = targetSettingRecoveryMapper.selectTargetSettingRecoveryList(targetSettingRecovery);
-//        List<TargetSettingRecoveryExcel> targetSettingRecoveryExcelList = new ArrayList<>();
-//        return targetSettingRecoveryExcelList;
-//    }
+
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    @Override
+    public void importTargetSettingRecovery(List<TargetSettingRecoveryExcel> list) {
+        List<TargetSettingRecovery> targetSettingRecoveryList = new ArrayList<>();
+        list.forEach(l -> {
+            TargetSettingRecovery targetSettingRecovery = new TargetSettingRecovery();
+            BeanUtils.copyProperties(l, targetSettingRecovery);
+            targetSettingRecovery.setCreateBy(SecurityUtils.getUserId());
+            targetSettingRecovery.setCreateTime(DateUtils.getNowDate());
+            targetSettingRecovery.setUpdateTime(DateUtils.getNowDate());
+            targetSettingRecovery.setUpdateBy(SecurityUtils.getUserId());
+            targetSettingRecovery.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            targetSettingRecoveryList.add(targetSettingRecovery);
+        });
+        try {
+            targetSettingRecoveryMapper.batchTargetSettingRecovery(targetSettingRecoveryList);
+        } catch (Exception e) {
+            throw new ServiceException("导入目标制定回款表失败");
+        }
+    }
+
+    /**
+     * 导出Excel
+     *
+     * @param targetSettingRecoveryDTO
+     * @return
+     */
+    @Override
+    public List<TargetSettingRecoveryExcel> exportTargetSettingRecovery(TargetSettingRecoveryDTO targetSettingRecoveryDTO) {
+        TargetSettingRecovery targetSettingRecovery = new TargetSettingRecovery();
+        BeanUtils.copyProperties(targetSettingRecoveryDTO, targetSettingRecovery);
+        List<TargetSettingRecoveryDTO> targetSettingRecoveryDTOList = targetSettingRecoveryMapper.selectTargetSettingRecoveryList(targetSettingRecovery);
+        List<TargetSettingRecoveryExcel> targetSettingRecoveryExcelList = new ArrayList<>();
+        return targetSettingRecoveryExcelList;
+    }
 
     /**
      * 通过目标制定ID获取目标制定回款

@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveryDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingRecoveryExcel;
 
 import java.util.List;
 
@@ -100,17 +101,21 @@ public interface ITargetSettingRecoveryService {
      * @return 结果
      */
     int deleteTargetSettingRecoveryByTargetSettingRecoveriesId(Long targetSettingRecoveriesId);
-//    /**
-//    * 导入Excel
-//    * @param list
-//    */
-//    void importTargetSettingRecovery(List<TargetSettingRecoveryExcel> list);
-//    /**
-//    * 导出Excel
-//    * @param targetSettingRecoveryDTO
-//    * @return
-//    */
-//    List<TargetSettingRecoveryExcel> exportTargetSettingRecovery(TargetSettingRecoveryDTO targetSettingRecoveryDTO);
+
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    void importTargetSettingRecovery(List<TargetSettingRecoveryExcel> list);
+
+    /**
+     * 导出Excel
+     *
+     * @param targetSettingRecoveryDTO
+     * @return
+     */
+    List<TargetSettingRecoveryExcel> exportTargetSettingRecovery(TargetSettingRecoveryDTO targetSettingRecoveryDTO);
 
     /**
      * 通过目标制定ID获取目标制定回款
