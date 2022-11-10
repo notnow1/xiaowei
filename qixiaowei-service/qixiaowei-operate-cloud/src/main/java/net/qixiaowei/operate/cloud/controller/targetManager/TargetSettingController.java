@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.controller.targetManager;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
@@ -13,6 +14,8 @@ import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingImportListener;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -203,22 +206,6 @@ public class TargetSettingController extends BaseController {
     }
 
     /**
-     * 导出目标制定
-     */
-    @SneakyThrows
-    @GetMapping("/export/order")
-    public void exportOrder(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
-
-        List<TargetSettingExcel> targetSettingExcelList = targetSettingService.exportOrderTargetSetting(targetSettingDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("销售订单目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetSettingExcel.class).sheet("销售订单目标制定").doWrite(targetSettingExcelList);
-    }
-
-    /**
      * 新增目标制定
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:add")
@@ -239,4 +226,57 @@ public class TargetSettingController extends BaseController {
     }
 
 
+    /**
+     * 导出销售订单目标制定
+     */
+    @SneakyThrows
+    @GetMapping("/export/order")
+    public void exportOrder(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        List<TargetSettingOrderExcel> targetSettingExcelList = targetSettingService.exportOrderTargetSetting(targetSettingDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售订单目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetSettingOrderExcel.class).sheet("销售订单目标制定")
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(targetSettingExcelList);
+    }
+
+    /**
+     * 导出销售收入目标制定
+     */
+    @SneakyThrows
+    @GetMapping("/export/income")
+    public void exportIncome(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        List<TargetSettingIncomeExcel> targetSettingExcelList = targetSettingService.exportIncomeTargetSetting(targetSettingDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售收入目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetSettingIncomeExcel.class)
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .sheet("销售收入目标制定").doWrite(targetSettingExcelList);
+    }
+
+    /**
+     * 导出销售回款目标制定
+     */
+    @SneakyThrows
+    @GetMapping("/export/recovery")
+    public void exportRecovery(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        List<TargetSettingIncomeExcel> targetSettingExcelList = targetSettingService.exportRecoveryTargetSetting(targetSettingDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售收入目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetSettingIncomeExcel.class)
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .sheet("销售收入目标制定").doWrite(targetSettingExcelList);
+    }
 }

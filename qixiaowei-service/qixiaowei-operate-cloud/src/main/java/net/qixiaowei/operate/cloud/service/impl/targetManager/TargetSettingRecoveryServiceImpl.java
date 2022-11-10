@@ -247,5 +247,16 @@ public class TargetSettingRecoveryServiceImpl implements ITargetSettingRecoveryS
     public TargetSettingRecoveryDTO selectTargetSettingRecoveryByTargetSettingId(Long targetSettingId) {
         return targetSettingRecoveryMapper.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
     }
+
+    /**
+     * 根据TargetSettingID集合查询Recovery列表
+     *
+     * @param targetSettingIds
+     * @return
+     */
+    @Override
+    public List<TargetSettingRecoveryDTO> selectTargetSettingRecoveryByTargetSettingIds(List<Long> targetSettingIds) {
+        return targetSettingRecoveryMapper.selectTargetSettingRecoveryByTargetSettingIds(targetSettingIds);
+    }
 }
 

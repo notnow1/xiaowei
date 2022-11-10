@@ -124,4 +124,12 @@ public interface ITargetSettingRecoveryService {
      * @return
      */
     TargetSettingRecoveryDTO selectTargetSettingRecoveryByTargetSettingId(Long targetSettingId);
+
+    /**
+     * 根据TargetSettingID集合查询Recovery列表
+     *
+     * @param targetSettingIds
+     * @return
+     */
+    List<TargetSettingRecoveryDTO> selectTargetSettingRecoveryByTargetSettingIds(List<Long> targetSettingIds);
 }

@@ -25,11 +25,15 @@ public class TargetSettingOrderExcel {
     private static final long serialVersionUID = 1L;
 
     /**
-     * ID
+     * 历史年度
      */
-    @ExcelIgnore
-    @ExcelProperty("ID")
-    private Long targetSettingOrderId;
+    @ExcelProperty("目标年度")
+    private Integer historyYear;
+    /**
+     * 公司战略增长诉求（%）
+     */
+    @ExcelProperty("公司战略增长诉求（%）")
+    private BigDecimal percentage;
     /**
      * 目标制定ID
      */
@@ -37,23 +41,19 @@ public class TargetSettingOrderExcel {
     @ExcelProperty("目标制定ID")
     private Long targetSettingId;
     /**
-     * 历史年度
+     * 挑战值
      */
-    @ExcelIgnore
-    @ExcelProperty("历史年度")
-    private Integer historyYear;
+    @ExcelProperty("挑战值")
+    private BigDecimal challengeValue;
     /**
-     * 历史年度实际值
+     * 目标值
      */
-    @ExcelIgnore
-    @ExcelProperty("历史年度实际值")
-    private BigDecimal historyActual;
+    @ExcelProperty("目标值")
+    private BigDecimal targetValue;
     /**
-     * 删除标记:0未删除;1已删除
+     * 保底值
      */
-    @ExcelIgnore
-    @ExcelProperty("删除标记:0未删除;1已删除")
-    private Integer deleteFlag;
-
+    @ExcelProperty("保底值")
+    private BigDecimal guaranteedValue;
 }
 

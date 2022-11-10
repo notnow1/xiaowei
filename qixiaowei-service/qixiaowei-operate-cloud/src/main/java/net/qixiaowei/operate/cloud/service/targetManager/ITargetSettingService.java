@@ -5,6 +5,8 @@ import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 
 import java.util.List;
@@ -134,7 +136,7 @@ public interface ITargetSettingService {
      * @param targetSettingDTO
      * @return
      */
-    List<TargetSettingExcel> exportOrderTargetSetting(TargetSettingDTO targetSettingDTO);
+    List<TargetSettingOrderExcel> exportOrderTargetSetting(TargetSettingDTO targetSettingDTO);
 
     /**
      * 保存销售收入目标制定
@@ -152,6 +154,15 @@ public interface ITargetSettingService {
      */
     TargetSettingDTO selectIncomeTargetSettingList(TargetSettingDTO targetSettingDTO);
 
+
+    /**
+     * 导出销售收入目标制定列表
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    List<TargetSettingIncomeExcel> exportIncomeTargetSetting(TargetSettingDTO targetSettingDTO);
+
     /**
      * 查询销售回款目标制定列表
      *
@@ -167,6 +178,14 @@ public interface ITargetSettingService {
      * @return
      */
     TargetSettingDTO saveRecoveryTargetSetting(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 导出销售回款目标制定
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    List<TargetSettingIncomeExcel> exportRecoveryTargetSetting(TargetSettingDTO targetSettingDTO);
 
     /**
      * 获取指标列表
@@ -189,5 +208,6 @@ public interface ITargetSettingService {
      * @return
      */
     TargetSettingDTO saveTargetSettings(List<TargetSettingDTO> targetSettingDTOS);
+
 
 }
