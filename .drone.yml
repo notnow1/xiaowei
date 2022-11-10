@@ -42,7 +42,7 @@ steps:
         - latest
         - ${DRONE_BUILD_NUMBER}
       depends_on:
-        - compile
+        - qixiaowei-cloud-compile
       trigger:
         status:
           - success
