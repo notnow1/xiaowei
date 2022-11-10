@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeDimensionCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -9,6 +10,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.DecomposeDetailsSnapshot;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.DetailCyclesSnapshot;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeDimension;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecomposeHistory;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeHistoryExcel;
@@ -19,7 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -44,6 +48,8 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     private DecomposeDetailCyclesMapper decomposeDetailCyclesMapper;
     @Autowired
     private TargetDecomposeDetailsMapper targetDecomposeDetailsMapper;
+    @Autowired
+    private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
 
     /**
      * 查询目标分解历史版本表
@@ -55,7 +61,17 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     public TargetDecomposeHistoryDTO selectTargetDecomposeHistoryByTargetDecomposeHistoryId(Long targetDecomposeHistoryId) {
         //历史目标分解主表数据
         TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
+        if (StringUtils.isNull(targetDecomposeHistoryDTO)) {
+            throw new ServiceException("数据不存在！");
+        } else {
+            TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeHistoryDTO.getTargetDecomposeId());
+            if (StringUtils.isNotNull(targetDecomposeDTO)){
+                this.packDecompositionHistoryDimension(targetDecomposeDTO,targetDecomposeHistoryDTO);
+                String forecastCycle = this.packForecastCycle(targetDecomposeDTO);
+                targetDecomposeHistoryDTO.setForecastCycle(forecastCycle);
+            }
 
+        }
         List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryId(targetDecomposeHistoryId);
         if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)) {
             for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
@@ -65,16 +81,27 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 BigDecimal actualTotal = new BigDecimal("0");
                 //目标完成率
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
+                List<DetailCyclesSnapshotDTO> detailCyclesSnapshotDTOS =new ArrayList<>();
                 //周期表数据
-                List<DetailCyclesSnapshotDTO> detailCyclesSnapshotDTOS = detailCyclesSnapshotMapper.selectDetailCyclesSnapshotByTargetDecomposeHistoryId(decomposeDetailsSnapshotDTO.getTargetDecomposeHistoryId());
+                detailCyclesSnapshotDTOS = detailCyclesSnapshotMapper.selectDetailCyclesSnapshotByTargetDecomposeHistoryId(decomposeDetailsSnapshotDTO.getTargetDecomposeHistoryId());
                 for (DetailCyclesSnapshotDTO detailCyclesSnapshotDTO : detailCyclesSnapshotDTOS) {
-                    //预测值
-                    forecastYear = forecastYear.add(detailCyclesSnapshotDTO.getCycleForecast());
-                    //实际值
-                    actualTotal = actualTotal.add(detailCyclesSnapshotDTO.getCycleActual());
+                    if (null != detailCyclesSnapshotDTO.getCycleForecast() && detailCyclesSnapshotDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
+                        //预测值
+                        forecastYear = forecastYear.add(detailCyclesSnapshotDTO.getCycleForecast());
+                    }
+                    if (null != detailCyclesSnapshotDTO.getCycleActual() && detailCyclesSnapshotDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
+                        //实际值
+                        actualTotal = actualTotal.add(detailCyclesSnapshotDTO.getCycleActual());
+                    }
+
                 }
-                //保留一位小数
-                targetPercentageComplete = targetPercentageComplete.divide(decomposeDetailsSnapshotDTO.getDecomposeTarget()).setScale(1);
+                if (null != targetPercentageComplete && targetPercentageComplete.compareTo(BigDecimal.ZERO) != 0) {
+                    //被除数 不能为0和空
+                    if (null != decomposeDetailsSnapshotDTO.getDecomposeTarget() && decomposeDetailsSnapshotDTO.getDecomposeTarget().compareTo(BigDecimal.ZERO) != 0) {
+                        //保留一位小数
+                        targetPercentageComplete = targetPercentageComplete.divide(decomposeDetailsSnapshotDTO.getDecomposeTarget()).setScale(1);
+                    }
+                }
                 decomposeDetailsSnapshotDTO.setForecastYear(forecastYear);
                 decomposeDetailsSnapshotDTO.setActualTotal(actualTotal);
                 decomposeDetailsSnapshotDTO.setTargetPercentageComplete(targetPercentageComplete);
@@ -87,6 +114,44 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
 
     }
 
+
+
+    /**
+     * 封装分解维度
+     *
+     * @param targetDecomposeDTO
+     */
+    private void packDecompositionHistoryDimension(TargetDecomposeDTO targetDecomposeDTO,TargetDecomposeHistoryDTO targetDecomposeHistoryDTO) {
+        TargetDecomposeDimension targetDecomposeDimension = new TargetDecomposeDimension();
+        targetDecomposeDimension.setTargetDecomposeDimensionId(targetDecomposeDTO.getTargetDecomposeDimensionId());
+
+        List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDTOS = targetDecomposeDimensionMapper.selectTargetDecomposeDimensionList(targetDecomposeDimension);
+        StringBuilder targetDecomposeDimensionName;
+        for (TargetDecomposeDimensionDTO decomposeDimensionDTO : targetDecomposeDimensionDTOS) {
+            targetDecomposeDimensionName = new StringBuilder("");
+            List<Map<String, String>> fileNameList = new ArrayList<>();
+            String decompositionDimension = decomposeDimensionDTO.getDecompositionDimension();
+            if (StringUtils.isNotEmpty(decompositionDimension)) {
+                for (String dimension : decompositionDimension.split(",")) {
+                    String info = TargetDecomposeDimensionCode.selectInfo(dimension);
+                    String filedName = TargetDecomposeDimensionCode.selectFiledName(dimension);
+                    String filedValue = TargetDecomposeDimensionCode.selectFiledValue(dimension);
+                    TargetDecomposeDimensionCode.selectFiledName(dimension);
+                    if (StringUtils.isNotNull(info)) {
+                        targetDecomposeDimensionName.append(info).append("+");
+                    }
+                    Map<String, String> fileNameMap = new HashMap<>();
+                    fileNameMap.put("label", info);
+                    fileNameMap.put("value", filedName);
+                    fileNameMap.put("name", filedValue);
+                    fileNameList.add(fileNameMap);
+                }
+                String substring = targetDecomposeDimensionName.substring(0, targetDecomposeDimensionName.length() - 1);
+                targetDecomposeHistoryDTO.setFileNameList(fileNameList);
+                targetDecomposeHistoryDTO.setDecompositionDimension(substring);
+            }
+        }
+    }
     /**
      * 查询目标分解历史版本表列表
      *
@@ -409,7 +474,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     }
                 }
             }
-            }
+        }
     }
 
     /**
@@ -590,7 +655,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      */
     private String packForecastCycleType(TargetDecomposeDTO targetDecomposeDTO) {
         String forecastCycle = null;
-         if (targetDecomposeDTO.getTimeDimension() == 3) {
+        if (targetDecomposeDTO.getTimeDimension() == 3) {
             forecastCycle = "季度";
         } else if (targetDecomposeDTO.getTimeDimension() == 4) {
             forecastCycle = "月";

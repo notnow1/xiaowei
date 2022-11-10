@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -60,6 +61,11 @@ public class TargetDecomposeHistoryDTO {
      * 分解维度
      */
     private  String decompositionDimension;
+
+    /**
+     * 字段名称
+     */
+    private List<Map<String, String>> fileNameList;
 
     /**
      * 时间维度:1年度;2半年度;3季度;4月度;5周

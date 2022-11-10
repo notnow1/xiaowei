@@ -15,7 +15,7 @@
                td.target_decompose_dimension_id,
                td.decomposition_dimension,
                td.time_dimension,
-               IFNULL(td.decompose_target,0) as target_value,
+               IFNULL(td.decompose_target,0) as decompose_target,
                IFNULL(td.forecast_year,0) as forecast_year,
                IFNULL(td.actual_total,0) as actual_total,
                td.status,

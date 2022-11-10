@@ -93,7 +93,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 BigDecimal forecastDeviationRateAve = new BigDecimal("0");
                 //分解目标值
                 BigDecimal decomposeTarget = targetDecomposeDetailsDTO.getDecomposeTarget();
-                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();
+                decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                 for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
                     //周期预测值
                     BigDecimal cycleForecast = decomposeDetailCyclesDTO.getCycleForecast();
@@ -211,7 +212,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 BigDecimal decomposeTarget = targetDecomposeDetailsDTO.getDecomposeTarget();
                 //目标完成率
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
-                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();
+                decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                 for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
                     if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
                         //预测值
@@ -257,7 +259,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 String version = targetDecomposeHistoryDTO.getVersion();
                 String substring = version.substring(1, 2);
                 int veri = Integer.parseInt(substring);
-                versionNum = version + (veri + 1) + ".0";
+                versionNum = "V" + (veri + 1) + ".0";
             }
         }
         if (StringUtils.equals(versionNum, "V")) {
