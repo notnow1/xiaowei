@@ -1,5 +1,5 @@
 kind: pipeline
-name: qixiaowei-cloud-pipeline
+name: qixiaowei-cloud-compile
 
 steps:
   - name: compile
@@ -20,6 +20,9 @@ volumes:
 kind: pipeline
 name: qixiaowei-cloud-images
 
+clone:
+  disable: true
+
 steps:
   - name: builid qixiaowei-file image
     pull: if-not-exists
@@ -37,7 +40,7 @@ steps:
         - latest
         - ${DRONE_BUILD_NUMBER}
       depends_on:
-        - qixiaowei-cloud-pipeline
+        - compile
       trigger:
         status:
           - success
