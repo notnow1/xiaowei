@@ -22,10 +22,9 @@ steps:
         from_secret: deploypwd
       insecure: true
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
-      auto_tag: false
+      dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
         - latest
-      debug: false
 
 volumes:
   - name: mavenrepo
