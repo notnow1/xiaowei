@@ -6,6 +6,26 @@ steps:
   - name: compile
     pull: if-not-exists
     image: maven:3-jdk-8
+    volumes:
+      - name: mavenrepo
+        path: /root/.m2
     commands:
-      - mvn version
-      - ls /root/.m2
+      - mvn clean package -Ptest -DskipTests=true
+
+  - name: builid qixiaowei-file image
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploypwd
+      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
+      tags:
+        - latest
+      build_args:
+        - JAR_FILE: qixiaowei-service/qixiaowei-file/target/*.jar
+
+volumes:
+  - name: mavenrepo
+    host:
+      path: /tmp/mavenrepo

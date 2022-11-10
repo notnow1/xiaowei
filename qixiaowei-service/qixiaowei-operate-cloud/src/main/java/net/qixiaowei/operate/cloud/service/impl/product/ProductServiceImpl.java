@@ -440,10 +440,10 @@ public class ProductServiceImpl implements IProductService {
             this.updateProductSpecificationData(productDataDTOS, productSpecificationParamList, productDTO);
         }
 
-            //修改产品文件表
-            List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
-            //修改产品文件表数据
-            this.updateProductFile(productFileDTOList, productDTO);
+        //修改产品文件表
+        List<ProductFileDTO> productFileDTOList = productDTO.getProductFileDTOList();
+        //修改产品文件表数据
+        this.updateProductFile(productFileDTOList, productDTO);
 
 
 
@@ -783,8 +783,25 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     @Override
     public int logicDeleteProductByProductIds(List<Long> productIds) {
+        //产品引用
+        StringBuffer productErreo = new StringBuffer();
+        //分解引用
+        StringBuffer decomposeErreo = new StringBuffer();
         int i = 0;
-        // todo 是否被引用
+        for (Long productId : productIds) {
+            // todo 是否被引用
+            List<ProductDTO> productDTOList = productMapper.selectProductQuote(productId);
+            String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
+            String indicatorName = productDTOList.stream().map(ProductDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
+            if (StringUtils.isNotBlank(indicatorName)){
+                decomposeErreo.append("产品"+productName+"已被目标分解"+indicatorName+"引用\n");
+            }
+        }
+        productErreo.append(decomposeErreo);
+        if (productErreo.length()>0){
+            throw new ServiceException(productErreo.toString());
+        }
+
         try {
             i = productMapper.logicDeleteProductByProductIds(productIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
         } catch (Exception e) {
@@ -888,6 +905,10 @@ public class ProductServiceImpl implements IProductService {
     @Transactional
     @Override
     public int logicDeleteProductByProductId(ProductDTO productDTO) {
+        //产品引用
+        StringBuffer productErreo = new StringBuffer();
+        //分解引用
+        StringBuffer decomposeErreo = new StringBuffer();
         int i = 0;
         Product product = new Product();
         product.setProductId(productDTO.getProductId());
@@ -897,7 +918,15 @@ public class ProductServiceImpl implements IProductService {
 
         //todo 是否被引用
         List<ProductDTO> productDTOList = productMapper.selectProductQuote(product.getProductId());
-
+        String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
+        String indicatorName = productDTOList.stream().map(ProductDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
+        if (StringUtils.isNotBlank(indicatorName)){
+            decomposeErreo.append("产品"+productName+"已被目标分解"+indicatorName+"引用\n");
+        }
+        productErreo.append(decomposeErreo);
+        if (productErreo.length()>0){
+            throw new ServiceException(productErreo.toString());
+        }
         i = productMapper.logicDeleteProductByProductId(product, SecurityUtils.getUserId(), DateUtils.getNowDate());
         //产品id
         Long productId = product.getProductId();
