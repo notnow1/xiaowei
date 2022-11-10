@@ -21,7 +21,7 @@ steps:
       password:
         from_secret: deploypwd
       insecure: true
-      repo: qixiaowei-cloud/qixiaowei-file
+      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
       tags:
         - latest
       build_args:
