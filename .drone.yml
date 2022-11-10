@@ -1,5 +1,4 @@
 kind: pipeline
-type: docker
 name: qixiaowei-cloud-pipeline
 
 steps:
@@ -11,6 +10,15 @@ steps:
         path: /root/.m2
     commands:
       - mvn clean package -Ptest -DskipTests=true
+
+volumes:
+  - name: mavenrepo
+    host:
+      path: /tmp/mavenrepo
+
+---
+kind: pipeline
+name: qixiaowei-cloud-images
 
 steps:
   - name: builid qixiaowei-file image
@@ -27,10 +35,9 @@ steps:
       dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
         - latest
+        - ${DRONE_BUILD_NUMBER}
       depends_on:
-        - compile
-
-volumes:
-  - name: mavenrepo
-    host:
-      path: /tmp/mavenrepo
+        - qixiaowei-cloud-pipeline
+      trigger:
+        status:
+          - success
