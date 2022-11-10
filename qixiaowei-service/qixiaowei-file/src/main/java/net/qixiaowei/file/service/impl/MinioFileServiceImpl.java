@@ -1,5 +1,7 @@
 package net.qixiaowei.file.service.impl;
 
+import io.minio.GetObjectArgs;
+import io.minio.RemoveObjectArgs;
 import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.file.config.MinioConfig;
 import net.qixiaowei.file.logic.FileLogic;
@@ -14,6 +16,7 @@ import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 
 import javax.annotation.Resource;
+import java.io.InputStream;
 
 /**
  * Minio 文件存储
@@ -56,4 +59,46 @@ public class MinioFileServiceImpl implements IFileService {
         fileDTO.setFilePath(fileConfig.getDomain() + url);
         return fileDTO;
     }
+
+    /**
+     * @description: x下载文件
+     * @Author: hzk
+     * @date: 2022/11/10 19:50
+     * @param: [fileDTO]
+     * @return: java.io.InputStream
+     **/
+    public InputStream downloadFile(FileDTO fileDTO) {
+        try {
+            GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+                    .bucket(minioConfig.getBucketName())
+                    .object(fileDTO.getFilePath())
+                    .build();
+            return client.getObject(getObjectArgs);
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    /**
+     * @description: 删除文件
+     * @Author: hzk
+     * @date: 2022/11/10 19:50
+     * @param: [fileDTO]
+     * @return: void
+     **/
+    public void deleteFile(FileDTO fileDTO) {
+        String key = fileDTO.getFilePath();
+        try {
+            RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
+                    .bucket(minioConfig.getBucketName())
+                    .object(key)
+                    .build();
+            client.removeObject(removeObjectArgs);
+        } catch (Exception e) {
+
+        }
+    }
+
+
 }

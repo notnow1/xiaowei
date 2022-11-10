@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @RefreshScope
 public class FileConfig {
 
-    @Value("${domain:http://127.0.0.1:9000}")
+    @Value("${domain:http://127.0.0.1:9000/local}")
     private String domain;
 
     /**
