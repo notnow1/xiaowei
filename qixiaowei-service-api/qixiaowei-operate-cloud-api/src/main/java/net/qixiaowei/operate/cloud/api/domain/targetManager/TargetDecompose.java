@@ -36,7 +36,7 @@ public class TargetDecompose extends BaseEntity {
     /**
      * 指标名称
      */
-    private Long indicatorName;
+    private String indicatorName;
     /**
      * 目标年度
      */
