@@ -12,7 +12,7 @@ steps:
     settings:
       restore: true
       mount:
-        - /root/.m2/
+        - ./.m2/
 
   - name: compile
     pull: if-not-exists
@@ -32,9 +32,12 @@ steps:
     settings:
       rebuild: true
       mount:
-        - /root/.m2/
+        - ./.m2/
 
 volumes:
   - name: cache
     host:
       path: /tmp/cache
+  - name: mavenrepo
+    host:
+      path: /tmp/mavenrepo
