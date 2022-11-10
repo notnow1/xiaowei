@@ -133,4 +133,13 @@ public interface TargetSettingMapper {
      * @return
      */
     List<TargetSettingDTO> selectTargetSettingByTypes(@Param("targetSettingType") List<Integer> targetSettingType, @Param("targetYear") Integer targetYear);
+
+    /**
+     * 根据年份区间查找
+     *
+     * @param targetSetting
+     * @param historyYears
+     * @return
+     */
+    List<TargetSettingDTO> selectTargetSettingByYears(@Param("targetSetting") TargetSettingDTO targetSetting, @Param("historyYears") List<Integer> historyYears);
 }

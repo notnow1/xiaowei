@@ -17,6 +17,8 @@ import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.*;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -166,12 +168,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     }
                     if (dto.getChoiceFlag().equals(1)) {
                         dto.setIsTarget(1);
+                        break;
                     }
                     Long indicatorId = settingDTO.getIndicatorId();
                     if (dto.getIndicatorId().equals(indicatorId)) {
                         dto.setIsTarget(1);
-                    } else {
-                        dto.setIsTarget(0);
+                        break;
                     }
                 }
             }
@@ -441,6 +443,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         return targetSettingDTO;
     }
 
+
     /**
      * 更新操作
      *
@@ -542,7 +545,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     private void storageValue(Integer targetYear, List<Long> noEdit, List<TargetSettingDTO> updateTargetSetting, List<TargetSettingDTO> delTargetSetting, List<TargetSettingDTO> addTargetSetting) {
         // 对新增进行筛选，讲新增的预置数据数据删除
-            for (int i = addTargetSetting.size() - 1; i >= 0; i--) {
+        for (int i = addTargetSetting.size() - 1; i >= 0; i--) {
             TargetSettingDTO targetSettingDTO = addTargetSetting.get(i);
             if (noEdit.contains(targetSettingDTO.getIndicatorId())) {
                 addTargetSetting.remove(i);
@@ -1105,20 +1108,36 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @return
      */
     @Override
-    public List<TargetSettingExcel> exportOrderTargetSetting(TargetSettingDTO targetSettingDTO) {
+    public List<TargetSettingOrderExcel> exportOrderTargetSetting(TargetSettingDTO targetSettingDTO) {
         Integer startYear = targetSettingDTO.getStartYear();
         Integer endYear = targetSettingDTO.getEndYear();
-        Long targetSettingId = targetSettingDTO.getTargetSettingId();
+        List<Integer> historyYears = new ArrayList<>();
+        if (startYear.equals(endYear)) {
+            historyYears.add(startYear);
+        } else if (startYear < endYear) {
+            for (int i = startYear; i <= endYear; i++) {
+                historyYears.add(i);
+            }
+        } else {
+            throw new ServiceException("开始年份不能小于结束年份");
+        }
         TargetSettingDTO settingDTO = new TargetSettingDTO();
-        settingDTO.setTargetSettingId(targetSettingId);
-        TargetSettingOrderDTO targetSettingOrderDTO = new TargetSettingOrderDTO();
-        List<TargetSettingDTO> targetSettingDTOList = this.selectTargetSettingList(settingDTO);
-        if (StringUtils.isNotEmpty(targetSettingDTOList)) {
+        settingDTO.setTargetSettingType(1);
+        List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
+        if (StringUtils.isEmpty(targetSettingDTOList)) {
             throw new ServiceException("当前目标制定不存在");
         }
-        BigDecimal percentage = targetSettingDTOList.get(0).getPercentage();
-        targetSettingOrderService.exportTargetSettingOrder(startYear, endYear, targetSettingId, percentage);
-        return null;
+        ArrayList<TargetSettingOrderExcel> targetSettingOrderExcels = new ArrayList<>();
+        for (TargetSettingDTO dto : targetSettingDTOList) {
+            TargetSettingOrderExcel targetSettingOrderExcel = new TargetSettingOrderExcel();
+            targetSettingOrderExcel.setHistoryYear(dto.getTargetYear());
+            targetSettingOrderExcel.setPercentage(dto.getPercentage());
+            targetSettingOrderExcel.setTargetValue(dto.getTargetValue());
+            targetSettingOrderExcel.setGuaranteedValue(dto.getGuaranteedValue());
+            targetSettingOrderExcel.setChallengeValue(dto.getChallengeValue());
+            targetSettingOrderExcels.add(targetSettingOrderExcel);
+        }
+        return targetSettingOrderExcels;
     }
 
     /**
@@ -1304,6 +1323,64 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         setting.setOrderTargetSetting(targetSettingByIndicator);
         setting.setTargetSettingIncomeVOS(targetSettingIncomeVOS);
         return setting;
+    }
+
+    /**
+     * 导出销售收入目标制定列表
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    @Override
+    public List<TargetSettingIncomeExcel> exportIncomeTargetSetting(TargetSettingDTO targetSettingDTO) {
+        Integer startYear = targetSettingDTO.getStartYear();
+        Integer endYear = targetSettingDTO.getEndYear();
+        List<Integer> historyYears = new ArrayList<>();
+        BigDecimal zero = new BigDecimal(0);
+        if (startYear.equals(endYear)) {
+            historyYears.add(startYear);
+        } else if (startYear < endYear) {
+            for (int i = startYear; i <= endYear; i++) {
+                historyYears.add(i);
+            }
+        } else {
+            throw new ServiceException("开始年份不能小于结束年份");
+        }
+        TargetSettingDTO settingDTO = new TargetSettingDTO();
+        settingDTO.setTargetSettingType(2);
+        List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
+        if (StringUtils.isEmpty(targetSettingDTOList)) {
+            throw new ServiceException("当前目标制定不存在");
+        }
+        // 查询   remove    赋值0     排序    传给excel
+        for (TargetSettingDTO dto : targetSettingDTOList) {
+            historyYears.remove(dto.getTargetYear());
+        }
+        if (StringUtils.isNotEmpty(historyYears)) {
+            for (Integer targetYear : historyYears) {
+                TargetSettingDTO targetSetting = new TargetSettingDTO();
+                targetSetting.setTargetValue(zero);
+                targetSetting.setChallengeValue(zero);
+                targetSetting.setGuaranteedValue(zero);
+                targetSetting.setPercentage(zero);
+                targetSetting.setTargetYear(targetYear);
+                targetSettingDTOList.add(targetSetting);
+            }
+        }
+        targetSettingDTOList.sort((TargetSettingDTO o1, TargetSettingDTO o2) -> {
+            return o2.getTargetYear() - o1.getTargetYear();
+        });
+        List<TargetSettingIncomeExcel> targetSettingIncomeExcels = new ArrayList<>();
+        for (TargetSettingDTO dto : targetSettingDTOList) {
+            TargetSettingIncomeExcel targetSettingIncomeExcel = new TargetSettingIncomeExcel();
+            targetSettingIncomeExcel.setTargetValue(dto.getTargetValue());
+            targetSettingIncomeExcel.setChallengeValue(dto.getChallengeValue());
+            targetSettingIncomeExcel.setGuaranteedValue(dto.getGuaranteedValue());
+            targetSettingIncomeExcel.setPercentage(dto.getPercentage());
+            targetSettingIncomeExcel.setTargetYear(dto.getTargetYear());
+            targetSettingIncomeExcels.add(targetSettingIncomeExcel);
+        }
+        return targetSettingIncomeExcels;
     }
 
     /**
@@ -1633,6 +1710,43 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
         targetSettingDTO.setTargetSettingId(targetSettingId);
         return targetSettingDTO;
+    }
+
+    /**
+     * 导出销售回款目标制定
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    @Override
+    public List<TargetSettingIncomeExcel> exportRecoveryTargetSetting(TargetSettingDTO targetSettingDTO) {
+        Integer startYear = targetSettingDTO.getStartYear();
+        Integer endYear = targetSettingDTO.getEndYear();
+        List<Integer> historyYears = new ArrayList<>();
+        BigDecimal zero = new BigDecimal(0);
+        if (startYear.equals(endYear)) {
+            historyYears.add(startYear);
+        } else if (startYear < endYear) {
+            for (int i = startYear; i <= endYear; i++) {
+                historyYears.add(i);
+            }
+        } else {
+            throw new ServiceException("开始年份不能小于结束年份");
+        }
+        TargetSettingDTO settingDTO = new TargetSettingDTO();
+        settingDTO.setTargetSettingType(2);
+        List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
+        if (StringUtils.isEmpty(targetSettingDTOList)) {
+            throw new ServiceException("当前目标制定不存在");
+        }
+        //
+        List<Long> targetSettingIds = new ArrayList<>();
+        for (TargetSettingDTO dto : targetSettingDTOList) {
+            targetSettingIds.add(dto.getTargetSettingId());
+            historyYears.remove(dto.getTargetYear());
+        }
+        List<TargetSettingRecoveryDTO> targetSettingRecoveryDTOS = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingIds(targetSettingIds);
+        return null;
     }
 
     /**

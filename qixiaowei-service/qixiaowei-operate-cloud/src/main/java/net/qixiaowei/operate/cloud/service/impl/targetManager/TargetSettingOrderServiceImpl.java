@@ -248,18 +248,7 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
      */
     @Override
     public List<TargetSettingOrderExcel> exportTargetSettingOrder(Integer startYear, Integer endYear, Long targetSettingId, BigDecimal percentage) {
-        List<Integer> historyYears = new ArrayList<>();
-        if (startYear.equals(endYear)) {
-            historyYears.add(startYear);
-        } else if (startYear < endYear) {
-            for (int i = startYear; i <= endYear; i++) {
-                historyYears.add(i);
-            }
-        } else {
-            throw new ServiceException("开始年份不能小于结束年份");
-        }
-        List<TargetSettingOrderDTO> targetSettingOrderDTOList = targetSettingOrderMapper.selectTargetSettingOrderList(historyYears, targetSettingId);
-
+        
         List<TargetSettingOrderExcel> targetSettingOrderExcelList = new ArrayList<>();
         return targetSettingOrderExcelList;
     }

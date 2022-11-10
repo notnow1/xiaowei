@@ -78,6 +78,19 @@
         WHERE delete_flag=0
         AND target_setting_id=#{targetSettingId}
     </select>
+    <select id="selectTargetSettingRecoveryByTargetSettingIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingRecoveryDTO">
+        SELECT
+        target_setting_recoveries_id, target_setting_id, balance_receivables,
+        baseline_value,improve_days, delete_flag,
+        create_by, create_time, update_by, update_time
+        FROM target_setting_recovery
+        WHERE delete_flag=0
+        AND target_setting_id IN
+        <foreach collection="targetSettingIds" separator="," index="index" item="item" close=")" open="(">
+            #{item}
+        </foreach>
+    </select>
     <!--新增目标制定回款表-->
     <insert id="insertTargetSettingRecovery" useGeneratedKeys="true" keyProperty="targetSettingRecoveriesId">
         INSERT INTO target_setting_recovery

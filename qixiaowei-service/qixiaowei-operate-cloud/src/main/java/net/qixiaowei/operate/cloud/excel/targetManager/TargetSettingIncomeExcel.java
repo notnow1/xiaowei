@@ -78,6 +78,30 @@ public class TargetSettingIncomeExcel {
     @ExcelIgnore
     @ExcelProperty("删除标记:0未删除;1已删除")
     private Integer deleteFlag;
-
+    /**
+     * 目标年度
+     */
+    @ExcelProperty("目标年度")
+    private Integer targetYear;
+    /**
+     * 挑战值
+     */
+    @ExcelProperty("挑战值")
+    private BigDecimal challengeValue;
+    /**
+     * 目标值
+     */
+    @ExcelProperty("目标值")
+    private BigDecimal targetValue;
+    /**
+     * 保底值
+     */
+    @ExcelProperty("保底值")
+    private BigDecimal guaranteedValue;
+    /**
+     * 目标年度订单转化率（%）
+     */
+    @ExcelProperty("目标年度订单转化率（%）")
+    private BigDecimal percentage;
 }
 

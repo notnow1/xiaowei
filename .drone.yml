@@ -3,28 +3,29 @@ type: docker
 name: qixiaowei-cloud-pipeline
 
 steps:
-  - name: compile
-    pull: if-not-exists
-    image: maven:3-jdk-8
-    volumes:
-      - name: mavenrepo
-        path: /root/.m2
-    commands:
-      - mvn clean package -Ptest -DskipTests=true
+- name: compile
+  pull: if-not-exists
+  image: maven:3-jdk-8
+  volumes:
+    - name: mavenrepo
+      path: /root/.m2
+  commands:
+    - mvn clean package -Ptest -DskipTests=true
 
-  - name: builid qixiaowei-file image
-    pull: if-not-exists
-    image: plugins/docker
-    settings:
-      registry: harbor.qixiaowei.net
-      username: deploy
-      password:
-        from_secret: deploypwd
-      insecure: true
-      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
-      dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
-      tags:
-        - latest
+- name: builid qixiaowei-file image
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    registry: harbor.qixiaowei.net
+    username:
+      from_secret: username
+    password:
+      from_secret: password
+    insecure: true
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
+    dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
+    tags:
+      - latest
 
 volumes:
   - name: mavenrepo

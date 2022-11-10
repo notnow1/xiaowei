@@ -27,19 +27,6 @@
         </foreach>
         and delete_flag=0
     </select>
-    <select id="selectTargetSettingOrderListByTargetSettingId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
-        SELECT
-        target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,
-        update_by, update_time
-        FROM target_setting_order
-        WHERE delete_flag=0
-        AND target_setting_id = #{targetSettingId}
-        AND history_year IN
-        <foreach collection="historyNumS" index="index" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-    </select>
     <select id="selectTargetSettingOrderByTargetSettingId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
         SELECT
