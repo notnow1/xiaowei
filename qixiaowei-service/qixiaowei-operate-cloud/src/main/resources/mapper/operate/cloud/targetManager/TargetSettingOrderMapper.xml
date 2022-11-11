@@ -36,8 +36,8 @@
         WHERE delete_flag=0
         AND target_setting_id = #{targetSettingId}
     </select>
-    <!--    查询目标制定订单表列表-->
-    <select id="selectTargetSettingOrderList"
+    <!--    查询销售订单目标制定列表根据目标制定Id-->
+    <select id="selectTargetSettingOrderListByTargetSettingId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO">
         SELECT
         target_setting_order_id, target_setting_id, history_year, history_actual, delete_flag, create_by, create_time,

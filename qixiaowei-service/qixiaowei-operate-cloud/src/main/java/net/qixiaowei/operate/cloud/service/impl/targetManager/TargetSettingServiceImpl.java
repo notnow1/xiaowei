@@ -84,13 +84,56 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     @Override
     public List<TargetSettingDTO> selectTargetSettingList(TargetSettingDTO targetSettingDTO) {
+        Integer targetYear = targetSettingDTO.getTargetYear();
+        BigDecimal zero = new BigDecimal(0);
+        if (StringUtils.isNull(targetYear)) {
+            throw new ServiceException("请输入目标年度");
+        }
         TargetSetting targetSetting = new TargetSetting();
         BeanUtils.copyProperties(targetSettingDTO, targetSetting);
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingList(targetSetting);
+        List<String> indicatorCodes = new ArrayList<>(IndicatorCode.getAllCodes());
+        R<List<IndicatorDTO>> indicatorByCodeR = indicatorService.selectIndicatorByCodeList(indicatorCodes, SecurityConstants.INNER);
+        List<IndicatorDTO> indicatorByCode = indicatorByCodeR.getData();
+        if (StringUtils.isEmpty(indicatorByCode) || indicatorByCode.size() != indicatorCodes.size()) {
+            throw new ServiceException("指标预置数据异常 请联系管理员");
+        }
         if (StringUtils.isEmpty(targetSettingDTOS)) {
+            // 无数据也要返回五个预置数据
+            int i = 0;
+            for (String indicatorCode : indicatorCodes) {
+                TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, zero, indicatorByCode);
+                if (StringUtils.isNotNull(zeroDto)) {
+                    i += 1;
+                    zeroDto.setSort(i);
+                    targetSettingDTOS.add(zeroDto);
+                }
+            }
             return targetSettingDTOS;
         }
-        return null;
+        List<TargetSettingDTO> targetSettingList = new ArrayList<>();
+        int sort = 0;
+        // 提取没有预置的数据
+        for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+            for (int i = indicatorByCode.size() - 1; i >= 0; i--) {
+                IndicatorDTO indicatorDTO = indicatorByCode.get(i);
+                if (indicatorDTO.getIndicatorId().equals(settingDTO.getIndicatorId())) {
+                    indicatorByCode.remove(indicatorDTO);
+                    break;
+                }
+            }
+        }
+        //如果那三个需要赋值 0
+        for (String indicatorCode : indicatorCodes) {
+            TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, zero, indicatorByCode);
+            if (StringUtils.isNotNull(zeroDto)) {
+                sort += 1;
+                zeroDto.setSort(sort);
+                targetSettingList.add(zeroDto);
+            }
+        }
+        setIndicatorValue(targetSettingDTOS, targetSettingList, sort);
+        return targetSettingList;
     }
 
     /**
@@ -230,12 +273,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
             return listToTree(targetSettingDTOS);
         }
-        List<TargetSettingDTO> targetSettingDTO1 = new ArrayList<>();
+        List<TargetSettingDTO> targetSettingList = new ArrayList<>();
         int sort = 0;
         // 提取没有预置的数据
         for (TargetSettingDTO settingDTO : targetSettingDTOS) {
             for (int i = indicatorByCode.size() - 1; i >= 0; i--) {
-                IndicatorDTO indicatorDTO = indicatorByCode.get(0);
+                IndicatorDTO indicatorDTO = indicatorByCode.get(i);
                 if (indicatorDTO.getIndicatorId().equals(settingDTO.getIndicatorId())) {
                     indicatorByCode.remove(indicatorDTO);
                     break;
@@ -248,27 +291,27 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             if (StringUtils.isNotNull(zeroDto)) {
                 sort += 1;
                 zeroDto.setSort(sort);
-                targetSettingDTO1.add(zeroDto);
+                targetSettingList.add(zeroDto);
             }
         }
-        setIndicatorValue(targetSettingDTOS, targetSettingDTO1, sort);
-        return listToTree(targetSettingDTO1);
+        setIndicatorValue(targetSettingDTOS, targetSettingList, sort);
+        return listToTree(targetSettingList);
     }
 
     /**
      * 处理数据 给数据赋上一些指标的值
      *
      * @param targetSettingDTOS
-     * @param targetSettingDTO1
+     * @param targetSettingList
      * @param sort
      */
-    private void setIndicatorValue(List<TargetSettingDTO> targetSettingDTOS, List<TargetSettingDTO> targetSettingDTO1, int sort) {
-        //给targetSettingDTOS排序 ,然后放进targetSettingDTO1
+    private void setIndicatorValue(List<TargetSettingDTO> targetSettingDTOS, List<TargetSettingDTO> targetSettingList, int sort) {
+        //给targetSettingDTOS排序 ,然后放进targetSettingList
         for (TargetSettingDTO settingDTO : targetSettingDTOS) {
             sort += 1;
             settingDTO.setSort(sort);
         }
-        targetSettingDTO1.addAll(targetSettingDTOS);
+        targetSettingList.addAll(targetSettingDTOS);
         IndicatorDTO indicatorDTO = new IndicatorDTO();
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorList(indicatorDTO, SecurityConstants.INNER);
         List<IndicatorDTO> indicatorList = listR.getData();
@@ -276,7 +319,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             throw new ServiceException("指标不存在 请联系管理员！");
         }
         //处理数据 给数据赋上一些指标的值
-        for (TargetSettingDTO settingDTO : targetSettingDTO1) {
+        for (TargetSettingDTO settingDTO : targetSettingList) {
             for (IndicatorDTO dto : indicatorList) {
                 if (dto.getIndicatorId().equals(settingDTO.getIndicatorId())) {
                     settingDTO.setParentIndicatorId(dto.getParentIndicatorId());
@@ -797,11 +840,53 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @return
      */
     @Override
-    public List<TargetSettingExcel> exportTargetSetting(TargetSettingDTO targetSettingDTO) {
-        TargetSetting targetSetting = new TargetSetting();
-        BeanUtils.copyProperties(targetSettingDTO, targetSetting);
-        List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingList(targetSetting);
-        return new ArrayList<>();
+    public List<List<TargetSettingExcel>> exportTargetSetting(TargetSettingDTO targetSettingDTO) {
+        List<Integer> historyYears = getHistoryYears(targetSettingDTO);
+        List<List<TargetSettingDTO>> targetSettingDTOLists = new ArrayList<>();
+        List<List<TargetSettingExcel>> targetSettingExcelLists = new ArrayList<>();
+        historyYears.forEach(targetYear -> {
+            targetSettingDTO.setTargetYear(targetYear);
+            List<TargetSettingDTO> targetSettingDTOList = selectTargetSettingList(targetSettingDTO);
+            targetSettingDTOLists.add(targetSettingDTOList);
+        });
+        for (int i = 0; i < targetSettingDTOLists.size(); i++) {
+            List<TargetSettingExcel> targetSettingExcels = new ArrayList<>();
+            List<TargetSettingDTO> targetSettingDTOList = targetSettingDTOLists.get(i);
+            Integer targetYear = historyYears.get(i);
+            targetSettingDTOList.forEach(settingDTO -> {
+                TargetSettingExcel targetSettingExcel = new TargetSettingExcel();
+                targetSettingExcel.setTargetYear(targetYear);
+                targetSettingExcel.setIndicatorName(settingDTO.getIndicatorName());
+                targetSettingExcel.setChallengeValue(settingDTO.getChallengeValue());
+                targetSettingExcel.setTargetValue(settingDTO.getTargetValue());
+                targetSettingExcel.setGuaranteedValue(settingDTO.getGuaranteedValue());
+                targetSettingExcels.add(targetSettingExcel);
+            });
+            targetSettingExcelLists.add(targetSettingExcels);
+        }
+        return targetSettingExcelLists;
+    }
+
+    /**
+     * 根据年份区间获得年份集合
+     *
+     * @param targetSettingDTO
+     * @return
+     */
+    private static List<Integer> getHistoryYears(TargetSettingDTO targetSettingDTO) {
+        Integer startYear = targetSettingDTO.getStartYear();
+        Integer endYear = targetSettingDTO.getEndYear();
+        List<Integer> historyYears = new ArrayList<>();
+        if (startYear.equals(endYear)) {
+            historyYears.add(startYear);
+        } else if (startYear < endYear) {
+            for (int i = startYear; i <= endYear; i++) {
+                historyYears.add(i);
+            }
+        } else {
+            throw new ServiceException("开始年份不能小于结束年份");
+        }
+        return historyYears;
     }
 
     /**
@@ -814,7 +899,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Transactional
     public TargetSettingDTO saveOrderTargetSetting(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
-//        Long indicatorId = getIndicator(IndicatorCode.ORDER.getCode()).getIndicatorId();
         List<TargetSettingOrderDTO> targetSettingOrderAfter = targetSettingDTO.getTargetSettingOrderDTOS();
         TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
         targetSettingDTO.setTargetSettingType(1);
@@ -1026,7 +1110,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 if (StringUtils.isNotNull(historyActual)) {
                     BigDecimal subtract = historyActual.subtract(beforeRate);
                     BigDecimal divide;
-                    if (!historyActual.equals(BigDecimal.ZERO)) {
+                    if (!beforeRate.equals(BigDecimal.ZERO)) {
                         divide = subtract.divide(beforeRate, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
                     } else {
                         divide = BigDecimal.ZERO;
@@ -1109,18 +1193,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     @Override
     public List<TargetSettingOrderExcel> exportOrderTargetSetting(TargetSettingDTO targetSettingDTO) {
-        Integer startYear = targetSettingDTO.getStartYear();
-        Integer endYear = targetSettingDTO.getEndYear();
-        List<Integer> historyYears = new ArrayList<>();
-        if (startYear.equals(endYear)) {
-            historyYears.add(startYear);
-        } else if (startYear < endYear) {
-            for (int i = startYear; i <= endYear; i++) {
-                historyYears.add(i);
-            }
-        } else {
-            throw new ServiceException("开始年份不能小于结束年份");
-        }
+        List<Integer> historyYears = getHistoryYears(targetSettingDTO);
         TargetSettingDTO settingDTO = new TargetSettingDTO();
         settingDTO.setTargetSettingType(1);
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
@@ -1333,19 +1406,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     @Override
     public List<TargetSettingIncomeExcel> exportIncomeTargetSetting(TargetSettingDTO targetSettingDTO) {
-        Integer startYear = targetSettingDTO.getStartYear();
-        Integer endYear = targetSettingDTO.getEndYear();
-        List<Integer> historyYears = new ArrayList<>();
+        List<Integer> historyYears = getHistoryYears(targetSettingDTO);
         BigDecimal zero = new BigDecimal(0);
-        if (startYear.equals(endYear)) {
-            historyYears.add(startYear);
-        } else if (startYear < endYear) {
-            for (int i = startYear; i <= endYear; i++) {
-                historyYears.add(i);
-            }
-        } else {
-            throw new ServiceException("开始年份不能小于结束年份");
-        }
         TargetSettingDTO settingDTO = new TargetSettingDTO();
         settingDTO.setTargetSettingType(2);
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
@@ -1415,10 +1477,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 //销售收入目标
                 TargetSettingRecoveriesDTO saleIncomeGoal = new TargetSettingRecoveriesDTO();//销售收入目标
                 TargetSettingRecoveriesDTO periodReceivables = new TargetSettingRecoveriesDTO();//期末应收款余额
-                BigDecimal targetSum = new BigDecimal(0);
-                BigDecimal challengeSum = new BigDecimal(0);
-                BigDecimal guaranteedSum = new BigDecimal(0);
-                BigDecimal actualLastSum = new BigDecimal(0);
+                BigDecimal targetSum = BigDecimal.ZERO;
+                BigDecimal challengeSum = BigDecimal.ZERO;
+                BigDecimal guaranteedSum = BigDecimal.ZERO;
+                BigDecimal actualLastSum = BigDecimal.ZERO;
                 for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDTOS) {
                     switch (targetSettingRecoveriesDTO.getType()) {
                         case 1:
@@ -1720,32 +1782,22 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     @Override
     public List<TargetSettingIncomeExcel> exportRecoveryTargetSetting(TargetSettingDTO targetSettingDTO) {
-        Integer startYear = targetSettingDTO.getStartYear();
-        Integer endYear = targetSettingDTO.getEndYear();
-        List<Integer> historyYears = new ArrayList<>();
-        BigDecimal zero = new BigDecimal(0);
-        if (startYear.equals(endYear)) {
-            historyYears.add(startYear);
-        } else if (startYear < endYear) {
-            for (int i = startYear; i <= endYear; i++) {
-                historyYears.add(i);
-            }
-        } else {
-            throw new ServiceException("开始年份不能小于结束年份");
-        }
+        List<Integer> historyYears = getHistoryYears(targetSettingDTO);
         TargetSettingDTO settingDTO = new TargetSettingDTO();
         settingDTO.setTargetSettingType(2);
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
         if (StringUtils.isEmpty(targetSettingDTOList)) {
             throw new ServiceException("当前目标制定不存在");
         }
-        //
         List<Long> targetSettingIds = new ArrayList<>();
         for (TargetSettingDTO dto : targetSettingDTOList) {
             targetSettingIds.add(dto.getTargetSettingId());
             historyYears.remove(dto.getTargetYear());
         }
         List<TargetSettingRecoveryDTO> targetSettingRecoveryDTOS = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingIds(targetSettingIds);
+        for (int i = 0; i < targetSettingDTOList.size(); i++) {
+
+        }
         return null;
     }
 
