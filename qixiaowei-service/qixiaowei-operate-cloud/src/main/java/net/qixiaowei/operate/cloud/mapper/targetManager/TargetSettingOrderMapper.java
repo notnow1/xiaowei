@@ -100,10 +100,10 @@ public interface TargetSettingOrderMapper {
     /**
      * 查询销售订单目标制定列表根据目标制定Id
      *
-     * @param historyNumS 历史年度集合
+     * @param historyYears 历史年度集合
      * @return
      */
-    List<TargetSettingOrderDTO> selectTargetSettingOrderListByTargetSettingId(@Param("targetSettingId") Long targetSettingId, @Param("historyNumS") List<Integer> historyNumS);
+    List<TargetSettingOrderDTO> selectTargetSettingOrderListByTargetSettingId(@Param("targetSettingId") Long targetSettingId, @Param("historyYears") List<Integer> historyYears);
 
     /**
      * 获取全部的订单

@@ -1,7 +1,9 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -124,6 +126,7 @@ public class TargetSettingController extends BaseController {
      * 导入目标制定
      */
     @PostMapping("/import")
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
     public AjaxResult importEmployee(MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
@@ -148,15 +151,26 @@ public class TargetSettingController extends BaseController {
      * 导出目标制定
      */
     @SneakyThrows
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
     @GetMapping("/export")
-    public void exportUser(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
-        List<TargetSettingExcel> targetSettingExcelList = targetSettingService.exportTargetSetting(targetSettingDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetSettingExcel.class).sheet("目标制定").doWrite(targetSettingExcelList);
+    public void export(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        List<List<TargetSettingExcel>> targetSettingExcelList = targetSettingService.exportTargetSetting(targetSettingDTO);
+        try {
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding(CharsetKit.UTF_8);
+            String fileName = URLEncoder.encode("目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                    , CharsetKit.UTF_8);
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
+            for (int i = 0; i < targetSettingExcelList.size(); i++) {
+                Integer targetYear = targetSettingExcelList.get(i).get(0).getTargetYear();
+                WriteSheet sheet = EasyExcel.writerSheet(i, targetYear + "年").head(TargetSettingExcel.class).build();
+                excelWriter.write(targetSettingExcelList.get(i), sheet);
+            }
+            excelWriter.finish();
+        } catch (IOException e) {
+            throw new ServiceException("导出失败");
+        }
     }
 
     /**

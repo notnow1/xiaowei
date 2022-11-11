@@ -104,7 +104,7 @@ public interface ITargetSettingService {
      * @param targetSettingDTO
      * @return
      */
-    List<TargetSettingExcel> exportTargetSetting(TargetSettingDTO targetSettingDTO);
+    List<List<TargetSettingExcel>> exportTargetSetting(TargetSettingDTO targetSettingDTO);
 
     /**
      * 保存销售订单目标制定
