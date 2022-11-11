@@ -49,6 +49,11 @@ public class PostDTO {
     */
     @NotBlank(message = "岗位编码不能为空",groups = {PostDTO.AddPostDTO.class,PostDTO.UpdatePostDTO.class})
     private  String postCode;
+
+    /**
+     * 级别前缀编码
+     */
+    private String rankPrefixCode;
     /**
     * 岗位名称
     */
