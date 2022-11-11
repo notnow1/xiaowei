@@ -60,6 +60,10 @@ public class DepartmentDTO {
     private  Long parentDepartmentId;
 
     /**
+     * 级别前缀编码
+     */
+    private String rankPrefixCode;
+    /**
      * 父级部门名称
      */
     private  String parentDepartmentName;
