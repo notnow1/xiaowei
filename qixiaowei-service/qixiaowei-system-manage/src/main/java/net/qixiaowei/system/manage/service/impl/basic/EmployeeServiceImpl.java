@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -362,6 +363,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             for (EmployeeDTO dto : employeeDTOList) {
                 EmployeeExcel employeeExcel = new EmployeeExcel();
                 BeanUtils.copyProperties(dto, employeeExcel);
+                //性别
                 if (StringUtils.isNotNull(dto.getEmployeeGender())){
                     if (dto.getEmployeeGender() == 1) {
                         employeeExcel.setEmployeeGender("男");
@@ -369,6 +371,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         employeeExcel.setEmployeeGender("女");
                     }
                 }
+                //用工关系状态
                 if (null != dto.getEmploymentStatus()){
                     if (dto.getEmploymentStatus() == 1) {
                         employeeExcel.setEmploymentStatus("在职");
@@ -376,7 +379,19 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         employeeExcel.setEmploymentStatus("离职");
                     }
                 }
-
+                //出生日期
+                if (null != dto.getEmployeeBirthday()){
+                    Date employeeBirthday = dto.getEmployeeBirthday();
+                    employeeExcel.setEmployeeBirthday(DateUtils.format(employeeBirthday));
+                }
+                //婚姻状况
+                if (null != dto.getEmploymentStatus()){
+                    if (dto.getEmploymentStatus() == 0) {
+                        employeeExcel.setEmploymentStatus("未婚");
+                    } else {
+                        employeeExcel.setEmploymentStatus("已婚");
+                    }
+                }
                 employeeExcelList.add(employeeExcel);
             }
         }

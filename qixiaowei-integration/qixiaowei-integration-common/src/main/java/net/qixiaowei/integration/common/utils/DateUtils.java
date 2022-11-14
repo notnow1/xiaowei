@@ -22,6 +22,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
 
     public static String YYYY_MM_DD = "yyyy-MM-dd";
 
+    public static String YYYY_MM_DD_TWO = "yyyy/MM/dd";
+
     public static String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
     public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
@@ -163,6 +165,13 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         return dayOfYear/week;
     }
 
+    /**
+     * 格式化时间
+     */
+    public static String format(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(YYYY_MM_DD_TWO);
+        return simpleDateFormat.format(date);
+    }
     /**
      * 获取今年最后一天日期
      *            年份

@@ -2,6 +2,9 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
+import com.alibaba.excel.write.style.row.SimpleRowHeightStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
@@ -42,6 +45,27 @@ public class EmployeeController extends BaseController {
     @Autowired
     private IEmployeeService employeeService;
 
+    /**
+     * 导出人员
+     */
+    @SneakyThrows
+    @GetMapping("test")
+    public void test(@RequestParam Map<String, Object> employee,EmployeeDTO employeeDTO, HttpServletResponse response) {
+        //自定义表头
+        List<List<String>> head = EmployeeImportListener.head();
+        List<EmployeeExcel> employeeExcelList = employeeService.exportEmployee(employeeDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("人员信息配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream())
+                .head(head)// 设置表头
+                .sheet("人员信息配置")// 设置 sheet 的名字
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(EmployeeImportListener.dataList(employeeExcelList));// 写入数据
+    }
     /**
      * 导入人员
      */

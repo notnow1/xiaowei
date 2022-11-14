@@ -70,7 +70,20 @@ public class EmployeeExcel {
      */
     @ExcelProperty("出生日期")
     @DateTimeFormat(value = "yyyy/MM/dd")
-    private Date employeeBirthday;
+    private String employeeBirthday;
+    /**
+     * 婚姻状况:0未婚;1已婚
+     */
+    @ExcelIgnore
+    private  Integer maritalStatus;
+
+    /**
+     * 国籍
+     */
+    @ExcelIgnore
+    private  String nationality;
+    @ExcelIgnore
+    private  String nationalityName;
     /**
      * 员工手机号
      */
