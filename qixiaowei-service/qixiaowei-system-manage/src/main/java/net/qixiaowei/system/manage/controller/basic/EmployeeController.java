@@ -1,7 +1,11 @@
 package net.qixiaowei.system.manage.controller.basic;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.WriteTable;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.row.SimpleRowHeightStyleStrategy;
@@ -15,6 +19,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
+import net.qixiaowei.system.manage.excel.basic.SelectSheetWriteHandler;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -27,10 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -51,20 +53,7 @@ public class EmployeeController extends BaseController {
     @SneakyThrows
     @GetMapping("test")
     public void test(@RequestParam Map<String, Object> employee,EmployeeDTO employeeDTO, HttpServletResponse response) {
-        //自定义表头
-        List<List<String>> head = EmployeeImportListener.head();
-        List<EmployeeExcel> employeeExcelList = employeeService.exportEmployee(employeeDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("人员信息配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream())
-                .head(head)// 设置表头
-                .sheet("人员信息配置")// 设置 sheet 的名字
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .doWrite(EmployeeImportListener.dataList(employeeExcelList));// 写入数据
+
     }
     /**
      * 导入人员
@@ -96,13 +85,22 @@ public class EmployeeController extends BaseController {
     @SneakyThrows
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee,EmployeeDTO employeeDTO, HttpServletResponse response) {
+        Map<Integer, List<String>> selectMap = new HashMap<>();
+        //自定义表头
+        List<List<String>> head = EmployeeImportListener.head(selectMap);
         List<EmployeeExcel> employeeExcelList = employeeService.exportEmployee(employeeDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("人员信息配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), EmployeeExcel.class).sheet("人员数据表").doWrite(employeeExcelList);
+        EasyExcel.write(response.getOutputStream())
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .head(head)// 设置表头
+                .sheet("人员信息配置")// 设置 sheet 的名字
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(EmployeeImportListener.dataList(employeeExcelList));
     }
 
     /**
@@ -111,12 +109,22 @@ public class EmployeeController extends BaseController {
     @SneakyThrows
     @GetMapping("export-template")
     public void exportUser(HttpServletResponse response) {
-        List<EmployeeExcel> list = new ArrayList<>();
+        Map<Integer, List<String>> selectMap = new HashMap<>();
+        //自定义表头
+        List<List<String>> head = EmployeeImportListener.head(selectMap);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("人员信息配置模板", CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("人员信息配置模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), EmployeeExcel.class).sheet("人员数据表").doWrite(list);
+
+        EasyExcel.write(response.getOutputStream())
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .excelType(ExcelTypeEnum.XLSX)
+                .head(head)// 设置表头
+                .sheet("人员信息配置")// 设置 sheet 的名字
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).doWrite(EmployeeImportListener.templateData());
     }
     /**
      * 分页查询员工表列表

@@ -385,12 +385,22 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     employeeExcel.setEmployeeBirthday(DateUtils.format(employeeBirthday));
                 }
                 //婚姻状况
-                if (null != dto.getEmploymentStatus()){
-                    if (dto.getEmploymentStatus() == 0) {
-                        employeeExcel.setEmploymentStatus("未婚");
+                if (null != dto.getMaritalStatus()){
+                    if (dto.getMaritalStatus() == 0) {
+                        employeeExcel.setMaritalStatus("未婚");
                     } else {
-                        employeeExcel.setEmploymentStatus("已婚");
+                        employeeExcel.setMaritalStatus("已婚");
                     }
+                }
+                //入职日期
+                if (null != dto.getEmploymentDate()){
+                    Date employmentDate = dto.getEmploymentDate();
+                    employeeExcel.setEmploymentDate(DateUtils.format(employmentDate));
+                }
+                //离职日期
+                if (null != dto.getDepartureDate()){
+                    Date departureDate = dto.getDepartureDate();
+                    employeeExcel.setDepartureDate(DateUtils.format(departureDate));
                 }
                 employeeExcelList.add(employeeExcel);
             }

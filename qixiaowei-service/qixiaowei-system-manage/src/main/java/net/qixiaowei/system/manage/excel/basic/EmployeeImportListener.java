@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.excel.basic;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.write.handler.WriteHandler;
@@ -10,14 +11,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.hssf.usermodel.DVConstraint;
+import org.apache.poi.hssf.usermodel.HSSFDataValidation;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * EmployeeImportListener
@@ -42,11 +43,13 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
      */
     private final IEmployeeService employeeService;
 
-    public static List<List<String>> head() {
+    public static List<List<String>> head(Map<Integer, List<String>> selectMap) {
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();
         head0.add("");
+        head0.add("*为必填项");
+        head0.add("数据要求（本行不填充数据，仅作说明）：");
         // 第二列
         List<String> head1 = new ArrayList<String>();
         head1.add("员工基本信息");
@@ -61,12 +64,14 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
         List<String> head3 = new ArrayList<String>();
         head3.add("员工基本信息");
         head3.add("用工关系状态*");
-        head3.add("下拉选择，若不填写，系统默认为在职，枚举值：在职；离职*");
+        head3.add("下拉选择，若不填写，系统默认为在职，枚举值：在职；离职");
+        selectMap.put(3,Arrays.asList("在职","离职"));
         // 第五列
         List<String> head4 = new ArrayList<String>();
         head4.add("员工基本信息");
         head4.add("性别");
         head4.add("下拉选择，枚举值：男；女");
+        selectMap.put(4,Arrays.asList("男","女"));
         // 第六列
         List<String> head5 = new ArrayList<String>();
         head5.add("员工基本信息");
@@ -82,6 +87,7 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
         head7.add("员工基本信息");
         head7.add("婚姻状况");
         head7.add("下拉选择，枚举值：未婚；已婚");
+        selectMap.put(7,Arrays.asList("未婚","已婚"));
         // 第九列
         List<String> head8 = new ArrayList<String>();
         head8.add("员工基本信息");
@@ -233,7 +239,7 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
     public static List dataList(List<EmployeeExcel> employeeExcelList) {
         List<List<Object>> list = new ArrayList<List<Object>>();
         int size = employeeExcelList.size();
-        for (int i = 0; i < (Math.max(employeeExcelList.size(), 8)); i++) {
+        for (int i = 0; i < (Math.max(employeeExcelList.size(), 7)); i++) {
             List<Object> data = new ArrayList<Object>();
             String s = EmployeeImportListener.packData(i);
             data.add(s);
@@ -254,6 +260,18 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 data.add(employeeExcelList.get(i).getMaritalStatus());
                 //国籍
                 data.add(employeeExcelList.get(i).getNationalityName());
+                //民族
+                data.add(employeeExcelList.get(i).getNationName());
+                //户口所在地名称
+                data.add(employeeExcelList.get(i).getResidentCityName());
+                //参保地名称
+                data.add(employeeExcelList.get(i).getInsuredCityName());
+                //常住地名称
+                data.add(employeeExcelList.get(i).getPermanentAddressName());
+                //入职日期
+                data.add(employeeExcelList.get(i).getEmploymentDate());
+                //离职日期
+                data.add(employeeExcelList.get(i).getDepartureDate());
             }
             list.add(data);
         }
@@ -261,35 +279,14 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
     }
     /**
      * 封装导出模板数据
-     * @param employeeExcelList
      * @return
      */
-    public static List templateData(List<EmployeeExcel> employeeExcelList) {
+    public static List templateData() {
         List<List<Object>> list = new ArrayList<List<Object>>();
-        int size = employeeExcelList.size();
-        for (int i = 0; i < (Math.max(size, 8)); i++) {
+        for (int i = 0; i < 7; i++) {
             List<Object> data = new ArrayList<Object>();
             String s = EmployeeImportListener.packData(i);
             data.add(s);
-            if (i<size){
-                //工号
-                data.add(employeeExcelList.get(i).getEmployeeCode());
-                //姓名
-                data.add(employeeExcelList.get(i).getEmployeeName());
-                //用工关系状态
-                data.add(employeeExcelList.get(i).getEmploymentStatus());
-                //性别
-                data.add(employeeExcelList.get(i).getEmployeeGender());
-                //身份证号码
-                data.add(employeeExcelList.get(i).getIdentityCard());
-                CellRangeAddressList cellRangeAddressList = new CellRangeAddressList(2, 65535, 0, 65535);
-                //出生日期
-                data.add(employeeExcelList.get(i).getEmployeeBirthday());
-                //婚姻状况
-                data.add(employeeExcelList.get(i).getMaritalStatus());
-                //国籍
-                data.add(employeeExcelList.get(i).getNationalityName());
-            }
             list.add(data);
         }
         return list;
@@ -303,25 +300,42 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
      */
     private static String packData(int i) {
         if (i == 0) {
-            return "*为必填项";
-        } else if (i == 1) {
-            return "数据要求（本行不填充数据，仅作说明）：";
-        } else if (i == 2) {
             return "填写示例：";
-        } else if (i == 3) {
+        } else if (i == 1) {
             return "注意事项：";
-        } else if (i == 4) {
+        } else if (i == 2) {
             return "1、对于有唯一性校验的字段，如果导入值重复，则该字段导入失败";
-        } else if (i == 5) {
+        } else if (i == 3) {
             return "2、对于必录字段，如果导入失败，则整条数据导入失败";
-        } else if (i == 6) {
+        } else if (i == 4) {
             return "3、对于非必录字段，如果导入失败，则整条数据导入成功，该字段为空";
-        }else if (i == 7) {
+        } else if (i == 5) {
             return "4、对于录入的字段，用户的填充值需要与系统值匹配";
         }
         return null;
     }
 
+
+
+    /**
+     * firstRow 開始行號 根据此项目，默认为2(下标0开始)
+     * lastRow  根据此项目，默认为最大65535
+     * firstCol 区域中第一个单元格的列号 (下标0开始)
+     * lastCol 区域中最后一个单元格的列号
+     * strings 下拉内容
+     * */
+    public static void selectList(Workbook workbook, int firstCol, int lastCol, String[] strings ){
+        Sheet sheet = workbook.getSheetAt(0);
+        //  生成下拉列表
+        //  只对(x，x)单元格有效
+        CellRangeAddressList cellRangeAddressList = new CellRangeAddressList(2, 65535, firstCol, lastCol);
+        //  生成下拉框内容
+        DVConstraint dvConstraint = DVConstraint.createExplicitListConstraint(strings);
+        HSSFDataValidation dataValidation = new HSSFDataValidation(cellRangeAddressList, dvConstraint);
+        //  对sheet页生效
+        sheet.addValidationData(dataValidation);
+
+    }
     @Override
     public void invoke(EmployeeExcel data, AnalysisContext context) {
         list.add(data);
@@ -368,5 +382,6 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
                 new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
         return horizontalCellStyleStrategy;
     }
+
 
 }

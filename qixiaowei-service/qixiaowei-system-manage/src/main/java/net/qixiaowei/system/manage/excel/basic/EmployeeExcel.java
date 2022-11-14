@@ -8,6 +8,7 @@ import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.alibaba.excel.annotation.write.style.ContentRowHeight;
 import com.alibaba.excel.annotation.write.style.HeadRowHeight;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
@@ -40,19 +41,22 @@ public class EmployeeExcel {
     /**
      * 工号
      */
+    @ExcelIgnore
     @ExcelProperty("工号")
     private String employeeCode;
     /**
      * 姓名
      */
+    @ExcelIgnore
     @ExcelProperty("姓名")
     private String employeeName;
-
+    @ExcelIgnore
     @ExcelProperty("用工关系状态")
     private String employmentStatus;
     /**
      * 性别:1男;2女
      */
+    @ExcelIgnore
     @ExcelProperty("性别")
     private String employeeGender;
     /**
@@ -63,11 +67,13 @@ public class EmployeeExcel {
     /**
      * 证件号码
      */
+    @ExcelIgnore
     @ExcelProperty("证件号码")
     private String identityCard;
     /**
      * 出生日期
      */
+    @ExcelIgnore
     @ExcelProperty("出生日期")
     @DateTimeFormat(value = "yyyy/MM/dd")
     private String employeeBirthday;
@@ -75,74 +81,50 @@ public class EmployeeExcel {
      * 婚姻状况:0未婚;1已婚
      */
     @ExcelIgnore
-    private  Integer maritalStatus;
+    private  String maritalStatus;
 
     /**
      * 国籍
      */
     @ExcelIgnore
-    private  String nationality;
-    @ExcelIgnore
     private  String nationalityName;
     /**
-     * 员工手机号
+     * 民族
      */
-    @ExcelProperty("员工手机号")
-    private String employeeMobile;
+    @ExcelIgnore
+    private  String nationName;
+    /**
+     * 户口所在地名称
+     */
+    @ExcelIgnore
+    private  String residentCityName;
+
+    /**
+     * 参保地名称
+     */
+    @ExcelIgnore
+    private  String insuredCityName;
+    /**
+     * 常住地名称
+     */
+    @ExcelIgnore
+    private  String permanentAddressName;
     /**
      * 入职日期
      */
-    @ExcelProperty("入职日期")
-    @DateTimeFormat(value = "yyyy/MM/dd")
-    private Date employmentDate;
-    /**
-     * 员工邮箱
-     */
-    @ExcelProperty("员工邮箱")
-    private String employeeEmail;
-    /**
-     * 员工部门ID
-     */
-
-    @ExcelProperty("部门编码")
-    private Long employeeDepartmentId;
     @ExcelIgnore
-    private String employeeDepartmentName;
-    /**
-     * 员工岗位ID
-     */
-    @ExcelProperty("岗位编码")
-    private Long employeePostId;
-    @ExcelIgnore
-    private String employeePostName;
-    /**
-     * 员工职级
-     */
-    @ExcelProperty("个人职级")
-    private Integer employeeRank;
-    /**
-     * 员工基本工资
-     */
-    @ExcelProperty("员工基本工资")
-    private BigDecimal employeeBasicWage;
-
+    private  String employmentDate;
     /**
      * 离职日期
      */
-    @ExcelProperty("离职日期")
-    @DateTimeFormat(value = "yyyy/MM/dd")
-    private Date departureDate;
-
+    @ExcelIgnore
+    private  String departureDate;
     /**
-     * 状态:0暂存;1生效
+     * 员工手机号
      */
     @ExcelIgnore
-    private Integer status;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    @ExcelIgnore
-    private Integer deleteFlag;
+    @ExcelProperty("员工手机号")
+    private String employeeMobile;
 
 }
 
