@@ -113,4 +113,12 @@ public interface TargetSettingRecoveriesMapper {
      * @return
      */
     List<TargetSettingRecoveriesDTO> selectTargetSettingRecoveriesByTargetSettingId(@Param("targetSettingId") Long targetSettingId);
+
+    /**
+     * 根据目标制定ID集合查找目标汇款详情表
+     *
+     * @param targetSettingIds
+     * @return
+     */
+    List<TargetSettingRecoveriesDTO> selectTargetSettingRecoveriesByTargetSettingIds(@Param("targetSettingIds")List<Long> targetSettingIds);
 }

@@ -19,6 +19,7 @@ import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingRecoveriesExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.*;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -490,10 +491,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 更新操作
      *
-     * @param targetSettingDTOAfter
-     * @param noEdit
-     * @param targetSettingDTOBefore
-     * @return
+     * @param targetSettingDTOAfter  参数
+     * @param noEdit                 没有编辑的ID
+     * @param targetSettingDTOBefore 库里的数据
+     * @return updateTargetSetting
      */
     private static List<TargetSettingDTO> updateOperate(List<TargetSettingDTO> targetSettingDTOAfter, List<Long> noEdit, List<TargetSettingDTO> targetSettingDTOBefore) {
         // Before里After的交集
@@ -502,6 +503,13 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                         targetSettingDTOBefore.stream().map(TargetSettingDTO::getIndicatorId)
                                 .collect(Collectors.toList()).contains(targetSettingDTO.getIndicatorId())
                 ).collect(Collectors.toList());
+        for (TargetSettingDTO targetSettingDTO : updateTargetSetting) {
+            for (TargetSettingDTO settingDTO : targetSettingDTOBefore) {
+                if (settingDTO.getIndicatorId().equals(targetSettingDTO.getIndicatorId())) {
+                    targetSettingDTO.setTargetSettingId(settingDTO.getTargetSettingId());
+                }
+            }
+        }
         // 更新筛选校验
         for (int i = updateTargetSetting.size() - 1; i >= 0; i--) {
             TargetSettingDTO targetSettingDTO = updateTargetSetting.get(i);
@@ -711,7 +719,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             List<Long> collect = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             targetSetting.setIndicatorIds(collect);
         }
-
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
         if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             for (TargetSettingDTO settingDTO : targetSettingDTOS) {
@@ -719,12 +726,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 BigDecimal targetValue = settingDTO.getTargetValue();
                 //年度实际值
                 BigDecimal actualTotal = settingDTO.getActualTotal();
-
                 //上年年度实际值
                 BigDecimal lastActualTotal = new BigDecimal("0");
                 //目标完成率
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
-
                 //同比
                 BigDecimal onBasis = settingDTO.getOnBasis();
                 if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
@@ -811,26 +816,61 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 导入Excel
      *
-     * @param list
+     * @param targetSettingExcelMaps EXCEL MAP
      */
     @Override
-    public void importTargetSetting(List<TargetSettingExcel> list) {
-        List<TargetSetting> targetSettingList = new ArrayList<>();
-        list.forEach(l -> {
-            TargetSetting targetSetting = new TargetSetting();
-            BeanUtils.copyProperties(l, targetSetting);
-            targetSetting.setCreateBy(SecurityUtils.getUserId());
-            targetSetting.setCreateTime(DateUtils.getNowDate());
-            targetSetting.setUpdateTime(DateUtils.getNowDate());
-            targetSetting.setUpdateBy(SecurityUtils.getUserId());
-            targetSetting.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            targetSettingList.add(targetSetting);
-        });
-        try {
-            targetSettingMapper.batchTargetSetting(targetSettingList);
-        } catch (Exception e) {
-            throw new ServiceException("导入目标制定失败");
+    public void importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps) {
+        for (String sheetName : targetSettingExcelMaps.keySet()) {
+            List<TargetSettingDTO> targetSettingDTOS = new ArrayList<>();
+            List<TargetSettingExcel> targetSettingExcelList = targetSettingExcelMaps.get(sheetName);
+            List<String> indicatorCodes = new ArrayList<>();
+            List<IndicatorDTO> indicatorDTOS = getIndicatorByCodes(targetSettingExcelList, indicatorCodes);
+            for (TargetSettingExcel targetSettingExcel : targetSettingExcelList) {
+                String indicatorCode = targetSettingExcel.getIndicatorCode();
+                TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
+                BeanUtils.copyProperties(targetSettingExcel, targetSettingDTO);
+                targetSettingDTO.setCreateBy(SecurityUtils.getUserId());
+                targetSettingDTO.setCreateTime(DateUtils.getNowDate());
+                targetSettingDTO.setUpdateTime(DateUtils.getNowDate());
+                targetSettingDTO.setUpdateBy(SecurityUtils.getUserId());
+                targetSettingDTO.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                targetSettingDTO.setTargetYear(Integer.valueOf(sheetName.split("年")[0]));
+                for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+                    if (indicatorDTO.getIndicatorCode().equals(indicatorCode)) {
+                        targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
+                        break;
+                    }
+                }
+                targetSettingDTOS.add(targetSettingDTO);
+            }
+            saveTargetSettings(targetSettingDTOS);
         }
+    }
+
+    /**
+     * 根据CodeList获取IndicatorList
+     *
+     * @param targetSettingExcelList EXCEL列表
+     * @param indicatorCodes         指标编码列表
+     * @return indicatorDTOS
+     */
+    private List<IndicatorDTO> getIndicatorByCodes(List<TargetSettingExcel> targetSettingExcelList, List<String> indicatorCodes) {
+        for (TargetSettingExcel targetSettingExcel : targetSettingExcelList) {
+            String indicatorCode = targetSettingExcel.getIndicatorCode();
+            if (StringUtils.isNull(indicatorCode)) {
+                throw new ServiceException("指标编码不能为空");
+            }
+            indicatorCodes.add(indicatorCode);
+        }
+        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByCodeList(indicatorCodes, SecurityConstants.INNER);
+        List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
+        if (indicatorR.getCode() != 200 || StringUtils.isEmpty(indicatorDTOS)) {
+            throw new ServiceException("远程获取指标编码失败");
+        }
+        if (indicatorDTOS.size() != indicatorCodes.size()) {
+            throw new ServiceException("请输入正确的指标编码");
+        }
+        return indicatorDTOS;
     }
 
     /**
@@ -1110,7 +1150,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 if (StringUtils.isNotNull(historyActual)) {
                     BigDecimal subtract = historyActual.subtract(beforeRate);
                     BigDecimal divide;
-                    if (!beforeRate.equals(BigDecimal.ZERO)) {
+                    if (beforeRate.compareTo(BigDecimal.ZERO) != 0) {
                         divide = subtract.divide(beforeRate, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
                     } else {
                         divide = BigDecimal.ZERO;
@@ -1781,24 +1821,124 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @return
      */
     @Override
-    public List<TargetSettingIncomeExcel> exportRecoveryTargetSetting(TargetSettingDTO targetSettingDTO) {
+    public List<TargetSettingRecoveriesExcel> exportRecoveryTargetSetting(TargetSettingDTO targetSettingDTO) {
         List<Integer> historyYears = getHistoryYears(targetSettingDTO);
         TargetSettingDTO settingDTO = new TargetSettingDTO();
-        settingDTO.setTargetSettingType(2);
+        settingDTO.setTargetSettingType(3);
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
+        //【销售收入指标】：从经营云-目标制定-公司目标生成-销售收入目标制定中获取当年目标值
+        settingDTO.setTargetSettingType(2);
+        List<TargetSettingDTO> targetSettingIncomeList = targetSettingMapper.selectTargetSettingByYears(settingDTO, historyYears);
         if (StringUtils.isEmpty(targetSettingDTOList)) {
             throw new ServiceException("当前目标制定不存在");
         }
         List<Long> targetSettingIds = new ArrayList<>();
         for (TargetSettingDTO dto : targetSettingDTOList) {
             targetSettingIds.add(dto.getTargetSettingId());
-            historyYears.remove(dto.getTargetYear());
+            historyYears.remove(dto.getTargetYear());//剩下的可以用来造假数据
         }
         List<TargetSettingRecoveryDTO> targetSettingRecoveryDTOS = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingIds(targetSettingIds);
+        List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOS = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingIds(targetSettingIds);
+        List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcels = new ArrayList<TargetSettingRecoveriesExcel>();
         for (int i = 0; i < targetSettingDTOList.size(); i++) {
-
+            TargetSettingRecoveriesExcel targetSettingRecoveriesExcel = new TargetSettingRecoveriesExcel();
+            TargetSettingDTO targetSetting = targetSettingDTOList.get(i);
+            Long targetSettingId = targetSetting.getTargetSettingId();
+            TargetSettingRecoveryDTO targetSettingRecoveryDTO = targetSettingRecoveryDTOS.get(i);
+            // 平均增值税率
+            BigDecimal percentage = targetSetting.getPercentage();
+            // 销售收入目标
+            BigDecimal salesRevenueTarget = BigDecimal.ZERO;
+            BigDecimal salesRevenueChallenge = BigDecimal.ZERO;
+            BigDecimal salesRevenueGuaranteed = BigDecimal.ZERO;
+            for (TargetSettingDTO dto : targetSettingIncomeList) {
+                if (dto.getIndicatorId().equals(targetSetting.getIndicatorId())) {
+                    salesRevenueTarget = dto.getTargetValue();
+                    salesRevenueChallenge = dto.getChallengeValue();
+                    salesRevenueGuaranteed = dto.getGuaranteedValue();
+                    break;
+                }
+            }
+            // 上年年末应收账款余额
+            BigDecimal balanceReceivables = targetSettingRecoveryDTO.getBalanceReceivables();
+            // DSO
+            int DSO = targetSettingRecoveryDTO.getBaselineValue() - targetSettingRecoveryDTO.getImproveDays();
+            // 【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额。
+            BigDecimal endingBalanceTarget =
+                    ((salesRevenueTarget.multiply(BigDecimal.valueOf(DSO))).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP)).subtract(balanceReceivables);
+            BigDecimal endingBalanceChallenge =
+                    ((salesRevenueChallenge.multiply(BigDecimal.valueOf(DSO))).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP)).subtract(balanceReceivables);
+            BigDecimal endingBalanceGuaranteed =
+                    ((salesRevenueGuaranteed.multiply(BigDecimal.valueOf(DSO))).divide(BigDecimal.valueOf(180), 2, RoundingMode.HALF_UP)).subtract(balanceReceivables);
+            // 【回款总目标】：公式=上年年末应收账款余额+销售收入目标*（1+平均增值税率）-期末应收账款余额。
+            BigDecimal rate = (percentage.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.ONE);
+            BigDecimal totalTarget = balanceReceivables.add(salesRevenueTarget.multiply(rate)).add(endingBalanceTarget);
+            BigDecimal totalChallenge = balanceReceivables.add(salesRevenueChallenge.multiply(rate)).add(endingBalanceChallenge);
+            BigDecimal totalGuaranteed = balanceReceivables.add(salesRevenueGuaranteed.multiply(rate)).add(endingBalanceGuaranteed);
+            Map<String, BigDecimal> challengeMap = new HashMap<>();
+            Map<String, BigDecimal> targetMap = new HashMap<>();
+            Map<String, BigDecimal> guaranteedMap = new HashMap<>();
+            for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDTOS) {
+                if (targetSettingRecoveriesDTO.getTargetSettingId().equals(targetSettingId)) {
+                    switch (targetSettingRecoveriesDTO.getType()) {
+                        case 1:
+                            challengeMap.put("1.应回尽回", targetSettingRecoveriesDTO.getChallengeValue());
+                            targetMap.put("1.应回尽回", targetSettingRecoveriesDTO.getTargetValue());
+                            guaranteedMap.put("1.应回尽回", targetSettingRecoveriesDTO.getGuaranteedValue());
+                        case 2:
+                            challengeMap.put("2.逾期清理", targetSettingRecoveriesDTO.getChallengeValue());
+                            targetMap.put("2.逾期清理", targetSettingRecoveriesDTO.getTargetValue());
+                            guaranteedMap.put("2.逾期清理", targetSettingRecoveriesDTO.getGuaranteedValue());
+                        case 3:
+                            challengeMap.put("3.提前回款", targetSettingRecoveriesDTO.getChallengeValue());
+                            targetMap.put("3.提前回款", targetSettingRecoveriesDTO.getTargetValue());
+                            guaranteedMap.put("3.提前回款", targetSettingRecoveriesDTO.getGuaranteedValue());
+                    }
+                }
+            }
+            challengeMap.put("期末应收账款余额", salesRevenueChallenge);
+            targetMap.put("期末应收账款余额", salesRevenueTarget);
+            guaranteedMap.put("期末应收账款余额", salesRevenueGuaranteed);
+            challengeMap.put("回款总目标", totalChallenge);
+            targetMap.put("回款总目标", totalTarget);
+            guaranteedMap.put("回款总目标", totalGuaranteed);
+            targetSettingRecoveriesExcel.setTargetMap(targetMap);
+            targetSettingRecoveriesExcel.setChallengeMap(challengeMap);
+            targetSettingRecoveriesExcel.setGuaranteedMap(guaranteedMap);
+            targetSettingRecoveriesExcel.setDSO(DSO);
+            targetSettingRecoveriesExcel.setTargetYear(targetSetting.getTargetYear());
+            targetSettingRecoveriesExcels.add(targetSettingRecoveriesExcel);
         }
-        return null;
+        if (StringUtils.isNotEmpty(historyYears)) {
+            for (Integer historyYear : historyYears) {
+                TargetSettingRecoveriesExcel targetSettingRecoveriesExcel = new TargetSettingRecoveriesExcel();
+                Map<String, BigDecimal> challengeMap = new HashMap<>();
+                Map<String, BigDecimal> targetMap = new HashMap<>();
+                Map<String, BigDecimal> guaranteedMap = new HashMap<>();
+                challengeMap.put("1.应回尽回", BigDecimal.ZERO);
+                targetMap.put("1.应回尽回", BigDecimal.ZERO);
+                guaranteedMap.put("1.应回尽回", BigDecimal.ZERO);
+                challengeMap.put("2.逾期清理", BigDecimal.ZERO);
+                targetMap.put("2.逾期清理", BigDecimal.ZERO);
+                guaranteedMap.put("2.逾期清理", BigDecimal.ZERO);
+                challengeMap.put("3.提前回款", BigDecimal.ZERO);
+                targetMap.put("3.提前回款", BigDecimal.ZERO);
+                guaranteedMap.put("3.提前回款", BigDecimal.ZERO);
+                challengeMap.put("期末应收账款余额", BigDecimal.ZERO);
+                targetMap.put("期末应收账款余额", BigDecimal.ZERO);
+                guaranteedMap.put("期末应收账款余额", BigDecimal.ZERO);
+                challengeMap.put("回款总目标", BigDecimal.ZERO);
+                targetMap.put("回款总目标", BigDecimal.ZERO);
+                guaranteedMap.put("回款总目标", BigDecimal.ZERO);
+                targetSettingRecoveriesExcel.setTargetMap(targetMap);
+                targetSettingRecoveriesExcel.setChallengeMap(challengeMap);
+                targetSettingRecoveriesExcel.setGuaranteedMap(guaranteedMap);
+                targetSettingRecoveriesExcel.setDSO(0);
+                targetSettingRecoveriesExcel.setTargetYear(historyYear);
+                targetSettingRecoveriesExcels.add(targetSettingRecoveriesExcel);
+            }
+        }
+        return targetSettingRecoveriesExcels;
     }
 
     /**

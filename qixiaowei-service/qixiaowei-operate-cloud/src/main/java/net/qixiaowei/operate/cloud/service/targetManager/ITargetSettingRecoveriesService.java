@@ -101,16 +101,20 @@ public interface ITargetSettingRecoveriesService {
      * @return 结果
      */
     int deleteTargetSettingRecoveriesByTargetSettingRecoveriesId(Long targetSettingRecoveriesId);
+
     /**
-    * 导入Excel
-    * @param list
-    */
+     * 导入Excel
+     *
+     * @param list
+     */
     void importTargetSettingRecoveries(List<TargetSettingRecoveriesExcel> list);
+
     /**
-    * 导出Excel
-    * @param targetSettingRecoveriesDTO
-    * @return
-    */
+     * 导出Excel
+     *
+     * @param targetSettingRecoveriesDTO
+     * @return
+     */
     List<TargetSettingRecoveriesExcel> exportTargetSettingRecoveries(TargetSettingRecoveriesDTO targetSettingRecoveriesDTO);
 
     /**
@@ -120,4 +124,11 @@ public interface ITargetSettingRecoveriesService {
      * @return
      */
     List<TargetSettingRecoveriesDTO> selectTargetSettingRecoveriesByTargetSettingId(Long targetSettingId);
+
+    /**
+     * 根据目标制定ID集合查找目标汇款详情表
+     *
+     * @param targetSettingIds
+     */
+    List<TargetSettingRecoveriesDTO> selectTargetSettingRecoveriesByTargetSettingIds(List<Long> targetSettingIds);
 }

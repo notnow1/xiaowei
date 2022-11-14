@@ -60,6 +60,14 @@ public class TargetOutcomeDetailsDTO {
      */
     private BigDecimal actualTotal;
     /**
+     * 目标值
+     */
+    private BigDecimal targetValue;
+    /**
+     * 目标完成率（%）
+     */
+    private BigDecimal targetCompletionRate;
+    /**
      * 一月实际值
      */
     private BigDecimal actualJanuary;

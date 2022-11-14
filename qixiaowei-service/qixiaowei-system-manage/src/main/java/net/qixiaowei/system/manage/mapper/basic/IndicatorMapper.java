@@ -180,4 +180,12 @@ public interface IndicatorMapper {
      * @return
      */
     List<IndicatorDTO> selectIndicatorByIds(@Param("indicatorIds") List<Long> indicatorIds);
+
+    /**
+     * 通过指标名称获取指标列表
+     *
+     * @param indicatorNames
+     * @return
+     */
+    List<IndicatorDTO> selectIndicatorByNames(@Param("indicatorNames") List<String> indicatorNames);
 }

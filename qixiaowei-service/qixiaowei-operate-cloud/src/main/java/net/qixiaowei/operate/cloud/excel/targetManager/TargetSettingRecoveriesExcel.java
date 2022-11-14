@@ -9,6 +9,7 @@ import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * 目标制定回款集合表
@@ -72,6 +73,37 @@ public class TargetSettingRecoveriesExcel {
     @ExcelIgnore
     @ExcelProperty("删除标记:0未删除;1已删除")
     private Integer deleteFlag;
+    /**
+     * 目标年度
+     */
+    @ExcelIgnore
+    @ExcelProperty("目标年度")
+    private Integer targetYear;
+    /**
+     * DSO（应收账款周转天数）
+     */
+    @ExcelIgnore
+    @ExcelProperty("DSO（应收账款周转天数）")
+    private Integer DSO;
+    /**
+     * 挑战值
+     */
+    @ExcelIgnore
+    @ExcelProperty("挑战值")
+    private Map<String, BigDecimal> challengeMap;
+    /**
+     * 目标值
+     */
+    @ExcelIgnore
+    @ExcelProperty("目标值")
+    private Map<String, BigDecimal> targetMap;
+    /**
+     * 保底值
+     */
+    @ExcelIgnore
+    @ExcelProperty("保底值")
+    private Map<String, BigDecimal> guaranteedMap;
+
 
 }
 

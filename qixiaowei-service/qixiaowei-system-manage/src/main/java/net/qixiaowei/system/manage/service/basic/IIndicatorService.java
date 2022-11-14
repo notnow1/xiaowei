@@ -157,4 +157,11 @@ public interface IIndicatorService {
      */
     List<IndicatorDTO> selectIndicatorByIds(List<Long> indicatorIds);
 
+    /**
+     * 通过指标名称获取指标内容
+     *
+     * @param indicatorNames 指标名称集合
+     * @return
+     */
+    List<IndicatorDTO> selectIndicatorByNames(List<String> indicatorNames);
 }

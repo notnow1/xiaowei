@@ -222,6 +222,21 @@
         </foreach>
         ORDER BY sort ASC
     </select>
+    <!--通过指标ID集合和年份查找-->
+    <select id="selectTargetSettingByIndicators"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage,
+        challenge_value,target_value, guaranteed_value,sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM target_setting
+        WHERE delete_flag=0
+        AND target_year = #{targetYear}
+        AND indicator_id
+        IN
+        <foreach collection="indicatorIds" open="(" close=")" item="item" index="index" separator=",">
+            #{item}
+        </foreach>
+    </select>
     <!--新增目标制定-->
     <insert id="insertTargetSetting" useGeneratedKeys="true" keyProperty="targetSettingId">
         INSERT INTO target_setting
