@@ -142,4 +142,12 @@ public interface TargetSettingMapper {
      * @return
      */
     List<TargetSettingDTO> selectTargetSettingByYears(@Param("targetSetting") TargetSettingDTO targetSetting, @Param("historyYears") List<Integer> historyYears);
+
+    /**
+     * 通过指标ID集合和年份查找
+     * @param indicatorIds
+     * @param targetYear
+     * @return
+     */
+    List<TargetSettingDTO> selectTargetSettingByIndicators(@Param("indicatorIds") List<Long> indicatorIds, @Param("targetYear") Integer targetYear);
 }

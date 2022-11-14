@@ -56,4 +56,11 @@ public class RemoteIndicator implements RemoteIndicatorService {
     public R<List<IndicatorDTO>> selectIndicatorByIds(@RequestBody List<Long> indicatorIds, String source) {
         return R.ok(indicatorService.selectIndicatorByIds(indicatorIds));
     }
+
+    @Override
+    @InnerAuth
+    @PostMapping("/listByNames")
+    public R<List<IndicatorDTO>> selectIndicatorByNames(@RequestBody List<String> indicatorNames, String source) {
+        return R.ok(indicatorService.selectIndicatorByNames(indicatorNames));
+    }
 }

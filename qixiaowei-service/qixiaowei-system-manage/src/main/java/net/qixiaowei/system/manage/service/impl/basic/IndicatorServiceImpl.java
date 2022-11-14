@@ -353,6 +353,17 @@ public class IndicatorServiceImpl implements IIndicatorService {
     }
 
     /**
+     * 通过指标名称集合获取指标列表
+     *
+     * @param indicatorNames 指标名称集合
+     * @return
+     */
+    @Override
+    public List<IndicatorDTO> selectIndicatorByNames(List<String> indicatorNames) {
+        return indicatorMapper.selectIndicatorByNames(indicatorNames);
+    }
+
+    /**
      * 逻辑删除指标表信息
      *
      * @param indicatorId 指标表

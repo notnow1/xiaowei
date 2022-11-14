@@ -7,9 +7,11 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingRecoveriesExcel;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -94,9 +96,9 @@ public interface ITargetSettingService {
     /**
      * 导入Excel
      *
-     * @param list
+     * @param targetSettingExcelMaps
      */
-    void importTargetSetting(List<TargetSettingExcel> list);
+    void importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps);
 
     /**
      * 导出Excel
@@ -185,7 +187,7 @@ public interface ITargetSettingService {
      * @param targetSettingDTO
      * @return
      */
-    List<TargetSettingIncomeExcel> exportRecoveryTargetSetting(TargetSettingDTO targetSettingDTO);
+    List<TargetSettingRecoveriesExcel> exportRecoveryTargetSetting(TargetSettingDTO targetSettingDTO);
 
     /**
      * 获取指标列表

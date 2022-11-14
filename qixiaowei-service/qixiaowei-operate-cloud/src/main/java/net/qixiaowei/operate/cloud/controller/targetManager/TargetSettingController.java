@@ -2,7 +2,6 @@ package net.qixiaowei.operate.cloud.controller.targetManager;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
@@ -14,19 +13,14 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
-import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
-import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingImportListener;
-import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingIncomeExcel;
-import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingOrderExcel;
+import net.qixiaowei.operate.cloud.excel.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -135,14 +129,12 @@ public class TargetSettingController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        InputStream inputStream;
         try {
-            TargetSettingImportListener importListener = new TargetSettingImportListener(targetSettingService);
-            inputStream = new BufferedInputStream(file.getInputStream());
-            ExcelReaderBuilder builder = EasyExcel.read(inputStream, TargetSettingExcel.class, importListener);
-            builder.doReadAll();
+            TargetSettingImportListener<TargetSettingExcel> listener = new TargetSettingImportListener<>(1);
+            Map<String, List<TargetSettingExcel>> targetSettingExcelMaps = listener.getData(file.getInputStream(), TargetSettingExcel.class);
+            targetSettingService.importTargetSetting(targetSettingExcelMaps);
         } catch (IOException e) {
-            throw new ServiceException("导入目标制定Excel失败");
+            logger.error("导出失败");
         }
         return AjaxResult.success("操作成功");
     }
@@ -282,15 +274,17 @@ public class TargetSettingController extends BaseController {
     @SneakyThrows
     @GetMapping("/export/recovery")
     public void exportRecovery(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
-        List<TargetSettingIncomeExcel> targetSettingExcelList = targetSettingService.exportRecoveryTargetSetting(targetSettingDTO);
+        List<List<String>> head = TargetSettingImportListener.head();
+        List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcels = targetSettingService.exportRecoveryTargetSetting(targetSettingDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("销售收入目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+        String fileName = URLEncoder.encode("销售回款目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetSettingIncomeExcel.class)
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .sheet("销售收入目标制定").doWrite(targetSettingExcelList);
+        EasyExcel.write(response.getOutputStream())
+                .head(head)
+                .sheet("销售回款目标制定")// 设置 sheet 的名字
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())// 自适应列宽
+                .doWrite(TargetSettingImportListener.dataList(targetSettingRecoveriesExcels));
     }
 }

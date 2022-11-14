@@ -6,6 +6,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -108,8 +109,9 @@ public interface ITargetOutcomeService {
      * 导入Excel
      *
      * @param list
+     * @param targetOutcomeId
      */
-    void importTargetOutcome(List<TargetOutcomeExcel> list);
+    void importTargetOutcome(Map<String, List<Map<Integer,String> >> list, Long targetOutcomeId);
 
     /**
      * 导出Excel

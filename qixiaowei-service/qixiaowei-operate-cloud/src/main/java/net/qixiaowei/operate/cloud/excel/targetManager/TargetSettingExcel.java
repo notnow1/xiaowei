@@ -54,6 +54,11 @@ public class TargetSettingExcel {
     @ExcelProperty("指标名称")
     private String indicatorName;
     /**
+     * 指标ID
+     */
+    @ExcelProperty("指标编码")
+    private String indicatorCode;
+    /**
      * 目标年度
      */
     @ExcelIgnore
