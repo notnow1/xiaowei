@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM harbor.qixiaowei.net/library/openjdk:8-jdk-alpine-qxw
 MAINTAINER qixiaowei
 
 ENV PARAMS="--server.port=8080"
