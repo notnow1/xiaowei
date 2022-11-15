@@ -142,6 +142,14 @@ public class EmployeeDTO {
     private  String permanentAddressName;
 
     /**
+     * 岗位编码
+     */
+    private  String postCode;
+    /**
+     * 部门编码
+     */
+    private  String departmentCode;
+    /**
     * 员工部门ID
     */
     @NotNull(message = "员工部门不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})

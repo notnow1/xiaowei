@@ -1,23 +1,21 @@
 package net.qixiaowei.system.manage.excel.basic;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.alibaba.excel.write.handler.WriteHandler;
-import com.alibaba.excel.write.metadata.style.WriteCellStyle;
-import com.alibaba.excel.write.metadata.style.WriteFont;
-import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -28,20 +26,36 @@ import java.util.*;
 @Data
 @RequiredArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel> {
+public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, String>> {
 
     /**
      * 默认每隔3000条存储数据库
      */
     private int batchCount = 3000;
+
+    /**
+     * 用户service
+     */
+    private final IEmployeeService employeeService;
     /**
      * 缓存的数据列表
      */
     private List<EmployeeExcel> list = new ArrayList<>();
     /**
-     * 用户service
+     * 解析数据(多sheet使用)
+     * key是sheetName，value是相应sheet的解析数据
      */
-    private final IEmployeeService employeeService;
+    private final Map<String, List<Map<Integer, String>>> dataMap = new HashMap<>();
+
+    /**
+     * excle所有数据(单sheet使用)
+     */
+    private final List<Map<Integer, String>> listMap = new ArrayList<>();
+    /**
+     * 日志
+     */
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     public static List<List<String>> head(Map<Integer, List<String>> selectMap) {
         List<List<String>> list = new ArrayList<List<String>>();
@@ -157,43 +171,37 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
         // 第二十一列
         List<String> head20 = new ArrayList<String>();
         head20.add("员工联系信息");
-        head20.add("手机*");
+        head20.add("邮箱");
         head20.add("文本录入");
 
         // 第二十二列
         List<String> head21 = new ArrayList<String>();
         head21.add("员工联系信息");
-        head21.add("邮箱");
+        head21.add("微信");
         head21.add("文本录入");
-
         // 第二十三列
         List<String> head22 = new ArrayList<String>();
         head22.add("员工联系信息");
-        head22.add("微信");
-        head22.add("文本录入");
+        head22.add("通信地址");
+        head22.add("文本录入，XX省XX市XX区（县）");
+
         // 第二十四列
         List<String> head23 = new ArrayList<String>();
         head23.add("员工联系信息");
-        head23.add("通信地址");
-        head23.add("文本录入，XX省XX市XX区（县）");
+        head23.add("紧急联系人姓名");
+        head23.add("文本录入");
 
         // 第二十五列
         List<String> head24 = new ArrayList<String>();
         head24.add("员工联系信息");
-        head24.add("紧急联系人姓名");
+        head24.add("紧急联系人电话");
         head24.add("文本录入");
 
         // 第二十六列
         List<String> head25 = new ArrayList<String>();
         head25.add("员工联系信息");
-        head25.add("紧急联系人电话");
+        head25.add("详细通信地址");
         head25.add("文本录入");
-
-        // 第二十八列
-        List<String> head26 = new ArrayList<String>();
-        head26.add("员工联系信息");
-        head26.add("详细通信地址");
-        head26.add("文本录入");
 
         list.add(head0);
         list.add(head1);
@@ -221,7 +229,6 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
         list.add(head23);
         list.add(head24);
         list.add(head25);
-        list.add(head26);
         return list;
     }
 
@@ -238,34 +245,8 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
             String s = EmployeeImportListener.packData(i);
             data.add(s);
             if (i<employeeExcelList.size()){
-                //工号
-                data.add(employeeExcelList.get(i).getEmployeeCode());
-                //姓名
-                data.add(employeeExcelList.get(i).getEmployeeName());
-                //用工关系状态
-                data.add(employeeExcelList.get(i).getEmploymentStatus());
-                //性别
-                data.add(employeeExcelList.get(i).getEmployeeGender());
-                //身份证号码
-                data.add(employeeExcelList.get(i).getIdentityCard());
-                //出生日期
-                data.add(employeeExcelList.get(i).getEmployeeBirthday());
-                //婚姻状况
-                data.add(employeeExcelList.get(i).getMaritalStatus());
-                //国籍
-                data.add(employeeExcelList.get(i).getNationalityName());
-                //民族
-                data.add(employeeExcelList.get(i).getNationName());
-                //户口所在地名称
-                data.add(employeeExcelList.get(i).getResidentCityName());
-                //参保地名称
-                data.add(employeeExcelList.get(i).getInsuredCityName());
-                //常住地名称
-                data.add(employeeExcelList.get(i).getPermanentAddressName());
-                //入职日期
-                data.add(employeeExcelList.get(i).getEmploymentDate());
-                //离职日期
-                data.add(employeeExcelList.get(i).getDepartureDate());
+
+                ExcelUtils.packList(employeeExcelList.get(i),data);
             }
             list.add(data);
         }
@@ -330,9 +311,23 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
         sheet.addValidationData(dataValidation);
 
     }
+
+
+
+
+
     @Override
-    public void invoke(EmployeeExcel data, AnalysisContext context) {
-        list.add(data);
+    public void invoke(Map<Integer, String> map, AnalysisContext analysisContext) {
+        listMap.add(map);
+    }
+
+
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+        logger.info("Excel解析完成");
+        EmployeeExcel employeeExcel = new EmployeeExcel();
+        ExcelUtils.mapToListModel(3,1,listMap,employeeExcel,list);
         // 达到BATCH_COUNT，则调用importer方法入库，防止数据几万条数据在内存，容易OOM
         if (list.size() >= batchCount) {
             // 调用importer方法
@@ -340,42 +335,12 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
             // 存储完成清理list
             list.clear();
         }
+        //防止重复执行
+        if (StringUtils.isNotEmpty(list)){
+            // 调用importer方法
+            employeeService.importEmployee(list);
+            // 存储完成清理list
+            list.clear();
+        }
     }
-
-    @Override
-    public void doAfterAllAnalysed(AnalysisContext analysisContext) {
-        // 调用importer方法
-        employeeService.importEmployee(list);
-        // 存储完成清理list
-        list.clear();
-    }
-
-    /***
-     * 设置 excel 的样式
-     * @return
-     */
-    public static WriteHandler createTableStyle() {
-        // 头的策略
-        WriteCellStyle headWriteCellStyle = new WriteCellStyle();
-        // 设置字体
-        WriteFont headWriteFont = new WriteFont();
-        headWriteFont.setFontHeightInPoints((short) 10);
-        headWriteCellStyle.setWriteFont(headWriteFont);
-        // 内容的策略
-        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
-        // 这里需要指定 FillPatternType 为FillPatternType.SOLID_FOREGROUND 不然无法显示背景颜色.头默认了 FillPatternType所以可以不指定
-        contentWriteCellStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
-        WriteFont contentWriteFont = new WriteFont();
-        // 字体大小
-        contentWriteFont.setFontHeightInPoints((short) 10);
-        contentWriteCellStyle.setWriteFont(contentWriteFont);
-
-
-        // 这个策略是 头是头的样式 内容是内容的样式 其他的策略可以自己实现
-        HorizontalCellStyleStrategy horizontalCellStyleStrategy =
-                new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
-        return horizontalCellStyleStrategy;
-    }
-
-
 }

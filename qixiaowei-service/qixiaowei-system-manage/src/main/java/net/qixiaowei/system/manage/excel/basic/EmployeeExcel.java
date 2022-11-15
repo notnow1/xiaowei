@@ -10,11 +10,14 @@ import com.alibaba.excel.annotation.write.style.ContentRowHeight;
 import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.ToString;
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -30,14 +33,37 @@ import java.util.Date;
 @HeadRowHeight(20)
 @ContentRowHeight(18)
 public class EmployeeExcel {
+    public EmployeeExcel() {
+    }
 
-    private static final long serialVersionUID = 1L;
+    public EmployeeExcel(String employeeCode, String employeeName, String employmentStatus, String employeeGender, String identityCard, String employeeBirthday, String maritalStatus, String nationalityName, String nationName, String residentCityName, String insuredCityName, String permanentAddressName, String employmentDate, String departureDate, String postCode, String departmentCode, String employeeRankName, String employeeBasicWage, String employeeMobile, String employeeEmail, String wechatCode, String contactAddress, String emergencyContact, String emergencyMobile, String contactAddressDetail) {
+        this.employeeCode = employeeCode;
+        this.employeeName = employeeName;
+        this.employmentStatus = employmentStatus;
+        this.employeeGender = employeeGender;
+        this.identityCard = identityCard;
+        this.employeeBirthday = employeeBirthday;
+        this.maritalStatus = maritalStatus;
+        this.nationalityName = nationalityName;
+        this.nationName = nationName;
+        this.residentCityName = residentCityName;
+        this.insuredCityName = insuredCityName;
+        this.permanentAddressName = permanentAddressName;
+        this.employmentDate = employmentDate;
+        this.departureDate = departureDate;
+        this.postCode = postCode;
+        this.departmentCode = departmentCode;
+        this.employeeRankName = employeeRankName;
+        this.employeeBasicWage = employeeBasicWage;
+        this.employeeMobile = employeeMobile;
+        this.employeeEmail = employeeEmail;
+        this.wechatCode = wechatCode;
+        this.contactAddress = contactAddress;
+        this.emergencyContact = emergencyContact;
+        this.emergencyMobile = emergencyMobile;
+        this.contactAddressDetail = contactAddressDetail;
+    }
 
-    /**
-     * ID
-     */
-    @ExcelIgnore
-    private Long employeeId;
     /**
      * 工号
      */
@@ -59,11 +85,6 @@ public class EmployeeExcel {
     @ExcelIgnore
     @ExcelProperty("性别")
     private String employeeGender;
-    /**
-     * 证件类型
-     */
-    @ExcelIgnore
-    private Integer identityType;
     /**
      * 证件号码
      */
@@ -120,11 +141,62 @@ public class EmployeeExcel {
     @ExcelIgnore
     private  String departureDate;
     /**
+     * 岗位编码
+     */
+    @ExcelIgnore
+    private  String postCode;
+    /**
+     * 部门编码
+     */
+    @ExcelIgnore
+    private  String departmentCode;
+    /**
+     * 个人职级
+     */
+    @ExcelIgnore
+    private  String employeeRankName;
+
+    /**
+     * 员工基本工资
+     */
+    @ExcelIgnore
+    @JsonFormat(shape =JsonFormat.Shape.STRING)
+    private String employeeBasicWage;
+    /**
      * 员工手机号
      */
     @ExcelIgnore
-    @ExcelProperty("员工手机号")
-    private String employeeMobile;
+    private  String employeeMobile;
+
+    /**
+     * 员工邮箱
+     */
+    @ExcelIgnore
+    private  String employeeEmail;
+    /**
+     * 微信号
+     */
+    @ExcelIgnore
+    private  String wechatCode;
+    /**
+     * 通信地址
+     */
+    @ExcelIgnore
+    private  String contactAddress;
+    /**
+     * 紧急联系人
+     */
+    @ExcelIgnore
+    private  String emergencyContact;
+    /**
+     * 紧急联系人电话
+     */
+    @ExcelIgnore
+    private  String emergencyMobile;
+    /**
+     * 通信地址详情
+     */
+    private  String contactAddressDetail;
 
 }
 

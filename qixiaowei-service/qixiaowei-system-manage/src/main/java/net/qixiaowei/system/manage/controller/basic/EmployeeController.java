@@ -62,14 +62,13 @@ public class EmployeeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        InputStream inputStream;
         try {
-            EmployeeImportListener importListener = new EmployeeImportListener(employeeService);
-            inputStream = new BufferedInputStream(file.getInputStream());
-            ExcelReaderBuilder builder = EasyExcel.read(inputStream, EmployeeExcel.class, importListener);
-            builder.doReadAll();
+            //构建读取器
+            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+            read.sheet()
+                    .registerReadListener(new EmployeeImportListener(employeeService)).doRead();
         } catch (IOException e) {
-            throw new ServiceException("导入人员Excel失败");
+            throw new ServiceException("导入关键经营结果Excel失败");
         }
         return AjaxResult.success("操作成功");
     }
