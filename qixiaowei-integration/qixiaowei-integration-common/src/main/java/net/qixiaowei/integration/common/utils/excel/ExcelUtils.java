@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author TANGMICHI
+ * @date 2022/11/15
+ */
 public class ExcelUtils {
     /**
      * 将实体类转换为list
