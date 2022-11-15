@@ -32,7 +32,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
         </dependency>
-
+        <!-- Alibaba EasyExcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
         <!-- Spring Web -->
         <dependency>
             <groupId>org.springframework</groupId>

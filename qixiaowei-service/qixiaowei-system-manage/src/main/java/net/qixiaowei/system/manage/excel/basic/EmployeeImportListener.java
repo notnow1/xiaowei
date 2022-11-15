@@ -103,56 +103,57 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
         // 第十一列
         List<String> head10 = new ArrayList<String>();
         head10.add("员工基本信息");
-        head10.add("民族");
-        head10.add("文本录入，若不填写，系统默认为汉族");
+        head10.add("户口所在地");
+        head10.add("文本录入，XX省XX市");
         // 第十二列
         List<String> head11 = new ArrayList<String>();
         head11.add("员工基本信息");
-        head11.add("户口所在地");
+        head11.add("参保地");
         head11.add("文本录入，XX省XX市");
         // 第十三列
         List<String> head12 = new ArrayList<String>();
         head12.add("员工基本信息");
-        head12.add("参保地");
+        head12.add("常住地");
         head12.add("文本录入，XX省XX市");
         // 第十四列
         List<String> head13 = new ArrayList<String>();
         head13.add("员工基本信息");
-        head13.add("常住地");
-        head13.add("文本录入，XX省XX市");
+        head13.add("入职日期*");
+        head13.add("文本录入，格式：YYYY/MM/DD");
         // 第十五列
         List<String> head14 = new ArrayList<String>();
         head14.add("员工基本信息");
-        head14.add("入职日期*");
-        head14.add("文本录入，格式：YYYY/MM/DD");
+        head14.add("离职日期");
+        head14.add("文本录入，用工关系状态为离职时，该字段才生效，格式：YYYY/MM/DD");
+
         // 第十六列
         List<String> head15 = new ArrayList<String>();
-        head15.add("员工基本信息");
-        head15.add("离职日期");
-        head15.add("文本录入，用工关系状态为离职时，该字段才生效，格式：YYYY/MM/DD");
-
+        head15.add("员工任职信息");
+        head15.add("部门编码*");
+        head15.add("文本录入");
         // 第十七列
         List<String> head16 = new ArrayList<String>();
         head16.add("员工任职信息");
-        head16.add("部门编码*");
+        head16.add("岗位编码*");
         head16.add("文本录入");
+
         // 第十八列
         List<String> head17 = new ArrayList<String>();
         head17.add("员工任职信息");
-        head17.add("岗位编码*");
+        head17.add("个人职级");
         head17.add("文本录入");
 
         // 第十九列
         List<String> head18 = new ArrayList<String>();
         head18.add("员工任职信息");
-        head18.add("个人职级");
-        head18.add("文本录入");
-
+        head18.add("基本工资");
+        head18.add("文本录入，金额保留两位小数");
         // 第二十列
         List<String> head19 = new ArrayList<String>();
-        head19.add("员工任职信息");
-        head19.add("基本工资");
-        head19.add("文本录入，金额保留两位小数");
+        head19.add("员工联系信息");
+        head19.add("手机*");
+        head19.add("文本录入");
+
         // 第二十一列
         List<String> head20 = new ArrayList<String>();
         head20.add("员工联系信息");
@@ -162,43 +163,37 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
         // 第二十二列
         List<String> head21 = new ArrayList<String>();
         head21.add("员工联系信息");
-        head21.add("手机*");
+        head21.add("邮箱");
         head21.add("文本录入");
 
         // 第二十三列
         List<String> head22 = new ArrayList<String>();
         head22.add("员工联系信息");
-        head22.add("邮箱");
+        head22.add("微信");
         head22.add("文本录入");
-
         // 第二十四列
         List<String> head23 = new ArrayList<String>();
         head23.add("员工联系信息");
-        head23.add("微信");
-        head23.add("文本录入");
+        head23.add("通信地址");
+        head23.add("文本录入，XX省XX市XX区（县）");
+
         // 第二十五列
         List<String> head24 = new ArrayList<String>();
         head24.add("员工联系信息");
-        head24.add("通信地址");
-        head24.add("文本录入，XX省XX市XX区（县）");
+        head24.add("紧急联系人姓名");
+        head24.add("文本录入");
 
         // 第二十六列
         List<String> head25 = new ArrayList<String>();
         head25.add("员工联系信息");
-        head25.add("紧急联系人姓名");
+        head25.add("紧急联系人电话");
         head25.add("文本录入");
 
-        // 第二十七列
+        // 第二十八列
         List<String> head26 = new ArrayList<String>();
         head26.add("员工联系信息");
-        head26.add("紧急联系人电话");
+        head26.add("详细通信地址");
         head26.add("文本录入");
-
-        // 第二十八列
-        List<String> head27 = new ArrayList<String>();
-        head27.add("员工联系信息");
-        head27.add("详细通信地址");
-        head27.add("文本录入");
 
         list.add(head0);
         list.add(head1);
@@ -227,7 +222,6 @@ public class EmployeeImportListener extends AnalysisEventListener<EmployeeExcel>
         list.add(head24);
         list.add(head25);
         list.add(head26);
-        list.add(head27);
         return list;
     }
 

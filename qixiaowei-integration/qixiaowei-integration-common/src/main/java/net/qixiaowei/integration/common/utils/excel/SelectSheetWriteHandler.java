@@ -1,15 +1,15 @@
-package net.qixiaowei.system.manage.excel.basic;
- 
+package net.qixiaowei.integration.common.utils.excel;
+
 import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
- 
+
 import java.util.List;
 import java.util.Map;
- 
+
 /**
  * @author 
  * @date 2021/12/20
@@ -76,6 +76,8 @@ public class SelectSheetWriteHandler implements SheetWriteHandler {
             validation.createErrorBox("提示", "此值与单元格定义格式不一致！");
             // 添加下拉框约束
             writeSheetHolder.getSheet().addValidationData(validation);
+            //隐藏字典sheet
+            workbook.setSheetVisibility(1,SheetVisibility.HIDDEN);
         }
     }
  

@@ -1,25 +1,20 @@
 package net.qixiaowei.system.manage.controller.basic;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.alibaba.excel.write.metadata.WriteSheet;
-import com.alibaba.excel.write.metadata.WriteTable;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.row.SimpleRowHeightStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
-import net.qixiaowei.system.manage.excel.basic.SelectSheetWriteHandler;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
