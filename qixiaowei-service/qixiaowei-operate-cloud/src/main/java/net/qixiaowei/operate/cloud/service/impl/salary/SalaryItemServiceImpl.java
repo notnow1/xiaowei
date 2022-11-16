@@ -225,10 +225,9 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      */
     @Override
     public List<SalaryItemExcel> exportSalaryExcel(SalaryItemDTO salaryItemDTO) {
-        Integer isSelect = salaryItemDTO.getIsSelect();
         List<SalaryItemDTO> salaryItemDTOList;
-        if (isSelect.equals(1)) {
-            List<Long> salaryItemIds = salaryItemDTO.getSelectSalaryItem();
+        List<Long> salaryItemIds = salaryItemDTO.getSelectSalaryItem();
+        if (StringUtils.isNotEmpty(salaryItemIds)) {
             salaryItemDTOList = salaryItemMapper.getSalaryItemByIds(salaryItemIds);
         } else {
             SalaryItem salaryItem = new SalaryItem();
