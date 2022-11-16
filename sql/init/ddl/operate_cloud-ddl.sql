@@ -426,3 +426,108 @@ CREATE TABLE target_outcome_details(
     update_time TIMESTAMP    COMMENT '更新时间' ,
     PRIMARY KEY (target_outcome_details_id)
 )  COMMENT = '目标结果详情表';
+
+
+CREATE TABLE employee_budget(
+    employee_budget_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    budget_year INT NOT NULL   COMMENT '预算年度' ,
+    department_id BIGINT NOT NULL   COMMENT '预算部门ID' ,
+    official_rank_system_id BIGINT NOT NULL   COMMENT '职级体系ID' ,
+    budget_cycle TINYINT NOT NULL   COMMENT '预算周期:1季度;2月度' ,
+    amount_last_year INT    COMMENT '上年期末人数' ,
+    amount_adjust INT    COMMENT '本年新增人数' ,
+    amount_average_adjust DECIMAL(10,3)    COMMENT '平均新增数' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (employee_budget_id)
+)  COMMENT = '人力预算表';
+
+
+CREATE TABLE employee_budget_details(
+    employee_budget_details_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    employee_budget_id BIGINT NOT NULL   COMMENT '人力预算ID' ,
+    official_rank INT    COMMENT '岗位职级' ,
+    number_last_year INT    COMMENT '上年期末人数' ,
+    count_adjust INT    COMMENT '本年新增人数' ,
+    average_adjust DECIMAL(10,3)    COMMENT '平均新增数' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (employee_budget_details_id)
+)  COMMENT = '人力预算明细表';
+
+
+CREATE TABLE employee_budget_adjusts(
+    employee_budget_adjusts_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    employee_budget_details_id BIGINT NOT NULL   COMMENT '人力预算明细ID' ,
+    cycle_number INT    COMMENT '周期数(顺序递增)' ,
+    number_adjust INT    COMMENT '调整人数' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (employee_budget_adjusts_id)
+)  COMMENT = '人力预算调整表';
+
+
+CREATE TABLE emolument_plan(
+    emolument_plan_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year INT NOT NULL   COMMENT '预算年度' ,
+    revenue_before_one DECIMAL(14,2)    COMMENT '预算年前一年销售收入' ,
+    revenue DECIMAL(14,2)    COMMENT '预算年销售收入' ,
+    revenue_after_one DECIMAL(14,2)    COMMENT '预算年后一年销售收入' ,
+    revenue_after_two DECIMAL(14,2)    COMMENT '预算年后二年销售收入' ,
+    er_before_one DECIMAL(14,2)    COMMENT '预算年前一年E/R值(%)' ,
+    emolument_revenue_improve DECIMAL(14,2)    COMMENT '预算年E/R值改进率(%)' ,
+    er_improve_after_one DECIMAL(14,2)    COMMENT '预算年后一年E/R值改进率(%)' ,
+    er_improve_after_two DECIMAL(14,2)    COMMENT '预算年后二年E/R值改进率(%)' ,
+    emolument_package_before_one DECIMAL(14,2)    COMMENT '预算年前一年总薪酬包' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (emolument_plan_id)
+)  COMMENT = '薪酬规划表';
+
+
+CREATE TABLE salary_pay(
+    salary_pay_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    employee_id BIGINT NOT NULL   COMMENT '员工ID' ,
+    pay_year INT NOT NULL   COMMENT '发薪年份' ,
+    pay_month INT NOT NULL   COMMENT '发薪月份' ,
+    salary_amount DECIMAL(18,2)    COMMENT '工资金额' ,
+    allowance_amount DECIMAL(18,2)    COMMENT '津贴金额' ,
+    welfare_amount DECIMAL(18,2)    COMMENT '福利金额' ,
+    bonus_amount DECIMAL(18,2)    COMMENT '奖金金额' ,
+    withhold_remit_tax DECIMAL(18,2)    COMMENT '代扣代缴金额' ,
+    other_deductions DECIMAL(18,2)    COMMENT '其他扣款金额' ,
+    pay_amount DECIMAL(18,2)    COMMENT '发薪金额' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (salary_pay_id)
+)  COMMENT = '工资发薪表';
+
+
+CREATE TABLE salary_pay_details(
+    salary_pay_details_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    salary_pay_id BIGINT NOT NULL   COMMENT '工资发薪ID' ,
+    salary_item_id BIGINT NOT NULL   COMMENT '工资项ID' ,
+    amount DECIMAL(18,2)    COMMENT '金额(单位/元)' ,
+    sort INT    COMMENT '排序' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (salary_pay_details_id)
+)  COMMENT = '工资发薪明细表';
