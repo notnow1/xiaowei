@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -117,9 +118,9 @@ public class TargetSettingController extends BaseController {
     }
 
     /**
-     * 导入目标制定
+     * 解析目标制定
      */
-    @PostMapping("/import")
+    @PostMapping("/excelParseObject")
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
     public AjaxResult importEmployee(MultipartFile file) {
         String filename = file.getOriginalFilename();
@@ -132,11 +133,11 @@ public class TargetSettingController extends BaseController {
         try {
             TargetSettingImportListener<TargetSettingExcel> listener = new TargetSettingImportListener<>(1);
             Map<String, List<TargetSettingExcel>> targetSettingExcelMaps = listener.getData(file.getInputStream(), TargetSettingExcel.class);
-            targetSettingService.importTargetSetting(targetSettingExcelMaps);
+            List<TargetSettingDTO> targetSettingDTOS = targetSettingService.importTargetSetting(targetSettingExcelMaps);
+            return AjaxResult.success(targetSettingDTOS);
         } catch (IOException e) {
-            logger.error("导出失败");
+            throw new RuntimeException("导出失败");
         }
-        return AjaxResult.success("操作成功");
     }
 
     /**
@@ -147,6 +148,7 @@ public class TargetSettingController extends BaseController {
     @GetMapping("/export")
     public void export(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
         List<List<TargetSettingExcel>> targetSettingExcelList = targetSettingService.exportTargetSetting(targetSettingDTO);
+//        List<List<String>> head = TargetSettingImportListener.head();
         try {
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding(CharsetKit.UTF_8);
@@ -159,6 +161,28 @@ public class TargetSettingController extends BaseController {
                 WriteSheet sheet = EasyExcel.writerSheet(i, targetYear + "年").head(TargetSettingExcel.class).build();
                 excelWriter.write(targetSettingExcelList.get(i), sheet);
             }
+            excelWriter.finish();
+        } catch (IOException e) {
+            throw new ServiceException("导出失败");
+        }
+    }
+
+    /**
+     * 导出目标制定模板
+     */
+    @SneakyThrows
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @GetMapping("/export-template")
+    public void exportTemplate(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        try {
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding(CharsetKit.UTF_8);
+            String fileName = URLEncoder.encode("经营云-关键经营目标制定导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                    , CharsetKit.UTF_8);
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
+            WriteSheet sheet = EasyExcel.writerSheet(0, "关键经营目标制定").head(TargetSettingExcel.class).build();
+            excelWriter.write(new ArrayList<>(), sheet);
             excelWriter.finish();
         } catch (IOException e) {
             throw new ServiceException("导出失败");
@@ -274,7 +298,7 @@ public class TargetSettingController extends BaseController {
     @SneakyThrows
     @GetMapping("/export/recovery")
     public void exportRecovery(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
-        List<List<String>> head = TargetSettingImportListener.head();
+        List<List<String>> headRecovery = TargetSettingImportListener.headRecovery();
         List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcels = targetSettingService.exportRecoveryTargetSetting(targetSettingDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
@@ -282,7 +306,7 @@ public class TargetSettingController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
-                .head(head)
+                .head(headRecovery)
                 .sheet("销售回款目标制定")// 设置 sheet 的名字
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())// 自适应列宽
                 .doWrite(TargetSettingImportListener.dataList(targetSettingRecoveriesExcels));

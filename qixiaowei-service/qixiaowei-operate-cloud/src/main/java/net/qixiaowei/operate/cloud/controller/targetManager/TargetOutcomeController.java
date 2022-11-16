@@ -1,7 +1,9 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -13,6 +15,8 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeImportListener;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
@@ -24,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -84,10 +89,10 @@ public class TargetOutcomeController extends BaseController {
     }
 
     /**
-     * 导入目标结果表
+     * 解析目标结果表
      */
-    @PostMapping("import")
-    public AjaxResult importTargetOutcome(Long targetOutSettingId, MultipartFile file) {
+    @PostMapping("excelParseObject")
+    public AjaxResult importTargetOutcome(Long targetOutSettingId, MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -95,15 +100,14 @@ public class TargetOutcomeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        try {
-            //构建读取器
-            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-            read.sheet()
-                    .registerReadListener(new TargetOutcomeImportListener(targetOutSettingId, targetOutcomeService)).doRead();
-        } catch (IOException e) {
-            throw new ServiceException("导入关键经营结果Excel失败");
-        }
-        return AjaxResult.success("操作成功");
+
+        ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+        List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
+//        //构建读取器
+        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetOutcomeId(targetOutSettingId);
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.importTargetOutcome(targetSettingExcelList, targetOutSettingId);
+        targetOutcomeDTO.setTargetOutcomeDetailsDTOList(targetOutcomeDetailsDTOList);
+        return AjaxResult.success(targetOutcomeDTO);
     }
 
     /**
@@ -124,5 +128,28 @@ public class TargetOutcomeController extends BaseController {
                 .sheet("关键经营结果")// 设置 sheet 的名字
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())                // 自适应列宽
                 .doWrite(TargetOutcomeImportListener.dataList(targetOutcomeExcelList));//
+    }
+
+    /**
+     * 导出目标结果模板
+     */
+    @SneakyThrows
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @GetMapping("/export-template")
+    public void exportTemplate(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        try {
+            List<List<String>> headTemplate = TargetOutcomeImportListener.headTemplate();
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding(CharsetKit.UTF_8);
+            String fileName = URLEncoder.encode("关键经营结果导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                    , CharsetKit.UTF_8);
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
+            WriteSheet sheet = EasyExcel.writerSheet(0, "Sheet1").head(headTemplate).build();
+            excelWriter.write(new ArrayList<>(), sheet);
+            excelWriter.finish();
+        } catch (IOException e) {
+            throw new ServiceException("导出失败");
+        }
     }
 }

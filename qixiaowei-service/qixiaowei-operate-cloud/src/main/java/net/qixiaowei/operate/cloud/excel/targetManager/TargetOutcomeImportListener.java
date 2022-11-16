@@ -5,6 +5,7 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,6 @@ public class TargetOutcomeImportListener extends AnalysisEventListener<Map<Integ
 
     private final ITargetOutcomeService targetOutcomeService;
 
-
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
         String sheetName = context.readSheetHolder().getSheetName();
@@ -56,8 +56,100 @@ public class TargetOutcomeImportListener extends AnalysisEventListener<Map<Integ
     @Override
     public void doAfterAllAnalysed(AnalysisContext analysisContext) {
         logger.info("Excel解析完成");
-        targetOutcomeService.importTargetOutcome(dataMap,targetOutcomeId);
     }
+
+    /**
+     * 创建导入模板表头，可以创建复杂的表头
+     *
+     * @return2
+     */
+    public static List<List<String>> headTemplate() {
+        List<List<String>> list = new ArrayList<List<String>>();
+        // 第一列
+        List<String> head0 = new ArrayList<String>();
+        head0.add("关键指标");
+        // 第二列
+        List<String> head1 = new ArrayList<String>();
+        head1.add("实际值");
+        head1.add("1月");
+        // 第二列
+        List<String> head2 = new ArrayList<String>();
+        head2.add("实际值");
+        head2.add("2月");
+        // 第二列
+        List<String> head3 = new ArrayList<String>();
+        head3.add("实际值");
+        head3.add("3月");
+        // 第二列
+        List<String> head4 = new ArrayList<String>();
+        head4.add("实际值");
+        head4.add("4月");
+        // 第三列
+        List<String> head5 = new ArrayList<String>();
+        head5.add("实际值");
+        head5.add("5月");
+        // 第四列
+        List<String> head6 = new ArrayList<String>();
+        head6.add("实际值");
+        head6.add("6月");
+        // 第五列
+        List<String> head7 = new ArrayList<String>();
+        head7.add("实际值");
+        head7.add("7月");
+        // 第六列
+        List<String> head8 = new ArrayList<String>();
+        head8.add("实际值");
+        head8.add("8月");
+        // 第七列
+        List<String> head9 = new ArrayList<String>();
+        head9.add("实际值");
+        head9.add("9月");
+        // 第七列
+        List<String> head10 = new ArrayList<String>();
+        head10.add("实际值");
+        head10.add("10月");
+        // 第七列
+        List<String> head11 = new ArrayList<String>();
+        head11.add("实际值");
+        head11.add("11月");
+        int month = DateUtils.getMonth();
+        list.add(head0);
+        if (month > 1) {
+            list.add(head1);
+        }
+        if (month > 2) {
+            list.add(head2);
+        }
+        if (month > 3) {
+            list.add(head3);
+        }
+        if (month > 4) {
+            list.add(head4);
+        }
+        if (month > 5) {
+            list.add(head5);
+        }
+        if (month > 6) {
+            list.add(head6);
+        }
+        if (month > 7) {
+            list.add(head7);
+        }
+        if (month > 8) {
+            list.add(head8);
+        }
+        if (month > 9) {
+            list.add(head9);
+        }
+        if (month > 10) {
+            list.add(head10);
+        }
+        if (month > 11) {
+            list.add(head11);
+        }
+        return list;
+    }
+
 
     /**
      * 创建表头，可以创建复杂的表头
@@ -126,22 +218,44 @@ public class TargetOutcomeImportListener extends AnalysisEventListener<Map<Integ
         List<String> head15 = new ArrayList<String>();
         head15.add("实际值");
         head15.add("12月");
+        int month = DateUtils.getMonth();
         list.add(head0);
         list.add(head1);
         list.add(head2);
         list.add(head3);
-        list.add(head4);
-        list.add(head5);
-        list.add(head6);
-        list.add(head7);
-        list.add(head8);
-        list.add(head9);
-        list.add(head10);
-        list.add(head11);
-        list.add(head12);
-        list.add(head13);
-        list.add(head14);
-        list.add(head15);
+        if (month > 1) {
+            list.add(head4);
+        }
+        if (month > 2) {
+            list.add(head5);
+        }
+        if (month > 3) {
+            list.add(head6);
+        }
+        if (month > 4) {
+            list.add(head7);
+        }
+        if (month > 5) {
+            list.add(head8);
+        }
+        if (month > 6) {
+            list.add(head9);
+        }
+        if (month > 7) {
+            list.add(head10);
+        }
+        if (month > 8) {
+            list.add(head11);
+        }
+        if (month > 9) {
+            list.add(head12);
+        }
+        if (month > 10) {
+            list.add(head13);
+        }
+        if (month > 11) {
+            list.add(head14);
+        }
         return list;
     }
 
@@ -163,30 +277,55 @@ public class TargetOutcomeImportListener extends AnalysisEventListener<Map<Integ
             data.add(targetOutcomeExcel.getTargetValue());
             // 目标完成率（%）
             data.add(targetOutcomeExcel.getTargetCompletionRate());
-            // 1月
-            data.add(targetOutcomeExcel.getActualJanuary());
-            // 2月
-            data.add(targetOutcomeExcel.getActualFebruary());
-            // 3月
-            data.add(targetOutcomeExcel.getActualMarch());
-            // 4月
-            data.add(targetOutcomeExcel.getActualApril());
-            // 5月
-            data.add(targetOutcomeExcel.getActualMay());
-            // 6月
-            data.add(targetOutcomeExcel.getActualJune());
-            // 7月
-            data.add(targetOutcomeExcel.getActualJuly());
-            // 8月
-            data.add(targetOutcomeExcel.getActualAugust());
-            // 9月
-            data.add(targetOutcomeExcel.getActualSeptember());
-            // 10月
-            data.add(targetOutcomeExcel.getActualOctober());
-            // 11月
-            data.add(targetOutcomeExcel.getActualNovember());
-            // 12月
-            data.add(targetOutcomeExcel.getActualDecember());
+            int month = DateUtils.getMonth();
+            if (month > 1) {
+                // 1月
+                data.add(targetOutcomeExcel.getActualJanuary());
+            }
+            if (month > 2) {
+                // 2月
+                data.add(targetOutcomeExcel.getActualFebruary());
+            }
+            if (month > 3) {
+                // 3月
+                data.add(targetOutcomeExcel.getActualMarch());
+            }
+            if (month > 4) {
+                // 4月
+                data.add(targetOutcomeExcel.getActualApril());
+            }
+            if (month > 5) {
+                // 5月
+                data.add(targetOutcomeExcel.getActualMay());
+            }
+            if (month > 6) {
+                // 6月
+                data.add(targetOutcomeExcel.getActualJune());
+            }
+            if (month > 7) {
+                // 7月
+                data.add(targetOutcomeExcel.getActualJuly());
+            }
+            if (month > 8) {
+                // 8月
+                data.add(targetOutcomeExcel.getActualAugust());
+            }
+            if (month > 9) {
+                // 9月
+                data.add(targetOutcomeExcel.getActualSeptember());
+            }
+            if (month > 10) {
+                // 10月
+                data.add(targetOutcomeExcel.getActualOctober());
+            }
+            if (month > 11) {
+                // 11月
+                data.add(targetOutcomeExcel.getActualNovember());
+            }
+            if (month > 13) {
+                // 12月
+                data.add(targetOutcomeExcel.getActualDecember());
+            }
             list.add(data);
         }
         return list;

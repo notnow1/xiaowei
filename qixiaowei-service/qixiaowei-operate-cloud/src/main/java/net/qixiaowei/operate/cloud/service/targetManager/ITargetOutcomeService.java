@@ -108,10 +108,10 @@ public interface ITargetOutcomeService {
     /**
      * 导入Excel
      *
-     * @param list
+     * @param dataList
      * @param targetOutcomeId
      */
-    void importTargetOutcome(Map<String, List<Map<Integer,String> >> list, Long targetOutcomeId);
+    List<TargetOutcomeDetailsDTO> importTargetOutcome(List<Map<Integer, String>> dataList, Long targetOutcomeId);
 
     /**
      * 导出Excel

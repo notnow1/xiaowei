@@ -819,32 +819,38 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param targetSettingExcelMaps EXCEL MAP
      */
     @Override
-    public void importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps) {
-        for (String sheetName : targetSettingExcelMaps.keySet()) {
-            List<TargetSettingDTO> targetSettingDTOS = new ArrayList<>();
-            List<TargetSettingExcel> targetSettingExcelList = targetSettingExcelMaps.get(sheetName);
-            List<String> indicatorCodes = new ArrayList<>();
-            List<IndicatorDTO> indicatorDTOS = getIndicatorByCodes(targetSettingExcelList, indicatorCodes);
-            for (TargetSettingExcel targetSettingExcel : targetSettingExcelList) {
-                String indicatorCode = targetSettingExcel.getIndicatorCode();
-                TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
-                BeanUtils.copyProperties(targetSettingExcel, targetSettingDTO);
-                targetSettingDTO.setCreateBy(SecurityUtils.getUserId());
-                targetSettingDTO.setCreateTime(DateUtils.getNowDate());
-                targetSettingDTO.setUpdateTime(DateUtils.getNowDate());
-                targetSettingDTO.setUpdateBy(SecurityUtils.getUserId());
-                targetSettingDTO.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                targetSettingDTO.setTargetYear(Integer.valueOf(sheetName.split("年")[0]));
-                for (IndicatorDTO indicatorDTO : indicatorDTOS) {
-                    if (indicatorDTO.getIndicatorCode().equals(indicatorCode)) {
-                        targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
-                        break;
-                    }
+    public List<TargetSettingDTO> importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps) {
+        List<TargetSettingExcel> targetSettingExcelList = targetSettingExcelMaps.get("关键经营目标制定");
+        List<TargetSettingDTO> targetSettingDTOS = new ArrayList<>();
+        List<String> indicatorCodes = new ArrayList<>();
+        List<IndicatorDTO> indicatorDTOS = getIndicatorByCodes(targetSettingExcelList, indicatorCodes);
+        TargetSetting targetSetting = new TargetSetting();
+        targetSetting.setTargetYear(2023);
+        List<TargetSettingDTO> targetSettingDTOBefore = targetSettingMapper.selectTargetSettingList(targetSetting);
+        for (TargetSettingExcel targetSettingExcel : targetSettingExcelList) {
+            String indicatorCode = targetSettingExcel.getIndicatorCode();
+            TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
+            BeanUtils.copyProperties(targetSettingExcel, targetSettingDTO);
+            Long indicatorId = null;
+            for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+                if (indicatorDTO.getIndicatorCode().equals(indicatorCode)) {
+                    indicatorId = indicatorDTO.getIndicatorId();
+                    targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
+                    targetSettingDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+                    break;
                 }
-                targetSettingDTOS.add(targetSettingDTO);
             }
-            saveTargetSettings(targetSettingDTOS);
+            targetSettingDTOS.add(targetSettingDTO);
         }
+        for (TargetSettingDTO targetSettingDTO : targetSettingDTOS) {
+            Long indicatorId = targetSettingDTO.getIndicatorId();
+            for (TargetSettingDTO settingDTO : targetSettingDTOBefore) {
+                if (StringUtils.isNotNull(indicatorId) && settingDTO.getIndicatorId().equals(indicatorId)) {
+                    targetSettingDTO.setTargetSettingId(settingDTO.getTargetSettingId());
+                }
+            }
+        }
+        return targetSettingDTOS;
     }
 
     /**
@@ -857,6 +863,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     private List<IndicatorDTO> getIndicatorByCodes(List<TargetSettingExcel> targetSettingExcelList, List<String> indicatorCodes) {
         for (TargetSettingExcel targetSettingExcel : targetSettingExcelList) {
             String indicatorCode = targetSettingExcel.getIndicatorCode();
+            if (indicatorCodes.contains(indicatorCode)) {
+                throw new ServiceException("指标编码重复，请检查");
+            }
             if (StringUtils.isNull(indicatorCode)) {
                 throw new ServiceException("指标编码不能为空");
             }
@@ -897,6 +906,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 TargetSettingExcel targetSettingExcel = new TargetSettingExcel();
                 targetSettingExcel.setTargetYear(targetYear);
                 targetSettingExcel.setIndicatorName(settingDTO.getIndicatorName());
+                targetSettingExcel.setIndicatorCode(settingDTO.getIndicatorCode());
                 targetSettingExcel.setChallengeValue(settingDTO.getChallengeValue());
                 targetSettingExcel.setTargetValue(settingDTO.getTargetValue());
                 targetSettingExcel.setGuaranteedValue(settingDTO.getGuaranteedValue());
@@ -1505,6 +1515,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             Long targetSettingId = targetSettingByIndicator.getTargetSettingId();
             BigDecimal percentage = targetSettingByIndicator.getPercentage();
             TargetSettingRecoveryDTO recoveryDTO = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
+            if (StringUtils.isNull(recoveryDTO)) {
+                recoveryDTO = new TargetSettingRecoveryDTO();
+            }
             recoveryDTO.setAddRate(percentage);
             List<Map<String, Object>> recoveryList = setRecoveryList(zero, recoveryDTO);
             targetSettingByIndicator.setTargetSettingRecoveryList(recoveryList);

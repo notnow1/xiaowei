@@ -86,7 +86,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
      *
      * @return2
      */
-    public static List<List<String>> head() {
+    public static List<List<String>> headRecovery() {
         List<List<String>> list = new ArrayList<List<String>>();
         // 目标年度
         List<String> head0 = new ArrayList<String>();
