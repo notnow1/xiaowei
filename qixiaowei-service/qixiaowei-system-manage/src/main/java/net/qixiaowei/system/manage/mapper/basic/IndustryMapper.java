@@ -157,4 +157,12 @@ public interface IndustryMapper {
      * @return
      */
     List<Integer> getLevelList();
+
+    /**
+     * 根据code集合查询行业信息
+     * @return
+     * @param industryCodes
+     */
+    List<IndustryDTO> selectCodeList(@Param("industryCodes") List<String> industryCodes);
+
 }

@@ -444,5 +444,15 @@ public class IndustryServiceImpl implements IIndustryService {
     public List<Integer> getLevel() {
         return industryMapper.getLevelList();
     }
+
+    /**
+     * 根据code集合查询行业信息
+     * @param industryCodes
+     * @return
+     */
+    @Override
+    public List<IndustryDTO> selectCodeList(List<String> industryCodes) {
+        return industryMapper.selectCodeList(industryCodes);
+    }
 }
 

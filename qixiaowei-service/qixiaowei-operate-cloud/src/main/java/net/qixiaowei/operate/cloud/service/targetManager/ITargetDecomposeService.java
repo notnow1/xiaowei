@@ -3,7 +3,9 @@ package net.qixiaowei.operate.cloud.service.targetManager;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -274,6 +276,12 @@ public interface ITargetDecomposeService {
      * @param list
      */
     void importTargetDecompose(List<TargetDecomposeExcel> list);
+    /**
+     * 解析Excel
+     *
+     * @param file
+     */
+    TargetDecomposeDTO  excelParseObject(MultipartFile file);
 
     /**
      * 目标分解(销售订单)导出列表Excel

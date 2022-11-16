@@ -160,4 +160,11 @@ public interface ProductMapper {
      * @return
      */
     List<ProductDTO> selectProductQuote(@Param("productId") Long productId);
+
+    /**
+     * 根据产品code集合查询产品数据
+     * @param productCodes
+     * @return
+     */
+    List<ProductDTO> selectProductByProductCodes(@Param("productCodes")List<String> productCodes);
 }

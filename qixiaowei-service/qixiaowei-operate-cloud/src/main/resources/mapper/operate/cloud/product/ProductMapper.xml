@@ -217,6 +217,11 @@
         where p.product_id = #{productId}
         and p.delete_flag = 0
     </select>
+<!--    根据产品code集合查询产品数据-->
+    <select id="selectProductByProductCodes"
+            resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+
+    </select>
     <!--新增产品表-->
     <insert id="insertProduct" useGeneratedKeys="true" keyProperty="productId">
         INSERT INTO product

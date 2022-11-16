@@ -32,6 +32,13 @@ public interface IEmployeeService{
     */
     List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO);
     /**
+     * 根据code查询员工表列表
+     *
+     * @param employeeCodes code集合
+     * @return 员工表集合
+     */
+    List<EmployeeDTO> selectCodeList(List<String> employeeCodes);
+    /**
      * 查询员工单条信息
      *
      * @param employeeDTO 员工表

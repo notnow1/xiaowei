@@ -73,6 +73,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return employeeMapper.selectEmployeeList(employee);
     }
 
+    /**
+     * 根据code查询员工表列表
+     * @param employeeCodes code集合
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> selectCodeList(List<String> employeeCodes) {
+        return employeeMapper.selectCodeList(employeeCodes);
+    }
 
 
     /**

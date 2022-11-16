@@ -158,4 +158,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectEmployeeByIdCards(@Param("identityCards")List<String> identityCards);
+
+    /**
+     * 根据code查询员工表列表
+     * @param employeeCodes
+     * @return
+     */
+    List<EmployeeDTO> selectCodeList(@Param("employeeCodes")List<String> employeeCodes);
 }

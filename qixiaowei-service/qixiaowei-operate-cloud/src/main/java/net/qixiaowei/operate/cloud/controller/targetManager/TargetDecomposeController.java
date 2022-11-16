@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
@@ -11,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import lombok.SneakyThrows;
-import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
@@ -25,9 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -404,10 +400,31 @@ public class TargetDecomposeController extends BaseController {
     }
 
     /**
-     * 目标分解(销售订单)导入列表Excel
+     * 目标分解导出列表模板Excel
      */
-    @PostMapping("import")
-    public AjaxResult importTargetDecompose(MultipartFile file) {
+    @SneakyThrows
+    @GetMapping("/export-template")
+    public void importTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
+        //自定义表头
+        List<List<String>> head = TargetDecomposeImportListener.headTemplate(targetDecomposeDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("自定义目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+
+        EasyExcel.write(response.getOutputStream())
+                .head(head)// 设置表头
+                .sheet("自定义目标分解详情")// 设置 sheet 的名字
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(new ArrayList<>());
+    }
+    /**
+     * 解析Excel
+     */
+    @PostMapping("/excelParseObject")
+    public AjaxResult excelParseObject(MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -415,15 +432,7 @@ public class TargetDecomposeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        InputStream inputStream;
-        try {
-            TargetDecomposeImportListener importListener = new TargetDecomposeImportListener(targetDecomposeService);
-            inputStream = new BufferedInputStream(file.getInputStream());
-            ExcelReaderBuilder builder = EasyExcel.read(inputStream, TargetDecomposeExcel.class, importListener);
-            builder.doReadAll();
-        } catch (IOException e) {
-            throw new ServiceException("导入目标分解(销售订单)表Excel失败");
-        }
+        targetDecomposeService.excelParseObject(file);
         return AjaxResult.success("操作成功");
     }
 

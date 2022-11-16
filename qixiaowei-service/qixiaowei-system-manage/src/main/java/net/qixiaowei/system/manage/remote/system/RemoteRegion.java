@@ -10,10 +10,7 @@ import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.service.system.IRegionService;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -34,6 +31,14 @@ public class RemoteRegion implements RemoteRegionService {
     @GetMapping("/getRegionsByIds")
     public R<List<RegionDTO>> getRegionsByIds(@RequestParam("regionIds") Set<Long> regionIds, String source) {
         return R.ok(regionService.getRegionsByIds(regionIds));
+    }
+
+
+    @Override
+    @InnerAuth
+    @PostMapping("/codeList")
+    public R<List<RegionDTO>> selectCodeList(List<String> regionNames, String source) {
+        return R.ok(regionService.selectCodeList(regionNames));
     }
 
 }

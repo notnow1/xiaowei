@@ -155,4 +155,11 @@ public interface IDepartmentService {
      * @return
      */
     List<DepartmentDTO> selectDepartmentByDepartmentIds(List<Long> departmentIds);
+
+    /**
+     * 根据code查询部门集合
+     * @param departmentCodes
+     * @return
+     */
+    List<DepartmentDTO> selectCodeList(List<String> departmentCodes);
 }

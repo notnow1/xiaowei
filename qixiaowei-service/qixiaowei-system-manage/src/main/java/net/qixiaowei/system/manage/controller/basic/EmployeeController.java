@@ -68,7 +68,7 @@ public class EmployeeController extends BaseController {
             read.sheet()
                     .registerReadListener(new EmployeeImportListener(employeeService)).doRead();
         } catch (IOException e) {
-            throw new ServiceException("导入关键经营结果Excel失败");
+            throw new ServiceException("导入人员信息配置Excel失败");
         }
         return AjaxResult.success("操作成功");
     }

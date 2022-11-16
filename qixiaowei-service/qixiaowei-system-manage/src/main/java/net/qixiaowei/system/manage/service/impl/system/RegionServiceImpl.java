@@ -168,6 +168,16 @@ public class RegionServiceImpl implements IRegionService {
     }
 
     /**
+     * 根据省份名称集合获取省份信息
+     * @param regionNames
+     * @return
+     */
+    @Override
+    public List<RegionDTO> selectCodeList(List<String> regionNames) {
+        return regionMapper.selectCodeList(regionNames);
+    }
+
+    /**
      * 逻辑删除区域表信息
      *
      * @param regionDTO 区域表

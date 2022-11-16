@@ -153,4 +153,11 @@ public interface IIndustryService {
      * @return
      */
     List<Integer> getLevel();
+
+    /**
+     * 根据code集合查询行业信息
+     * @param departmentCodes
+     * @return
+     */
+    List<IndustryDTO> selectCodeList(List<String> departmentCodes);
 }

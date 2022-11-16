@@ -76,6 +76,21 @@
         FROM area
         WHERE delete_flag = 0
     </select>
+<!--    根据code集合判断是否存在-->
+    <select id="selectAreaListByAreaCodes"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO">
+        SELECT area_id, area_code, area_name, region_ids, region_names, delete_flag, create_by, create_time, update_by,
+        update_time
+        FROM area
+        WHERE area_code
+        IN
+        <foreach item="item"
+                 collection="areaCodes"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND delete_flag = 0
+    </select>
     <!--新增区域表-->
     <insert id="insertArea" useGeneratedKeys="true" keyProperty="areaId">
         INSERT INTO area

@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.api.dto.basic;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
@@ -22,8 +23,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 */
 @Data
 @Accessors(chain = true)
-public class EmployeeDTO {
-
+public class EmployeeDTO implements Serializable{
+    private static final long serialVersionUID = 1L;
     //查询检验
     public interface QueryEmployeeDTO extends Default{
 

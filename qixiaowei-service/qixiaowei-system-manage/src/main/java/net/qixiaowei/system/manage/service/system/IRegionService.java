@@ -135,4 +135,11 @@ public interface IRegionService {
      * @return 结果
      */
     int deleteRegionByRegionId(Long regionId);
+
+    /**
+     * 根据省份名称集合获取省份信息
+     * @param regionNames
+     * @return
+     */
+    List<RegionDTO> selectCodeList(List<String> regionNames);
 }

@@ -123,4 +123,11 @@ public interface RegionMapper {
      * @return 区域表
      */
     List<RegionDTO> selectRegionByLevel(@Param("level") Integer level);
+
+    /**
+     * 根据省份名称集合获取省份信息
+     * @param regionNames
+     * @return
+     */
+    List<RegionDTO> selectCodeList(@Param("regionNames") List<String> regionNames);
 }

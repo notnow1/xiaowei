@@ -114,6 +114,14 @@ public interface AreaMapper {
     List<AreaDTO> selectAreaListByAreaIds(@Param("areaIds") List<Long> areaIds);
 
     /**
+     * 根据code集合判断是否存在
+     *
+     * @param areaCodes
+     * @return
+     */
+    List<AreaDTO> selectAreaListByAreaCodes(@Param("areaCodes") List<String> areaCodes);
+
+    /**
      * 获取地区/名称
      *
      * @param area

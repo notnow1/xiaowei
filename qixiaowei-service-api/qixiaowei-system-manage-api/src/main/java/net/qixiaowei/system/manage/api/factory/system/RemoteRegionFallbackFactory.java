@@ -26,6 +26,11 @@ public class RemoteRegionFallbackFactory implements FallbackFactory<RemoteRegion
             public R<List<RegionDTO>> getRegionsByIds(Set<Long> regionIds, String source) {
                 return R.fail("获取区域失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<RegionDTO>> selectCodeList(List<String> regionNames, String source) {
+                return R.fail("根据省份名称集合获取省份失败:" + throwable.getMessage());
+            }
         };
     }
 }
