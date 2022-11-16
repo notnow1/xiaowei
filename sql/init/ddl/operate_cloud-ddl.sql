@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS `operate-cloud`;
-CREATE DATABASE `operate-cloud` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `operate-cloud`;
+DROP DATABASE IF EXISTS `operate_cloud`;
+CREATE DATABASE `operate_cloud` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `operate_cloud`;
 SET NAMES utf8mb4;
 
 CREATE TABLE area(

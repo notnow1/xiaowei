@@ -1,4 +1,4 @@
-USE `operate-cloud`;
+USE `operate_cloud`;
 SET NAMES utf8mb4;
 
 -- ----------------------------

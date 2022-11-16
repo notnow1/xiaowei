@@ -1,4 +1,4 @@
-USE `system-manage`;
+USE `system_manage`;
 SET NAMES utf8mb4;
 
 -- ----------------------------

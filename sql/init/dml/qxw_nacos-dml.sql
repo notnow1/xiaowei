@@ -1,4 +1,4 @@
-USE `qxw-nacos`;
+USE `qxw_nacos`;
 SET NAMES utf8mb4;
 
 -- ----------------------------
