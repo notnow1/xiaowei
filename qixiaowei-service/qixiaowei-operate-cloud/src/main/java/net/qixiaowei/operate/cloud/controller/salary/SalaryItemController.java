@@ -126,7 +126,7 @@ public class SalaryItemController extends BaseController {
      * 导出用户
      */
     @SneakyThrows
-    @PostMapping("export")
+    @PostMapping("/export")
     public void export(@RequestBody SalaryItemDTO salaryItemDTO, HttpServletResponse response) {
         List<SalaryItemExcel> salaryItemExcels = salaryItemService.exportSalaryExcel(salaryItemDTO);
         response.setContentType("application/vnd.ms-excel");

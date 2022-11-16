@@ -101,7 +101,7 @@ public class EmployeeController extends BaseController {
      * 导出模板
      */
     @SneakyThrows
-    @GetMapping("export-template")
+    @GetMapping("/export-template")
     public void exportUser(HttpServletResponse response) {
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
