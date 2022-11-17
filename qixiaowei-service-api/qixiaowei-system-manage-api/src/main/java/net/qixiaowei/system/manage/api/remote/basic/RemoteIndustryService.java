@@ -6,9 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteIndustryFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,8 +30,8 @@ public interface RemoteIndustryService {
      *
      * @return 结果
      */
-    @PostMapping(API_PREFIX_INDUSTRY + "/selectById")
-    R<IndustryDTO> selectById(Long industryId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @GetMapping(API_PREFIX_INDUSTRY + "/selectById")
+    R<IndustryDTO> selectById(@RequestParam("industryId") Long industryId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过ID集合查找行业列表

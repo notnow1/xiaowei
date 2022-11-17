@@ -9,7 +9,6 @@ import net.qixiaowei.system.manage.service.basic.IIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,7 +58,9 @@ public class RemoteIndicator implements RemoteIndicatorService {
     }
 
     @Override
-    public R<IndicatorDTO> selectIndicatorById(Long indicatorId, String source) {
+    @InnerAuth
+    @GetMapping("/byId")
+    public R<IndicatorDTO> selectIndicatorById(@RequestParam Long indicatorId, String source) {
         return null;
     }
 
