@@ -280,14 +280,14 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     }
 
     /**
-     * 导入工资条
+     * 通过ID集合查找工资项
      *
-     * @param list
+     * @param salaryItemIds
      * @return
      */
     @Override
-    public void importSalaryItem(List<SalaryItemExcel> list) {
-
+    public List<SalaryItemDTO> selectSalaryItemBySalaryItemIds(List<Long> salaryItemIds) {
+        return salaryItemMapper.selectSalaryItemBySalaryItemIds(salaryItemIds);
     }
 
     /**

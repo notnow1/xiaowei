@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.SalaryPayDetailsMapper">
+    <!--    查询工资发薪明细表-->
+    <select id="selectSalaryPayDetailsBySalaryPayDetailsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
+        SELECT
+        salary_pay_details_id, salary_pay_id, salary_item_id, amount, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM salary_pay_details
+        WHERE  salary_pay_details_id=#{salaryPayDetailsId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询工资发薪明细表-->
+    <select id="selectSalaryPayDetailsBySalaryPayDetailsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
+        SELECT
+        salary_pay_details_id, salary_pay_id, salary_item_id, amount, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM salary_pay_details
+        WHERE  salary_pay_details_id in
+            <foreach item="item"
+                     collection="salaryPayDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询工资发薪明细表列表-->
+    <select id="selectSalaryPayDetailsList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
+        SELECT
+        salary_pay_details_id, salary_pay_id, salary_item_id, amount, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM salary_pay_details
+        WHERE delete_flag=0
+                <if test="salaryPayDetails.salaryPayDetailsId != null">
+                    and salary_pay_details_id=#{salaryPayDetails.salaryPayDetailsId}
+                </if>
+                <if test="salaryPayDetails.salaryPayId != null">
+                    and salary_pay_id=#{salaryPayDetails.salaryPayId}
+                </if>
+                <if test="salaryPayDetails.salaryItemId != null">
+                    and salary_item_id=#{salaryPayDetails.salaryItemId}
+                </if>
+                <if test="salaryPayDetails.amount != null">
+                    and amount=#{salaryPayDetails.amount}
+                </if>
+                <if test="salaryPayDetails.sort != null">
+                    and sort=#{salaryPayDetails.sort}
+                </if>
+                <if test="salaryPayDetails.deleteFlag != null">
+                    and delete_flag=#{salaryPayDetails.deleteFlag}
+                </if>
+                <if test="salaryPayDetails.createBy != null">
+                    and create_by=#{salaryPayDetails.createBy}
+                </if>
+                <if test="salaryPayDetails.createTime != null">
+                    and create_time=#{salaryPayDetails.createTime}
+                </if>
+                <if test="salaryPayDetails.updateBy != null">
+                    and update_by=#{salaryPayDetails.updateBy}
+                </if>
+                <if test="salaryPayDetails.updateTime != null">
+                    and update_time=#{salaryPayDetails.updateTime}
+                </if>
+    </select>
+    <!--新增工资发薪明细表-->
+    <insert id="insertSalaryPayDetails" useGeneratedKeys="true" keyProperty="salaryPayDetailsId">
+        INSERT INTO salary_pay_details (salary_pay_id,salary_item_id,amount,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{salaryPayDetails.salaryPayId},#{salaryPayDetails.salaryItemId},#{salaryPayDetails.amount},#{salaryPayDetails.sort},#{salaryPayDetails.deleteFlag},#{salaryPayDetails.createBy},#{salaryPayDetails.createTime},#{salaryPayDetails.updateBy},#{salaryPayDetails.updateTime})
+    </insert>
+    <!--修改工资发薪明细表-->
+    <update id="updateSalaryPayDetails">
+        UPDATE salary_pay_details
+        SET
+                    <if test="salaryPayDetails.salaryPayId != null">
+                        salary_pay_id=#{salaryPayDetails.salaryPayId},
+                    </if>
+                    <if test="salaryPayDetails.salaryItemId != null">
+                        salary_item_id=#{salaryPayDetails.salaryItemId},
+                    </if>
+                    <if test="salaryPayDetails.amount != null">
+                        amount=#{salaryPayDetails.amount},
+                    </if>
+                    <if test="salaryPayDetails.sort != null">
+                        sort=#{salaryPayDetails.sort},
+                    </if>
+                    <if test="salaryPayDetails.deleteFlag != null">
+                        delete_flag=#{salaryPayDetails.deleteFlag},
+                    </if>
+                    <if test="salaryPayDetails.createBy != null">
+                        create_by=#{salaryPayDetails.createBy},
+                    </if>
+                    <if test="salaryPayDetails.createTime != null">
+                        create_time=#{salaryPayDetails.createTime},
+                    </if>
+                    <if test="salaryPayDetails.updateBy != null">
+                        update_by=#{salaryPayDetails.updateBy},
+                    </if>
+                    <if test="salaryPayDetails.updateTime != null">
+                        update_time=#{salaryPayDetails.updateTime}
+                    </if>
+        WHERE
+                 salary_pay_details_id=#{salaryPayDetails.salaryPayDetailsId}
+    </update>
+    <!--逻辑删除工资发薪明细表-->
+    <update id="logicDeleteSalaryPayDetailsBySalaryPayDetailsId">
+        UPDATE salary_pay_details
+        SET     delete_flag= 1,
+                update_by=#{salaryPayDetails.updateBy},
+                update_time=#{salaryPayDetails.updateTime}
+        WHERE
+                salary_pay_details_id=#{salaryPayDetails.salaryPayDetailsId}
+    </update>
+    <!--逻辑批量删除工资发薪明细表-->
+    <update id="logicDeleteSalaryPayDetailsBySalaryPayDetailsIds">
+        UPDATE salary_pay_details
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         salary_pay_details_id IN
+            <foreach item="item"
+                     collection="salaryPayDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增工资发薪明细表-->
+    <insert id="batchSalaryPayDetails">
+        INSERT INTO salary_pay_details (salary_pay_id,salary_item_id,amount,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="salaryPayDetailss"
+                 separator=",">
+            (#{item.salaryPayId},#{item.salaryItemId},#{item.amount},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除工资发薪明细表-->
+    <delete id="deleteSalaryPayDetailsBySalaryPayDetailsId">
+        DELETE FROM salary_pay_details
+        WHERE  salary_pay_details_id=#{salaryPayDetails}
+
+    </delete>
+    <!--物理批量删除工资发薪明细表-->
+    <delete id="deleteSalaryPayDetailsBySalaryPayDetailsIds">
+        DELETE FROM salary_pay_details
+        WHERE  salary_pay_details_id IN
+            <foreach item="item"
+                     collection="salaryPayDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改工资发薪明细表-->
+    <update id="updateSalaryPayDetailss">
+        update salary_pay_details
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="salary_pay_id=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.salaryPayId != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.salaryPayId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="salary_item_id=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.salaryItemId != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.salaryItemId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="amount=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.amount != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.amount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="salaryPayDetailsList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when salary_pay_details_id=#{item.salaryPayDetailsId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="salaryPayDetailsList" separator="or" item="item" index="index">
+                    salary_pay_details_id=#{item.salaryPayDetailsId}
+        </foreach>
+    </update>
+</mapper>
+
+

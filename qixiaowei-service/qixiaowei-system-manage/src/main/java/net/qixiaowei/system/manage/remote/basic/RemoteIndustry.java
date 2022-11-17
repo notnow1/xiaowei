@@ -6,7 +6,10 @@ import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.service.basic.IIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,6 +21,7 @@ public class RemoteIndustry implements RemoteIndustryService {
 
     /**
      * 根据code集合查询行业数据
+     *
      * @param industryCodes
      * @param source
      * @return
@@ -28,4 +32,30 @@ public class RemoteIndustry implements RemoteIndustryService {
     public R<List<IndustryDTO>> selectCodeList(@RequestBody List<String> industryCodes, String source) {
         return R.ok(industryService.selectCodeList(industryCodes));
     }
+
+    /**
+     * 通过Id查找行业列表
+     *
+     * @param industryId
+     * @param source
+     * @return
+     */
+    @Override
+    public R<IndustryDTO> selectById(Long industryId, String source) {
+        return R.ok(industryService.selectIndustryByIndustryId(industryId));
+    }
+
+    /**
+     * 通过ID集合查找行业列表
+     *
+     * @param industryIds
+     * @param source
+     * @return
+     */
+    @Override
+    public R<List<IndustryDTO>> selectByIds(List<String> industryIds, String source) {
+        return R.ok(industryService.selectIndustryByIndustryIds(industryIds));
+    }
+
+
 }

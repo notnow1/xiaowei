@@ -447,12 +447,24 @@ public class IndustryServiceImpl implements IIndustryService {
 
     /**
      * 根据code集合查询行业信息
+     *
      * @param industryCodes
      * @return
      */
     @Override
     public List<IndustryDTO> selectCodeList(List<String> industryCodes) {
         return industryMapper.selectCodeList(industryCodes);
+    }
+
+    /**
+     * 通过Id集合查询行业信息
+     *
+     * @param industryIds
+     * @return
+     */
+    @Override
+    public List<IndustryDTO> selectIndustryByIndustryIds(List<String> industryIds) {
+        return industryMapper.selectIndustryByIndustryIds(industryIds);
     }
 }
 

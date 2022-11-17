@@ -6,7 +6,10 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -27,5 +30,19 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @PostMapping("/codeList")
     public R<List<EmployeeDTO>> selectCodeList(@RequestBody List<String> employeeCodes, String source) {
         return R.ok(employeeService.selectCodeList(employeeCodes));
+    }
+
+    /**
+     * 远程查询人员数据
+     *
+     * @param employeeDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/remoteList")
+    public R<List<EmployeeDTO>> selectRemoteList(@RequestBody EmployeeDTO employeeDTO, String source) {
+        return R.ok(employeeService.selectEmployeeList(employeeDTO));
     }
 }

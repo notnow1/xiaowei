@@ -119,5 +119,11 @@ public interface ISalaryItemService {
      */
     List<SalaryItemExcel> exportSalaryExcel(SalaryItemDTO salaryItemDTO);
 
-    void importSalaryItem(List<SalaryItemExcel> list);
+    /**
+     * 通过ID集合查找工资项
+     *
+     * @param salaryItemIds
+     * @return
+     */
+    List<SalaryItemDTO> selectSalaryItemBySalaryItemIds(List<Long> salaryItemIds);
 }

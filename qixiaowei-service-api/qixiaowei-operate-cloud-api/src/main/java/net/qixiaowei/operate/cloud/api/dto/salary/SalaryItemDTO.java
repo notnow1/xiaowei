@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.api.dto.salary;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.Data;
@@ -73,6 +74,10 @@ public class SalaryItemDTO {
      * 排序
      */
     private Integer sort;
+    /**
+     * 金额
+     */
+    private BigDecimal amount;
     /**
      * 删除标记:0未删除;1已删除
      */

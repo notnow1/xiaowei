@@ -160,9 +160,17 @@ public interface IndustryMapper {
 
     /**
      * 根据code集合查询行业信息
-     * @return
+     *
      * @param industryCodes
+     * @return
      */
     List<IndustryDTO> selectCodeList(@Param("industryCodes") List<String> industryCodes);
 
+    /**
+     * 通过Id集合查询行业信息
+     *
+     * @param industryIds
+     * @return
+     */
+    List<IndustryDTO> selectIndustryByIndustryIds(@Param("industryIds") List<String> industryIds);
 }

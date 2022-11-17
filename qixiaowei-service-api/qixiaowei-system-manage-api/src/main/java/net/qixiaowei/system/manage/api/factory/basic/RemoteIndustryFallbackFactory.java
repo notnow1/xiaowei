@@ -26,6 +26,16 @@ public class RemoteIndustryFallbackFactory implements FallbackFactory<RemoteIndu
             public R<List<IndustryDTO>> selectCodeList(List<String> departmentCodes, String source) {
                 return R.fail("根据code集合获取行业信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<IndustryDTO> selectById(Long industryId, String source) {
+                return R.fail("根据ID获取行业信息失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<IndustryDTO>> selectByIds(List<String> industryIds, String source) {
+                return R.fail("根据ID集合获取行业信息失败:" + throwable.getMessage());
+            }
         };
     }
 }

@@ -426,9 +426,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private void packEmployeeExcel(List<EmployeeExcel> employeeExcelList) {
         //示例数据
         EmployeeExcel employeeExcel1 = new EmployeeExcel("YG000001","张三","在职","男","123321200001011234","2000/10/10","未婚","中国"
-                                                        ,"汉族","广东省深圳市","广东省深圳市","广东省深圳市南山区","2022/10/10","2022/10/10","100"
-                                                        ,"GW001","P9","10000","13712344321","youxiang@mail.com","WX123","广东省深圳市南山区","李四",
-                                        "13799991111","广东省深圳市南山区大冲商务中心");
+                ,"汉族","广东省深圳市","广东省深圳市","广东省深圳市南山区","2022/10/10","2022/10/10","100"
+                ,"GW001","P9","10000","13712344321","youxiang@mail.com","WX123","广东省深圳市南山区","李四",
+                "13799991111","广东省深圳市南山区大冲商务中心");
         employeeExcelList.add(employeeExcel1);
 
     }

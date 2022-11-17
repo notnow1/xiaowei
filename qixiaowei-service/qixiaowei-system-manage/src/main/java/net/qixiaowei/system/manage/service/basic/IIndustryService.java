@@ -156,8 +156,17 @@ public interface IIndustryService {
 
     /**
      * 根据code集合查询行业信息
+     *
      * @param departmentCodes
      * @return
      */
     List<IndustryDTO> selectCodeList(List<String> departmentCodes);
+
+    /**
+     * 通过Id集合查询行业信息
+     *
+     * @param industryIds
+     * @return
+     */
+    List<IndustryDTO> selectIndustryByIndustryIds(List<String> industryIds);
 }

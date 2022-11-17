@@ -21,8 +21,25 @@ public interface RemoteIndustryService {
 
     /**
      * 通过Code集合查找行业列表
+     *
      * @return 结果
      */
     @PostMapping(API_PREFIX_INDUSTRY + "/codeList")
     R<List<IndustryDTO>> selectCodeList(@RequestBody List<String> industryCodes, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 通过Id查找行业列表
+     *
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_INDUSTRY + "/selectById")
+    R<IndustryDTO> selectById(Long industryId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 通过ID集合查找行业列表
+     *
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_INDUSTRY + "/selectByIds")
+    R<List<IndustryDTO>> selectByIds(@RequestBody List<String> industryIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }
