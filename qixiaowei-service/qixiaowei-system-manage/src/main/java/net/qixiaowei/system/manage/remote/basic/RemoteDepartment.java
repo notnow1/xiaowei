@@ -28,4 +28,30 @@ public class RemoteDepartment implements RemoteDepartmentService {
     public R<List<DepartmentDTO>> selectCodeList(@RequestBody List<String> departmentCodes, String source) {
         return R.ok(departmentService.selectCodeList(departmentCodes));
     }
+
+    /**
+     * 通过id查找部门信息
+     * @param departmentId
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/departmentId")
+    public R<DepartmentDTO> selectdepartmentId(Long departmentId, String source) {
+        return R.ok(departmentService.selectDepartmentByDepartmentId(departmentId));
+    }
+
+    /**
+     * 通过id集合查找部门信息
+     * @param departmentIds
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/departmentIds")
+    public R<List<DepartmentDTO>> selectdepartmentIds(@RequestBody List<Long> departmentIds, String source) {
+        return R.ok(departmentService.selectDepartmentByDepartmentIds(departmentIds));
+    }
 }

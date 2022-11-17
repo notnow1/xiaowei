@@ -4,20 +4,43 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.factory.targetManager.RemoteDecomposeFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 /**
- * 名表分解主表服务
+ * 目标分解主表服务
  */
 @FeignClient(contextId = "remoteDecomposeService", value = ServiceNameConstants.OPERATE_CLOUD_SERVICE, fallbackFactory = RemoteDecomposeFallbackFactory.class)
 public interface RemoteDecomposeService {
     /**
-     *
+     * 根据目标分解id查询目标分解数据
+     * @param targetDecomposeId
+     * @param source
+     * @return
      */
-    @PostMapping("/targetDecompose/remote/{targetDecomposeId}")
-    R<TargetDecomposeDTO> info(@PathVariable Long targetDecomposeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @GetMapping("/targetDecompose/remote/targetDecomposeId")
+    R<TargetDecomposeDTO> info(Long targetDecomposeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    /**
+     * 根据目标分解id查询目标分解数据
+     * @param targetDecomposeId
+     * @param source
+     * @return
+     */
+    @PostMapping("/targetDecompose/remote/targetDecomposeIds")
+    R<List<TargetDecomposeDTO>> selectBytargetDecomposeIds(@RequestBody  List<Long> targetDecomposeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+
+    /**
+     * 根据目标分解id查询目标分解详情数据
+     * @param targetDecomposeId
+     * @param source
+     * @return
+     */
+    @GetMapping("/targetDecompose/remote/decomposeDetails/targetDecomposeId")
+    R<List<TargetDecomposeDetailsDTO>> selectDecomposeDetailsBytargetDecomposeId(Long targetDecomposeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

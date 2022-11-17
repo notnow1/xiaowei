@@ -45,4 +45,30 @@ public class RemoteEmployee implements RemoteEmployeeService {
     public R<List<EmployeeDTO>> selectRemoteList(@RequestBody EmployeeDTO employeeDTO, String source) {
         return R.ok(employeeService.selectEmployeeList(employeeDTO));
     }
+
+    /**
+     * 通过id查找人员
+     * @param employeeId
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/employeeId")
+    public R<EmployeeDTO> selectByEmployeeId(Long employeeId, String source) {
+        return R.ok(employeeService.selectEmployeeByEmployeeId(employeeId));
+    }
+
+    /**
+     * 通过id集合查找人员列表
+     * @param employeeIds
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/employeeIds")
+    public R<List<EmployeeDTO>> selectByEmployeeIds(@RequestBody List<Long> employeeIds, String source) {
+        return R.ok(employeeService.selectEmployeeByEmployeeIds(employeeIds));
+    }
 }

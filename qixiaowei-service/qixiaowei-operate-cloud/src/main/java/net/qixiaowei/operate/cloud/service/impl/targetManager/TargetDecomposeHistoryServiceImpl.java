@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeDimensionCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.Convert;
@@ -16,6 +18,8 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeHistoryExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeHistoryService;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +45,8 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     private DecomposeDetailsSnapshotMapper decomposeDetailsSnapshotMapper;
     @Autowired
     private DetailCyclesSnapshotMapper detailCyclesSnapshotMapper;
+    @Autowired
+    private RemoteIndicatorService remoteIndicatorService;
 
     @Autowired
     private TargetDecomposeMapper targetDecomposeMapper;
@@ -66,6 +72,11 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         } else {
             TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeHistoryDTO.getTargetDecomposeId());
             if (StringUtils.isNotNull(targetDecomposeDTO)){
+                    R<IndicatorDTO> R = remoteIndicatorService.selectIndicatorById(targetDecomposeDTO.getIndicatorId(), SecurityConstants.INNER);
+                    IndicatorDTO data = R.getData();
+                    if (StringUtils.isNotNull(data)){
+                        targetDecomposeDTO.setIndicatorName(data.getIndicatorName());
+                    }
                 this.packDecompositionHistoryDimension(targetDecomposeDTO,targetDecomposeHistoryDTO);
                 String forecastCycle = this.packForecastCycle(targetDecomposeDTO);
                 targetDecomposeHistoryDTO.setForecastCycle(forecastCycle);

@@ -23,6 +23,13 @@ public interface IEmployeeService{
      * @return 员工表
      */
     EmployeeDTO selectEmployeeByEmployeeId(Long employeeId);
+    /**
+     * 根据id集合查询员工表
+     *
+     * @param employeeIds 员工表主键集合
+     * @return 员工表
+     */
+    List<EmployeeDTO> selectEmployeeByEmployeeIds(List<Long> employeeIds);
 
     /**
      * 查询员工表列表

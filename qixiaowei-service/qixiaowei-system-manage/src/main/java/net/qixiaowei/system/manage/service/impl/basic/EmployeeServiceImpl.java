@@ -60,6 +60,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return employeeMapper.selectEmployeeByEmployeeId(employeeId);
     }
 
+    @Override
+    public List<EmployeeDTO> selectEmployeeByEmployeeIds(List<Long> employeeIds) {
+        return employeeMapper.selectEmployeeByEmployeeIds(employeeIds);
+    }
+
     /**
      * 查询员工表列表
      *

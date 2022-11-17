@@ -99,6 +99,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！");
         } else {
+            R<IndicatorDTO> R = remoteIndicatorService.selectIndicatorById(targetDecomposeDTO.getIndicatorId(), SecurityConstants.INNER);
+            IndicatorDTO data = R.getData();
+            if (StringUtils.isNotNull(data)){
+                targetDecomposeDTO.setIndicatorName(data.getIndicatorName());
+            }
             this.packDecompositionDimension(targetDecomposeDTO);
         }
         //目标分解详情数据
@@ -223,6 +228,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！");
         } else {
+            R<IndicatorDTO> R = remoteIndicatorService.selectIndicatorById(targetDecomposeDTO.getIndicatorId(), SecurityConstants.INNER);
+            IndicatorDTO data = R.getData();
+            if (StringUtils.isNotNull(data)){
+                targetDecomposeDTO.setIndicatorName(data.getIndicatorName());
+            }
             this.packDecompositionDimension(targetDecomposeDTO);
             String forecastCycle = this.packForecastCycle(targetDecomposeDTO);
             targetDecomposeDTO.setForecastCycle(forecastCycle);
@@ -282,7 +292,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public TargetDecomposeDTO selectTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNotNull(targetDecomposeDTO)){
-
+            R<IndicatorDTO> R = remoteIndicatorService.selectIndicatorById(targetDecomposeDTO.getIndicatorId(), SecurityConstants.INNER);
+            IndicatorDTO data = R.getData();
+            if (StringUtils.isNotNull(data)){
+                targetDecomposeDTO.setIndicatorName(data.getIndicatorName());
+            }
         }
         return targetDecomposeDTO;
     }
@@ -294,7 +308,21 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
-        return null;
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
+        if (StringUtils.isNotEmpty(targetDecomposeDTOS)){
+            List<Long> collect = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
+                List<IndicatorDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
+                        targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+                    }
+                }
+            }
+
+        }
+        return targetDecomposeDTOS;
     }
 
     /**
@@ -531,6 +559,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public TargetDecomposeDTO packSelectTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        if (StringUtils.isNotNull(targetDecomposeDTO)){
+            R<IndicatorDTO> R = remoteIndicatorService.selectIndicatorById(targetDecomposeDTO.getIndicatorId(), SecurityConstants.INNER);
+            IndicatorDTO data = R.getData();
+            if (StringUtils.isNotNull(data)){
+                targetDecomposeDTO.setIndicatorName(data.getIndicatorName());
+            }
+        }
         this.packDecompositionDimension(targetDecomposeDTO);
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
@@ -1815,6 +1850,61 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
     }
 
+    /**
+     * 远程调用根据目标分解id查询目标分解详情数据
+     * @param targetDecomposeId
+     * @return
+     */
+    @Override
+    public List<TargetDecomposeDetailsDTO> selectTargetDecomposeDetailsByTargetDecomposeId(Long targetDecomposeId) {
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
+        this.packRemote(targetDecomposeDetailsDTOList);
+        return targetDecomposeDetailsDTOList;
+    }
+
+    /**
+     * 封装远程调用数据
+     * @param targetDecomposeDetailsDTOList
+     * @return
+     */
+    public void packRemote(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList) {
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)){
+            //人员id集合
+            List<Long> employeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getEmployeeId).collect(Collectors.toList());
+
+            //部门id集合
+            List<Long> departmentIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getDepartmentId).collect(Collectors.toList());
+
+            //省份id集合
+            List<Long> regionIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getRegionId).collect(Collectors.toList());
+
+            //行业id集合
+            List<Long> IndustryIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getIndustryId).collect(Collectors.toList());
+            //人员远程
+            if (StringUtils.isNotEmpty(employeeIdCollect)){
+                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(employeeIdCollect, SecurityConstants.INNER);
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                        targetDecomposeDetailsDTOList.get(i).setEmployeeId(data.get(i).getEmployeeId());
+                        targetDecomposeDetailsDTOList.get(i).setEmployeeName(data.get(i).getEmployeeName());
+                    }
+                }
+            }
+            //部门远程
+            if (StringUtils.isNotEmpty(departmentIdCollect)){
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(departmentIdCollect, SecurityConstants.INNER);
+                List<DepartmentDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                       targetDecomposeDetailsDTOList.get(i).setDepartmentId(data.get(i).getDepartmentId());
+                        targetDecomposeDetailsDTOList.get(i).setDepartmentName(data.get(i).getDepartmentName());
+                    }
+                }
+            }
+
+        }
+    }
     /**
      * 统一封装目标分解导出
      *

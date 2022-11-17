@@ -4,7 +4,7 @@
     <!--    查询销售订单目标分解表-->
     <select id="selectTargetDecomposeByTargetDecomposeId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
-        SELECT i.indicator_name,
+        SELECT
                IFNULL(ts.challenge_value,0) as challenge_value,
                IFNULL(ts.guaranteed_value,0) as guaranteed_value,
                IFNULL(ts.target_value,0) as target_value,
@@ -29,9 +29,6 @@
                            on td.indicator_id = ts.indicator_id
                                and td.target_year = ts.target_year
                                and ts.delete_flag = 0
-                 left join `system-manage`.indicator i
-                           on i.indicator_id = td.indicator_id
-                               and i.delete_flag = 0
         WHERE td.target_decompose_id = #{targetDecomposeId}
           and td.delete_flag = 0
     </select>

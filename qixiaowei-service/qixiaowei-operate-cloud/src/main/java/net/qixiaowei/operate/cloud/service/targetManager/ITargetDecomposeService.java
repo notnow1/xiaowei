@@ -336,4 +336,11 @@ public interface ITargetDecomposeService {
      * @return
      */
     int turnOverPrincipalEmployee(TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
+     * 根据目标分解id查询目标分解详情数据
+     * @param targetDecomposeId
+     * @return
+     */
+    List<TargetDecomposeDetailsDTO> selectTargetDecomposeDetailsByTargetDecomposeId(Long targetDecomposeId);
 }
