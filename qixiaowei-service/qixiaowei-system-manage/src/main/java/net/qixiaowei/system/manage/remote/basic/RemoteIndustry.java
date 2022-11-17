@@ -6,10 +6,7 @@ import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.service.basic.IIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,7 +39,7 @@ public class RemoteIndustry implements RemoteIndustryService {
      */
     @Override
     @InnerAuth
-    @PostMapping("/listById")
+    @GetMapping("/listById")
     public R<IndustryDTO> selectById(Long industryId, String source) {
         return R.ok(industryService.selectIndustryByIndustryId(industryId));
     }

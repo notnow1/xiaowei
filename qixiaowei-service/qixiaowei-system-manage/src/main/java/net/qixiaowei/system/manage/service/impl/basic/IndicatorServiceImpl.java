@@ -364,6 +364,17 @@ public class IndicatorServiceImpl implements IIndicatorService {
     }
 
     /**
+     * 通过ID查询指标列表
+     *
+     * @param indicatorId
+     * @return
+     */
+    @Override
+    public IndicatorDTO selectIndicatorById(Long indicatorId) {
+        return indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
+    }
+
+    /**
      * 逻辑删除指标表信息
      *
      * @param indicatorId 指标表

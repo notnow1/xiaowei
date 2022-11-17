@@ -70,7 +70,8 @@ public interface RemoteIndicatorService {
      * @return 结果
      */
     @GetMapping(API_PREFIX_INDICATOR + "/byId")
-    R<IndicatorDTO> selectIndicatorById(@RequestParam Long indicatorId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<IndicatorDTO> selectIndicatorById(Long indicatorId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
     /**
      * 通过指标名称List查找指标列表
      *
@@ -78,6 +79,6 @@ public interface RemoteIndicatorService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_INDICATOR + "/listByNames")
-    R<List<IndicatorDTO>> selectIndicatorByNames(@RequestBody List<String>indicatorNames, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<List<IndicatorDTO>> selectIndicatorByNames(@RequestBody List<String> indicatorNames, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }
