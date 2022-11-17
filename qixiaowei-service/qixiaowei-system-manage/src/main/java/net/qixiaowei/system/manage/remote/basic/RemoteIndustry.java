@@ -57,7 +57,7 @@ public class RemoteIndustry implements RemoteIndustryService {
     @Override
     @InnerAuth
     @PostMapping("/listByIds")
-    public R<List<IndustryDTO>> selectByIds(List<String> industryIds, String source) {
+    public R<List<IndustryDTO>> selectByIds(List<Long> industryIds, String source) {
         return R.ok(industryService.selectIndustryByIndustryIds(industryIds));
     }
 
