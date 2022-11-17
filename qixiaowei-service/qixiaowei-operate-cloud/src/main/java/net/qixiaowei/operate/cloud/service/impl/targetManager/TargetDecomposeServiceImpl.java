@@ -1816,13 +1816,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeExcel> packExportOrderTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
-        //excel实体类
-        TargetDecomposeExcel targetDecomposeExcel = new TargetDecomposeExcel();
         //excelList
         List<TargetDecomposeExcel> targetDecomposeExcelList = new ArrayList<>();
         List<TargetDecomposeDTO> targetDecomposeDTOList = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
         if (StringUtils.isNotEmpty(targetDecomposeDTOList)) {
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOList) {
+                //excel实体类
+                TargetDecomposeExcel targetDecomposeExcel = new TargetDecomposeExcel();
                 BeanUtils.copyProperties(decomposeDTO, targetDecomposeExcel);
                 //时间维度
                 if (1 == targetDecomposeExcel.getTimeDimension()) {
