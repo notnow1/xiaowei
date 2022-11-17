@@ -64,4 +64,17 @@ public class RemoteDecompose implements RemoteDecomposeService {
     public R<List<TargetDecomposeDetailsDTO>> selectDecomposeDetailsBytargetDecomposeId(Long targetDecomposeId, String source) {
         return R.ok(targetDecomposeService.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId));
     }
+    /**
+     * 传入实体类根据条件查询
+     * @param targetDecomposeDetailsDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/decomposeDetails/getDecomposeDetails")
+    public R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, String source) {
+        return R.ok(targetDecomposeService.getDecomposeDetails(targetDecomposeDetailsDTO));
+    }
+
 }

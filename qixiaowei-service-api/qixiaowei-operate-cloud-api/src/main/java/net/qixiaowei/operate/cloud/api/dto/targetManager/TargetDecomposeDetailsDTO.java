@@ -49,8 +49,11 @@ public class TargetDecomposeDetailsDTO {
     /**
     * 员工ID
     */
-
     private  Long employeeId;
+    /**
+     * 员工ID集合
+     */
+    private  List<Long> employeeIds;
     /**
      * 员工名称
      */
@@ -59,6 +62,10 @@ public class TargetDecomposeDetailsDTO {
     * 区域ID
     */
     private  Long areaId;
+    /**
+     * 区域ID集合
+     */
+    private  List<Long> areaIds;
     /**
      * 区域名称
      */
@@ -69,6 +76,10 @@ public class TargetDecomposeDetailsDTO {
     */
         private  Long departmentId;
     /**
+     * 部门ID集合
+     */
+    private  List<Long> departmentIds;
+    /**
      * 部门名称
      */
     private  String departmentName;
@@ -76,6 +87,10 @@ public class TargetDecomposeDetailsDTO {
     * 产品ID
     */
     private  Long productId;
+    /**
+     * 产品ID集合
+     */
+    private  List<Long> productIds;
     /**
      * 产品名称
      */
@@ -85,6 +100,10 @@ public class TargetDecomposeDetailsDTO {
     */
     private  Long regionId;
     /**
+     * 省份ID集合
+     */
+    private  List<Long> regionIds;
+    /**
      * 省份名称
      */
     private  String regionName;
@@ -92,6 +111,10 @@ public class TargetDecomposeDetailsDTO {
     * 行业ID
     */
     private  Long industryId;
+    /**
+     * 行业ID集合
+     */
+    private  List<Long> industryIds;
     /**
      * 行业名称
      */

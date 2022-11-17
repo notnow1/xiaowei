@@ -58,6 +58,11 @@ public class TargetDecomposeHistoryDTO {
     private  String indicatorName;
 
     /**
+     * 指标id
+     */
+    private  Long indicatorId;
+
+    /**
      * 分解维度
      */
     private  String decompositionDimension;
