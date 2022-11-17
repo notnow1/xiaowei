@@ -66,6 +66,10 @@ public class ProductDTO {
      */
     private String indicatorName;
     /**
+     * 指标名称
+     */
+    private Long indicatorId;
+    /**
     * 层级
     */
     @NotNull(message = "层级不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
@@ -137,7 +141,6 @@ public class ProductDTO {
      * 组织子节点信息
      */
     private List<ProductDTO> children;
-
 
 }
 

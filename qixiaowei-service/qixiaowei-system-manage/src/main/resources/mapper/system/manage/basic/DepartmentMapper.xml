@@ -362,7 +362,6 @@
     <!--    查询人员是否被部门引用-->
     <select id="deleteFlagEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
-            i.indicator_name,
             u.user_name ,
             p.post_name as employee_post_name,
             dm.department_name as employee_department_name,
@@ -395,12 +394,6 @@
                 left join `user` u
                           on u.employee_id =ee.employee_id
                               and u.delete_flag =0
-                left join `operate-cloud`.target_decompose_details tdd
-                          on ee.employee_id = tdd.employee_id
-                              and tdd.delete_flag = 0
-                left join `operate-cloud`.target_decompose td
-                          on td.target_decompose_id = tdd.target_decompose_id
-                              and td.delete_flag = 0
                 left join indicator i
                           on i.indicator_id = td.indicator_id
                               and i.delete_flag = 0

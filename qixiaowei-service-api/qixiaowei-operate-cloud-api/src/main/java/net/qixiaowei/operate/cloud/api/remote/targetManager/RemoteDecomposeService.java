@@ -43,4 +43,13 @@ public interface RemoteDecomposeService {
     @GetMapping("/targetDecompose/remote/decomposeDetails/targetDecomposeId")
     R<List<TargetDecomposeDetailsDTO>> selectDecomposeDetailsBytargetDecomposeId(Long targetDecomposeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
+    /**
+     * 传入实体类根据条件查询
+     * @param targetDecomposeDetailsDTO
+     * @param source
+     * @return
+     */
+    @PostMapping("/targetDecompose/remote/decomposeDetails/getDecomposeDetails")
+    R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(@RequestBody TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
 }

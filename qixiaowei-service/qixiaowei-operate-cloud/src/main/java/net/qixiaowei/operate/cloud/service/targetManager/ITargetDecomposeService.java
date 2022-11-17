@@ -343,4 +343,11 @@ public interface ITargetDecomposeService {
      * @return
      */
     List<TargetDecomposeDetailsDTO> selectTargetDecomposeDetailsByTargetDecomposeId(Long targetDecomposeId);
+
+    /**
+     * 传入实体类根据条件查询
+     * @param targetDecomposeDetailsDTO
+     * @return
+     */
+    List<TargetDecomposeDetailsDTO> getDecomposeDetails(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO);
 }

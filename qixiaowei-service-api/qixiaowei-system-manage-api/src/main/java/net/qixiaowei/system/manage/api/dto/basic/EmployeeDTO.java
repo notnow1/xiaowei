@@ -7,11 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -42,6 +41,15 @@ public class EmployeeDTO implements Serializable{
     public interface UpdateEmployeeDTO extends Default{
 
     }
+
+    /**
+     * 目标分解ID
+     */
+    private  Long targetDecomposeId;
+    /**
+     * 目标分解ID集合
+     */
+    private List<Long> targetDecomposeIds;
     /**
     * ID
     */

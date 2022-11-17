@@ -33,7 +33,7 @@ public class RemoteIndustryFallbackFactory implements FallbackFactory<RemoteIndu
             }
 
             @Override
-            public R<List<IndustryDTO>> selectByIds(List<String> industryIds, String source) {
+            public R<List<IndustryDTO>> selectByIds(List<Long> industryIds, String source) {
                 return R.fail("根据ID集合获取行业信息失败:" + throwable.getMessage());
             }
         };

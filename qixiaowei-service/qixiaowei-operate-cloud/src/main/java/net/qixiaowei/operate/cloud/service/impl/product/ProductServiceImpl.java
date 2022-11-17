@@ -16,7 +16,9 @@ import net.qixiaowei.operate.cloud.api.dto.product.*;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +52,8 @@ public class ProductServiceImpl implements IProductService {
     private    FileConfig fileConfig;
     @Autowired
     private RemoteDictionaryDataService remoteDictionaryDataService;
-
+    @Autowired
+    private RemoteIndicatorService remoteIndicatorService;
     /**
      * 查询产品表
      *
@@ -126,8 +129,12 @@ public class ProductServiceImpl implements IProductService {
                     R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(collect2, SecurityConstants.INNER);
                     List<DictionaryDataDTO> data = listR.getData();
                     if (StringUtils.isNotEmpty(data)){
-                        for (int i = 0; i < productDTOList.size(); i++) {
-                            productDTOList.get(i).setProductCategoryName(data.get(i).getDictionaryLabel());
+                        for (ProductDTO dto : productDTOList) {
+                            for (DictionaryDataDTO datum : data) {
+                            if (Long.valueOf(dto.getProductCategory()).equals(datum.getDictionaryDataId())){
+                                dto.setProductCategoryName(datum.getDictionaryLabel());
+                            }
+                            }
                         }
                     }
                 }
@@ -823,11 +830,21 @@ public class ProductServiceImpl implements IProductService {
         for (Long productId : productIds) {
             // todo 是否被引用
             List<ProductDTO> productDTOList = productMapper.selectProductQuote(productId);
-            String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
-            String indicatorName = productDTOList.stream().map(ProductDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
-            if (StringUtils.isNotBlank(indicatorName)){
-                decomposeErreo.append("产品"+productName+"已被目标分解"+indicatorName+"引用\n");
+            //指标名称 远程调用
+            if (StringUtils.isNotEmpty(productDTOList)){
+                List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
+
+                R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                List<IndicatorDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
+                    String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
+                    if (StringUtils.isNotBlank(indicatorName)){
+                        decomposeErreo.append("产品"+productName+"已被目标分解"+indicatorName+"引用\n");
+                    }
+                }
             }
+
         }
         productErreo.append(decomposeErreo);
         if (productErreo.length()>0){
@@ -950,10 +967,18 @@ public class ProductServiceImpl implements IProductService {
 
         //todo 是否被引用
         List<ProductDTO> productDTOList = productMapper.selectProductQuote(product.getProductId());
-        String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
-        String indicatorName = productDTOList.stream().map(ProductDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
-        if (StringUtils.isNotBlank(indicatorName)){
-            decomposeErreo.append("产品"+productName+"已被目标分解"+indicatorName+"引用\n");
+        //指标名称远程调用
+        if (StringUtils.isNotEmpty(productDTOList)){
+            List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
+            R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+            List<IndicatorDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)){
+                String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
+                String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
+                if (StringUtils.isNotBlank(indicatorName)){
+                    decomposeErreo.append("产品"+productName+"已被目标分解"+indicatorName+"引用\n");
+                }
+            }
         }
         productErreo.append(decomposeErreo);
         if (productErreo.length()>0){

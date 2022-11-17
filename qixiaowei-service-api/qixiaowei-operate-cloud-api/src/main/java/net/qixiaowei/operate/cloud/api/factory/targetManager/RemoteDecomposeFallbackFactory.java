@@ -37,6 +37,11 @@ public class RemoteDecomposeFallbackFactory implements FallbackFactory<RemoteDec
             public R<List<TargetDecomposeDetailsDTO>> selectDecomposeDetailsBytargetDecomposeId(Long targetDecomposeId, String source) {
                 return R.fail("根据目标分解id获取目标分解详细信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, String source) {
+                return R.fail("根据表字段条件获取目标分解详细信息失败:" + throwable.getMessage());
+            }
         };
     }
 }

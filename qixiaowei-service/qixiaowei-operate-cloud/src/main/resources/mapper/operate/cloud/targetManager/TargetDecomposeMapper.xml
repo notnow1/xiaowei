@@ -55,7 +55,6 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
         SELECT
         td.target_year,
-        i.indicator_name,
         td.decomposition_dimension,
         td.time_dimension,
         ts.target_value,
@@ -73,9 +72,6 @@
         and td.indicator_id = ts.indicator_id
         and ts.target_setting_type=#{targetDecompose.targetDecomposeType}
         and ts.delete_flag= 0
-        left join `system-manage`.indicator i
-        on i.indicator_id =td.indicator_id
-        and i.delete_flag =0
         WHERE td.delete_flag = 0
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
@@ -155,7 +151,6 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
         SELECT
         td.target_year,
-        i.indicator_name,
         td.decomposition_dimension,
         td.time_dimension,
         ts.target_value,
@@ -172,9 +167,6 @@
         on td.target_year = ts.target_year
         and td.indicator_id = ts.indicator_id
         and ts.delete_flag= 0
-        left join `system-manage`.indicator i
-        on i.indicator_id =td.indicator_id
-        and i.delete_flag =0
         WHERE td.delete_flag = 0
         and td.indicator_id in
         <foreach item="item"
@@ -259,7 +251,6 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
         SELECT
         td.target_year,
-        i.indicator_name,
         td.decomposition_dimension,
         td.time_dimension,
         IFNULL(ts.target_value,0) as target_value,
@@ -276,9 +267,6 @@
         on td.target_year = ts.target_year
         and td.indicator_id = ts.indicator_id
         and ts.delete_flag= 0
-        left join `system-manage`.indicator i
-        on i.indicator_id =td.indicator_id
-        and i.delete_flag =0
         WHERE td.delete_flag = 0
         and td.indicator_id in
         <foreach item="item"

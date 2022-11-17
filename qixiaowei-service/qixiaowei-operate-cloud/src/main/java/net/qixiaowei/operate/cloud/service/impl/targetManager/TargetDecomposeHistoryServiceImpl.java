@@ -18,16 +18,21 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeHistoryExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeHistoryService;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
+import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -56,7 +61,14 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     private TargetDecomposeDetailsMapper targetDecomposeDetailsMapper;
     @Autowired
     private TargetDecomposeDimensionMapper targetDecomposeDimensionMapper;
-
+    @Autowired
+    private RemoteEmployeeService remoteEmployeeService;
+    @Autowired
+    private RemoteDepartmentService remoteDepartmentService;
+    @Autowired
+    private RemoteIndustryService remoteIndustryService;
+    @Autowired
+    private RemoteRegionService remoteRegionService;
     /**
      * 查询目标分解历史版本表
      *
@@ -67,6 +79,15 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     public TargetDecomposeHistoryDTO selectTargetDecomposeHistoryByTargetDecomposeHistoryId(Long targetDecomposeHistoryId) {
         //历史目标分解主表数据
         TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
+        //指标远程调用
+        if (StringUtils.isNotNull(targetDecomposeHistoryDTO)){
+            R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorById(targetDecomposeHistoryDTO.getIndicatorId(), SecurityConstants.INNER);
+            IndicatorDTO data = indicatorDTOR.getData();
+            if (StringUtils.isNotNull(data)){
+                targetDecomposeHistoryDTO.setIndicatorName(data.getIndicatorName());
+            }
+        }
+
         if (StringUtils.isNull(targetDecomposeHistoryDTO)) {
             throw new ServiceException("数据不存在！");
         } else {
@@ -84,6 +105,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
 
         }
         List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryId(targetDecomposeHistoryId);
+        this.packHistoryRemote(decomposeDetailsSnapshotDTOS);
         if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)) {
             for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
                 //年度预测值
@@ -470,6 +492,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             //循环添加
             for (TargetDecomposeHistory targetDecomposeHistory : targetDecomposeHistories) {
                 List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+                this.packRemote(targetDecomposeDetailsDTOList);
                 if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         DecomposeDetailsSnapshot decomposeDetailsSnapshot = new DecomposeDetailsSnapshot();
@@ -484,6 +507,165 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                         decomposeDetailsSnapshots.add(decomposeDetailsSnapshot);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * 封装远程调用数据
+     * @param targetDecomposeDetailsDTOList
+     * @return
+     */
+    public void packRemote(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList) {
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)){
+            //人员id集合
+            List<Long> employeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getEmployeeId).collect(Collectors.toList());
+
+            //人员id集合滚动预测负责人
+            List<Long> principalEmployeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getPrincipalEmployeeId).collect(Collectors.toList());
+
+            //部门id集合
+            List<Long> departmentIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getDepartmentId).collect(Collectors.toList());
+
+            //省份id集合
+            Set<Long> regionIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getRegionId).collect(Collectors.toSet());
+
+            //行业id集合
+            List<Long> industryIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getIndustryId).collect(Collectors.toList());
+            //人员远程
+            if (StringUtils.isNotEmpty(employeeIdCollect)){
+                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(employeeIdCollect, SecurityConstants.INNER);
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                        targetDecomposeDetailsDTOList.get(i).setEmployeeId(data.get(i).getEmployeeId());
+                        targetDecomposeDetailsDTOList.get(i).setEmployeeName(data.get(i).getEmployeeName());
+                    }
+                }
+            }
+            //人员远程
+            if (StringUtils.isNotEmpty(principalEmployeeIdCollect)){
+                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(principalEmployeeIdCollect, SecurityConstants.INNER);
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                        targetDecomposeDetailsDTOList.get(i).setPrincipalEmployeeId(data.get(i).getEmployeeId());
+                        targetDecomposeDetailsDTOList.get(i).setPrincipalEmployeeName(data.get(i).getEmployeeName());
+                    }
+                }
+            }
+            //部门远程
+            if (StringUtils.isNotEmpty(departmentIdCollect)){
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(departmentIdCollect, SecurityConstants.INNER);
+                List<DepartmentDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                        targetDecomposeDetailsDTOList.get(i).setDepartmentId(data.get(i).getDepartmentId());
+                        targetDecomposeDetailsDTOList.get(i).setDepartmentName(data.get(i).getDepartmentName());
+                    }
+                }
+            }
+            //省份远程
+            if (StringUtils.isNotEmpty(regionIdCollect)){
+                R<List<RegionDTO>> regionsByIds = remoteRegionService.getRegionsByIds(regionIdCollect, SecurityConstants.INNER);
+                List<RegionDTO> data = regionsByIds.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                        targetDecomposeDetailsDTOList.get(i).setRegionId(data.get(i).getRegionId());
+                        targetDecomposeDetailsDTOList.get(i).setRegionName(data.get(i).getRegionName());
+                    }
+                }
+            }
+            //行业远程
+            if (StringUtils.isNotEmpty(industryIdCollect)){
+                R<List<IndustryDTO>> listR = remoteIndustryService.selectByIds(industryIdCollect, SecurityConstants.INNER);
+                List<IndustryDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                        targetDecomposeDetailsDTOList.get(i).setIndustryId(data.get(i).getIndustryId());
+                        targetDecomposeDetailsDTOList.get(i).setIndustryName(data.get(i).getIndustryName());
+                    }
+                }
+
+            }
+        }
+    }
+    /**
+     * 封装分解快照数据远程调用数据
+     * @param decomposeDetailsSnapshotDTOS
+     * @return
+     */
+    public void packHistoryRemote(List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS) {
+        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+            //人员id集合
+            List<Long> employeeIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getEmployeeId).collect(Collectors.toList());
+
+            //人员id集合滚动预测负责人
+            List<Long> principalEmployeeIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getPrincipalEmployeeId).collect(Collectors.toList());
+
+            //部门id集合
+            List<Long> departmentIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDepartmentId).collect(Collectors.toList());
+
+            //省份id集合
+            Set<Long> regionIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getRegionId).collect(Collectors.toSet());
+
+            //行业id集合
+            List<Long> industryIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getIndustryId).collect(Collectors.toList());
+            //人员远程
+            if (StringUtils.isNotEmpty(employeeIdCollect)){
+                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(employeeIdCollect, SecurityConstants.INNER);
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
+                        decomposeDetailsSnapshotDTOS.get(i).setEmployeeId(data.get(i).getEmployeeId());
+                        decomposeDetailsSnapshotDTOS.get(i).setEmployeeName(data.get(i).getEmployeeName());
+                    }
+                }
+            }
+            //人员远程
+            if (StringUtils.isNotEmpty(principalEmployeeIdCollect)){
+                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(principalEmployeeIdCollect, SecurityConstants.INNER);
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
+                        decomposeDetailsSnapshotDTOS.get(i).setPrincipalEmployeeId(data.get(i).getEmployeeId());
+                        decomposeDetailsSnapshotDTOS.get(i).setPrincipalEmployeeName(data.get(i).getEmployeeName());
+                    }
+                }
+            }
+            //部门远程
+            if (StringUtils.isNotEmpty(departmentIdCollect)){
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(departmentIdCollect, SecurityConstants.INNER);
+                List<DepartmentDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
+                        decomposeDetailsSnapshotDTOS.get(i).setDepartmentId(data.get(i).getDepartmentId());
+                        decomposeDetailsSnapshotDTOS.get(i).setDepartmentName(data.get(i).getDepartmentName());
+                    }
+                }
+            }
+            //省份远程
+            if (StringUtils.isNotEmpty(regionIdCollect)){
+                R<List<RegionDTO>> regionsByIds = remoteRegionService.getRegionsByIds(regionIdCollect, SecurityConstants.INNER);
+                List<RegionDTO> data = regionsByIds.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
+                        decomposeDetailsSnapshotDTOS.get(i).setRegionId(data.get(i).getRegionId());
+                        decomposeDetailsSnapshotDTOS.get(i).setRegionName(data.get(i).getRegionName());
+                    }
+                }
+            }
+            //行业远程
+            if (StringUtils.isNotEmpty(industryIdCollect)){
+                R<List<IndustryDTO>> listR = remoteIndustryService.selectByIds(industryIdCollect, SecurityConstants.INNER);
+                List<IndustryDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
+                        decomposeDetailsSnapshotDTOS.get(i).setIndustryId(data.get(i).getIndustryId());
+                        decomposeDetailsSnapshotDTOS.get(i).setIndustryName(data.get(i).getIndustryName());
+                    }
+                }
+
             }
         }
     }

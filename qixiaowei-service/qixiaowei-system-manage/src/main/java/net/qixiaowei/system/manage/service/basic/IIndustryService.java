@@ -168,5 +168,5 @@ public interface IIndustryService {
      * @param industryIds
      * @return
      */
-    List<IndustryDTO> selectIndustryByIndustryIds(List<String> industryIds);
+    List<IndustryDTO> selectIndustryByIndustryIds(List<Long> industryIds);
 }

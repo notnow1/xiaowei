@@ -172,5 +172,5 @@ public interface IndustryMapper {
      * @param industryIds
      * @return
      */
-    List<IndustryDTO> selectIndustryByIndustryIds(@Param("industryIds") List<String> industryIds);
+    List<IndustryDTO> selectIndustryByIndustryIds(@Param("industryIds") List<Long> industryIds);
 }

@@ -463,7 +463,7 @@ public class IndustryServiceImpl implements IIndustryService {
      * @return
      */
     @Override
-    public List<IndustryDTO> selectIndustryByIndustryIds(List<String> industryIds) {
+    public List<IndustryDTO> selectIndustryByIndustryIds(List<Long> industryIds) {
         return industryMapper.selectIndustryByIndustryIds(industryIds);
     }
 }

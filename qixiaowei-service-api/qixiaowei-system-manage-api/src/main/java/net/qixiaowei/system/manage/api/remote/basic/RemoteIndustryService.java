@@ -39,5 +39,5 @@ public interface RemoteIndustryService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_INDUSTRY + "/selectByIds")
-    R<List<IndustryDTO>> selectByIds(@RequestBody List<String> industryIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<List<IndustryDTO>> selectByIds(@RequestBody List<Long> industryIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }
