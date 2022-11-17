@@ -129,8 +129,12 @@ public class ProductServiceImpl implements IProductService {
                     R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(collect2, SecurityConstants.INNER);
                     List<DictionaryDataDTO> data = listR.getData();
                     if (StringUtils.isNotEmpty(data)){
-                        for (int i = 0; i < productDTOList.size(); i++) {
-                            productDTOList.get(i).setProductCategoryName(data.get(i).getDictionaryLabel());
+                        for (ProductDTO dto : productDTOList) {
+                            for (DictionaryDataDTO datum : data) {
+                            if (Long.valueOf(dto.getProductCategory()).equals(datum.getDictionaryDataId())){
+                                dto.setProductCategoryName(datum.getDictionaryLabel());
+                            }
+                            }
                         }
                     }
                 }

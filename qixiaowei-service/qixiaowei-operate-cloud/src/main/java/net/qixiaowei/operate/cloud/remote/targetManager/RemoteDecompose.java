@@ -72,8 +72,8 @@ public class RemoteDecompose implements RemoteDecomposeService {
      */
     @Override
     @InnerAuth
-    @GetMapping("/decomposeDetails/getDecomposeDetails")
-    public R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, String source) {
+    @PostMapping("/decomposeDetails/getDecomposeDetails")
+    public R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(@RequestBody TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, String source) {
         return R.ok(targetDecomposeService.getDecomposeDetails(targetDecomposeDetailsDTO));
     }
 

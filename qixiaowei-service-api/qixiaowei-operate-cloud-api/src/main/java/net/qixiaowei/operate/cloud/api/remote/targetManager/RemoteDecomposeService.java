@@ -49,7 +49,7 @@ public interface RemoteDecomposeService {
      * @param source
      * @return
      */
-    @GetMapping("/targetDecompose/remote/getDecomposeDetails")
-    R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping("/targetDecompose/remote/decomposeDetails/getDecomposeDetails")
+    R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(@RequestBody TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

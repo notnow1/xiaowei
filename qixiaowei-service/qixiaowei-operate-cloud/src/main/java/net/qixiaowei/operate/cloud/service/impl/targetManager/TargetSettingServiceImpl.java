@@ -66,6 +66,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Autowired
     private RemoteIndicatorService indicatorService;
 
+
     /**
      * 查询目标制定
      *
@@ -720,6 +721,16 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSetting.setIndicatorIds(collect);
         }
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
+        if (StringUtils.isNotEmpty(targetSettingDTOS)){
+            List<Long> indicatorIds = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).collect(Collectors.toList());
+            R<List<IndicatorDTO>> listR1 = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+            List<IndicatorDTO> data = listR1.getData();
+            if (StringUtils.isNotEmpty(data)){
+                for (int i = 0; i < targetSettingDTOS.size(); i++) {
+                    targetSettingDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+                }
+            }
+        }
         if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             for (TargetSettingDTO settingDTO : targetSettingDTOS) {
                 //年度目标值

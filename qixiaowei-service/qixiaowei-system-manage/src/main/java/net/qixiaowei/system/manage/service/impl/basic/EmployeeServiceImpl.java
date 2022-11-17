@@ -1,12 +1,16 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
-import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -22,9 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,6 +50,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private PostMapper postMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RemoteDecomposeService remoteDecomposeService;
 
     /**
      * 查询员工表
@@ -207,6 +211,30 @@ public class EmployeeServiceImpl implements IEmployeeService {
             String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).distinct().collect(Collectors.toList()).toString();
             String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
             String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
+            //远程调用目标分解数据
+            if (StringUtils.isNotEmpty(employeeDTOList)){
+                List<Long> collect = employeeDTOList.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+                TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
+                targetDecomposeDetailsDTO.setEmployeeIds(collect);
+                //远程调用查看目标分解详情数据 获取目标分解主表id
+                R<List<TargetDecomposeDetailsDTO>> decomposeDetails = remoteDecomposeService.getDecomposeDetails(targetDecomposeDetailsDTO, SecurityConstants.INNER);
+                List<TargetDecomposeDetailsDTO> data = decomposeDetails.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (int i1 = 0; i1 < employeeDTOList.size(); i1++) {
+                        employeeDTOList.get(i1).setTargetDecomposeId(data.get(i).getTargetDecomposeId());
+                    }
+                    List<Long> collect2 = employeeDTOList.stream().map(EmployeeDTO::getTargetDecomposeId).collect(Collectors.toList());
+
+                    //远程调用查看目标分解主表
+                    R<List<TargetDecomposeDTO>> listR = remoteDecomposeService.selectBytargetDecomposeIds(collect2, SecurityConstants.INNER);
+                    List<TargetDecomposeDTO> data1 = listR.getData();
+                    if (StringUtils.isNotEmpty(data1)){
+                        for (int i1 = 0; i1 < employeeDTOList.size(); i1++) {
+                            employeeDTOList.get(i1).setIndicatorName(data1.get(i1).getIndicatorName());
+                        }
+                    }
+                }
+            }
             String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
             for (EmployeeDTO employeeDTO : employeeDTOList) {
                 if (StringUtils.isNotBlank(username)) {
