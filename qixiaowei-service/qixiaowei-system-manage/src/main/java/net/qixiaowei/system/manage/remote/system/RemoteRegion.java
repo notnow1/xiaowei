@@ -33,7 +33,12 @@ public class RemoteRegion implements RemoteRegionService {
         return R.ok(regionService.getRegionsByIds(regionIds));
     }
 
-
+    /**
+     * 根据省份名称集合查询省份数据
+     * @param regionNames 省份集合
+     * @param source
+     * @return
+     */
     @Override
     @InnerAuth
     @PostMapping("/codeList")

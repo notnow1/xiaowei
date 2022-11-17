@@ -401,7 +401,7 @@
                 left join `operate-cloud`.target_decompose td
                           on td.target_decompose_id = tdd.target_decompose_id
                               and td.delete_flag = 0
-                left join `system-manage`.`indicator` i
+                left join indicator i
                           on i.indicator_id = td.indicator_id
                               and i.delete_flag = 0
         where ee.employee_id = #{employeeId}
@@ -504,7 +504,7 @@
         left join `operate-cloud`.target_decompose td
         on td.target_decompose_id = tdd.target_decompose_id
         and td.delete_flag = 0
-        left join `system-manage`.`indicator` i
+        left join indicator i
         on i.indicator_id = td.indicator_id
         and i.delete_flag = 0
         where tdd.department_id=#{departmentId}

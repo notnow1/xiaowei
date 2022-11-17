@@ -17,7 +17,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
     private IEmployeeService employeeService;
 
     /**
-     * 查询人员数据
+     * 根据code集合查询人员数据
      * @param employeeCodes
      * @param source
      * @return

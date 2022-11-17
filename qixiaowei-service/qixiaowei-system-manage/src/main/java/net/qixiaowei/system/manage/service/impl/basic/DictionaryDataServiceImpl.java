@@ -47,6 +47,16 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     public DictionaryDataDTO selectDictionaryDataByDictionaryDataId(Long dictionaryDataId) {
         return dictionaryDataMapper.selectDictionaryDataByDictionaryDataId(dictionaryDataId);
     }
+    /**
+     * 根据字典id集合查询字典数据表
+     *
+     * @param dictionaryDataIds 字典数据表主键
+     * @return 字典数据表
+     */
+    @Override
+    public List<DictionaryDataDTO> selectDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds) {
+        return dictionaryDataMapper.selectDictionaryDataByDictionaryDataIds(dictionaryDataIds);
+    }
 
     /**
      * 查询字典数据表列表

@@ -30,6 +30,21 @@ public interface ITargetDecomposeService {
      * @return 目标分解表
      */
     TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId);
+
+    /**
+     * 远程调用根据id目标分解id查询数据
+     *
+     * @param targetDecomposeId 目标分解表主键
+     * @return 目标分解表
+     */
+    TargetDecomposeDTO selectTargetDecomposeByTargetDecomposeId(Long targetDecomposeId);
+    /**
+     * 远程调用根据id集合目标分解id查询数据
+     *
+     * @param targetDecomposeIds 目标分解表主键集合
+     * @return 目标分解表
+     */
+    List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds);
     /**
      * 查询目标分解(销售订单)表
      *

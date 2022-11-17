@@ -5,3 +5,4 @@ net.qixiaowei.system.manage.api.factory.basic.RemoteIndicatorFallbackFactory
 net.qixiaowei.system.manage.api.factory.basic.RemoteEmployeeFallbackFactory
 net.qixiaowei.system.manage.api.factory.basic.RemoteDepartmentFallbackFactory
 net.qixiaowei.system.manage.api.factory.basic.RemoteIndustryFallbackFactory
+net.qixiaowei.system.manage.api.factory.basic.RemoteDictionaryDataFallbackFactory

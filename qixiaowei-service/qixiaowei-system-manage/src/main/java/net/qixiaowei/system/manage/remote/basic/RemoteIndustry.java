@@ -17,7 +17,7 @@ public class RemoteIndustry implements RemoteIndustryService {
     private IIndustryService industryService;
 
     /**
-     * 查询人员数据
+     * 根据code集合查询行业数据
      * @param industryCodes
      * @param source
      * @return

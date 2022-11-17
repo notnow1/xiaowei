@@ -19,7 +19,7 @@ public class RemoteIndustryFallbackFactory implements FallbackFactory<RemoteIndu
 
     @Override
     public RemoteIndustryService create(Throwable throwable) {
-        log.error("部门服务调用失败:{}", throwable.getMessage());
+        log.error("行业服务调用失败:{}", throwable.getMessage());
         return new RemoteIndustryService() {
 
             @Override

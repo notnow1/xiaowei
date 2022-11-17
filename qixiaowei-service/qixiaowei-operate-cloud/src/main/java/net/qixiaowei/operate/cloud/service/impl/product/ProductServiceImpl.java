@@ -3,6 +3,8 @@ package net.qixiaowei.operate.cloud.service.impl.product;
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -13,6 +15,8 @@ import net.qixiaowei.operate.cloud.api.domain.product.*;
 import net.qixiaowei.operate.cloud.api.dto.product.*;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +48,8 @@ public class ProductServiceImpl implements IProductService {
     private ProductFileMapper productFileMapper;
     @Autowired
     private    FileConfig fileConfig;
+    @Autowired
+    private RemoteDictionaryDataService remoteDictionaryDataService;
 
     /**
      * 查询产品表
@@ -56,6 +62,19 @@ public class ProductServiceImpl implements IProductService {
         List<ProductDataDTO> productDataDTOList = new ArrayList<>();
         //产品表
         ProductDTO productDTO = productMapper.selectProductByProductId(productId);
+        if (StringUtils.isNotNull(productDTO)){
+            String productCategory = productDTO.getProductCategory();
+            if (StringUtils.isNotBlank(productCategory)){
+                //远程调用查询字典数据
+                R<DictionaryDataDTO> info = remoteDictionaryDataService.info(Long.valueOf(productCategory), SecurityConstants.INNER);
+                DictionaryDataDTO data = info.getData();
+                if (StringUtils.isNotNull(data)){
+                    productDTO.setProductCategoryName(data.getDictionaryType());
+                }
+            }
+
+        }
+
         //产品文件表
         List<ProductFileDTO> productFileDTOS = productFileMapper.selectProductFileByProductId(productId);
         //拼接文件路径
@@ -96,10 +115,23 @@ public class ProductServiceImpl implements IProductService {
     public List<ProductDTO> selectProductList(ProductDTO productDTO) {
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
-        //返回数据
-        List<ProductDTO> tree = new ArrayList<>();
         //查询数据
         List<ProductDTO> productDTOList = productMapper.selectProductList(product);
+        if (StringUtils.isNotEmpty(productDTOList)){
+            List<String> collect = productDTOList.stream().map(ProductDTO::getProductCategory).collect(Collectors.toList());
+
+            List<Long> collect2 = collect.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(collect2)){
+                    //远程调用查询字典数据
+                    R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(collect2, SecurityConstants.INNER);
+                    List<DictionaryDataDTO> data = listR.getData();
+                    if (StringUtils.isNotEmpty(data)){
+                        for (int i = 0; i < productDTOList.size(); i++) {
+                            productDTOList.get(i).setProductCategoryName(data.get(i).getDictionaryLabel());
+                        }
+                    }
+                }
+        }
         if (!CheckObjectIsNullUtils.isNull(productDTO)) {
             return productDTOList;
         } else {

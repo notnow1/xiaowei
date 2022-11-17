@@ -9,7 +9,9 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
+import net.qixiaowei.integration.common.enums.targetManager.DecompositionDimension;
 import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeDimensionCode;
+import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -272,6 +274,30 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     }
 
     /**
+     * 远程调用根据id目标分解id查询数据
+     * @param targetDecomposeId 目标分解表主键
+     * @return
+     */
+    @Override
+    public TargetDecomposeDTO selectTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        if (StringUtils.isNotNull(targetDecomposeDTO)){
+
+        }
+        return targetDecomposeDTO;
+    }
+
+    /**
+     * 远程调用根据id集合目标分解id查询数据
+     * @param targetDecomposeIds 目标分解表主键集合
+     * @return
+     */
+    @Override
+    public List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
+        return null;
+    }
+
+    /**
      * 封装版本号
      *
      * @param targetDecomposeDTO
@@ -530,15 +556,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeDTO> selectOrderList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
-        //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode(), SecurityConstants.INNER);
-        if (StringUtils.isNull(indicatorDTOR.getData())) {
-            throw new ServiceException("指标不存在！请联系管理员");
-        }
-        //指标id
-        targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
+
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.ONE);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.ORDER.getCode());
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
@@ -592,15 +612,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeDTO> selectIncomeList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
-        //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode(), SecurityConstants.INNER);
-        if (StringUtils.isNull(indicatorDTOR.getData())) {
-            throw new ServiceException("指标不存在！请联系管理员");
-        }
-        //指标id
-        targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
+
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.TWO);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.INCOME.getCode());
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
@@ -620,15 +634,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeDTO> selectReturnedList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
-        //远程指标code调用
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode(), SecurityConstants.INNER);
-        if (StringUtils.isNull(indicatorDTOR.getData())) {
-            throw new ServiceException("指标不存在！请联系管理员");
-        }
-        //指标id
-        targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.THREE);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.RECEIVABLE.getCode());
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
@@ -649,7 +656,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.ZERO);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.CUSTOM.getCode());
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
@@ -673,7 +680,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.ONE);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.ORDER.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
             throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
@@ -720,7 +727,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.TWO);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.INCOME.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
             throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
@@ -766,7 +773,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
-        targetDecompose.setTargetDecomposeType(Constants.THREE);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.RECEIVABLE.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
             throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
@@ -786,7 +793,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //指标id
         targetDecompose.setIndicatorId(indicatorDTOR.getData().getIndicatorId());
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.THREE);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.RECEIVABLE.getCode());
         try {
             targetDecomposeMapper.insertTargetDecompose(targetDecompose);
         } catch (Exception e) {
@@ -813,7 +820,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
-        targetDecompose.setTargetDecomposeType(Constants.ZERO);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.CUSTOM.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
             throw new ServiceException(Calendar.getInstance().get(Calendar.YEAR) + "年已创建该维度目标分解，无需重复创建。");
@@ -1157,7 +1164,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.ONE);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.ORDER.getCode());
 
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
@@ -1187,7 +1194,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.TWO);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.INCOME.getCode());
 
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
@@ -1217,7 +1224,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.THREE);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.RECEIVABLE.getCode());
 
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
@@ -1247,7 +1254,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
         //分解类型
-        targetDecompose.setTargetDecomposeType(Constants.ZERO);
+        targetDecompose.setTargetDecomposeType(TargetDecomposeType.CUSTOM.getCode());
 
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
@@ -1629,17 +1636,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             for (int i = 0; i < listMap.size(); i++) {
                 Map<Integer, String> map = listMap.get(i);
                 map.forEach((key, value) -> {
-                    if (StringUtils.equals(map.get(key), "销售员")) {
+                    if (StringUtils.equals(map.get(key), DecompositionDimension.EMPLOYEE.getInfo())) {
+
                         employeeNameKey.set(key);
-                    } else if (StringUtils.equals(map.get(key), "区域")) {
+                    } else if (StringUtils.equals(map.get(key), DecompositionDimension.AREA.getInfo())) {
                         areaCodesKey.set(key);
-                    } else if (StringUtils.equals(map.get(key), "部门")) {
+                    } else if (StringUtils.equals(map.get(key), DecompositionDimension.DEPARTMENT.getInfo())) {
                         departmentCodeKey.set(key);
-                    } else if (StringUtils.equals(map.get(key), "行业")) {
+                    } else if (StringUtils.equals(map.get(key), DecompositionDimension.INDUSTRY.getInfo())) {
                         industryCodeKey.set(key);
-                    } else if (StringUtils.equals(map.get(key), "省份")) {
+                    } else if (StringUtils.equals(map.get(key), DecompositionDimension.REGION.getInfo())) {
                         provinceNameKey.set(key);
-                    } else if (StringUtils.equals(map.get(key), "产品")) {
+                    } else if (StringUtils.equals(map.get(key), DecompositionDimension.PRODUCT.getInfo())) {
                         productCodeKey.set(key);
                     } else if (StringUtils.equals(map.get(key), "时间维度")) {
                         timeDimensionKey.set(key);
@@ -1652,42 +1660,42 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         if (0 != employeeNameKey.get()) {
                             if (key == employeeNameKey.get()){
                                 employeeCodes.add(map.get(employeeNameKey.get()));
-                                mapAllData.put("销售员", employeeCodes);
+                                mapAllData.put(DecompositionDimension.EMPLOYEE.getInfo(), employeeCodes);
                             }
 
                         }
                         if (0 != areaCodesKey.get()) {
                             if (key == areaCodesKey.get()){
                                 areaCodes.add(map.get(areaCodesKey.get()));
-                                mapAllData.put("区域", areaCodes);
+                                mapAllData.put(DecompositionDimension.AREA.getInfo(), areaCodes);
                             }
 
                         }
                         if (0 != departmentCodeKey.get()) {
                             if (key == departmentCodeKey.get()){
                                 departmentCodes.add(map.get(departmentCodeKey.get()));
-                                mapAllData.put("部门", departmentCodes);
+                                mapAllData.put(DecompositionDimension.DEPARTMENT.getInfo(), departmentCodes);
                             }
 
                         }
                         if (0 != industryCodeKey.get()) {
                             if (key == industryCodeKey.get()){
                                 industryCodes.add(map.get(industryCodeKey.get()));
-                                mapAllData.put("行业", industryCodes);
+                                mapAllData.put(DecompositionDimension.INDUSTRY.getInfo(), industryCodes);
                             }
 
                         }
                         if (0 != provinceNameKey.get()) {
                             if (key == provinceNameKey.get()){
                                 provinceNames.add(map.get(provinceNameKey.get()));
-                                mapAllData.put("省份", provinceNames);
+                                mapAllData.put(DecompositionDimension.REGION.getInfo(), provinceNames);
                             }
 
                         }
                         if (0 != productCodeKey.get()) {
                             if (key == productCodeKey.get()){
                                 productCodes.add(map.get(productCodeKey.get()));
-                                mapAllData.put("产品", productCodes);
+                                mapAllData.put(DecompositionDimension.PRODUCT.getInfo(), productCodes);
                             }
 
                         }
@@ -1730,7 +1738,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeExcel> exportOrderTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
-        targetDecomposeDTO.setTargetDecomposeType(Constants.ONE);
+        targetDecomposeDTO.setTargetDecomposeType(TargetDecomposeType.ORDER.getCode());
         return this.packExportOrderTargetDecompose(targetDecomposeDTO);
     }
 
@@ -1742,7 +1750,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeExcel> exportIncomeTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
-        targetDecomposeDTO.setTargetDecomposeType(Constants.TWO);
+        targetDecomposeDTO.setTargetDecomposeType(TargetDecomposeType.INCOME.getCode());
         return this.packExportOrderTargetDecompose(targetDecomposeDTO);
     }
 
@@ -1754,7 +1762,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeExcel> exportReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
-        targetDecomposeDTO.setTargetDecomposeType(Constants.THREE);
+        targetDecomposeDTO.setTargetDecomposeType(TargetDecomposeType.RECEIVABLE.getCode());
         return this.packExportOrderTargetDecompose(targetDecomposeDTO);
     }
 
@@ -1766,7 +1774,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeExcel> exportCustomTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
-        targetDecomposeDTO.setTargetDecomposeType(Constants.ZERO);
+        targetDecomposeDTO.setTargetDecomposeType(TargetDecomposeType.CUSTOM.getCode());
         return this.packExportOrderTargetDecompose(targetDecomposeDTO);
     }
 
@@ -1868,7 +1876,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             List<Object> list = mapAllEndData.get(key);
             Collections.reverse(list);
 
-            if (StringUtils.equals(key, "销售员")) {
+            if (StringUtils.equals(key, DecompositionDimension.EMPLOYEE.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
@@ -1897,7 +1905,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
                 }
 
-            } else if (StringUtils.equals(key, "区域")) {
+            } else if (StringUtils.equals(key, DecompositionDimension.AREA.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
@@ -1925,7 +1933,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
                 }
 
-            } else if (StringUtils.equals(key, "部门")) {
+            } else if (StringUtils.equals(key, DecompositionDimension.DEPARTMENT.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
@@ -1954,7 +1962,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
                 }
 
-            } else if (StringUtils.equals(key, "行业")) {
+            } else if (StringUtils.equals(key, DecompositionDimension.INDUSTRY.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
@@ -1982,7 +1990,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
                 }
 
-            } else if (StringUtils.equals(key, "省份")) {
+            } else if (StringUtils.equals(key, DecompositionDimension.REGION.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
@@ -2011,7 +2019,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
                 }
 
-            } else if (StringUtils.equals(key, "产品")) {
+            } else if (StringUtils.equals(key, DecompositionDimension.PRODUCT.getInfo())) {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
@@ -2072,7 +2080,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         Map<String, List<Object>> mapAllEndData = new LinkedHashMap<>();
         if (StringUtils.isNotEmpty(mapAllData)) {
             mapAllData.forEach((key, value) -> {
-                if (StringUtils.equals(key, "销售员")) {
+                if (StringUtils.equals(key, DecompositionDimension.EMPLOYEE.getInfo())) {
                     List<String> list = mapAllData.get(key);
                     //远程调用查询是否存在
                     R<List<EmployeeDTO>> listR = remoteEmployeeService.selectCodeList(mapAllData.get(key), SecurityConstants.INNER);
@@ -2094,7 +2102,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                         mapAllEndData.put(key,EmployeeData);
                     }
-                } else if (StringUtils.equals(key, "区域")) {
+                } else if (StringUtils.equals(key, DecompositionDimension.AREA.getInfo())) {
                     //excel数据
                     List<String> list = mapAllData.get(key);
                     //数据库数据
@@ -2115,7 +2123,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         }
                         mapAllEndData.put(key, Collections.singletonList(areaData));
                     }
-                } else if (StringUtils.equals(key, "部门")) {
+                } else if (StringUtils.equals(key, DecompositionDimension.DEPARTMENT.getInfo())) {
                     //excel数据
                     List<String> list = mapAllData.get(key);
                     //远程调用查询是否存在
@@ -2137,7 +2145,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         }
                         mapAllEndData.put(key, DepartmentData);
                     }
-                } else if (StringUtils.equals(key, "行业")) {
+                } else if (StringUtils.equals(key, DecompositionDimension.INDUSTRY.getInfo())) {
                     //excel数据
                     List<String> list = mapAllData.get(key);
                     //远程调用查询是否存在
@@ -2159,7 +2167,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         }
                         mapAllEndData.put(key, industryData);
                     }
-                } else if (StringUtils.equals(key, "省份")) {
+                } else if (StringUtils.equals(key, DecompositionDimension.REGION.getInfo())) {
                     //excel数据
                     List<String> list = mapAllData.get(key);
                     //远程调用查询是否存在
@@ -2181,7 +2189,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         }
                         mapAllEndData.put(key, regionData);
                     }
-                } else if (StringUtils.equals(key, "产品")) {
+                } else if (StringUtils.equals(key, DecompositionDimension.PRODUCT.getInfo())) {
                     //excel数据
                     List<String> list = mapAllData.get(key);
                     //数据库数据

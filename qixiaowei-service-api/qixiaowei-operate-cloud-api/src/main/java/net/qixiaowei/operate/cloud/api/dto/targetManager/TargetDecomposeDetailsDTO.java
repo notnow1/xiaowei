@@ -67,7 +67,7 @@ public class TargetDecomposeDetailsDTO {
     /**
     * 部门ID
     */
-    private  Long departmentId;
+        private  Long departmentId;
     /**
      * 部门名称
      */

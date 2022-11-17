@@ -1,3 +1,4 @@
 net.qixiaowei.operate.cloud.api.factory.product.RemoteProductFallbackFactory
 net.qixiaowei.operate.cloud.api.factory.targetManager.RemoteAreaFallbackFactory
 net.qixiaowei.operate.cloud.api.factory.targetManager.RemoteTargetDecomposeHistoryFallbackFactory
+net.qixiaowei.operate.cloud.api.factory.targetManager.RemoteDecomposeFallbackFactory

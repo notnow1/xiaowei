@@ -5,7 +5,6 @@
     <select id="selectProductByProductId"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-        da.dictionary_label as product_category_name,
         p.product_id,
         p.parent_product_id,
         pu.product_unit_name,
@@ -29,10 +28,6 @@
         on
         pu.product_unit_id = p.product_unit_id
         and pu.delete_flag = 0
-        left join `system-manage`.dictionary_data da
-        on
-        da.dictionary_data_id = p.product_category
-        and da.default_flag = 0
         WHERE
         p.product_id =
         #{productId}
@@ -42,7 +37,6 @@
     <!--    查询产品表列表-->
     <select id="selectProductList" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT
-        da.dictionary_label as product_category_name,
         pu.product_unit_name,
         p.product_id,
         p.parent_product_id,
@@ -66,10 +60,6 @@
         product_unit pu
         on p.product_unit_id =pu.product_unit_id
         and pu.delete_flag= 0
-        left join
-        `system-manage`.dictionary_data da
-        on da.dictionary_data_id =p.product_category
-        and da.delete_flag= 0
         WHERE
         p.delete_flag = 0
         <if test="product.productUnitName != null">

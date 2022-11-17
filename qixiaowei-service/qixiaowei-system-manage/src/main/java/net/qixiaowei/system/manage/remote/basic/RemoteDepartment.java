@@ -17,7 +17,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
     private IDepartmentService departmentService;
 
     /**
-     * 查询人员数据
+     * 查询根据code集合查询部门数据
      * @param departmentCodes
      * @param source
      * @return

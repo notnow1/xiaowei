@@ -19,6 +19,13 @@ public interface IDictionaryDataService{
     DictionaryDataDTO selectDictionaryDataByDictionaryDataId(Long dictionaryDataId);
 
     /**
+     * 查询字典数据表
+     *
+     * @param dictionaryDataIds 字典数据表主键集合
+     * @return 字典数据表
+     */
+    List<DictionaryDataDTO> selectDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds);
+    /**
     * 查询字典数据表列表
     *
     * @param dictionaryDataDTO 字典数据表
