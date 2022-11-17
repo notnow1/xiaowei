@@ -432,8 +432,7 @@ public class TargetDecomposeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        targetDecomposeService.excelParseObject(file);
-        return AjaxResult.success("操作成功");
+        return AjaxResult.success(targetDecomposeService.excelParseObject(file));
     }
 
     /**

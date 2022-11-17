@@ -4,7 +4,6 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -1589,10 +1588,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecomposeDTO targetDecomposeDTO = new TargetDecomposeDTO();
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = new ArrayList<>();
-        //目标分解周期数据
-        List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
         //分解维度顺序排序
-        Map<String, List<String>> mapAllData = new HashMap<>();
+        Map<String, List<String>> mapAllData = new LinkedHashMap<>();
         //Excel目标分解周期数据
         List<List<String>> cyclesExcelData = new ArrayList<>();
         try {
@@ -1702,16 +1699,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 }
 
             }
-            int szie = mapAllData.get("销售员").size();
-            System.out.println(mapAllData.get("销售员"));
-            System.out.println(cyclesExcelData);
-            this.packExcelData(targetDecomposeDTO, mapAllData, targetDecomposeDetailsDTOS, decomposeDetailCyclesDTOS);
+           return this.packExcelData(targetDecomposeDTO, mapAllData, targetDecomposeDetailsDTOS,cyclesExcelData);
 
 
         } catch (IOException e) {
             throw new ServiceException("导入人员信息配置Excel失败");
         }
-        return targetDecomposeDTO;
     }
 
     /**
@@ -1861,10 +1854,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDTO
      * @param mapAllData
      * @param targetDecomposeDetailsDTOS
-     * @param decomposeDetailCyclesDTOS
+     * @param cyclesExcelData
      * @return
      */
-    public List<TargetDecomposeDetailsDTO> packExcelData(TargetDecomposeDTO targetDecomposeDTO, Map<String, List<String>> mapAllData, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS) {
+    public TargetDecomposeDTO packExcelData(TargetDecomposeDTO targetDecomposeDTO, Map<String, List<String>> mapAllData, List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS,  List<List<String>> cyclesExcelData) {
 
         //对下标进行排序
         int maxSize = this.packExcelListData(mapAllData);
@@ -1873,25 +1866,34 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
         mapAllEndData.forEach((key, value) -> {
             List<Object> list = mapAllEndData.get(key);
-
+            Collections.reverse(list);
 
             if (StringUtils.equals(key, "销售员")) {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                        // 直接强转容易出现问题，需要使用ObjectMapper
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), EmployeeDTO.class);
-//                        EmployeeDTO employeeDTO = objectMapper.convertValue(s, EmployeeDTO.class);
-                        if (list.size() < i) {
-                            targetDecomposeDetailsDTO.setEmployeeName("");
+                        if (list.size()-1 < i) {
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setEmployeeName("");
+                            }else {
+                                targetDecomposeDetailsDTO.setEmployeeName("");
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+
                         } else {
-                            //人员名称
-                            targetDecomposeDetailsDTO.setEmployeeName(employeeDTO.getEmployeeName());
-                            //人员id
-                            targetDecomposeDetailsDTO.setEmployeeId(employeeDTO.getEmployeeId());
+                            EmployeeDTO employeeDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), EmployeeDTO.class);
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setEmployeeName(employeeDTO.getEmployeeName());
+                                targetDecomposeDetailsDTOS.get(i).setEmployeeId(employeeDTO.getEmployeeId());
+                            }else {
+                                //人员名称
+                                targetDecomposeDetailsDTO.setEmployeeName(employeeDTO.getEmployeeName());
+                                //人员id
+                                targetDecomposeDetailsDTO.setEmployeeId(employeeDTO.getEmployeeId());
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
                         }
-                        targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+
                     }
                 }
 
@@ -1899,18 +1901,27 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                        // 直接强转容易出现问题，需要使用ObjectMapper
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        AreaDTO areaDTO = objectMapper.convertValue(list.get(i), AreaDTO.class);
-                        if (list.size() < i) {
-                            targetDecomposeDetailsDTO.setAreaName("");
+                        if (list.size()-1 < i) {
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setAreaName("");
+                            }else {
+                                targetDecomposeDetailsDTO.setAreaName("");
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+
                         } else {
-                            //区域名称
-                            targetDecomposeDetailsDTO.setAreaName(areaDTO.getAreaName());
-                            //区域id
-                            targetDecomposeDetailsDTO.setAreaId(areaDTO.getAreaId());
+                            AreaDTO areaDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), AreaDTO.class);
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setAreaName(areaDTO.getAreaName());
+                                targetDecomposeDetailsDTOS.get(i).setAreaId(areaDTO.getAreaId());
+                            }else {
+                                //区域名称
+                                targetDecomposeDetailsDTO.setAreaName(areaDTO.getAreaName());
+                                //区域id
+                                targetDecomposeDetailsDTO.setAreaId(areaDTO.getAreaId());
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
                         }
-                        targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                     }
                 }
 
@@ -1918,18 +1929,28 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                        // 直接强转容易出现问题，需要使用ObjectMapper
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        DepartmentDTO departmentDTO = objectMapper.convertValue(list.get(i), DepartmentDTO.class);
-                        if (list.size() < i) {
-                            targetDecomposeDetailsDTO.setDepartmentName("");
+                        if (list.size()-1 < i) {
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setDepartmentName("");
+                            }else {
+                                targetDecomposeDetailsDTO.setDepartmentName("");
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
                         } else {
-                            //部门名称
-                            targetDecomposeDetailsDTO.setDepartmentName(departmentDTO.getDepartmentName());
-                            //部门id
-                            targetDecomposeDetailsDTO.setDepartmentId(departmentDTO.getDepartmentId());
+                            DepartmentDTO departmentDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), DepartmentDTO.class);
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setDepartmentName(departmentDTO.getDepartmentName());
+                                targetDecomposeDetailsDTOS.get(i).setDepartmentId(departmentDTO.getDepartmentId());
+                            }else {
+                                //部门名称
+                                targetDecomposeDetailsDTO.setDepartmentName(departmentDTO.getDepartmentName());
+                                //部门id
+                                targetDecomposeDetailsDTO.setDepartmentId(departmentDTO.getDepartmentId());
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+
                         }
-                        targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+
                     }
                 }
 
@@ -1937,18 +1958,27 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                        // 直接强转容易出现问题，需要使用ObjectMapper
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        IndustryDTO industryDTO = objectMapper.convertValue(list.get(i), IndustryDTO.class);
-                        if (list.size() < i) {
-                            targetDecomposeDetailsDTO.setIndustryName("");
+                        if (list.size()-1 < i) {
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setIndustryName("");
+                            }else {
+                                targetDecomposeDetailsDTO.setIndustryName("");
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
                         } else {
-                            //行业名称
-                            targetDecomposeDetailsDTO.setIndustryName(industryDTO.getIndustryName());
-                            //行业id
-                            targetDecomposeDetailsDTO.setIndustryId(industryDTO.getIndustryId());
+                            IndustryDTO industryDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), IndustryDTO.class);
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setIndustryName(industryDTO.getIndustryName());
+                                targetDecomposeDetailsDTOS.get(i).setIndustryId(industryDTO.getIndustryId());
+                            }else {
+                                //行业名称
+                                targetDecomposeDetailsDTO.setIndustryName(industryDTO.getIndustryName());
+                                //行业id
+                                targetDecomposeDetailsDTO.setIndustryId(industryDTO.getIndustryId());
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+
                         }
-                        targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                     }
                 }
 
@@ -1956,18 +1986,28 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                        // 直接强转容易出现问题，需要使用ObjectMapper
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        RegionDTO regionDTO = objectMapper.convertValue(list.get(i), RegionDTO.class);
-                        if (list.size() < i) {
-                            targetDecomposeDetailsDTO.setRegionName("");
+                        if (list.size()-1 < i) {
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setRegionName("");
+                            }else {
+                                targetDecomposeDetailsDTO.setRegionName("");
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+
                         } else {
-                            //省份名称
-                            targetDecomposeDetailsDTO.setRegionName(regionDTO.getProvinceName());
-                            //省份id
-                            targetDecomposeDetailsDTO.setRegionId(regionDTO.getRegionId());
+                            RegionDTO regionDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), RegionDTO.class);
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setRegionName(regionDTO.getProvinceName());
+                                targetDecomposeDetailsDTOS.get(i).setRegionId(regionDTO.getRegionId());
+                            }else {
+                                //省份名称
+                                targetDecomposeDetailsDTO.setRegionName(regionDTO.getProvinceName());
+                                //省份id
+                                targetDecomposeDetailsDTO.setRegionId(regionDTO.getRegionId());
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+
                         }
-                        targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                     }
                 }
 
@@ -1975,27 +2015,51 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(list)) {
                     for (int i = 0; i < Math.max(list.size(), maxSize); i++) {
                         TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                        // 直接强转容易出现问题，需要使用ObjectMapper
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        ProductDTO productDTO = objectMapper.convertValue(list.get(i), ProductDTO.class);
-                        if (list.size() < i) {
-                            targetDecomposeDetailsDTO.setProductName("");
+                        if (list.size()-1 < i) {
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setProductName("");
+                            }else {
+                                targetDecomposeDetailsDTO.setProductName("");
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
                         } else {
-                            //产品名称
-                            targetDecomposeDetailsDTO.setProductName(productDTO.getProductName());
-                            //产品id
-                            targetDecomposeDetailsDTO.setProductId(productDTO.getProductId());
+                            ProductDTO productDTO = JSON.toJavaObject(JSONObject.parseObject(JSONObject.toJSONString(list.get(i))), ProductDTO.class);
+                            if (targetDecomposeDetailsDTOS.size() == maxSize){
+                                targetDecomposeDetailsDTOS.get(i).setProductName(productDTO.getProductName());
+                                targetDecomposeDetailsDTOS.get(i).setProductId(productDTO.getProductId());
+                            }else {
+                                //产品名称
+                                targetDecomposeDetailsDTO.setProductName(productDTO.getProductName());
+                                //产品id
+                                targetDecomposeDetailsDTO.setProductId(productDTO.getProductId());
+                                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
+                            }
+
                         }
-                        targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
                     }
                 }
 
             }
         });
+        //详情周期数据
         for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
-
+            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
+            List<String> list = cyclesExcelData.get(i);
+            for (int i1 = 0; i1 < list.size(); i1++) {
+                DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
+                //周期
+                decomposeDetailCyclesDTO.setCycleNumber(i1+1);
+                if (StringUtils.isNotBlank(list.get(i1))){
+                    //预测值
+                    decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal(list.get(i1)));
+                }
+                decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
+            }
+            targetDecomposeDetailsDTOS.get(i).setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOS);
         }
-        return null;
+        //解析完成数据
+        targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOS);
+        return targetDecomposeDTO;
     }
 
     /**
@@ -2005,10 +2069,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     public Map<String, List<Object>> packExcelDecompositionDimensionData(Map<String, List<String>> mapAllData) {
-        Map<String, List<Object>> mapAllEndData = new HashMap<>();
+        Map<String, List<Object>> mapAllEndData = new LinkedHashMap<>();
         if (StringUtils.isNotEmpty(mapAllData)) {
             mapAllData.forEach((key, value) -> {
-                TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
                 if (StringUtils.equals(key, "销售员")) {
                     List<String> list = mapAllData.get(key);
                     //远程调用查询是否存在
@@ -2022,13 +2085,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         //删除差集
                         list.removeAll(reduce1);
                         //最终人员数据
-                        List<EmployeeDTO> EmployeeData = new ArrayList<>();
+                        List<Object> EmployeeData = new ArrayList<>();
                         for (EmployeeDTO employeeDTO : employeeDTOS) {
                             if (list.contains(employeeDTO.getEmployeeCode())) {
-                                EmployeeData.add(employeeDTO);
+                                EmployeeData.add(JSONObject.parseObject(JSONObject.toJSONString(employeeDTO)));
                             }
                         }
-                        mapAllEndData.put(key,JSONObject.parseArray(EmployeeData.toString()));
+
+                        mapAllEndData.put(key,EmployeeData);
                     }
                 } else if (StringUtils.equals(key, "区域")) {
                     //excel数据
@@ -2043,10 +2107,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         //删除差集
                         list.removeAll(reduce1);
                         //最终区域数据
-                        List<AreaDTO> areaData = new ArrayList<>();
+                        List<Object> areaData = new ArrayList<>();
                         for (AreaDTO areaDTO : areaDTOS) {
                             if (list.contains(areaDTO.getAreaCode())) {
-                                areaData.add(areaDTO);
+                                areaData.add(JSONObject.parseObject(JSONObject.toJSONString(areaDTO)));
                             }
                         }
                         mapAllEndData.put(key, Collections.singletonList(areaData));
@@ -2065,13 +2129,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         //删除差集
                         list.removeAll(reduce1);
                         //最终部门数据
-                        List<DepartmentDTO> DepartmentData = new ArrayList<>();
+                        List<Object> DepartmentData = new ArrayList<>();
                         for (DepartmentDTO departmentDTO : departmentDTOS) {
                             if (list.contains(departmentDTO.getDepartmentCode())) {
-                                DepartmentData.add(departmentDTO);
+                                DepartmentData.add(JSONObject.parseObject(JSONObject.toJSONString(departmentDTO)));
                             }
                         }
-                        mapAllEndData.put(key, Collections.singletonList(DepartmentData));
+                        mapAllEndData.put(key, DepartmentData);
                     }
                 } else if (StringUtils.equals(key, "行业")) {
                     //excel数据
@@ -2087,13 +2151,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         //删除差集
                         list.removeAll(reduce1);
                         //最终行业数据
-                        List<IndustryDTO> industryData = new ArrayList<>();
+                        List<Object> industryData = new ArrayList<>();
                         for (IndustryDTO industryDTO : industryDTOS) {
                             if (list.contains(industryDTO.getIndustryCode())) {
-                                industryData.add(industryDTO);
+                                industryData.add(JSONObject.parseObject(JSONObject.toJSONString(industryDTO)));
                             }
                         }
-                        mapAllEndData.put(key, Collections.singletonList(industryData));
+                        mapAllEndData.put(key, industryData);
                     }
                 } else if (StringUtils.equals(key, "省份")) {
                     //excel数据
@@ -2109,13 +2173,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         //删除差集
                         list.removeAll(reduce1);
                         //最终行业数据
-                        List<RegionDTO> regionData = new ArrayList<>();
+                        List<Object> regionData = new ArrayList<>();
                         for (RegionDTO regionDTO : regionDTOS) {
                             if (list.contains(regionDTO.getProvinceName())) {
-                                regionData.add(regionDTO);
+                                regionData.add(JSONObject.parseObject(JSONObject.toJSONString(regionDTO)));
                             }
                         }
-                        mapAllEndData.put(key, Collections.singletonList(regionData));
+                        mapAllEndData.put(key, regionData);
                     }
                 } else if (StringUtils.equals(key, "产品")) {
                     //excel数据
@@ -2130,13 +2194,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         //删除差集
                         list.removeAll(reduce1);
                         //最终区域数据
-                        List<ProductDTO> productData = new ArrayList<>();
+                        List<Object> productData = new ArrayList<>();
                         for (ProductDTO productDTO : productDTOS) {
                             if (list.contains(productDTO.getProductCode())) {
-                                productData.add(productDTO);
+                                productData.add(JSONObject.parseObject(JSONObject.toJSONString(productDTO)));
                             }
                         }
-                        mapAllEndData.put(key, Collections.singletonList(productData));
+                        mapAllEndData.put(key, productData);
                     }
                 }
             });
