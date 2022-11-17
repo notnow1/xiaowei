@@ -47,7 +47,7 @@ public class RemoteDecompose implements RemoteDecomposeService {
      */
     @Override
     @InnerAuth
-    @PostMapping("/targetDecomposeIds")
+    @PostMapping("/decomposeDetails/targetDecomposeIds")
     public R<List<TargetDecomposeDTO>> selectBytargetDecomposeIds(@RequestBody  List<Long> targetDecomposeIds, String source) {
         return R.ok(targetDecomposeService.selectTargetDecomposeByTargetDecomposeIds(targetDecomposeIds));
     }
@@ -60,7 +60,7 @@ public class RemoteDecompose implements RemoteDecomposeService {
      */
     @Override
     @InnerAuth
-    @GetMapping("/targetDecomposeId")
+    @GetMapping("/decomposeDetails/targetDecomposeId")
     public R<List<TargetDecomposeDetailsDTO>> selectDecomposeDetailsBytargetDecomposeId(Long targetDecomposeId, String source) {
         return R.ok(targetDecomposeService.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId));
     }

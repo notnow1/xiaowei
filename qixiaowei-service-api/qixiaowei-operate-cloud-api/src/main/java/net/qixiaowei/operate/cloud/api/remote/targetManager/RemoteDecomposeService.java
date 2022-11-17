@@ -30,7 +30,7 @@ public interface RemoteDecomposeService {
      * @param source
      * @return
      */
-    @PostMapping("/targetDecompose/remote/targetDecomposeIds")
+    @PostMapping("/targetDecompose/remote/decomposeDetails/targetDecomposeIds")
     R<List<TargetDecomposeDTO>> selectBytargetDecomposeIds(@RequestBody  List<Long> targetDecomposeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 
