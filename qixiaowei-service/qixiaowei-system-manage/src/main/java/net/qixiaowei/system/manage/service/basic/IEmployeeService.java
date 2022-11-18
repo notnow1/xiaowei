@@ -143,4 +143,10 @@ public interface IEmployeeService{
      */
     List<EmployeeDTO> unallocatedUserList();
 
+    /**
+     * 分页查询岗位薪酬报表
+     * @param employeeDTO
+     * @return
+     */
+    List<EmployeeDTO> pagePostSalaryReportList(EmployeeDTO employeeDTO);
 }

@@ -172,6 +172,9 @@ public class Employee extends BaseEntity {
      * 紧急联系人电话
      */
     private  String emergencyMobile;
-
+    /**
+     * 职级体系ID
+     */
+    private  Long officialRankSystemId;
 }
 

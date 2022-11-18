@@ -63,18 +63,22 @@ public class Post extends BaseEntity {
      * 职级体系名称
      */
     private String officialRankSystemName;
- /**
-  * 岗位职级下限
-  */
- private  String postRankLowerName;
- /**
-  * 岗位职级上限
-  */
- private  String postRankUpperName;
- /**
-  * 岗位职级
-  */
- private  String postRankName;
+    /**
+     * 岗位职级下限
+     */
+    private String postRankLowerName;
+    /**
+     * 岗位职级上限
+     */
+    private String postRankUpperName;
+    /**
+     * 岗位职级
+     */
+    private String postRankName;
+    /**
+     * 部门ID
+     */
+    private Long departmentId;
 
 }
 

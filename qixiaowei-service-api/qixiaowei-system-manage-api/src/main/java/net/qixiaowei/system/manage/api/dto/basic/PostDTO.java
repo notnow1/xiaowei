@@ -128,5 +128,9 @@ public class PostDTO {
      * 部门表集合
      */
     private List<DepartmentDTO> departmentDTOList;
+    /**
+     * 部门ID
+     */
+    private  Long departmentId;
 }
 

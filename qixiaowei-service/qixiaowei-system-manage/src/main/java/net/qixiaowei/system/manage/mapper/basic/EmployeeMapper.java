@@ -165,4 +165,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectCodeList(@Param("employeeCodes")List<String> employeeCodes);
+
+    /**
+     * 分页查询岗位薪酬报表
+     * @param employee
+     * @return
+     */
+    List<EmployeeDTO> selectPostSalaryReportList(@Param("employee") Employee employee);
 }

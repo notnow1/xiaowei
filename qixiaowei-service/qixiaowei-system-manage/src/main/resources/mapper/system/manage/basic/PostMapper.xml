@@ -75,6 +75,15 @@
         left join official_rank_system ors
         on p.official_rank_system_id = ors .official_rank_system_id
         and ors .delete_flag = 0
+        <if test="post.departmentId != null ">
+            left join department_post dp
+            on dp.post_id  = p.post_id
+            and dp .delete_flag = 0
+            and dp.department_id =#{post.departmentId}
+            left join department d
+            on d.department_id  = dp.department_id
+            and d.delete_flag = 0
+        </if>
         where
         p.delete_flag = 0
         <if test="post.officialRankSystemName != null and post.postDescription != '' ">

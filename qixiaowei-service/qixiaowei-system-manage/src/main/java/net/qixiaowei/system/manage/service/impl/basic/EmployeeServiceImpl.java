@@ -482,6 +482,17 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return employeeMapper.unallocatedUserList();
     }
 
+    /**
+     * 分页查询岗位薪酬报表
+     * @param employeeDTO
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> pagePostSalaryReportList(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        return employeeMapper.selectPostSalaryReportList(employee);
+    }
 
 
     /**

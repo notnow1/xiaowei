@@ -274,6 +274,21 @@ public class EmployeeDTO implements Serializable{
 
     /** 请求参数 */
     private Map<String, Object> params;
-
+    /**
+     * 主管
+     */
+    private String inCharge;
+    /**
+     * 职级体系名称
+     */
+    private String officialRankSystemName;
+    /**
+     * 职级体系ID
+     */
+    private  Long officialRankSystemId;
+    /**
+     * 司龄
+     */
+    private  String workingAge;
 }
 

@@ -43,6 +43,15 @@ public class EmployeeController extends BaseController {
     private IEmployeeService employeeService;
 
     /**
+     * 分页查询岗位薪酬报表
+     */
+    //@RequiresPermissions("system:manage:employee:pageList")
+    @GetMapping("/pagePostSalaryReportList")
+    public AjaxResult pagePostSalaryReportList(EmployeeDTO employeeDTO) {
+        List<EmployeeDTO> list = employeeService.pagePostSalaryReportList(employeeDTO);
+        return AjaxResult.success(list);
+    }
+    /**
      * 导出人员
      */
     @SneakyThrows
