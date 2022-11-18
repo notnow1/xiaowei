@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.qixiaowei.integration.common.text.Convert;
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
@@ -57,10 +58,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();
-        head0.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+        head0.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
         // 第一列
         List<String> headNull = new ArrayList<String>();
-        headNull.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+        head0.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
         headNull.add("");
         list.add(head0);
         list.add(headNull);
@@ -68,57 +69,57 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         for (Map<String, String> stringStringMap : fileNameList) {
             // 动态列
             List<String> head1 = new ArrayList<String>();
-            head1.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+            head1.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
             head1.add("分解维度");
             head1.add(stringStringMap.get("label"));
             list.add(head1);
         }
-        if (1 == targetDecomposeDTO.getTimeDimension()){
+        if (1 == targetDecomposeDTO.getTimeDimension()) {
 
             // 动态列
             List<String> head2 = new ArrayList<String>();
-            head2.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+            head2.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
             head2.add("时间维度");
             head2.add("年度");
             list.add(head2);
-        }else if (2 == targetDecomposeDTO.getTimeDimension()){
+        } else if (2 == targetDecomposeDTO.getTimeDimension()) {
             // 动态列
             List<String> head2 = new ArrayList<String>();
-            head2.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+            head2.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
             head2.add("时间维度");
             head2.add("上年度");
             // 动态列
             List<String> head3 = new ArrayList<String>();
-            head3.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+            head3.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
             head3.add("时间维度");
             head3.add("下年度");
             list.add(head2);
             list.add(head3);
-        }else if (3 == targetDecomposeDTO.getTimeDimension()){
+        } else if (3 == targetDecomposeDTO.getTimeDimension()) {
             for (int i = 1; i <= 4; i++) {
                 // 动态列
                 List<String> head2 = new ArrayList<String>();
-                head2.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+                head2.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
                 head2.add("时间维度");
-                head2.add(Convert.int2chineseNum(i)+"季度");
+                head2.add(Convert.int2chineseNum(i) + "季度");
                 list.add(head2);
             }
-        }else if (4 == targetDecomposeDTO.getTimeDimension()){
+        } else if (4 == targetDecomposeDTO.getTimeDimension()) {
             for (int i = 1; i <= 12; i++) {
                 // 动态列
                 List<String> head2 = new ArrayList<String>();
-                head2.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+                head2.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
                 head2.add("时间维度");
-                head2.add(Convert.int2chineseNum(i)+"月度");
+                head2.add(i + "月度");
                 list.add(head2);
             }
-        }else if (5 == targetDecomposeDTO.getTimeDimension()){
+        } else if (5 == targetDecomposeDTO.getTimeDimension()) {
             for (int i = 1; i <= 52; i++) {
                 // 动态列
                 List<String> head2 = new ArrayList<String>();
-                head2.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
+                head2.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
                 head2.add("时间维度");
-                head2.add(Convert.int2chineseNum(i)+"周");
+                head2.add(i + "周");
                 list.add(head2);
             }
         }
@@ -205,41 +206,49 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         }
         return list;
     }
+
     /**
      * excel解析导出数据
      *
      * @param targetDecomposeDTO
      * @return
      */
-    public static List excelParseObject  (TargetDecomposeDTO targetDecomposeDTO ) {
+    public static List excelParseObject(TargetDecomposeDTO targetDecomposeDTO) {
         List<List<Object>> list = new ArrayList<List<Object>>();
-        if (StringUtils.isNull(targetDecomposeDTO)){
-            List<Object> list1 = new ArrayList<>();
-            TargetDecomposeImportListener.excelParseObject(list1,list,targetDecomposeDTO);
-        }else {
-            List<Object> list1 = new ArrayList<>();
-            TargetDecomposeImportListener.excelParseObject(list1,list,targetDecomposeDTO);
-
-        }
-
+        TargetDecomposeImportListener.excelParseObject(list, targetDecomposeDTO);
         return list;
     }
 
     /**
      * 封装excel重复数据
-     * @param list1
+     *
      * @param list
      */
-    public static void excelParseObject  (List<Object> list1,List<List<Object>> list,TargetDecomposeDTO targetDecomposeDTO) {
+    public static void excelParseObject(List<List<Object>> list, TargetDecomposeDTO targetDecomposeDTO) {
+        List<Object> list1 = new ArrayList<>();
+        List<Object> list2 = new ArrayList<>();
+        List<Object> list3 = new ArrayList<>();
+        List<Object> list4 = new ArrayList<>();
+        List<Object> list5 = new ArrayList<>();
+        List<Object> list6 = new ArrayList<>();
+        List<Object> list7 = new ArrayList<>();
+        List<Object> list8 = new ArrayList<>();
         list1.add("目标年度：" + targetDecomposeDTO.getTargetYear());
-        list1.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
-        list1.add("挑战值：" + targetDecomposeDTO.getChallengeValue());
-        list1.add("目标值：" + targetDecomposeDTO.getTargetValue());
-        list1.add("保底值：" + targetDecomposeDTO.getGuaranteedValue());
-        list1.add("分解目标：" + targetDecomposeDTO.getDecomposeTarget());
-        list1.add("");
-        list1.add("注：省份维度录入汉字，部门/销售员/产品/区域/行业维度录入编码");
+        list2.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
+        list3.add("挑战值：" + targetDecomposeDTO.getChallengeValue());
+        list4.add("目标值：" + targetDecomposeDTO.getTargetValue());
+        list5.add("保底值：" + targetDecomposeDTO.getGuaranteedValue());
+        list6.add("分解目标：" + targetDecomposeDTO.getDecomposeTarget());
+        list7.add("");
+        list8.add("注：省份维度录入汉字，部门/销售员/产品/区域/行业维度录入编码");
         list.add(list1);
+        list.add(list2);
+        list.add(list3);
+        list.add(list4);
+        list.add(list5);
+        list.add(list6);
+        list.add(list7);
+        list.add(list8);
     }
 }
 

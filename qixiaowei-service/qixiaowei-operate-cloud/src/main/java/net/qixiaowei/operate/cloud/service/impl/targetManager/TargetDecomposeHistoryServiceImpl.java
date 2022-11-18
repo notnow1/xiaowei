@@ -554,7 +554,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)){
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getEmployeeId() == datum.getEmployeeId()){
+                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId() == datum.getEmployeeId()){
                                 targetDecomposeDetailsDTO.setPrincipalEmployeeId(datum.getEmployeeId());
                                 targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
                             }
@@ -637,9 +637,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(employeeIdCollect, SecurityConstants.INNER);
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)){
-                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
-                        decomposeDetailsSnapshotDTOS.get(i).setEmployeeId(data.get(i).getEmployeeId());
-                        decomposeDetailsSnapshotDTOS.get(i).setEmployeeName(data.get(i).getEmployeeName());
+                    for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
+                        for (EmployeeDTO datum : data) {
+                            if (decomposeDetailsSnapshotDTO.getEmployeeId() == datum.getEmployeeId()){
+                                decomposeDetailsSnapshotDTO.setEmployeeId(datum.getEmployeeId());
+                                decomposeDetailsSnapshotDTO.setEmployeeName(datum.getEmployeeName());
+                            }
+                        }
                     }
                 }
             }
@@ -648,9 +652,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(principalEmployeeIdCollect, SecurityConstants.INNER);
                 List<EmployeeDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)){
-                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
-                        decomposeDetailsSnapshotDTOS.get(i).setPrincipalEmployeeId(data.get(i).getEmployeeId());
-                        decomposeDetailsSnapshotDTOS.get(i).setPrincipalEmployeeName(data.get(i).getEmployeeName());
+                    for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
+                        for (EmployeeDTO datum : data) {
+                            if (decomposeDetailsSnapshotDTO.getPrincipalEmployeeId() == datum.getEmployeeId()){
+                                decomposeDetailsSnapshotDTO.setPrincipalEmployeeId(datum.getEmployeeId());
+                                decomposeDetailsSnapshotDTO.setPrincipalEmployeeName(datum.getEmployeeName());
+                            }
+                        }
                     }
                 }
             }
@@ -659,9 +667,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(departmentIdCollect, SecurityConstants.INNER);
                 List<DepartmentDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)){
-                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
-                        decomposeDetailsSnapshotDTOS.get(i).setDepartmentId(data.get(i).getDepartmentId());
-                        decomposeDetailsSnapshotDTOS.get(i).setDepartmentName(data.get(i).getDepartmentName());
+                    for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
+                        for (DepartmentDTO datum : data) {
+                            if (decomposeDetailsSnapshotDTO.getDepartmentId() == datum.getDepartmentId()){
+                                decomposeDetailsSnapshotDTO.setDepartmentId(datum.getDepartmentId());
+                                decomposeDetailsSnapshotDTO.setDepartmentName(datum.getDepartmentName());
+                            }
+                        }
                     }
                 }
             }
@@ -670,9 +682,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 R<List<RegionDTO>> regionsByIds = remoteRegionService.getRegionsByIds(regionIdCollect, SecurityConstants.INNER);
                 List<RegionDTO> data = regionsByIds.getData();
                 if (StringUtils.isNotEmpty(data)){
-                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
-                        decomposeDetailsSnapshotDTOS.get(i).setRegionId(data.get(i).getRegionId());
-                        decomposeDetailsSnapshotDTOS.get(i).setRegionName(data.get(i).getRegionName());
+                    for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
+                        for (RegionDTO datum : data) {
+                            if (decomposeDetailsSnapshotDTO.getRegionId() == datum.getRegionId()){
+                                decomposeDetailsSnapshotDTO.setRegionId(datum.getRegionId());
+                                decomposeDetailsSnapshotDTO.setRegionName(datum.getRegionName());
+                            }
+                        }
                     }
                 }
             }
@@ -681,9 +697,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 R<List<IndustryDTO>> listR = remoteIndustryService.selectByIds(industryIdCollect, SecurityConstants.INNER);
                 List<IndustryDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)){
-                    for (int i = 0; i < decomposeDetailsSnapshotDTOS.size(); i++) {
-                        decomposeDetailsSnapshotDTOS.get(i).setIndustryId(data.get(i).getIndustryId());
-                        decomposeDetailsSnapshotDTOS.get(i).setIndustryName(data.get(i).getIndustryName());
+                    for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
+                        for (IndustryDTO datum : data) {
+                            if (decomposeDetailsSnapshotDTO.getIndustryId() == datum.getIndustryId()){
+                                decomposeDetailsSnapshotDTO.setIndustryId(datum.getIndustryId());
+                                decomposeDetailsSnapshotDTO.setIndustryName(datum.getIndustryName());
+                            }
+                        }
                     }
                 }
 
@@ -768,8 +788,14 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 targetDecomposeHistory.setTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
                 //版本号
                 targetDecomposeHistory.setVersion("V"+i+".0");
-                //预测周期
-                targetDecomposeHistory.setForecastCycle(Convert.int2chineseNum(i)+this.packForecastCycleType(targetDecomposeDTO));
+                if (targetDecomposeDTO.getTimeDimension() == 3){
+                    //预测周期
+                    targetDecomposeHistory.setForecastCycle(Convert.int2chineseNum(i)+this.packForecastCycleType(targetDecomposeDTO));
+                }else {
+                    //预测周期
+                    targetDecomposeHistory.setForecastCycle(i+this.packForecastCycleType(targetDecomposeDTO));
+                }
+
                 targetDecomposeHistory.setCreateBy(SecurityUtils.getUserId());
                 targetDecomposeHistory.setCreateTime(DateUtils.getNowDate());
                 targetDecomposeHistory.setUpdateTime(DateUtils.getNowDate());
@@ -854,9 +880,9 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         } else if (targetDecomposeDTO.getTimeDimension() == 3) {
             forecastCycle = Convert.int2chineseNum(DateUtils.getQuarter()) + "季度";
         } else if (targetDecomposeDTO.getTimeDimension() == 4) {
-            forecastCycle = Convert.int2chineseNum(DateUtils.getMonth()) + "月";
+            forecastCycle = DateUtils.getMonth() + "月";
         } else if (targetDecomposeDTO.getTimeDimension() == 5) {
-            forecastCycle = Convert.int2chineseNum(DateUtils.getDayOfWeek()) + "周";
+            forecastCycle = DateUtils.getDayOfWeek() + "周";
         }
         return forecastCycle;
     }

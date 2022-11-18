@@ -403,11 +403,10 @@ public class TargetDecomposeController extends BaseController {
      * 目标分解导出列表模板Excel
      */
     @SneakyThrows
-    @GetMapping("/export-template")
-    public void importTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
-        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeService.selectTargetDecomposeByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+    @PostMapping("/export-template")
+    public void importTargetDecompose(@RequestBody TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
         //自定义表头
-        List<List<String>> head = TargetDecomposeImportListener.headTemplate(targetDecomposeDTO1);
+        List<List<String>> head = TargetDecomposeImportListener.headTemplate(targetDecomposeDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("自定义目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)

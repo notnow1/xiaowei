@@ -39,7 +39,7 @@ public class RemoteIndustry implements RemoteIndustryService {
      */
     @Override
     @InnerAuth
-    @GetMapping("/listById")
+    @GetMapping("/selectById")
     public R<IndustryDTO> selectById(Long industryId, String source) {
         return R.ok(industryService.selectIndustryByIndustryId(industryId));
     }
@@ -53,7 +53,7 @@ public class RemoteIndustry implements RemoteIndustryService {
      */
     @Override
     @InnerAuth
-    @PostMapping("/listByIds")
+    @PostMapping("/selectByIds")
     public R<List<IndustryDTO>> selectByIds(List<Long> industryIds, String source) {
         return R.ok(industryService.selectIndustryByIndustryIds(industryIds));
     }
