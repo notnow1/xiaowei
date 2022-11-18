@@ -405,8 +405,9 @@ public class TargetDecomposeController extends BaseController {
     @SneakyThrows
     @GetMapping("/export-template")
     public void importTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
+        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeService.selectTargetDecomposeByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
         //自定义表头
-        List<List<String>> head = TargetDecomposeImportListener.headTemplate(targetDecomposeDTO);
+        List<List<String>> head = TargetDecomposeImportListener.headTemplate(targetDecomposeDTO1);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("自定义目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
@@ -418,7 +419,7 @@ public class TargetDecomposeController extends BaseController {
                 .sheet("自定义目标分解详情")// 设置 sheet 的名字
                 // 自适应列宽
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .doWrite(new ArrayList<>());
+                .doWrite(TargetDecomposeImportListener.excelParseObject(targetDecomposeDTO));
     }
     /**
      * 解析Excel

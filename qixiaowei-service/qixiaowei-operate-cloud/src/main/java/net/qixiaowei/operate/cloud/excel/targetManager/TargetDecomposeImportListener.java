@@ -95,36 +95,30 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             list.add(head2);
             list.add(head3);
         }else if (3 == targetDecomposeDTO.getTimeDimension()){
-            List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
-            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS();
-            for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
+            for (int i = 1; i <= 4; i++) {
                 // 动态列
                 List<String> head2 = new ArrayList<String>();
                 head2.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
                 head2.add("时间维度");
-                head2.add(Convert.int2chineseNum(decomposeDetailCyclesDTO.getCycleNumber())+"季度");
+                head2.add(Convert.int2chineseNum(i)+"季度");
                 list.add(head2);
             }
         }else if (4 == targetDecomposeDTO.getTimeDimension()){
-            List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
-            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS();
-            for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
+            for (int i = 1; i <= 12; i++) {
                 // 动态列
                 List<String> head2 = new ArrayList<String>();
                 head2.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
                 head2.add("时间维度");
-                head2.add(Convert.int2chineseNum(decomposeDetailCyclesDTO.getCycleNumber())+"月度");
+                head2.add(Convert.int2chineseNum(i)+"月度");
                 list.add(head2);
             }
         }else if (5 == targetDecomposeDTO.getTimeDimension()){
-            List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
-            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS();
-            for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
+            for (int i = 1; i <= 52; i++) {
                 // 动态列
                 List<String> head2 = new ArrayList<String>();
                 head2.add(targetDecomposeDTO.getIndicatorName()+"目标分解");
                 head2.add("时间维度");
-                head2.add(Convert.int2chineseNum(decomposeDetailCyclesDTO.getCycleNumber())+"周");
+                head2.add(Convert.int2chineseNum(i)+"周");
                 list.add(head2);
             }
         }
@@ -133,7 +127,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
 
     @Override
     public void invoke(Map<Integer, String> map, AnalysisContext analysisContext) {
-            listMap.add(map);
+        listMap.add(map);
     }
 
     @Override

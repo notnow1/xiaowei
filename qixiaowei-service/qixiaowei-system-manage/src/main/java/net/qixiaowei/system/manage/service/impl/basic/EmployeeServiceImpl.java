@@ -220,8 +220,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 R<List<TargetDecomposeDetailsDTO>> decomposeDetails = remoteDecomposeService.getDecomposeDetails(targetDecomposeDetailsDTO, SecurityConstants.INNER);
                 List<TargetDecomposeDetailsDTO> data = decomposeDetails.getData();
                 if (StringUtils.isNotEmpty(data)){
-                    for (int i1 = 0; i1 < employeeDTOList.size(); i1++) {
-                        employeeDTOList.get(i1).setTargetDecomposeId(data.get(i).getTargetDecomposeId());
+                    for (EmployeeDTO employeeDTO : employeeDTOList) {
+                        for (TargetDecomposeDetailsDTO datum : data) {
+                            if (employeeDTO.getEmployeeId() == datum.getEmployeeId()){
+                                employeeDTO.setTargetDecomposeId(datum.getTargetDecomposeId());
+                            }
+                        }
                     }
                     List<Long> collect2 = employeeDTOList.stream().map(EmployeeDTO::getTargetDecomposeId).collect(Collectors.toList());
 
@@ -229,8 +233,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     R<List<TargetDecomposeDTO>> listR = remoteDecomposeService.selectBytargetDecomposeIds(collect2, SecurityConstants.INNER);
                     List<TargetDecomposeDTO> data1 = listR.getData();
                     if (StringUtils.isNotEmpty(data1)){
-                        for (int i1 = 0; i1 < employeeDTOList.size(); i1++) {
-                            employeeDTOList.get(i1).setIndicatorName(data1.get(i1).getIndicatorName());
+                        for (EmployeeDTO employeeDTO : employeeDTOList) {
+                            for (TargetDecomposeDTO targetDecomposeDTO : data1) {
+                                if (employeeDTO.getTargetDecomposeId() == targetDecomposeDTO.getTargetDecomposeId()){
+                                    employeeDTO.setIndicatorName(targetDecomposeDTO.getIndicatorName());
+                                }
+                            }
                         }
                     }
                 }
