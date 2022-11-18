@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.EmolumentPlanMapper">
+    <!--    查询薪酬规划表-->
+    <select id="selectEmolumentPlanByEmolumentPlanId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO">
+        SELECT
+        emolument_plan_id, plan_year, revenue_before_one, revenue, revenue_after_one, revenue_after_two, er_before_one, emolument_revenue_improve, er_improve_after_one, er_improve_after_two, emolument_package_before_one, delete_flag, create_by, create_time, update_by, update_time
+        FROM emolument_plan
+        WHERE  emolument_plan_id=#{emolumentPlanId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询薪酬规划表-->
+    <select id="selectEmolumentPlanByEmolumentPlanIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO">
+        SELECT
+        emolument_plan_id, plan_year, revenue_before_one, revenue, revenue_after_one, revenue_after_two, er_before_one, emolument_revenue_improve, er_improve_after_one, er_improve_after_two, emolument_package_before_one, delete_flag, create_by, create_time, update_by, update_time
+        FROM emolument_plan
+        WHERE  emolument_plan_id in
+            <foreach item="item"
+                     collection="emolumentPlanIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询薪酬规划表列表-->
+    <select id="selectEmolumentPlanList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO">
+        SELECT
+        emolument_plan_id, plan_year, revenue_before_one, revenue, revenue_after_one, revenue_after_two, er_before_one, emolument_revenue_improve, er_improve_after_one, er_improve_after_two, emolument_package_before_one, delete_flag, create_by, create_time, update_by, update_time
+        FROM emolument_plan
+        WHERE delete_flag=0
+                <if test="emolumentPlan.emolumentPlanId != null">
+                    and emolument_plan_id=#{emolumentPlan.emolumentPlanId}
+                </if>
+                <if test="emolumentPlan.planYear != null">
+                    and plan_year=#{emolumentPlan.planYear}
+                </if>
+                <if test="emolumentPlan.revenueBeforeOne != null">
+                    and revenue_before_one=#{emolumentPlan.revenueBeforeOne}
+                </if>
+                <if test="emolumentPlan.revenue != null">
+                    and revenue=#{emolumentPlan.revenue}
+                </if>
+                <if test="emolumentPlan.revenueAfterOne != null">
+                    and revenue_after_one=#{emolumentPlan.revenueAfterOne}
+                </if>
+                <if test="emolumentPlan.revenueAfterTwo != null">
+                    and revenue_after_two=#{emolumentPlan.revenueAfterTwo}
+                </if>
+                <if test="emolumentPlan.erBeforeOne != null">
+                    and er_before_one=#{emolumentPlan.erBeforeOne}
+                </if>
+                <if test="emolumentPlan.emolumentRevenueImprove != null">
+                    and emolument_revenue_improve=#{emolumentPlan.emolumentRevenueImprove}
+                </if>
+                <if test="emolumentPlan.erImproveAfterOne != null">
+                    and er_improve_after_one=#{emolumentPlan.erImproveAfterOne}
+                </if>
+                <if test="emolumentPlan.erImproveAfterTwo != null">
+                    and er_improve_after_two=#{emolumentPlan.erImproveAfterTwo}
+                </if>
+                <if test="emolumentPlan.emolumentPackageBeforeOne != null">
+                    and emolument_package_before_one=#{emolumentPlan.emolumentPackageBeforeOne}
+                </if>
+                <if test="emolumentPlan.deleteFlag != null">
+                    and delete_flag=#{emolumentPlan.deleteFlag}
+                </if>
+                <if test="emolumentPlan.createBy != null">
+                    and create_by=#{emolumentPlan.createBy}
+                </if>
+                <if test="emolumentPlan.createTime != null">
+                    and create_time=#{emolumentPlan.createTime}
+                </if>
+                <if test="emolumentPlan.updateBy != null">
+                    and update_by=#{emolumentPlan.updateBy}
+                </if>
+                <if test="emolumentPlan.updateTime != null">
+                    and update_time=#{emolumentPlan.updateTime}
+                </if>
+    </select>
+    <!--新增薪酬规划表-->
+    <insert id="insertEmolumentPlan" useGeneratedKeys="true" keyProperty="emolumentPlanId">
+        INSERT INTO emolument_plan (plan_year,revenue_before_one,revenue,revenue_after_one,revenue_after_two,er_before_one,emolument_revenue_improve,er_improve_after_one,er_improve_after_two,emolument_package_before_one,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{emolumentPlan.planYear},#{emolumentPlan.revenueBeforeOne},#{emolumentPlan.revenue},#{emolumentPlan.revenueAfterOne},#{emolumentPlan.revenueAfterTwo},#{emolumentPlan.erBeforeOne},#{emolumentPlan.emolumentRevenueImprove},#{emolumentPlan.erImproveAfterOne},#{emolumentPlan.erImproveAfterTwo},#{emolumentPlan.emolumentPackageBeforeOne},#{emolumentPlan.deleteFlag},#{emolumentPlan.createBy},#{emolumentPlan.createTime},#{emolumentPlan.updateBy},#{emolumentPlan.updateTime})
+    </insert>
+    <!--修改薪酬规划表-->
+    <update id="updateEmolumentPlan">
+        UPDATE emolument_plan
+        SET
+                    <if test="emolumentPlan.planYear != null">
+                        plan_year=#{emolumentPlan.planYear},
+                    </if>
+                    <if test="emolumentPlan.revenueBeforeOne != null">
+                        revenue_before_one=#{emolumentPlan.revenueBeforeOne},
+                    </if>
+                    <if test="emolumentPlan.revenue != null">
+                        revenue=#{emolumentPlan.revenue},
+                    </if>
+                    <if test="emolumentPlan.revenueAfterOne != null">
+                        revenue_after_one=#{emolumentPlan.revenueAfterOne},
+                    </if>
+                    <if test="emolumentPlan.revenueAfterTwo != null">
+                        revenue_after_two=#{emolumentPlan.revenueAfterTwo},
+                    </if>
+                    <if test="emolumentPlan.erBeforeOne != null">
+                        er_before_one=#{emolumentPlan.erBeforeOne},
+                    </if>
+                    <if test="emolumentPlan.emolumentRevenueImprove != null">
+                        emolument_revenue_improve=#{emolumentPlan.emolumentRevenueImprove},
+                    </if>
+                    <if test="emolumentPlan.erImproveAfterOne != null">
+                        er_improve_after_one=#{emolumentPlan.erImproveAfterOne},
+                    </if>
+                    <if test="emolumentPlan.erImproveAfterTwo != null">
+                        er_improve_after_two=#{emolumentPlan.erImproveAfterTwo},
+                    </if>
+                    <if test="emolumentPlan.emolumentPackageBeforeOne != null">
+                        emolument_package_before_one=#{emolumentPlan.emolumentPackageBeforeOne},
+                    </if>
+                    <if test="emolumentPlan.deleteFlag != null">
+                        delete_flag=#{emolumentPlan.deleteFlag},
+                    </if>
+                    <if test="emolumentPlan.createBy != null">
+                        create_by=#{emolumentPlan.createBy},
+                    </if>
+                    <if test="emolumentPlan.createTime != null">
+                        create_time=#{emolumentPlan.createTime},
+                    </if>
+                    <if test="emolumentPlan.updateBy != null">
+                        update_by=#{emolumentPlan.updateBy},
+                    </if>
+                    <if test="emolumentPlan.updateTime != null">
+                        update_time=#{emolumentPlan.updateTime}
+                    </if>
+        WHERE
+                 emolument_plan_id=#{emolumentPlan.emolumentPlanId}
+    </update>
+    <!--逻辑删除薪酬规划表-->
+    <update id="logicDeleteEmolumentPlanByEmolumentPlanId">
+        UPDATE emolument_plan
+        SET     delete_flag= 1,
+                update_by=#{emolumentPlan.updateBy},
+                update_time=#{emolumentPlan.updateTime}
+        WHERE
+                emolument_plan_id=#{emolumentPlan.emolumentPlanId}
+    </update>
+    <!--逻辑批量删除薪酬规划表-->
+    <update id="logicDeleteEmolumentPlanByEmolumentPlanIds">
+        UPDATE emolument_plan
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         emolument_plan_id IN
+            <foreach item="item"
+                     collection="emolumentPlanIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增薪酬规划表-->
+    <insert id="batchEmolumentPlan">
+        INSERT INTO emolument_plan (plan_year,revenue_before_one,revenue,revenue_after_one,revenue_after_two,er_before_one,emolument_revenue_improve,er_improve_after_one,er_improve_after_two,emolument_package_before_one,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="emolumentPlans"
+                 separator=",">
+            (#{item.planYear},#{item.revenueBeforeOne},#{item.revenue},#{item.revenueAfterOne},#{item.revenueAfterTwo},#{item.erBeforeOne},#{item.emolumentRevenueImprove},#{item.erImproveAfterOne},#{item.erImproveAfterTwo},#{item.emolumentPackageBeforeOne},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除薪酬规划表-->
+    <delete id="deleteEmolumentPlanByEmolumentPlanId">
+        DELETE FROM emolument_plan
+        WHERE  emolument_plan_id=#{emolumentPlan}
+
+    </delete>
+    <!--物理批量删除薪酬规划表-->
+    <delete id="deleteEmolumentPlanByEmolumentPlanIds">
+        DELETE FROM emolument_plan
+        WHERE  emolument_plan_id IN
+            <foreach item="item"
+                     collection="emolumentPlanIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改薪酬规划表-->
+    <update id="updateEmolumentPlans">
+        update emolument_plan
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="plan_year=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.planYear != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.planYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="revenue_before_one=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.revenueBeforeOne != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.revenueBeforeOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="revenue=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.revenue != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.revenue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="revenue_after_one=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.revenueAfterOne != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.revenueAfterOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="revenue_after_two=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.revenueAfterTwo != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.revenueAfterTwo}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="er_before_one=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.erBeforeOne != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.erBeforeOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="emolument_revenue_improve=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.emolumentRevenueImprove != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.emolumentRevenueImprove}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="er_improve_after_one=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.erImproveAfterOne != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.erImproveAfterOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="er_improve_after_two=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.erImproveAfterTwo != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.erImproveAfterTwo}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="emolument_package_before_one=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.emolumentPackageBeforeOne != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.emolumentPackageBeforeOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="emolumentPlanList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when emolument_plan_id=#{item.emolumentPlanId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="emolumentPlanList" separator="or" item="item" index="index">
+                    emolument_plan_id=#{item.emolumentPlanId}
+        </foreach>
+    </update>
+</mapper>
+
+
