@@ -52,14 +52,6 @@ public class EmployeeController extends BaseController {
         return AjaxResult.success(list);
     }
     /**
-     * 导出人员
-     */
-    @SneakyThrows
-    @GetMapping("test")
-    public void test(@RequestParam Map<String, Object> employee,EmployeeDTO employeeDTO, HttpServletResponse response) {
-
-    }
-    /**
      * 导入人员
      */
     @PostMapping("import")
