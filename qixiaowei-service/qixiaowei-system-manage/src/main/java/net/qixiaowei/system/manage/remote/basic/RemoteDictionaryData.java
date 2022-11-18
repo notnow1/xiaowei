@@ -25,7 +25,7 @@ public class RemoteDictionaryData implements RemoteDictionaryDataService {
     @Override
     @InnerAuth
     @GetMapping("/{dictionaryDataId}")
-    public R<DictionaryDataDTO> info(Long dictionaryDataId, String source) {
+    public R<DictionaryDataDTO> info(@RequestParam("dictionaryDataId") Long dictionaryDataId, String source) {
         return R.ok(dictionaryDataService.selectDictionaryDataByDictionaryDataId(dictionaryDataId));
     }
 

@@ -38,7 +38,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
     @Override
     @InnerAuth
     @GetMapping("/departmentId")
-    public R<DepartmentDTO> selectdepartmentId(Long departmentId, String source) {
+    public R<DepartmentDTO> selectdepartmentId(@RequestParam("departmentId") Long departmentId, String source) {
         return R.ok(departmentService.selectDepartmentByDepartmentId(departmentId));
     }
 

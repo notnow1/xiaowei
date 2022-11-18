@@ -52,7 +52,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @Override
     @InnerAuth
     @GetMapping("/employeeId")
-    public R<EmployeeDTO> selectByEmployeeId(Long employeeId, String source) {
+    public R<EmployeeDTO> selectByEmployeeId(@RequestParam("employeeId")Long employeeId, String source) {
         return R.ok(employeeService.selectEmployeeByEmployeeId(employeeId));
     }
 

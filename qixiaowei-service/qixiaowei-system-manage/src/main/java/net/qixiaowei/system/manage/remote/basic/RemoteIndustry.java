@@ -40,7 +40,7 @@ public class RemoteIndustry implements RemoteIndustryService {
     @Override
     @InnerAuth
     @GetMapping("/selectById")
-    public R<IndustryDTO> selectById(Long industryId, String source) {
+    public R<IndustryDTO> selectById(@RequestParam("industryId") Long industryId, String source) {
         return R.ok(industryService.selectIndustryByIndustryId(industryId));
     }
 

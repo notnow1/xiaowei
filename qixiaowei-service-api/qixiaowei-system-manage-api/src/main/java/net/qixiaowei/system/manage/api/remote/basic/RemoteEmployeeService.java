@@ -6,10 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteEmployeeFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,7 +44,7 @@ public interface RemoteEmployeeService {
      * @return 结果
      */
     @GetMapping(API_PREFIX_EMPLOYEE + "/employeeId")
-    R<EmployeeDTO> selectByEmployeeId(Long employeeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<EmployeeDTO> selectByEmployeeId(@RequestParam("employeeId")Long employeeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过id集合查找人员列表

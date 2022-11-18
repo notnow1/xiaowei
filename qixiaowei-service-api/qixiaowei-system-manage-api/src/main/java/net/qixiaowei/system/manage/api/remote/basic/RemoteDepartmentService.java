@@ -6,10 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteDepartmentFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,7 +33,7 @@ public interface RemoteDepartmentService {
      * @return
      */
     @GetMapping(API_PREFIX_DEPARTMEN + "/departmentId")
-    R<DepartmentDTO> selectdepartmentId(Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<DepartmentDTO> selectdepartmentId(@RequestParam("departmentId")  Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过id集合查找部门信息

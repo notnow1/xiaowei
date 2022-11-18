@@ -21,7 +21,7 @@ public interface RemoteDictionaryDataService {
      * 根据字典id查询字典数据表详情
      */
     @GetMapping(API_PREFIX_DICTIONARYDATA+"/dictionaryDataId")
-    public R<DictionaryDataDTO> info(Long dictionaryDataId,@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    public R<DictionaryDataDTO> info(@RequestParam("dictionaryDataId") Long dictionaryDataId,@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 根据字典id集合查询字典数据表详情
