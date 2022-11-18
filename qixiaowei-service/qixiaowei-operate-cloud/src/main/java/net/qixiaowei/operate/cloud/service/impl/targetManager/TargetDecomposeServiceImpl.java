@@ -1943,7 +1943,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getEmployeeId() == datum.getEmployeeId()){
+                            if (targetDecomposeDetailsDTO.getEmployeeId() == datum.getEmployeeId()) {
                                 targetDecomposeDetailsDTO.setEmployeeId(datum.getEmployeeId());
                                 targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
                             }
@@ -1958,7 +1958,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId() == datum.getEmployeeId()){
+                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId() == datum.getEmployeeId()) {
                                 targetDecomposeDetailsDTO.setPrincipalEmployeeId(datum.getEmployeeId());
                                 targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
                             }
@@ -1973,7 +1973,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (DepartmentDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getDepartmentId() == datum.getDepartmentId()){
+                            if (targetDecomposeDetailsDTO.getDepartmentId() == datum.getDepartmentId()) {
                                 targetDecomposeDetailsDTO.setDepartmentId(datum.getDepartmentId());
                                 targetDecomposeDetailsDTO.setDepartmentName(datum.getDepartmentName());
                             }
@@ -1988,7 +1988,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (RegionDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getRegionId() == datum.getRegionId()){
+                            if (targetDecomposeDetailsDTO.getRegionId() == datum.getRegionId()) {
                                 targetDecomposeDetailsDTO.setRegionId(datum.getRegionId());
                                 targetDecomposeDetailsDTO.setRegionName(datum.getRegionName());
                             }
@@ -2003,7 +2003,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (IndustryDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getIndustryId() == datum.getIndustryId()){
+                            if (targetDecomposeDetailsDTO.getIndustryId() == datum.getIndustryId()) {
                                 targetDecomposeDetailsDTO.setIndustryId(datum.getIndustryId());
                                 targetDecomposeDetailsDTO.setIndustryName(datum.getIndustryName());
                             }
@@ -2249,40 +2249,50 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             }
         });
-        //详情周期数据
-        for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
-            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
-            List<String> list = cyclesExcelData.get(i);
-            for (int i1 = 0; i1 < list.size(); i1++) {
-                DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
-                //周期
-                decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
-                if (StringUtils.isNotBlank(list.get(i1))) {
-                    //预测值
-                    decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal(list.get(i1)));
-                }
-                decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
-            }
-            targetDecomposeDetailsDTOS.get(i).setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOS);
-        }
-
-        //excel一行都是空的数据
-        List<TargetDecomposeDetailsDTO> deleteTargetExcelNullData = new ArrayList<>();
-        //去除无用数据
-        for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
-            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
-            //封装删除excel为空的数据
-            boolean flag = this.packDeleteExcelNullData(targetDecomposeDetailsDTOS.get(i));
-            if (flag) {
-                //周期数据必须全部为空
-                List<BigDecimal> collect = decomposeDetailCyclesDTOS.stream().map(DecomposeDetailCyclesDTO::getCycleForecast).filter(cycleForecast -> cycleForecast != null).collect(Collectors.toList());
-                if (StringUtils.isEmpty(collect)) {
-                    deleteTargetExcelNullData.add(targetDecomposeDetailsDTOS.get(i));
-                }
+        if (StringUtils.isEmpty(targetDecomposeDetailsDTOS) && StringUtils.isNotEmpty(cyclesExcelData)) {
+            for (int i = 0; i < cyclesExcelData.size(); i++) {
+                TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
+                targetDecomposeDetailsDTO.setEmployeeName("");
+                targetDecomposeDetailsDTOS.add(targetDecomposeDetailsDTO);
             }
         }
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+            //详情周期数据
+            for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
+                List<String> list = cyclesExcelData.get(i);
+                for (int i1 = 0; i1 < list.size(); i1++) {
+                    DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
+                    //周期
+                    decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
+                    if (StringUtils.isNotBlank(list.get(i1))) {
+                        //预测值
+                        decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal(list.get(i1)));
+                    }
+                    decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
+                }
+                targetDecomposeDetailsDTOS.get(i).setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOS);
+            }
 
-        targetDecomposeDetailsDTOS.removeAll(deleteTargetExcelNullData);
+            //excel一行都是空的数据
+            List<TargetDecomposeDetailsDTO> deleteTargetExcelNullData = new ArrayList<>();
+            //去除无用数据
+            for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
+                //封装删除excel为空的数据
+                boolean flag = this.packDeleteExcelNullData(targetDecomposeDetailsDTOS.get(i));
+                if (flag) {
+                    //周期数据必须全部为空
+                    List<BigDecimal> collect = decomposeDetailCyclesDTOS.stream().map(DecomposeDetailCyclesDTO::getCycleForecast).filter(cycleForecast -> cycleForecast != null).collect(Collectors.toList());
+                    if (StringUtils.isEmpty(collect)) {
+                        deleteTargetExcelNullData.add(targetDecomposeDetailsDTOS.get(i));
+                    }
+                }
+            }
+
+            targetDecomposeDetailsDTOS.removeAll(deleteTargetExcelNullData);
+        }
+
         //解析完成数据
         targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOS);
         return targetDecomposeDTO;
@@ -2295,7 +2305,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     private boolean packDeleteExcelNullData(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO) {
         boolean flag = false;
-        if (    null == targetDecomposeDetailsDTO.getEmployeeId() &&
+        if (null == targetDecomposeDetailsDTO.getEmployeeId() &&
                 null == targetDecomposeDetailsDTO.getDepartmentId() &&
                 null == targetDecomposeDetailsDTO.getRegionId() &&
                 null == targetDecomposeDetailsDTO.getAreaId() &&
@@ -2332,7 +2342,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         List<Object> EmployeeData = new ArrayList<>();
                         for (String s : list) {
                             for (EmployeeDTO employeeDTO : employeeDTOS) {
-                                if (StringUtils.equals(s,employeeDTO.getEmployeeCode())) {
+                                if (StringUtils.equals(s, employeeDTO.getEmployeeCode())) {
                                     EmployeeData.add(JSONObject.parseObject(JSONObject.toJSONString(employeeDTO)));
                                 }
                             }
@@ -2355,7 +2365,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         List<Object> areaData = new ArrayList<>();
                         for (String s : list) {
                             for (AreaDTO areaDTO : areaDTOS) {
-                                if (StringUtils.equals(s,areaDTO.getAreaCode())) {
+                                if (StringUtils.equals(s, areaDTO.getAreaCode())) {
                                     areaData.add(JSONObject.parseObject(JSONObject.toJSONString(areaDTO)));
                                 }
                             }
@@ -2380,7 +2390,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         List<Object> DepartmentData = new ArrayList<>();
                         for (String s : list) {
                             for (DepartmentDTO departmentDTO : departmentDTOS) {
-                                if (StringUtils.equals(s,departmentDTO.getDepartmentCode())) {
+                                if (StringUtils.equals(s, departmentDTO.getDepartmentCode())) {
                                     DepartmentData.add(JSONObject.parseObject(JSONObject.toJSONString(departmentDTO)));
                                 }
                             }
@@ -2405,7 +2415,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         List<Object> industryData = new ArrayList<>();
                         for (String s : list) {
                             for (IndustryDTO industryDTO : industryDTOS) {
-                                if (StringUtils.equals(s,industryDTO.getIndustryCode())) {
+                                if (StringUtils.equals(s, industryDTO.getIndustryCode())) {
                                     industryData.add(JSONObject.parseObject(JSONObject.toJSONString(industryDTO)));
                                 }
                             }
@@ -2430,7 +2440,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         List<Object> regionData = new ArrayList<>();
                         for (String s : list) {
                             for (RegionDTO regionDTO : regionDTOS) {
-                                if (StringUtils.equals(s,regionDTO.getProvinceName())) {
+                                if (StringUtils.equals(s, regionDTO.getProvinceName())) {
                                     regionData.add(JSONObject.parseObject(JSONObject.toJSONString(regionDTO)));
                                 }
                             }
@@ -2454,7 +2464,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         List<Object> productData = new ArrayList<>();
                         for (String s : list) {
                             for (ProductDTO productDTO : productDTOS) {
-                                if (StringUtils.equals(s,productDTO.getProductCode())) {
+                                if (StringUtils.equals(s, productDTO.getProductCode())) {
                                     productData.add(JSONObject.parseObject(JSONObject.toJSONString(productDTO)));
                                 }
                             }
