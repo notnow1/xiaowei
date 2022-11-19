@@ -1673,9 +1673,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     @Override
-    public TargetDecomposeDTO excelParseObject(MultipartFile file) {
-        //返回详情数据
-        TargetDecomposeDTO targetDecomposeDTO = new TargetDecomposeDTO();
+    public TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO,MultipartFile file) {
+
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = new ArrayList<>();
         //分解维度顺序排序

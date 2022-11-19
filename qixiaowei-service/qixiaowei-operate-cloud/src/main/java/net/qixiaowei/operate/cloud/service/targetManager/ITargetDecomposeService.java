@@ -296,7 +296,7 @@ public interface ITargetDecomposeService {
      *
      * @param file
      */
-    TargetDecomposeDTO  excelParseObject(MultipartFile file);
+    TargetDecomposeDTO  excelParseObject(TargetDecomposeDTO targetDecomposeDTO,MultipartFile file);
 
     /**
      * 目标分解(销售订单)导出列表Excel
