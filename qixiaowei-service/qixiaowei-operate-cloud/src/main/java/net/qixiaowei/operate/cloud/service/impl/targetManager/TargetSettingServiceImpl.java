@@ -725,11 +725,16 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             List<Long> indicatorIds = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).collect(Collectors.toList());
             R<List<IndicatorDTO>> listR1 = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR1.getData();
-            if (StringUtils.isNotEmpty(data)){
-                for (int i = 0; i < targetSettingDTOS.size(); i++) {
-                    targetSettingDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+            for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+                if (StringUtils.isNotEmpty(data)){
+                    for (IndicatorDTO datum : data) {
+                        if (settingDTO.getIndicatorId() == datum.getIndicatorId()){
+                            settingDTO.setIndicatorName(settingDTO.getIndicatorName());
+                        }
+                    }
                 }
             }
+
         }
         if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             for (TargetSettingDTO settingDTO : targetSettingDTOS) {

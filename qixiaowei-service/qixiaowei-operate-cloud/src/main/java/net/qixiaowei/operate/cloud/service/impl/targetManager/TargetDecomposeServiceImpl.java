@@ -316,11 +316,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             if (StringUtils.isNotEmpty(collect)) {
                 R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
                 List<IndicatorDTO> data = listR.getData();
-                if (StringUtils.isNotEmpty(data)) {
-                    for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
-                        targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+                for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
+                    if (StringUtils.isNotEmpty(data)) {
+                        for (IndicatorDTO datum : data) {
+                            if (targetDecomposeDTO.getIndicatorId() ==datum.getIndicatorId()){
+                                targetDecomposeDTO.setIndicatorName(datum.getIndicatorName());
+                            }
+                        }
                     }
                 }
+
             }
 
         }
@@ -737,17 +742,20 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             List<Long> indicatorIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).collect(Collectors.toList());
-
-            for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
                 //远程获取指标名称
                 R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
                 List<IndicatorDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
-                    targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
-                }
-                this.packDecompositionDimension(targetDecomposeDTOS.get(i));
-            }
+                    for (IndicatorDTO datum : data) {
+                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()){
+                            decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                        }
+                    }
 
+                }
+                this.packDecompositionDimension(decomposeDTO);
+            }
         }
         return targetDecomposeDTOS;
     }
