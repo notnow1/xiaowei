@@ -5,6 +5,9 @@ SET NAMES utf8mb4;
 -- initialization data
 -- ----------------------------
 
+-- ----------------------------
+-- init of distributed_lock
+-- ----------------------------
 INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('AsyncCommitting', ' ', 0);
 INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('RetryCommitting', ' ', 0);
 INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('RetryRollbacking', ' ', 0);

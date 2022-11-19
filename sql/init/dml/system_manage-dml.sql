@@ -5,6 +5,9 @@ SET NAMES utf8mb4;
 -- initialization data
 -- ----------------------------
 
+-- ----------------------------
+-- init of user
+-- ----------------------------
 INSERT INTO `user`
 (user_id, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status, delete_flag,
  create_by, create_time, update_by, update_time)
