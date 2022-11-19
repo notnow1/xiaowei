@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationDataDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
@@ -713,6 +714,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         list.add(IndicatorCode.INCOME.getCode());
         //回款金额（含税）
         list.add(IndicatorCode.RECEIVABLE.getCode());
+        //销售毛利
+        list.add(IndicatorCode.GROSS.getCode());
+        //PROFITS
+        list.add(IndicatorCode.RECEIVABLE.getCode());
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
         if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
@@ -729,7 +734,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 if (StringUtils.isNotEmpty(data)){
                     for (IndicatorDTO datum : data) {
                         if (settingDTO.getIndicatorId() == datum.getIndicatorId()){
-                            settingDTO.setIndicatorName(settingDTO.getIndicatorName());
+                            settingDTO.setIndicatorName(datum.getIndicatorName());
                         }
                     }
                 }
