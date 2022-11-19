@@ -11,6 +11,7 @@ import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,8 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
 
     @Autowired
     private RemoteIndicatorService remoteIndicatorService;
+    @Autowired
+    private RemoteUserService remoteUserService;
 
     /**
      * 查询薪酬规划表
@@ -62,6 +65,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
     public List<EmolumentPlanDTO> selectEmolumentPlanList(EmolumentPlanDTO emolumentPlanDTO) {
         EmolumentPlan emolumentPlan = new EmolumentPlan();
         BeanUtils.copyProperties(emolumentPlanDTO, emolumentPlan);
+
         return emolumentPlanMapper.selectEmolumentPlanList(emolumentPlan);
     }
 
@@ -99,6 +103,10 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
     public int updateEmolumentPlan(EmolumentPlanDTO emolumentPlanDTO) {
         EmolumentPlan emolumentPlan = new EmolumentPlan();
         BeanUtils.copyProperties(emolumentPlanDTO, emolumentPlan);
+        EmolumentPlanDTO emolumentPlanDTO1 = emolumentPlanMapper.selectEmolumentPlanByEmolumentPlanId(emolumentPlan.getEmolumentPlanId());
+        if (StringUtils.isNull(emolumentPlanDTO1)){
+            throw new ServiceException("数据不存在！！！");
+        }
         emolumentPlan.setUpdateTime(DateUtils.getNowDate());
         emolumentPlan.setUpdateBy(SecurityUtils.getUserId());
         return emolumentPlanMapper.updateEmolumentPlan(emolumentPlan);
@@ -112,6 +120,10 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      */
     @Override
     public int logicDeleteEmolumentPlanByEmolumentPlanIds(List<Long> emolumentPlanIds) {
+        List<EmolumentPlanDTO> emolumentPlanDTOS = emolumentPlanMapper.selectEmolumentPlanByEmolumentPlanIds(emolumentPlanIds);
+        if (StringUtils.isNotEmpty(emolumentPlanDTOS)){
+            throw new ServiceException("数据不存在！！！");
+        }
         return emolumentPlanMapper.logicDeleteEmolumentPlanByEmolumentPlanIds(emolumentPlanIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -123,6 +135,10 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      */
     @Override
     public int deleteEmolumentPlanByEmolumentPlanId(Long emolumentPlanId) {
+        EmolumentPlanDTO emolumentPlanDTO1 = emolumentPlanMapper.selectEmolumentPlanByEmolumentPlanId(emolumentPlanId);
+        if (StringUtils.isNull(emolumentPlanDTO1)){
+            throw new ServiceException("数据不存在！！！");
+        }
         return emolumentPlanMapper.deleteEmolumentPlanByEmolumentPlanId(emolumentPlanId);
     }
 
