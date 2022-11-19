@@ -492,9 +492,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             R<List<IndicatorDTO>> listR1 = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR1.getData();
             if (StringUtils.isNotEmpty(data)) {
-                for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
-                    targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+                for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                    for (IndicatorDTO datum : data) {
+                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()){
+                            decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                        }
+                    }
                 }
+
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
@@ -649,9 +654,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             R<List<IndicatorDTO>> listR1 = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR1.getData();
             if (StringUtils.isNotEmpty(data)) {
-                for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
-                    targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+                for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                    for (IndicatorDTO datum : data) {
+                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()){
+                            decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                        }
+                    }
                 }
+
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {

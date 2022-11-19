@@ -48,11 +48,20 @@ public class EmolumentPlanController extends BaseController
     private IEmolumentPlanService emolumentPlanService;
 
 
+    /**
+     * 新增薪酬规划时预制数据
+     */
+    //@RequiresPermissions("operate:cloud:emolumentPlan:info")
+    @GetMapping("/add/{planYear}")
+    public AjaxResult prefabricateAddEmolumentPlan(@PathVariable int planYear){
+        EmolumentPlanDTO emolumentPlanDTO = emolumentPlanService.prefabricateAddEmolumentPlan(planYear);
+        return AjaxResult.success(emolumentPlanDTO);
+    }
 
     /**
     * 查询薪酬规划表详情
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:info")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:info")
     @GetMapping("/info/{emolumentPlanId}")
     public AjaxResult info(@PathVariable Long emolumentPlanId){
     EmolumentPlanDTO emolumentPlanDTO = emolumentPlanService.selectEmolumentPlanByEmolumentPlanId(emolumentPlanId);
@@ -62,7 +71,7 @@ public class EmolumentPlanController extends BaseController
     /**
     * 分页查询薪酬规划表列表
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:pageList")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(EmolumentPlanDTO emolumentPlanDTO){
     startPage();
@@ -73,7 +82,7 @@ public class EmolumentPlanController extends BaseController
     /**
     * 查询薪酬规划表列表
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:list")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:list")
     @GetMapping("/list")
     public AjaxResult list(EmolumentPlanDTO emolumentPlanDTO){
     List<EmolumentPlanDTO> list = emolumentPlanService.selectEmolumentPlanList(emolumentPlanDTO);
@@ -84,7 +93,7 @@ public class EmolumentPlanController extends BaseController
     /**
     * 新增薪酬规划表
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:add")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:add")
     @Log(title = "新增薪酬规划表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody EmolumentPlanDTO emolumentPlanDTO) {
@@ -95,7 +104,7 @@ public class EmolumentPlanController extends BaseController
     /**
     * 修改薪酬规划表
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:edit")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:edit")
     @Log(title = "修改薪酬规划表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody EmolumentPlanDTO emolumentPlanDTO)
@@ -106,7 +115,7 @@ public class EmolumentPlanController extends BaseController
     /**
     * 逻辑删除薪酬规划表
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:remove")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:remove")
     @Log(title = "删除薪酬规划表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody EmolumentPlanDTO emolumentPlanDTO)
@@ -116,7 +125,7 @@ public class EmolumentPlanController extends BaseController
     /**
     * 批量修改薪酬规划表
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:edits")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:edits")
     @Log(title = "批量修改薪酬规划表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<EmolumentPlanDTO> emolumentPlanDtos)
@@ -127,7 +136,7 @@ public class EmolumentPlanController extends BaseController
     /**
     * 批量新增薪酬规划表
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:insertEmolumentPlans")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:insertEmolumentPlans")
     @Log(title = "批量新增薪酬规划表", businessType = BusinessType.INSERT)
     @PostMapping("/insertEmolumentPlans")
     public AjaxResult insertEmolumentPlans(@RequestBody List<EmolumentPlanDTO> emolumentPlanDtos)
@@ -138,7 +147,7 @@ public class EmolumentPlanController extends BaseController
     /**
     * 逻辑批量删除薪酬规划表
     */
-    @RequiresPermissions("operate:cloud:emolumentPlan:removes")
+    //@RequiresPermissions("operate:cloud:emolumentPlan:removes")
     @Log(title = "批量删除薪酬规划表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  emolumentPlanIds)

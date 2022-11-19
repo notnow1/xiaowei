@@ -43,6 +43,10 @@ public class EmolumentPlanDTO {
     */
     private  Integer planYear;
     /**
+     * 指标id
+     */
+    private Long indicatorId;
+    /**
     * 预算年前一年销售收入
     */
     private BigDecimal revenueBeforeOne;
@@ -58,10 +62,25 @@ public class EmolumentPlanDTO {
     * 预算年后二年销售收入
     */
     private  BigDecimal revenueAfterTwo;
+
+    /**
+     * 预算年E/R值(%)
+     */
+    private  BigDecimal er;
     /**
     * 预算年前一年E/R值(%)
     */
     private  BigDecimal erBeforeOne;
+
+    /**
+     * 预算年后一年E/R值(%)
+     */
+    private  BigDecimal erAfterOne;
+    /**
+     * 预算年后二年E/R值(%)
+     */
+    private  BigDecimal erAfterTwo;
+
     /**
     * 预算年E/R值改进率(%)
     */
@@ -86,6 +105,10 @@ public class EmolumentPlanDTO {
     * 创建人
     */
     private  Long createBy;
+    /**
+     * 创建人名称
+     */
+    private  String createName;
     /**
     * 创建时间
     */

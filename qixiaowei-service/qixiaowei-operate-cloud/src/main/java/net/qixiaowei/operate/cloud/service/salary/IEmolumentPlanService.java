@@ -98,4 +98,11 @@ public interface IEmolumentPlanService{
     * @return 结果
     */
     int deleteEmolumentPlanByEmolumentPlanId(Long emolumentPlanId);
+
+    /**
+     *新增薪酬规划时预制数据
+     * @param planYear
+     * @return
+     */
+    EmolumentPlanDTO prefabricateAddEmolumentPlan(int planYear);
 }
