@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.remote.user;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
@@ -27,6 +28,13 @@ public class RemoteUser implements RemoteUserService {
     @GetMapping("/info")
     public R<LoginUserVO> getUserInfo(String userAccount, String source) {
         return R.ok(userService.getUserByUserAccount(userAccount));
+    }
+
+    @Override
+    @InnerAuth
+    @GetMapping("/infoByUserId")
+    public R<UserDTO> getUserInfoByUserId(Long UserId) {
+        return R.ok(userService.selectUserByUserId(UserId));
     }
 
     @Override
