@@ -28,8 +28,8 @@ public class RemoteRegion implements RemoteRegionService {
 
     @Override
     @InnerAuth
-    @GetMapping("/getRegionsByIds")
-    public R<List<RegionDTO>> getRegionsByIds(@RequestParam("regionIds") Set<Long> regionIds, String source) {
+    @PostMapping("/getRegionsByIds")
+    public R<List<RegionDTO>> getRegionsByIds(@RequestBody Set<Long> regionIds, String source) {
         return R.ok(regionService.getRegionsByIds(regionIds));
     }
 

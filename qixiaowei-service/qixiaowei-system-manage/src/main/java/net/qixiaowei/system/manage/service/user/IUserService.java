@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.user;
 
 import java.util.List;
+import java.util.Set;
 
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
@@ -46,6 +47,14 @@ public interface IUserService{
     List<UserDTO> selectUserList(UserDTO userDTO);
 
     /**
+     * 查询用户表列表
+     *
+     * @param userIds 用户ids
+     * @return 用户表集合
+     */
+    List<UserDTO> getUsersByUserIds(Set<Long> userIds);
+
+    /**
     * 新增用户表
     *
     * @param userDTO 用户表
@@ -83,7 +92,7 @@ public interface IUserService{
     * @param userIds 需要删除的用户ID集合
     * @return 结果
     */
-    int logicDeleteUserByUserIds(List<Long> userIds);
+    int logicDeleteUserByUserIds(Set<Long> userIds);
 
     /**
     * 逻辑删除用户表信息

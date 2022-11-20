@@ -25,8 +25,8 @@ public interface RemoteRegionService {
      * @param regionIds 区域ids
      * @return 结果
      */
-    @GetMapping(API_PREFIX_REGION + "/getRegionsByIds")
-    R<List<RegionDTO>> getRegionsByIds(@RequestParam("regionIds") Set<Long> regionIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping(API_PREFIX_REGION + "/getRegionsByIds")
+    R<List<RegionDTO>> getRegionsByIds(@RequestBody Set<Long> regionIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过省份名称集合集合查询省份信息

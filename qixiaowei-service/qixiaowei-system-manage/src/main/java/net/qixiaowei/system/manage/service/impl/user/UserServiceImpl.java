@@ -145,6 +145,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 查询用户表列表
+     *
+     * @param userIds 用户ids
+     * @return 用户表集合
+     */
+    @Override
+    public List<UserDTO> getUsersByUserIds(Set<Long> userIds) {
+        return userMapper.selectUserListByUserIds(userIds);
+    }
+
+    /**
      * 新增用户表
      *
      * @param userDTO 用户表
@@ -216,7 +227,7 @@ public class UserServiceImpl implements IUserService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int logicDeleteUserByUserIds(List<Long> userIds) {
+    public int logicDeleteUserByUserIds(Set<Long> userIds) {
         Long userId = SecurityUtils.getUserId();
         String userAccount = SecurityUtils.getUserAccount();
         for (Long id : userIds) {
@@ -232,7 +243,7 @@ public class UserServiceImpl implements IUserService {
             throw new ServiceException("删除失败，用户不存在");
         }
         if (userIds.size() != userDTOS.size()) {
-            userIds = userDTOS.stream().map(UserDTO::getUserId).collect(Collectors.toList());
+            userIds = userDTOS.stream().map(UserDTO::getUserId).collect(Collectors.toSet());
         }
         Date nowDate = DateUtils.getNowDate();
         if (StringUtils.isNotEmpty(userIds)) {

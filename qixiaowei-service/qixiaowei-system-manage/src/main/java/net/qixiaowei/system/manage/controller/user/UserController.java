@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.controller.user;
 
 import java.util.List;
+import java.util.Set;
 
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +110,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("system:manage:user:removes")
     @Log(title = "批量删除用户表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<Long> userIds) {
+    public AjaxResult removes(@RequestBody Set<Long> userIds) {
         return toAjax(userService.logicDeleteUserByUserIds(userIds));
     }
 

@@ -7,6 +7,7 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -78,7 +79,7 @@ public interface UserMapper {
      * @param userIds 需要查询的数据主键集合
      * @return 结果
      */
-    List<UserDTO> selectUserListByUserIds(@Param("userIds") List<Long> userIds);
+    List<UserDTO> selectUserListByUserIds(@Param("userIds") Set<Long> userIds);
 
     /**
      * 根据条件分页查询已配用户角色列表
@@ -134,7 +135,7 @@ public interface UserMapper {
      * @param userIds 需要删除的数据主键集合
      * @return 结果
      */
-    int logicDeleteUserByUserIds(@Param("userIds") List<Long> userIds, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
+    int logicDeleteUserByUserIds(@Param("userIds") Set<Long> userIds, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
 
 
     /**

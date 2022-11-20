@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * 用户服务降级处理
  */
@@ -27,8 +30,13 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             }
 
             @Override
-            public R<UserDTO> getUserInfoByUserId(Long userId) {
+            public R<UserDTO> getUserInfoByUserId(Long userId, String source) {
                 return R.fail("根据用户ID获取用户失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<UserDTO>> getUsersByUserIds(Set<Long> userIds, String source) {
+                return R.fail("根据用户IDs获取用户列表失败:" + throwable.getMessage());
             }
 
             @Override

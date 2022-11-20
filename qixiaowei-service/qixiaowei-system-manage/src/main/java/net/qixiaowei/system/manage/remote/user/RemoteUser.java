@@ -8,9 +8,10 @@ import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @Author hzk
@@ -33,8 +34,15 @@ public class RemoteUser implements RemoteUserService {
     @Override
     @InnerAuth
     @GetMapping("/infoByUserId")
-    public R<UserDTO> getUserInfoByUserId(Long UserId) {
+    public R<UserDTO> getUserInfoByUserId(Long UserId, String source) {
         return R.ok(userService.selectUserByUserId(UserId));
+    }
+
+    @Override
+    @InnerAuth
+    @PostMapping("/usersByUserIds")
+    public R<List<UserDTO>> getUsersByUserIds(@RequestBody Set<Long> userIds, String source) {
+        return R.ok(userService.getUsersByUserIds(userIds));
     }
 
     @Override
