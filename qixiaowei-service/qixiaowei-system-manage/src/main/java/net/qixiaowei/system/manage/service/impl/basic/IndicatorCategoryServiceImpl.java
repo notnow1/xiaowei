@@ -75,10 +75,13 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         if (StringUtils.isEmpty(indicatorCategoryCode)) {
             throw new ServiceException("指标分类编码不能为空");
         }
-        IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkUnique(indicatorCategoryCode);
-        if (StringUtils.isNotNull(indicatorCategoryByCode)
-                && !indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
+        IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkCodeUnique(indicatorCategoryCode);
+        if (StringUtils.isNotNull(indicatorCategoryByCode)) {
             throw new ServiceException("指标分类编码重复");
+        }
+        IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
+        if (StringUtils.isNotNull(indicatorCategoryByName)) {
+            throw new ServiceException("指标分类名称重复");
         }
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);
@@ -102,6 +105,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     public int updateIndicatorCategory(IndicatorCategoryDTO indicatorCategoryDTO) {
         String indicatorCategoryCode = indicatorCategoryDTO.getIndicatorCategoryCode();
         Long indicatorCategoryId = indicatorCategoryDTO.getIndicatorCategoryId();
+        String indicatorCategoryName = indicatorCategoryDTO.getIndicatorCategoryName();
         if (StringUtils.isNull(indicatorCategoryId)) {
             throw new ServiceException("指标分类id不能为空");
         }
@@ -112,12 +116,15 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         if (StringUtils.isNull(indicatorCategoryById)) {
             throw new ServiceException("当前指标分类不存在");
         }
-        IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkUnique(indicatorCategoryCode);
-        if (StringUtils.isNotNull(indicatorCategoryByCode)) {
-            if (!indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
-                throw new ServiceException("更新指标" + indicatorCategoryDTO.getIndicatorCategoryName() + "失败,指标编码重复");
-            }
+        IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkCodeUnique(indicatorCategoryCode);
+        if ((StringUtils.isNotNull(indicatorCategoryByCode)) && !indicatorCategoryByCode.getIndicatorCategoryId().equals(indicatorCategoryId)) {
+            throw new ServiceException("更新指标" + indicatorCategoryName + "失败,指标编码重复");
         }
+        IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
+        if (StringUtils.isNotNull(indicatorCategoryByName) && !indicatorCategoryByName.getIndicatorCategoryId().equals(indicatorCategoryId)) {
+            throw new ServiceException("更新指标" + indicatorCategoryName + "失败,指标编码重复");
+        }
+
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);
         indicatorCategory.setUpdateTime(DateUtils.getNowDate());

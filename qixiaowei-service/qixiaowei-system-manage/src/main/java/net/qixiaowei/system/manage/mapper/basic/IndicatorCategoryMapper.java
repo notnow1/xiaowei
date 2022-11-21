@@ -1,12 +1,11 @@
 package net.qixiaowei.system.manage.mapper.basic;
 
-import java.util.List;
-
 import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -111,7 +110,15 @@ public interface IndicatorCategoryMapper {
      * @param indicatorCategoryCode
      * @return
      */
-    IndicatorCategoryDTO checkUnique(@Param("indicatorCategoryCode") String indicatorCategoryCode);
+    IndicatorCategoryDTO checkCodeUnique(@Param("indicatorCategoryCode") String indicatorCategoryCode);
+
+    /**
+     * 指标编码唯一性校验
+     *
+     * @param indicatorCategoryName
+     * @return
+     */
+    IndicatorCategoryDTO checkNameUnique(@Param("indicatorCategoryName") String indicatorCategoryName);
 
     /**
      * 根据id集合判断是否存在
