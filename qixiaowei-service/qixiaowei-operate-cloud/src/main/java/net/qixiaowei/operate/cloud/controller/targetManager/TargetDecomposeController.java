@@ -412,7 +412,6 @@ public class TargetDecomposeController extends BaseController {
         String fileName = URLEncoder.encode("自定义目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-
         EasyExcel.write(response.getOutputStream())
                 .head(head)// 设置表头
                 .sheet("自定义目标分解详情")// 设置 sheet 的名字

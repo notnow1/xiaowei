@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
         List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
         if (indicatorR.getCode() != 200 || StringUtils.isEmpty(indicatorDTOS)) {
-            throw new ServiceException("远程调用指标失败 请咨询管理员");
+            throw new ServiceException("查询失败 请咨询管理员");
         }
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
             for (IndicatorDTO indicatorDTO : indicatorDTOS) {
@@ -287,6 +288,27 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         targetOutcome.setUpdateBy(SecurityUtils.getUserId());
         targetOutcome.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         targetOutcomeMapper.insertTargetOutcome(targetOutcome);
+        targetOutcomeDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
+        return targetOutcomeDTO;
+    }
+
+    /**
+     * 新增目标结果表--订单，收入，回款
+     *
+     * @param targetOutcomeDTO 目标结果表
+     * @return 结果
+     */
+    @Override
+    @Transactional
+    public TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO, Integer type) {
+        TargetOutcome targetOutcome = new TargetOutcome();
+        BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
+        targetOutcome.setCreateBy(SecurityUtils.getUserId());
+        targetOutcome.setCreateTime(DateUtils.getNowDate());
+        targetOutcome.setUpdateTime(DateUtils.getNowDate());
+        targetOutcome.setUpdateBy(SecurityUtils.getUserId());
+        targetOutcome.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+//        targetOutcomeMapper.insertTargetOutcome(targetOutcome);
         targetOutcomeDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
         return targetOutcomeDTO;
     }

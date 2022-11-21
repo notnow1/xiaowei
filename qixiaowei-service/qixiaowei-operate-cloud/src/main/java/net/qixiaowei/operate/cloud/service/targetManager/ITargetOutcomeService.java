@@ -41,6 +41,14 @@ public interface ITargetOutcomeService {
     TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO);
 
     /**
+     * 新增目标结果表--订单，收入，回款
+     *
+     * @param targetOutcomeDTO 目标结果表
+     * @return 结果
+     */
+    TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO, Integer type);
+
+    /**
      * 修改目标结果表
      *
      * @param targetOutcomeDTO 目标结果表

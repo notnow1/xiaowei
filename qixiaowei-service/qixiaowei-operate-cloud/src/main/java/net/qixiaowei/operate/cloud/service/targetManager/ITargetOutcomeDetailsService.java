@@ -35,7 +35,7 @@ public interface ITargetOutcomeDetailsService {
      * @param targetOutcomeDetailsDTO 目标结果详情表
      * @return 结果
      */
-    TargetOutcomeDetailsDTO insertTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO);
+    TargetOutcomeDetailsDTO insertTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO, Integer type);
 
     /**
      * 修改目标结果详情表
@@ -125,15 +125,19 @@ public interface ITargetOutcomeDetailsService {
      * @param targetOutcomeId
      */
     int addTargetOutcomeDetailsS(List<Long> indicatorIds, Long targetOutcomeId);
+
     /**
-    * 导入Excel
-    * @param list
-    */
+     * 导入Excel
+     *
+     * @param list
+     */
     void importTargetOutcomeDetails(List<TargetOutcomeDetailsExcel> list);
+
     /**
-    * 导出Excel
-    * @param targetOutcomeDetailsDTO
-    * @return
-    */
+     * 导出Excel
+     *
+     * @param targetOutcomeDetailsDTO
+     * @return
+     */
     List<TargetOutcomeDetailsExcel> exportTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO);
 }

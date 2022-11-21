@@ -100,7 +100,6 @@ public class TargetOutcomeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
 //        //构建读取器
@@ -126,7 +125,7 @@ public class TargetOutcomeController extends BaseController {
         EasyExcel.write(response.getOutputStream())
                 .head(head)
                 .sheet("关键经营结果")// 设置 sheet 的名字
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
                 .doWrite(TargetOutcomeImportListener.dataList(targetOutcomeExcelList));//
     }
 

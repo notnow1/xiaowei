@@ -1,12 +1,11 @@
 package net.qixiaowei.operate.cloud.mapper.salary;
 
-import java.util.List;
-
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryPay;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -106,4 +105,30 @@ public interface SalaryPayMapper {
      */
     int batchSalaryPay(@Param("salaryPays") List<SalaryPay> SalaryPays);
 
+    /**
+     * 根据人员ID集合查找工资发薪信息
+     *
+     * @param employeeIds
+     * @return
+     */
+    List<SalaryPayDTO> selectSalaryPayByEmployeeIds(@Param("employeeIds") List<Long> employeeIds);
+
+    /**
+     * 同一年的多个月
+     *
+     * @param payYear
+     * @param startMonth
+     * @param endMonth
+     * @return
+     */
+    List<SalaryPayDTO> selectSalaryPayBySomeMonth(@Param("payYear") Integer payYear, @Param("startMonth") Integer startMonth, @Param("endMonth") Integer endMonth);
+
+    /**
+     * 多个年份的所有
+     *
+     * @param startYear
+     * @param endYear
+     * @return
+     */
+    List<SalaryPayDTO> selectSalaryPayBySomeYear(@Param("startYear") Integer startYear, @Param("endYear") Integer endYear);
 }

@@ -31,6 +31,13 @@ public interface ISalaryItemService {
     List<SalaryItemDTO> selectSalaryItemList(SalaryItemDTO salaryItemDTO);
 
     /**
+     * 为一级工资二级工资附名称
+     *
+     * @param itemDTO
+     */
+    void salarySetName(SalaryItemDTO itemDTO);
+
+    /**
      * 新增工资项
      *
      * @param salaryItemDTO 工资项

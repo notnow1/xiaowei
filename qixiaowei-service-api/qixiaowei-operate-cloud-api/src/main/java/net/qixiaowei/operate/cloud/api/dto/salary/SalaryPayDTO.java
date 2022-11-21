@@ -48,6 +48,10 @@ public class SalaryPayDTO {
      */
     private Long employeeId;
     /**
+     * 员工工号
+     */
+    private String employeeCode;
+    /**
      * 员工名称
      */
     private String employeeName;
@@ -55,6 +59,10 @@ public class SalaryPayDTO {
      * 岗位名称
      */
     private String postName;
+    /**
+     * 岗位职级
+     */
+    private String postRank;
     /**
      * 部门名称
      */

@@ -70,7 +70,7 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
      * @return 结果
      */
     @Override
-    public TargetOutcomeDetailsDTO insertTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
+    public TargetOutcomeDetailsDTO insertTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO, Integer type) {
         TargetOutcomeDetails targetOutcomeDetails = new TargetOutcomeDetails();
         BeanUtils.copyProperties(targetOutcomeDetailsDTO, targetOutcomeDetails);
         targetOutcomeDetails.setCreateBy(SecurityUtils.getUserId());
@@ -78,7 +78,7 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
         targetOutcomeDetails.setUpdateTime(DateUtils.getNowDate());
         targetOutcomeDetails.setUpdateBy(SecurityUtils.getUserId());
         targetOutcomeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        targetOutcomeDetailsMapper.insertTargetOutcomeDetails(targetOutcomeDetails);
+//        targetOutcomeDetailsMapper.insertTargetOutcomeDetails(targetOutcomeDetails);
         targetOutcomeDetailsDTO.setTargetOutcomeDetailsId(targetOutcomeDetails.getTargetOutcomeDetailsId());
         return targetOutcomeDetailsDTO;
     }
@@ -120,7 +120,7 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
     public int logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(List<Long> indicators, Long targetOutcomeId) {
         Long updateBy = SecurityUtils.getUserId();
         Date updateTime = DateUtils.getNowDate();
-        return targetOutcomeDetailsMapper.logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(updateBy,updateTime,indicators, targetOutcomeId);
+        return targetOutcomeDetailsMapper.logicDeleteTargetOutcomeDetailsByOutcomeIdAndIndicator(updateBy, updateTime, indicators, targetOutcomeId);
     }
 
     /**
