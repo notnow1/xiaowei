@@ -5,6 +5,7 @@ import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -44,7 +45,7 @@ public interface UserRoleMapper{
      * @param userIds 用户ID集合
      * @return 用户角色表ID集合
      */
-    List<Long> selectUserRoleIdsByUserIds(@Param("userIds")List<Long> userIds);
+    List<Long> selectUserRoleIdsByUserIds(@Param("userIds") Set<Long> userIds);
 
     /**
     * 查询用户角色表列表

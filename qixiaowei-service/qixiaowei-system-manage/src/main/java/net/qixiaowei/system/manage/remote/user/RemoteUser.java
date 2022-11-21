@@ -2,14 +2,16 @@ package net.qixiaowei.system.manage.remote.user;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @Author hzk
@@ -27,6 +29,20 @@ public class RemoteUser implements RemoteUserService {
     @GetMapping("/info")
     public R<LoginUserVO> getUserInfo(String userAccount, String source) {
         return R.ok(userService.getUserByUserAccount(userAccount));
+    }
+
+    @Override
+    @InnerAuth
+    @GetMapping("/infoByUserId")
+    public R<UserDTO> getUserInfoByUserId(Long UserId, String source) {
+        return R.ok(userService.selectUserByUserId(UserId));
+    }
+
+    @Override
+    @InnerAuth
+    @PostMapping("/usersByUserIds")
+    public R<List<UserDTO>> getUsersByUserIds(@RequestBody Set<Long> userIds, String source) {
+        return R.ok(userService.getUsersByUserIds(userIds));
     }
 
     @Override

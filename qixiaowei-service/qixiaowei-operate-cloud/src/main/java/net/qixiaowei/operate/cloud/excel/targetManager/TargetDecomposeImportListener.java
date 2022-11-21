@@ -59,12 +59,9 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         // 第一列
         List<String> head0 = new ArrayList<String>();
         head0.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-        // 第一列
-        List<String> headNull = new ArrayList<String>();
         head0.add(targetDecomposeDTO.getIndicatorName() + "目标分解");
-        headNull.add("");
         list.add(head0);
-        list.add(headNull);
+
         List<Map<String, String>> fileNameList = targetDecomposeDTO.getFileNameList();
         for (Map<String, String> stringStringMap : fileNameList) {
             // 动态列

@@ -556,7 +556,7 @@
             and e.employee_post_id =#{employee.employeePostId}
         </if>
         <if test="employee.officialRankSystemId != null">
-            and p.official_rank_system_id =#{employee.officialRankSystemId}
+            and concat(ors.rank_prefix_code, e.employee_rank) =#{employee.employeeRankName}
         </if>
     </select>
     <!--新增员工表-->

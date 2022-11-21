@@ -316,11 +316,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             if (StringUtils.isNotEmpty(collect)) {
                 R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
                 List<IndicatorDTO> data = listR.getData();
-                if (StringUtils.isNotEmpty(data)) {
-                    for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
-                        targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+                for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
+                    if (StringUtils.isNotEmpty(data)) {
+                        for (IndicatorDTO datum : data) {
+                            if (targetDecomposeDTO.getIndicatorId() ==datum.getIndicatorId()){
+                                targetDecomposeDTO.setIndicatorName(datum.getIndicatorName());
+                            }
+                        }
                     }
                 }
+
             }
 
         }
@@ -492,9 +497,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             R<List<IndicatorDTO>> listR1 = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR1.getData();
             if (StringUtils.isNotEmpty(data)) {
-                for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
-                    targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+                for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                    for (IndicatorDTO datum : data) {
+                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()){
+                            decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                        }
+                    }
                 }
+
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
@@ -547,7 +557,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 .filter(friend -> friend.getTargetPercentageComplete() != null)
                                 .map(TargetDecomposeDTO::getTargetPercentageComplete)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1)), BigDecimal.ROUND_CEILING);
+                        if (StringUtils.isNotEmpty(targetDecomposeDTOS1)&& targetDecomposeDTOS1.size() - 1 != 0){
+                            targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1)), BigDecimal.ROUND_CEILING);
+                        }
+
                         //目标完成率平均值
                         for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS1) {
                             decomposeDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
@@ -649,9 +662,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             R<List<IndicatorDTO>> listR1 = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR1.getData();
             if (StringUtils.isNotEmpty(data)) {
-                for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
-                    targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+                for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                    for (IndicatorDTO datum : data) {
+                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()){
+                            decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                        }
+                    }
                 }
+
             }
         }
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
@@ -724,17 +742,20 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             List<Long> indicatorIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).collect(Collectors.toList());
-
-            for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
                 //远程获取指标名称
                 R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
                 List<IndicatorDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
-                    targetDecomposeDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
-                }
-                this.packDecompositionDimension(targetDecomposeDTOS.get(i));
-            }
+                    for (IndicatorDTO datum : data) {
+                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()){
+                            decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                        }
+                    }
 
+                }
+                this.packDecompositionDimension(decomposeDTO);
+            }
         }
         return targetDecomposeDTOS;
     }
@@ -1663,9 +1684,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     @Override
-    public TargetDecomposeDTO excelParseObject(MultipartFile file) {
-        //返回详情数据
-        TargetDecomposeDTO targetDecomposeDTO = new TargetDecomposeDTO();
+    public TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO,MultipartFile file) {
+
         //目标分解详情数据
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = new ArrayList<>();
         //分解维度顺序排序
@@ -1923,19 +1943,19 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public void packRemote(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList) {
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             //人员id集合
-            List<Long> employeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getEmployeeId).collect(Collectors.toList());
+            List<Long> employeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getEmployeeId).distinct().filter(r->r != null).collect(Collectors.toList());
 
             //人员id集合滚动预测负责人
-            List<Long> principalEmployeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getPrincipalEmployeeId).collect(Collectors.toList());
+            List<Long> principalEmployeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getPrincipalEmployeeId).distinct().filter(r->r != null).collect(Collectors.toList());
 
             //部门id集合
-            List<Long> departmentIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getDepartmentId).collect(Collectors.toList());
+            List<Long> departmentIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getDepartmentId).distinct().filter(d->d != null).collect(Collectors.toList());
 
             //省份id集合
-            Set<Long> regionIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getRegionId).collect(Collectors.toSet());
+            Set<Long> regionIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getRegionId).distinct().filter(r->r != null).collect(Collectors.toSet());
 
             //行业id集合
-            List<Long> industryIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getIndustryId).collect(Collectors.toList());
+            List<Long> industryIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getIndustryId).distinct().filter(x->x != null).collect(Collectors.toList());
             //人员远程
             if (StringUtils.isNotEmpty(employeeIdCollect)) {
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(employeeIdCollect, SecurityConstants.INNER);

@@ -23,6 +23,13 @@ public interface EmolumentPlanMapper{
 
 
     /**
+     * 查询薪酬规划表
+     *
+     * @param planYear 薪酬规划表预算年度
+     * @return 薪酬规划表
+     */
+    EmolumentPlanDTO selectEmolumentPlanByPlanYear(@Param("planYear")int planYear);
+    /**
     * 批量查询薪酬规划表
     *
     * @param emolumentPlanIds 薪酬规划表主键集合
@@ -101,4 +108,11 @@ public interface EmolumentPlanMapper{
     * @return 结果
     */
     int batchEmolumentPlan(@Param("emolumentPlans")List<EmolumentPlan> EmolumentPlans);
+
+    /**
+     * 新增薪酬规划时预制数据
+     * @param emolumentPlanDTO
+     * @return
+     */
+    EmolumentPlanDTO prefabricateAddEmolumentPlan(@Param("emolumentPlanDTO") EmolumentPlanDTO emolumentPlanDTO);
 }

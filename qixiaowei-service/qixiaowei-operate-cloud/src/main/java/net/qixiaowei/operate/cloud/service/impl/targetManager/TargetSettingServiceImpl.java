@@ -14,6 +14,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationDataDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
@@ -713,6 +714,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         list.add(IndicatorCode.INCOME.getCode());
         //回款金额（含税）
         list.add(IndicatorCode.RECEIVABLE.getCode());
+        //销售毛利
+        list.add(IndicatorCode.GROSS.getCode());
+        //PROFITS
+        list.add(IndicatorCode.RECEIVABLE.getCode());
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
         if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
@@ -721,15 +726,20 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSetting.setIndicatorIds(collect);
         }
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
-        if (StringUtils.isNotEmpty(targetSettingDTOS)) {
+        if (StringUtils.isNotEmpty(targetSettingDTOS)){
             List<Long> indicatorIds = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).collect(Collectors.toList());
             R<List<IndicatorDTO>> listR1 = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR1.getData();
-            if (StringUtils.isNotEmpty(data)) {
-                for (int i = 0; i < targetSettingDTOS.size(); i++) {
-                    targetSettingDTOS.get(i).setIndicatorName(data.get(i).getIndicatorName());
+            for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+                if (StringUtils.isNotEmpty(data)){
+                    for (IndicatorDTO datum : data) {
+                        if (settingDTO.getIndicatorId() == datum.getIndicatorId()){
+                            settingDTO.setIndicatorName(datum.getIndicatorName());
+                        }
+                    }
                 }
             }
+
         }
         if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             for (TargetSettingDTO settingDTO : targetSettingDTOS) {
@@ -832,9 +842,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Override
     public List<TargetSettingDTO> importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps) {
         List<TargetSettingExcel> targetSettingExcelList = targetSettingExcelMaps.get("关键经营目标制定");
-        if (StringUtils.isEmpty(targetSettingExcelList)) {
-            throw new ServiceException("excel为空,请检查");
-        }
         List<TargetSettingDTO> targetSettingDTOS = new ArrayList<>();
         List<String> indicatorCodes = new ArrayList<>();
         List<IndicatorDTO> indicatorDTOS = getIndicatorByCodes(targetSettingExcelList, indicatorCodes);
@@ -969,23 +976,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingDTO.setSort(0);
         if (StringUtils.isNull(targetSetting)) {//新增
             TargetSetting setting = insertTargetSetting(targetSettingDTO);
-
             targetSetting = new TargetSettingDTO();
             targetSetting.setTargetSettingId(setting.getTargetSettingId());
-            TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetYear(targetYear);
-            if (StringUtils.isNull(targetOutcomeDTO)) {
-                TargetOutcomeDTO outcomeDTO = new TargetOutcomeDTO();
-                targetOutcomeService.insertTargetOutcome(outcomeDTO, 1);
-            } else {
-                String orderCode = IndicatorCode.getCodesByIsPreset(1).get(0);
-                R<IndicatorDTO> indicatorDTOR = indicatorService.selectIndicatorByCode(orderCode, SecurityConstants.INNER);
-                IndicatorDTO data = indicatorDTOR.getData();
-                if (indicatorDTOR.getCode() != 200 && StringUtils.isNull(data)) {
-
-                }
-                TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
-                targetOutcomeDetailsService.insertTargetOutcomeDetails(targetOutcomeDetailsDTO, 1);
-            }
             operate(targetSettingOrderAfter, targetSetting);
             return targetSetting;
         }
@@ -1311,30 +1303,24 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         TargetSetting setting;
         if (StringUtils.isNull(targetSetting)) {//新增
             TargetSettingIncomeDTO targetSettingIncomeDTO;
-            if (StringUtils.isEmpty(targetSettingIncomeVOS)) {
-                throw new ServiceException("数据为空请检查");
+            if (StringUtils.isNotEmpty(targetSettingIncomeVOS)) {
+                targetSettingIncomeDTO = incomeVoToDto(targetSettingIncomeVOS, targetSettingDTO);
+                setting = insertTargetSetting(targetSettingDTO);
+                Long targetSettingId = setting.getTargetSettingId();
+                targetSettingIncomeDTO.setTargetSettingId(targetSettingId);
+                targetSettingIncomeService.insertTargetSettingIncome(targetSettingIncomeDTO);
+            } else {
+                setting = insertTargetSetting(targetSettingDTO);
             }
-            setting = insertTargetSetting(targetSettingDTO);
-            targetSettingIncomeDTO = incomeVoToDto(targetSettingIncomeVOS, targetSettingDTO);
-            Long targetSettingId = setting.getTargetSettingId();
-            targetSettingIncomeDTO.setTargetSettingId(targetSettingId);
-            targetSettingIncomeService.insertTargetSettingIncome(targetSettingIncomeDTO);
             targetSetting = new TargetSettingDTO();
             targetSetting.setTargetSettingId(setting.getTargetSettingId());
         } else {
             Long targetSettingId = targetSetting.getTargetSettingId();
             if (StringUtils.isNotEmpty(targetSettingIncomeVOS)) {
-                TargetSettingIncomeDTO targetSettingIncome = new TargetSettingIncomeDTO();
-                targetSettingIncome.setTargetSettingId(targetSettingId);
-                List<TargetSettingIncomeDTO> targetSettingIncomeDTOS = targetSettingIncomeService.selectTargetSettingIncomeList(targetSettingIncome);
-                if (StringUtils.isEmpty(targetSettingIncomeDTOS)) {
-                    throw new ServiceException("数据为空请检查");
-                }
-                TargetSettingIncomeDTO incomeDTO = targetSettingIncomeDTOS.get(0);
                 TargetSettingIncomeDTO targetSettingIncomeDTO = incomeVoToDto(targetSettingIncomeVOS, targetSettingDTO);
                 targetSettingDTO.setTargetSettingId(targetSettingId);
                 saveTargetSetting(targetSettingDTO);
-                targetSettingIncomeDTO.setTargetSettingIncomeId(incomeDTO.getTargetSettingIncomeId());
+                targetSettingIncomeDTO.setTargetSettingId(targetSettingId);
                 targetSettingIncomeService.updateTargetSettingIncome(targetSettingIncomeDTO);
             }
             saveTargetSetting(targetSettingDTO);
@@ -1441,12 +1427,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         TargetSettingDTO setting = targetSettingDTOS.get(0);
         Long targetSettingId = setting.getTargetSettingId();
         List<TargetSettingIncomeDTO> targetSettingIncomeDTOS = targetSettingIncomeService.selectTargetSettingIncomeByHistoryNumS(targetSettingId);
-        TargetSettingIncomeDTO targetSettingIncomeDTO;
-        if (StringUtils.isEmpty(targetSettingIncomeDTOS)) {
-            targetSettingIncomeDTO = new TargetSettingIncomeDTO();
-            setIncomeZero(targetSettingIncomeDTO);
-        }
-        targetSettingIncomeDTO = targetSettingIncomeDTOS.get(0);
+        TargetSettingIncomeDTO targetSettingIncomeDTO = targetSettingIncomeDTOS.get(0);
         List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();
         // dtoToVo
         for (int i = 0; i < historyNumS.size(); i++) {
@@ -1486,20 +1467,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         setting.setOrderTargetSetting(targetSettingByIndicator);
         setting.setTargetSettingIncomeVOS(targetSettingIncomeVOS);
         return setting;
-    }
-
-    /**
-     * 给收入赋0
-     *
-     * @param targetSettingIncomeDTO
-     */
-    private void setIncomeZero(TargetSettingIncomeDTO targetSettingIncomeDTO) {
-        targetSettingIncomeDTO.setMoneyBeforeOne(BigDecimal.ZERO);
-        targetSettingIncomeDTO.setMoneyBeforeTwo(BigDecimal.ZERO);
-        targetSettingIncomeDTO.setMoneyBeforeThree(BigDecimal.ZERO);
-        targetSettingIncomeDTO.setConversionBeforeOne(BigDecimal.ZERO);
-        targetSettingIncomeDTO.setConversionBeforeTwo(BigDecimal.ZERO);
-        targetSettingIncomeDTO.setConversionBeforeThree(BigDecimal.ZERO);
     }
 
     /**
@@ -1571,12 +1538,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             TargetSettingRecoveryDTO recoveryDTO = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
             if (StringUtils.isNull(recoveryDTO)) {
                 recoveryDTO = new TargetSettingRecoveryDTO();
-                setRecoveryZero(recoveryDTO);
             }
             recoveryDTO.setAddRate(percentage);
             List<Map<String, Object>> recoveryList = setRecoveryList(zero, recoveryDTO);
             targetSettingByIndicator.setTargetSettingRecoveryList(recoveryList);
-            BigDecimal DSOValue = new BigDecimal(Optional.ofNullable(recoveryDTO.getBaselineValue()).orElse(0) - Optional.ofNullable(recoveryDTO.getImproveDays()).orElse(0));
+            BigDecimal DSOValue = new BigDecimal(recoveryDTO.getBaselineValue() - recoveryDTO.getImproveDays());
 //               todo 查询销售回款列表--recoveries
 //              【DSO（应收账款周转天数）】：公式=DSO基线-DSO改进天数。
 //              【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额。
@@ -1584,9 +1550,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             if (targetSettingRecoveriesDTOS.size() > 4) {
                 //销售收入目标
                 TargetSettingRecoveriesDTO saleIncomeGoal = new TargetSettingRecoveriesDTO();//销售收入目标
-                if (StringUtils.isNull(saleIncomeGoal)) {
-
-                }
                 TargetSettingRecoveriesDTO periodReceivables = new TargetSettingRecoveriesDTO();//期末应收款余额
                 BigDecimal targetSum = BigDecimal.ZERO;
                 BigDecimal challengeSum = BigDecimal.ZERO;
@@ -1694,18 +1657,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingByIndicator.setTargetSettingTypeDTOS(targetSettingTypeDTOS);
         targetSettingByIndicator.setTargetSettingIndicatorDTOS(targetSettingIndicatorDTOS);
         return targetSettingByIndicator;
-    }
-
-    /**
-     * 为RecoveryDTO赋0
-     *
-     * @param recoveryDTO
-     */
-    private void setRecoveryZero(TargetSettingRecoveryDTO recoveryDTO) {
-        recoveryDTO.setAddRate(BigDecimal.ZERO);
-        recoveryDTO.setBalanceReceivables(BigDecimal.ZERO);
-        recoveryDTO.setBaselineValue(0);
-        recoveryDTO.setImproveDays(0);
     }
 
     /**

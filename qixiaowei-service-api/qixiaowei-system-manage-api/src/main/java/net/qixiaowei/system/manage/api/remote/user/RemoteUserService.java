@@ -3,11 +3,15 @@ package net.qixiaowei.system.manage.api.remote.user;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.factory.user.RemoteUserFallbackFactory;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * 用户服务
@@ -26,6 +30,24 @@ public interface RemoteUserService {
      */
     @GetMapping(API_PREFIX_USER + "/info")
     R<LoginUserVO> getUserInfo(@RequestParam("userAccount") String userAccount, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 通过用户ID查询用户信息
+     *
+     * @param userId 用户ID
+     * @return 结果
+     */
+    @GetMapping(API_PREFIX_USER + "/infoByUserId")
+    R<UserDTO> getUserInfoByUserId(@RequestParam("userId") Long userId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 通过用户ID集合查询用户列表信息
+     *
+     * @param userIds 用户IDs
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_USER + "/usersByUserIds")
+    R<List<UserDTO>> getUsersByUserIds(@RequestBody Set<Long> userIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 注册用户信息
