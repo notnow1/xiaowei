@@ -35,7 +35,7 @@ public interface ITargetOutcomeDetailsService {
      * @param targetOutcomeDetailsDTO 目标结果详情表
      * @return 结果
      */
-    TargetOutcomeDetailsDTO insertTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO, Integer type);
+    TargetOutcomeDetailsDTO insertTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO);
 
     /**
      * 修改目标结果详情表

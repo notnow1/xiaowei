@@ -60,8 +60,8 @@ public class RemoteIndicator implements RemoteIndicatorService {
     @Override
     @InnerAuth
     @GetMapping("/byId")
-    public R<IndicatorDTO> selectIndicatorById(Long indicatorId, String source) {
-        return  R.ok(indicatorService.selectIndicatorById(indicatorId));
+    public R<IndicatorDTO> selectIndicatorById(@RequestParam("indicatorId") Long indicatorId, String source) {
+        return R.ok(indicatorService.selectIndicatorById(indicatorId));
     }
 
     @Override

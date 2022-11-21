@@ -70,16 +70,21 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
      * @return 结果
      */
     @Override
-    public TargetOutcomeDetailsDTO insertTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO, Integer type) {
-        TargetOutcomeDetails targetOutcomeDetails = new TargetOutcomeDetails();
-        BeanUtils.copyProperties(targetOutcomeDetailsDTO, targetOutcomeDetails);
-        targetOutcomeDetails.setCreateBy(SecurityUtils.getUserId());
-        targetOutcomeDetails.setCreateTime(DateUtils.getNowDate());
-        targetOutcomeDetails.setUpdateTime(DateUtils.getNowDate());
-        targetOutcomeDetails.setUpdateBy(SecurityUtils.getUserId());
-        targetOutcomeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-//        targetOutcomeDetailsMapper.insertTargetOutcomeDetails(targetOutcomeDetails);
-        targetOutcomeDetailsDTO.setTargetOutcomeDetailsId(targetOutcomeDetails.getTargetOutcomeDetailsId());
+    public TargetOutcomeDetailsDTO insertTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
+        // 当前的targetOutcomeDetailsDTO只有indicator的值
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = selectTargetOutcomeDetailsList(targetOutcomeDetailsDTO);
+        if (StringUtils.isEmpty(targetOutcomeDetailsDTOList)) {
+            setMonthValue(BigDecimal.ZERO, targetOutcomeDetailsDTO);
+            TargetOutcomeDetails targetOutcomeDetails = new TargetOutcomeDetails();
+            BeanUtils.copyProperties(targetOutcomeDetailsDTO, targetOutcomeDetails);
+            targetOutcomeDetails.setCreateBy(SecurityUtils.getUserId());
+            targetOutcomeDetails.setCreateTime(DateUtils.getNowDate());
+            targetOutcomeDetails.setUpdateTime(DateUtils.getNowDate());
+            targetOutcomeDetails.setUpdateBy(SecurityUtils.getUserId());
+            targetOutcomeDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            targetOutcomeDetailsMapper.insertTargetOutcomeDetails(targetOutcomeDetails);
+            targetOutcomeDetailsDTO.setTargetOutcomeDetailsId(targetOutcomeDetails.getTargetOutcomeDetailsId());
+        }
         return targetOutcomeDetailsDTO;
     }
 

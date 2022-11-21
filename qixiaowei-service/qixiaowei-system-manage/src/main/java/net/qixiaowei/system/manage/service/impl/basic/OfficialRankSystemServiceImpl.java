@@ -171,7 +171,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 }
                 break;
         }
-        throw new ServiceException("请输入对应的分解维度类型");
+        throw new ServiceException("改维度暂未配置，请先配置该维度信息");
     }
 
     /**
@@ -186,6 +186,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         for (OfficialRankSystemDTO officialRankSystemDTO : officialRankSystemDTOS) {
             StringBuilder officialRank = new StringBuilder("");
             rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
+            if (StringUtils.isNull(rankPrefixCode)) {
+                rankPrefixCode = "";
+            }
             rankStart = officialRankSystemDTO.getRankStart();
             rankEnd = officialRankSystemDTO.getRankEnd();
             while (rankStart < rankEnd) {
@@ -477,6 +480,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             throw new ServiceException("当前的职级体系已不存在");
         }
         List<Long> officialRankSystemIds = new ArrayList<>();
+        officialRankSystemIds.add(officialRankSystemId);
         List<PostDTO> postDTOS = postMapper.selectPostByOfficialRankSystemIds(officialRankSystemIds);
         if (StringUtils.isNotEmpty(postDTOS)) {
             throw new ServiceException("当前职级体系正在被引用");

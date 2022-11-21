@@ -26,9 +26,9 @@
         <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
             and official_rank_system_name like "%" #{officialRankSystem.officialRankSystemName} "%"
         </if>
-        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">
-            and rank_prefix_code like "%" #{officialRankSystem.rankPrefixCode} "%"
-        </if>
+<!--        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">-->
+<!--            and rank_prefix_code like "%" #{officialRankSystem.rankPrefixCode} "%"-->
+<!--        </if>-->
         <if test="officialRankSystem.rankStart != null">
             and rank_start = #{officialRankSystem.rankStart}
         </if>
@@ -106,9 +106,9 @@
         <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
             official_rank_system_name=#{officialRankSystem.officialRankSystemName},
         </if>
-        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">
-            rank_prefix_code=#{officialRankSystem.rankPrefixCode},
-        </if>
+<!--        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">-->
+<!--            rank_prefix_code=#{officialRankSystem.rankPrefixCode},-->
+<!--        </if>-->
         <if test="officialRankSystem.rankStart != null">
             rank_start=#{officialRankSystem.rankStart},
         </if>
@@ -203,13 +203,13 @@
                     </if>
                 </foreach>
             </trim>
-            <trim prefix="rank_prefix_code=case" suffix="end,">
-                <foreach collection="officialRankSystemList" item="item" index="index">
-                    <if test="item.rankPrefixCode != null and item.rankPrefixCode != ''">
-                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.rankPrefixCode}
-                    </if>
-                </foreach>
-            </trim>
+<!--            <trim prefix="rank_prefix_code=case" suffix="end,">-->
+<!--                <foreach collection="officialRankSystemList" item="item" index="index">-->
+<!--                    <if test="item.rankPrefixCode != null and item.rankPrefixCode != ''">-->
+<!--                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.rankPrefixCode}-->
+<!--                    </if>-->
+<!--                </foreach>-->
+<!--            </trim>-->
             <trim prefix="rank_start=case" suffix="end,">
                 <foreach collection="officialRankSystemList" item="item" index="index">
                     <if test="item.rankStart != null">

@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -308,7 +307,28 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         targetOutcome.setUpdateTime(DateUtils.getNowDate());
         targetOutcome.setUpdateBy(SecurityUtils.getUserId());
         targetOutcome.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-//        targetOutcomeMapper.insertTargetOutcome(targetOutcome);
+        targetOutcomeMapper.insertTargetOutcome(targetOutcome);
+        String indicatorCode = null;
+        R<IndicatorDTO> indicatorDTOR = null;
+        if (type == 1) {
+            indicatorDTOR = indicatorService.selectIndicatorByCode("CW001", SecurityConstants.INNER);
+        } else if (type == 2) {
+            indicatorDTOR = indicatorService.selectIndicatorByCode("CW002", SecurityConstants.INNER);
+        } else if (type == 3) {
+            indicatorDTOR = indicatorService.selectIndicatorByCode("CW022", SecurityConstants.INNER);
+        }
+        if (indicatorDTOR == null) {
+            throw new ServiceException("添加目标结果 指标ID获取失败");
+        }
+        IndicatorDTO indicatorDTO = indicatorDTOR.getData();
+        if (indicatorDTOR.getCode() != 200 || StringUtils.isNull(indicatorDTO)) {
+            throw new ServiceException("添加目标结果 指标ID获取失败");
+        }
+        TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
+        targetOutcomeDetailsDTO.setIndicatorId(indicatorDTO.getIndicatorId());
+        targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
+        targetOutcomeDetailsService.insertTargetOutcomeDetails(targetOutcomeDetailsDTO);
+        Long indicatorId = indicatorDTO.getIndicatorId();
         targetOutcomeDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
         return targetOutcomeDTO;
     }
