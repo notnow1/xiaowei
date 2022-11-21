@@ -52,6 +52,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      */
     @Override
     public EmolumentPlanDTO selectEmolumentPlanByEmolumentPlanId(Long emolumentPlanId) {
+
         return emolumentPlanMapper.selectEmolumentPlanByEmolumentPlanId(emolumentPlanId);
     }
 

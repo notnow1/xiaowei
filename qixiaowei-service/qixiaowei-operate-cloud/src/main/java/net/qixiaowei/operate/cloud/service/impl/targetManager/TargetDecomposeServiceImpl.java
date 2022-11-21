@@ -1742,8 +1742,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         provinceNameKey.set(key);
                     } else if (StringUtils.equals(map.get(key), DecompositionDimension.PRODUCT.getInfo())) {
                         productCodeKey.set(key);
-                    } else if (StringUtils.equals(map.get(key), "时间维度")) {
-                        timeDimensionKey.set(key);
+                    } else if (StringUtils.equals(map.get(key), "分解维度")) {
+                        timeDimensionKey.set(key+1);
                     }
                 });
 
@@ -2280,16 +2280,19 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //详情周期数据
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
+                int dime = this.packDecomposeDetailCycles(targetDecomposeDTO);
                 List<String> list = cyclesExcelData.get(i);
                 for (int i1 = 0; i1 < list.size(); i1++) {
-                    DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
-                    //周期
-                    decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
-                    if (StringUtils.isNotBlank(list.get(i1))) {
-                        //预测值
-                        decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal(list.get(i1)));
+                    if (i1 >= dime){
+                        DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
+                        //周期
+                        decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
+                        if (StringUtils.isNotBlank(list.get(i1))) {
+                            //预测值
+                            decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal(list.get(i1)));
+                        }
+                        decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
                     }
-                    decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
                 }
                 targetDecomposeDetailsDTOS.get(i).setDecomposeDetailCyclesDTOS(decomposeDetailCyclesDTOS);
             }
@@ -2316,6 +2319,46 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //解析完成数据
         targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOS);
         return targetDecomposeDTO;
+    }
+
+    /**
+     * 返回是否是新增还是修改数据 填装数据不一样
+     * @param targetDecomposeDTO
+     * @return
+     */
+    private int packDecomposeDetailCycles(TargetDecomposeDTO targetDecomposeDTO) {
+        //分解id
+        Long targetDecomposeId = targetDecomposeDTO.getTargetDecomposeId();
+        //时间维度
+        Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+        //为空是新增
+        if (null == targetDecomposeId){
+            return 0;
+        }else {
+            //时间维度
+            //半年度
+            if (2 == timeDimension){
+                int month = DateUtils.getMonth();
+                if (month>6){
+                    return 1;
+                }else {
+                    return 0;
+                }
+            }
+            //季度
+            if (3 == timeDimension){
+                return DateUtils.getQuarter();
+            }
+            //月度
+            if (4 == timeDimension){
+                return DateUtils.getMonth();
+            }
+            //周
+            if (5 == timeDimension){
+                return DateUtils.getDayOfWeek();
+            }
+            return 0;
+        }
     }
 
     /**

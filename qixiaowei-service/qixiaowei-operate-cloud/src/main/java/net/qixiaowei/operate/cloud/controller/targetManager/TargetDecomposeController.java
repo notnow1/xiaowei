@@ -423,7 +423,7 @@ public class TargetDecomposeController extends BaseController {
      * 解析Excel
      */
     @PostMapping("/excelParseObject")
-    public AjaxResult excelParseObject(@RequestBody TargetDecomposeDTO targetDecomposeDTO,MultipartFile file) {
+    public AjaxResult excelParseObject(TargetDecomposeDTO targetDecomposeDTO,MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
