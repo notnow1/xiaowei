@@ -713,10 +713,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         list.add(IndicatorCode.INCOME.getCode());
         //回款金额（含税）
         list.add(IndicatorCode.RECEIVABLE.getCode());
-        //销售毛利
-        list.add(IndicatorCode.GROSS.getCode());
-        //PROFITS
-        list.add(IndicatorCode.RECEIVABLE.getCode());
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
         if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
@@ -747,7 +743,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 //年度实际值
                 BigDecimal actualTotal = settingDTO.getActualTotal();
                 //上年年度实际值
-                BigDecimal lastActualTotal = new BigDecimal("0");
+                BigDecimal lastActualTotal = settingDTO.getLastActualTotal();
                 //目标完成率
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
                 //同比
