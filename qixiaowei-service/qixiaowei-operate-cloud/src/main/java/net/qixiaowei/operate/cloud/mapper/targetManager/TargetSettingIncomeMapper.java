@@ -111,5 +111,6 @@ public interface TargetSettingIncomeMapper {
      *
      * @param targetSettingId 目标制定ID
      */
-    List<TargetSettingIncomeDTO> selectTargetSettingIncomeByHistoryNumS(@Param("targetSettingId") Long targetSettingId);
+    List<TargetSettingIncomeDTO> selectTargetSettingIncomeByTargetSettingId(@Param("targetSettingId") Long targetSettingId);
+
 }

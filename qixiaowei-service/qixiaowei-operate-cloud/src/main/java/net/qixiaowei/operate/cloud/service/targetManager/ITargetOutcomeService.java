@@ -4,6 +4,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public interface ITargetOutcomeService {
      * @param targetOutcomeDTO 目标结果表
      * @return 结果
      */
-    TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO, Integer type);
+    TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO, IndicatorDTO indicatorDTO);
 
     /**
      * 修改目标结果表

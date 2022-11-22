@@ -1,9 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import net.qixiaowei.integration.common.constant.SecurityConstants;
-import net.qixiaowei.integration.common.domain.R;
-import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -14,7 +11,6 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeDetailsExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeDetailsMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
-import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -160,19 +156,8 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
     @Override
     public int addTargetOutcomeDetailsS(List<Long> indicatorIds, Long targetOutcomeId) {
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = new ArrayList<>();
+        //todo BUG新增时会产生多余的预置指标
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOByIndicators = targetOutcomeDetailsMapper.selectTargetOutcomeDetailsByIndicatorIds(indicatorIds, targetOutcomeId);
-        List<String> codesByIsPreset = IndicatorCode.getCodesByIsPreset(1);
-        codesByIsPreset.addAll(IndicatorCode.getCodesByIsPreset(2));
-        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByCodeList(codesByIsPreset, SecurityConstants.INNER);
-        if (indicatorR.getCode() != 200 && StringUtils.isEmpty(indicatorR.getData())) {
-            throw new ServiceException("获取预置指标失败 请联系管理员");
-        }
-        List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
-        for (IndicatorDTO indicatorDTO : indicatorDTOS) {
-            if (!indicatorIds.contains(indicatorDTO.getIndicatorId())) {
-                indicatorIds.add(indicatorDTO.getIndicatorId());
-            }
-        }
         // 筛选掉已经存在的目标结果详情列表
         if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOByIndicators)) {
             for (int i = indicatorIds.size() - 1; i >= 0; i--) {
@@ -183,16 +168,18 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
                 }
             }
         }
-        BigDecimal zero = new BigDecimal(0);
-        for (Long indicatorId : indicatorIds) {
-            TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
-            targetOutcomeDetailsDTO.setIndicatorId(indicatorId);
-            targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcomeId);
-            targetOutcomeDetailsDTO.setActualTotal(zero);//总值
-            setMonthValue(zero, targetOutcomeDetailsDTO);
-            targetOutcomeDetailsDTOList.add(targetOutcomeDetailsDTO);
+        if (StringUtils.isNotEmpty(indicatorIds)) {
+            for (Long indicatorId : indicatorIds) {
+                TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
+                targetOutcomeDetailsDTO.setIndicatorId(indicatorId);
+                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcomeId);
+                targetOutcomeDetailsDTO.setActualTotal(BigDecimal.ZERO);//总值
+                setMonthValue(BigDecimal.ZERO, targetOutcomeDetailsDTO);
+                targetOutcomeDetailsDTOList.add(targetOutcomeDetailsDTO);
+            }
+            return insertTargetOutcomeDetailss(targetOutcomeDetailsDTOList);
         }
-        return insertTargetOutcomeDetailss(targetOutcomeDetailsDTOList);
+        return 1;
     }
 
     /**
@@ -214,6 +201,7 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
         targetOutcomeDetailsDTO.setActualOctober(value);
         targetOutcomeDetailsDTO.setActualNovember(value);
         targetOutcomeDetailsDTO.setActualDecember(value);
+        targetOutcomeDetailsDTO.setActualTotal(value);
     }
 
     /**

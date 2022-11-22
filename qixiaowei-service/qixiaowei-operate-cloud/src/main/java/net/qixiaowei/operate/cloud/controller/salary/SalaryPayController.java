@@ -87,8 +87,7 @@ public class SalaryPayController extends BaseController {
     //@RequiresPermissions("operate:cloud:salaryPay:list")
     @GetMapping("/list/structure")
     public AjaxResult listStructure(SalaryStructureDTO salaryStructureDTO) {
-        List<SalaryStructureDTO> list = salaryPayService.selectSalaryPayStructureList(salaryStructureDTO);
-        return AjaxResult.success(list);
+        return AjaxResult.success(salaryPayService.selectSalaryPayStructureList(salaryStructureDTO));
     }
 
 

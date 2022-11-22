@@ -1,11 +1,11 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
-import java.util.List;
-import java.util.Map;
-
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayExcel;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -125,5 +125,5 @@ public interface ISalaryPayService {
      * @param salaryStructureDTO
      * @return
      */
-    List<SalaryStructureDTO> selectSalaryPayStructureList(SalaryStructureDTO salaryStructureDTO);
+    SalaryStructureDTO selectSalaryPayStructureList(SalaryStructureDTO salaryStructureDTO);
 }

@@ -642,8 +642,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 }
             }
         });
-
-
 //        SalaryPay salaryPay = new SalaryPay();
 //        BeanUtils.copyProperties(map, salaryPay);
 //        salaryPay.setCreateBy(SecurityUtils.getUserId());
@@ -682,7 +680,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @return
      */
     @Override
-    public List<SalaryStructureDTO> selectSalaryPayStructureList(SalaryStructureDTO salaryStructureDTO) {
+    public SalaryStructureDTO selectSalaryPayStructureList(SalaryStructureDTO salaryStructureDTO) {
         // 默认当前年份的1月到现在的月份
         // 默认当前所有部门
         SalaryStructureDTO salaryStructure = new SalaryStructureDTO();
@@ -694,27 +692,39 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             BigDecimal allowanceAmountSum = BigDecimal.ZERO;
             BigDecimal welfareAmountSum = BigDecimal.ZERO;
             BigDecimal bonusAmountSum = BigDecimal.ZERO;
+            List<Long> employeeIds = new ArrayList<>();
+            // 获取工资，津贴，福利，奖金合计
             for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
                 salaryAmountSum = salaryAmountSum.add(salaryPayDTO.getSalaryAmount());
                 allowanceAmountSum = allowanceAmountSum.add(salaryPayDTO.getAllowanceAmount());
                 welfareAmountSum = welfareAmountSum.add(salaryPayDTO.getWelfareAmount());
                 bonusAmountSum = bonusAmountSum.add(salaryPayDTO.getBonusAmount());
                 Long employeeId = salaryPayDTO.getEmployeeId();
-                // 为员工赋值
-                R<EmployeeDTO> employeeDTOR = employeeService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
-                EmployeeDTO employeeDTO = employeeDTOR.getData();
-                if (employeeDTOR.getCode() != 200) {
-                    throw new ServiceException("远程获取人员信息失败");
-                }
-                if (StringUtils.isNull(employeeDTO)) {
-                    throw new ServiceException("当前人员信息已不存在，请检查员工配置");
-                }
+                employeeIds.add(employeeId);
             }
             salaryStructure.setSalaryAmountSum(salaryAmountSum);
             salaryStructure.setAllowanceAmountSum(allowanceAmountSum);
             salaryStructure.setWelfareAmountSum(welfareAmountSum);
             salaryStructure.setBonusAmountSum(bonusAmountSum);
             salaryStructure.setSalaryPayDTOList(salaryPayDTOList);
+            // 为员工赋值
+            R<List<EmployeeDTO>> employeeDTOR = employeeService.selectByEmployeeIds(employeeIds, SecurityConstants.INNER);
+            List<EmployeeDTO> employeeDTOS = employeeDTOR.getData();
+            if (employeeDTOR.getCode() != 200) {
+                throw new ServiceException("远程获取人员信息失败");
+            }
+            if (StringUtils.isEmpty(employeeDTOS)) {
+                throw new ServiceException("当前人员信息已不存在，请检查员工配置");
+            }
+            for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
+                for (EmployeeDTO employeeDTO : employeeDTOS) {
+                    if (salaryPayDTO.getEmployeeId().equals(employeeDTO.getEmployeeId())) {
+                        salaryPayDTO.setPostRank(employeeDTO.getPostRankName());
+                        salaryPayDTO.setDepartmentName(employeeDTO.getEmployeeDepartmentName());
+                    }
+                }
+            }
+            return null;
         }
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setEmployeePostId(salaryStructureDTO.getPostId());

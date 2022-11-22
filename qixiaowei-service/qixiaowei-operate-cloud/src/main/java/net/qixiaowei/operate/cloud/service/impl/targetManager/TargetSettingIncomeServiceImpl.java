@@ -115,8 +115,8 @@ public class TargetSettingIncomeServiceImpl implements ITargetSettingIncomeServi
      * @param targetSettingId 目标制定ID
      */
     @Override
-    public List<TargetSettingIncomeDTO> selectTargetSettingIncomeByHistoryNumS(Long targetSettingId) {
-        return targetSettingIncomeMapper.selectTargetSettingIncomeByHistoryNumS(targetSettingId);
+    public List<TargetSettingIncomeDTO> selectTargetSettingIncomeByTargetSettingId(Long targetSettingId) {
+        return targetSettingIncomeMapper.selectTargetSettingIncomeByTargetSettingId(targetSettingId);
     }
 
     /**

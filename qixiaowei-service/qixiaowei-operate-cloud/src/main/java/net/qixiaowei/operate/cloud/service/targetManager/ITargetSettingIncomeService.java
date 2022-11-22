@@ -108,7 +108,7 @@ public interface ITargetSettingIncomeService {
      *
      * @param targetSettingId 目标制定ID
      */
-    List<TargetSettingIncomeDTO> selectTargetSettingIncomeByHistoryNumS(Long targetSettingId);
+    List<TargetSettingIncomeDTO> selectTargetSettingIncomeByTargetSettingId(Long targetSettingId);
 
     /**
      * 导入Excel
