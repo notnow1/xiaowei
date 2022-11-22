@@ -93,7 +93,7 @@ public class EmolumentPlanController extends BaseController
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody EmolumentPlanDTO emolumentPlanDTO)
     {
-    return toAjax(emolumentPlanService.updateEmolumentPlan(emolumentPlanDTO));
+        return toAjax(emolumentPlanService.updateEmolumentPlan(emolumentPlanDTO));
     }
 
     /**

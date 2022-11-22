@@ -6,7 +6,7 @@ import org.apache.poi.ss.formula.functions.T;
 import java.util.List;
 
 @Data
-public class ExcelParseObject {
+public class ExcelParseObject<T> {
     /**
      * 成功条数
      */
@@ -18,9 +18,9 @@ public class ExcelParseObject {
     /**
      * 成功list
      */
-    private List<T> successList ;
+    private List<? extends T>  successList ;
     /**
      * 失败list
      */
-    private List<T>  errorList ;
+    private List<?  extends T>  errorList ;
 }
