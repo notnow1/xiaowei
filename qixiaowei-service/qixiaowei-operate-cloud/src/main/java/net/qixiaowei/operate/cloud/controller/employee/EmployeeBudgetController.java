@@ -1,7 +1,10 @@
 package net.qixiaowei.operate.cloud.controller.employee;
 
 import java.util.List;
+
+import net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,7 +91,7 @@ public class EmployeeBudgetController extends BaseController
     //@RequiresPermissions("operate:cloud:employeeBudget:add")
     //@Log(title = "新增人力预算表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody EmployeeBudgetDTO employeeBudgetDTO) {
+    public AjaxResult addSave(@RequestBody @Validated(EmployeeBudgetDTO.AddEmployeeBudgetDTO.class) EmployeeBudgetDTO employeeBudgetDTO) {
     return AjaxResult.success(employeeBudgetService.insertEmployeeBudget(employeeBudgetDTO));
     }
 
@@ -99,7 +102,7 @@ public class EmployeeBudgetController extends BaseController
     //@RequiresPermissions("operate:cloud:employeeBudget:edit")
     //@Log(title = "修改人力预算表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody EmployeeBudgetDTO employeeBudgetDTO)
+    public AjaxResult editSave(@RequestBody @Validated(EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class) EmployeeBudgetDTO employeeBudgetDTO)
     {
     return toAjax(employeeBudgetService.updateEmployeeBudget(employeeBudgetDTO));
     }

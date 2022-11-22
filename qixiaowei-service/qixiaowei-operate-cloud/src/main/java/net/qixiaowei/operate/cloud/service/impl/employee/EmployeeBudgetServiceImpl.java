@@ -55,7 +55,6 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     private RemoteDepartmentService remoteDepartmentService;
 
 
-
     /**
      * 查询人力预算表
      *
@@ -69,10 +68,8 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         //远程调用部门
         R<DepartmentDTO> departmentDTOR = remoteDepartmentService.selectdepartmentId(employeeBudgetDTO.getDepartmentId(), SecurityConstants.INNER);
         DepartmentDTO data = departmentDTOR.getData();
-        if (StringUtils.isNotNull(data)){
+        if (StringUtils.isNotNull(data)) {
             employeeBudgetDTO.setDepartmentName(data.getDepartmentName());
-        }else {
-            throw new ServiceException("部门不存在,请联系管理员！");
         }
 
         //todo 职级体系远程调用
@@ -80,7 +77,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         //人力预算明细表集合
         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetId(employeeBudgetId);
         List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
-        if (StringUtils.isNotEmpty(collect)){
+        if (StringUtils.isNotEmpty(collect)) {
             List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);
             //根据人力预算明细表id分组
             Map<Long, List<EmployeeBudgetAdjustsDTO>> mapList = employeeBudgetAdjustsDTOS.parallelStream().collect(Collectors.groupingBy(EmployeeBudgetAdjustsDTO::getEmployeeBudgetDetailsId));
@@ -91,7 +88,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 //本年新增人数
                 Integer countAdjust = employeeBudgetDetailsDTO.getCountAdjust();
                 //年度平均人数 = 上年期末数+平均新增人数
-                employeeBudgetDetailsDTO.setAnnualAverageNUm(numberLastYear+countAdjust);
+                employeeBudgetDetailsDTO.setAnnualAverageNUm(numberLastYear + countAdjust);
                 employeeBudgetDetailsDTO.setEmployeeBudgetAdjustsDTOS(mapList.get(employeeBudgetDetailsDTO.getEmployeeBudgetDetailsId()));
             }
         }
@@ -113,13 +110,13 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         List<EmployeeBudgetDTO> employeeBudgetDTOS = employeeBudgetMapper.selectEmployeeBudgetList(employeeBudget);
         //远程调用部门赋值
         List<Long> collect = employeeBudgetDTOS.stream().map(EmployeeBudgetDTO::getDepartmentId).collect(Collectors.toList());
-        if (StringUtils.isNotEmpty(collect)){
+        if (StringUtils.isNotEmpty(collect)) {
             R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
             List<DepartmentDTO> data = listR.getData();
-            if (StringUtils.isNotEmpty(data)){
+            if (StringUtils.isNotEmpty(data)) {
                 for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
                     for (DepartmentDTO datum : data) {
-                        if (budgetDTO.getDepartmentId() == datum.getDepartmentId()){
+                        if (budgetDTO.getDepartmentId() == datum.getDepartmentId()) {
                             budgetDTO.setDepartmentName(datum.getDepartmentName());
                         }
                     }
@@ -129,10 +126,13 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         //todo 远程调用职级赋值
 
 
+        Integer amountAverageAdjust = 0;
         for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
             Integer amountLastYear = budgetDTO.getAmountLastYear();
             Integer amountAdjust = budgetDTO.getAmountAdjust();
-            Integer amountAverageAdjust =  amountLastYear+amountAdjust;
+            if (null != amountLastYear && null != amountAdjust){
+                 amountAverageAdjust = amountLastYear + amountAdjust;
+            }
             //年度平均人数 = 上年期末数+平均新增人数
             budgetDTO.setAnnualAverageNUm(amountAverageAdjust);
         }
@@ -159,13 +159,33 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         employeeBudget.setUpdateTime(DateUtils.getNowDate());
         employeeBudget.setUpdateBy(SecurityUtils.getUserId());
         employeeBudget.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        //人力预算详情表
+        List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDTO.getEmployeeBudgetDetailsDTOS();
+        if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
+            //上年期末人数
+            Integer amountLastYear = 0;
+            //本年新增人数
+            Integer amountAdjust = 0;
+            //平均新增数
+            BigDecimal amountAverageAdjust = new BigDecimal("0");
+            for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                //上年期末人数
+                amountLastYear = amountLastYear + employeeBudgetDetailsDTO.getNumberLastYear();
+                //本年新增人数
+                amountAdjust = amountLastYear + employeeBudgetDetailsDTO.getCountAdjust();
+                //平均新增数
+                amountAverageAdjust = amountAverageAdjust.add(employeeBudgetDetailsDTO.getAverageAdjust());
+            }
+            employeeBudget.setAmountLastYear(amountLastYear);
+            employeeBudget.setAmountAdjust(amountAdjust);
+            employeeBudget.setAmountAverageAdjust(amountAverageAdjust);
+        }
         try {
             employeeBudgetMapper.insertEmployeeBudget(employeeBudget);
         } catch (Exception e) {
             throw new ServiceException("新增人力预算失败");
         }
-        //人力预算详情表
-        List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDTO.getEmployeeBudgetDetailsDTOS();
+
         //插入人力详情表
         List<EmployeeBudgetDetails> employeeBudgetDetails = packEmployeeBudgetDetailsList(employeeBudgetDetailsDTOS, employeeBudget);
         //插入人力预算详情明细调整表
@@ -187,7 +207,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                         //调整人数
                         employeeBudgetAdjusts.setEmployeeBudgetDetailsId(employeeBudgetDetails.get(i).getEmployeeBudgetDetailsId());
                         employeeBudgetAdjusts.setNumberAdjust(employeeBudgetAdjustsDTOS.get(i1).getNumberAdjust());
-                        employeeBudgetAdjusts.setCycleNumber(i1+1);
+                        employeeBudgetAdjusts.setCycleNumber(i1 + 1);
                         employeeBudgetAdjusts.setCreateBy(SecurityUtils.getUserId());
                         employeeBudgetAdjusts.setCreateTime(DateUtils.getNowDate());
                         employeeBudgetAdjusts.setUpdateTime(DateUtils.getNowDate());
@@ -249,13 +269,14 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDTO.getEmployeeBudgetDetailsDTOS();
         //修改人力预算调整表集合
         List<EmployeeBudgetAdjusts> employeeBudgetAdjustsList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)){
+        if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
             for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                 //人力预算调整表集合
                 List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetDetailsDTO.getEmployeeBudgetAdjustsDTOS();
-                if (StringUtils.isNotEmpty(employeeBudgetAdjustsDTOS)){
+                if (StringUtils.isNotEmpty(employeeBudgetAdjustsDTOS)) {
                     for (EmployeeBudgetAdjustsDTO employeeBudgetAdjustsDTO : employeeBudgetAdjustsDTOS) {
                         EmployeeBudgetAdjusts employeeBudgetAdjusts = new EmployeeBudgetAdjusts();
+                        employeeBudgetAdjusts.setEmployeeBudgetAdjustsId(employeeBudgetAdjustsDTO.getEmployeeBudgetAdjustsId());
                         employeeBudgetAdjusts.setNumberAdjust(employeeBudgetAdjustsDTO.getNumberAdjust());
                         employeeBudgetAdjusts.setUpdateTime(DateUtils.getNowDate());
                         employeeBudgetAdjusts.setUpdateBy(SecurityUtils.getUserId());
@@ -277,7 +298,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     @Override
     public int logicDeleteEmployeeBudgetByEmployeeBudgetIds(List<Long> employeeBudgetIds) {
         List<EmployeeBudgetDTO> employeeBudgetDTOS = employeeBudgetMapper.selectEmployeeBudgetByEmployeeBudgetIds(employeeBudgetIds);
-        if (StringUtils.isNotEmpty(employeeBudgetDTOS)){
+        if (StringUtils.isNotEmpty(employeeBudgetDTOS)) {
             throw new ServiceException("数据不存在！");
         }
         return employeeBudgetMapper.logicDeleteEmployeeBudgetByEmployeeBudgetIds(employeeBudgetIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
@@ -305,7 +326,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         EmployeeBudget employeeBudget = new EmployeeBudget();
         employeeBudget.setEmployeeBudgetId(employeeBudgetDTO.getEmployeeBudgetId());
         EmployeeBudgetDTO employeeBudgetDTO1 = employeeBudgetMapper.selectEmployeeBudgetByEmployeeBudgetId(employeeBudgetDTO.getEmployeeBudgetId());
-        if (StringUtils.isNull(employeeBudgetDTO1)){
+        if (StringUtils.isNull(employeeBudgetDTO1)) {
             throw new ServiceException("数据不存在！");
         }
         employeeBudget.setUpdateTime(DateUtils.getNowDate());

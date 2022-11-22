@@ -4,6 +4,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -48,6 +49,7 @@ public class EmployeeBudgetAdjustsDTO {
     /**
     * 调整人数
     */
+    @NotNull(message = "调整人数人数不能为空", groups = {EmployeeBudgetAdjustsDTO.AddEmployeeBudgetAdjustsDTO.class, EmployeeBudgetAdjustsDTO.UpdateEmployeeBudgetAdjustsDTO.class})
     private  Integer numberAdjust;
     /**
     * 删除标记:0未删除;1已删除
