@@ -531,3 +531,94 @@ CREATE TABLE salary_pay_details(
     update_time TIMESTAMP    COMMENT '更新时间' ,
     PRIMARY KEY (salary_pay_details_id)
 )  COMMENT = '工资发薪明细表';
+
+
+CREATE TABLE performance_appraisal(
+    performance_appraisal_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    performance_rank_id BIGINT NOT NULL   COMMENT '绩效等级ID' ,
+    appraisal_year INT NOT NULL   COMMENT '考核年度' ,
+    appraisal_name VARCHAR(128)    COMMENT '考核名称' ,
+    cycle_flag TINYINT    COMMENT '周期性考核标记:0否;1是' ,
+    cycle_type TINYINT    COMMENT '周期类型:1月度;2季度;3半年度;4年度' ,
+    cycle_number INT    COMMENT '考核周期' ,
+    appraisal_start_date DATE    COMMENT '考核开始日期' ,
+    appraisal_end_date DATE    COMMENT '考核结束日期' ,
+    appraisal_flow TINYINT    COMMENT '考核流程:1系统流程;2仅导入结果' ,
+    appraisal_object TINYINT    COMMENT '考核对象:1组织;2员工' ,
+    appraisal_status TINYINT    COMMENT '考核状态:1制定目标;2评议;3排名;4归档' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (performance_appraisal_id)
+)  COMMENT = '绩效考核表';
+
+
+CREATE TABLE performance_appraisal_objects(
+    perform_appraisal_objects_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    performance_appraisal_id BIGINT NOT NULL   COMMENT '绩效考核ID' ,
+    appraisal_object_id BIGINT NOT NULL   COMMENT '考核对象ID' ,
+    appraisal_principal_id BIGINT    COMMENT '考核负责人ID' ,
+    evaluation_score DECIMAL(5,2)    COMMENT '评议分数' ,
+    appraisal_result_id BIGINT    COMMENT '考核结果(绩效等级ID)' ,
+    filing_date DATE    COMMENT '归档日期' ,
+    self_defined_columns_flag TINYINT    COMMENT '自定义列标记:0否;1是' ,
+    appraisal_object_status TINYINT    COMMENT '考核对象状态:1制定目标;2评议;3排名;4归档' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (perform_appraisal_objects_id)
+)  COMMENT = '绩效考核对象表';
+
+
+CREATE TABLE performance_appraisal_items(
+    perform_appraisal_items_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    perform_appraisal_objects_id BIGINT NOT NULL   COMMENT '绩效考核对象ID' ,
+    indicator_id BIGINT NOT NULL   COMMENT '指标ID' ,
+    challenge_value DECIMAL(18,2)    COMMENT '挑战值' ,
+    target_value DECIMAL(18,2)    COMMENT '目标值' ,
+    guaranteed_value DECIMAL(18,2)    COMMENT '保底值' ,
+    actual_value DECIMAL(18,2)    COMMENT '实际值' ,
+    weight DECIMAL(5,2)    COMMENT '权重百分比(%)' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (perform_appraisal_items_id)
+)  COMMENT = '绩效考核项目表';
+
+
+CREATE TABLE performance_appraisal_columns(
+    perform_appraisal_columns_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    performance_appraisal_id BIGINT NOT NULL   COMMENT '绩效考核ID' ,
+    column_name VARCHAR(256)    COMMENT '列名' ,
+    column_value VARCHAR(1024)    COMMENT '列值(所有行集合的JSON格式数据)' ,
+    sort INT    COMMENT '排序' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (perform_appraisal_columns_id)
+)  COMMENT = '绩效考核自定义列表';
+
+
+CREATE TABLE official_rank_emolument(
+    official_rank_emolument_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    official_rank_system_id BIGINT NOT NULL   COMMENT '职级体系ID' ,
+    official_rank INT NOT NULL   COMMENT '职级' ,
+    salary_cap DECIMAL(18,2)    COMMENT '工资上限' ,
+    salary_floor DECIMAL(18,2)    COMMENT '工资下限' ,
+    salary_median DECIMAL(18,2)    COMMENT '工资中位数' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (official_rank_emolument_id)
+)  COMMENT = '职级薪酬表';
+
