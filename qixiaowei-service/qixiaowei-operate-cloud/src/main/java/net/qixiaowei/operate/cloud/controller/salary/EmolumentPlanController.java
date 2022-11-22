@@ -1,13 +1,18 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
+import net.qixiaowei.integration.common.utils.excel.ExcelParseObject;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 import net.qixiaowei.operate.cloud.service.salary.IEmolumentPlanService;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -65,7 +70,7 @@ public class EmolumentPlanController extends BaseController
     @GetMapping("/list")
     public AjaxResult list(EmolumentPlanDTO emolumentPlanDTO){
     List<EmolumentPlanDTO> list = emolumentPlanService.selectEmolumentPlanList(emolumentPlanDTO);
-    return AjaxResult.success(list);
+        return AjaxResult.success(list);
     }
 
 
@@ -75,7 +80,7 @@ public class EmolumentPlanController extends BaseController
     //@RequiresPermissions("operate:cloud:emolumentPlan:add")
     //@Log(title = "新增薪酬规划表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody EmolumentPlanDTO emolumentPlanDTO) {
+    public AjaxResult addSave(@RequestBody @Validated(EmolumentPlanDTO.AddEmolumentPlanDTO.class) EmolumentPlanDTO emolumentPlanDTO) {
     return AjaxResult.success(emolumentPlanService.insertEmolumentPlan(emolumentPlanDTO));
     }
 
@@ -97,7 +102,7 @@ public class EmolumentPlanController extends BaseController
     //@RequiresPermissions("operate:cloud:emolumentPlan:remove")
     //@Log(title = "删除薪酬规划表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody EmolumentPlanDTO emolumentPlanDTO)
+    public AjaxResult remove(@RequestBody @Validated(EmolumentPlanDTO.DeleteEmolumentPlanDTO.class) EmolumentPlanDTO emolumentPlanDTO)
     {
     return toAjax(emolumentPlanService.logicDeleteEmolumentPlanByEmolumentPlanId(emolumentPlanDTO));
     }

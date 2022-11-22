@@ -1,10 +1,11 @@
-package net.qixiaowei.operate.cloud.api.dto.salary;
+package net.qixiaowei.operate.cloud.api.dto.employee;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -47,9 +48,18 @@ public class EmployeeBudgetDTO {
     */
     private  Long departmentId;
     /**
+     * 预算部门名称
+     */
+    private  String departmentName;
+    /**
     * 职级体系ID
     */
     private  Long officialRankSystemId;
+
+    /**
+     * 职级体系名称
+     */
+    private  String officialRankSystemName;
     /**
     * 预算周期:1季度;2月度
     */
@@ -66,6 +76,14 @@ public class EmployeeBudgetDTO {
     * 平均新增数
     */
     private BigDecimal amountAverageAdjust;
+    /**
+     * 人力预算明细表集合
+     */
+    private List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS;
+    /**
+     * 年度平均人数
+     */
+    private Integer annualAverageNUm;
     /**
     * 删除标记:0未删除;1已删除
     */

@@ -1,8 +1,8 @@
-package net.qixiaowei.operate.cloud.mapper.salary;
+package net.qixiaowei.operate.cloud.mapper.employee;
 
 import java.util.List;
-import net.qixiaowei.operate.cloud.api.domain.salary.EmployeeBudget;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmployeeBudgetDTO;
+import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudget;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -101,4 +101,11 @@ public interface EmployeeBudgetMapper{
     * @return 结果
     */
     int batchEmployeeBudget(@Param("employeeBudgets")List<EmployeeBudget> EmployeeBudgets);
+
+    /**
+     * 不允许季度和月度同时存在 新增时查询唯一性
+     * @param employeeBudget
+     * @return
+     */
+    EmployeeBudgetDTO selectEmployeeBudget(@Param("employeeBudget") EmployeeBudget employeeBudget);
 }

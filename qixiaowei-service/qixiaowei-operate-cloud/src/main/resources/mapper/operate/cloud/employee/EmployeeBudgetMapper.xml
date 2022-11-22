@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.EmployeeBudgetMapper">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetMapper">
     <!--    查询人力预算表-->
     <select id="selectEmployeeBudgetByEmployeeBudgetId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO">
         SELECT
         employee_budget_id, budget_year, department_id, official_rank_system_id, budget_cycle, amount_last_year, amount_adjust, amount_average_adjust, delete_flag, create_by, create_time, update_by, update_time
         FROM employee_budget
@@ -13,7 +13,7 @@
 
     <!--    批量查询人力预算表-->
     <select id="selectEmployeeBudgetByEmployeeBudgetIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO">
         SELECT
         employee_budget_id, budget_year, department_id, official_rank_system_id, budget_cycle, amount_last_year, amount_adjust, amount_average_adjust, delete_flag, create_by, create_time, update_by, update_time
         FROM employee_budget
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询人力预算表列表-->
-    <select id="selectEmployeeBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeBudgetDTO">
+    <select id="selectEmployeeBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO">
         SELECT
         employee_budget_id, budget_year, department_id, official_rank_system_id, budget_cycle, amount_last_year, amount_adjust, amount_average_adjust, delete_flag, create_by, create_time, update_by, update_time
         FROM employee_budget
@@ -71,6 +71,26 @@
                 <if test="employeeBudget.updateTime != null">
                     and update_time=#{employeeBudget.updateTime}
                 </if>
+    </select>
+<!--    不允许季度和月度同时存在 新增时查询唯一性-->
+    <select id="selectEmployeeBudget"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO">
+        SELECT
+        employee_budget_id, budget_year, department_id, official_rank_system_id, budget_cycle, amount_last_year, amount_adjust, amount_average_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget
+        WHERE delete_flag=0
+        <if test="employeeBudget.budgetYear != null">
+            and budget_year=#{employeeBudget.budgetYear}
+        </if>
+        <if test="employeeBudget.departmentId != null">
+            and department_id=#{employeeBudget.departmentId}
+        </if>
+        <if test="employeeBudget.officialRankSystemId != null">
+            and official_rank_system_id=#{employeeBudget.officialRankSystemId}
+        </if>
+        <if test="employeeBudget.budgetCycle != null">
+            and budget_cycle=#{employeeBudget.budgetCycle}
+        </if>
     </select>
     <!--新增人力预算表-->
     <insert id="insertEmployeeBudget" useGeneratedKeys="true" keyProperty="employeeBudgetId">

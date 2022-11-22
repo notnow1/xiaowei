@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.controller.salary;
+package net.qixiaowei.operate.cloud.controller.employee;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import lombok.SneakyThrows;
@@ -16,10 +15,10 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.log.enums.BusinessType;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmployeeBudgetDTO;
-import net.qixiaowei.operate.cloud.excel.salary.EmployeeBudgetExcel;
-import net.qixiaowei.operate.cloud.excel.salary.EmployeeBudgetImportListener;
-import net.qixiaowei.operate.cloud.service.salary.IEmployeeBudgetService;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
+import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetExcel;
+import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetImportListener;
+import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +53,7 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 查询人力预算表详情
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:info")
+    //@RequiresPermissions("operate:cloud:employeeBudget:info")
     @GetMapping("/info/{employeeBudgetId}")
     public AjaxResult info(@PathVariable Long employeeBudgetId){
     EmployeeBudgetDTO employeeBudgetDTO = employeeBudgetService.selectEmployeeBudgetByEmployeeBudgetId(employeeBudgetId);
@@ -64,7 +63,7 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 分页查询人力预算表列表
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:pageList")
+    //@RequiresPermissions("operate:cloud:employeeBudget:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(EmployeeBudgetDTO employeeBudgetDTO){
     startPage();
@@ -75,7 +74,7 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 查询人力预算表列表
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:list")
+    //@RequiresPermissions("operate:cloud:employeeBudget:list")
     @GetMapping("/list")
     public AjaxResult list(EmployeeBudgetDTO employeeBudgetDTO){
     List<EmployeeBudgetDTO> list = employeeBudgetService.selectEmployeeBudgetList(employeeBudgetDTO);
@@ -86,8 +85,8 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 新增人力预算表
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:add")
-    @Log(title = "新增人力预算表", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("operate:cloud:employeeBudget:add")
+    //@Log(title = "新增人力预算表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody EmployeeBudgetDTO employeeBudgetDTO) {
     return AjaxResult.success(employeeBudgetService.insertEmployeeBudget(employeeBudgetDTO));
@@ -97,8 +96,8 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 修改人力预算表
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:edit")
-    @Log(title = "修改人力预算表", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("operate:cloud:employeeBudget:edit")
+    //@Log(title = "修改人力预算表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody EmployeeBudgetDTO employeeBudgetDTO)
     {
@@ -108,8 +107,8 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 逻辑删除人力预算表
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:remove")
-    @Log(title = "删除人力预算表", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("operate:cloud:employeeBudget:remove")
+    //@Log(title = "删除人力预算表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody EmployeeBudgetDTO employeeBudgetDTO)
     {
@@ -118,8 +117,8 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 批量修改人力预算表
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:edits")
-    @Log(title = "批量修改人力预算表", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("operate:cloud:employeeBudget:edits")
+    //@Log(title = "批量修改人力预算表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<EmployeeBudgetDTO> employeeBudgetDtos)
     {
@@ -129,8 +128,8 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 批量新增人力预算表
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:insertEmployeeBudgets")
-    @Log(title = "批量新增人力预算表", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("operate:cloud:employeeBudget:insertEmployeeBudgets")
+    //@Log(title = "批量新增人力预算表", businessType = BusinessType.INSERT)
     @PostMapping("/insertEmployeeBudgets")
     public AjaxResult insertEmployeeBudgets(@RequestBody List<EmployeeBudgetDTO> employeeBudgetDtos)
     {
@@ -140,8 +139,8 @@ public class EmployeeBudgetController extends BaseController
     /**
     * 逻辑批量删除人力预算表
     */
-    @RequiresPermissions("operate:cloud:employeeBudget:removes")
-    @Log(title = "批量删除人力预算表", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("operate:cloud:employeeBudget:removes")
+    //@Log(title = "批量删除人力预算表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  employeeBudgetIds)
     {

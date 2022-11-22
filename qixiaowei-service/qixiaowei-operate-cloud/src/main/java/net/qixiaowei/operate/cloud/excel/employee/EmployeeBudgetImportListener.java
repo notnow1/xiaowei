@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.excel.salary;
+package net.qixiaowei.operate.cloud.excel.employee;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
-import net.qixiaowei.operate.cloud.service.salary.IEmployeeBudgetService;
+import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
 
 /**
 * EmployeeBudgetImportListener
