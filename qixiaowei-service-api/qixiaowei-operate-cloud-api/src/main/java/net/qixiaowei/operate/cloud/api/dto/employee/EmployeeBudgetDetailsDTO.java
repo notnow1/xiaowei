@@ -51,6 +51,11 @@ public class EmployeeBudgetDetailsDTO {
     */
     @NotNull(message = "岗位职级不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
     private  Integer officialRank;
+
+    /**
+     * 岗位职级名称
+     */
+    private  String officialRankName;
     /**
     * 上年期末人数
     */

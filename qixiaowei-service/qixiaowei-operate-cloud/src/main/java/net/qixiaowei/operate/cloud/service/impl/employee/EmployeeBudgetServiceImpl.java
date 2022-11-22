@@ -15,7 +15,9 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,8 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
 
     @Autowired
     private RemoteDepartmentService remoteDepartmentService;
+    @Autowired
+    private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
 
 
     /**
@@ -72,10 +76,25 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             employeeBudgetDTO.setDepartmentName(data.getDepartmentName());
         }
 
-        //todo 职级体系远程调用
+        //职级体系远程调用
+        R<OfficialRankSystemDTO> officialRankSystemDTOR = remoteOfficialRankSystemService.selectById(employeeBudgetDTO.getOfficialRankSystemId(), SecurityConstants.INNER);
+        OfficialRankSystemDTO data1 = officialRankSystemDTOR.getData();
+        if (StringUtils.isNotNull(data1)){
+            employeeBudgetDTO.setOfficialRankSystemName(data1.getOfficialRankSystemName());
+        }
 
         //人力预算明细表集合
         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetId(employeeBudgetId);
+
+        //岗位职级远程调用
+        R<List<String>> listR = remoteOfficialRankSystemService.selectRankById(employeeBudgetDTO.getOfficialRankSystemId(), SecurityConstants.INNER);
+        List<String> data2 = listR.getData();
+        if (StringUtils.isNotEmpty(data2)){
+            for (int i = 0; i < employeeBudgetDetailsDTOS.size(); i++) {
+                employeeBudgetDetailsDTOS.get(i).setOfficialRankName(data2.get(i));
+            }
+        }
+
         List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(collect)) {
             List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);
@@ -123,8 +142,19 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 }
             }
         }
-        //todo 远程调用职级赋值
-
+        //远程调用职级赋值
+        List<Long> collect1 = employeeBudgetDTOS.stream().map(EmployeeBudgetDTO::getOfficialRankSystemId).collect(Collectors.toList());
+        R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
+        List<OfficialRankSystemDTO> data = listR.getData();
+        if (StringUtils.isNotEmpty(data)){
+            for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
+                for (OfficialRankSystemDTO datum : data) {
+                    if (budgetDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
+                        budgetDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+                    }
+                }
+            }
+        }
 
         Integer amountAverageAdjust = 0;
         for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
