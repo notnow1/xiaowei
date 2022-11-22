@@ -107,7 +107,7 @@ public class TargetOutcomeController extends BaseController {
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
         List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeService.importTargetOutcome(targetSettingExcelList, targetOutSettingId);
-        return AjaxResult.success(targetOutcomeDetailsDTOList);
+        return AjaxResult.successExcel(targetOutcomeDetailsDTOList, null);
     }
 
     /**

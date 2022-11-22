@@ -2,8 +2,11 @@ package net.qixiaowei.integration.common.web.domain;
 
 import net.qixiaowei.integration.common.constant.HttpStatus;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -26,6 +29,22 @@ public class AjaxResult extends HashMap<String, Object> {
      * 数据对象
      */
     public static final String DATA_TAG = "data";
+    /**
+     * 成功条数
+     */
+    public static final String SUCCESS_TOTAL = "successTotal";
+    /**
+     * 失败条数
+     */
+    public static final String ERROR_TOTAL = "errorTotal";
+    /**
+     * 成功list
+     */
+    public static final String SUCCESS_LIST = "successList";
+    /**
+     * 失败list
+     */
+    public static final String ERROR_LIST = "errorList";
 
     /**
      * 初始化一个新创建的 AjaxResult 对象，使其表示一个空消息。
@@ -74,6 +93,28 @@ public class AjaxResult extends HashMap<String, Object> {
      * @return 成功消息
      */
     public static AjaxResult success(Object data) {
+        return AjaxResult.success("操作成功", data);
+    }
+
+    /**
+     * 返回成功excel数据
+     *
+     * @return 成功消息
+     */
+    public static <T> AjaxResult successExcel(List<T> successExcel, List<T> errorExcel) {
+        Map<Object, Object> data = new HashMap<>();
+        if (StringUtils.isEmpty(successExcel)) {
+            data.put(SUCCESS_TOTAL, 0);
+        } else {
+            data.put(SUCCESS_TOTAL, successExcel.size());
+        }
+        if (StringUtils.isEmpty(errorExcel)) {
+            data.put(ERROR_TOTAL, 0);
+        } else {
+            data.put(ERROR_TOTAL, errorExcel.size());
+        }
+        data.put(SUCCESS_LIST, successExcel);
+        data.put(ERROR_LIST, errorExcel);
         return AjaxResult.success("操作成功", data);
     }
 
