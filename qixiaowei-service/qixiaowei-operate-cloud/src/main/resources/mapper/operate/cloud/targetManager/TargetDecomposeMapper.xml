@@ -74,6 +74,9 @@
         and ts.delete_flag= 0
         WHERE td.delete_flag = 0
         <if test="targetDecompose.targetDecomposeId != null">
+            and td.target_decompose_id in
+        </if>
+        <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
         </if>
         <if test="targetDecompose.targetDecomposeType != null">

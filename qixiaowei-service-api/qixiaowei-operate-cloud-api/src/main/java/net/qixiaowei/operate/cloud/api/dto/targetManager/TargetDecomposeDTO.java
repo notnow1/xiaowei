@@ -49,6 +49,7 @@ public class TargetDecomposeDTO {
     */
     @NotNull(message = "ID不能为空",groups = {TargetDecomposeDTO.DeleteTargetDecomposeDTO.class})
     private  Long targetDecomposeId;
+
     /**
      * ID集合
      */

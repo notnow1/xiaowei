@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 租户表
@@ -23,6 +24,10 @@ public class Tenant extends BaseEntity {
      * 租户ID
      */
     private Long tenantId;
+    /**
+     * 租户ID集合
+     */
+    private List<Long> tenantIds;
     /**
      * 租户编码
      */

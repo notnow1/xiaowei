@@ -57,6 +57,14 @@
         on e.employee_id in (t.support_staff)
         and e.delete_flag = 0
         where t.delete_flag = 0
+        <if test="tenant.tenantIds  != null and tenant.tenantIds .size()!=0">
+            and   t.tenant_id  in
+            <foreach item="item"
+                     collection="tenant.tenantIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="tenant.tenantIndustryName != null and tenant.tenantIndustryName != ''">
             and   id.industry_name  like '%${tenant.tenantIndustryName}%'
         </if>

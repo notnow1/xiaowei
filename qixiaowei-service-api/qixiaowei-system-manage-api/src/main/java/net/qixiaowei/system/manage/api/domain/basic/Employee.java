@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 员工表
@@ -24,6 +25,10 @@ public class Employee extends BaseEntity {
      * ID
      */
     private Long employeeId;
+    /**
+     * 人员ID集合
+     */
+    private List<Long> employeeIds;
     /**
      * 工号
      */
