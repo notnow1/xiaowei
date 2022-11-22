@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -201,8 +198,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     public SalaryPayDTO insertSalaryPay(SalaryPayDTO salaryPayDTO) {
         insertCheck(salaryPayDTO);
         Date payTime = salaryPayDTO.getPayTime();
-        int year = DateUtils.getYear(payTime);
-        int month = DateUtils.getMonth(payTime);
+        int year = salaryPayDTO.getPayYear();
+        int month = salaryPayDTO.getPayMonth();
         List<SalaryPayDTO> salaryPayDTOList = salaryPayDTO.getSalaryPayDTOList();
         List<SalaryItemDTO> salaryItemDTOList = salaryPayDTO.getSalaryItemDTOList();
         SalaryPay salaryPay = new SalaryPay();
@@ -259,19 +256,15 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @param salaryPayDTO dto
      */
     private void insertCheck(SalaryPayDTO salaryPayDTO) {
-        Date payTime = salaryPayDTO.getPayTime();
         Long employeeId = salaryPayDTO.getEmployeeId();
-        int year = DateUtils.getYear(payTime);
-        int month = DateUtils.getMonth(payTime);
+        int year = salaryPayDTO.getPayYear();
+        int month = salaryPayDTO.getPayMonth();
         List<SalaryPayDTO> salaryPayDTOList = salaryPayDTO.getSalaryPayDTOList();
         List<SalaryItemDTO> salaryItemDTOList = salaryPayDTO.getSalaryItemDTOList();
         SalaryPay salaryPayByTime = new SalaryPay();
         salaryPayByTime.setEmployeeId(employeeId);
         salaryPayByTime.setPayYear(year);
         salaryPayByTime.setPayMonth(month);
-        if (StringUtils.isNull(payTime)) {
-            throw new ServiceException("时间不能为空");
-        }
         if (StringUtils.isNull(employeeId)) {
             throw new ServiceException("员工不能为空");
         }
@@ -319,9 +312,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         Long salaryPayId = salaryPayDTO.getSalaryPayId();
         List<SalaryPayDTO> salaryPayDTOList = salaryPayDTO.getSalaryPayDTOList();
         List<SalaryItemDTO> salaryItemDTOList = salaryPayDTO.getSalaryItemDTOList();
-        Date payTime = salaryPayDTO.getPayTime();
-        int year = DateUtils.getYear(payTime);
-        int month = DateUtils.getMonth(payTime);
+        int year = salaryPayDTO.getPayYear();
+        int month = salaryPayDTO.getPayMonth();
         SalaryPay salaryPay = new SalaryPay();
         BeanUtils.copyProperties(salaryPayDTO, salaryPay);
         for (SalaryPayDTO payDTO : salaryPayDTOList) {
@@ -412,10 +404,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      */
     private void updateCheck(SalaryPayDTO salaryPayDTO) {
         Long salaryPayId = salaryPayDTO.getSalaryPayId();
-        Date payTime = salaryPayDTO.getPayTime();
         Long employeeId = salaryPayDTO.getEmployeeId();
-        int year = DateUtils.getYear(payTime);
-        int month = DateUtils.getMonth(payTime);
+        int year = salaryPayDTO.getPayYear();
+        int month = salaryPayDTO.getPayMonth();
         List<SalaryPayDTO> salaryPayDTOList = salaryPayDTO.getSalaryPayDTOList();
         List<SalaryItemDTO> salaryItemDTOList = salaryPayDTO.getSalaryItemDTOList();
         SalaryPay salaryPayByTime = new SalaryPay();
@@ -424,9 +415,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         salaryPayByTime.setPayMonth(month);
         if (StringUtils.isNull(salaryPayId)) {
             throw new ServiceException("工资表ID不能为空");
-        }
-        if (StringUtils.isNull(payTime)) {
-            throw new ServiceException("时间不能为空");
         }
         if (StringUtils.isNull(employeeId)) {
             throw new ServiceException("员工不能为空");
@@ -711,7 +699,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             R<List<EmployeeDTO>> employeeDTOR = employeeService.selectByEmployeeIds(employeeIds, SecurityConstants.INNER);
             List<EmployeeDTO> employeeDTOS = employeeDTOR.getData();
             if (employeeDTOR.getCode() != 200) {
-                throw new ServiceException("远程获取人员信息失败");
+                throw new ServiceException(employeeDTOR.getMsg());
             }
             if (StringUtils.isEmpty(employeeDTOS)) {
                 throw new ServiceException("当前人员信息已不存在，请检查员工配置");
@@ -719,11 +707,29 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
                 for (EmployeeDTO employeeDTO : employeeDTOS) {
                     if (salaryPayDTO.getEmployeeId().equals(employeeDTO.getEmployeeId())) {
-                        salaryPayDTO.setPostRank(employeeDTO.getPostRankName());
+                        salaryPayDTO.setPostRankName(employeeDTO.getEmployeeRankName());
                         salaryPayDTO.setDepartmentName(employeeDTO.getEmployeeDepartmentName());
+                        salaryPayDTO.setDepartmentId(employeeDTO.getEmployeeDepartmentId());
+                        break;
                     }
                 }
             }
+            Map<String, List<SalaryPayDTO>> map = new HashMap<>();
+            Map<String, List<SalaryPayDTO>> map2 = salaryPayDTOList.stream().collect(Collectors.groupingBy(SalaryPayDTO::getDepartmentName));
+
+            Map<String, Map<String, List<SalaryPayDTO>>> salaryPayMap = salaryPayDTOList.stream()
+                    .collect(Collectors.groupingBy(SalaryPayDTO::getDepartmentName, Collectors.groupingBy(SalaryPayDTO::getPostRankName)));
+            for (String s : salaryPayMap.keySet()) {
+                Map<String, List<SalaryPayDTO>> stringListMap = salaryPayMap.get(s);
+                for (String s1 : stringListMap.keySet()) {
+                    List<SalaryPayDTO> salaryPayDTOList1 = stringListMap.get(s1);
+                    List<SalaryPayDTO> salaryPayDTOS = new ArrayList<>();
+                    for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
+
+                    }
+                }
+            }
+
             return null;
         }
         EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -731,5 +737,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         R<List<EmployeeDTO>> listR = employeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
         return null;
     }
+
 }
 

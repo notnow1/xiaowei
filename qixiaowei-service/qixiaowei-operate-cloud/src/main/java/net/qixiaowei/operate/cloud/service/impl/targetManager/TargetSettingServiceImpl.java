@@ -478,9 +478,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         //更新操作
         List<TargetSettingDTO> updateTargetSetting = updateOperate(targetSettingDTOAfter, noEdit, targetSettingDTOBefore);
         //删除操作
-        List<TargetSettingDTO> delTargetSetting = delOperate(targetSettingDTOAfter, noDelete, targetSettingDTOBefore, updateTargetSetting);
+        List<TargetSettingDTO> delTargetSetting = delOperate(targetSettingDTOAfter, noDelete, targetSettingDTOBefore);
         //新增操作
-        List<TargetSettingDTO> addTargetSetting = addOperate(targetYear, noEdit, targetSettingDTOAfter, targetSettingDTOBefore,indicator);
+        List<TargetSettingDTO> addTargetSetting = addOperate(targetYear, noEdit, targetSettingDTOAfter, targetSettingDTOBefore, indicator);
         //存值
         storageValue(targetYear, noEdit, updateTargetSetting, delTargetSetting, addTargetSetting);
         TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
@@ -530,10 +530,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * @param targetSettingDTOAfter
      * @param noDelete
      * @param targetSettingDTOBefore
-     * @param updateTargetSetting
      * @return
      */
-    private static List<TargetSettingDTO> delOperate(List<TargetSettingDTO> targetSettingDTOAfter, List<Long> noDelete, List<TargetSettingDTO> targetSettingDTOBefore, List<TargetSettingDTO> updateTargetSetting) {
+    private static List<TargetSettingDTO> delOperate(List<TargetSettingDTO> targetSettingDTOAfter, List<Long> noDelete, List<TargetSettingDTO> targetSettingDTOBefore) {
         // After里Before的交集
         List<TargetSettingDTO> delTargetSetting =
                 targetSettingDTOBefore.stream().filter(targetSettingDTO ->
@@ -541,14 +540,18 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                                 .collect(Collectors.toList()).contains(targetSettingDTO.getIndicatorId())
                 ).collect(Collectors.toList());
         // 删除筛选校验
-        for (int i = delTargetSetting.size() - 1; i >= 0; i--) {
-            TargetSettingDTO targetSettingDTO = delTargetSetting.get(i);
-            if (noDelete.contains(targetSettingDTO.getIndicatorId())) {
-                updateTargetSetting.remove(i);
+        if (StringUtils.isNotEmpty(delTargetSetting)) {
+            for (int i = delTargetSetting.size() - 1; i >= 0; i--) {
+                TargetSettingDTO targetSettingDTO = delTargetSetting.get(i);
+                if (noDelete.contains(targetSettingDTO.getIndicatorId())) {
+                    delTargetSetting.remove(i);
+                }
+                if (StringUtils.isEmpty(delTargetSetting)) {
+                    break;
+                }
             }
-            if (StringUtils.isEmpty(delTargetSetting)) {
-                break;
-            }
+
+
         }
         return delTargetSetting;
     }
