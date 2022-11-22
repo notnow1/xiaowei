@@ -197,7 +197,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     @Transactional
     public SalaryPayDTO insertSalaryPay(SalaryPayDTO salaryPayDTO) {
         insertCheck(salaryPayDTO);
-        Date payTime = salaryPayDTO.getPayTime();
         int year = salaryPayDTO.getPayYear();
         int month = salaryPayDTO.getPayMonth();
         List<SalaryPayDTO> salaryPayDTOList = salaryPayDTO.getSalaryPayDTOList();
