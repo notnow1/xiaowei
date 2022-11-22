@@ -16,7 +16,6 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeImportListener;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
@@ -135,9 +134,9 @@ public class TargetOutcomeController extends BaseController {
     @SneakyThrows
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
     @GetMapping("/export-template")
-    public void exportTemplate(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+    public void exportTemplate(@RequestParam Integer targetYear, HttpServletResponse response) {
         try {
-            List<List<String>> headTemplate = TargetOutcomeImportListener.headTemplate();
+            List<List<String>> headTemplate = TargetOutcomeImportListener.headTemplate(targetYear);
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding(CharsetKit.UTF_8);
             String fileName = URLEncoder.encode("关键经营结果导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
