@@ -517,7 +517,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         if (StringUtils.isNull(targetOutcomeId)) {
             throw new ServiceException("关键经营结果ID不能为空!");
         }
-        int size = dataList.get(0).size();
+        int size = dataList.get(1).size() + 1;
         dataList.remove(0);
         List<String> indicatorCodes = new ArrayList<>();
         for (Map<Integer, String> data : dataList) {
@@ -531,7 +531,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         if (indicatorDTOS.size() != dataList.size()) {
             throw new ServiceException("指标有问题,请检查指标配置!");
         }
-        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = new ArrayList<>();
         List<BigDecimal> monthValue = new ArrayList<>();
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsAfter = new ArrayList<>();
         for (Map<Integer, String> data : dataList) {
@@ -557,7 +556,19 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                 }
             }
         }
-        return targetOutcomeDetailsAfter;
+        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeMapper.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
+        Integer targetYear = targetOutcomeDTO.getTargetYear();
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = new ArrayList<>();
+        int year = DateUtils.getYear();
+        int month = DateUtils.getMonth();
+        if (targetYear < year) {
+            setAllMonth(targetOutcomeDetailsAfter, monthValue, targetOutcomeDetailsDTOS);// 存放所有月份
+        } else if (targetYear == year) {
+            setSomeMonth(targetOutcomeDetailsAfter, month, monthValue, targetOutcomeDetailsDTOS);//存放部分月份
+        } else {
+            setOtherValue(targetOutcomeDetailsAfter, targetOutcomeDetailsDTOS);//不存放月份
+        }
+        return targetOutcomeDetailsDTOS;
     }
 
     /**

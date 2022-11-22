@@ -56,6 +56,18 @@ public class SalaryStructureDTO {
      */
     private BigDecimal bonusAmountSum;
     /**
+     * 固定占比（%）
+     */
+    private BigDecimal fixedProportion;
+    /**
+     * 浮动占比（%）
+     */
+    private BigDecimal floateProportion;
+    /**
+     * 合计（%）
+     */
+    private BigDecimal sum;
+    /**
      * 部门ID
      */
     private Long postId;

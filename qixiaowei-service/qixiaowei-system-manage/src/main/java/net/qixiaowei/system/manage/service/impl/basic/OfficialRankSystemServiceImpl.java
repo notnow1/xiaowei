@@ -175,6 +175,44 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     }
 
     /**
+     * 通过ID集合查找职级等级列表
+     *
+     * @param officialRankSystemIds
+     * @return
+     */
+    @Override
+    public List<OfficialRankSystemDTO> selectOfficialRankSystemByOfficialRankSystemIds(List<Long> officialRankSystemIds) {
+        return officialRankSystemMapper.selectOfficialRankSystemByOfficialRankSystemIds(officialRankSystemIds);
+    }
+
+    /**
+     * 通过Id查找职级上下限
+     *
+     * @param officialRankSystemId
+     * @return
+     */
+    @Override
+    public List<String> selectOfficialRankByOfficialRankSystemId(Long officialRankSystemId) {
+        OfficialRankSystemDTO officialRankSystemDTO = officialRankSystemMapper.selectOfficialRankSystemByOfficialRankSystemId(officialRankSystemId);
+        List<String> rankList = new ArrayList<>();
+        if (StringUtils.isNull(officialRankSystemDTO)) {
+            throw new ServiceException("当前职级为空");
+        }
+        int rankStart = officialRankSystemDTO.getRankStart();
+        int rankEnd = officialRankSystemDTO.getRankEnd();
+        String rankPrefixCode;
+        if (StringUtils.isNull(officialRankSystemDTO.getRankPrefixCode())) {
+            rankPrefixCode = "";
+        }
+        rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
+        while (rankStart < rankEnd) {
+            rankStart++;
+            rankList.add(rankPrefixCode + rankStart);
+        }
+        return rankList;
+    }
+
+    /**
      * 拼接职级字段
      *
      * @param officialRankSystemDTOS 职级体系

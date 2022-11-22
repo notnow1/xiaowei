@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.controller.basic;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequestMapping("officialRankSystem")
 public class OfficialRankSystemController extends BaseController {
 
+
     @Autowired
     private IOfficialRankSystemService officialRankSystemService;
 
@@ -41,6 +43,10 @@ public class OfficialRankSystemController extends BaseController {
 //    @RequiresPermissions("system:manage:officialRankSystem:list")
     @GetMapping("/list")
     public AjaxResult list(OfficialRankSystemDTO officialRankSystemDTO) {
+        for (int i = 0; i < 12; i++) {
+
+        }
+
         List<OfficialRankSystemDTO> list = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
         return AjaxResult.success(list);
     }
@@ -103,5 +109,17 @@ public class OfficialRankSystemController extends BaseController {
     @GetMapping("/decomposeDrop/{rankDecomposeDimension}")
     public AjaxResult decomposeDrop(@PathVariable Integer rankDecomposeDimension) {
         return AjaxResult.success(officialRankSystemService.decomposeDrop(rankDecomposeDimension));
+    }
+
+    /**
+     * 通过Id查找职级上下限
+     *
+     * @param officialRankSystemId
+     * @return
+     */
+    @Log(title = "通过Id查找职级上下限")
+    @GetMapping("/selectRankById/{officialRankSystemId}")
+    public R<List<String>> selectRankById(@PathVariable Long officialRankSystemId) {
+        return R.ok(officialRankSystemService.selectOfficialRankByOfficialRankSystemId(officialRankSystemId));
     }
 }

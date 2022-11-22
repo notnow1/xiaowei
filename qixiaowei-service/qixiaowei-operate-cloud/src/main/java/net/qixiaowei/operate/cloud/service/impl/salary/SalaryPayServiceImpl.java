@@ -26,7 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -77,8 +80,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         }
         salaryPayDTO.setEmployeeName(employeeDTO.getEmployeeName());
         salaryPayDTO.setEmployeeCode(employeeDTO.getEmployeeCode());
-        salaryPayDTO.setDepartmentName(employeeDTO.getEmployeeDepartmentName());
-        salaryPayDTO.setPostName(employeeDTO.getEmployeePostName());
+        salaryPayDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
+        salaryPayDTO.setEmployeePostName(employeeDTO.getEmployeePostName());
         salaryPayDTO.setEmployeeName(employeeDTO.getEmployeeName());
         List<SalaryPayDetailsDTO> salaryPayDetailsDTOList = salaryPayDetailsService.selectSalaryPayDetailsBySalaryPayId(salaryPayId);
         List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
@@ -143,9 +146,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     public List<SalaryPayDTO> selectSalaryPayList(SalaryPayDTO salaryPayDTO) {
         List<SalaryPayDTO> salaryPayDTOList = new ArrayList<>();
         EmployeeDTO employeeDTO = new EmployeeDTO();
-        String postName = salaryPayDTO.getPostName();
+        String postName = salaryPayDTO.getEmployeePostName();
         String employeeName = salaryPayDTO.getEmployeeName();
-        String departmentName = salaryPayDTO.getDepartmentName();
+        String departmentName = salaryPayDTO.getEmployeeDepartmentName();
         String employeeCode = salaryPayDTO.getEmployeeCode();
         employeeDTO.setEmployeeName(employeeName);
         employeeDTO.setEmployeeCode(employeeCode);
@@ -176,8 +179,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                     if (payDTO.getEmployeeId().equals(dto.getEmployeeId())) {
                         payDTO.setEmployeeName(dto.getEmployeeName());
                         payDTO.setEmployeeCode(dto.getEmployeeCode());
-                        payDTO.setDepartmentName(dto.getEmployeeDepartmentName());
-                        payDTO.setPostName(dto.getEmployeePostName());
+                        payDTO.setEmployeeDepartmentName(dto.getEmployeeDepartmentName());
+                        payDTO.setEmployeePostName(dto.getEmployeePostName());
+                        payDTO.setEmployeeRankName(dto.getEmployeeRankName());
                         payDTO.setEmployeeName(dto.getEmployeeName());
                         break;
                     }
@@ -706,35 +710,55 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
                 for (EmployeeDTO employeeDTO : employeeDTOS) {
                     if (salaryPayDTO.getEmployeeId().equals(employeeDTO.getEmployeeId())) {
-                        salaryPayDTO.setPostRankName(employeeDTO.getEmployeeRankName());
-                        salaryPayDTO.setDepartmentName(employeeDTO.getEmployeeDepartmentName());
-                        salaryPayDTO.setDepartmentId(employeeDTO.getEmployeeDepartmentId());
+                        salaryPayDTO.setEmployeeRankName(employeeDTO.getEmployeeRankName());
+                        salaryPayDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
+                        salaryPayDTO.setEmployeeDepartmentId(employeeDTO.getEmployeeDepartmentId());
                         break;
                     }
                 }
             }
-            Map<String, List<SalaryPayDTO>> map = new HashMap<>();
-            Map<String, List<SalaryPayDTO>> map2 = salaryPayDTOList.stream().collect(Collectors.groupingBy(SalaryPayDTO::getDepartmentName));
-
-            Map<String, Map<String, List<SalaryPayDTO>>> salaryPayMap = salaryPayDTOList.stream()
-                    .collect(Collectors.groupingBy(SalaryPayDTO::getDepartmentName, Collectors.groupingBy(SalaryPayDTO::getPostRankName)));
-            for (String s : salaryPayMap.keySet()) {
-                Map<String, List<SalaryPayDTO>> stringListMap = salaryPayMap.get(s);
-                for (String s1 : stringListMap.keySet()) {
-                    List<SalaryPayDTO> salaryPayDTOList1 = stringListMap.get(s1);
-                    List<SalaryPayDTO> salaryPayDTOS = new ArrayList<>();
-                    for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
-
-                    }
-                }
-            }
-
-            return null;
+            calculateAmount(salaryStructure, salaryPayDTOList);
+            return salaryStructure;
         }
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setEmployeePostId(salaryStructureDTO.getPostId());
         R<List<EmployeeDTO>> listR = employeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
         return null;
+    }
+
+    /**
+     * 薪酬架构报表金额计算
+     *
+     * @param salaryStructure  返回的DTO
+     * @param salaryPayDTOList 子表DTO
+     */
+    private static void calculateAmount(SalaryStructureDTO salaryStructure, List<SalaryPayDTO> salaryPayDTOList) {
+        Map<String, Map<String, List<SalaryPayDTO>>> salaryPayMap = salaryPayDTOList.stream()
+                .collect(Collectors.groupingBy(SalaryPayDTO::getEmployeeDepartmentName, Collectors.groupingBy(SalaryPayDTO::getEmployeeRankName)));
+        List<SalaryPayDTO> salaryPayDTOS = new ArrayList<>();
+        for (String s : salaryPayMap.keySet()) {
+            Map<String, List<SalaryPayDTO>> stringListMap = salaryPayMap.get(s);
+            for (String s1 : stringListMap.keySet()) {
+                List<SalaryPayDTO> salaryPayDTOList1 = stringListMap.get(s1);
+                BigDecimal salaryAmountValue = BigDecimal.ZERO;// 工资金额
+                BigDecimal allowanceAmountValue = BigDecimal.ZERO;// 津贴金额
+                BigDecimal welfareAmountValue = BigDecimal.ZERO;// 福利金额
+                BigDecimal bonusAmountValue = BigDecimal.ZERO;// 奖金金额
+                for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
+                    salaryAmountValue = salaryAmountValue.add(salaryPayDTO.getSalaryAmount());
+                    allowanceAmountValue = allowanceAmountValue.add(salaryPayDTO.getAllowanceAmount());
+                    welfareAmountValue = welfareAmountValue.add(salaryPayDTO.getWelfareAmount());
+                    bonusAmountValue = bonusAmountValue.add(salaryPayDTO.getBonusAmount());
+                }
+                SalaryPayDTO salaryPayDTO = new SalaryPayDTO();
+                salaryPayDTO.setSalaryAmount(salaryAmountValue);
+                salaryPayDTO.setAllowanceAmount(allowanceAmountValue);
+                salaryPayDTO.setWelfareAmount(welfareAmountValue);
+                salaryPayDTO.setBonusAmount(bonusAmountValue);
+                salaryPayDTOS.add(salaryPayDTO);
+            }
+        }
+        salaryStructure.setSalaryPayDTOList(salaryPayDTOS);
     }
 
 }

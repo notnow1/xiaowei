@@ -126,4 +126,12 @@ public interface OfficialRankSystemMapper {
      * @return
      */
     List<OfficialRankSystemDTO> isExistByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
+
+    /**
+     * 通过ID集合查找职级等级列表
+     *
+     * @param officialRankSystemIds
+     * @return
+     */
+    List<OfficialRankSystemDTO> selectOfficialRankSystemByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
 }

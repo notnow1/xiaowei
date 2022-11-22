@@ -125,4 +125,20 @@ public interface IOfficialRankSystemService {
      * @return
      */
     List<Map<String, String>> decomposeDrop(Integer rankDecomposeDimension);
+
+    /**
+     * 通过ID集合查找职级等级列表
+     *
+     * @param officialRankSystemIds
+     * @return
+     */
+    List<OfficialRankSystemDTO> selectOfficialRankSystemByOfficialRankSystemIds(List<Long> officialRankSystemIds);
+
+    /**
+     * 通过Id查找职级上下限
+     *
+     * @param officialRankSystemId
+     * @return
+     */
+    List<String> selectOfficialRankByOfficialRankSystemId(Long officialRankSystemId);
 }

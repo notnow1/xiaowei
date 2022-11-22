@@ -26,9 +26,9 @@
         <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
             and official_rank_system_name like "%" #{officialRankSystem.officialRankSystemName} "%"
         </if>
-<!--        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">-->
-<!--            and rank_prefix_code like "%" #{officialRankSystem.rankPrefixCode} "%"-->
-<!--        </if>-->
+        <!--        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">-->
+        <!--            and rank_prefix_code like "%" #{officialRankSystem.rankPrefixCode} "%"-->
+        <!--        </if>-->
         <if test="officialRankSystem.rankStart != null">
             and rank_start = #{officialRankSystem.rankStart}
         </if>
@@ -92,6 +92,19 @@
             #{item}
         </foreach>
     </select>
+    <select id="selectOfficialRankSystemByOfficialRankSystemIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
+        SELECT
+        official_rank_system_id, official_rank_system_name, rank_prefix_code, rank_start, rank_end,
+        rank_decompose_dimension, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_system
+        WHERE official_rank_system_id
+        IN
+        <foreach collection="officialRankSystemIds" separator="," open="(" close=")" index="index" item="item">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增职级体系表-->
     <insert id="insertOfficialRankSystem" useGeneratedKeys="true" keyProperty="officialRankSystemId">
         INSERT INTO official_rank_system
@@ -106,9 +119,9 @@
         <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
             official_rank_system_name=#{officialRankSystem.officialRankSystemName},
         </if>
-<!--        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">-->
-<!--            rank_prefix_code=#{officialRankSystem.rankPrefixCode},-->
-<!--        </if>-->
+        <!--        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">-->
+        <!--            rank_prefix_code=#{officialRankSystem.rankPrefixCode},-->
+        <!--        </if>-->
         <if test="officialRankSystem.rankStart != null">
             rank_start=#{officialRankSystem.rankStart},
         </if>
@@ -203,13 +216,13 @@
                     </if>
                 </foreach>
             </trim>
-<!--            <trim prefix="rank_prefix_code=case" suffix="end,">-->
-<!--                <foreach collection="officialRankSystemList" item="item" index="index">-->
-<!--                    <if test="item.rankPrefixCode != null and item.rankPrefixCode != ''">-->
-<!--                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.rankPrefixCode}-->
-<!--                    </if>-->
-<!--                </foreach>-->
-<!--            </trim>-->
+            <!--            <trim prefix="rank_prefix_code=case" suffix="end,">-->
+            <!--                <foreach collection="officialRankSystemList" item="item" index="index">-->
+            <!--                    <if test="item.rankPrefixCode != null and item.rankPrefixCode != ''">-->
+            <!--                        when official_rank_system_id=#{item.officialRankSystemId} then #{item.rankPrefixCode}-->
+            <!--                    </if>-->
+            <!--                </foreach>-->
+            <!--            </trim>-->
             <trim prefix="rank_start=case" suffix="end,">
                 <foreach collection="officialRankSystemList" item="item" index="index">
                     <if test="item.rankStart != null">

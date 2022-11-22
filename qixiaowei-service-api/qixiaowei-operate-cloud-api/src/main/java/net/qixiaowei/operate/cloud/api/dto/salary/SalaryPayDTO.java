@@ -58,7 +58,7 @@ public class SalaryPayDTO {
     /**
      * 岗位名称
      */
-    private String postName;
+    private String employeePostName;
     /**
      * 岗位职级
      */
@@ -66,15 +66,15 @@ public class SalaryPayDTO {
     /**
      * 岗位职级名称
      */
-    private String postRankName;
+    private String employeeRankName;
     /**
      * 部门ID
      */
-    private Long departmentId;
+    private Long employeeDepartmentId;
     /**
      * 部门名称
      */
-    private String departmentName;
+    private String employeeDepartmentName;
     /**
      * 发薪年份
      */
