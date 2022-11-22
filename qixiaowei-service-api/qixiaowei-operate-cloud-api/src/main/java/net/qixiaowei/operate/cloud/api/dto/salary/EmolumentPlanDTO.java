@@ -82,9 +82,18 @@ public class EmolumentPlanDTO {
     private  BigDecimal erAfterTwo;
 
     /**
+     * 预算年前一年E/R值改进率(%)
+     */
+    private  BigDecimal emolumentRevenueImproveBeforeOne;
+    /**
     * 预算年E/R值改进率(%)
     */
     private  BigDecimal emolumentRevenueImprove;
+
+    /**
+     * 预算年E/R值实际改进率(%)
+     */
+    private  BigDecimal emolumentPracticalRevenueImprove;
     /**
     * 预算年后一年E/R值改进率(%)
     */
@@ -97,6 +106,19 @@ public class EmolumentPlanDTO {
     * 预算年前一年总薪酬包
     */
     private  BigDecimal emolumentPackageBeforeOne;
+
+    /**
+     * 预算年总薪酬包
+     */
+    private  BigDecimal emolumentPackage;
+    /**
+     * 预算年后一年总薪酬包
+     */
+    private  BigDecimal emolumentPackageAfterOne;
+    /**
+     * 预算年后二年总薪酬包
+     */
+    private  BigDecimal emolumentPackageAfterTwo;
     /**
     * 删除标记:0未删除;1已删除
     */

@@ -111,8 +111,8 @@ public interface EmolumentPlanMapper{
 
     /**
      * 新增薪酬规划时预制数据
-     * @param emolumentPlanDTO
+     * @param emolumentPlan
      * @return
      */
-    EmolumentPlanDTO prefabricateAddEmolumentPlan(@Param("emolumentPlanDTO") EmolumentPlanDTO emolumentPlanDTO);
+    EmolumentPlanDTO prefabricateAddEmolumentPlan(@Param("emolumentPlan") EmolumentPlan emolumentPlan);
 }
