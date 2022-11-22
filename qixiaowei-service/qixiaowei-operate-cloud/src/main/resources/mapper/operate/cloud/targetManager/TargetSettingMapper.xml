@@ -109,17 +109,16 @@
     <select id="selectAnalyseList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
-        distinct
-        tod.actual_august,
-        tod2.actual_august,
+        sum(tod.actual_august)  as actual_august,
+        sum(tod2.actual_august)  as last_actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
         ts.target_year,
         ts.percentage,
-        ts.challenge_value,
-        ts.target_value,
-        ts.guaranteed_value,
+        sum(ts.challenge_value) as challenge_value,
+        sum(ts.target_value) as target_value,
+        sum(ts.guaranteed_value) as guaranteed_value,
         ts.sort,
         ts.delete_flag,
         ts.create_by,
@@ -138,16 +137,46 @@
         = 0) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
-        and ts.indicator_id in
-        <foreach item="item"
-                 collection="targetSetting.indicatorIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        and ts.indicator_id = #{targetSetting.indicatorIds[0]}
         <if test="targetSetting.targetYear != null">
             and ts.target_year=#{targetSetting.targetYear}
         </if>
-
+        union
+        SELECT
+        sum(tod.actual_august)  as actual_august,
+        sum(tod2.actual_august)  as last_actual_august,
+        ts.target_setting_id,
+        ts.target_setting_type,
+        ts.indicator_id,
+        ts.target_year,
+        ts.percentage,
+        sum(ts.challenge_value) as challenge_value,
+        sum(ts.target_value) as target_value,
+        sum(ts.guaranteed_value) as guaranteed_value,
+        ts.sort,
+        ts.delete_flag,
+        ts.create_by,
+        ts.create_time,
+        ts.update_by,
+        ts.update_time
+        FROM target_setting ts
+        left join target_outcome toe
+        on toe.target_year = ts.target_year
+        and toe.delete_flag = 0
+        left join target_outcome_details tod
+        on ts.indicator_id = tod.indicator_id
+        and tod.delete_flag = 0
+        left join target_outcome_details tod2
+        on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
+        = 0) = tod2.target_outcome_id
+        and tod2.delete_flag = 0
+        WHERE ts.delete_flag = 0
+        and ts.indicator_id = #{targetSetting.indicatorIds[1]}
+        <if test="targetSetting.targetYear != null">
+            and ts.target_year=#{targetSetting.targetYear}
+        </if>
+        union
+        1
     </select>
     <select id="selectTargetSettingByTypes"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
