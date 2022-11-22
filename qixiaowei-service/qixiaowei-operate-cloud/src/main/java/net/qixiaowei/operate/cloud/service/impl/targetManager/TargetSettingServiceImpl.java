@@ -480,7 +480,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         //删除操作
         List<TargetSettingDTO> delTargetSetting = delOperate(targetSettingDTOAfter, noDelete, targetSettingDTOBefore, updateTargetSetting);
         //新增操作
-        List<TargetSettingDTO> addTargetSetting = addOperate(targetYear, targetSettingDTOAfter, targetSettingDTOBefore);
+        List<TargetSettingDTO> addTargetSetting = addOperate(targetYear, noEdit, targetSettingDTOAfter, targetSettingDTOBefore,indicator);
         //存值
         storageValue(targetYear, noEdit, updateTargetSetting, delTargetSetting, addTargetSetting);
         TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
@@ -557,11 +557,13 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * 新增操作
      *
      * @param targetYear
+     * @param noEdit
      * @param targetSettingDTOAfter
      * @param targetSettingDTOBefore
+     * @param indicator
      * @return
      */
-    private List<TargetSettingDTO> addOperate(Integer targetYear, List<TargetSettingDTO> targetSettingDTOAfter, List<TargetSettingDTO> targetSettingDTOBefore) {
+    private List<TargetSettingDTO> addOperate(Integer targetYear, List<Long> noEdit, List<TargetSettingDTO> targetSettingDTOAfter, List<TargetSettingDTO> targetSettingDTOBefore, List<IndicatorDTO> indicator) {
         // 差集 After中Before的补集
         List<TargetSettingDTO> addTargetSetting =
                 targetSettingDTOAfter.stream().filter(targetSettingDTO ->
@@ -583,6 +585,17 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
             targetOutcomeDetailsService.addTargetOutcomeDetailsS(indicatorIds, targetOutcomeDTO.getTargetOutcomeId());
         }
+        // 更新筛选校验
+        for (int i = addTargetSetting.size() - 1; i >= 0; i--) {
+            TargetSettingDTO targetSettingDTO = addTargetSetting.get(i);
+            if (noEdit.contains(targetSettingDTO.getIndicatorId())) {
+                addTargetSetting.remove(i);
+            }
+            if (StringUtils.isEmpty(addTargetSetting)) {
+                break;
+            }
+        }
+
         return addTargetSetting;
     }
 
@@ -967,33 +980,15 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         Integer targetYear = targetSettingDTO.getTargetYear();
         List<TargetSettingOrderDTO> targetSettingOrderAfter = targetSettingDTO.getTargetSettingOrderDTOS();
         TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
+        IndicatorDTO indicatorDTO = getIndicator(IndicatorCode.ORDER.getCode());
         targetSettingDTO.setTargetSettingType(1);
+        targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
         targetSettingDTO.setSort(0);
         if (StringUtils.isNull(targetSetting)) {//新增
             TargetSetting setting = insertTargetSetting(targetSettingDTO);
             targetSetting = new TargetSettingDTO();
             targetSetting.setTargetSettingId(setting.getTargetSettingId());
             operate(targetSettingOrderAfter, targetSetting);
-            // 新增目标结果
-            TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetYear(targetYear);
-            if (StringUtils.isNull(targetOutcomeDTO)) {
-                TargetOutcomeDTO outcomeDTO = new TargetOutcomeDTO();
-                outcomeDTO.setTargetYear(targetYear);
-                targetOutcomeService.insertTargetOutcome(outcomeDTO, 1);
-            } else {
-                R<IndicatorDTO> indicatorDTOR = indicatorService.selectIndicatorByCode("CW001", SecurityConstants.INNER);
-                if (indicatorDTOR == null) {
-                    throw new ServiceException("添加目标结果 指标ID获取失败");
-                }
-                IndicatorDTO indicatorDTO = indicatorDTOR.getData();
-                if (indicatorDTOR.getCode() != 200 || StringUtils.isNull(indicatorDTO)) {
-                    throw new ServiceException("添加目标结果 指标ID获取失败");
-                }
-                TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
-                targetOutcomeDetailsDTO.setIndicatorId(indicatorDTO.getIndicatorId());
-                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcomeDTO.getTargetOutcomeId());
-                targetOutcomeDetailsService.insertTargetOutcomeDetails(targetOutcomeDetailsDTO);
-            }
             return targetSetting;
         }
         Long targetSettingId = targetSetting.getTargetSettingId();
@@ -1023,6 +1018,14 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                                 .collect(Collectors.toList()).contains(targetSettingOrderDTO.getHistoryYear())
                 ).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(updateTargetSettingOrder)) {
+            for (TargetSettingOrderDTO targetSettingOrderDTO : updateTargetSettingOrder) {
+                for (TargetSettingOrderDTO settingOrderDTO : targetSettingOrderBefore) {
+                    if (targetSettingOrderDTO.getHistoryYear().equals(settingOrderDTO.getHistoryYear())) {
+                        targetSettingOrderDTO.setTargetSettingOrderId(settingOrderDTO.getTargetSettingOrderId());
+                        break;
+                    }
+                }
+            }
             targetSettingOrderService.updateTargetSettingOrders(updateTargetSettingOrder, targetSetting);
         }
         // 差集 After中Before的补集
@@ -1219,7 +1222,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             throw new ServiceException("远程获取指标信息失败");
         }
         if (StringUtils.isNull(indicatorDTOR.getData())) {
-            throw new ServiceException("当前销售订单指标无法获取");
+            throw new ServiceException("当前指标无法获取");
         }
         //指标ID
         return indicatorDTOR.getData();
@@ -1309,11 +1312,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Transactional
     public TargetSettingDTO saveIncomeTargetSetting(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
-        Long indicatorId = getIndicator(IndicatorCode.INCOME.getCode()).getIndicatorId();
+        IndicatorDTO indicatorDTO = getIndicator(IndicatorCode.INCOME.getCode());
+        Long indicatorId = indicatorDTO.getIndicatorId();
         List<TargetSettingIncomeVO> targetSettingIncomeVOS = targetSettingDTO.getTargetSettingIncomeVOS();
         TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 2);
         targetSettingDTO.setTargetSettingType(2);
-//        targetSettingDTO.setIndicatorId(indicatorId);
+        targetSettingDTO.setIndicatorId(indicatorId);
         targetSettingDTO.setSort(0);
         TargetSetting setting;
         if (StringUtils.isNull(targetSetting)) {//新增
@@ -1327,38 +1331,21 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             } else {
                 setting = insertTargetSetting(targetSettingDTO);
             }
-            // 新增目标结果
-            TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetYear(targetYear);
-            if (StringUtils.isNull(targetOutcomeDTO)) {
-                TargetOutcomeDTO outcomeDTO = new TargetOutcomeDTO();
-                outcomeDTO.setTargetYear(targetYear);
-                targetOutcomeService.insertTargetOutcome(outcomeDTO, 2);
-            } else {
-                R<IndicatorDTO> indicatorDTOR = indicatorService.selectIndicatorByCode("CW002", SecurityConstants.INNER);
-                if (indicatorDTOR == null) {
-                    throw new ServiceException("添加目标结果 指标ID获取失败");
-                }
-                IndicatorDTO indicatorDTO = indicatorDTOR.getData();
-                if (indicatorDTOR.getCode() != 200 || StringUtils.isNull(indicatorDTO)) {
-                    throw new ServiceException("添加目标结果 指标ID获取失败");
-                }
-                TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
-                targetOutcomeDetailsDTO.setIndicatorId(indicatorDTO.getIndicatorId());
-                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcomeDTO.getTargetOutcomeId());
-                targetOutcomeDetailsService.insertTargetOutcomeDetails(targetOutcomeDetailsDTO);
-            }
             targetSetting = new TargetSettingDTO();
             targetSetting.setTargetSettingId(setting.getTargetSettingId());
         } else {
             Long targetSettingId = targetSetting.getTargetSettingId();
-            if (StringUtils.isNotEmpty(targetSettingIncomeVOS)) {
-                TargetSettingIncomeDTO targetSettingIncomeDTO = incomeVoToDto(targetSettingIncomeVOS, targetSettingDTO);
-                targetSettingDTO.setTargetSettingId(targetSettingId);
-                saveTargetSetting(targetSettingDTO);
-                targetSettingIncomeDTO.setTargetSettingId(targetSettingId);
-                targetSettingIncomeService.updateTargetSettingIncome(targetSettingIncomeDTO);
+            List<TargetSettingIncomeDTO> targetSettingIncomeDTOS = targetSettingIncomeService.selectTargetSettingIncomeByTargetSettingId(targetSettingId);
+            if (StringUtils.isNotEmpty(targetSettingIncomeDTOS)) {
+                TargetSettingIncomeDTO targetSettingIncome = targetSettingIncomeDTOS.get(0);
+                if (StringUtils.isNotEmpty(targetSettingIncomeVOS)) {
+                    TargetSettingIncomeDTO targetSettingIncomeDTO = incomeVoToDto(targetSettingIncomeVOS, targetSettingDTO);
+                    targetSettingDTO.setTargetSettingId(targetSettingId);
+                    saveTargetSetting(targetSettingDTO);
+                    targetSettingIncomeDTO.setTargetSettingIncomeId(targetSettingIncome.getTargetSettingIncomeId());
+                    targetSettingIncomeService.updateTargetSettingIncome(targetSettingIncomeDTO);
+                }
             }
-            saveTargetSetting(targetSettingDTO);
         }
         return targetSetting;
     }
@@ -1461,7 +1448,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
         TargetSettingDTO setting = targetSettingDTOS.get(0);
         Long targetSettingId = setting.getTargetSettingId();
-        List<TargetSettingIncomeDTO> targetSettingIncomeDTOS = targetSettingIncomeService.selectTargetSettingIncomeByHistoryNumS(targetSettingId);
+        List<TargetSettingIncomeDTO> targetSettingIncomeDTOS = targetSettingIncomeService.selectTargetSettingIncomeByTargetSettingId(targetSettingId);
         TargetSettingIncomeDTO targetSettingIncomeDTO = targetSettingIncomeDTOS.get(0);
         List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();
         // dtoToVo
@@ -1838,7 +1825,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Override
     @Transactional
     public TargetSettingDTO saveRecoveryTargetSetting(TargetSettingDTO targetSettingDTO) {
-        IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.RECEIVABLE.getCode());
+        IndicatorDTO indicatorDTO = getIndicator(IndicatorCode.RECEIVABLE.getCode());
         Integer targetYear = targetSettingDTO.getTargetYear();
         List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS = targetSettingDTO.getTargetSettingIndicatorDTOS();
         List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = targetSettingDTO.getTargetSettingTypeDTOS();
@@ -1846,7 +1833,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         TargetSettingRecoveryDTO targetSettingRecoveryDTO = recoveryListToDto(targetSettingRecoveryList, targetSettingDTO);
         targetSettingDTO.setSort(0);
         targetSettingDTO.setTargetSettingType(3);
-        targetSettingDTO.setIndicatorId(indicatorIncomeDTO.getIndicatorId());
+        targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
         targetSettingDTO.setPercentage(targetSettingRecoveryDTO.getAddRate());
         TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 3);
         Long targetSettingId;
@@ -1856,26 +1843,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingByIndicator.setTargetValue(recoveriesDTO.getTargetValue());
             targetSettingByIndicator.setGuaranteedValue(recoveriesDTO.getGuaranteedValue());
             targetSettingByIndicator.setChallengeValue(recoveriesDTO.getChallengeValue());
-            // 目标结果新增
-            TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetYear(targetYear);
-            if (StringUtils.isNull(targetOutcomeDTO)) {
-                TargetOutcomeDTO outcomeDTO = new TargetOutcomeDTO();
-                outcomeDTO.setTargetYear(targetYear);
-                targetOutcomeService.insertTargetOutcome(outcomeDTO, 3);
-            } else {
-                R<IndicatorDTO> indicatorDTOR = indicatorService.selectIndicatorByCode("CW022", SecurityConstants.INNER);
-                if (indicatorDTOR == null) {
-                    throw new ServiceException("添加目标结果 指标ID获取失败");
-                }
-                IndicatorDTO indicatorDTO = indicatorDTOR.getData();
-                if (indicatorDTOR.getCode() != 200 || StringUtils.isNull(indicatorDTO)) {
-                    throw new ServiceException("添加目标结果 指标ID获取失败");
-                }
-                TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
-                targetOutcomeDetailsDTO.setIndicatorId(indicatorDTO.getIndicatorId());
-                targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcomeDTO.getTargetOutcomeId());
-                targetOutcomeDetailsService.insertTargetOutcomeDetails(targetOutcomeDetailsDTO);
-            }
             TargetSetting targetSetting = insertTargetSetting(targetSettingDTO);
             targetSettingId = targetSetting.getTargetSettingId();
         } else {
@@ -1895,9 +1862,17 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         List<TargetSettingRecoveriesDTO> recoveries = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
         List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
         if (StringUtils.isNotEmpty(recoveries) && recoveries.size() > 4) {
+            for (TargetSettingRecoveriesDTO recoveriesDTO : recoveries) {
+                for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : recoveryDTO) {
+                    if (recoveriesDTO.getType().equals(targetSettingRecoveriesDTO.getType())) {
+                        targetSettingRecoveriesDTO.setTargetSettingRecoveriesId(recoveriesDTO.getTargetSettingRecoveriesId());
+                        break;
+                    }
+                }
+            }
             targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
         } else {// 新增
-            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
+//            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
         }
         targetSettingDTO.setTargetSettingId(targetSettingId);
         return targetSettingDTO;

@@ -83,7 +83,7 @@ public class TargetSettingDTO {
     /**
      * 目标年度
      */
-    @NotBlank(message = "目标制定类型不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
+    @NotBlank(message = "目标年度不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private Integer targetYear;
     /**
      * 百分比(%)

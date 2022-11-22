@@ -12,10 +12,12 @@ import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -231,7 +233,7 @@ public class TargetSettingController extends BaseController {
 //    @RequiresPermissions("operate:cloud:targetSetting:add")
     @Log(title = "保存销售订单目标制定", businessType = BusinessType.UPDATE)
     @PostMapping("/save/order")
-    public AjaxResult saveOrder(@RequestBody TargetSettingDTO targetSettingDTO) {
+    public AjaxResult saveOrder(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveOrderTargetSetting(targetSettingDTO));
     }
 
@@ -249,7 +251,7 @@ public class TargetSettingController extends BaseController {
      * 新增目标制定
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:add")
-    @Log(title = "保存销售回款目标制定", businessType = BusinessType.INSERT)
+    @Log(title = "保存销售回款目标制定", businessType = BusinessType.UPDATE)
     @PostMapping("/save/recovery")
     public AjaxResult saveRecoveries(@RequestBody TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveRecoveryTargetSetting(targetSettingDTO));

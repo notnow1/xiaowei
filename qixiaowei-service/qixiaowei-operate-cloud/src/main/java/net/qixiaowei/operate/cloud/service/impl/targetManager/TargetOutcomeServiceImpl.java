@@ -25,9 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -92,10 +90,17 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         }
         //根据指标和年份获取目标制定值
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByIndicators(indicatorIds, targetYear);
+        Map<Long, TargetSettingDTO> targetSettingMaps = new HashMap<>();
         for (TargetSettingDTO targetSettingDTO : targetSettingDTOList) {
-            for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            targetSettingMaps.put(targetSettingDTO.getIndicatorId(), targetSettingDTO);
+        }
+        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+            Long indicatorId = targetOutcomeDetailsDTO.getIndicatorId();
+            //赋予目标值
+            if (targetSettingMaps.containsKey(indicatorId)) {
+                TargetSettingDTO targetSettingDTO = targetSettingMaps.get(indicatorId);
                 if (targetOutcomeDetailsDTO.getIndicatorId().equals(targetSettingDTO.getIndicatorId())) {
-                    BigDecimal targetValue = targetSettingDTO.getTargetValue();
+                    BigDecimal targetValue = Optional.ofNullable(targetSettingDTO.getTargetValue()).orElse(BigDecimal.ZERO);
                     BigDecimal actualTotal = targetOutcomeDetailsDTO.getActualTotal();
                     targetOutcomeDetailsDTO.setTargetValue(targetValue);
                     BigDecimal targetCompletionRate;
@@ -106,6 +111,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                     }
                     targetOutcomeDetailsDTO.setTargetCompletionRate(targetCompletionRate);
                 }
+            } else {//初始化
+                targetOutcomeDetailsDTO.setTargetYear(targetYear);
+                targetOutcomeDetailsDTO.setTargetValue(BigDecimal.ZERO);
+                targetOutcomeDetailsDTO.setTargetCompletionRate(BigDecimal.ZERO);
             }
         }
     }
@@ -299,7 +308,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      */
     @Override
     @Transactional
-    public TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO, Integer type) {
+    public TargetOutcomeDTO insertTargetOutcome(TargetOutcomeDTO targetOutcomeDTO, IndicatorDTO indicatorDTO) {
         TargetOutcome targetOutcome = new TargetOutcome();
         BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
         targetOutcome.setCreateBy(SecurityUtils.getUserId());
@@ -308,27 +317,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         targetOutcome.setUpdateBy(SecurityUtils.getUserId());
         targetOutcome.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         targetOutcomeMapper.insertTargetOutcome(targetOutcome);
-        String indicatorCode = null;
-        R<IndicatorDTO> indicatorDTOR = null;
-        if (type == 1) {
-            indicatorDTOR = indicatorService.selectIndicatorByCode("CW001", SecurityConstants.INNER);
-        } else if (type == 2) {
-            indicatorDTOR = indicatorService.selectIndicatorByCode("CW002", SecurityConstants.INNER);
-        } else if (type == 3) {
-            indicatorDTOR = indicatorService.selectIndicatorByCode("CW022", SecurityConstants.INNER);
-        }
-        if (indicatorDTOR == null) {
-            throw new ServiceException("添加目标结果 指标ID获取失败");
-        }
-        IndicatorDTO indicatorDTO = indicatorDTOR.getData();
-        if (indicatorDTOR.getCode() != 200 || StringUtils.isNull(indicatorDTO)) {
-            throw new ServiceException("添加目标结果 指标ID获取失败");
-        }
         TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
         targetOutcomeDetailsDTO.setIndicatorId(indicatorDTO.getIndicatorId());
         targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
         targetOutcomeDetailsService.insertTargetOutcomeDetails(targetOutcomeDetailsDTO);
-        Long indicatorId = indicatorDTO.getIndicatorId();
         targetOutcomeDTO.setTargetOutcomeId(targetOutcome.getTargetOutcomeId());
         return targetOutcomeDTO;
     }

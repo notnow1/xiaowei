@@ -63,7 +63,112 @@ public class TargetOutcomeImportListener extends AnalysisEventListener<Map<Integ
      *
      * @return2
      */
-    public static List<List<String>> headTemplate() {
+    public static List<List<String>> headTemplate(Integer targetYear) {
+        int year = DateUtils.getYear();
+        if (year == targetYear) {
+            return getNowHead();
+        } else if (year > targetYear) {
+            return geLastedHead();
+        } else {
+            return getFutureHead();
+        }
+
+    }
+
+    /**
+     * 获取未来年份的头部
+     *
+     * @return
+     */
+    private static List<List<String>> getFutureHead() {
+        List<List<String>> list = new ArrayList<List<String>>();
+        // 第一列
+        List<String> head0 = new ArrayList<String>();
+        head0.add("关键指标");
+        list.add(head0);
+        return list;
+    }
+
+    /**
+     * 获取过去年份的头部
+     *
+     * @return
+     */
+    private static List<List<String>> geLastedHead() {
+        List<List<String>> list = new ArrayList<List<String>>();
+        // 第一列
+        List<String> head0 = new ArrayList<String>();
+        head0.add("关键指标");
+        // 第二列
+        List<String> head1 = new ArrayList<String>();
+        head1.add("实际值");
+        head1.add("1月");
+        // 第二列
+        List<String> head2 = new ArrayList<String>();
+        head2.add("实际值");
+        head2.add("2月");
+        // 第二列
+        List<String> head3 = new ArrayList<String>();
+        head3.add("实际值");
+        head3.add("3月");
+        // 第二列
+        List<String> head4 = new ArrayList<String>();
+        head4.add("实际值");
+        head4.add("4月");
+        // 第三列
+        List<String> head5 = new ArrayList<String>();
+        head5.add("实际值");
+        head5.add("5月");
+        // 第四列
+        List<String> head6 = new ArrayList<String>();
+        head6.add("实际值");
+        head6.add("6月");
+        // 第五列
+        List<String> head7 = new ArrayList<String>();
+        head7.add("实际值");
+        head7.add("7月");
+        // 第六列
+        List<String> head8 = new ArrayList<String>();
+        head8.add("实际值");
+        head8.add("8月");
+        // 第七列
+        List<String> head9 = new ArrayList<String>();
+        head9.add("实际值");
+        head9.add("9月");
+        // 第七列
+        List<String> head10 = new ArrayList<String>();
+        head10.add("实际值");
+        head10.add("10月");
+        // 第七列
+        List<String> head11 = new ArrayList<String>();
+        head11.add("实际值");
+        head11.add("11月");
+        // 第七列
+        List<String> head12 = new ArrayList<String>();
+        head11.add("实际值");
+        head11.add("12月");
+        list.add(head0);
+        list.add(head1);
+        list.add(head2);
+        list.add(head3);
+        list.add(head4);
+        list.add(head5);
+        list.add(head6);
+        list.add(head7);
+        list.add(head8);
+        list.add(head9);
+        list.add(head10);
+        list.add(head11);
+        list.add(head12);
+        return list;
+    }
+
+    /**
+     * 获取当前年份的head
+     *
+     * @return
+     */
+    private static List<List<String>> getNowHead() {
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();

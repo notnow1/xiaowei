@@ -79,7 +79,7 @@
             and update_time=#{targetSettingIncome.updateTime}
         </if>
     </select>
-    <select id="selectTargetSettingIncomeByHistoryNumS"
+    <select id="selectTargetSettingIncomeByTargetSettingId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingIncomeDTO">
         SELECT
         target_setting_income_id, target_setting_id, money_before_one, money_before_two, money_before_three,
