@@ -175,8 +175,6 @@
         <if test="targetSetting.targetYear != null">
             and ts.target_year=#{targetSetting.targetYear}
         </if>
-        union
-        1
     </select>
     <select id="selectTargetSettingByTypes"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
