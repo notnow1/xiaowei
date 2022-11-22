@@ -38,6 +38,14 @@ public interface EmployeeBudgetDetailsMapper{
     List<EmployeeBudgetDetailsDTO> selectEmployeeBudgetDetailsByEmployeeBudgetDetailsIds(@Param("employeeBudgetDetailsIds") List<Long> employeeBudgetDetailsIds);
 
     /**
+     * 根据人力预算主表主键集合批量查询人力预算明细表
+     *
+     * @param employeeBudgetIds 人力预算主表主键集合
+     * @return 人力预算明细表
+     */
+    List<EmployeeBudgetDetailsDTO> selectEmployeeBudgetDetailsByEmployeeBudgetIds(@Param("employeeBudgetIds") List<Long> employeeBudgetIds);
+
+    /**
     * 查询人力预算明细表列表
     *
     * @param employeeBudgetDetails 人力预算明细表
