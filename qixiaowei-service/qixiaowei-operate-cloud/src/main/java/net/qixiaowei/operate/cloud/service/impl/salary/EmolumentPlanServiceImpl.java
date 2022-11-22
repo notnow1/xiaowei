@@ -25,6 +25,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -157,7 +159,22 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                 }
             }
         }
+
         this.queryCalculateList(emolumentPlanDTOS);
+        String createName = emolumentPlanDTO.getCreateName();
+        if (StringUtils.isNotNull(createName)){
+            List<EmolumentPlanDTO> emolumentPlanDTOList = new ArrayList<>();
+            //模糊查询
+            Pattern pattern = Pattern.compile(emolumentPlanDTO.getCreateName());
+            for (EmolumentPlanDTO planDTO : emolumentPlanDTOS) {
+                Matcher matcher = pattern.matcher(planDTO.getCreateName());
+                if(matcher.find()){  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                    emolumentPlanDTOList.add(planDTO);
+                }
+            }
+            return emolumentPlanDTOList;
+        }
+
         return emolumentPlanDTOS;
     }
 

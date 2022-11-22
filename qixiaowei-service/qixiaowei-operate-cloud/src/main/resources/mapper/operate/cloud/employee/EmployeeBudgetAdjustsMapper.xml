@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper">
+    <!--    查询人力预算调整表-->
+    <select id="selectEmployeeBudgetAdjustsByEmployeeBudgetAdjustsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO">
+        SELECT
+        employee_budget_adjusts_id, employee_budget_details_id, cycle_number, number_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_adjusts
+        WHERE  employee_budget_adjusts_id=#{employeeBudgetAdjustsId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询人力预算调整表-->
+    <select id="selectEmployeeBudgetAdjustsByEmployeeBudgetAdjustsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO">
+        SELECT
+        employee_budget_adjusts_id, employee_budget_details_id, cycle_number, number_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_adjusts
+        WHERE  employee_budget_adjusts_id in
+            <foreach item="item"
+                     collection="employeeBudgetAdjustsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询人力预算调整表列表-->
+    <select id="selectEmployeeBudgetAdjustsList" resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO">
+        SELECT
+        employee_budget_adjusts_id, employee_budget_details_id, cycle_number, number_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_adjusts
+        WHERE delete_flag=0
+                <if test="employeeBudgetAdjusts.employeeBudgetAdjustsId != null">
+                    and employee_budget_adjusts_id=#{employeeBudgetAdjusts.employeeBudgetAdjustsId}
+                </if>
+                <if test="employeeBudgetAdjusts.employeeBudgetDetailsId != null">
+                    and employee_budget_details_id=#{employeeBudgetAdjusts.employeeBudgetDetailsId}
+                </if>
+                <if test="employeeBudgetAdjusts.cycleNumber != null">
+                    and cycle_number=#{employeeBudgetAdjusts.cycleNumber}
+                </if>
+                <if test="employeeBudgetAdjusts.numberAdjust != null">
+                    and number_adjust=#{employeeBudgetAdjusts.numberAdjust}
+                </if>
+                <if test="employeeBudgetAdjusts.deleteFlag != null">
+                    and delete_flag=#{employeeBudgetAdjusts.deleteFlag}
+                </if>
+                <if test="employeeBudgetAdjusts.createBy != null">
+                    and create_by=#{employeeBudgetAdjusts.createBy}
+                </if>
+                <if test="employeeBudgetAdjusts.createTime != null">
+                    and create_time=#{employeeBudgetAdjusts.createTime}
+                </if>
+                <if test="employeeBudgetAdjusts.updateBy != null">
+                    and update_by=#{employeeBudgetAdjusts.updateBy}
+                </if>
+                <if test="employeeBudgetAdjusts.updateTime != null">
+                    and update_time=#{employeeBudgetAdjusts.updateTime}
+                </if>
+    </select>
+<!--    根据人力预算明细表主键查询人力预算调整表-->
+    <select id="selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO">
+        SELECT
+            employee_budget_adjusts_id, employee_budget_details_id, cycle_number, number_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_adjusts
+        WHERE  employee_budget_details_id=#{employeeBudgetDetailsId}
+          and delete_flag=0
+        ORDER BY cycle_number
+    </select>
+    <select id="selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO">
+        SELECT
+        employee_budget_adjusts_id, employee_budget_details_id, cycle_number, number_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_adjusts
+        WHERE  employee_budget_details_id in
+        <foreach item="item"
+                 collection="employeeBudgetDetailsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+        ORDER BY cycle_number
+    </select>
+    <!--新增人力预算调整表-->
+    <insert id="insertEmployeeBudgetAdjusts" useGeneratedKeys="true" keyProperty="employeeBudgetAdjustsId">
+        INSERT INTO employee_budget_adjusts (employee_budget_details_id,cycle_number,number_adjust,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{employeeBudgetAdjusts.employeeBudgetDetailsId},#{employeeBudgetAdjusts.cycleNumber},#{employeeBudgetAdjusts.numberAdjust},#{employeeBudgetAdjusts.deleteFlag},#{employeeBudgetAdjusts.createBy},#{employeeBudgetAdjusts.createTime},#{employeeBudgetAdjusts.updateBy},#{employeeBudgetAdjusts.updateTime})
+    </insert>
+    <!--修改人力预算调整表-->
+    <update id="updateEmployeeBudgetAdjusts">
+        UPDATE employee_budget_adjusts
+        SET
+                    <if test="employeeBudgetAdjusts.employeeBudgetDetailsId != null">
+                        employee_budget_details_id=#{employeeBudgetAdjusts.employeeBudgetDetailsId},
+                    </if>
+                    <if test="employeeBudgetAdjusts.cycleNumber != null">
+                        cycle_number=#{employeeBudgetAdjusts.cycleNumber},
+                    </if>
+                    <if test="employeeBudgetAdjusts.numberAdjust != null">
+                        number_adjust=#{employeeBudgetAdjusts.numberAdjust},
+                    </if>
+                    <if test="employeeBudgetAdjusts.deleteFlag != null">
+                        delete_flag=#{employeeBudgetAdjusts.deleteFlag},
+                    </if>
+                    <if test="employeeBudgetAdjusts.createBy != null">
+                        create_by=#{employeeBudgetAdjusts.createBy},
+                    </if>
+                    <if test="employeeBudgetAdjusts.createTime != null">
+                        create_time=#{employeeBudgetAdjusts.createTime},
+                    </if>
+                    <if test="employeeBudgetAdjusts.updateBy != null">
+                        update_by=#{employeeBudgetAdjusts.updateBy},
+                    </if>
+                    <if test="employeeBudgetAdjusts.updateTime != null">
+                        update_time=#{employeeBudgetAdjusts.updateTime}
+                    </if>
+        WHERE
+                 employee_budget_adjusts_id=#{employeeBudgetAdjusts.employeeBudgetAdjustsId}
+    </update>
+    <!--逻辑删除人力预算调整表-->
+    <update id="logicDeleteEmployeeBudgetAdjustsByEmployeeBudgetAdjustsId">
+        UPDATE employee_budget_adjusts
+        SET     delete_flag= 1,
+                update_by=#{employeeBudgetAdjusts.updateBy},
+                update_time=#{employeeBudgetAdjusts.updateTime}
+        WHERE
+                employee_budget_adjusts_id=#{employeeBudgetAdjusts.employeeBudgetAdjustsId}
+    </update>
+    <!--逻辑批量删除人力预算调整表-->
+    <update id="logicDeleteEmployeeBudgetAdjustsByEmployeeBudgetAdjustsIds">
+        UPDATE employee_budget_adjusts
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         employee_budget_adjusts_id IN
+            <foreach item="item"
+                     collection="employeeBudgetAdjustsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增人力预算调整表-->
+    <insert id="batchEmployeeBudgetAdjusts">
+        INSERT INTO employee_budget_adjusts (employee_budget_details_id,cycle_number,number_adjust,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="employeeBudgetAdjustss"
+                 separator=",">
+            (#{item.employeeBudgetDetailsId},#{item.cycleNumber},#{item.numberAdjust},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除人力预算调整表-->
+    <delete id="deleteEmployeeBudgetAdjustsByEmployeeBudgetAdjustsId">
+        DELETE FROM employee_budget_adjusts
+        WHERE  employee_budget_adjusts_id=#{employeeBudgetAdjusts}
+
+    </delete>
+    <!--物理批量删除人力预算调整表-->
+    <delete id="deleteEmployeeBudgetAdjustsByEmployeeBudgetAdjustsIds">
+        DELETE FROM employee_budget_adjusts
+        WHERE  employee_budget_adjusts_id IN
+            <foreach item="item"
+                     collection="employeeBudgetAdjustsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改人力预算调整表-->
+    <update id="updateEmployeeBudgetAdjustss">
+        update employee_budget_adjusts
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="employee_budget_details_id=case" suffix="end,">
+                        <foreach collection="employeeBudgetAdjustsList" item="item" index="index">
+                                <if test="item.employeeBudgetDetailsId != null">
+                                    when employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId} then #{item.employeeBudgetDetailsId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="cycle_number=case" suffix="end,">
+                        <foreach collection="employeeBudgetAdjustsList" item="item" index="index">
+                                <if test="item.cycleNumber != null">
+                                    when employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId} then #{item.cycleNumber}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="number_adjust=case" suffix="end,">
+                        <foreach collection="employeeBudgetAdjustsList" item="item" index="index">
+                                <if test="item.numberAdjust != null">
+                                    when employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId} then #{item.numberAdjust}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="employeeBudgetAdjustsList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="employeeBudgetAdjustsList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="employeeBudgetAdjustsList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="employeeBudgetAdjustsList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="employeeBudgetAdjustsList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="employeeBudgetAdjustsList" separator="or" item="item" index="index">
+                    employee_budget_adjusts_id=#{item.employeeBudgetAdjustsId}
+        </foreach>
+    </update>
+</mapper>
+
+

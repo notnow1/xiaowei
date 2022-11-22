@@ -1,12 +1,18 @@
-package net.qixiaowei.operate.cloud.api.dto.salary;
+package net.qixiaowei.operate.cloud.api.dto.employee;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 
 /**
 * 人力预算表
@@ -37,19 +43,32 @@ public class EmployeeBudgetDTO {
     /**
     * ID
     */
+    @NotNull(message = "ID不能为空", groups = {EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Long employeeBudgetId;
     /**
     * 预算年度
     */
+    @NotNull(message = "预算年度不能为空", groups = {EmployeeBudgetDTO.AddEmployeeBudgetDTO.class, EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Integer budgetYear;
     /**
     * 预算部门ID
     */
+    @NotNull(message = "预算部门不能为空", groups = {EmployeeBudgetDTO.AddEmployeeBudgetDTO.class, EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Long departmentId;
+    /**
+     * 预算部门名称
+     */
+    private  String departmentName;
     /**
     * 职级体系ID
     */
+    @NotNull(message = "职级体系不能为空", groups = {EmployeeBudgetDTO.AddEmployeeBudgetDTO.class, EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Long officialRankSystemId;
+
+    /**
+     * 职级体系名称
+     */
+    private  String officialRankSystemName;
     /**
     * 预算周期:1季度;2月度
     */
@@ -66,6 +85,16 @@ public class EmployeeBudgetDTO {
     * 平均新增数
     */
     private BigDecimal amountAverageAdjust;
+    /**
+     * 人力预算明细表集合
+     */
+    @NotEmpty(message = "人力预算明细表集合不能为空",groups = {EmployeeBudgetDTO.AddEmployeeBudgetDTO.class, EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
+    @Valid
+    private List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS;
+    /**
+     * 年度平均人数
+     */
+    private Integer annualAverageNUm;
     /**
     * 删除标记:0未删除;1已删除
     */

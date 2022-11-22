@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper">
+    <!--    查询人力预算明细表-->
+    <select id="selectEmployeeBudgetDetailsByEmployeeBudgetDetailsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO">
+        SELECT
+        employee_budget_details_id, employee_budget_id, official_rank, number_last_year, count_adjust, average_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_details
+        WHERE  employee_budget_details_id=#{employeeBudgetDetailsId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询人力预算明细表-->
+    <select id="selectEmployeeBudgetDetailsByEmployeeBudgetDetailsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO">
+        SELECT
+        employee_budget_details_id, employee_budget_id, official_rank, number_last_year, count_adjust, average_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_details
+        WHERE  employee_budget_details_id in
+            <foreach item="item"
+                     collection="employeeBudgetDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询人力预算明细表列表-->
+    <select id="selectEmployeeBudgetDetailsList" resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO">
+        SELECT
+        employee_budget_details_id, employee_budget_id, official_rank, number_last_year, count_adjust, average_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_details
+        WHERE delete_flag=0
+                <if test="employeeBudgetDetails.employeeBudgetDetailsId != null">
+                    and employee_budget_details_id=#{employeeBudgetDetails.employeeBudgetDetailsId}
+                </if>
+                <if test="employeeBudgetDetails.employeeBudgetId != null">
+                    and employee_budget_id=#{employeeBudgetDetails.employeeBudgetId}
+                </if>
+                <if test="employeeBudgetDetails.officialRank != null">
+                    and official_rank=#{employeeBudgetDetails.officialRank}
+                </if>
+                <if test="employeeBudgetDetails.numberLastYear != null">
+                    and number_last_year=#{employeeBudgetDetails.numberLastYear}
+                </if>
+                <if test="employeeBudgetDetails.countAdjust != null">
+                    and count_adjust=#{employeeBudgetDetails.countAdjust}
+                </if>
+                <if test="employeeBudgetDetails.averageAdjust != null">
+                    and average_adjust=#{employeeBudgetDetails.averageAdjust}
+                </if>
+                <if test="employeeBudgetDetails.deleteFlag != null">
+                    and delete_flag=#{employeeBudgetDetails.deleteFlag}
+                </if>
+                <if test="employeeBudgetDetails.createBy != null">
+                    and create_by=#{employeeBudgetDetails.createBy}
+                </if>
+                <if test="employeeBudgetDetails.createTime != null">
+                    and create_time=#{employeeBudgetDetails.createTime}
+                </if>
+                <if test="employeeBudgetDetails.updateBy != null">
+                    and update_by=#{employeeBudgetDetails.updateBy}
+                </if>
+                <if test="employeeBudgetDetails.updateTime != null">
+                    and update_time=#{employeeBudgetDetails.updateTime}
+                </if>
+    </select>
+<!--    根据人力预算主表主键查询人力预算明细表-->
+    <select id="selectEmployeeBudgetDetailsByEmployeeBudgetId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO">
+        SELECT
+            employee_budget_details_id, employee_budget_id, official_rank, number_last_year, count_adjust, average_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_details
+        WHERE  employee_budget_id=#{employeeBudgetId}
+          and delete_flag=0
+    </select>
+    <!--新增人力预算明细表-->
+    <insert id="insertEmployeeBudgetDetails" useGeneratedKeys="true" keyProperty="employeeBudgetDetailsId">
+        INSERT INTO employee_budget_details (employee_budget_id,official_rank,number_last_year,count_adjust,average_adjust,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{employeeBudgetDetails.employeeBudgetId},#{employeeBudgetDetails.officialRank},#{employeeBudgetDetails.numberLastYear},#{employeeBudgetDetails.countAdjust},#{employeeBudgetDetails.averageAdjust},#{employeeBudgetDetails.deleteFlag},#{employeeBudgetDetails.createBy},#{employeeBudgetDetails.createTime},#{employeeBudgetDetails.updateBy},#{employeeBudgetDetails.updateTime})
+    </insert>
+    <!--修改人力预算明细表-->
+    <update id="updateEmployeeBudgetDetails">
+        UPDATE employee_budget_details
+        SET
+                    <if test="employeeBudgetDetails.employeeBudgetId != null">
+                        employee_budget_id=#{employeeBudgetDetails.employeeBudgetId},
+                    </if>
+                    <if test="employeeBudgetDetails.officialRank != null">
+                        official_rank=#{employeeBudgetDetails.officialRank},
+                    </if>
+                    <if test="employeeBudgetDetails.numberLastYear != null">
+                        number_last_year=#{employeeBudgetDetails.numberLastYear},
+                    </if>
+                    <if test="employeeBudgetDetails.countAdjust != null">
+                        count_adjust=#{employeeBudgetDetails.countAdjust},
+                    </if>
+                    <if test="employeeBudgetDetails.averageAdjust != null">
+                        average_adjust=#{employeeBudgetDetails.averageAdjust},
+                    </if>
+                    <if test="employeeBudgetDetails.deleteFlag != null">
+                        delete_flag=#{employeeBudgetDetails.deleteFlag},
+                    </if>
+                    <if test="employeeBudgetDetails.createBy != null">
+                        create_by=#{employeeBudgetDetails.createBy},
+                    </if>
+                    <if test="employeeBudgetDetails.createTime != null">
+                        create_time=#{employeeBudgetDetails.createTime},
+                    </if>
+                    <if test="employeeBudgetDetails.updateBy != null">
+                        update_by=#{employeeBudgetDetails.updateBy},
+                    </if>
+                    <if test="employeeBudgetDetails.updateTime != null">
+                        update_time=#{employeeBudgetDetails.updateTime}
+                    </if>
+        WHERE
+                 employee_budget_details_id=#{employeeBudgetDetails.employeeBudgetDetailsId}
+    </update>
+    <!--逻辑删除人力预算明细表-->
+    <update id="logicDeleteEmployeeBudgetDetailsByEmployeeBudgetDetailsId">
+        UPDATE employee_budget_details
+        SET     delete_flag= 1,
+                update_by=#{employeeBudgetDetails.updateBy},
+                update_time=#{employeeBudgetDetails.updateTime}
+        WHERE
+                employee_budget_details_id=#{employeeBudgetDetails.employeeBudgetDetailsId}
+    </update>
+    <!--逻辑批量删除人力预算明细表-->
+    <update id="logicDeleteEmployeeBudgetDetailsByEmployeeBudgetDetailsIds">
+        UPDATE employee_budget_details
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         employee_budget_details_id IN
+            <foreach item="item"
+                     collection="employeeBudgetDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增人力预算明细表-->
+    <insert id="batchEmployeeBudgetDetails" useGeneratedKeys="true" keyProperty="employeeBudgetDetailsId">
+        INSERT INTO employee_budget_details (employee_budget_id,official_rank,number_last_year,count_adjust,average_adjust,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="employeeBudgetDetailss"
+                 separator=",">
+            (#{item.employeeBudgetId},#{item.officialRank},#{item.numberLastYear},#{item.countAdjust},#{item.averageAdjust},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除人力预算明细表-->
+    <delete id="deleteEmployeeBudgetDetailsByEmployeeBudgetDetailsId">
+        DELETE FROM employee_budget_details
+        WHERE  employee_budget_details_id=#{employeeBudgetDetails}
+
+    </delete>
+    <!--物理批量删除人力预算明细表-->
+    <delete id="deleteEmployeeBudgetDetailsByEmployeeBudgetDetailsIds">
+        DELETE FROM employee_budget_details
+        WHERE  employee_budget_details_id IN
+            <foreach item="item"
+                     collection="employeeBudgetDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改人力预算明细表-->
+    <update id="updateEmployeeBudgetDetailss">
+        update employee_budget_details
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="employee_budget_id=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.employeeBudgetId != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.employeeBudgetId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="official_rank=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.officialRank != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.officialRank}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="number_last_year=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.numberLastYear != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.numberLastYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="count_adjust=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.countAdjust != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.countAdjust}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="average_adjust=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.averageAdjust != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.averageAdjust}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="employeeBudgetDetailsList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when employee_budget_details_id=#{item.employeeBudgetDetailsId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="employeeBudgetDetailsList" separator="or" item="item" index="index">
+                    employee_budget_details_id=#{item.employeeBudgetDetailsId}
+        </foreach>
+    </update>
+</mapper>
+
+
