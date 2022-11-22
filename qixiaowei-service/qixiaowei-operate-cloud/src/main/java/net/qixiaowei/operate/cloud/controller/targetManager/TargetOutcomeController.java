@@ -1,9 +1,7 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -18,7 +16,9 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeImportListener;
+import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +43,12 @@ public class TargetOutcomeController extends BaseController {
 
     @Autowired
     private ITargetOutcomeService targetOutcomeService;
+
+    @Autowired
+    private RemoteIndicatorService indicatorService;
+
+    @Autowired
+    private ITargetOutcomeDetailsService targetOutcomeDetailsService;
 
 
     /**
@@ -125,7 +130,7 @@ public class TargetOutcomeController extends BaseController {
                 .head(head)
                 .sheet("关键经营结果")// 设置 sheet 的名字
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .doWrite(TargetOutcomeImportListener.dataList(targetOutcomeExcelList));//
+                .doWrite(TargetOutcomeImportListener.dataList(targetOutcomeExcelList));
     }
 
     /**
@@ -137,15 +142,21 @@ public class TargetOutcomeController extends BaseController {
     public void exportTemplate(@RequestParam Integer targetYear, HttpServletResponse response) {
         try {
             List<List<String>> headTemplate = TargetOutcomeImportListener.headTemplate(targetYear);
+            TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetYear(targetYear);
+            if (StringUtils.isNull(targetOutcomeDTO)) {
+                throw new ServiceException("当前年度的目标结果不存在");
+            }
+            List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeDTO.getTargetOutcomeId());
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding(CharsetKit.UTF_8);
             String fileName = URLEncoder.encode("关键经营结果导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                     , CharsetKit.UTF_8);
             response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
-            WriteSheet sheet = EasyExcel.writerSheet(0, "Sheet1").head(headTemplate).build();
-            excelWriter.write(new ArrayList<>(), sheet);
-            excelWriter.finish();
+            EasyExcel.write(response.getOutputStream())
+                    .head(headTemplate)
+                    .sheet("Sheet1")// 设置 sheet 的名字
+                    .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                    .doWrite(TargetOutcomeImportListener.dataTemplateList(targetOutcomeDetailsDTOList, indicatorService));
         } catch (IOException e) {
             throw new ServiceException("导出失败");
         }

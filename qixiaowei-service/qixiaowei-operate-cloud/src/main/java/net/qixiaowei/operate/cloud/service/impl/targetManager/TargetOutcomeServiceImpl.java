@@ -519,11 +519,11 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         }
         int size = dataList.get(0).size();
         dataList.remove(0);
-        List<String> indicatorNames = new ArrayList<>();
+        List<String> indicatorCodes = new ArrayList<>();
         for (Map<Integer, String> data : dataList) {
-            indicatorNames.add(data.get(0));
+            indicatorCodes.add(data.get(1));
         }
-        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByNames(indicatorNames, SecurityConstants.INNER);
+        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByCodeList(indicatorCodes, SecurityConstants.INNER);
         List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
         if (indicatorR.getCode() != 200 || StringUtils.isEmpty(indicatorDTOS)) {
             throw new ServiceException("获取指标名称失败!");
@@ -537,9 +537,10 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         for (Map<Integer, String> data : dataList) {
             TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = new TargetOutcomeDetailsDTO();
             String indicatorName = data.get(0);
+            String indicatorCode = data.get(1);
             targetOutcomeDetailsDTO.setTargetOutcomeId(targetOutcomeId);
             for (IndicatorDTO indicatorDTO : indicatorDTOS) {
-                if (indicatorDTO.getIndicatorName().equals(indicatorName)) {
+                if (indicatorDTO.getIndicatorCode().equals(indicatorCode)) {
                     targetOutcomeDetailsDTO.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetOutcomeDetailsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
                 }
@@ -568,53 +569,53 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      */
     private static void excelToDTO(int size, Map<Integer, String> data, TargetOutcomeDetailsDTO targetOutcomeDetailsDTO) {
         BigDecimal sum = BigDecimal.ZERO;
-        if (size > 2) {
-            targetOutcomeDetailsDTO.setActualJanuary(new BigDecimal(data.get(1)));
-            sum = sum.add(new BigDecimal(data.get(1)));
-        }
         if (size > 3) {
-            targetOutcomeDetailsDTO.setActualFebruary(new BigDecimal(data.get(2)));
+            targetOutcomeDetailsDTO.setActualJanuary(new BigDecimal(data.get(2)));
             sum = sum.add(new BigDecimal(data.get(2)));
         }
         if (size > 4) {
-            targetOutcomeDetailsDTO.setActualMarch(new BigDecimal(data.get(3)));
+            targetOutcomeDetailsDTO.setActualFebruary(new BigDecimal(data.get(3)));
             sum = sum.add(new BigDecimal(data.get(3)));
         }
         if (size > 5) {
-            targetOutcomeDetailsDTO.setActualApril(new BigDecimal(data.get(4)));
+            targetOutcomeDetailsDTO.setActualMarch(new BigDecimal(data.get(4)));
             sum = sum.add(new BigDecimal(data.get(4)));
         }
         if (size > 6) {
-            targetOutcomeDetailsDTO.setActualMay(new BigDecimal(data.get(5)));
+            targetOutcomeDetailsDTO.setActualApril(new BigDecimal(data.get(5)));
             sum = sum.add(new BigDecimal(data.get(5)));
         }
         if (size > 7) {
-            targetOutcomeDetailsDTO.setActualJune(new BigDecimal(data.get(6)));
+            targetOutcomeDetailsDTO.setActualMay(new BigDecimal(data.get(6)));
             sum = sum.add(new BigDecimal(data.get(6)));
         }
         if (size > 8) {
-            targetOutcomeDetailsDTO.setActualJuly(new BigDecimal(data.get(7)));
+            targetOutcomeDetailsDTO.setActualJune(new BigDecimal(data.get(7)));
             sum = sum.add(new BigDecimal(data.get(7)));
         }
         if (size > 9) {
-            targetOutcomeDetailsDTO.setActualAugust(new BigDecimal(data.get(8)));
+            targetOutcomeDetailsDTO.setActualJuly(new BigDecimal(data.get(8)));
             sum = sum.add(new BigDecimal(data.get(8)));
         }
         if (size > 10) {
-            targetOutcomeDetailsDTO.setActualSeptember(new BigDecimal(data.get(9)));
+            targetOutcomeDetailsDTO.setActualAugust(new BigDecimal(data.get(9)));
             sum = sum.add(new BigDecimal(data.get(9)));
         }
         if (size > 11) {
-            targetOutcomeDetailsDTO.setActualOctober(new BigDecimal(data.get(10)));
+            targetOutcomeDetailsDTO.setActualSeptember(new BigDecimal(data.get(10)));
             sum = sum.add(new BigDecimal(data.get(10)));
         }
         if (size > 12) {
-            targetOutcomeDetailsDTO.setActualNovember(new BigDecimal(data.get(11)));
+            targetOutcomeDetailsDTO.setActualOctober(new BigDecimal(data.get(11)));
             sum = sum.add(new BigDecimal(data.get(11)));
         }
         if (size > 13) {
-            targetOutcomeDetailsDTO.setActualDecember(new BigDecimal(data.get(12)));
+            targetOutcomeDetailsDTO.setActualNovember(new BigDecimal(data.get(12)));
             sum = sum.add(new BigDecimal(data.get(12)));
+        }
+        if (size > 14) {
+            targetOutcomeDetailsDTO.setActualDecember(new BigDecimal(data.get(13)));
+            sum = sum.add(new BigDecimal(data.get(13)));
         }
         targetOutcomeDetailsDTO.setActualTotal(sum);
     }

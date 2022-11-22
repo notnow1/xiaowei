@@ -56,6 +56,10 @@ public class TargetOutcomeDetailsDTO {
      */
     private String indicatorName;
     /**
+     * 指标名称
+     */
+    private String indicatorCode;
+    /**
      * 累计实际值
      */
     private BigDecimal actualTotal;
