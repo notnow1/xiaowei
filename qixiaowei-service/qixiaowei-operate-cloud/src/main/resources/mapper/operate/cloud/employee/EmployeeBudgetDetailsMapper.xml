@@ -75,6 +75,20 @@
         WHERE  employee_budget_id=#{employeeBudgetId}
           and delete_flag=0
     </select>
+<!--    根据人力预算主表主键集合批量查询人力预算明细表-->
+    <select id="selectEmployeeBudgetDetailsByEmployeeBudgetIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO">
+        SELECT
+        employee_budget_details_id, employee_budget_id, official_rank, number_last_year, count_adjust, average_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget_details
+        WHERE  employee_budget_id in
+        <foreach item="item"
+                 collection="employeeBudgetIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增人力预算明细表-->
     <insert id="insertEmployeeBudgetDetails" useGeneratedKeys="true" keyProperty="employeeBudgetDetailsId">
         INSERT INTO employee_budget_details (employee_budget_id,official_rank,number_last_year,count_adjust,average_adjust,delete_flag,create_by,create_time,update_by,update_time)

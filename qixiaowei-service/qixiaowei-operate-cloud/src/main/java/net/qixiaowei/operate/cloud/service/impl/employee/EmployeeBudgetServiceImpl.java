@@ -296,10 +296,36 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteEmployeeBudgetByEmployeeBudgetIds(List<Long> employeeBudgetIds) {
         List<EmployeeBudgetDTO> employeeBudgetDTOS = employeeBudgetMapper.selectEmployeeBudgetByEmployeeBudgetIds(employeeBudgetIds);
-        if (StringUtils.isNotEmpty(employeeBudgetDTOS)) {
+        if (StringUtils.isEmpty(employeeBudgetDTOS)) {
             throw new ServiceException("数据不存在！");
+        }
+        //删除详情表
+        List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetIds(employeeBudgetIds);
+        if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)){
+            List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
+
+            try {
+                if (StringUtils.isNotEmpty(collect)){
+                    employeeBudgetDetailsMapper.logicDeleteEmployeeBudgetDetailsByEmployeeBudgetDetailsIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                }
+
+            } catch (Exception e) {
+                throw new ServiceException("删除人力预算详情表失败");
+            }
+            //删除明细表
+            List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);
+            List<Long> collect1 = employeeBudgetAdjustsDTOS.stream().map(EmployeeBudgetAdjustsDTO::getEmployeeBudgetAdjustsId).collect(Collectors.toList());
+            try {
+                if (StringUtils.isNotEmpty(collect1)){
+                    employeeBudgetAdjustsMapper.logicDeleteEmployeeBudgetAdjustsByEmployeeBudgetAdjustsIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                }
+            } catch (Exception e) {
+                throw new ServiceException("删除人力预算明细表失败");
+            }
+
         }
         return employeeBudgetMapper.logicDeleteEmployeeBudgetByEmployeeBudgetIds(employeeBudgetIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
@@ -322,6 +348,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteEmployeeBudgetByEmployeeBudgetId(EmployeeBudgetDTO employeeBudgetDTO) {
         EmployeeBudget employeeBudget = new EmployeeBudget();
         employeeBudget.setEmployeeBudgetId(employeeBudgetDTO.getEmployeeBudgetId());
@@ -331,6 +358,31 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         }
         employeeBudget.setUpdateTime(DateUtils.getNowDate());
         employeeBudget.setUpdateBy(SecurityUtils.getUserId());
+        //删除详情表
+        List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetId(employeeBudgetDTO.getEmployeeBudgetId());
+        if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)){
+            List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
+
+            try {
+                if (StringUtils.isNotEmpty(collect)){
+                    employeeBudgetDetailsMapper.logicDeleteEmployeeBudgetDetailsByEmployeeBudgetDetailsIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                }
+
+            } catch (Exception e) {
+                throw new ServiceException("删除人力预算详情表失败");
+            }
+            //删除明细表
+            List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);
+            List<Long> collect1 = employeeBudgetAdjustsDTOS.stream().map(EmployeeBudgetAdjustsDTO::getEmployeeBudgetAdjustsId).collect(Collectors.toList());
+            try {
+                if (StringUtils.isNotEmpty(collect1)){
+                    employeeBudgetAdjustsMapper.logicDeleteEmployeeBudgetAdjustsByEmployeeBudgetAdjustsIds(collect1,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                }
+            } catch (Exception e) {
+                throw new ServiceException("删除人力预算明细表失败");
+            }
+
+        }
         return employeeBudgetMapper.logicDeleteEmployeeBudgetByEmployeeBudgetId(employeeBudget);
     }
 
