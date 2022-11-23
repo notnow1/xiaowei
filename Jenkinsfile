@@ -20,7 +20,7 @@ pipeline {
       agent none
       steps {
         container('maven') {
-          sh 'mvn clean package -Ptest -Dmaven.test.skip=true'
+          sh 'mvn clean package -Ptest -DskipTests -pl !qixiaowei-gen'
         }
 
       }
