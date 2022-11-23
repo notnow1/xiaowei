@@ -178,5 +178,5 @@ public interface EmployeeMapper {
      * @param planYear
      * @return
      */
-    List<Integer> selecTamountLastYearList(@Param("planYear") int planYear);
+    List<EmployeeDTO> selecTamountLastYearList(@Param("planYear") int planYear);
 }

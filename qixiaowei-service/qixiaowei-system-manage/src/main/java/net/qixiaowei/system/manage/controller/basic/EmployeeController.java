@@ -49,8 +49,7 @@ public class EmployeeController extends BaseController {
     //@RequiresPermissions("system:manage:employee:pageList")
     @GetMapping("/amountLastYear/{planYear}")
     public AjaxResult selecTamountLastYearList(@PathVariable int planYear) {
-        List<Integer> amountLastYears =employeeService.selecTamountLastYearList(planYear);
-        return AjaxResult.success(amountLastYears);
+        return AjaxResult.success(employeeService.selecTamountLastYearList(planYear));
     }
     /**
      * 分页查询岗位薪酬报表

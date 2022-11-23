@@ -500,7 +500,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @return
      */
     @Override
-    public List<Integer> selecTamountLastYearList(int planYear) {
+    public List<EmployeeDTO> selecTamountLastYearList(int planYear) {
         return employeeMapper.selecTamountLastYearList(planYear);
     }
 

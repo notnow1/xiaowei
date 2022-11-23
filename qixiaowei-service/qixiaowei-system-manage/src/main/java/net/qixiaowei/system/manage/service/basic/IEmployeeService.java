@@ -155,5 +155,5 @@ public interface IEmployeeService{
      * @param planYear
      * @return
      */
-    List<Integer> selecTamountLastYearList(int planYear);
+    List<EmployeeDTO> selecTamountLastYearList(int planYear);
 }
