@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.mapper.employee;
 
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetDetails;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
@@ -116,4 +117,11 @@ public interface EmployeeBudgetDetailsMapper{
     * @return 结果
     */
     int batchEmployeeBudgetDetails(@Param("employeeBudgetDetailss")List<EmployeeBudgetDetails> EmployeeBudgetDetailss);
+
+    /**
+     * 查询增人/减人工资包列表
+     * @param employeeBudgetDTO
+     * @return
+     */
+    List<EmployeeBudgetDetailsDTO> salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO);
 }

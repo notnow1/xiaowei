@@ -173,7 +173,7 @@
 
         where
         e.delete_flag = 0
-        <if test="employee.employeeIds  != null and employee.employeeIds .size()!=0">
+        <if test="employee.employeeIds  != null and employee.employeeIds.size()!=0">
             and e.employee_id in
             <foreach item="item"
                      collection="employee.employeeIds"
@@ -581,6 +581,10 @@
         <if test="employee.officialRankSystemId != null">
             and concat(ors.rank_prefix_code, e.employee_rank) =#{employee.employeeRankName}
         </if>
+    </select>
+<!--    新增人力预算上年期末数集合-->
+    <select id="selecTamountLastYearList" resultType="java.lang.Integer">
+
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">

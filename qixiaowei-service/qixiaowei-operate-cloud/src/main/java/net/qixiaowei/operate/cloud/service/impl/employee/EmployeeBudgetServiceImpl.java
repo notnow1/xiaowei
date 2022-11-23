@@ -11,7 +11,6 @@ import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetAdjusts;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetDetails;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -100,6 +100,8 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);
             //根据人力预算明细表id分组
             Map<Long, List<EmployeeBudgetAdjustsDTO>> mapList = employeeBudgetAdjustsDTOS.parallelStream().collect(Collectors.groupingBy(EmployeeBudgetAdjustsDTO::getEmployeeBudgetDetailsId));
+
+
             //放入数据
             for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                 //上年期末人数
@@ -107,8 +109,15 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 //本年新增人数
                 Integer countAdjust = employeeBudgetDetailsDTO.getCountAdjust();
                 //年度平均人数 = 上年期末数+平均新增人数
-                employeeBudgetDetailsDTO.setAnnualAverageNUm(numberLastYear + countAdjust);
-                employeeBudgetDetailsDTO.setEmployeeBudgetAdjustsDTOS(mapList.get(employeeBudgetDetailsDTO.getEmployeeBudgetDetailsId()));
+                employeeBudgetDetailsDTO.setAnnualAverageNum(numberLastYear + countAdjust);
+                List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS1 = mapList.get(employeeBudgetDetailsDTO.getEmployeeBudgetDetailsId());
+                //sterm流求和
+                Integer reduce = employeeBudgetAdjustsDTOS1.stream().filter(Objects::nonNull).map(EmployeeBudgetAdjustsDTO::getNumberAdjust).reduce(0, Integer::sum);
+                //年度规划人数
+                employeeBudgetDetailsDTO.setAnnualPlanningNum(reduce);
+                //年末总计
+                employeeBudgetDetailsDTO.setEndYearSum(numberLastYear+reduce);
+                employeeBudgetDetailsDTO.setEmployeeBudgetAdjustsDTOS(employeeBudgetAdjustsDTOS1);
             }
         }
 
@@ -164,7 +173,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                  amountAverageAdjust = amountLastYear + amountAdjust;
             }
             //年度平均人数 = 上年期末数+平均新增人数
-            budgetDTO.setAnnualAverageNUm(amountAverageAdjust);
+            budgetDTO.setAnnualAverageNum(amountAverageAdjust);
         }
         return employeeBudgetDTOS;
     }
@@ -527,6 +536,16 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectEmployeeBudgetList(employeeBudget);
         List<EmployeeBudgetExcel> employeeBudgetExcelList = new ArrayList<>();
         return employeeBudgetExcelList;
+    }
+
+    /**
+     * 查询增人/减人工资包列表
+     * @param employeeBudgetDTO
+     * @return
+     */
+    @Override
+    public List<EmployeeBudgetDetailsDTO> salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO) {
+        return employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);
     }
 }
 

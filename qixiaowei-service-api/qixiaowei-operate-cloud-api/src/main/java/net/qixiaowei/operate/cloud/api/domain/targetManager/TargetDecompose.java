@@ -26,6 +26,10 @@ public class TargetDecompose extends BaseEntity {
      */
     private Long targetDecomposeId;
     /**
+     * ID集合
+     */
+    private  List<Long> targetDecomposeIds;
+    /**
      * 目标分解类型:0自定义;1销售订单;2销售收入;3销售回款
      */
     private Integer targetDecomposeType;

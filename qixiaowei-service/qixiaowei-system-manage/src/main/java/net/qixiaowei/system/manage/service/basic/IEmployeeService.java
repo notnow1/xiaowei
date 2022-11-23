@@ -149,4 +149,11 @@ public interface IEmployeeService{
      * @return
      */
     List<EmployeeDTO> pagePostSalaryReportList(EmployeeDTO employeeDTO);
+
+    /**
+     * 新增人力预算上年期末数集合
+     * @param planYear
+     * @return
+     */
+    List<Integer> selecTamountLastYearList(int planYear);
 }

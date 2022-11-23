@@ -73,8 +73,13 @@
         and ts.target_setting_type=#{targetDecompose.targetDecomposeType}
         and ts.delete_flag= 0
         WHERE td.delete_flag = 0
-        <if test="targetDecompose.targetDecomposeId != null">
+        <if test="targetDecompose.targetDecomposeIds != null and targetDecompose.targetDecomposeIds.size() != 0">
             and td.target_decompose_id in
+            <foreach item="item"
+                     collection="targetDecompose.targetDecomposeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}

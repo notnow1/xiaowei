@@ -172,4 +172,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectPostSalaryReportList(@Param("employee") Employee employee);
+
+    /**
+     * 新增人力预算上年期末数集合
+     * @param planYear
+     * @return
+     */
+    List<Integer> selecTamountLastYearList(@Param("planYear") int planYear);
 }
