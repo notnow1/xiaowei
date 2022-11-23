@@ -68,4 +68,9 @@ public class RemoteEmployee implements RemoteEmployeeService {
     public R<List<EmployeeDTO>> selectByEmployeeIds(@RequestBody List<Long> employeeIds, String source) {
         return R.ok(employeeService.selectEmployeeByEmployeeIds(employeeIds));
     }
+
+    @Override
+    public R<List<EmployeeDTO>> selectByBudgeList(EmployeeDTO employeeDTO, String source) {
+        return null;
+    }
 }

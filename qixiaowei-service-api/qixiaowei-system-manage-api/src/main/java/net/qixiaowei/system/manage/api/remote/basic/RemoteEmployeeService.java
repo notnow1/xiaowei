@@ -55,4 +55,13 @@ public interface RemoteEmployeeService {
     @PostMapping(API_PREFIX_EMPLOYEE + "/employeeIds")
     R<List<EmployeeDTO>> selectByEmployeeIds(@RequestBody List<Long> employeeIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
+    /**
+     * 通过id集合查找人员列表
+     *
+     * @param employeeDTO
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/selectByBudgeList")
+    R<List<EmployeeDTO>> selectByBudgeList(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
 }

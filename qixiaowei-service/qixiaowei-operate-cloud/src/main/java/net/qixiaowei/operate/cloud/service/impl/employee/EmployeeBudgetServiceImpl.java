@@ -16,6 +16,7 @@ import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -57,6 +58,8 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     private RemoteDepartmentService remoteDepartmentService;
     @Autowired
     private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
+    @Autowired
+    private RemoteEmployeeService remoteEmployeeService;
 
 
     /**
@@ -576,14 +579,14 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     public List<EmployeeBudgetDetailsDTO> salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO) {
         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);
         if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)){
-            //去重
+            //部门id去重
             List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getDepartmentId).distinct().collect(Collectors.toList());
             //远程调用组织
             if (StringUtils.isNotEmpty(collect)){
                 R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
                 List<DepartmentDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)){
-                    //远程赋值名称
+                    //远程赋值部门名称
                     for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                         for (DepartmentDTO datum : data) {
                             if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getDepartmentId()){
@@ -593,12 +596,20 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     }
                 }
             }
-
+            //职级id去重
+            List<Long> collect1 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getOfficialRankSystemId).distinct().collect(Collectors.toList());
             //职级体系远程调用
-            R<OfficialRankSystemDTO> officialRankSystemDTOR = remoteOfficialRankSystemService.selectById(employeeBudgetDTO.getOfficialRankSystemId(), SecurityConstants.INNER);
-            OfficialRankSystemDTO data1 = officialRankSystemDTOR.getData();
-            if (StringUtils.isNotNull(data1)){
-                employeeBudgetDTO.setOfficialRankSystemName(data1.getOfficialRankSystemName());
+            R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
+            List<OfficialRankSystemDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)){
+                for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                    //远程赋值职级名称
+                    for (OfficialRankSystemDTO datum : data) {
+                        if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
+                            employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+                        }
+                    }
+                }
             }
         }
 

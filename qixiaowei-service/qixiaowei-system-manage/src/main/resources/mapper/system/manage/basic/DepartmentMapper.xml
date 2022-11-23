@@ -30,34 +30,34 @@
     <!--    查询部门表列表-->
     <select id="selectDepartmentList" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         select
-            ee.employee_name as department_leader_name,
-            ee2.employee_name as examination_leader_name,
-            p.post_name as department_leader_post_name,
-            dm.department_id,
-            dm.parent_department_id,
-            dm.ancestors,
-            dm.department_code,
-            dm.department_name,
-            dm.level,
-            dm.department_leader_id,
-            dm.department_leader_post_id,
-            dm.examination_leader_id,
-            dm.department_importance_factor,
-            dm.department_description,
-            dm.sort,
-            dm.status
+        ee.employee_name as department_leader_name,
+        ee2.employee_name as examination_leader_name,
+        p.post_name as department_leader_post_name,
+        dm.department_id,
+        dm.parent_department_id,
+        dm.ancestors,
+        dm.department_code,
+        dm.department_name,
+        dm.level,
+        dm.department_leader_id,
+        dm.department_leader_post_id,
+        dm.examination_leader_id,
+        dm.department_importance_factor,
+        dm.department_description,
+        dm.sort,
+        dm.status
         from
-            department dm
-                left join employee ee
-                          on ee.employee_id = dm.department_leader_id
-                              and ee.delete_flag =0
-                left join employee ee2
-                          on ee2.employee_id = dm.examination_leader_id
-                              and ee2.delete_flag =0
-                left join post p
-                          on  p.post_id = dm.department_leader_post_id
-                              and p.delete_flag =0
-            where dm.delete_flag =0
+        department dm
+        left join employee ee
+        on ee.employee_id = dm.department_leader_id
+        and ee.delete_flag =0
+        left join employee ee2
+        on ee2.employee_id = dm.examination_leader_id
+        and ee2.delete_flag =0
+        left join post p
+        on  p.post_id = dm.department_leader_post_id
+        and p.delete_flag =0
+        where dm.delete_flag =0
         <if test="department.examinationLeaderName != null and department.examinationLeaderName != ''">
             and ee2.employee_name like '%${department.examinationLeaderName}%'
         </if>
@@ -99,35 +99,35 @@
     <!--    根据父级id查询数据-->
     <select id="selectParentDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         select
-        ee.employee_name as department_leader_name,
-        ee2.employee_name as examination_leader_name,
-        p.post_name as department_leader_post_name,
-        dm.department_id,
-        dm.parent_department_id,
-        dm.ancestors,
-        dm.department_code,
-        dm.department_name,
-        dm.level,
-        dm.department_leader_id,
-        dm.department_leader_post_id,
-        dm.examination_leader_id,
-        dm.department_importance_factor,
-        dm.department_description,
-        dm.sort,
-        dm.status
+            ee.employee_name as department_leader_name,
+            ee2.employee_name as examination_leader_name,
+            p.post_name as department_leader_post_name,
+            dm.department_id,
+            dm.parent_department_id,
+            dm.ancestors,
+            dm.department_code,
+            dm.department_name,
+            dm.level,
+            dm.department_leader_id,
+            dm.department_leader_post_id,
+            dm.examination_leader_id,
+            dm.department_importance_factor,
+            dm.department_description,
+            dm.sort,
+            dm.status
         from
-        department dm
-        left join employee ee
-        on ee.employee_id = dm.department_leader_id
-        and ee.delete_flag =0
-        left join employee ee2
-        on ee2.employee_id = dm.examination_leader_id
-        and ee2.delete_flag =0
-        left join post p
-        on  p.post_id = dm.department_leader_post_id
-        and p.delete_flag =0
+            department dm
+                left join employee ee
+                          on ee.employee_id = dm.department_leader_id
+                              and ee.delete_flag =0
+                left join employee ee2
+                          on ee2.employee_id = dm.examination_leader_id
+                              and ee2.delete_flag =0
+                left join post p
+                          on  p.post_id = dm.department_leader_post_id
+                              and p.delete_flag =0
         where dm.delete_flag =0
-            and dm.department_id=#{departmentId}
+          and dm.department_id=#{departmentId}
     </select>
     <!--    根据id查询所有子级数据-->
     <select id="selectAncestors" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
@@ -394,9 +394,6 @@
                 left join `user` u
                           on u.employee_id =ee.employee_id
                               and u.delete_flag =0
-                left join indicator i
-                          on i.indicator_id = td.indicator_id
-                              and i.delete_flag = 0
         where ee.employee_id = #{employeeId}
           and ee.delete_flag = 0
     </select>
@@ -431,28 +428,28 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach> or
-             examination_leader_id in
+        examination_leader_id in
         <foreach item="item"
                  collection="collect"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>)
     </select>
-<!--    批量查询code编码是否已经存在-->
+    <!--    批量查询code编码是否已经存在-->
     <select id="selectDepartmentCodes" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT department_id, parent_department_id, ancestors, department_code, department_name, `level`,
         department_leader_id, department_leader_post_id, examination_leader_id, department_importance_factor,
         department_description, sort, status, delete_flag, create_by, create_time, update_by, update_time
         FROM department
         where department_code in
-            <foreach item="item"
-                     collection="departmentCodes"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        <foreach item="item"
+                 collection="departmentCodes"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag = 0
     </select>
-<!--    批量查询部门表-->
+    <!--    批量查询部门表-->
     <select id="selectDepartmentByDepartmentIds"
             resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT d.department_id, d.parent_department_id, d.ancestors, d.department_code, d.department_name, d.`level`,
@@ -461,12 +458,12 @@
         e.employee_name as department_leader_name,
         ee.employee_name as examination_leader_name
         FROM department d
-            LEFT JOIN employee e
-                ON d.department_leader_id = e.employee_id
-                    AND e.delete_flag =0
-            LEFT JOIN employee ee
-                ON d.examination_leader_id = ee.employee_id
-                    AND d.delete_flag =0
+        LEFT JOIN employee e
+        ON d.department_leader_id = e.employee_id
+        AND e.delete_flag =0
+        LEFT JOIN employee ee
+        ON d.examination_leader_id = ee.employee_id
+        AND d.delete_flag =0
         where department_id in
         <foreach item="item"
                  collection="departmentIds"
@@ -475,14 +472,14 @@
         </foreach>
         and d.delete_flag = 0
     </select>
-<!--    返回部门层级-->
+    <!--    返回部门层级-->
     <select id="selectLevel" resultType="java.lang.Integer">
         SELECT level
         FROM department
         WHERE delete_flag = 0
         group by level
     </select>
-<!--    目标分解是否被引用-->
+    <!--    目标分解是否被引用-->
     <select id="queryDeptDecompose"
             resultType="net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose">
         SELECT i.indicator_name,
@@ -502,14 +499,14 @@
                tdd.update_by,
                tdd.update_time
         FROM `operate-cloud`.target_decompose_details tdd
-        left join `operate-cloud`.target_decompose td
-        on td.target_decompose_id = tdd.target_decompose_id
-        and td.delete_flag = 0
-        left join indicator i
-        on i.indicator_id = td.indicator_id
-        and i.delete_flag = 0
+                 left join `operate-cloud`.target_decompose td
+                           on td.target_decompose_id = tdd.target_decompose_id
+                               and td.delete_flag = 0
+                 left join indicator i
+                           on i.indicator_id = td.indicator_id
+                               and i.delete_flag = 0
         where tdd.department_id=#{departmentId}
-        and tdd.delete_flag = 0
+          and tdd.delete_flag = 0
     </select>
 
     <!--新增部门表-->

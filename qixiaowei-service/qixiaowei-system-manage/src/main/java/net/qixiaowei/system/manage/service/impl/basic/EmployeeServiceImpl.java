@@ -529,19 +529,18 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 officialRankSystemDTO1.setRankCodeName(officialRankSystemDTO.getRankPrefixCode() + i);
                 //职级级别
                 officialRankSystemDTO1.setRankCode(i);
+                officialRankSystemDTO1.setAmountLastYear(0);
                 officialRankSystemDTOs.add(officialRankSystemDTO1);
             }
+
             //比对职级级别 相同的赋值 不同的赋0
-            if (StringUtils.isNotEmpty(officialRankSystemDTOs)) {
+            if (StringUtils.isNotEmpty(officialRankSystemDTOs) && StringUtils.isNotEmpty(employeeDTOList) && employeeDTOList.get(0) != null ) {
                 for (OfficialRankSystemDTO rankSystemDTO : officialRankSystemDTOs) {
                     for (EmployeeDTO dto : employeeDTOList) {
                         if (StringUtils.equals(rankSystemDTO.getRankCodeName(), dto.getEmployeeRankName())) {
 
                             rankSystemDTO.setAmountLastYear(dto.getAmountLastYear());
-                        } else {
-                            rankSystemDTO.setAmountLastYear(0);
                         }
-
                     }
                 }
             }
