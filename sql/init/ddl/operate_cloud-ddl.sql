@@ -622,3 +622,81 @@ CREATE TABLE official_rank_emolument(
     PRIMARY KEY (official_rank_emolument_id)
 )  COMMENT = '职级薪酬表';
 
+
+CREATE TABLE bonus_budget(
+    bonus_budget_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    budget_year INT NOT NULL   COMMENT '预算年度' ,
+    amount_bonus_budget DECIMAL(14,2)    COMMENT '总奖金包预算' ,
+    bonus_before_one DECIMAL(14,2)    COMMENT '预算年度前一年的总奖金包' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (bonus_budget_id)
+)  COMMENT = '奖金预算表';
+
+
+CREATE TABLE bonus_budget_parameters(
+    bonus_budget_parameters_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    bonus_budget_id BIGINT NOT NULL   COMMENT '奖金预算ID' ,
+    indicator_id BIGINT NOT NULL   COMMENT '指标ID' ,
+    bonus_weight DECIMAL(14,2)    COMMENT '奖金权重(%)' ,
+    bonus_proportion_standard DECIMAL(14,2)    COMMENT '奖金占比基准值(%)' ,
+    bonus_proportion_variation DECIMAL(14,2)    COMMENT '奖金占比浮动差值' ,
+    challenge_value DECIMAL(14,2)    COMMENT '挑战值' ,
+    target_value DECIMAL(14,2)    COMMENT '目标值' ,
+    guaranteed_value DECIMAL(14,2)    COMMENT '保底值' ,
+    target_completion_rate DECIMAL(14,2)    COMMENT '预计目标达成率(%)' ,
+    performance_after_one DECIMAL(14,2)    COMMENT '预算年后一年业绩增长率' ,
+    performance_after_two DECIMAL(14,2)    COMMENT '预算年后二年业绩增长率' ,
+    bonus_allowance_after_one DECIMAL(14,2)    COMMENT '预算年后一年奖金折让系数' ,
+    bonus_allowance_after_two DECIMAL(14,2)    COMMENT '预算年后二年奖金折让系数' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (bonus_budget_parameters_id)
+)  COMMENT = '奖金预算参数表';
+
+
+CREATE TABLE dept_bonus_budget(
+    dept_bonus_budget_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    budget_year INT NOT NULL   COMMENT '预算年度' ,
+    strategy_award_percentage DECIMAL(14,2)    COMMENT '战略奖比例' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (dept_bonus_budget_id)
+)  COMMENT = '部门奖金包预算表';
+
+
+CREATE TABLE dept_bonus_budget_details(
+    dept_bonus_budget_details_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    dept_bonus_budget_id BIGINT NOT NULL   COMMENT '部门奖金包预算ID' ,
+    department_id BIGINT NOT NULL   COMMENT '部门ID' ,
+    dept_bonus_percentage DECIMAL(5,2)    COMMENT '部门奖金占比' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (dept_bonus_budget_details_id)
+)  COMMENT = '部门奖金预算明细表';
+
+
+CREATE TABLE dept_bonus_budget_items(
+    dept_bonus_budget_items_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    dept_bonus_budget_details_id BIGINT NOT NULL   COMMENT '部门奖金预算明细ID' ,
+    salary_item_id BIGINT NOT NULL   COMMENT '工资项ID' ,
+    bonus_percentage DECIMAL(5,2)    COMMENT '奖金占比' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (dept_bonus_budget_items_id)
+)  COMMENT = '部门奖金预算项目表';

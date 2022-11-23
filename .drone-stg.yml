@@ -24,7 +24,7 @@ steps:
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
       dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
-        - latest-stg
+        - v-1.0.${DRONE_BUILD_NUMBER}
 
 volumes:
   - name: cache
