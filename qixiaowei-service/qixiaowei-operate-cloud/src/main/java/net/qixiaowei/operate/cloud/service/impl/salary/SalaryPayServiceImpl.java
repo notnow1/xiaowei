@@ -666,6 +666,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
 
     /**
      * 查询薪酬架构报表列表
+     * todo 1.有查询条件的情况查询2.分页
+     * todo 新增一个接口
      *
      * @param salaryStructureDTO 薪酬架构DTO
      * @return
@@ -717,7 +719,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                     }
                 }
             }
-            calculateAmount(salaryStructure, salaryPayDTOList);
+            List<SalaryPayDTO> salaryPayDTOS = calculateAmount(salaryPayDTOList);
+            salaryStructure.setSalaryPayDTOList(salaryPayDTOS);
             return salaryStructure;
         }
         EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -729,10 +732,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     /**
      * 薪酬架构报表金额计算
      *
-     * @param salaryStructure  返回的DTO
      * @param salaryPayDTOList 子表DTO
      */
-    private static void calculateAmount(SalaryStructureDTO salaryStructure, List<SalaryPayDTO> salaryPayDTOList) {
+    private static List<SalaryPayDTO> calculateAmount(List<SalaryPayDTO> salaryPayDTOList) {
         Map<String, Map<String, List<SalaryPayDTO>>> salaryPayMap = salaryPayDTOList.stream()
                 .collect(Collectors.groupingBy(SalaryPayDTO::getEmployeeDepartmentName, Collectors.groupingBy(SalaryPayDTO::getEmployeeRankName)));
         List<SalaryPayDTO> salaryPayDTOS = new ArrayList<>();
@@ -758,7 +760,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 salaryPayDTOS.add(salaryPayDTO);
             }
         }
-        salaryStructure.setSalaryPayDTOList(salaryPayDTOS);
+        return salaryPayDTOS;
     }
 
 }

@@ -1452,6 +1452,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         TargetSettingDTO setting = targetSettingDTOS.get(0);
         Long targetSettingId = setting.getTargetSettingId();
         List<TargetSettingIncomeDTO> targetSettingIncomeDTOS = targetSettingIncomeService.selectTargetSettingIncomeByTargetSettingId(targetSettingId);
+        if (StringUtils.isEmpty(targetSettingIncomeDTOS)) {
+            TargetSettingIncomeDTO targetSettingIncomeDTO = new TargetSettingIncomeDTO();
+            setIncomeZero(targetSettingIncomeDTO);
+        }
         TargetSettingIncomeDTO targetSettingIncomeDTO = targetSettingIncomeDTOS.get(0);
         List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();
         // dtoToVo
@@ -1492,6 +1496,20 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         setting.setOrderTargetSetting(targetSettingByIndicator);
         setting.setTargetSettingIncomeVOS(targetSettingIncomeVOS);
         return setting;
+    }
+
+    /**
+     * 为收入赋0
+     *
+     * @param targetSettingIncomeDTO
+     */
+    private void setIncomeZero(TargetSettingIncomeDTO targetSettingIncomeDTO) {
+        targetSettingIncomeDTO.setMoneyBeforeOne(BigDecimal.ZERO);
+        targetSettingIncomeDTO.setMoneyBeforeTwo(BigDecimal.ZERO);
+        targetSettingIncomeDTO.setMoneyBeforeThree(BigDecimal.ZERO);
+        targetSettingIncomeDTO.setConversionBeforeOne(BigDecimal.ZERO);
+        targetSettingIncomeDTO.setConversionBeforeTwo(BigDecimal.ZERO);
+        targetSettingIncomeDTO.setConversionBeforeThree(BigDecimal.ZERO);
     }
 
     /**
@@ -1563,6 +1581,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             TargetSettingRecoveryDTO recoveryDTO = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
             if (StringUtils.isNull(recoveryDTO)) {
                 recoveryDTO = new TargetSettingRecoveryDTO();
+                setRecoveryZero(recoveryDTO);
             }
             recoveryDTO.setAddRate(percentage);
             List<Map<String, Object>> recoveryList = setRecoveryList(zero, recoveryDTO);
@@ -1682,6 +1701,18 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingByIndicator.setTargetSettingTypeDTOS(targetSettingTypeDTOS);
         targetSettingByIndicator.setTargetSettingIndicatorDTOS(targetSettingIndicatorDTOS);
         return targetSettingByIndicator;
+    }
+
+    /**
+     * 为回款赋值
+     *
+     * @param recoveryDTO
+     */
+    private void setRecoveryZero(TargetSettingRecoveryDTO recoveryDTO) {
+        recoveryDTO.setBalanceReceivables(BigDecimal.ZERO);
+        recoveryDTO.setBaselineValue(0);
+        recoveryDTO.setImproveDays(0);
+        recoveryDTO.setAddRate(BigDecimal.ZERO);
     }
 
     /**
