@@ -92,7 +92,21 @@
 <!--    查询增人/减人工资包列表-->
     <select id="salaryPackageList"
             resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO">
-6
+        select
+            eb.department_id,
+            eb.official_rank_system_id,
+            ebd.employee_budget_details_id,
+            ebd.employee_budget_id,
+            ebd.official_rank,
+            ebd.number_last_year,
+            ebd.count_adjust,
+            ebd.average_adjust
+        from
+            employee_budget_details ebd
+                left join employee_budget eb
+                          on eb .employee_budget_id = ebd.employee_budget_id
+                              and eb.delete_flag =0
+                              and ebd.delete_flag =0
     </select>
     <!--新增人力预算明细表-->
     <insert id="insertEmployeeBudgetDetails" useGeneratedKeys="true" keyProperty="employeeBudgetDetailsId">

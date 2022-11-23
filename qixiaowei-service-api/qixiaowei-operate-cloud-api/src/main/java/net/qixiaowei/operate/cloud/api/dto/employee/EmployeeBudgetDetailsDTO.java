@@ -46,6 +46,24 @@ public class EmployeeBudgetDetailsDTO {
     * 人力预算ID
     */
     private  Long employeeBudgetId;
+
+    /**
+     * 预算部门ID
+     */
+    private  Long departmentId;
+    /**
+     * 预算部门名称
+     */
+    private  String departmentName;
+    /**
+     * 职级体系ID
+     */
+    private  Long officialRankSystemId;
+
+    /**
+     * 职级体系名称
+     */
+    private  String officialRankSystemName;
     /**
     * 岗位职级
     */

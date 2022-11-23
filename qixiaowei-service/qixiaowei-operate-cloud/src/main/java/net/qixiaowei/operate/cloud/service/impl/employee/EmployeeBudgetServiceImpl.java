@@ -200,7 +200,45 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         employeeBudget.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         //人力预算详情表
         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDTO.getEmployeeBudgetDetailsDTOS();
+        //封装主表上年期末人数 本年新增人数 平均新增数 封装详情表本年新增人数
+        packNum(employeeBudget, employeeBudgetDetailsDTOS);
+        try {
+            employeeBudgetMapper.insertEmployeeBudget(employeeBudget);
+        } catch (Exception e) {
+            throw new ServiceException("新增人力预算失败");
+        }
+
+        //插入人力详情表
+        List<EmployeeBudgetDetails> employeeBudgetDetails = packEmployeeBudgetDetailsList(employeeBudgetDetailsDTOS, employeeBudget);
+        //插入人力预算详情明细调整表
+        if (StringUtils.isNotEmpty(employeeBudgetDetails)) {
+            packEmployeeBudgetAdjustsList(employeeBudgetDetailsDTOS, employeeBudgetDetails);
+        }
+        employeeBudgetDTO.setEmployeeBudgetId(employeeBudget.getEmployeeBudgetId());
+        return employeeBudgetDTO;
+    }
+
+    /**
+     * 封装主表上年期末人数 本年新增人数 平均新增数 封装详情表本年新增人数
+     * @param employeeBudget
+     * @param employeeBudgetDetailsDTOS
+     */
+    private void packNum(EmployeeBudget employeeBudget, List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS) {
         if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
+            //人力预算详情表
+            for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetDetailsDTO.getEmployeeBudgetAdjustsDTOS();
+                if (StringUtils.isNotEmpty(employeeBudgetAdjustsDTOS)){
+                    //人力预算详情明细表
+                    for (EmployeeBudgetAdjustsDTO employeeBudgetAdjustsDTO : employeeBudgetAdjustsDTOS) {
+                        //本年新增人数
+                        Integer countAdjust = 0;
+                        //本年新增人数
+                        countAdjust = countAdjust + employeeBudgetAdjustsDTO.getNumberAdjust();
+                        employeeBudgetDetailsDTO.setCountAdjust(countAdjust);
+                    }
+                }
+            }
             //上年期末人数
             Integer amountLastYear = 0;
             //本年新增人数
@@ -219,22 +257,13 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             employeeBudget.setAmountAdjust(amountAdjust);
             employeeBudget.setAmountAverageAdjust(amountAverageAdjust);
         }
-        try {
-            employeeBudgetMapper.insertEmployeeBudget(employeeBudget);
-        } catch (Exception e) {
-            throw new ServiceException("新增人力预算失败");
-        }
-
-        //插入人力详情表
-        List<EmployeeBudgetDetails> employeeBudgetDetails = packEmployeeBudgetDetailsList(employeeBudgetDetailsDTOS, employeeBudget);
-        //插入人力预算详情明细调整表
-        if (StringUtils.isNotEmpty(employeeBudgetDetails)) {
-            packEmployeeBudgetAdjustsList(employeeBudgetDetailsDTOS, employeeBudgetDetails);
-        }
-        employeeBudgetDTO.setEmployeeBudgetId(employeeBudget.getEmployeeBudgetId());
-        return employeeBudgetDTO;
     }
 
+    /**
+     * 插入人力预算详情明细调整表
+     * @param employeeBudgetDetailsDTOS
+     * @param employeeBudgetDetails
+     */
     private void packEmployeeBudgetAdjustsList(List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS, List<EmployeeBudgetDetails> employeeBudgetDetails) {
         if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
             List<EmployeeBudgetAdjusts> employeeBudgetAdjustsList = new ArrayList<>();
@@ -545,6 +574,34 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      */
     @Override
     public List<EmployeeBudgetDetailsDTO> salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO) {
+        List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);
+        if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)){
+            //去重
+            List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getDepartmentId).distinct().collect(Collectors.toList());
+            //远程调用组织
+            if (StringUtils.isNotEmpty(collect)){
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
+                List<DepartmentDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    //远程赋值名称
+                    for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                        for (DepartmentDTO datum : data) {
+                            if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getDepartmentId()){
+                                employeeBudgetDetailsDTO.setDepartmentName(datum.getDepartmentName());
+                            }
+                        }
+                    }
+                }
+            }
+
+            //职级体系远程调用
+            R<OfficialRankSystemDTO> officialRankSystemDTOR = remoteOfficialRankSystemService.selectById(employeeBudgetDTO.getOfficialRankSystemId(), SecurityConstants.INNER);
+            OfficialRankSystemDTO data1 = officialRankSystemDTOR.getData();
+            if (StringUtils.isNotNull(data1)){
+                employeeBudgetDTO.setOfficialRankSystemName(data1.getOfficialRankSystemName());
+            }
+        }
+
         return employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);
     }
 }

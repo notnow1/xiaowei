@@ -51,6 +51,7 @@ public class OfficialRankSystemDTO {
      * 职级体系名称
      */
     private String officialRankSystemName;
+
     /**
      * 级别前缀编码
      */
@@ -113,6 +114,20 @@ public class OfficialRankSystemDTO {
      * 请求参数
      */
     private Map<String, Object> params;
+
+
+    /**
+     * 上年期末数
+     */
+    private Integer amountLastYear;
+    /**
+     * 职级名称
+     */
+    private String rankCodeName;
+    /**
+     * 职级级别
+     */
+    private Integer rankCode;
 
 }
 

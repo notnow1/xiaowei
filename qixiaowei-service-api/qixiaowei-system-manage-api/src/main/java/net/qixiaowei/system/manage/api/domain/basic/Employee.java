@@ -181,5 +181,10 @@ public class Employee extends BaseEntity {
      * 职级体系ID
      */
     private  Long officialRankSystemId;
+    /**
+     * 预算年度
+     */
+    private int planYear;
+
 }
 

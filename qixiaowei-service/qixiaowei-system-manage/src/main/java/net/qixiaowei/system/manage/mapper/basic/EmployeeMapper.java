@@ -175,8 +175,8 @@ public interface EmployeeMapper {
 
     /**
      * 新增人力预算上年期末数集合
-     * @param planYear
+     * @param employee
      * @return
      */
-    List<EmployeeDTO> selecTamountLastYearList(@Param("planYear") int planYear);
+    List<EmployeeDTO> selecTamountLastYearList(@Param("employee") Employee employee);
 }

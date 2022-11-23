@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import org.springframework.validation.annotation.Validated;
@@ -152,8 +153,8 @@ public interface IEmployeeService{
 
     /**
      * 新增人力预算上年期末数集合
-     * @param planYear
+     * @param employeeDTO
      * @return
      */
-    List<EmployeeDTO> selecTamountLastYearList(int planYear);
+    List<OfficialRankSystemDTO> selecTamountLastYearList(EmployeeDTO employeeDTO);
 }

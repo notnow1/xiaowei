@@ -16,6 +16,7 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
+import net.qixiaowei.system.manage.service.impl.basic.EmployeeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -44,12 +45,12 @@ public class EmployeeController extends BaseController {
 
 
     /**
-     * 新增人力预算上年期末数集合
+     * 新增人力预算上年期末数集合预制数据
      */
     //@RequiresPermissions("system:manage:employee:pageList")
-    @GetMapping("/amountLastYear/{planYear}")
-    public AjaxResult selecTamountLastYearList(@PathVariable int planYear) {
-        return AjaxResult.success(employeeService.selecTamountLastYearList(planYear));
+    @PostMapping("/amountLastYear")
+    public AjaxResult selecTamountLastYearList(@RequestBody EmployeeDTO employeeDTO) {
+        return AjaxResult.success(employeeService.selecTamountLastYearList(employeeDTO));
     }
     /**
      * 分页查询岗位薪酬报表
@@ -113,6 +114,9 @@ public class EmployeeController extends BaseController {
     @SneakyThrows
     @GetMapping("/export-template")
     public void exportUser(HttpServletResponse response) {
+        //示例数据
+        List<EmployeeExcel> employeeExcelList = new ArrayList<>();
+        EmployeeServiceImpl.packEmployeeExcel(employeeExcelList);
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
         List<List<String>> head = EmployeeImportListener.head(selectMap);
@@ -121,14 +125,13 @@ public class EmployeeController extends BaseController {
         String fileName = URLEncoder.encode("人员信息配置模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-
         EasyExcel.write(response.getOutputStream())
                 .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
                 .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
                 .sheet("人员信息配置")// 设置 sheet 的名字
                 // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).doWrite(EmployeeImportListener.templateData());
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).doWrite(EmployeeImportListener.dataList(employeeExcelList));
     }
     /**
      * 分页查询员工表列表

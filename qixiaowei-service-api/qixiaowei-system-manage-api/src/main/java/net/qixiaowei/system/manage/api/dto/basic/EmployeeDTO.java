@@ -309,5 +309,9 @@ public class EmployeeDTO implements Serializable {
      * 上年期末数
      */
     private Integer amountLastYear;
+    /**
+     * 预算年度
+     */
+    private int planYear;
 }
 
