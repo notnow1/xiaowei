@@ -103,5 +103,5 @@ public interface ConfigMapper {
      * @param configCode
      * @return
      */
-    int selectConfigValueByCode(@Param("configCode") String configCode);
+    Integer selectConfigValueByCode(@Param("configCode") String configCode);
 }

@@ -1348,6 +1348,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     targetSettingIncomeDTO.setTargetSettingIncomeId(targetSettingIncome.getTargetSettingIncomeId());
                     targetSettingIncomeService.updateTargetSettingIncome(targetSettingIncomeDTO);
                 }
+            } else {
+                throw new ServiceException("销售收入数据异常");
             }
         }
         return targetSetting;
@@ -1455,6 +1457,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         if (StringUtils.isEmpty(targetSettingIncomeDTOS)) {
             TargetSettingIncomeDTO targetSettingIncomeDTO = new TargetSettingIncomeDTO();
             setIncomeZero(targetSettingIncomeDTO);
+            targetSettingIncomeDTOS.add(targetSettingIncomeDTO);
         }
         TargetSettingIncomeDTO targetSettingIncomeDTO = targetSettingIncomeDTOS.get(0);
         List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();

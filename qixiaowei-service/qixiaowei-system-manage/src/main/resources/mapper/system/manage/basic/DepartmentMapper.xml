@@ -455,17 +455,25 @@
 <!--    批量查询部门表-->
     <select id="selectDepartmentByDepartmentIds"
             resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-        SELECT department_id, parent_department_id, ancestors, department_code, department_name, `level`,
-        department_leader_id, department_leader_post_id, examination_leader_id, department_importance_factor,
-        department_description, sort, status, delete_flag, create_by, create_time, update_by, update_time
-        FROM department
+        SELECT d.department_id, d.parent_department_id, d.ancestors, d.department_code, d.department_name, d.`level`,
+        d.department_leader_id, d.department_leader_post_id, d.examination_leader_id, d.department_importance_factor,
+        d.department_description, d.sort, d.status, d.delete_flag, d.create_by, d.create_time, d.update_by, d.update_time,
+        e.employee_name as department_leader_name,
+        ee.employee_name as examination_leader_name
+        FROM department d
+            LEFT JOIN employee e
+                ON d.department_leader_id = e.employee_id
+                    AND e.delete_flag =0
+            LEFT JOIN employee ee
+                ON d.examination_leader_id = ee.employee_id
+                    AND d.delete_flag =0
         where department_id in
         <foreach item="item"
                  collection="departmentIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        and delete_flag = 0
+        and d.delete_flag = 0
     </select>
 <!--    返回部门层级-->
     <select id="selectLevel" resultType="java.lang.Integer">
