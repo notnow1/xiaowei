@@ -22,7 +22,7 @@ steps:
         from_secret: deploy-pwd
       insecure: true
       repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
-      dockerfile: Dockerfile
+      dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
       tags:
         - latest-stg
 
