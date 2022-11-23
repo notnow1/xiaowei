@@ -10,7 +10,7 @@ steps:
       - name: cache
         path: /root/.m2
     commands:
-      - mvn clean package -Ptest -Dmaven.test.skip=true
+      - mvn -pl !qixiaowei-gen clean package -Ptest -DskipTests
 
 volumes:
   - name: cache
