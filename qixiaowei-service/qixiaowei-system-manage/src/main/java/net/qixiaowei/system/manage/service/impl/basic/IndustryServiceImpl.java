@@ -369,17 +369,16 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
         // todo 行业启用：1系统；2自定义
-        try {
-            int enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
-            if (enableType == 2) {
-                return selectIndustryTreeList(industryDTO);
-            } else {
-                IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
-                BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
-                return industryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO);
-            }
-        } catch (Exception e) {
+        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        if (StringUtils.isNull(enableType)) {
             throw new ServiceException("系统配置数据异常");
+        }
+        if (enableType == 2) {
+            return selectIndustryTreeList(industryDTO);
+        } else {
+            IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
+            BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
+            return industryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO);
         }
     }
 

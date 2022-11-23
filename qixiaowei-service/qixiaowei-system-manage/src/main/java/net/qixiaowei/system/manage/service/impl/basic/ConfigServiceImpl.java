@@ -116,7 +116,7 @@ public class ConfigServiceImpl implements IConfigService {
      * @return
      */
     @Override
-    public int getValueByCode(String configCode) {
+    public Integer getValueByCode(String configCode) {
         return configMapper.selectConfigValueByCode(configCode);
     }
 

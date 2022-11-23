@@ -107,5 +107,5 @@ public interface IConfigService {
      * @param configCode
      * @return
      */
-    int getValueByCode(String configCode);
+    Integer getValueByCode(String configCode);
 }
