@@ -42,6 +42,15 @@ public class EmployeeController extends BaseController {
     @Autowired
     private IEmployeeService employeeService;
 
+
+    /**
+     * 新增人力预算上年期末数集合
+     */
+    //@RequiresPermissions("system:manage:employee:pageList")
+    @GetMapping("/amountLastYear/{planYear}")
+    public AjaxResult selecTamountLastYearList(@PathVariable int planYear) {
+        return AjaxResult.success(employeeService.selecTamountLastYearList(planYear));
+    }
     /**
      * 分页查询岗位薪酬报表
      */

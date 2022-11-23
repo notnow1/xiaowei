@@ -75,7 +75,15 @@ public class EmployeeBudgetDetailsDTO {
      * 年度平均人数
      */
     @NotNull(message = "年度平均人数不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
-    private Integer annualAverageNUm;
+    private Integer annualAverageNum;
+    /**
+     * 年度规划人数
+     */
+    private Integer annualPlanningNum;
+    /**
+     * 年末总计
+     */
+    private Integer endYearSum;
 
     /**
      * 人力预算调整表集合

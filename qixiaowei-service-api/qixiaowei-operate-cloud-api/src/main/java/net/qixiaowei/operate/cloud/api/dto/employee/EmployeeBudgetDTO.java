@@ -4,15 +4,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 
 /**
 * 人力预算表
@@ -94,7 +92,7 @@ public class EmployeeBudgetDTO {
     /**
      * 年度平均人数
      */
-    private Integer annualAverageNUm;
+    private Integer annualAverageNum;
     /**
     * 删除标记:0未删除;1已删除
     */

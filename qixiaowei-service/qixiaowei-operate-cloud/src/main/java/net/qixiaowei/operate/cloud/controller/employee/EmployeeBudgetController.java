@@ -10,6 +10,7 @@ import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetExcel;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetImportListener;
 import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
@@ -43,6 +44,17 @@ public class EmployeeBudgetController extends BaseController
 
     @Autowired
     private IEmployeeBudgetService employeeBudgetService;
+
+
+    /**
+     * 查询增人/减人工资包列表
+     */
+    //@RequiresPermissions("operate:cloud:employeeBudget:list")
+    @GetMapping("/salaryPackageList")
+    public AjaxResult salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO){
+        List<EmployeeBudgetDetailsDTO> list = employeeBudgetService.salaryPackageList(employeeBudgetDTO);
+        return AjaxResult.success(list);
+    }
 
 
 

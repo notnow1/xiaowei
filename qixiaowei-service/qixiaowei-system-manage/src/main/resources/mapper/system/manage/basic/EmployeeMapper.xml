@@ -173,7 +173,7 @@
 
         where
         e.delete_flag = 0
-        <if test="employee.employeeIds  != null and employee.employeeIds .size()!=0">
+        <if test="employee.employeeIds  != null and employee.employeeIds.size()!=0">
             and e.employee_id in
             <foreach item="item"
                      collection="employee.employeeIds"
@@ -581,6 +581,24 @@
         <if test="employee.officialRankSystemId != null">
             and concat(ors.rank_prefix_code, e.employee_rank) =#{employee.employeeRankName}
         </if>
+    </select>
+    <!--    新增人力预算上年期末数集合-->
+    <select id="selecTamountLastYearList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT
+            concat(ors.rank_prefix_code, e.employee_rank) as employee_rank_name,
+            case when date_format(now(),'%Y') 	&lt;   #{planYear} then sum(employment_status=1)
+                 when date_format(now(),'%Y') = #{planYear} and date_format(now(),'%m') 	&gt;0 and date_format(now(),'%m') 	&lt;  7  then sum(case when date_format(departure_date,'%Y')	&lt;  #{planYear}-1 then employment_status=1 end)
+                 when date_format(now(),'%Y') = #{planYear} and date_format(now(),'%m') 	&gt;6 and date_format(now(),'%m') 	&lt;  13  then sum( employment_status=1)
+                end as amount_last_year
+        FROM
+            employee e
+                left join post p
+                          on p.post_id =e.employee_post_id
+                              and p.delete_flag =0
+                left join official_rank_system ors
+                          on p.official_rank_system_id = ors.official_rank_system_id
+                              and ors.delete_flag = 0
+        group by employee_department_id ,employee_post_id ,employee_rank
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">

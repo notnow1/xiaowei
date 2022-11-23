@@ -494,6 +494,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return employeeMapper.selectPostSalaryReportList(employee);
     }
 
+    /**
+     * 新增人力预算上年期末数集合
+     * @param planYear
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> selecTamountLastYearList(int planYear) {
+        return employeeMapper.selecTamountLastYearList(planYear);
+    }
+
 
     /**
      * 逻辑删除员工表信息
