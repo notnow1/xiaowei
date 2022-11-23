@@ -1,0 +1,10 @@
+kind: pipeline
+type: docker
+name: qixiaowei-cloud-stg
+
+steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    commands:
+      - mvn clean package -Ptest -Dmaven.test.skip=true
