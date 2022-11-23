@@ -390,7 +390,10 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public IndustryDTO getEnableType(IndustryDTO industryDTO) {
         // todo 0-默认,1-自定义
-        int enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        if (StringUtils.isNull(enableType)) {
+            throw new ServiceException("系统配置数据异常");
+        }
         industryDTO.setConfigValue(enableType);
         return industryDTO;
     }
