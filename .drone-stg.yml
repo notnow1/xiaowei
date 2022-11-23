@@ -12,6 +12,20 @@ steps:
     commands:
       - mvn clean package -Ptest -DskipTests -pl !qixiaowei-gen
 
+  - name: builid qixiaowei-file image
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
+      dockerfile: Dockerfile
+      tags:
+        - latest-stg
+
 volumes:
   - name: cache
     host:
