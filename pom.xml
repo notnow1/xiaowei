@@ -16,7 +16,7 @@
         <module>qixiaowei-service-api</module>
         <module>qixiaowei-gateway</module>
         <module>qixiaowei-auth</module>
-         <module>qixiaowei-gen</module>
+        <!--<module>qixiaowei-gen</module>-->
         <module>qixiaowei-integration</module>
     </modules>
 
