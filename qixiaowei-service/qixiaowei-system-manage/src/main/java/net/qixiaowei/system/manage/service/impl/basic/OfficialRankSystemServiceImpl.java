@@ -213,6 +213,17 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     }
 
     /**
+     * 通过Id查找职级上下限
+     *
+     * @param officilRankSystemId
+     * @return
+     */
+    @Override
+    public List<Map<String, String>> selectOfficialRankMapBySystemId(Long officilRankSystemId) {
+        return null;
+    }
+
+    /**
      * 拼接职级字段
      *
      * @param officialRankSystemDTOS 职级体系

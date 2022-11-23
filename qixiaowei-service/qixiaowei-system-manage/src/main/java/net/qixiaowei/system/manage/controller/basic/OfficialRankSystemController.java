@@ -117,4 +117,16 @@ public class OfficialRankSystemController extends BaseController {
     public AjaxResult selectRankById(@PathVariable Long officialRankSystemId) {
         return AjaxResult.success(officialRankSystemService.selectOfficialRankByOfficialRankSystemId(officialRankSystemId));
     }
+
+    /**
+     * 通过Id查找职级上下限
+     *
+     * @param officialRankSystemId
+     * @return
+     */
+    @Log(title = "通过Id查找职级上下限")
+    @GetMapping("/selectRankMapById/{officialRankSystemId}")
+    public AjaxResult selectRankMapById(@PathVariable Long officialRankSystemId) {
+        return AjaxResult.success(officialRankSystemService.selectOfficialRankMapBySystemId(officialRankSystemId));
+    }
 }

@@ -141,4 +141,12 @@ public interface IOfficialRankSystemService {
      * @return
      */
     List<String> selectOfficialRankByOfficialRankSystemId(Long officialRankSystemId);
+
+    /**
+     * 通过Id查找职级上下限
+     *
+     * @param officilRankSystemId
+     * @return
+     */
+    List<Map<String, String>> selectOfficialRankMapBySystemId(Long officilRankSystemId);
 }
