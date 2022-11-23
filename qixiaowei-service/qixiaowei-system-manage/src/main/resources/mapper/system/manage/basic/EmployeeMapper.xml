@@ -173,6 +173,14 @@
 
         where
         e.delete_flag = 0
+        <if test="employee.employeeIds  != null and employee.employeeIds .size()!=0">
+            and e.employee_id in
+            <foreach item="item"
+                     collection="employee.employeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="employee.residentCityName != null and employee.residentCityName != ''">
             and concat(r.province_name, r.city_name, r.district_name) like '%${employee.residentCityName}%'
         </if>

@@ -64,6 +64,10 @@ public class EmployeeDTO implements Serializable {
     private Long employeeId;
 
     /**
+     * 人员ID集合
+     */
+    private List<Long> employeeIds;
+    /**
      * 用户账号
      */
     private String userName;

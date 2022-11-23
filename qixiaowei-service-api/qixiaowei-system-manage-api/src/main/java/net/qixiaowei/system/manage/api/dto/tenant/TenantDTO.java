@@ -52,6 +52,10 @@ public class TenantDTO {
     @NotNull(message = "租户ID不能为空",groups = {TenantDTO.DeleteTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
     private  Long tenantId;
     /**
+     * 租户ID集合
+     */
+    private  List<Long> tenantIds;
+    /**
     * 租户编码
     */
     private  String tenantCode;
