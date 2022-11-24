@@ -38,7 +38,7 @@ steps:
         from_secret: host-pwd-stg
       port: 22
       script:
-        - kubectl apply -f deploy/deploy-stg.yaml
+        - kubectl apply -f http://172.31.0.156/backend/qixiaowei-cloud/-/blob/main/deploy/stg/qixiaowei-gateway.yaml
 
 volumes:
   - name: cache
