@@ -11,11 +11,6 @@ steps:
       path: /root/.m2
   commands:
     - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
-  depends_on:
-    - clone
-  when:
-    status:
-      - success
 
 - name: build-qixiaowei-gateway
   pull: if-not-exists
