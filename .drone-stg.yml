@@ -4,14 +4,12 @@ name: qixiaowei-gateway-pipeline
 
 steps:
   - name: deploy
-    image: zc2638/drone-k8s-plugin
-    pull: if-not-exists
+    image: quay.io/honestbee/drone-kubernetes
     settings:
-      k8s_server: https://172.31.0.156:6443
-      k8s_token:
-        from_secret: k8s_token-stg
-      k8s_ca_crt:
-        from_secret: k8s_ca_crt-stg
-      k8s_skip_tls: false
+      kubernetes_server: https://172.31.0.156:6443
+      kubernetes_token: ZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNklqWXhiMFZtYzJ4U05ubDNXRWhsYkdoaFpuTlJZVkJhTWxrMWJGUk9PRzFGWkhoQ09Ea3RSMFZGTWtraWZRLmV5SnBjM01pT2lKcmRXSmxjbTVsZEdWekwzTmxjblpwWTJWaFkyTnZkVzUwSWl3aWEzVmlaWEp1WlhSbGN5NXBieTl6WlhKMmFXTmxZV05qYjNWdWRDOXVZVzFsYzNCaFkyVWlPaUp4YVhocFlXOTNaV2t0YzNSbk1TSXNJbXQxWW1WeWJtVjBaWE11YVc4dmMyVnlkbWxqWldGalkyOTFiblF2YzJWamNtVjBMbTVoYldVaU9pSmtaV1poZFd4MExYUnZhMlZ1TFdJNGNqVnhJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5OXpaWEoyYVdObFlXTmpiM1Z1ZEM5elpYSjJhV05sTFdGalkyOTFiblF1Ym1GdFpTSTZJbVJsWm1GMWJIUWlMQ0pyZFdKbGNtNWxkR1Z6TG1sdkwzTmxjblpwWTJWaFkyTnZkVzUwTDNObGNuWnBZMlV0WVdOamIzVnVkQzUxYVdRaU9pSTJZVE5qWVRFM01pMHpaREppTFRRMU5USXRZVGxrTVMweU9UQTRZekZrWXpZNVl6Z2lMQ0p6ZFdJaU9pSnplWE4wWlcwNmMyVnlkbWxqWldGalkyOTFiblE2Y1dsNGFXRnZkMlZwTFhOMFp6RTZaR1ZtWVhWc2RDSjkuY0lzUUlJMUNJNEtrTktNMGJSbHNxcWdpMnNlQ0xmWDFUTDB4OFRPWGNPLUt5eEVtRUlsaFlWbk5naWlCQjE2Vm52MEo5aWFubGpYTTdYRGhlbUE3ZlFGLUhlZFROandwenhnenJZU052SXM4MHA4Vjl6M1FSQ3EyYTFnYWRfZGttNTN1MnJrOTVXVVNPZU9hNWtYa1owbHpUNnJVY1p0a09ZWHJmM3dTZjZadlFZYldkRG5tVG96U3NDdlUxTDA3OGRYNS0tb096MjM0WEMyTjZaeVlfLTEzaXduU3Q2RDVBQktFbC1sOWxJbENBVmk1WGdnVmJDbGtBMjEyQ083ejNQaTg2d3lIRUhTbUdnNk5EZGx2UUxlUFJzcklzZVF0WDJqRTVlTDFaY0x0ZXlpdERLb0dEMktnMnpzbHdrSTN3NktBSmg2RXhReVVwNkc3dUZFSlFB
       namespace: qixiaowei-stg1
-      app_name: qixiaowei-gateway
+      deployment: qixiaowei-gateway
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
+      container: qixiaowei-gateway
+      tag: v1.0.65
