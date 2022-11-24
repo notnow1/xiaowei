@@ -357,6 +357,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         }
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();
         BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
+        if (rankPrefixCode.length() == 0) {
+            officialRankSystem.setRankPrefixCode(null);
+        }
         officialRankSystem.setUpdateTime(DateUtils.getNowDate());
         officialRankSystem.setUpdateBy(SecurityUtils.getUserId());
         officialRankSystemMapper.updateOfficialRankSystem(officialRankSystem);

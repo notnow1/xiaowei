@@ -119,7 +119,7 @@
         <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
             official_rank_system_name=#{officialRankSystem.officialRankSystemName},
         </if>
-        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">
+        <if test="true">
             rank_prefix_code=#{officialRankSystem.rankPrefixCode},
         </if>
         <if test="officialRankSystem.rankStart != null">
