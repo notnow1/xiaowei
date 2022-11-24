@@ -574,7 +574,6 @@ CREATE TABLE performance_appraisal_objects(
 )  COMMENT = '绩效考核对象表';
 
 
-
 CREATE TABLE performance_appraisal_items(
     perform_appraisal_items_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     perform_appraisal_objects_id BIGINT NOT NULL   COMMENT '绩效考核对象ID' ,
@@ -691,6 +690,7 @@ CREATE TABLE dept_bonus_budget_details(
 
 CREATE TABLE dept_bonus_budget_items(
     dept_bonus_budget_items_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    dept_bonus_budget_id BIGINT NOT NULL   COMMENT '部门奖金包预算ID' ,
     dept_bonus_budget_details_id BIGINT NOT NULL   COMMENT '部门奖金预算明细ID' ,
     salary_item_id BIGINT NOT NULL   COMMENT '工资项ID' ,
     bonus_percentage DECIMAL(5,2)    COMMENT '奖金占比' ,
@@ -701,3 +701,52 @@ CREATE TABLE dept_bonus_budget_items(
     update_time TIMESTAMP    COMMENT '更新时间' ,
     PRIMARY KEY (dept_bonus_budget_items_id)
 )  COMMENT = '部门奖金预算项目表';
+
+
+CREATE TABLE bonus_pay_application(
+    bonus_pay_application_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    salary_item_id BIGINT NOT NULL   COMMENT '奖项类别,工资条ID' ,
+    award_code VARCHAR(64) NOT NULL   COMMENT '奖项编码' ,
+    award_name VARCHAR(32)    COMMENT '奖项名称' ,
+    award_year INT    COMMENT '获奖时间-年' ,
+    award_month INT    COMMENT '获奖时间-月' ,
+    apply_department_id BIGINT    COMMENT '申请部门ID' ,
+    award_total_amount DECIMAL(18,2)    COMMENT '奖项总金额' ,
+    bonus_pay_object TINYINT    COMMENT '奖金发放对象:1部门;2员工;3部门+员工' ,
+    award_description VARCHAR(512)    COMMENT '奖项事迹描述' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (bonus_pay_application_id)
+)  COMMENT = '奖金发放申请表';
+
+
+CREATE TABLE bonus_pay_budget_dept(
+    bonus_pay_budget_dept_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    bonus_pay_application_id BIGINT NOT NULL   COMMENT '奖金发放申请ID' ,
+    department_id BIGINT NOT NULL   COMMENT '部门ID' ,
+    bonus_percentage DECIMAL(5,2)    COMMENT '奖金比例' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (bonus_pay_budget_dept_id)
+)  COMMENT = '奖金发放预算部门表';
+
+
+CREATE TABLE bonus_pay_objects(
+    bonus_pay_objects_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    bonus_pay_application_id BIGINT NOT NULL   COMMENT '奖金发放申请ID' ,
+    bonus_pay_object TINYINT NOT NULL   COMMENT '奖金发放对象:1部门;2员工' ,
+    bonus_pay_object_id BIGINT NOT NULL   COMMENT '奖金发放对象ID' ,
+    award_amount DECIMAL(18,2)    COMMENT '奖项金额' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (bonus_pay_objects_id)
+)  COMMENT = '奖金发放对象表';
