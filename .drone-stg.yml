@@ -15,5 +15,5 @@ steps:
       k8s_skip_tls: false
       namespace: qixiaowei-stg1
       templates:
-        - deploy/deploy-stg.yaml
+        - /root/deploy/deploy-stg.yaml
       app_name: qixiaowei-gateway
