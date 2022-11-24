@@ -1875,51 +1875,86 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         List<TargetSettingRecoveriesDTO> targetSettingTypeDTOS = targetSettingDTO.getTargetSettingTypeDTOS();
         List<Map<String, Object>> targetSettingRecoveryList = targetSettingDTO.getTargetSettingRecoveryList();
         TargetSettingRecoveryDTO targetSettingRecoveryDTO = recoveryListToDto(targetSettingRecoveryList, targetSettingDTO);
-        targetSettingDTO.setSort(0);
-        targetSettingDTO.setTargetSettingType(3);
-        targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
         targetSettingDTO.setPercentage(targetSettingRecoveryDTO.getAddRate());
         TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 3);
         Long targetSettingId;
-        if (StringUtils.isNull(targetSettingByIndicator)) {
+        if (StringUtils.isNull(targetSettingByIndicator)) {//新增
             TargetSettingRecoveriesDTO recoveriesDTO = targetSettingIndicatorDTOS.stream().filter(f -> f.getPrefixType().equals("回款总目标")).collect(Collectors.toList()).get(0);
-            targetSettingByIndicator = new TargetSettingDTO();
-            targetSettingByIndicator.setTargetValue(recoveriesDTO.getTargetValue());
-            targetSettingByIndicator.setGuaranteedValue(recoveriesDTO.getGuaranteedValue());
-            targetSettingByIndicator.setChallengeValue(recoveriesDTO.getChallengeValue());
+            targetSettingDTO.setSort(0);
+            targetSettingDTO.setTargetSettingType(3);
+            targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
+            targetSettingDTO.setTargetValue(recoveriesDTO.getTargetValue());
+            targetSettingDTO.setGuaranteedValue(recoveriesDTO.getGuaranteedValue());
+            targetSettingDTO.setChallengeValue(recoveriesDTO.getChallengeValue());
             TargetSetting targetSetting = insertTargetSetting(targetSettingDTO);
             targetSettingId = targetSetting.getTargetSettingId();
-        } else {
+            // recovery
+            targetSettingRecoveryDTO.setTargetSettingId(targetSettingId);
+            targetSettingRecoveryService.insertTargetSettingRecovery(targetSettingRecoveryDTO);
+            // recoveries
+            List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
+            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
+            targetSettingDTO.setTargetSettingId(targetSettingId);
+            return targetSettingDTO;
+        } else {//更新
             targetSettingId = targetSettingByIndicator.getTargetSettingId();
             targetSettingDTO.setTargetSettingId(targetSettingId);
             saveTargetSetting(targetSettingDTO);
-        }
-        TargetSettingRecoveryDTO recovery = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
-        targetSettingRecoveryDTO.setTargetSettingId(targetSettingId);
-        if (StringUtils.isNull(recovery)) {
-            TargetSettingRecoveryDTO targetSettingRecovery = targetSettingRecoveryService.insertTargetSettingRecovery(targetSettingRecoveryDTO);
-        } else {
-            Long targetSettingRecoveriesId = recovery.getTargetSettingRecoveriesId();
-            targetSettingRecoveryDTO.setTargetSettingRecoveriesId(targetSettingRecoveriesId);
-            targetSettingRecoveryService.updateTargetSettingRecovery(targetSettingRecoveryDTO);
-        }
-        List<TargetSettingRecoveriesDTO> recoveries = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
-        List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
-        if (StringUtils.isNotEmpty(recoveries) && recoveries.size() > 4) {
-            for (TargetSettingRecoveriesDTO recoveriesDTO : recoveries) {
-                for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : recoveryDTO) {
-                    if (recoveriesDTO.getType().equals(targetSettingRecoveriesDTO.getType())) {
-                        targetSettingRecoveriesDTO.setTargetSettingRecoveriesId(recoveriesDTO.getTargetSettingRecoveriesId());
-                        break;
+            // recovery
+            TargetSettingRecoveryDTO recovery = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
+            if (StringUtils.isNull(recovery)) {
+                throw new ServiceException("更新数据异常 请联系管理员");
+            } else {
+                Long targetSettingRecoveriesId = recovery.getTargetSettingRecoveriesId();
+                targetSettingRecoveryDTO.setTargetSettingRecoveriesId(targetSettingRecoveriesId);
+                targetSettingRecoveryService.updateTargetSettingRecovery(targetSettingRecoveryDTO);
+            }
+            // recoveries
+            List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
+            List<TargetSettingRecoveriesDTO> recoveries = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
+            if (StringUtils.isEmpty(recoveries) || recoveries.size() < 5) {
+                throw new ServiceException("更新数据异常 请联系管理员");
+            } else {// 新增
+                for (TargetSettingRecoveriesDTO recoveriesDTO : recoveries) {
+                    for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : recoveryDTO) {
+                        if (recoveriesDTO.getType().equals(targetSettingRecoveriesDTO.getType())) {
+                            targetSettingRecoveriesDTO.setTargetSettingRecoveriesId(recoveriesDTO.getTargetSettingRecoveriesId());
+                            break;
+                        }
                     }
                 }
+                targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
             }
-            targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
-        } else {// 新增
-            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
+            targetSettingDTO.setTargetSettingId(targetSettingId);
+            return targetSettingDTO;
         }
-        targetSettingDTO.setTargetSettingId(targetSettingId);
-        return targetSettingDTO;
+//
+//        TargetSettingRecoveryDTO recovery = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
+//        targetSettingRecoveryDTO.setTargetSettingId(targetSettingId);
+//        if (StringUtils.isNull(recovery)) {
+//            targetSettingRecoveryService.insertTargetSettingRecovery(targetSettingRecoveryDTO);
+//        } else {
+//            Long targetSettingRecoveriesId = recovery.getTargetSettingRecoveriesId();
+//            targetSettingRecoveryDTO.setTargetSettingRecoveriesId(targetSettingRecoveriesId);
+//            targetSettingRecoveryService.updateTargetSettingRecovery(targetSettingRecoveryDTO);
+//        }
+//        List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
+//        List<TargetSettingRecoveriesDTO> recoveries = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
+//        if (StringUtils.isNotEmpty(recoveries) && recoveries.size() > 4) {
+//            for (TargetSettingRecoveriesDTO recoveriesDTO : recoveries) {
+//                for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : recoveryDTO) {
+//                    if (recoveriesDTO.getType().equals(targetSettingRecoveriesDTO.getType())) {
+//                        targetSettingRecoveriesDTO.setTargetSettingRecoveriesId(recoveriesDTO.getTargetSettingRecoveriesId());
+//                        break;
+//                    }
+//                }
+//            }
+//            targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
+//        } else {// 新增
+//            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
+//        }
+//        targetSettingDTO.setTargetSettingId(targetSettingId);
+//        return targetSettingDTO;
     }
 
     /**
