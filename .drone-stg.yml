@@ -28,6 +28,22 @@ steps:
     depends_on:
       - complie
 
+- name: build-qixiaowei-auth
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    registry: harbor.qixiaowei.net
+    username: deploy
+    password:
+      from_secret: deploy-pwd
+    insecure: true
+    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
+    dockerfile: qixiaowei-gateway/Dockerfile
+    tags:
+      - latest
+    depends_on:
+      - complie
+
 - name: scp
   pull: if-not-exists
   image: appleboy/drone-scp
@@ -46,6 +62,7 @@ steps:
     overwrite: true
     depends_on:
       - build-qixiaowei-gateway
+      - build-qixiaowei-auth
 
 - name: deploy
   pull: if-not-exists
