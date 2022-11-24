@@ -30,7 +30,7 @@ spec:
         - name: harbor-deploy
       containers:
         - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           name: qixiaowei-auth
           ports:
             - containerPort: 8080
