@@ -56,7 +56,7 @@ steps:
       from_secret: deploy-pwd
     insecure: true
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage
-    dockerfile: qixiaowei-system-manage/Dockerfile
+    dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
     tags:
       - latest
   depends_on:
@@ -72,7 +72,7 @@ steps:
       from_secret: deploy-pwd
     insecure: true
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-operate-cloud
-    dockerfile: qixiaowei-operate-cloud/Dockerfile
+    dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
     tags:
       - latest
   depends_on:
@@ -88,7 +88,7 @@ steps:
       from_secret: deploy-pwd
     insecure: true
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-file
-    dockerfile: qixiaowei-file/Dockerfile
+    dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
     tags:
       - latest
   depends_on:
