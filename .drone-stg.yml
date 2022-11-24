@@ -26,7 +26,7 @@ steps:
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
       - latest
-  depends_on: ["complie"]
+  depends_on: ["compile"]
 
 - name: build-qixiaowei-auth
   pull: if-not-exists
@@ -41,7 +41,7 @@ steps:
     dockerfile: qixiaowei-auth/Dockerfile
     tags:
       - latest
-  depends_on: ["complie"]
+  depends_on: ["compile"]
 
 - name: scp
   pull: if-not-exists
