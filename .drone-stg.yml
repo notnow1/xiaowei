@@ -11,6 +11,8 @@ steps:
       path: /root/.m2
   commands:
     - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
+  depends_on:
+    - clone
 
 - name: build-qixiaowei-gateway
   pull: if-not-exists
@@ -27,9 +29,6 @@ steps:
       - latest
     depends_on:
       - compile
-    when:
-      status:
-        - success
 
 - name: build-qixiaowei-auth
   pull: if-not-exists
@@ -46,9 +45,6 @@ steps:
       - latest
     depends_on:
       - compile
-    when:
-      status:
-        - success
 
 - name: scp
   pull: if-not-exists
@@ -69,9 +65,6 @@ steps:
     depends_on:
       - build-qixiaowei-gateway
       - build-qixiaowei-auth
-    when:
-      status:
-        - success
 
 - name: deploy
   pull: if-not-exists
@@ -88,9 +81,6 @@ steps:
       - kubectl apply -f k8s/deploy/stg/*.yaml
     depends_on:
       - scp
-    when:
-      status:
-        - success
 
 volumes:
   - name: cache
