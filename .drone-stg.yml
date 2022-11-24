@@ -25,8 +25,6 @@ steps:
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
       - latest
-    depends_on:
-    - complie
 
 - name: build-qixiaowei-auth
   pull: if-not-exists
@@ -41,8 +39,6 @@ steps:
     dockerfile: qixiaowei-auth/Dockerfile
     tags:
       - latest
-    depends_on:
-    - complie
 
 - name: scp
   pull: if-not-exists
@@ -61,7 +57,6 @@ steps:
     rm: true
     overwrite: true
     depends_on:
-    - compile
     - build-qixiaowei-gateway
     - build-qixiaowei-auth
 
@@ -79,10 +74,8 @@ steps:
     script:
       - kubectl apply -f k8s/deploy/stg/*.yaml
     depends_on:
-    - compile
     - build-qixiaowei-gateway
     - build-qixiaowei-auth
-    - scp
 
 volumes:
   - name: cache
