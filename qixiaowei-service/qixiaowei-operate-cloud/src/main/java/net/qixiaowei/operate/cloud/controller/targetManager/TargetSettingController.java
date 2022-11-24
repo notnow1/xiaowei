@@ -241,9 +241,9 @@ public class TargetSettingController extends BaseController {
      * 新增目标制定
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:add")
-    @Log(title = "保存销售收入目标制定", businessType = BusinessType.INSERT)
+    @Log(title = "保存销售收入目标制定", businessType = BusinessType.UPDATE)
     @PostMapping("/save/income")
-    public AjaxResult saveIncome(@RequestBody TargetSettingDTO targetSettingDTO) {
+    public AjaxResult saveIncome(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveIncomeTargetSetting(targetSettingDTO));
     }
 
@@ -253,7 +253,7 @@ public class TargetSettingController extends BaseController {
 //    @RequiresPermissions("operate:cloud:targetSetting:add")
     @Log(title = "保存销售回款目标制定", businessType = BusinessType.UPDATE)
     @PostMapping("/save/recovery")
-    public AjaxResult saveRecoveries(@RequestBody TargetSettingDTO targetSettingDTO) {
+    public AjaxResult saveRecoveries(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveRecoveryTargetSetting(targetSettingDTO));
     }
 

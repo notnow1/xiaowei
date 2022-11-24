@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import net.qixiaowei.operate.cloud.api.vo.TargetSettingIncomeVO;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -45,12 +45,10 @@ public class TargetSettingDTO {
     /**
      * ID
      */
-    @NotBlank(message = "目标制定ID不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private Long targetSettingId;
     /**
      * 目标制定类型:0自定义;1销售订单;2销售收入;3销售回款
      */
-    @NotBlank(message = "目标制定类型不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private Integer targetSettingType;
     /**
      * 指标ID
@@ -83,27 +81,26 @@ public class TargetSettingDTO {
     /**
      * 目标年度
      */
-    @NotBlank(message = "目标年度不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
+    @NotNull(message = "目标年度不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private Integer targetYear;
     /**
      * 百分比(%)
      */
-    @NotBlank(message = "百分比(%)不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private BigDecimal percentage;
     /**
      * 挑战值
      */
-    @NotBlank(message = "挑战值不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
+    @NotNull(message = "挑战值不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private BigDecimal challengeValue;
     /**
      * 目标值
      */
-    @NotBlank(message = "目标值不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
+    @NotNull(message = "目标值不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private BigDecimal targetValue;
     /**
      * 保底值
      */
-    @NotBlank(message = "保底值不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
+    @NotNull(message = "保底值不能为空", groups = {TargetSettingDTO.class, TargetSettingDTO.UpdateTargetSettingDTO.class})
     private BigDecimal guaranteedValue;
     /**
      * 年度实际值

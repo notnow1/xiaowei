@@ -1191,13 +1191,21 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
 
     /**
      * 计算年度增长率
+     * （本行年度实际值-去年实际值）/去年实际值，
      *
      * @param targetSettingOrderDTOS
      */
     private static void calculateGrowthRate(List<TargetSettingOrderDTO> targetSettingOrderDTOS) {
-        BigDecimal beforeRate = new BigDecimal(0);
         if (StringUtils.isNotEmpty(targetSettingOrderDTOS)) {
-            for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDTOS) {
+            for (int i = 0; i < targetSettingOrderDTOS.size() - 1; i++) {
+                TargetSettingOrderDTO targetSettingOrderDTO = targetSettingOrderDTOS.get(i);
+                TargetSettingOrderDTO targetSettingLastDTO = targetSettingOrderDTOS.get(i + 1);
+                BigDecimal beforeRate;
+                if (StringUtils.isNotNull(targetSettingLastDTO)) {
+                    beforeRate = targetSettingLastDTO.getHistoryActual();
+                } else {
+                    beforeRate = BigDecimal.ZERO;
+                }
                 BigDecimal historyActual = targetSettingOrderDTO.getHistoryActual();
                 if (StringUtils.isNotNull(historyActual)) {
                     BigDecimal subtract = historyActual.subtract(beforeRate);
@@ -1208,9 +1216,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                         divide = BigDecimal.ZERO;
                     }
                     targetSettingOrderDTO.setGrowthRate(divide);
-                    beforeRate = targetSettingOrderDTO.getHistoryActual();
                 } else {
-                    beforeRate = new BigDecimal(0);
+                    targetSettingOrderDTO.setGrowthRate(BigDecimal.ZERO);
                 }
             }
         }
@@ -1909,7 +1916,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
             targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
         } else {// 新增
-//            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
+            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
         }
         targetSettingDTO.setTargetSettingId(targetSettingId);
         return targetSettingDTO;
