@@ -543,6 +543,7 @@ CREATE TABLE performance_appraisal(
     cycle_number INT    COMMENT '考核周期' ,
     appraisal_start_date DATE    COMMENT '考核开始日期' ,
     appraisal_end_date DATE    COMMENT '考核结束日期' ,
+    filing_date DATE    COMMENT '归档日期' ,
     appraisal_flow TINYINT    COMMENT '考核流程:1系统流程;2仅导入结果' ,
     appraisal_object TINYINT    COMMENT '考核对象:1组织;2员工' ,
     appraisal_status TINYINT    COMMENT '考核状态:1制定目标;2评议;3排名;4归档' ,
@@ -562,7 +563,6 @@ CREATE TABLE performance_appraisal_objects(
     appraisal_principal_id BIGINT    COMMENT '考核负责人ID' ,
     evaluation_score DECIMAL(5,2)    COMMENT '评议分数' ,
     appraisal_result_id BIGINT    COMMENT '考核结果(绩效等级ID)' ,
-    filing_date DATE    COMMENT '归档日期' ,
     self_defined_columns_flag TINYINT    COMMENT '自定义列标记:0否;1是' ,
     appraisal_object_status TINYINT    COMMENT '考核对象状态:1制定目标;2评议;3排名;4归档' ,
     delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
@@ -572,6 +572,7 @@ CREATE TABLE performance_appraisal_objects(
     update_time TIMESTAMP    COMMENT '更新时间' ,
     PRIMARY KEY (perform_appraisal_objects_id)
 )  COMMENT = '绩效考核对象表';
+
 
 
 CREATE TABLE performance_appraisal_items(
