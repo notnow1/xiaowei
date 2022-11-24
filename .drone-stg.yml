@@ -129,7 +129,7 @@ steps:
       from_secret: host-pwd-stg
     port: 22
     script:
-      - kubectl apply -f k8s/deploy/stg/*.yaml
+      - kubectl apply -k k8s/deploy/stg/
   depends_on:
     - scp
 

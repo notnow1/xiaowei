@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: qixiaowei-stg1
+
+resources:
+  - qixiaowei-gateway.yaml
+  - qixiaowei-auth.yaml
+  - qixiaowei-system-manage.yaml
+  - qixiaowei-operate-cloud.yaml
+  - qixiaowei-file.yaml
