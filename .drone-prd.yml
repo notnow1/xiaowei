@@ -106,7 +106,7 @@ steps:
       from_secret: host-pwd
     port: 12205
     command_timeout: 2m
-    target: /root/k8s/
+    target: /root/k8s/qxw/
     source: ./deploy/
     rm: true
     overwrite: true
@@ -127,9 +127,9 @@ steps:
       from_secret: host-username
     password:
       from_secret: host-pwd
-    port: 22
+    port: 12205
     script:
-      - kubectl apply -k k8s/deploy/stg/
+      - kubectl apply -k k8s/qxw/deploy/prd/
   depends_on:
     - scp
 
