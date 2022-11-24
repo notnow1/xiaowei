@@ -5,6 +5,7 @@ import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -134,5 +135,11 @@ public interface ISalaryItemService {
      */
     List<SalaryItemDTO> selectSalaryItemBySalaryItemIds(List<Long> salaryItemIds);
 
-    List<SalaryItemDTO> selectBonusItemList(SalaryItemDTO salaryItemDTO);
+    /**
+     * 查找二级为奖金的三级工资条
+     *
+     * @param salaryItemDTO
+     * @return
+     */
+    List<Map<String, String>> selectBonusItemList(SalaryItemDTO salaryItemDTO);
 }

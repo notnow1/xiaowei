@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -277,10 +279,18 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @return List
      */
     @Override
-    public List<SalaryItemDTO> selectBonusItemList(SalaryItemDTO salaryItemDTO) {
+    public List<Map<String, String>> selectBonusItemList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
         salaryItem.setSecondLevelItem(4);
-        return salaryItemMapper.selectSalaryItemList(salaryItem);
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
+        List<Map<String, String>> list = new ArrayList<>();
+        for (SalaryItemDTO itemDTO : salaryItemDTOS) {
+            Map<String, String> map = new HashMap<>();
+            map.put("salaryItemId", itemDTO.getSalaryItemId().toString());
+            map.put("thirdLevelItem", itemDTO.getThirdLevelItem());
+            list.add(map);
+        }
+        return list;
     }
 
     /**
