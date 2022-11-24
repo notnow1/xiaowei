@@ -10,7 +10,7 @@ steps:
     - name: cache
       path: /root/.m2
   commands:
-    - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
+  - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
 
 - name: build-qixiaowei-gateway
   pull: if-not-exists
@@ -25,8 +25,6 @@ steps:
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
       - latest
-    depends_on:
-      - complie
 
 - name: build-qixiaowei-auth
   pull: if-not-exists
@@ -38,11 +36,9 @@ steps:
       from_secret: deploy-pwd
     insecure: true
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
-    dockerfile: qixiaowei-gateway/Dockerfile
+    dockerfile: qixiaowei-auth/Dockerfile
     tags:
       - latest
-    depends_on:
-      - complie
 
 - name: scp
   pull: if-not-exists
@@ -61,8 +57,8 @@ steps:
     rm: true
     overwrite: true
     depends_on:
-      - build-qixiaowei-gateway
-      - build-qixiaowei-auth
+    - build-qixiaowei-auth
+    - build-qixiaowei-gateway
 
 - name: deploy
   pull: if-not-exists
@@ -78,7 +74,8 @@ steps:
     script:
       - kubectl apply -f k8s/deploy/stg/*.yaml
     depends_on:
-      - scp
+    - build-qixiaowei-auth
+    - build-qixiaowei-gateway
 
 volumes:
   - name: cache
