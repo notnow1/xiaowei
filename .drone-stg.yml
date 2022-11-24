@@ -46,6 +46,54 @@ steps:
   depends_on:
     - compile
 
+- name: build-qixiaowei-system-manage
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    registry: harbor.qixiaowei.net
+    username: deploy
+    password:
+      from_secret: deploy-pwd
+    insecure: true
+    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage
+    dockerfile: qixiaowei-system-manage/Dockerfile
+    tags:
+      - latest
+  depends_on:
+    - compile
+
+- name: build-qixiaowei-operate-cloud
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    registry: harbor.qixiaowei.net
+    username: deploy
+    password:
+      from_secret: deploy-pwd
+    insecure: true
+    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-operate-cloud
+    dockerfile: qixiaowei-operate-cloud/Dockerfile
+    tags:
+      - latest
+  depends_on:
+    - compile
+
+- name: build-qixiaowei-file
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    registry: harbor.qixiaowei.net
+    username: deploy
+    password:
+      from_secret: deploy-pwd
+    insecure: true
+    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-file
+    dockerfile: qixiaowei-file/Dockerfile
+    tags:
+      - latest
+  depends_on:
+    - compile
+
 - name: scp
   pull: if-not-exists
   image: appleboy/drone-scp
@@ -65,6 +113,9 @@ steps:
   depends_on:
     - build-qixiaowei-gateway
     - build-qixiaowei-auth
+    - build-qixiaowei-system-manage
+    - build-qixiaowei-operate-cloud
+    - build-qixiaowei-file
 
 - name: deploy
   pull: if-not-exists
