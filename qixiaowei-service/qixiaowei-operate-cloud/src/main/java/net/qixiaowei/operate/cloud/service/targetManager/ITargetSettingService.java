@@ -97,8 +97,9 @@ public interface ITargetSettingService {
      * 导入Excel
      *
      * @param targetSettingExcelMaps
+     * @param targetYear
      */
-    List<TargetSettingDTO> importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps);
+    List<TargetSettingDTO> importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps, Integer targetYear);
 
     /**
      * 导出Excel

@@ -136,4 +136,14 @@ public class SalaryItemController extends BaseController {
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), SalaryItemExcel.class).sheet("工资条配置").doWrite(salaryItemExcels);
     }
+
+    /**
+     * 查找二级为奖金的三级工资条
+     */
+//    @RequiresPermissions("operate:cloud:salaryItem:pageList")
+    @GetMapping("/bonusList")
+    public AjaxResult bonusList(SalaryItemDTO salaryItemDTO) {
+        return AjaxResult.success(salaryItemService.selectBonusItemList(salaryItemDTO));
+    }
+
 }

@@ -857,15 +857,16 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      * 导入Excel
      *
      * @param targetSettingExcelMaps EXCEL MAP
+     * @param targetYear
      */
     @Override
-    public List<TargetSettingDTO> importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps) {
+    public List<TargetSettingDTO> importTargetSetting(Map<String, List<TargetSettingExcel>> targetSettingExcelMaps, Integer targetYear) {
         List<TargetSettingExcel> targetSettingExcelList = targetSettingExcelMaps.get("关键经营目标制定");
         List<TargetSettingDTO> targetSettingDTOS = new ArrayList<>();
         List<String> indicatorCodes = new ArrayList<>();
         List<IndicatorDTO> indicatorDTOS = getIndicatorByCodes(targetSettingExcelList, indicatorCodes);
         TargetSetting targetSetting = new TargetSetting();
-        targetSetting.setTargetYear(2023);
+        targetSetting.setTargetYear(targetYear);
         List<TargetSettingDTO> targetSettingDTOBefore = targetSettingMapper.selectTargetSettingList(targetSetting);
         for (TargetSettingExcel targetSettingExcel : targetSettingExcelList) {
             String indicatorCode = targetSettingExcel.getIndicatorCode();

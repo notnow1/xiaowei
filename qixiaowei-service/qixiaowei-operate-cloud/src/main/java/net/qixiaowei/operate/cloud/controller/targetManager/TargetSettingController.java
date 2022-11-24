@@ -124,7 +124,7 @@ public class TargetSettingController extends BaseController {
      */
     @PostMapping("/excelParseObject")
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
-    public AjaxResult importEmployee(MultipartFile file) {
+    public AjaxResult importEmployee(MultipartFile file, Integer targetYear) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -135,7 +135,7 @@ public class TargetSettingController extends BaseController {
         try {
             TargetSettingImportListener<TargetSettingExcel> listener = new TargetSettingImportListener<>(1);
             Map<String, List<TargetSettingExcel>> targetSettingExcelMaps = listener.getData(file.getInputStream(), TargetSettingExcel.class);
-            List<TargetSettingDTO> targetSettingDTOS = targetSettingService.importTargetSetting(targetSettingExcelMaps);
+            List<TargetSettingDTO> targetSettingDTOS = targetSettingService.importTargetSetting(targetSettingExcelMaps,targetYear);
             return AjaxResult.success(targetSettingDTOS);
         } catch (IOException e) {
             throw new RuntimeException("导出失败");

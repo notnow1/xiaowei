@@ -271,6 +271,19 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     }
 
     /**
+     * 查找奖金的三级工资项目
+     *
+     * @param salaryItemDTO dto
+     * @return List
+     */
+    @Override
+    public List<SalaryItemDTO> selectBonusItemList(SalaryItemDTO salaryItemDTO) {
+        SalaryItem salaryItem = new SalaryItem();
+        salaryItem.setSecondLevelItem(4);
+        return salaryItemMapper.selectSalaryItemList(salaryItem);
+    }
+
+    /**
      * 逻辑删除工资项信息
      *
      * @param salaryItemDTO 工资项
