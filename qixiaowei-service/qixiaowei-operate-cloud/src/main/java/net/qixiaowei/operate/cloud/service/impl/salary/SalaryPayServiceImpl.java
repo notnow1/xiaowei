@@ -171,9 +171,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             return salaryPayDTOList;
         }
         salaryPayDTOList = salaryPayMapper.selectSalaryPayByEmployeeIds(employeeIds);
-        if (StringUtils.isEmpty(salaryPayDTOList)) {
-            return salaryPayDTOList;
-        } else {
+        if (StringUtils.isNotEmpty(salaryPayDTOList)) {
             for (SalaryPayDTO payDTO : salaryPayDTOList) {
                 for (EmployeeDTO dto : employeeDTOS) {
                     if (payDTO.getEmployeeId().equals(dto.getEmployeeId())) {
@@ -187,8 +185,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                     }
                 }
             }
-            return salaryPayDTOList;
         }
+        return salaryPayDTOList;
     }
 
     /**
