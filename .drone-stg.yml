@@ -28,6 +28,7 @@ steps:
     tags:
       - latest
     depends_on:
+      - clone
       - compile
 
 - name: build-qixiaowei-auth
@@ -44,6 +45,7 @@ steps:
     tags:
       - latest
     depends_on:
+      - clone
       - compile
 
 - name: scp
@@ -63,6 +65,8 @@ steps:
     rm: true
     overwrite: true
     depends_on:
+      - clone
+      - compile
       - build-qixiaowei-gateway
       - build-qixiaowei-auth
 
@@ -80,6 +84,10 @@ steps:
     script:
       - kubectl apply -f k8s/deploy/stg/*.yaml
     depends_on:
+      - clone
+      - complie
+      - build-qixiaowei-gateway
+      - build-qixiaowei-auth
       - scp
 
 volumes:
