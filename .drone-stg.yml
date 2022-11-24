@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: qixiaowei-gateway-pipeline
+name: qixiaowei-cloud-pipeline
 
 steps:
 - name: compile
@@ -12,33 +12,37 @@ steps:
   commands:
   - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
 
-- name: build-qixiaowei-gateway
-  pull: if-not-exists
-  image: plugins/docker
-  settings:
-    registry: harbor.qixiaowei.net
-    username: deploy
-    password:
-      from_secret: deploy-pwd
-    insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
-    dockerfile: qixiaowei-gateway/Dockerfile
-    tags:
-      - latest
+  - name: build-qixiaowei-gateway
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
+      dockerfile: qixiaowei-gateway/Dockerfile
+      tags:
+        - latest
+      depends_on:
+      - compile
 
-- name: build-qixiaowei-auth
-  pull: if-not-exists
-  image: plugins/docker
-  settings:
-    registry: harbor.qixiaowei.net
-    username: deploy
-    password:
-      from_secret: deploy-pwd
-    insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
-    dockerfile: qixiaowei-auth/Dockerfile
-    tags:
-      - latest
+  - name: build-qixiaowei-auth
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
+      dockerfile: qixiaowei-auth/Dockerfile
+      tags:
+        - latest
+      depends_on:
+      - compile
 
 - name: scp
   pull: if-not-exists
@@ -74,8 +78,7 @@ steps:
     script:
       - kubectl apply -f k8s/deploy/stg/*.yaml
     depends_on:
-    - build-qixiaowei-auth
-    - build-qixiaowei-gateway
+    - scp
 
 volumes:
   - name: cache
