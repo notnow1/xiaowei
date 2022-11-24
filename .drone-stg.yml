@@ -4,8 +4,8 @@ name: qixiaowei-gateway-pipeline
 
 steps:
   - name: compile
-    pull: if-not-exists
     image: docker.io/library/maven:3.8.6
+    pull: if-not-exists
     volumes:
       - name: cache
         path: /root/.m2
@@ -13,8 +13,8 @@ steps:
       - mvn clean package -Ptest -DskipTests -pl !qixiaowei-gen
 
   - name: build
-    pull: if-not-exists
     image: plugins/docker
+    pull: if-not-exists
     settings:
       registry: harbor.qixiaowei.net
       username: deploy
@@ -27,14 +27,19 @@ steps:
         - v1.0.${DRONE_BUILD_NUMBER}
 
   - name: deploy
+    image: zc2638/drone-k8s-plugin
     pull: if-not-exists
-    image: danielgormly/drone-plugin-kube:0.0.1
     settings:
-      template: qixiaowei-gateway/deploy/deploy-stg.yaml
-      server: http://172.31.0.156:6443
-      ca: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMvakNDQWVhZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRJeU1Ea3hOakV5TURReU1Gb1hEVE15TURreE16RXlNRFF5TUZvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBSnBHCnI5cWVVam1JbHRIRzJlaTV2dlNtNHpWNmV1akI5aDhLVVBoUzRCYWNNWHFDZnJETUp2TFZMbWJmcnl1S1lKWDYKQUZVL0NoOHAwUm9HYkVnK2IyOWJDV3BzN3puRzFGK3ErYUFwaXVIaVkyL1A1UEdGSUlBVUhHRkhNOGUzY1gyQQpRZUt1N1NVbzNHNHdYTldYcWh5cXZRR2cycERwYkNmQ3U2RmduNXBxblRzN0g5dVh6dXkycVNMaVV4K29uNmZkCkppeWpkTHRXTFh4ZitDUlMxdk9kU1dpeE1vQUNPQ0JXRHBlT2xzaGU1dHZjMmVoMTAydHpIRURpVUYwcTV0eFoKeW1hV2hnS1JWYTBrQ0tkL2N2Y0tNRmZ3akVYTTVOekgwR01kWEp6MkNCTGNqc2UvR2xvNnRPcjRWNUlUUDFQSApFRlJqd2QwUGh6U1d1YmZmWEQ4Q0F3RUFBYU5aTUZjd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0hRWURWUjBPQkJZRUZOMlYwaDlDa1NZdHI3aUdJeHRWR3VuT29Mc1RNQlVHQTFVZEVRUU8KTUF5Q0NtdDFZbVZ5Ym1WMFpYTXdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUJBSXI0OTZEZStlUUtxWWZtZm04aApWQ2huUndZUnR3WitJNEt4dC8xKzZWNTg3UTdzUDhvVEZsTjNjNERDTWJLSEtTSVhmNU1SV1MrTnhUWTNTdkROCmllR3JaYXlQY3FtK0NZTFZ2TWZOZndyMjZwaC9Cd1craCtKTXNBdzVuUVl0L1luRFpJVHR4ZXVWKzE4YUsvRHQKRDR2cjB5MklXRlRrNThaMk1abHliUllpQms3SkJsVHZFdzl3dFBBTEpSMGcyOXZvNE50c2xPbmY5dlJpdy9jbgowUlZvZ2VLSUxvUVRicjBEQ0Q3cldQREUwTi9vc3l0ektkaWpPSTJSc2hhTGRFdUptOGJRYkpBNmh5MjJyUHpCCjB3VVR0Z1A1ZVZDVDJjZ3F0RTFIZXlKcHhvdFVSdFJaYW5PQ0tKcnVXSS9MS2J6dlNkV1dqcVJ2MFQvczdyVzQKeDgwPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-      token:
-        from_secret: kubernetes_token-stg
+      k8s_server: https://172.31.0.156:6443
+      k8s_token:
+        from_secret: k8s_token-stg
+      k8s_ca_crt:
+        from_secret: k8s_ca_crt-stg
+      k8s_skip_tls: false
+      namespace: qixiaowei-stg1
+      templates:
+        - qixiaowei-gateway/deploy/deploy-stg.yaml
+      app_name: qixiaowei-gateway
 
 volumes:
   - name: cache
