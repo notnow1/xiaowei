@@ -3,8 +3,176 @@ type: docker
 name: qixiaowei-gateway-pipeline
 
 steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
 
+  - name: build
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
+      dockerfile: qixiaowei-gateway/Dockerfile
+      tags:
+        - latest
 
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/mvnrepo
+
+---
+kind: pipeline
+type: docker
+name: qixiaowei-auth-pipeline
+
+steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
+
+  - name: build
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
+      dockerfile: qixiaowei-auth/Dockerfile
+      tags:
+        - latest
+
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/mvnrepo
+
+---
+kind: pipeline
+type: docker
+name: qixiaowei-system-manage-pipeline
+
+steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
+
+  - name: build
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage
+      dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
+      tags:
+        - latest
+
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/mvnrepo
+
+---
+kind: pipeline
+type: docker
+name: qixiaowei-operate-cloud-pipeline
+
+steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
+
+  - name: build
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-operate-cloud
+      dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
+      tags:
+        - latest
+
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/mvnrepo
+
+---
+kind: pipeline
+type: docker
+name: qixiaowei-file-pipeline
+
+steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
+
+  - name: build
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-file
+      dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
+      tags:
+        - latest
+
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/mvnrepo
+
+---
+kind: pipeline
+type: docker
+name: qixiaowei-cloud-deploy-pipeline
+
+steps:
   - name: scp
     pull: if-not-exists
     image: appleboy/drone-scp
@@ -21,10 +189,19 @@ steps:
       source: ./deploy/
       rm: true
       overwrite: true
+      depends_on:
+        - qixiaowei-gateway-pipeline
+        - qixiaowei-auth-pipeline
+        - qixiaowei-system-manage-pipeline
+        - qixiaowei-operate-cloud-pipeline
+        - qixiaowei-file-pipeline
+      when:
+        status:
+          - success
 
   - name: deploy
-    image: appleboy/drone-ssh
     pull: if-not-exists
+    image: appleboy/drone-ssh
     settings:
       host:
         from_secret: host-stg
@@ -35,8 +212,8 @@ steps:
       port: 22
       script:
         - kubectl apply -f k8s/deploy/stg/*.yaml
-
-volumes:
-  - name: cache
-    host:
-      path: /tmp/cache/mvnrepo
+      depends_on:
+        - scp
+      when:
+        status:
+          - success
