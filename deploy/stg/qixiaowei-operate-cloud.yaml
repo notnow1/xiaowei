@@ -4,7 +4,7 @@ metadata:
   labels:
     app: qixiaowei-operate-cloud
   name: qixiaowei-operate-cloud
-  namespace: qixiaowei-stg1
+  namespace: qixiaowei-cloud
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -35,10 +35,6 @@ spec:
           ports:
             - containerPort: 8080
               protocol: TCP
-          resources:
-            limits:
-              cpu: 300m
-              memory: 600Mi
           volumeMounts:
             - name: host-time
               readOnly: true
@@ -55,7 +51,7 @@ metadata:
   labels:
     app: qixiaowei-operate-cloud
   name: qixiaowei-operate-cloud
-  namespace: qixiaowei-stg1
+  namespace: qixiaowei-cloud
 spec:
   ports:
     - name: http

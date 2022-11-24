@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: qixiaowei-stg1
+namespace: qixiaowei-cloud
 
 resources:
   - qixiaowei-gateway.yaml
