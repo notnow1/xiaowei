@@ -675,7 +675,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Override
     public int saveTargetSetting(TargetSettingDTO targetSettingDTO) {
         TargetSetting targetSetting = new TargetSetting();
-        BeanUtils.copyProperties(targetSettingDTO, targetSetting);
+        targetSetting.setTargetSettingId(targetSettingDTO.getTargetSettingId());
+        targetSetting.setSort(targetSettingDTO.getSort());
+        targetSetting.setPercentage(targetSettingDTO.getPercentage());
+        targetSetting.setTargetValue(targetSettingDTO.getTargetValue());
+        targetSetting.setChallengeValue(targetSettingDTO.getChallengeValue());
+        targetSetting.setGuaranteedValue(targetSettingDTO.getGuaranteedValue());
         targetSetting.setUpdateTime(DateUtils.getNowDate());
         targetSetting.setUpdateBy(SecurityUtils.getUserId());
         return targetSettingMapper.updateTargetSetting(targetSetting);
@@ -832,10 +837,13 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     public int updateTargetSettings(List<TargetSettingDTO> targetSettingDtos) {
         List<TargetSetting> targetSettingList = new ArrayList<>();
-
         for (TargetSettingDTO targetSettingDTO : targetSettingDtos) {
             TargetSetting targetSetting = new TargetSetting();
-            BeanUtils.copyProperties(targetSettingDTO, targetSetting);
+            targetSetting.setSort(targetSettingDTO.getSort());
+            targetSetting.setTargetSettingId(targetSettingDTO.getTargetSettingId());
+            targetSetting.setChallengeValue(targetSettingDTO.getChallengeValue());
+            targetSetting.setGuaranteedValue(targetSettingDTO.getGuaranteedValue());
+            targetSetting.setTargetValue(targetSettingDTO.getTargetValue());
             targetSetting.setCreateBy(SecurityUtils.getUserId());
             targetSetting.setCreateTime(DateUtils.getNowDate());
             targetSetting.setUpdateTime(DateUtils.getNowDate());
@@ -984,10 +992,13 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         List<TargetSettingOrderDTO> targetSettingOrderAfter = targetSettingDTO.getTargetSettingOrderDTOS();
         TargetSettingDTO targetSetting = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
         IndicatorDTO indicatorDTO = getIndicator(IndicatorCode.ORDER.getCode());
-        targetSettingDTO.setTargetSettingType(1);
-        targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
-        targetSettingDTO.setSort(0);
+        if (StringUtils.isEmpty(targetSettingOrderAfter) || targetSettingOrderAfter.size() != 4) {
+            throw new ServiceException("数据不规范 请检查");
+        }
         if (StringUtils.isNull(targetSetting)) {//新增
+            targetSettingDTO.setTargetSettingType(1);
+            targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
+            targetSettingDTO.setSort(0);
             TargetSetting setting = insertTargetSetting(targetSettingDTO);
             targetSetting = new TargetSettingDTO();
             targetSetting.setTargetSettingId(setting.getTargetSettingId());
@@ -995,6 +1006,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             return targetSetting;
         }
         Long targetSettingId = targetSetting.getTargetSettingId();
+        targetSettingDTO.setSort(0);
         targetSettingDTO.setTargetSettingId(targetSettingId);
         // 保存
         saveTargetSetting(targetSettingDTO);
@@ -1346,18 +1358,18 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         } else {
             Long targetSettingId = targetSetting.getTargetSettingId();
             List<TargetSettingIncomeDTO> targetSettingIncomeDTOS = targetSettingIncomeService.selectTargetSettingIncomeByTargetSettingId(targetSettingId);
-            if (StringUtils.isNotEmpty(targetSettingIncomeDTOS)) {
-                TargetSettingIncomeDTO targetSettingIncome = targetSettingIncomeDTOS.get(0);
-                if (StringUtils.isNotEmpty(targetSettingIncomeVOS)) {
-                    TargetSettingIncomeDTO targetSettingIncomeDTO = incomeVoToDto(targetSettingIncomeVOS, targetSettingDTO);
-                    targetSettingDTO.setTargetSettingId(targetSettingId);
-                    saveTargetSetting(targetSettingDTO);
-                    targetSettingIncomeDTO.setTargetSettingIncomeId(targetSettingIncome.getTargetSettingIncomeId());
-                    targetSettingIncomeService.updateTargetSettingIncome(targetSettingIncomeDTO);
-                }
-            } else {
-                throw new ServiceException("销售收入数据异常");
+            if (StringUtils.isEmpty(targetSettingIncomeDTOS)) {
+                throw new ServiceException("更新数据异常 请联系管理员");
             }
+            TargetSettingIncomeDTO targetSettingIncome = targetSettingIncomeDTOS.get(0);
+            if (StringUtils.isEmpty(targetSettingIncomeVOS)) {
+                throw new ServiceException("表格不能为空");
+            }
+            TargetSettingIncomeDTO targetSettingIncomeDTO = incomeVoToDto(targetSettingIncomeVOS, targetSettingDTO);
+            targetSettingDTO.setTargetSettingId(targetSettingId);
+            saveTargetSetting(targetSettingDTO);
+            targetSettingIncomeDTO.setTargetSettingIncomeId(targetSettingIncome.getTargetSettingIncomeId());
+            targetSettingIncomeService.updateTargetSettingIncome(targetSettingIncomeDTO);
         }
         return targetSetting;
     }
@@ -1601,6 +1613,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
 //              【DSO（应收账款周转天数）】：公式=DSO基线-DSO改进天数。
 //              【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额。
             List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDTOS = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
+            if (StringUtils.isEmpty(targetSettingRecoveriesDTOS)) {
+                throw new ServiceException("数据异常 请联系管理员");
+            }
             if (targetSettingRecoveriesDTOS.size() > 4) {
                 //销售收入目标
                 TargetSettingRecoveriesDTO saleIncomeGoal = new TargetSettingRecoveriesDTO();//销售收入目标
@@ -1878,8 +1893,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingDTO.setPercentage(targetSettingRecoveryDTO.getAddRate());
         TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 3);
         Long targetSettingId;
+        TargetSettingRecoveriesDTO recoveriesDTO = targetSettingIndicatorDTOS.stream().filter(f -> f.getPrefixType().equals("回款总目标")).collect(Collectors.toList()).get(0);
         if (StringUtils.isNull(targetSettingByIndicator)) {//新增
-            TargetSettingRecoveriesDTO recoveriesDTO = targetSettingIndicatorDTOS.stream().filter(f -> f.getPrefixType().equals("回款总目标")).collect(Collectors.toList()).get(0);
             targetSettingDTO.setSort(0);
             targetSettingDTO.setTargetSettingType(3);
             targetSettingDTO.setIndicatorId(indicatorDTO.getIndicatorId());
@@ -1894,40 +1909,42 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             // recoveries
             List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
             targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
-            targetSettingDTO.setTargetSettingId(targetSettingId);
-            return targetSettingDTO;
         } else {//更新
             targetSettingId = targetSettingByIndicator.getTargetSettingId();
             targetSettingDTO.setTargetSettingId(targetSettingId);
+            targetSettingDTO.setTargetValue(recoveriesDTO.getTargetValue());
+            targetSettingDTO.setGuaranteedValue(recoveriesDTO.getGuaranteedValue());
+            targetSettingDTO.setChallengeValue(recoveriesDTO.getChallengeValue());
             saveTargetSetting(targetSettingDTO);
             // recovery
             TargetSettingRecoveryDTO recovery = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
             if (StringUtils.isNull(recovery)) {
                 throw new ServiceException("更新数据异常 请联系管理员");
-            } else {
-                Long targetSettingRecoveriesId = recovery.getTargetSettingRecoveriesId();
-                targetSettingRecoveryDTO.setTargetSettingRecoveriesId(targetSettingRecoveriesId);
-                targetSettingRecoveryService.updateTargetSettingRecovery(targetSettingRecoveryDTO);
             }
+            Long targetSettingRecoveriesId = recovery.getTargetSettingRecoveriesId();
+            targetSettingRecoveryDTO.setTargetSettingRecoveriesId(targetSettingRecoveriesId);
+            targetSettingRecoveryService.updateTargetSettingRecovery(targetSettingRecoveryDTO);
             // recoveries
-            List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
+            List<TargetSettingRecoveriesDTO> recoveryDTOS = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
             List<TargetSettingRecoveriesDTO> recoveries = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
-            if (StringUtils.isEmpty(recoveries) || recoveries.size() < 5) {
+            if (StringUtils.isEmpty(recoveries)) {
                 throw new ServiceException("更新数据异常 请联系管理员");
-            } else {// 新增
-                for (TargetSettingRecoveriesDTO recoveriesDTO : recoveries) {
-                    for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : recoveryDTO) {
-                        if (recoveriesDTO.getType().equals(targetSettingRecoveriesDTO.getType())) {
-                            targetSettingRecoveriesDTO.setTargetSettingRecoveriesId(recoveriesDTO.getTargetSettingRecoveriesId());
-                            break;
-                        }
+            }
+            if (recoveries.size() < 5) {
+                throw new ServiceException("更新数据异常 请联系管理员");
+            }
+            for (TargetSettingRecoveriesDTO settingRecoveriesDTO : recoveries) {
+                for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : recoveryDTOS) {
+                    if (settingRecoveriesDTO.getType().equals(targetSettingRecoveriesDTO.getType())) {
+                        targetSettingRecoveriesDTO.setTargetSettingRecoveriesId(settingRecoveriesDTO.getTargetSettingRecoveriesId());
+                        break;
                     }
                 }
-                targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
             }
-            targetSettingDTO.setTargetSettingId(targetSettingId);
-            return targetSettingDTO;
+            targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTOS);
         }
+        targetSettingDTO.setTargetSettingId(targetSettingId);
+        return targetSettingDTO;
     }
 
     /**

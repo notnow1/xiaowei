@@ -147,7 +147,7 @@ public class TargetSettingRecoveriesServiceImpl implements ITargetSettingRecover
 
     @Override
     public int deleteTargetSettingRecoveriesByTargetSettingRecoveriesIds(List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDtos) {
             stringList.add(targetSettingRecoveriesDTO.getTargetSettingRecoveriesId());
         }
@@ -161,7 +161,7 @@ public class TargetSettingRecoveriesServiceImpl implements ITargetSettingRecover
      */
 
     public int insertTargetSettingRecoveriess(List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDtos) {
-        List<TargetSettingRecoveries> targetSettingRecoveriesList = new ArrayList();
+        List<TargetSettingRecoveries> targetSettingRecoveriesList = new ArrayList<>();
 
         for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDtos) {
             TargetSettingRecoveries targetSettingRecoveries = new TargetSettingRecoveries();
@@ -183,11 +183,14 @@ public class TargetSettingRecoveriesServiceImpl implements ITargetSettingRecover
      */
 
     public int updateTargetSettingRecoveriess(List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDtos) {
-        List<TargetSettingRecoveries> targetSettingRecoveriesList = new ArrayList();
-
+        List<TargetSettingRecoveries> targetSettingRecoveriesList = new ArrayList<>();
         for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDtos) {
             TargetSettingRecoveries targetSettingRecoveries = new TargetSettingRecoveries();
-            BeanUtils.copyProperties(targetSettingRecoveriesDTO, targetSettingRecoveries);
+            targetSettingRecoveries.setTargetSettingRecoveriesId(targetSettingRecoveriesDTO.getTargetSettingRecoveriesId());
+            targetSettingRecoveries.setChallengeValue(targetSettingRecoveriesDTO.getChallengeValue());
+            targetSettingRecoveries.setGuaranteedValue(targetSettingRecoveriesDTO.getGuaranteedValue());
+            targetSettingRecoveries.setTargetValue(targetSettingRecoveriesDTO.getTargetValue());
+            targetSettingRecoveries.setActualLastYear(targetSettingRecoveriesDTO.getActualLastYear());
             targetSettingRecoveries.setCreateBy(SecurityUtils.getUserId());
             targetSettingRecoveries.setCreateTime(DateUtils.getNowDate());
             targetSettingRecoveries.setUpdateTime(DateUtils.getNowDate());

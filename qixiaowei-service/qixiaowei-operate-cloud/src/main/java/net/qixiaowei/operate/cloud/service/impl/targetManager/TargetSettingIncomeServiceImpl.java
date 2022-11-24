@@ -81,7 +81,13 @@ public class TargetSettingIncomeServiceImpl implements ITargetSettingIncomeServi
     @Override
     public int updateTargetSettingIncome(TargetSettingIncomeDTO targetSettingIncomeDTO) {
         TargetSettingIncome targetSettingIncome = new TargetSettingIncome();
-        BeanUtils.copyProperties(targetSettingIncomeDTO, targetSettingIncome);
+        targetSettingIncome.setTargetSettingIncomeId(targetSettingIncomeDTO.getTargetSettingIncomeId());
+        targetSettingIncome.setConversionBeforeOne(targetSettingIncomeDTO.getConversionBeforeOne());
+        targetSettingIncome.setConversionBeforeTwo(targetSettingIncomeDTO.getConversionBeforeTwo());
+        targetSettingIncome.setConversionBeforeThree(targetSettingIncomeDTO.getConversionBeforeThree());
+        targetSettingIncome.setMoneyBeforeOne(targetSettingIncomeDTO.getMoneyBeforeOne());
+        targetSettingIncome.setMoneyBeforeTwo(targetSettingIncomeDTO.getMoneyBeforeTwo());
+        targetSettingIncome.setMoneyBeforeThree(targetSettingIncomeDTO.getMoneyBeforeThree());
         targetSettingIncome.setUpdateTime(DateUtils.getNowDate());
         targetSettingIncome.setUpdateBy(SecurityUtils.getUserId());
         return targetSettingIncomeMapper.updateTargetSettingIncome(targetSettingIncome);

@@ -81,7 +81,10 @@ public class TargetSettingRecoveryServiceImpl implements ITargetSettingRecoveryS
     @Override
     public int updateTargetSettingRecovery(TargetSettingRecoveryDTO targetSettingRecoveryDTO) {
         TargetSettingRecovery targetSettingRecovery = new TargetSettingRecovery();
-        BeanUtils.copyProperties(targetSettingRecoveryDTO, targetSettingRecovery);
+        targetSettingRecovery.setTargetSettingRecoveriesId(targetSettingRecoveryDTO.getTargetSettingRecoveriesId());
+        targetSettingRecovery.setBalanceReceivables(targetSettingRecoveryDTO.getBalanceReceivables());
+        targetSettingRecovery.setBaselineValue(targetSettingRecoveryDTO.getBaselineValue());
+        targetSettingRecovery.setImproveDays(targetSettingRecoveryDTO.getImproveDays());
         targetSettingRecovery.setUpdateTime(DateUtils.getNowDate());
         targetSettingRecovery.setUpdateBy(SecurityUtils.getUserId());
         return targetSettingRecoveryMapper.updateTargetSettingRecovery(targetSettingRecovery);
