@@ -1426,12 +1426,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectTargetSettingList(targetSetting);// 当年份销售收入的目标制定list
         // 当年份销售订单的目标制定-当年
         TargetSettingDTO targetSettingByIndicator = targetSettingMapper.selectTargetSettingByTargetYearAndIndicator(targetYear, 1);
-        BigDecimal zero = new BigDecimal(0);
         if (StringUtils.isNull(targetSettingByIndicator)) {
             targetSettingByIndicator = new TargetSettingDTO();
-            targetSettingByIndicator.setChallengeValue(zero);
-            targetSettingByIndicator.setGuaranteedValue(zero);
-            targetSettingByIndicator.setTargetValue(zero);
+            targetSettingByIndicator.setChallengeValue(BigDecimal.ZERO);
+            targetSettingByIndicator.setGuaranteedValue(BigDecimal.ZERO);
+            targetSettingByIndicator.setTargetValue(BigDecimal.ZERO);
         }
         if (StringUtils.isEmpty(targetSettingDTOS)) {
             List<TargetSettingIncomeVO> targetSettingIncomeVOS = new ArrayList<>();
@@ -1440,29 +1439,29 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 if (i == 3) {//当年  // 目标值 挑战值 保底值  //本年增量订单-订单金额:从经营云-目标制定-公司目标生成-销售订单目标制定中获取当年目标值
                     BigDecimal targetValue = targetSettingByIndicator.getTargetValue();
                     targetSettingIncomeVO.setMoney(targetValue);
-                    targetSettingDTO.setChallengeValue(zero);
-                    targetSettingDTO.setTargetValue(zero);
-                    targetSettingDTO.setGuaranteedValue(zero);
-                    targetSettingIncomeVO.setConversion(zero);
-                    targetSettingIncomeVO.setIncome(zero);
+                    targetSettingDTO.setChallengeValue(BigDecimal.ZERO);
+                    targetSettingDTO.setTargetValue(BigDecimal.ZERO);
+                    targetSettingDTO.setGuaranteedValue(BigDecimal.ZERO);
+                    targetSettingIncomeVO.setConversion(BigDecimal.ZERO);
+                    targetSettingIncomeVO.setIncome(BigDecimal.ZERO);
                     targetSettingIncomeVO.setYearName("本年增量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 } else if (i == 2) {//前一年
-                    targetSettingIncomeVO.setMoney(zero);
-                    targetSettingIncomeVO.setConversion(zero);
-                    targetSettingIncomeVO.setIncome(zero);
+                    targetSettingIncomeVO.setMoney(BigDecimal.ZERO);
+                    targetSettingIncomeVO.setConversion(BigDecimal.ZERO);
+                    targetSettingIncomeVO.setIncome(BigDecimal.ZERO);
                     targetSettingIncomeVO.setYearName(targetYear - 1 + "年存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 } else if (i == 1) {//前两年
-                    targetSettingIncomeVO.setMoney(zero);
-                    targetSettingIncomeVO.setConversion(zero);
-                    targetSettingIncomeVO.setIncome(zero);
+                    targetSettingIncomeVO.setMoney(BigDecimal.ZERO);
+                    targetSettingIncomeVO.setConversion(BigDecimal.ZERO);
+                    targetSettingIncomeVO.setIncome(BigDecimal.ZERO);
                     targetSettingIncomeVO.setYearName(targetYear - 2 + "年存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 } else if (i == 0) {//前三年
-                    targetSettingIncomeVO.setMoney(zero);
-                    targetSettingIncomeVO.setConversion(zero);
-                    targetSettingIncomeVO.setIncome(zero);
+                    targetSettingIncomeVO.setMoney(BigDecimal.ZERO);
+                    targetSettingIncomeVO.setConversion(BigDecimal.ZERO);
+                    targetSettingIncomeVO.setIncome(BigDecimal.ZERO);
                     targetSettingIncomeVO.setYearName(targetYear - 3 + "年及以前存量订单");
                     targetSettingIncomeVOS.add(targetSettingIncomeVO);
                 }
@@ -1485,9 +1484,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         for (int i = 0; i < historyNumS.size(); i++) {
             TargetSettingIncomeVO targetSettingIncomeVO = new TargetSettingIncomeVO();
             if (i == 3) {//当年
-                targetSettingDTO.setChallengeValue(zero);
-                targetSettingDTO.setTargetValue(zero);
-                targetSettingDTO.setGuaranteedValue(zero);
+                targetSettingDTO.setChallengeValue(BigDecimal.ZERO);
+                targetSettingDTO.setTargetValue(BigDecimal.ZERO);
+                targetSettingDTO.setGuaranteedValue(BigDecimal.ZERO);
                 BigDecimal targetValue = targetSettingByIndicator.getTargetValue();
                 targetSettingIncomeVO.setConversion(targetSettingByIndicator.getPercentage());
                 targetSettingIncomeVO.setMoney(targetValue);
