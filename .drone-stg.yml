@@ -11,8 +11,6 @@ steps:
       path: /root/.m2
   commands:
     - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
-  depends_on:
-    - clone
 
 - name: build-qixiaowei-gateway
   pull: if-not-exists
@@ -28,6 +26,7 @@ steps:
     tags:
       - latest
     depends_on:
+      - clone
       - compile
 
 - name: build-qixiaowei-auth
@@ -44,6 +43,7 @@ steps:
     tags:
       - latest
     depends_on:
+      - clone
       - compile
 
 - name: scp
