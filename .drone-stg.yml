@@ -190,11 +190,11 @@ steps:
       rm: true
       overwrite: true
       depends_on:
-        - qixiaowei-gateway-pipeline
-        - qixiaowei-auth-pipeline
-        - qixiaowei-system-manage-pipeline
-        - qixiaowei-operate-cloud-pipeline
-        - qixiaowei-file-pipeline
+        - qixiaowei-gateway-pipeline.build
+        - qixiaowei-auth-pipeline.build
+        - qixiaowei-system-manage-pipeline.build
+        - qixiaowei-operate-cloud-pipeline.build
+        - qixiaowei-file-pipeline.build
       when:
         status:
           - success
