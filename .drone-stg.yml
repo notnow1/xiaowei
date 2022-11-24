@@ -3,29 +3,6 @@ type: docker
 name: qixiaowei-gateway-pipeline
 
 steps:
-  - name: compile
-    image: docker.io/library/maven:3.8.6
-    pull: if-not-exists
-    volumes:
-      - name: cache
-        path: /root/.m2
-    commands:
-      - mvn clean package -Ptest -DskipTests -pl !qixiaowei-gen
-
-  - name: build
-    image: plugins/docker
-    pull: if-not-exists
-    settings:
-      registry: harbor.qixiaowei.net
-      username: deploy
-      password:
-        from_secret: deploy-pwd
-      insecure: true
-      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
-      dockerfile: qixiaowei-gateway/Dockerfile
-      tags:
-        - v1.0.${DRONE_BUILD_NUMBER}
-
   - name: deploy
     image: zc2638/drone-k8s-plugin
     pull: if-not-exists
@@ -40,9 +17,3 @@ steps:
       templates:
         - qixiaowei-gateway/deploy/deploy-stg.yaml
       app_name: qixiaowei-gateway
-
-volumes:
-  - name: cache
-    host:
-      path: /tmp/cache/mvnrepo
-
