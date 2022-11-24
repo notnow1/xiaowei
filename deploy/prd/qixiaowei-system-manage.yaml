@@ -4,7 +4,7 @@ metadata:
   labels:
     app: qixiaowei-system-manage
   name: qixiaowei-system-manage
-  namespace: qixiaowei-cloud
+  namespace: qxw-cloud
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -29,7 +29,7 @@ spec:
       imagePullSecrets:
         - name: harbor-deploy
       containers:
-        - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage:v1.0.0
+        - image: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage:v1.0.0
           imagePullPolicy: IfNotPresent
           name: qixiaowei-system-manage
           ports:
@@ -51,7 +51,7 @@ metadata:
   labels:
     app: qixiaowei-system-manage
   name: qixiaowei-system-manage
-  namespace: qixiaowei-cloud
+  namespace: qxw-cloud
 spec:
   ports:
     - name: http
