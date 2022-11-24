@@ -1928,33 +1928,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingDTO.setTargetSettingId(targetSettingId);
             return targetSettingDTO;
         }
-//
-//        TargetSettingRecoveryDTO recovery = targetSettingRecoveryService.selectTargetSettingRecoveryByTargetSettingId(targetSettingId);
-//        targetSettingRecoveryDTO.setTargetSettingId(targetSettingId);
-//        if (StringUtils.isNull(recovery)) {
-//            targetSettingRecoveryService.insertTargetSettingRecovery(targetSettingRecoveryDTO);
-//        } else {
-//            Long targetSettingRecoveriesId = recovery.getTargetSettingRecoveriesId();
-//            targetSettingRecoveryDTO.setTargetSettingRecoveriesId(targetSettingRecoveriesId);
-//            targetSettingRecoveryService.updateTargetSettingRecovery(targetSettingRecoveryDTO);
-//        }
-//        List<TargetSettingRecoveriesDTO> recoveryDTO = integration(targetSettingIndicatorDTOS, targetSettingTypeDTOS, targetSettingId);
-//        List<TargetSettingRecoveriesDTO> recoveries = targetSettingRecoveriesServices.selectTargetSettingRecoveriesByTargetSettingId(targetSettingId);
-//        if (StringUtils.isNotEmpty(recoveries) && recoveries.size() > 4) {
-//            for (TargetSettingRecoveriesDTO recoveriesDTO : recoveries) {
-//                for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : recoveryDTO) {
-//                    if (recoveriesDTO.getType().equals(targetSettingRecoveriesDTO.getType())) {
-//                        targetSettingRecoveriesDTO.setTargetSettingRecoveriesId(recoveriesDTO.getTargetSettingRecoveriesId());
-//                        break;
-//                    }
-//                }
-//            }
-//            targetSettingRecoveriesServices.updateTargetSettingRecoveriess(recoveryDTO);
-//        } else {// 新增
-//            targetSettingRecoveriesServices.insertTargetSettingRecoveriess(recoveryDTO);
-//        }
-//        targetSettingDTO.setTargetSettingId(targetSettingId);
-//        return targetSettingDTO;
     }
 
     /**
