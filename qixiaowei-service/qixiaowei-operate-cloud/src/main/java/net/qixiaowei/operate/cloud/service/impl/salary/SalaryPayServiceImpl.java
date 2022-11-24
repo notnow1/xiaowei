@@ -14,6 +14,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayExcel;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
@@ -26,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -128,10 +126,12 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
                 if (salaryItemDTO.getSalaryItemId().equals(salaryPayDetailsDTO.getSalaryItemId())) {
                     salaryItemDTO.setAmount(salaryPayDetailsDTO.getAmount());
+                    salaryItemDTO.setSort(salaryPayDetailsDTO.getSort());
                     break;
                 }
             }
         }
+        salaryItemDTOS.sort(Comparator.comparingInt(SalaryItemDTO::getSort));
         salaryPayDTO.setSalaryItemDTOList(salaryItemDTOS);
         return salaryPayDTO;
     }
