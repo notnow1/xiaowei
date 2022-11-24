@@ -21,10 +21,10 @@ steps:
       password:
         from_secret: deploy-pwd
       insecure: true
-      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
       dockerfile: qixiaowei-gateway/Dockerfile
       tags:
-        - v-1.0.${DRONE_BUILD_NUMBER}
+        - v1.0.${DRONE_BUILD_NUMBER}
 
 volumes:
   - name: cache
@@ -55,10 +55,112 @@ steps:
       password:
         from_secret: deploy-pwd
       insecure: true
-      repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
       dockerfile: qixiaowei-auth/Dockerfile
       tags:
-        - v-1.0.${DRONE_BUILD_NUMBER}
+        - v1.0.${DRONE_BUILD_NUMBER}
+
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/mvnrepo
+
+---
+kind: pipeline
+type: docker
+name: qixiaowei-system-manage-pipeline
+
+steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests -pl !qixiaowei-gen
+
+  - name: qixiaowei-system-manage
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage
+      dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
+      tags:
+        - v1.0.${DRONE_BUILD_NUMBER}
+
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/mvnrepo
+
+---
+kind: pipeline
+type: docker
+name: qixiaowei-operate-cloud-pipeline
+
+steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests -pl !qixiaowei-gen
+
+  - name: qixiaowei-operate-cloud
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-operate-cloud
+      dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
+      tags:
+        - v1.0.${DRONE_BUILD_NUMBER}
+
+volumes:
+  - name: cache
+    host:
+      path: /tmp/cache/mvnrepo
+
+---
+kind: pipeline
+type: docker
+name: qixiaowei-file-pipeline
+
+steps:
+  - name: compile
+    pull: if-not-exists
+    image: docker.io/library/maven:3.8.6
+    volumes:
+      - name: cache
+        path: /root/.m2
+    commands:
+      - mvn clean package -Ptest -DskipTests -pl !qixiaowei-gen
+
+  - name: qixiaowei-file
+    pull: if-not-exists
+    image: plugins/docker
+    settings:
+      registry: harbor.qixiaowei.net
+      username: deploy
+      password:
+        from_secret: deploy-pwd
+      insecure: true
+      repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-file
+      dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
+      tags:
+        - v1.0.${DRONE_BUILD_NUMBER}
 
 volumes:
   - name: cache
