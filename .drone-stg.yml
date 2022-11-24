@@ -4,16 +4,15 @@ name: qixiaowei-gateway-pipeline
 
 steps:
   - name: deploy
-    image: zc2638/drone-k8s-plugin
+    image: appleboy/drone-ssh
     pull: if-not-exists
     settings:
-      k8s_server: https://172.31.0.156:6443
-      k8s_token:
-        from_secret: k8s_token-stg
-      k8s_ca_crt:
-        from_secret: k8s_ca_crt-stg
-      k8s_skip_tls: false
-      namespace: qixiaowei-stg1
-      templates:
-        - /root/deploy/deploy-stg.yaml
-      app_name: qixiaowei-gateway
+      host:
+        from_secret: host-stg
+      username:
+        from_secret: host-username-stg
+      password:
+        from_secret: host-pwd-stg
+      port: 22
+      script:
+        - kubectl apply -f deploy/deploy-stg.yaml
