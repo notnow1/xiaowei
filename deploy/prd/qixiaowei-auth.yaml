@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: qixiaowei-auth
+  name: qixiaowei-auth
+  namespace: qixiaowei-cloud
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qixiaowei-auth
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: qixiaowei-auth
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      imagePullSecrets:
+        - name: harbor-deploy
+      containers:
+        - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth:v1.0.0
+          imagePullPolicy: IfNotPresent
+          name: qixiaowei-auth
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: host-time
+              readOnly: true
+              mountPath: /etc/localtime
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: qixiaowei-auth
+  name: qixiaowei-auth
+  namespace: qixiaowei-cloud
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: qixiaowei-auth
+  sessionAffinity: None
+  type: ClusterIP
