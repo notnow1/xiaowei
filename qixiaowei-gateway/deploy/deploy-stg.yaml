@@ -29,7 +29,7 @@ spec:
       imagePullSecrets:
         - name: harbor-deploy
       containers:
-        - image: $REGISTRY/$HARBOR_PROJECT/qixiaowei-gateway:SNAPSHOT-$BUILD_NUMBER
+        - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway:v1.0.${DRONE_BUILD_NUMBER}
           imagePullPolicy: IfNotPresent
           name: qixiaowei-gateway
           ports:
