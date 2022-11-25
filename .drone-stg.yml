@@ -113,7 +113,11 @@ steps:
       - envsubst '${imagetag}' < deploy/stg/qixiaowei-operate-cloud.yaml | kubectl apply -f -
       - envsubst '${imagetag}' < deploy/stg/qixiaowei-file.yaml | kubectl apply -f -
   depends_on:
-    - scp
+    - build-qixiaowei-gateway
+    - build-qixiaowei-auth
+    - build-qixiaowei-system-manage
+    - build-qixiaowei-operate-cloud
+    - build-qixiaowei-file
 
 volumes:
   - name: cache
