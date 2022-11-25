@@ -94,29 +94,6 @@ steps:
   depends_on:
     - compile
 
-- name: scp
-  pull: if-not-exists
-  image: appleboy/drone-scp
-  settings:
-    host:
-      from_secret: host-stg
-    username:
-      from_secret: host-username-stg
-    password:
-      from_secret: host-pwd-stg
-    port: 22
-    command_timeout: 2m
-    target: /root/k8s/qxw/
-    source: ./deploy/
-    rm: true
-    overwrite: true
-  depends_on:
-    - build-qixiaowei-gateway
-    - build-qixiaowei-auth
-    - build-qixiaowei-system-manage
-    - build-qixiaowei-operate-cloud
-    - build-qixiaowei-file
-
 - name: deploy
   pull: if-not-exists
   image: appleboy/drone-ssh
@@ -129,12 +106,12 @@ steps:
       from_secret: host-pwd-stg
     port: 22
     script:
-      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth:v1.0.${DRONE_BUILD_NUMBER}
-      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway:v1.0.${DRONE_BUILD_NUMBER}
-      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage:v1.0.${DRONE_BUILD_NUMBER}
-      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud:v1.0.${DRONE_BUILD_NUMBER}
-      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file:v1.0.${DRONE_BUILD_NUMBER}
-      - kubectl apply -k k8s/qxw/deploy/stg/
+      - export imagetag=v1.0.${DRONE_BUILD_NUMBER}
+      - envsubst '${imagetag}' < deploy/stg/qixiaowei-gateway.yaml | kubectl apply -f -
+      - envsubst '${imagetag}' < deploy/stg/qixiaowei-auth.yaml | kubectl apply -f -
+      - envsubst '${imagetag}' < deploy/stg/qixiaowei-system-manage.yaml | kubectl apply -f -
+      - envsubst '${imagetag}' < deploy/stg/qixiaowei-operate-cloud.yaml | kubectl apply -f -
+      - envsubst '${imagetag}' < deploy/stg/qixiaowei-file.yaml | kubectl apply -f -
   depends_on:
     - scp
 
