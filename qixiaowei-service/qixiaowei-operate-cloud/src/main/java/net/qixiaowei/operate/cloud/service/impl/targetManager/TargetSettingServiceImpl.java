@@ -87,7 +87,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     @Override
     public List<TargetSettingDTO> selectTargetSettingList(TargetSettingDTO targetSettingDTO) {
         Integer targetYear = targetSettingDTO.getTargetYear();
-        BigDecimal zero = new BigDecimal(0);
         if (StringUtils.isNull(targetYear)) {
             throw new ServiceException("请输入目标年度");
         }
@@ -104,7 +103,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             // 无数据也要返回五个预置数据
             int i = 0;
             for (String indicatorCode : indicatorCodes) {
-                TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, zero, indicatorByCode);
+                TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, BigDecimal.ZERO, indicatorByCode);
                 if (StringUtils.isNotNull(zeroDto)) {
                     i += 1;
                     zeroDto.setSort(i);
@@ -127,7 +126,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
         //如果那三个需要赋值 0
         for (String indicatorCode : indicatorCodes) {
-            TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, zero, indicatorByCode);
+            TargetSettingDTO zeroDto = setTargetSettingZero(indicatorCode, BigDecimal.ZERO, indicatorByCode);
             if (StringUtils.isNotNull(zeroDto)) {
                 sort += 1;
                 zeroDto.setSort(sort);
@@ -1824,22 +1823,22 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 case 0:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("1.应回尽回");
-                    targetSettingRecoveriesDTO.setActualLastYear(zero);
-                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingRecoveriesDTO.setActualLastYear(BigDecimal.ZERO);
+                    setRecoveriesValue(targetSettingRecoveriesDTO, BigDecimal.ZERO);
                     targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
                     break;
                 case 1:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("2.逾期清理");
-                    targetSettingRecoveriesDTO.setActualLastYear(zero);
-                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingRecoveriesDTO.setActualLastYear(BigDecimal.ZERO);
+                    setRecoveriesValue(targetSettingRecoveriesDTO, BigDecimal.ZERO);
                     targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
                     break;
                 case 2:
                     targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
                     targetSettingRecoveriesDTO.setPrefixType("3.提前回款");
-                    targetSettingRecoveriesDTO.setActualLastYear(zero);
-                    setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+                    targetSettingRecoveriesDTO.setActualLastYear(BigDecimal.ZERO);
+                    setRecoveriesValue(targetSettingRecoveriesDTO, BigDecimal.ZERO);
                     targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
                     break;
                 case 3:
@@ -1851,9 +1850,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                         targetSettingRecoveriesDTO.setGuaranteedValue(targetIncomeByIndicator.getGuaranteedValue());
                         targetSettingRecoveriesDTO.setChallengeValue(targetIncomeByIndicator.getChallengeValue());
                     } else {
-                        targetSettingRecoveriesDTO.setTargetValue(zero);
-                        targetSettingRecoveriesDTO.setGuaranteedValue(zero);
-                        targetSettingRecoveriesDTO.setChallengeValue(zero);
+                        targetSettingRecoveriesDTO.setTargetValue(BigDecimal.ZERO);
+                        targetSettingRecoveriesDTO.setGuaranteedValue(BigDecimal.ZERO);
+                        targetSettingRecoveriesDTO.setChallengeValue(BigDecimal.ZERO);
                     }
                     saleIncomeGoal = targetSettingRecoveriesDTO;
                     targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
@@ -1866,7 +1865,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
         targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
-        setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+        setRecoveriesValue(targetSettingRecoveriesDTO, BigDecimal.ZERO);
         targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
 //        【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
@@ -1893,7 +1892,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 .subtract(periodReceivables.getGuaranteedValue());
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
         targetSettingRecoveriesDTO.setPrefixType("合计");
-        setRecoveriesValue(targetSettingRecoveriesDTO, zero);
+        setRecoveriesValue(targetSettingRecoveriesDTO, BigDecimal.ZERO);
         targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
     }
 
