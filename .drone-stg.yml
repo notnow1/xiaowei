@@ -23,7 +23,7 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
       - v1.0.${DRONE_BUILD_NUMBER}
@@ -39,7 +39,7 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
     dockerfile: qixiaowei-auth/Dockerfile
     tags:
       - v1.0.${DRONE_BUILD_NUMBER}
@@ -55,7 +55,7 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage
     dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
     tags:
       - v1.0.${DRONE_BUILD_NUMBER}
@@ -71,7 +71,7 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-operate-cloud
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud
     dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
     tags:
       - v1.0.${DRONE_BUILD_NUMBER}
@@ -87,7 +87,7 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-file
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
     dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
     tags:
       - v1.0.${DRONE_BUILD_NUMBER}
