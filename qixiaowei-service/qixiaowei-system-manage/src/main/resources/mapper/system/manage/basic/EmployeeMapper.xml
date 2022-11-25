@@ -9,7 +9,8 @@
             n.nation_name,
             p.post_name as employee_post_name,
             d.department_name as employee_department_name,
-            concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
+            case when ors.rank_prefix_code is null then p.post_rank
+                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code, p.post_rank) end as post_rank_name,
             ei.employee_info_id,
             ei.employee_id,
             ei.marital_status,
@@ -23,7 +24,8 @@
             ei.wechat_code,
             ei.emergency_contact,
             ei.emergency_mobile,
-            concat(ors.rank_prefix_code, e.employee_rank) as employee_rank_name,
+            case when ors.rank_prefix_code is null then e.employee_rank
+                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code, e.employee_rank) end as employee_rank_name,
             e.employee_id,
             e.employee_code,
             e.employee_name,
@@ -100,7 +102,8 @@
         p.post_code,
         d.department_name as employee_department_name,
         d.department_code,
-        concat(ors.rank_prefix_code, e.employee_rank) as employee_rank_name,
+        case when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code, e.employee_rank) end as employee_rank_name,
         e.employee_id,
         e.employee_code,
         e.employee_name,
@@ -206,10 +209,14 @@
             and p.post_name like '%${employee.employeePostName}%'
         </if>
         <if test="employee.postRankName != null and employee.postRankName != ''">
-            and concat(ors.rank_prefix_code, p.post_rank) like '%${employee.postRankName}%'
+            and         case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code, p.post_rank) end
+            like '%${employee.postRankName}%'
         </if>
         <if test="employee.employeeRankName != null and employee.employeeRankName != ''">
-            and concat(ors.rank_prefix_code, e.employee_rank) like '%${employee.employeeRankName}%'
+            and  case when ors.rank_prefix_code is null then e.employee_rank
+            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code, e.employee_rank) end
+            like '%${employee.employeeRankName}%'
         </if>
         <if test="employee.employeeId != null">
             and e.employee_id like '%${employee.employeeId}%'
@@ -395,7 +402,8 @@
         p.post_code,
         d.department_name as employee_department_name,
         d.department_code,
-        concat(ors.rank_prefix_code, ee.employee_rank) as employee_rank_name,
+        case when ors.rank_prefix_code is null then ee.employee_rank
+        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code, ee.employee_rank) end as employee_rank_name,
         ee.employee_id, ee.employee_code, ee.employee_name, ee.employee_gender, ee.identity_type, ee.identity_card, ee.employee_birthday,
         ee.employee_mobile, ee.employee_email, ee.employee_department_id, ee.employee_post_id, ee.employee_rank, ee.employee_basic_wage,
         ee.employment_date, ee.departure_date, ee.employment_status, ee.status, ee.delete_flag, ee.create_by, ee.create_time, ee.update_by,
@@ -514,15 +522,17 @@
     <select id="selectPostSalaryReportList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
         DISTINCT
-        case when TIMESTAMPDIFF(month,e.employment_date,NOW())=0 then concat(1,'月') else
-        concat(TIMESTAMPDIFF(month,e.employment_date,NOW()),'月') end as working_age,
+        case when TIMESTAMPDIFF(month,e.employment_date,NOW())=0 then concat(1,'月')
+        when TIMESTAMPDIFF(month,e.employment_date,NOW()) &lt; 12 then concat(TIMESTAMPDIFF(month,e.employment_date,NOW()),'月')
+        when TIMESTAMPDIFF(month,e.employment_date,NOW()) &gt; 12 then concat(TIMESTAMPDIFF(month,e.employment_date,NOW())/12,'年',        case when TIMESTAMPDIFF(month,e.employment_date,NOW())%12=0 then '月' when TIMESTAMPDIFF(month,e.employment_date,NOW())%12 &gt; 0 then concat(TIMESTAMPDIFF(month,e.employment_date,NOW()),'月') end ) end as working_age,
         p.post_name as employee_post_name,
         p.post_code,
         d.department_name as employee_department_name,
         d.department_leader_id as in_charge,
         d.department_code,
         ors.official_rank_system_name,
-        concat(ors.rank_prefix_code, e.employee_rank) as employee_rank_name,
+        case when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,e.employee_rank) end as employee_rank_name,
         e.employee_id,
         e.employee_code,
         e.employee_name,
@@ -579,13 +589,16 @@
             and e.employee_post_id =#{employee.employeePostId}
         </if>
         <if test="employee.employeeRankName != null and employee.employeeRankName != ''">
-            and concat(ors.rank_prefix_code, e.employee_rank) =#{employee.employeeRankName}
+           and  case when ors.rank_prefix_code is null then e.employee_rank
+            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code, e.employee_rank) end  =#{employee.employeeRankName}
         </if>
     </select>
     <!--    新增人力预算上年期末数集合-->
     <select id="selecTamountLastYearList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT
-            concat(ors.rank_prefix_code, e.employee_rank) as employeeRankName,
+            case when ors.rank_prefix_code is null then e.employee_rank
+                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,e.employee_rank) end
+                as employeeRankName,
             case when date_format(now(),'%Y') 	&lt;   #{employee.planYear} then sum(employment_status=1)
                  when date_format(now(),'%Y') = #{employee.planYear} and date_format(now(),'%m') 	&gt;0 and date_format(now(),'%m') 	&lt;  7  then sum(case when date_format(departure_date,'%Y')	&lt;  #{employee.planYear}-1 then employment_status=1 end)
                  when date_format(now(),'%Y') = #{employee.planYear} and date_format(now(),'%m') 	&gt;6 and date_format(now(),'%m') 	&lt;  13  then sum( employment_status=1)
@@ -600,6 +613,8 @@
                               and ors.delete_flag = 0
                               and p.official_rank_system_id=#{employee.officialRankSystemId}
         where e.employee_department_id=#{employee.employeeDepartmentId}
+          and p.official_rank_system_id=#{employee.officialRankSystemId}
+        group by employeeRankName
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
