@@ -26,7 +26,7 @@ steps:
     repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
-      - v1.0.0
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -42,7 +42,7 @@ steps:
     repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
     dockerfile: qixiaowei-auth/Dockerfile
     tags:
-      - v1.0.0
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -58,7 +58,7 @@ steps:
     repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage
     dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
     tags:
-      - v1.0.0
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -74,7 +74,7 @@ steps:
     repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud
     dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
     tags:
-      - v1.0.0
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -90,7 +90,7 @@ steps:
     repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
     dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
     tags:
-      - v1.0.0
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -129,6 +129,11 @@ steps:
       from_secret: host-pwd
     port: 12205
     script:
+      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth:v1.0.${DRONE_BUILD_NUMBER}
+      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway:v1.0.${DRONE_BUILD_NUMBER}
+      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage:v1.0.${DRONE_BUILD_NUMBER}
+      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud:v1.0.${DRONE_BUILD_NUMBER}
+      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-file:v1.0.${DRONE_BUILD_NUMBER}
       - kubectl apply -k k8s/qxw/deploy/prd/
   depends_on:
     - scp
