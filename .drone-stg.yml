@@ -27,6 +27,7 @@ steps:
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
       - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -43,6 +44,7 @@ steps:
     dockerfile: qixiaowei-auth/Dockerfile
     tags:
       - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -59,6 +61,7 @@ steps:
     dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
     tags:
       - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -75,6 +78,7 @@ steps:
     dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
     tags:
       - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -91,6 +95,7 @@ steps:
     dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
     tags:
       - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -129,7 +134,6 @@ steps:
       from_secret: host-pwd-stg
     port: 22
     script:
-      - kubectl delete -k k8s/qxw/deploy/stg/
       - kubectl apply -k k8s/qxw/deploy/stg/
   depends_on:
     - scp

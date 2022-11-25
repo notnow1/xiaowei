@@ -29,7 +29,7 @@ spec:
       imagePullSecrets:
         - name: harbor-deploy
       containers:
-        - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage:latest
+        - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage:v1.0.5
           name: qixiaowei-system-manage
           imagePullPolicy: IfNotPresent
           ports:
