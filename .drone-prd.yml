@@ -129,12 +129,12 @@ steps:
       from_secret: host-pwd
     port: 12205
     script:
-      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth:v1.0.${DRONE_BUILD_NUMBER}
-      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway:v1.0.${DRONE_BUILD_NUMBER}
-      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage:v1.0.${DRONE_BUILD_NUMBER}
-      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud:v1.0.${DRONE_BUILD_NUMBER}
-      - kustomize edit set imagetag hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-file:v1.0.${DRONE_BUILD_NUMBER}
-      - kubectl apply -k k8s/qxw/deploy/prd/
+      - export imagetag=v1.0.${DRONE_BUILD_NUMBER}
+      - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-gateway.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-auth.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-system-manage.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-operate-cloud.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-file.yaml | kubectl apply -f -
   depends_on:
     - scp
 
