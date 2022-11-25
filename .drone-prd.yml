@@ -5,7 +5,7 @@ name: qixiaowei-cloud-prd
 steps:
 - name: compile
   pull: if-not-exists
-  image: docker.io/library/maven:3.8.6-openjdk-8
+  image: docker.io/library/maven:3.8.6-jdk-8
   volumes:
     - name: cache
       path: /root/.m2
