@@ -274,6 +274,7 @@
             update_time
         from department
         where delete_flag = 0
+        and status=1
     </select>
     <!--    查询code编码是否已经存在-->
     <select id="selectDepartmentCode" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">

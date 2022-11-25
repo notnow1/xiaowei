@@ -109,10 +109,10 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                 //上年期末人数
                 Integer numberLastYear = employeeBudgetDetailsDTO.getNumberLastYear();
-                //本年新增人数
-                Integer countAdjust = employeeBudgetDetailsDTO.getCountAdjust();
+                //平均新增人数
+                BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
                 //年度平均人数 = 上年期末数+平均新增人数
-                employeeBudgetDetailsDTO.setAnnualAverageNum(numberLastYear + countAdjust);
+                employeeBudgetDetailsDTO.setAnnualAverageNum(new BigDecimal(numberLastYear.toString()).add(averageAdjust));
                 List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS1 = mapList.get(employeeBudgetDetailsDTO.getEmployeeBudgetDetailsId());
                 //sterm流求和
                 Integer reduce = employeeBudgetAdjustsDTOS1.stream().filter(Objects::nonNull).map(EmployeeBudgetAdjustsDTO::getNumberAdjust).reduce(0, Integer::sum);
@@ -173,7 +173,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             Integer amountLastYear = budgetDTO.getAmountLastYear();
             Integer amountAdjust = budgetDTO.getAmountAdjust();
             if (null != amountLastYear && null != amountAdjust){
-                 amountAverageAdjust = amountLastYear + amountAdjust;
+                amountAverageAdjust = amountLastYear + amountAdjust;
             }
             //年度平均人数 = 上年期末数+平均新增人数
             budgetDTO.setAnnualAverageNum(amountAverageAdjust);
