@@ -69,8 +69,16 @@ public class RemoteEmployee implements RemoteEmployeeService {
         return R.ok(employeeService.selectEmployeeByEmployeeIds(employeeIds));
     }
 
+    /**
+     * 根据部门 职级 获取人员信息集合
+     * @param list
+     * @param source
+     * @return
+     */
     @Override
-    public R<List<EmployeeDTO>> selectByBudgeList(EmployeeDTO employeeDTO, String source) {
-        return null;
+    @InnerAuth
+    @PostMapping("/selectByBudgeList")
+    public R<List<EmployeeDTO>> selectByBudgeList(@RequestBody List<List<Long>> list, String source) {
+        return R.ok(employeeService.selectByBudgeList(list));
     }
 }

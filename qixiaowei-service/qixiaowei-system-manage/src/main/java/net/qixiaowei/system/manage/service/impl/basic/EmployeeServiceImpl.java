@@ -517,35 +517,44 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
         List<EmployeeDTO> employeeDTOList = employeeMapper.selecTamountLastYearList(employee);
         List<OfficialRankSystemDTO> officialRankSystemDTOs = new ArrayList<>();
-        if (StringUtils.isNotEmpty(employeeDTOList)) {
-            //职级起始级别
-            Integer rankStart = officialRankSystemDTO.getRankStart();
-            //职级终止级别
-            Integer rankEnd = officialRankSystemDTO.getRankEnd();
+        //职级起始级别
+        Integer rankStart = officialRankSystemDTO.getRankStart();
+        //职级终止级别
+        Integer rankEnd = officialRankSystemDTO.getRankEnd();
 
-            for (Integer i = rankStart; i <= rankEnd; i++) {
-                OfficialRankSystemDTO officialRankSystemDTO1 = new OfficialRankSystemDTO();
-                //职级名称
-                officialRankSystemDTO1.setRankCodeName(officialRankSystemDTO.getRankPrefixCode() + i);
-                //职级级别
-                officialRankSystemDTO1.setRankCode(i);
-                officialRankSystemDTO1.setAmountLastYear(0);
-                officialRankSystemDTOs.add(officialRankSystemDTO1);
-            }
+        for (Integer i = rankStart; i <= rankEnd; i++) {
+            OfficialRankSystemDTO officialRankSystemDTO1 = new OfficialRankSystemDTO();
+            //职级名称
+            officialRankSystemDTO1.setRankCodeName(officialRankSystemDTO.getRankPrefixCode() + i);
+            //职级级别
+            officialRankSystemDTO1.setRankCode(i);
+            officialRankSystemDTO1.setAmountLastYear(0);
+            officialRankSystemDTOs.add(officialRankSystemDTO1);
+        }
 
-            //比对职级级别 相同的赋值 不同的赋0
-            if (StringUtils.isNotEmpty(officialRankSystemDTOs) && StringUtils.isNotEmpty(employeeDTOList) && employeeDTOList.get(0) != null ) {
-                for (OfficialRankSystemDTO rankSystemDTO : officialRankSystemDTOs) {
-                    for (EmployeeDTO dto : employeeDTOList) {
-                        if (StringUtils.equals(rankSystemDTO.getRankCodeName(), dto.getEmployeeRankName())) {
+        //比对职级级别 相同的赋值 不同的赋0
+        if (StringUtils.isNotEmpty(officialRankSystemDTOs) && StringUtils.isNotEmpty(employeeDTOList) && employeeDTOList.get(0) != null ) {
+            for (OfficialRankSystemDTO rankSystemDTO : officialRankSystemDTOs) {
+                for (EmployeeDTO dto : employeeDTOList) {
+                    if (StringUtils.equals(rankSystemDTO.getRankCodeName(), dto.getEmployeeRankName())) {
 
-                            rankSystemDTO.setAmountLastYear(dto.getAmountLastYear());
-                        }
+                        rankSystemDTO.setAmountLastYear(dto.getAmountLastYear());
                     }
                 }
             }
         }
+
         return officialRankSystemDTOs;
+    }
+
+    /**
+     * 根据部门 职级 获取人员信息集合
+     * @param list
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> selectByBudgeList(List<List<Long>> list) {
+        return  employeeMapper.selectByBudgeList(list);
     }
 
 

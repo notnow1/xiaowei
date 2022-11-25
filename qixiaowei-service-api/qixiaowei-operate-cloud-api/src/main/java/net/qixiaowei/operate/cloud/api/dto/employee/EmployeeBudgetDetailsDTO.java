@@ -79,6 +79,15 @@ public class EmployeeBudgetDetailsDTO {
      */
     @NotNull(message = "上年期末人数不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
     private  Integer numberLastYear;
+
+    /**
+     * 上年平均工资
+     */
+    private  BigDecimal agePayAmountLastYear;
+    /**
+     * 增人/减人工资包
+     */
+    private  BigDecimal increaseAndDecreasePay;
     /**
      * 本年新增人数
      */
@@ -89,6 +98,10 @@ public class EmployeeBudgetDetailsDTO {
      */
     @NotNull(message = "平均新增数不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
     private BigDecimal averageAdjust;
+    /**
+     * 平均规划新增人数
+     */
+    private BigDecimal averageAdjustPlan;
     /**
      * 年度平均人数
      */

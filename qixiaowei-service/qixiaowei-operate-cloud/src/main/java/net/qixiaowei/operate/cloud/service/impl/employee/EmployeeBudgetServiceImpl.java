@@ -11,9 +11,12 @@ import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetAdjusts;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetDetails;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
+import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
@@ -36,6 +39,8 @@ import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.constraints.NotNull;
 
 
 /**
@@ -60,6 +65,8 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
     @Autowired
     private RemoteEmployeeService remoteEmployeeService;
+    @Autowired
+    private SalaryPayMapper salaryPayMapper;
 
 
     /**
@@ -90,12 +97,13 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetId(employeeBudgetId);
 
         //岗位职级远程调用
-        R<List<String>> listR = remoteOfficialRankSystemService.selectRankById(employeeBudgetDTO.getOfficialRankSystemId(), SecurityConstants.INNER);
-        List<String> data2 = listR.getData();
-        if (StringUtils.isNotEmpty(data2)){
-            for (int i = 0; i < employeeBudgetDetailsDTOS.size(); i++) {
-                employeeBudgetDetailsDTOS.get(i).setOfficialRankName(data2.get(i));
+        R<OfficialRankSystemDTO> officialRankSystemDTOR1 = remoteOfficialRankSystemService.selectById(employeeBudgetDTO.getOfficialRankSystemId(), SecurityConstants.INNER);
+        OfficialRankSystemDTO data2 = officialRankSystemDTOR1.getData();
+        if (StringUtils.isNotNull(data2)){
+            for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                employeeBudgetDetailsDTO.setOfficialRankName(data2.getRankPrefixCode()+employeeBudgetDetailsDTO.getOfficialRank());
             }
+
         }
 
         List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
@@ -198,7 +206,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         BeanUtils.copyProperties(employeeBudgetDTO, employeeBudget);
         EmployeeBudgetDTO employeeBudgetDTO1 = employeeBudgetMapper.selectEmployeeBudget(employeeBudget);
         if (StringUtils.isNotNull(employeeBudgetDTO1)) {
-            throw new ServiceException("已存在相同预算周期！");
+            throw new ServiceException("人力预算已存在！");
         }
         employeeBudget.setCreateBy(SecurityUtils.getUserId());
         employeeBudget.setCreateTime(DateUtils.getNowDate());
@@ -236,14 +244,15 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                 List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetDetailsDTO.getEmployeeBudgetAdjustsDTOS();
                 if (StringUtils.isNotEmpty(employeeBudgetAdjustsDTOS)){
+                    //本年新增人数
+                    Integer countAdjust = 0;
                     //人力预算详情明细表
                     for (EmployeeBudgetAdjustsDTO employeeBudgetAdjustsDTO : employeeBudgetAdjustsDTOS) {
                         //本年新增人数
-                        Integer countAdjust = 0;
-                        //本年新增人数
                         countAdjust = countAdjust + employeeBudgetAdjustsDTO.getNumberAdjust();
-                        employeeBudgetDetailsDTO.setCountAdjust(countAdjust);
+
                     }
+                    employeeBudgetDetailsDTO.setCountAdjust(countAdjust);
                 }
             }
             //上年期末人数
@@ -256,7 +265,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 //上年期末人数
                 amountLastYear = amountLastYear + employeeBudgetDetailsDTO.getNumberLastYear();
                 //本年新增人数
-                amountAdjust = amountLastYear + employeeBudgetDetailsDTO.getCountAdjust();
+                amountAdjust = amountAdjust+employeeBudgetDetailsDTO.getNumberLastYear() + employeeBudgetDetailsDTO.getCountAdjust();
                 //平均新增数
                 amountAverageAdjust = amountAverageAdjust.add(employeeBudgetDetailsDTO.getAverageAdjust());
             }
@@ -340,12 +349,46 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      */
     @Override
     public int updateEmployeeBudget(EmployeeBudgetDTO employeeBudgetDTO) {
+        int i = 0;
+        //人力预算主表
+        EmployeeBudget employeeBudget = new EmployeeBudget();
         //人力预算明细表集合
         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDTO.getEmployeeBudgetDetailsDTOS();
+        //修改人力预算详情表集合
+        List<EmployeeBudgetDetails> employeeBudgetDetailsList = new ArrayList<>();
         //修改人力预算调整表集合
         List<EmployeeBudgetAdjusts> employeeBudgetAdjustsList = new ArrayList<>();
+        //列表本年新增人数
+        Integer amountAdjust = 0;
+        //列表上年期末人数
+        Integer amountLastYear = 0;
+        //列表平均新增数
+        BigDecimal amountAverageAdjust = new BigDecimal("0");
         if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
             for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                //本年新增人数
+                Integer countAdjust = 0;
+                //人力预算调整表集合
+                List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetDetailsDTO.getEmployeeBudgetAdjustsDTOS();
+                if (StringUtils.isNotEmpty(employeeBudgetAdjustsDTOS)) {
+                    for (EmployeeBudgetAdjustsDTO employeeBudgetAdjustsDTO : employeeBudgetAdjustsDTOS) {
+                        countAdjust=countAdjust+employeeBudgetAdjustsDTO.getNumberAdjust();
+                    }
+                }
+                //本年新增人数
+                employeeBudgetDetailsDTO.setCountAdjust(countAdjust);
+            }
+            for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                //上年期末人数
+                amountLastYear = amountLastYear + employeeBudgetDetailsDTO.getNumberLastYear();
+                //本年新增人数
+                amountAdjust = amountAdjust+employeeBudgetDetailsDTO.getNumberLastYear() + employeeBudgetDetailsDTO.getCountAdjust();
+                //平均新增数
+                amountAverageAdjust = amountAverageAdjust.add(employeeBudgetDetailsDTO.getAverageAdjust());
+                //人力预算详情表
+                EmployeeBudgetDetails employeeBudgetDetails = new EmployeeBudgetDetails();
+                BeanUtils.copyProperties(employeeBudgetDetailsDTO,employeeBudgetDetails);
+
                 //人力预算调整表集合
                 List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetDetailsDTO.getEmployeeBudgetAdjustsDTOS();
                 if (StringUtils.isNotEmpty(employeeBudgetAdjustsDTOS)) {
@@ -358,10 +401,42 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                         employeeBudgetAdjustsList.add(employeeBudgetAdjusts);
                     }
                 }
+                employeeBudgetDetailsList.add(employeeBudgetDetails);
             }
-            return employeeBudgetAdjustsMapper.updateEmployeeBudgetAdjustss(employeeBudgetAdjustsList);
+
+            BeanUtils.copyProperties(employeeBudgetDTO,employeeBudget);
+            //列表上年期末人数
+            employeeBudget.setAmountLastYear(amountLastYear);
+            //列表本年新增人数
+            employeeBudget.setAmountAdjust(amountAdjust);
+            //列表平均新增数
+            employeeBudget.setAmountAverageAdjust(amountAverageAdjust);
+
+            if (StringUtils.isNotNull(employeeBudget)){
+                employeeBudget.setUpdateBy(SecurityUtils.getUserId());
+                employeeBudget.setUpdateTime(DateUtils.getNowDate());
+                try {
+                    i= employeeBudgetMapper.updateEmployeeBudget(employeeBudget);
+                } catch (Exception e) {
+                    throw new ServiceException("修改人力预算失败");
+                }
+            }
+            if (StringUtils.isNotEmpty(employeeBudgetDetailsList)){
+                try {
+                    employeeBudgetDetailsMapper.updateEmployeeBudgetDetailss(employeeBudgetDetailsList);
+                } catch (Exception e) {
+                    throw new ServiceException("修改人力预算详情失败");
+                }
+            }
+            if (StringUtils.isNotEmpty(employeeBudgetAdjustsList)){
+                try {
+                    employeeBudgetAdjustsMapper.updateEmployeeBudgetAdjustss(employeeBudgetAdjustsList);
+                } catch (Exception e) {
+                    throw new ServiceException("修改人力预算详情明细失败");
+                }
+            }
         }
-        return 0;
+        return i;
     }
 
     /**
@@ -617,10 +692,86 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     }
                 }
             }
+            List<List<Long>> list = new ArrayList<>();
+            //部门id集合
+            List<Long> collect2 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getDepartmentId).filter(Objects::nonNull).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect2)){
+                list.add(collect2);
+            }
+            //职级体系ID集合
+            List<Long> collect3 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getOfficialRankSystemId).filter(Objects::nonNull).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect3)){
+                list.add(collect3);
+            }
+            //封装增人减人工资
+            this.packPayAmountNum(employeeBudgetDTO, employeeBudgetDetailsDTOS, list);
 
         }
 
-        return employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);
+        return employeeBudgetDetailsDTOS;
     }
+
+    /**
+     * 封装增人减人工资
+     * @param employeeBudgetDTO
+     * @param employeeBudgetDetailsDTOS
+     * @param list
+     */
+    private void packPayAmountNum(EmployeeBudgetDTO employeeBudgetDTO, List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS, List<List<Long>> list) {
+        if (StringUtils.isNotEmpty(list)){
+            R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByBudgeList(list, SecurityConstants.INNER);
+            List<EmployeeDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)){
+                for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                    //人员id集合
+                    List<Long> employeeIds = new ArrayList<>();
+                    for (EmployeeDTO datum : data) {
+                        //部门id 和个人职级相等
+                        if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() &&
+                                employeeBudgetDetailsDTO.getOfficialRank() == datum.getEmployeeRank()){
+                            //人员id
+                            employeeIds.add(datum.getEmployeeId());
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(employeeIds)){
+                        //人员数量
+                        int size = employeeIds.size();
+                        //根据人员id集合查询工资发薪表数据 计算该部门该职级体系下 根据职级等级分组的上年平均工资
+                        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayByBudggetEmployeeIds(employeeIds, employeeBudgetDTO.getBudgetYear());
+                        if (salaryPayDTOS.size()<12){
+                            //发薪金额总计
+                            BigDecimal payAmountSum = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            if (null != payAmountSum && size>0){
+                                BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)));
+                                //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
+                            }
+                        }else if (salaryPayDTOS.size()>12){
+                            List<SalaryPayDTO> salaryPayDTOS1 = salaryPayDTOS.subList(0, 11);
+                            BigDecimal payAmountSum = salaryPayDTOS1.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            if (null != payAmountSum && size>0){
+                                BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)));
+                                //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
+                            }
+                        }
+                        //上年平均工资
+                        BigDecimal agePayAmountLastYear = employeeBudgetDetailsDTO.getAgePayAmountLastYear();
+                        //平均新增数
+                        BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
+                        if (null != agePayAmountLastYear && null != averageAdjust && agePayAmountLastYear.compareTo(new BigDecimal("0"))!= 0 && averageAdjust.compareTo(new BigDecimal("0")) != 0){
+                            //增人/减人工资包  公式=平均规划新增人数×上年平均工资。可为负数（代表部门人数减少）
+                            BigDecimal increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust);
+                            employeeBudgetDetailsDTO.setIncreaseAndDecreasePay(increaseAndDecreasePay);
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
+
+
 }
 

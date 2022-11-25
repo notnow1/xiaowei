@@ -589,7 +589,7 @@
             and e.employee_post_id =#{employee.employeePostId}
         </if>
         <if test="employee.employeeRankName != null and employee.employeeRankName != ''">
-           and  case when ors.rank_prefix_code is null then e.employee_rank
+            and  case when ors.rank_prefix_code is null then e.employee_rank
             when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code, e.employee_rank) end  =#{employee.employeeRankName}
         </if>
     </select>
@@ -598,7 +598,7 @@
         SELECT
             case when ors.rank_prefix_code is null then e.employee_rank
                  when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,e.employee_rank) end
-                as employeeRankName,
+                    as employeeRankName,
             case when date_format(now(),'%Y') 	&lt;   #{employee.planYear} then sum(employment_status=1)
                  when date_format(now(),'%Y') = #{employee.planYear} and date_format(now(),'%m') 	&gt;0 and date_format(now(),'%m') 	&lt;  7  then sum(case when date_format(departure_date,'%Y')	&lt;  #{employee.planYear}-1 then employment_status=1 end)
                  when date_format(now(),'%Y') = #{employee.planYear} and date_format(now(),'%m') 	&gt;6 and date_format(now(),'%m') 	&lt;  13  then sum( employment_status=1)
@@ -615,6 +615,55 @@
         where e.employee_department_id=#{employee.employeeDepartmentId}
           and p.official_rank_system_id=#{employee.officialRankSystemId}
         group by employeeRankName
+    </select>
+    <!--    根据部门 职级 获取人员信息集合-->
+    <select id="selectByBudgeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        e.create_by,
+        e.create_time,
+        e.update_by,
+        e.update_time
+        FROM
+        employee e
+        left join post p
+        on
+        e.employee_post_id = p.post_id
+        and p.delete_flag = 0
+        left JOIN official_rank_system ors
+        on
+        ors.official_rank_system_id = p.official_rank_system_id
+        AND ors.delete_flag =0
+        WHERE  e.delete_flag =0
+        and e.employee_department_id in
+        <foreach item="item"
+                 collection="list.get[0]"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and ors.official_rank_system_id in
+        <foreach item="item"
+                 collection="list.get[1]"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">

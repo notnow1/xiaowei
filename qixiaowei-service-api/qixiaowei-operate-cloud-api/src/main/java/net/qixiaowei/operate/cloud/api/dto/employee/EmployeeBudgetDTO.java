@@ -13,10 +13,10 @@ import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
-* 人力预算表
-* @author TANGMICHI
-* @since 2022-11-18
-*/
+ * 人力预算表
+ * @author TANGMICHI
+ * @since 2022-11-18
+ */
 @Data
 @Accessors(chain = true)
 public class EmployeeBudgetDTO {
@@ -39,27 +39,32 @@ public class EmployeeBudgetDTO {
 
     }
     /**
-    * ID
-    */
+     * ID
+     */
     @NotNull(message = "ID不能为空", groups = {EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Long employeeBudgetId;
     /**
-    * 预算年度
-    */
+     * 预算年度
+     */
     @NotNull(message = "预算年度不能为空", groups = {EmployeeBudgetDTO.AddEmployeeBudgetDTO.class, EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Integer budgetYear;
     /**
-    * 预算部门ID
-    */
+     * 预算部门ID
+     */
     @NotNull(message = "预算部门不能为空", groups = {EmployeeBudgetDTO.AddEmployeeBudgetDTO.class, EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Long departmentId;
+
+    /**
+     * 岗位职级
+     */
+    private  Integer officialRank;
     /**
      * 预算部门名称
      */
     private  String departmentName;
     /**
-    * 职级体系ID
-    */
+     * 职级体系ID
+     */
     @NotNull(message = "职级体系不能为空", groups = {EmployeeBudgetDTO.AddEmployeeBudgetDTO.class, EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Long officialRankSystemId;
 
@@ -68,20 +73,20 @@ public class EmployeeBudgetDTO {
      */
     private  String officialRankSystemName;
     /**
-    * 预算周期:1季度;2月度
-    */
+     * 预算周期:1季度;2月度
+     */
     private  Integer budgetCycle;
     /**
-    * 上年期末人数
-    */
+     * 上年期末人数
+     */
     private  Integer amountLastYear;
     /**
-    * 本年新增人数
-    */
+     * 本年新增人数
+     */
     private  Integer amountAdjust;
     /**
-    * 平均新增数
-    */
+     * 平均新增数
+     */
     private BigDecimal amountAverageAdjust;
     /**
      * 人力预算明细表集合
@@ -94,25 +99,25 @@ public class EmployeeBudgetDTO {
      */
     private BigDecimal annualAverageNum;
     /**
-    * 删除标记:0未删除;1已删除
-    */
+     * 删除标记:0未删除;1已删除
+     */
     private  Integer deleteFlag;
     /**
-    * 创建人
-    */
+     * 创建人
+     */
     private  Long createBy;
     /**
-    * 创建时间
-    */
+     * 创建时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  createTime;
     /**
-    * 更新人
-    */
+     * 更新人
+     */
     private  Long updateBy;
     /**
-    * 更新时间
-    */
+     * 更新时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
 

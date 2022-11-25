@@ -5,11 +5,11 @@
     <select id="selectSalaryPayBySalaryPayId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
-        salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
-        withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
+            salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
+            withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
         FROM salary_pay
         WHERE salary_pay_id=#{salaryPayId}
-        and delete_flag=0
+          and delete_flag=0
         ORDER BY create_time DESC
     </select>
 
@@ -104,32 +104,47 @@
     <select id="selectSalaryPayBySomeMonth"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
-        salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
-        withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
+            salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
+            withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
         FROM
-        salary_Pay
+            salary_Pay
         WHERE
-        pay_year = #{payYear}
-        AND pay_month &gt; #{startMonth}
-        AND pay_month &lt; #{endMonth}
+            pay_year = #{payYear}
+          AND pay_month &gt; #{startMonth}
+          AND pay_month &lt; #{endMonth}
     </select>
     <!--多个年份的所有-->
     <select id="selectSalaryPayBySomeYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
+            salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
+            withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
+        FROM
+            salary_Pay
+        WHERE pay_year &gt; #{startYear}
+          AND pay_year &lt; #{endYear}
+    </select>
+    <!--    根据人员ID集合和年份查找工资发薪信息-->
+    <select id="selectSalaryPayByBudggetEmployeeIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
+        SELECT
         salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
         withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
-        FROM
-        salary_Pay
-        WHERE pay_year &gt; #{startYear}
-        AND pay_year &lt; #{endYear}
+        FROM salary_pay
+        WHERE delete_flag=0
+        AND employee_id IN
+        <foreach collection="employeeIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND pay_year &lt;={payYear}
+        order by pay_year desc
     </select>
     <!--新增工资发薪表-->
     <insert id="insertSalaryPay" useGeneratedKeys="true" keyProperty="salaryPayId">
         INSERT INTO salary_pay
         (employee_id,pay_year,pay_month,salary_amount,allowance_amount,welfare_amount,bonus_amount,withhold_remit_tax,other_deductions,pay_amount,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{salaryPay.employeeId},#{salaryPay.payYear},#{salaryPay.payMonth},#{salaryPay.salaryAmount},#{salaryPay.allowanceAmount},#{salaryPay.welfareAmount},#{salaryPay.bonusAmount},#{salaryPay.withholdRemitTax},#{salaryPay.otherDeductions},#{salaryPay.payAmount},#{salaryPay.deleteFlag},#{salaryPay.createBy},#{salaryPay.createTime},#{salaryPay.updateBy},#{salaryPay.updateTime})
+            (#{salaryPay.employeeId},#{salaryPay.payYear},#{salaryPay.payMonth},#{salaryPay.salaryAmount},#{salaryPay.allowanceAmount},#{salaryPay.welfareAmount},#{salaryPay.bonusAmount},#{salaryPay.withholdRemitTax},#{salaryPay.otherDeductions},#{salaryPay.payAmount},#{salaryPay.deleteFlag},#{salaryPay.createBy},#{salaryPay.createTime},#{salaryPay.updateBy},#{salaryPay.updateTime})
     </insert>
     <!--修改工资发薪表-->
     <update id="updateSalaryPay">
@@ -187,10 +202,10 @@
     <update id="logicDeleteSalaryPayBySalaryPayId">
         UPDATE salary_pay
         SET delete_flag= 1,
-        update_by=#{salaryPay.updateBy},
-        update_time=#{salaryPay.updateTime}
+            update_by=#{salaryPay.updateBy},
+            update_time=#{salaryPay.updateTime}
         WHERE
-        salary_pay_id=#{salaryPay.salaryPayId}
+            salary_pay_id=#{salaryPay.salaryPayId}
     </update>
     <!--逻辑批量删除工资发薪表-->
     <update id="logicDeleteSalaryPayBySalaryPayIds">

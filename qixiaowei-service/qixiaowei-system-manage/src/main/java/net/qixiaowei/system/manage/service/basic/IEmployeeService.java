@@ -12,10 +12,10 @@ import javax.validation.Valid;
 
 
 /**
-* EmployeeService接口
-* @author TANGMICHI
-* @since 2022-09-30
-*/
+ * EmployeeService接口
+ * @author TANGMICHI
+ * @since 2022-09-30
+ */
 public interface IEmployeeService{
     /**
      * 查询员工表
@@ -157,4 +157,11 @@ public interface IEmployeeService{
      * @return
      */
     List<OfficialRankSystemDTO> selecTamountLastYearList(EmployeeDTO employeeDTO);
+
+    /**
+     * 根据部门 职级 获取人员信息集合
+     * @param list
+     * @return
+     */
+    List<EmployeeDTO> selectByBudgeList(List<List<Long>> list);
 }

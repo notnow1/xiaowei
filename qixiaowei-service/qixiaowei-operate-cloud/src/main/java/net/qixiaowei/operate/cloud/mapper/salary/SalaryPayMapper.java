@@ -114,6 +114,14 @@ public interface SalaryPayMapper {
     List<SalaryPayDTO> selectSalaryPayByEmployeeIds(@Param("employeeIds") List<Long> employeeIds);
 
     /**
+     * 根据人员ID集合和年份查找工资发薪信息
+     *
+     * @param employeeIds
+     * @return
+     */
+    List<SalaryPayDTO> selectSalaryPayByBudggetEmployeeIds(@Param("employeeIds") List<Long> employeeIds,@Param("payYear") Integer payYear);
+
+    /**
      * 同一年的多个月
      *
      * @param payYear

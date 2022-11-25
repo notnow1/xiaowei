@@ -179,4 +179,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selecTamountLastYearList(@Param("employee") Employee employee);
+
+    /**
+     * 根据部门 职级 获取人员信息集合
+     * @param list
+     * @return
+     */
+    List<EmployeeDTO> selectByBudgeList(@Param("list") List<List<Long>> list);
 }
