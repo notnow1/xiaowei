@@ -26,7 +26,7 @@ steps:
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
-      - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -42,7 +42,7 @@ steps:
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
     dockerfile: qixiaowei-auth/Dockerfile
     tags:
-      - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -58,7 +58,7 @@ steps:
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage
     dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
     tags:
-      - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -74,7 +74,7 @@ steps:
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-operate-cloud
     dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
     tags:
-      - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
@@ -90,7 +90,7 @@ steps:
     repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-file
     dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
     tags:
-      - latest
+      - v1.0.${DRONE_BUILD_NUMBER}
   depends_on:
     - compile
 
