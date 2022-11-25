@@ -317,6 +317,16 @@ public class PostServiceImpl implements IPostService {
     }
 
     /**
+     * 根据部门查询岗位表列表
+     * @param departmentId
+     * @return
+     */
+    @Override
+    public List<PostDTO> selectBydepartmentId(Long departmentId) {
+        return postMapper.selectBydepartmentId(departmentId);
+    }
+
+    /**
      * 逻辑删除岗位表信息
      *
      * @param postDTO 岗位表

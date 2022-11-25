@@ -97,4 +97,11 @@ public interface IPostService{
     * @return 结果
     */
     int deletePostByPostId(Long postId);
+
+    /**
+     * 根据部门查询岗位表列表
+     * @param departmentId
+     * @return
+     */
+    List<PostDTO> selectBydepartmentId(Long departmentId);
 }

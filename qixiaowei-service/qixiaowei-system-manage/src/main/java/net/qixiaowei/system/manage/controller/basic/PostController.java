@@ -51,6 +51,16 @@ public class PostController extends BaseController
     return AjaxResult.success(list);
     }
 
+    /**
+     * 根据部门查询岗位表列表
+     */
+    //@RequiresPermissions("system:manage:post:list")
+    @GetMapping("/postList/{departmentId}")
+    public AjaxResult selectBydepartmentId(@PathVariable Long departmentId){
+        List<PostDTO> list = postService.selectBydepartmentId(departmentId);
+        return AjaxResult.success(list);
+    }
+
 
     /**
      * 查询岗位详情
