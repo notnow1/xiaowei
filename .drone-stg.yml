@@ -134,6 +134,11 @@ steps:
       from_secret: host-pwd-stg
     port: 22
     script:
+      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth:v1.0.${DRONE_BUILD_NUMBER}
+      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway:v1.0.${DRONE_BUILD_NUMBER}
+      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage:v1.0.${DRONE_BUILD_NUMBER}
+      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud:v1.0.${DRONE_BUILD_NUMBER}
+      - kustomize edit set imagetag harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file:v1.0.${DRONE_BUILD_NUMBER}
       - kubectl apply -k k8s/qxw/deploy/stg/
   depends_on:
     - scp
