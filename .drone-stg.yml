@@ -130,11 +130,11 @@ steps:
     port: 22
     script:
       - export imagetag=v1.0.${DRONE_BUILD_NUMBER}
-      - envsubst '${imagetag}' < k8s/qxw/deploy/stg/qixiaowei-gateway.yaml | kubectl apply -f -
-      - envsubst '${imagetag}' < k8s/qxw/deploy/stg/qixiaowei-auth.yaml | kubectl apply -f -
-      - envsubst '${imagetag}' < k8s/qxw/deploy/stg/qixiaowei-system-manage.yaml | kubectl apply -f -
-      - envsubst '${imagetag}' < k8s/qxw/deploy/stg/qixiaowei-operate-cloud.yaml | kubectl apply -f -
-      - envsubst '${imagetag}' < k8s/qxw/deploy/stg/qixiaowei-file.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/stg/qixiaowei-gateway.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/stg/qixiaowei-auth.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/stg/qixiaowei-system-manage.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/stg/qixiaowei-operate-cloud.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/stg/qixiaowei-file.yaml | kubectl apply -f -
   depends_on:
     - scp
 
