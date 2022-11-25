@@ -132,4 +132,13 @@ public interface TargetOutcomeDetailsMapper {
      * @return
      */
     List<TargetOutcomeDetailsDTO> selectTargetOutcomeDetailsByIndicatorIds(@Param("indicatorIds") List<Long> indicatorIds, @Param("targetOutcomeId") Long targetOutcomeId);
+
+    /**
+     * 通过目标年度查询目标结果详情
+     *
+     * @param targetYear
+     * @param indicatorId
+     * @return
+     */
+    TargetOutcomeDetailsDTO selectTargetOutcomeDetailByTargetYear(@Param("targetYear") Integer targetYear, @Param("indicatorId") Long indicatorId);
 }

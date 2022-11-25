@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalMapper">
+    <!--    查询绩效考核表-->
+    <select id="selectPerformanceAppraisalByPerformanceAppraisalId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">
+        SELECT
+        performance_appraisal_id, performance_rank_id, appraisal_year, appraisal_name, cycle_flag, cycle_type,
+        cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow, appraisal_object,
+        appraisal_status, delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_appraisal
+        WHERE performance_appraisal_id=#{performanceAppraisalId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询绩效考核表-->
+    <select id="selectPerformanceAppraisalByPerformanceAppraisalIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">
+        SELECT
+        performance_appraisal_id, performance_rank_id, appraisal_year, appraisal_name, cycle_flag, cycle_type,
+        cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow, appraisal_object,
+        appraisal_status, delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_appraisal
+        WHERE performance_appraisal_id in
+        <foreach item="item"
+                 collection="performanceAppraisalIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询绩效考核表列表-->
+    <select id="selectPerformanceAppraisalList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">
+        SELECT
+        performance_appraisal_id, performance_rank_id, appraisal_year, appraisal_name, cycle_flag, cycle_type,
+        cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow, appraisal_object,
+        appraisal_status, delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_appraisal
+        WHERE delete_flag=0
+        <if test="performanceAppraisal.performanceAppraisalId != null">
+            and performance_appraisal_id=#{performanceAppraisal.performanceAppraisalId}
+        </if>
+        <if test="performanceAppraisal.performanceRankId != null">
+            and performance_rank_id=#{performanceAppraisal.performanceRankId}
+        </if>
+        <if test="performanceAppraisal.appraisalYear != null">
+            and appraisal_year=#{performanceAppraisal.appraisalYear}
+        </if>
+        <if test="performanceAppraisal.appraisalName != null and performanceAppraisal.appraisalName != ''">
+            and appraisal_name=#{performanceAppraisal.appraisalName}
+        </if>
+        <if test="performanceAppraisal.cycleFlag != null">
+            and cycle_flag=#{performanceAppraisal.cycleFlag}
+        </if>
+        <if test="performanceAppraisal.cycleType != null">
+            and cycle_type=#{performanceAppraisal.cycleType}
+        </if>
+        <if test="performanceAppraisal.cycleNumber != null">
+            and cycle_number=#{performanceAppraisal.cycleNumber}
+        </if>
+        <if test="performanceAppraisal.appraisalStartDate != null">
+            and appraisal_start_date=#{performanceAppraisal.appraisalStartDate}
+        </if>
+        <if test="performanceAppraisal.appraisalEndDate != null">
+            and appraisal_end_date=#{performanceAppraisal.appraisalEndDate}
+        </if>
+        <if test="performanceAppraisal.filingDate != null">
+            and filing_date=#{performanceAppraisal.filingDate}
+        </if>
+        <if test="performanceAppraisal.appraisalFlow != null">
+            and appraisal_flow=#{performanceAppraisal.appraisalFlow}
+        </if>
+        <if test="performanceAppraisal.appraisalObject != null">
+            and appraisal_object=#{performanceAppraisal.appraisalObject}
+        </if>
+        <if test="performanceAppraisal.appraisalStatus != null">
+            and appraisal_status=#{performanceAppraisal.appraisalStatus}
+        </if>
+        <if test="performanceAppraisal.deleteFlag != null">
+            and delete_flag=#{performanceAppraisal.deleteFlag}
+        </if>
+        <if test="performanceAppraisal.createBy != null">
+            and create_by=#{performanceAppraisal.createBy}
+        </if>
+        <if test="performanceAppraisal.createTime != null">
+            and create_time=#{performanceAppraisal.createTime}
+        </if>
+        <if test="performanceAppraisal.updateBy != null">
+            and update_by=#{performanceAppraisal.updateBy}
+        </if>
+        <if test="performanceAppraisal.updateTime != null">
+            and update_time=#{performanceAppraisal.updateTime}
+        </if>
+        ORDER BY appraisal_year,cycle_number
+    </select>
+    <!--新增绩效考核表-->
+    <insert id="insertPerformanceAppraisal" useGeneratedKeys="true" keyProperty="performanceAppraisalId">
+        INSERT INTO performance_appraisal
+        (performance_rank_id,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{performanceAppraisal.performanceRankId},#{performanceAppraisal.appraisalYear},#{performanceAppraisal.appraisalName},#{performanceAppraisal.cycleFlag},#{performanceAppraisal.cycleType},#{performanceAppraisal.cycleNumber},#{performanceAppraisal.appraisalStartDate},#{performanceAppraisal.appraisalEndDate},#{performanceAppraisal.filingDate},#{performanceAppraisal.appraisalFlow},#{performanceAppraisal.appraisalObject},#{performanceAppraisal.appraisalStatus},#{performanceAppraisal.deleteFlag},#{performanceAppraisal.createBy},#{performanceAppraisal.createTime},#{performanceAppraisal.updateBy},#{performanceAppraisal.updateTime})
+    </insert>
+    <!--修改绩效考核表-->
+    <update id="updatePerformanceAppraisal">
+        UPDATE performance_appraisal
+        SET
+        <if test="performanceAppraisal.performanceRankId != null">
+            performance_rank_id=#{performanceAppraisal.performanceRankId},
+        </if>
+        <if test="performanceAppraisal.appraisalYear != null">
+            appraisal_year=#{performanceAppraisal.appraisalYear},
+        </if>
+        <if test="performanceAppraisal.appraisalName != null and performanceAppraisal.appraisalName != ''">
+            appraisal_name=#{performanceAppraisal.appraisalName},
+        </if>
+        <if test="performanceAppraisal.cycleFlag != null">
+            cycle_flag=#{performanceAppraisal.cycleFlag},
+        </if>
+        <if test="performanceAppraisal.cycleType != null">
+            cycle_type=#{performanceAppraisal.cycleType},
+        </if>
+        <if test="performanceAppraisal.cycleNumber != null">
+            cycle_number=#{performanceAppraisal.cycleNumber},
+        </if>
+        <if test="performanceAppraisal.appraisalStartDate != null">
+            appraisal_start_date=#{performanceAppraisal.appraisalStartDate},
+        </if>
+        <if test="performanceAppraisal.appraisalEndDate != null">
+            appraisal_end_date=#{performanceAppraisal.appraisalEndDate},
+        </if>
+        <if test="performanceAppraisal.filingDate != null">
+            filing_date=#{performanceAppraisal.filingDate},
+        </if>
+        <if test="performanceAppraisal.appraisalFlow != null">
+            appraisal_flow=#{performanceAppraisal.appraisalFlow},
+        </if>
+        <if test="performanceAppraisal.appraisalObject != null">
+            appraisal_object=#{performanceAppraisal.appraisalObject},
+        </if>
+        <if test="performanceAppraisal.appraisalStatus != null">
+            appraisal_status=#{performanceAppraisal.appraisalStatus},
+        </if>
+        <if test="performanceAppraisal.deleteFlag != null">
+            delete_flag=#{performanceAppraisal.deleteFlag},
+        </if>
+        <if test="performanceAppraisal.createBy != null">
+            create_by=#{performanceAppraisal.createBy},
+        </if>
+        <if test="performanceAppraisal.createTime != null">
+            create_time=#{performanceAppraisal.createTime},
+        </if>
+        <if test="performanceAppraisal.updateBy != null">
+            update_by=#{performanceAppraisal.updateBy},
+        </if>
+        <if test="performanceAppraisal.updateTime != null">
+            update_time=#{performanceAppraisal.updateTime}
+        </if>
+        WHERE
+        performance_appraisal_id=#{performanceAppraisal.performanceAppraisalId}
+    </update>
+    <!--逻辑删除绩效考核表-->
+    <update id="logicDeletePerformanceAppraisalByPerformanceAppraisalId">
+        UPDATE performance_appraisal
+        SET delete_flag= 1,
+        update_by=#{performanceAppraisal.updateBy},
+        update_time=#{performanceAppraisal.updateTime}
+        WHERE
+        performance_appraisal_id=#{performanceAppraisal.performanceAppraisalId}
+    </update>
+    <!--逻辑批量删除绩效考核表-->
+    <update id="logicDeletePerformanceAppraisalByPerformanceAppraisalIds">
+        UPDATE performance_appraisal
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        performance_appraisal_id IN
+        <foreach item="item"
+                 collection="performanceAppraisalIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增绩效考核表-->
+    <insert id="batchPerformanceAppraisal">
+        INSERT INTO performance_appraisal
+        (performance_rank_id,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="performanceAppraisals"
+                 separator=",">
+            (#{item.performanceRankId},#{item.appraisalYear},#{item.appraisalName},#{item.cycleFlag},#{item.cycleType},#{item.cycleNumber},#{item.appraisalStartDate},#{item.appraisalEndDate},#{item.filingDate},#{item.appraisalFlow},#{item.appraisalObject},#{item.appraisalStatus},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除绩效考核表-->
+    <delete id="deletePerformanceAppraisalByPerformanceAppraisalId">
+        DELETE FROM performance_appraisal
+        WHERE performance_appraisal_id=#{performanceAppraisal}
+
+    </delete>
+    <!--物理批量删除绩效考核表-->
+    <delete id="deletePerformanceAppraisalByPerformanceAppraisalIds">
+        DELETE FROM performance_appraisal
+        WHERE performance_appraisal_id IN
+        <foreach item="item"
+                 collection="performanceAppraisalIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改绩效考核表-->
+    <update id="updatePerformanceAppraisals">
+        update performance_appraisal
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="performance_rank_id=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.performanceRankId != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.performanceRankId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_year=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.appraisalYear != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.appraisalYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_name=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.appraisalName != null and item.appraisalName != ''">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.appraisalName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_flag=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.cycleFlag != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.cycleFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_type=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.cycleType != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.cycleType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_number=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.cycleNumber != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.cycleNumber}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_start_date=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.appraisalStartDate != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.appraisalStartDate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_end_date=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.appraisalEndDate != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.appraisalEndDate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="filing_date=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.filingDate != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.filingDate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_flow=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.appraisalFlow != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.appraisalFlow}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_object=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.appraisalObject != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.appraisalObject}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_status=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.appraisalStatus != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.appraisalStatus}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="performanceAppraisalList" separator="or" item="item" index="index">
+            performance_appraisal_id=#{item.performanceAppraisalId}
+        </foreach>
+    </update>
+</mapper>
+
+

@@ -19,6 +19,7 @@ public interface RemoteDepartmentService {
 
     /**
      * 通过Code查找部门列表
+     *
      * @param departmentCodes
      * @param source
      * @return
@@ -28,19 +29,31 @@ public interface RemoteDepartmentService {
 
     /**
      * 通过id查找部门信息
+     *
      * @param departmentId
      * @param source
      * @return
      */
     @GetMapping(API_PREFIX_DEPARTMEN + "/departmentId")
-    R<DepartmentDTO> selectdepartmentId(@RequestParam("departmentId")  Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<DepartmentDTO> selectdepartmentId(@RequestParam("departmentId") Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过id集合查找部门信息
+     *
      * @param departmentIds
      * @param source
      * @return
      */
     @PostMapping(API_PREFIX_DEPARTMEN + "/departmentIds")
     R<List<DepartmentDTO>> selectdepartmentIds(@RequestBody List<Long> departmentIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 查找部门列表
+     *
+     * @param departmentDTO
+     * @param source
+     * @return
+     */
+    @PostMapping(API_PREFIX_DEPARTMEN + "/selectAll")
+    R<List<DepartmentDTO>> selectDepartment(@RequestBody DepartmentDTO departmentDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

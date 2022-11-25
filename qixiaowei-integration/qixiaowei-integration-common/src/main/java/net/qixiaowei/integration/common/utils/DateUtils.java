@@ -48,6 +48,18 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return dateTimeNow(YYYY_MM_DD);
     }
 
+    /**
+     * 获取当前日期, 默认格式为yyyy-MM-dd
+     *
+     * @return String
+     */
+    public static LocalDate getLocalDate() {
+        Instant instant = new Date().toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        // atZone()方法返回在指定时区从此Instant生成的ZonedDateTime。
+        return instant.atZone(zoneId).toLocalDate();
+    }
+
     public static final String getTime() {
         return dateTimeNow(YYYY_MM_DD_HH_MM_SS);
     }
@@ -153,6 +165,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     /**
+     * 获取当前日期所在半年度
+     */
+    public static int getHalfYears() {
+        int month = DateUtils.getMonth();
+        return month % 6 == 0 ? month / 6 : month / 6 + 1;
+    }
+
+    /**
      * 今年的第几周
      */
     public static int getDayOfWeek() {
@@ -185,7 +205,178 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         Calendar currCal = Calendar.getInstance();
         int currentYear = currCal.get(Calendar.YEAR);
         return getYearLast(currentYear);
+    }
 
+    /**
+     * 获取某年某月的最后一天
+     *
+     * @param month,year 时间
+     * @return Date
+     */
+    public static Date getMonthStart(int year, int month) { // 月份开始
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(Calendar.YEAR, year);
+        startCalendar.set(Calendar.MONTH, month - 1);
+        startCalendar.roll(Calendar.HOUR_OF_DAY, 0);
+        startCalendar.set(Calendar.MINUTE, 0);
+        startCalendar.set(Calendar.SECOND, 0);
+        //获取目标月和目标年份的当月第一天时间
+        final int start = Calendar.YEAR;
+        startCalendar.set(Calendar.DAY_OF_MONTH, start);
+        return startCalendar.getTime();
+    }
+
+    /**
+     * 获取某年某月的最后一天
+     *
+     * @return Date
+     */
+    public static Date getMonthLast(int year, int month) {
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(Calendar.YEAR, year);
+        endCalendar.set(Calendar.MONTH, month - 1);
+        endCalendar.set(Calendar.HOUR_OF_DAY, 23);
+        endCalendar.set(Calendar.MINUTE, 59);
+        endCalendar.set(Calendar.SECOND, 59);
+        //获取目标月和目标年份的当月第一天时间
+        final int last = endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        endCalendar.set(Calendar.DAY_OF_MONTH, last);
+        return endCalendar.getTime();
+    }
+
+    /**
+     * 获取某年某某个季度的第一天
+     *
+     * @return Date
+     */
+    public static Date getQuarterStart(int year, int quarter) {
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(Calendar.YEAR, year);//年
+        startCalendar.set(Calendar.DATE, 15);//日
+        startCalendar.set(Calendar.HOUR_OF_DAY, 0);//时
+        startCalendar.set(Calendar.MINUTE, 0);//分
+        startCalendar.set(Calendar.SECOND, 0);//秒
+        switch (quarter) {
+            case 1:
+                startCalendar.set(Calendar.MONTH, Calendar.JANUARY);
+                break;
+            case 2:
+                startCalendar.set(Calendar.MONTH, Calendar.APRIL);
+                break;
+            case 3:
+                startCalendar.set(Calendar.MONTH, Calendar.JULY);
+                break;
+            case 4:
+                startCalendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                break;
+        }
+        //获取目标月和目标年份的当月第一天时间
+        final int last = startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        startCalendar.set(Calendar.DAY_OF_MONTH, 1);
+        return startCalendar.getTime();
+    }
+
+    /**
+     * 获取某年某某个季度的最后一天
+     *
+     * @return Date
+     */
+    public static Date getQuarterLast(int year, int quarter) {
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(Calendar.YEAR, year);//年
+        endCalendar.set(Calendar.DATE, 15);//日
+        endCalendar.set(Calendar.HOUR_OF_DAY, 23);//时
+        endCalendar.set(Calendar.MINUTE, 59);//分
+        endCalendar.set(Calendar.SECOND, 59);//秒
+        switch (quarter) {
+            case 1:
+                endCalendar.set(Calendar.MONTH, Calendar.MARCH);
+                break;
+            case 2:
+                endCalendar.set(Calendar.MONTH, Calendar.JUNE);
+                break;
+            case 3:
+                endCalendar.set(Calendar.MONTH, Calendar.SEPTEMBER);
+                break;
+            case 4:
+                endCalendar.set(Calendar.MONTH, Calendar.DECEMBER);
+                break;
+        }
+        endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return endCalendar.getTime();
+    }
+
+    /**
+     * 获取半年度的开始日期
+     *
+     * @param year     年份
+     * @param halfYear 半年度
+     * @return Date
+     */
+    public static Date getHalfYearStart(int year, int halfYear) {
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(Calendar.YEAR, year);//年
+        startCalendar.set(Calendar.DATE, 15);//日
+        startCalendar.set(Calendar.HOUR_OF_DAY, 0);//时
+        startCalendar.set(Calendar.MINUTE, 0);//分
+        startCalendar.set(Calendar.SECOND, 0);//秒
+        switch (halfYear) {
+            case 1:
+                startCalendar.set(Calendar.MONTH, Calendar.JANUARY);
+                break;
+            case 2:
+                startCalendar.set(Calendar.MONTH, Calendar.APRIL);
+                break;
+            case 3:
+                startCalendar.set(Calendar.MONTH, Calendar.JULY);
+                break;
+            case 4:
+                startCalendar.set(Calendar.MONTH, Calendar.OCTOBER);
+                break;
+        }
+        //获取目标月和目标年份的当月第一天时间
+        final int last = startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        startCalendar.set(Calendar.DAY_OF_MONTH, 1);
+        return startCalendar.getTime();
+    }
+
+    /**
+     * 获取半年度的结束日期
+     *
+     * @param year     年份
+     * @param halfYear 半年度
+     * @return Date
+     */
+    public static Date getHalfYearLast(int year, int halfYear) {
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(Calendar.YEAR, year);//年
+        endCalendar.set(Calendar.DATE, 15);//日
+        endCalendar.set(Calendar.HOUR_OF_DAY, 23);//时
+        endCalendar.set(Calendar.MINUTE, 59);//分
+        endCalendar.set(Calendar.SECOND, 59);//秒
+        switch (halfYear) {
+            case 1:
+                endCalendar.set(Calendar.MONTH, Calendar.JUNE);
+                break;
+            case 2:
+                endCalendar.set(Calendar.MONTH, Calendar.DECEMBER);
+                break;
+        }
+        endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return endCalendar.getTime();
+    }
+
+    /**
+     * 获取某年第一天日期
+     *
+     * @param year 年份
+     * @return Date
+     */
+    public static Date getYearStart(int year) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR, --year);
+        return calendar.getTime();
     }
 
     /**
@@ -199,9 +390,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
         calendar.roll(Calendar.DAY_OF_YEAR, -1);
-        Date currYearLast = calendar.getTime();
-        return currYearLast;
-
+        return calendar.getTime();
     }
 
     /**
@@ -259,4 +448,15 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
+
+    /**
+     * 增加 Date ==> LocalDate
+     */
+    public static LocalDate toLocalDate(Date date) {
+        Instant instant = date.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        // atZone()方法返回在指定时区从此Instant生成的ZonedDateTime。
+        return instant.atZone(zoneId).toLocalDate();
+    }
+
 }

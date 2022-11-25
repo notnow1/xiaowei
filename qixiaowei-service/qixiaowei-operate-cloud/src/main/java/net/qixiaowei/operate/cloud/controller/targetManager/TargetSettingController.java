@@ -135,7 +135,7 @@ public class TargetSettingController extends BaseController {
         try {
             TargetSettingImportListener<TargetSettingExcel> listener = new TargetSettingImportListener<>(1);
             Map<String, List<TargetSettingExcel>> targetSettingExcelMaps = listener.getData(file.getInputStream(), TargetSettingExcel.class);
-            List<TargetSettingDTO> targetSettingDTOS = targetSettingService.importTargetSetting(targetSettingExcelMaps,targetYear);
+            List<TargetSettingDTO> targetSettingDTOS = targetSettingService.importTargetSetting(targetSettingExcelMaps, targetYear);
             return AjaxResult.success(targetSettingDTOS);
         } catch (IOException e) {
             throw new RuntimeException("导出失败");
@@ -222,7 +222,7 @@ public class TargetSettingController extends BaseController {
      * 查询销售订单目标制定-不带主表玩
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/list/orderDrop")
+    @GetMapping("/info/orderDrop")
     public AjaxResult listOrderDrop(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectOrderDropTargetSettingList(targetSettingDTO));
     }

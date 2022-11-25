@@ -1,8 +1,8 @@
 #nacos 配置，为了统一使用
 nacos:
   username: nacos
-  password: ump@nacos
-  server-addr: 192.168.0.201:8850
+  password: J7CC2bxd
+  server-addr: nacos-headless.qxw-middleware:8848
   config-namespace: e939d37b-6d2d-4913-932d-d1aba511acad
   seata-namespace: 254209f0-851b-4c91-a5f5-2a802f6543cc
 
@@ -34,12 +34,12 @@ spring:
       eager: true
       transport:
         # 控制台地址
-        dashboard: localhost:8718
+        dashboard: sentinel-headless.qxw-middleware:8858
       # nacos配置持久化
       datasource:
         ds1:
           nacos:
-            server-addr: 192.168.0.201:8850
+            server-addr: nacos-headless.qxw-middleware:8848
             dataId: sentinel-qixiaowei-gateway
             groupId: PROD_GROUP
             data-type: json

@@ -140,4 +140,13 @@ public interface ITargetOutcomeDetailsService {
      * @return
      */
     List<TargetOutcomeDetailsExcel> exportTargetOutcomeDetails(TargetOutcomeDetailsDTO targetOutcomeDetailsDTO);
+
+    /**
+     * 通过目标年度查询目标结果详情
+     *
+     * @param targetYear
+     * @param indicatorId
+     * @return
+     */
+    TargetOutcomeDetailsDTO selectTargetOutcomeDetailByTargetYear(Integer targetYear, Long indicatorId);
 }

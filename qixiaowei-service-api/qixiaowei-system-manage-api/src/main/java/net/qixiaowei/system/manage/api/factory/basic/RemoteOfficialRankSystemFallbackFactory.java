@@ -21,6 +21,11 @@ public class RemoteOfficialRankSystemFallbackFactory implements FallbackFactory<
         return new RemoteOfficialRankSystemService() {
 
             @Override
+            public R<List<OfficialRankSystemDTO>> selectAll(String source) {
+                return R.fail("根据ID获取职级信息失败:" + throwable.getMessage());
+            }
+
+            @Override
             public R<OfficialRankSystemDTO> selectById(Long officialRankSystemId, String source) {
                 return R.fail("根据ID获取职级信息失败:" + throwable.getMessage());
             }
