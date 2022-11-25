@@ -18,12 +18,12 @@ steps:
   pull: if-not-exists
   image: plugins/docker
   settings:
-    registry: harbor.qixiaowei.net
+    registry: hub.qixiaowei.net
     username: deploy
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway
+    repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
       - v1.0.0
@@ -34,12 +34,12 @@ steps:
   pull: if-not-exists
   image: plugins/docker
   settings:
-    registry: harbor.qixiaowei.net
+    registry: hub.qixiaowei.net
     username: deploy
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
+    repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
     dockerfile: qixiaowei-auth/Dockerfile
     tags:
       - v1.0.0
@@ -50,12 +50,12 @@ steps:
   pull: if-not-exists
   image: plugins/docker
   settings:
-    registry: harbor.qixiaowei.net
+    registry: hub.qixiaowei.net
     username: deploy
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage
+    repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage
     dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
     tags:
       - v1.0.0
@@ -66,12 +66,12 @@ steps:
   pull: if-not-exists
   image: plugins/docker
   settings:
-    registry: harbor.qixiaowei.net
+    registry: hub.qixiaowei.net
     username: deploy
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud
+    repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud
     dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
     tags:
       - v1.0.0
@@ -82,12 +82,12 @@ steps:
   pull: if-not-exists
   image: plugins/docker
   settings:
-    registry: harbor.qixiaowei.net
+    registry: hub.qixiaowei.net
     username: deploy
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
+    repo: hub.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
     dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
     tags:
       - v1.0.0
