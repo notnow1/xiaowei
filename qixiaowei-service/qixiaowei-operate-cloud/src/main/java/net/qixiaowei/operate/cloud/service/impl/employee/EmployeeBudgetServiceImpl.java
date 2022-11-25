@@ -107,12 +107,16 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
 
             //放入数据
             for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                BigDecimal annualAverageNum = new BigDecimal("0");
                 //上年期末人数
                 Integer numberLastYear = employeeBudgetDetailsDTO.getNumberLastYear();
-                //本年新增人数
-                Integer countAdjust = employeeBudgetDetailsDTO.getCountAdjust();
+                //平均新增人数
+                BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
+                if (null != numberLastYear && null != averageAdjust){
+                    annualAverageNum=new BigDecimal(numberLastYear.toString()).add(averageAdjust);
+                }
                 //年度平均人数 = 上年期末数+平均新增人数
-                employeeBudgetDetailsDTO.setAnnualAverageNum(numberLastYear + countAdjust);
+                employeeBudgetDetailsDTO.setAnnualAverageNum(annualAverageNum);
                 List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS1 = mapList.get(employeeBudgetDetailsDTO.getEmployeeBudgetDetailsId());
                 //sterm流求和
                 Integer reduce = employeeBudgetAdjustsDTOS1.stream().filter(Objects::nonNull).map(EmployeeBudgetAdjustsDTO::getNumberAdjust).reduce(0, Integer::sum);
@@ -168,15 +172,15 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             }
         }
 
-        Integer amountAverageAdjust = 0;
+        BigDecimal annualAverageNum = new BigDecimal("0");
         for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
             Integer amountLastYear = budgetDTO.getAmountLastYear();
-            Integer amountAdjust = budgetDTO.getAmountAdjust();
-            if (null != amountLastYear && null != amountAdjust){
-                 amountAverageAdjust = amountLastYear + amountAdjust;
+            BigDecimal amountAverageAdjust = budgetDTO.getAmountAverageAdjust();
+            if (null != amountLastYear && null != amountAverageAdjust){
+                annualAverageNum = new BigDecimal(amountLastYear.toString()).add(amountAverageAdjust);
             }
             //年度平均人数 = 上年期末数+平均新增人数
-            budgetDTO.setAnnualAverageNum(amountAverageAdjust);
+            budgetDTO.setAnnualAverageNum(annualAverageNum);
         }
         return employeeBudgetDTOS;
     }
@@ -598,19 +602,22 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             }
             //职级id去重
             List<Long> collect1 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getOfficialRankSystemId).distinct().collect(Collectors.toList());
-            //职级体系远程调用
-            R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
-            List<OfficialRankSystemDTO> data = listR.getData();
-            if (StringUtils.isNotEmpty(data)){
-                for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
-                    //远程赋值职级名称
-                    for (OfficialRankSystemDTO datum : data) {
-                        if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
-                            employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+            if (StringUtils.isNotEmpty(collect1)){
+                //职级体系远程调用
+                R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
+                List<OfficialRankSystemDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                        //远程赋值职级名称
+                        for (OfficialRankSystemDTO datum : data) {
+                            if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
+                                employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+                            }
                         }
                     }
                 }
             }
+
         }
 
         return employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);

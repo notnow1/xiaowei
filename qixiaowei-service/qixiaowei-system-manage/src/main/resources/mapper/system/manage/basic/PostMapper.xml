@@ -11,9 +11,12 @@
             p.post_code,
             p.post_name,
             p.official_rank_system_id,
-            concat(ors.rank_prefix_code, p.post_rank_lower) as post_rank_lower_name,
-            concat(ors.rank_prefix_code, p.post_rank_upper) as post_rank_upper_name,
-            concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
+            case when ors.rank_prefix_code is null then p.post_rank_lower
+                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_lower) end as post_rank_lower_name,
+            case when ors.rank_prefix_code is null then p.post_rank_upper
+                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_upper) end as post_rank_upper_name,
+            case when ors.rank_prefix_code is null then p.post_rank
+                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
             p.post_rank_lower,
             p.post_rank_upper,
             p.post_rank,
@@ -60,9 +63,12 @@
         p.post_rank_lower,
         p.post_rank_upper,
         p.post_rank,
-        concat(ors.rank_prefix_code, p.post_rank_lower) as post_rank_lower_name,
-        concat(ors.rank_prefix_code, p.post_rank_upper) as post_rank_upper_name,
-        concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
+        case when ors.rank_prefix_code is null then p.post_rank_lower
+        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_lower) end as post_rank_lower_name,
+        case when ors.rank_prefix_code is null then p.post_rank_upper
+        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_upper) end as post_rank_upper_name,
+        case when ors.rank_prefix_code is null then p.post_rank
+        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
         p.post_description,
         p.status,
         p.delete_flag,
@@ -102,13 +108,19 @@
             and p.official_rank_system_id like '%${post.officialRankSystemId}%'
         </if>
         <if test="post.postRankLowerName != null and  post.postRankLowerName != '' ">
-            and concat(ors.rank_prefix_code, p.post_rank_lower) like '%${post.postRankLowerName}%'
+           and  case when ors.rank_prefix_code is null then p.post_rank_lower
+            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_lower) end
+             like '%${post.postRankLowerName}%'
         </if>
         <if test="post.postRankName != null and post.postRankName != '' ">
-            and concat(ors.rank_prefix_code, p.post_rank) like '%${post.postRankName}%'
+          and   case when ors.rank_prefix_code is null then p.post_rank_upper
+            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_upper) end
+            like '%${post.postRankName}%'
         </if>
         <if test="post.postRankUpperName != null and post.postRankUpperName != '' ">
-            and concat(ors.rank_prefix_code, p.post_rank_upper) like '%${post.postRankUpperName}%'
+           and  case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end
+            like '%${post.postRankUpperName}%'
         </if>
         <if test="post.postDescription != null and post.postDescription != ''">
             and p.post_description like '%${post.postDescription}%'

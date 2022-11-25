@@ -13,10 +13,10 @@ import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
-* 人力预算明细表
-* @author TANGMICHI
-* @since 2022-11-22
-*/
+ * 人力预算明细表
+ * @author TANGMICHI
+ * @since 2022-11-22
+ */
 @Data
 @Accessors(chain = true)
 public class EmployeeBudgetDetailsDTO {
@@ -39,12 +39,12 @@ public class EmployeeBudgetDetailsDTO {
 
     }
     /**
-    * ID
-    */
+     * ID
+     */
     private  Long employeeBudgetDetailsId;
     /**
-    * 人力预算ID
-    */
+     * 人力预算ID
+     */
     private  Long employeeBudgetId;
 
     /**
@@ -65,8 +65,8 @@ public class EmployeeBudgetDetailsDTO {
      */
     private  String officialRankSystemName;
     /**
-    * 岗位职级
-    */
+     * 岗位职级
+     */
     @NotNull(message = "岗位职级不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
     private  Integer officialRank;
 
@@ -75,25 +75,25 @@ public class EmployeeBudgetDetailsDTO {
      */
     private  String officialRankName;
     /**
-    * 上年期末人数
-    */
+     * 上年期末人数
+     */
     @NotNull(message = "上年期末人数不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
     private  Integer numberLastYear;
     /**
-    * 本年新增人数
-    */
+     * 本年新增人数
+     */
     @NotNull(message = "本年新增人数不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
     private  Integer countAdjust;
     /**
-    * 平均新增数
-    */
+     * 平均新增数
+     */
     @NotNull(message = "平均新增数不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
     private BigDecimal averageAdjust;
     /**
      * 年度平均人数
      */
     @NotNull(message = "年度平均人数不能为空", groups = {EmployeeBudgetDetailsDTO.AddEmployeeBudgetDetailsDTO.class, EmployeeBudgetDetailsDTO.UpdateEmployeeBudgetDetailsDTO.class})
-    private Integer annualAverageNum;
+    private BigDecimal annualAverageNum;
     /**
      * 年度规划人数
      */
@@ -110,25 +110,25 @@ public class EmployeeBudgetDetailsDTO {
     @Valid
     private List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS;
     /**
-    * 删除标记:0未删除;1已删除
-    */
+     * 删除标记:0未删除;1已删除
+     */
     private  Integer deleteFlag;
     /**
-    * 创建人
-    */
+     * 创建人
+     */
     private  Long createBy;
     /**
-    * 创建时间
-    */
+     * 创建时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  createTime;
     /**
-    * 更新人
-    */
+     * 更新人
+     */
     private  Long updateBy;
     /**
-    * 更新时间
-    */
+     * 更新时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
 

@@ -2,15 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: qixiaowei-gateway
-  name: qixiaowei-gateway
+    app: qixiaowei-operate-cloud
+  name: qixiaowei-operate-cloud
   namespace: qixiaowei-cloud
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
   selector:
     matchLabels:
-      app: qixiaowei-gateway
+      app: qixiaowei-operate-cloud
   strategy:
     rollingUpdate:
       maxSurge: 50%
@@ -19,7 +19,7 @@ spec:
   template:
     metadata:
       labels:
-        app: qixiaowei-gateway
+        app: qixiaowei-operate-cloud
     spec:
       volumes:
         - name: host-time
@@ -29,9 +29,9 @@ spec:
       imagePullSecrets:
         - name: harbor-deploy
       containers:
-        - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway:latest
+        - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-operate-cloud:latest
           imagePullPolicy: Always
-          name: qixiaowei-gateway
+          name: qixiaowei-operate-cloud
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -49,8 +49,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: qixiaowei-gateway
-  name: qixiaowei-gateway
+    app: qixiaowei-operate-cloud
+  name: qixiaowei-operate-cloud
   namespace: qixiaowei-cloud
 spec:
   ports:
@@ -58,8 +58,7 @@ spec:
       port: 8080
       protocol: TCP
       targetPort: 8080
-      nodePort: 32111
   selector:
-    app: qixiaowei-gateway
+    app: qixiaowei-operate-cloud
   sessionAffinity: None
-  type: NodePort
+  type: ClusterIP

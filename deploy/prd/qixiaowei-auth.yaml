@@ -2,15 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: qixiaowei-gateway
-  name: qixiaowei-gateway
-  namespace: qixiaowei-cloud
+    app: qixiaowei-auth
+  name: qixiaowei-auth
+  namespace: qxw-cloud
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
   selector:
     matchLabels:
-      app: qixiaowei-gateway
+      app: qixiaowei-auth
   strategy:
     rollingUpdate:
       maxSurge: 50%
@@ -19,7 +19,7 @@ spec:
   template:
     metadata:
       labels:
-        app: qixiaowei-gateway
+        app: qixiaowei-auth
     spec:
       volumes:
         - name: host-time
@@ -29,9 +29,9 @@ spec:
       imagePullSecrets:
         - name: harbor-deploy
       containers:
-        - image: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway:latest
-          imagePullPolicy: Always
-          name: qixiaowei-gateway
+        - image: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth:v1.0.0
+          imagePullPolicy: IfNotPresent
+          name: qixiaowei-auth
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -49,17 +49,16 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: qixiaowei-gateway
-  name: qixiaowei-gateway
-  namespace: qixiaowei-cloud
+    app: qixiaowei-auth
+  name: qixiaowei-auth
+  namespace: qxw-cloud
 spec:
   ports:
     - name: http
       port: 8080
       protocol: TCP
       targetPort: 8080
-      nodePort: 32111
   selector:
-    app: qixiaowei-gateway
+    app: qixiaowei-auth
   sessionAffinity: None
-  type: NodePort
+  type: ClusterIP

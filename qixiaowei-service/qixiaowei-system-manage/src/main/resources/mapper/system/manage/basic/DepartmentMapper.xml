@@ -274,6 +274,7 @@
             update_time
         from department
         where delete_flag = 0
+        and status=1
     </select>
     <!--    查询code编码是否已经存在-->
     <select id="selectDepartmentCode" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
@@ -292,7 +293,8 @@
         select
             p.post_name,
             ors.official_rank_system_name,
-            concat(ors.rank_prefix_code, p.post_rank) as post_rank_name,
+            case when ors.rank_prefix_code is null then p.post_rank
+                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
             dm.department_name ,
             dm.department_code,
             deptpost.department_post_id,

@@ -523,7 +523,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             //职级终止级别
             Integer rankEnd = officialRankSystemDTO.getRankEnd();
 
-            for (Integer i = rankStart; i < rankEnd; i++) {
+            for (Integer i = rankStart; i <= rankEnd; i++) {
                 OfficialRankSystemDTO officialRankSystemDTO1 = new OfficialRankSystemDTO();
                 //职级名称
                 officialRankSystemDTO1.setRankCodeName(officialRankSystemDTO.getRankPrefixCode() + i);

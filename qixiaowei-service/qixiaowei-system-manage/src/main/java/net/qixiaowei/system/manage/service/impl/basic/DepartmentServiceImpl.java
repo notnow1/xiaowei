@@ -379,28 +379,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public List<DepartmentDTO> queryparent() {
         List<DepartmentDTO> queryparent = departmentMapper.queryparent();
-        List<DepartmentDTO> tree = this.createTree(queryparent, 0);
-
-        deleteTree(tree);
-        return tree;
-    }
-
-    private void deleteTree(List<DepartmentDTO> tree) {
-        List<DepartmentDTO> departmentDTOList = new ArrayList<>();
-        for (DepartmentDTO departmentDTO : tree) {
-            if (StringUtils.isNotEmpty(departmentDTO.getChildren())){
-                Integer status = departmentDTO.getStatus();
-                if (status ==1){
-                    departmentDTOList.add(departmentDTO);
-                }
-            }else {
-                Integer status = departmentDTO.getStatus();
-                if (status ==1){
-                    departmentDTOList.add(departmentDTO);
-                }
-            }
-        }
-        tree.removeAll(departmentDTOList);
+        return this.createTree(queryparent, 0);
     }
 
     /**

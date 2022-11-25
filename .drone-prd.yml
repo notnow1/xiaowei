@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: qixiaowei-cloud-stg
+name: qixiaowei-cloud-prd
 
 steps:
 - name: compile
@@ -10,7 +10,7 @@ steps:
     - name: cache
       path: /root/.m2
   commands:
-    - mvn clean package -Ptest -DskipTests=true -pl !qixiaowei-gen
+    - mvn clean package -Pprod -DskipTests=true -pl !qixiaowei-gen
   depends_on:
     - clone
 
@@ -23,10 +23,10 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-gateway
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-gateway
     dockerfile: qixiaowei-gateway/Dockerfile
     tags:
-      - latest
+      - v1.0.0
   depends_on:
     - compile
 
@@ -39,10 +39,10 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-auth
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-auth
     dockerfile: qixiaowei-auth/Dockerfile
     tags:
-      - latest
+      - v1.0.0
   depends_on:
     - compile
 
@@ -55,10 +55,10 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-system-manage
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-system-manage
     dockerfile: qixiaowei-service/qixiaowei-system-manage/Dockerfile
     tags:
-      - latest
+      - v1.0.0
   depends_on:
     - compile
 
@@ -71,10 +71,10 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-operate-cloud
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-operate-cloud
     dockerfile: qixiaowei-service/qixiaowei-operate-cloud/Dockerfile
     tags:
-      - latest
+      - v1.0.0
   depends_on:
     - compile
 
@@ -87,10 +87,10 @@ steps:
     password:
       from_secret: deploy-pwd
     insecure: true
-    repo: harbor.qixiaowei.net/qixiaowei-cloud-stg/qixiaowei-file
+    repo: harbor.qixiaowei.net/qixiaowei-cloud/qixiaowei-file
     dockerfile: qixiaowei-service/qixiaowei-file/Dockerfile
     tags:
-      - latest
+      - v1.0.0
   depends_on:
     - compile
 
@@ -99,12 +99,12 @@ steps:
   image: appleboy/drone-scp
   settings:
     host:
-      from_secret: host-stg
+      from_secret: host
     username:
-      from_secret: host-username-stg
+      from_secret: host-username
     password:
-      from_secret: host-pwd-stg
-    port: 22
+      from_secret: host-pwd
+    port: 12205
     command_timeout: 2m
     target: /root/k8s/qxw/
     source: ./deploy/
@@ -122,14 +122,14 @@ steps:
   image: appleboy/drone-ssh
   settings:
     host:
-      from_secret: host-stg
+      from_secret: host
     username:
-      from_secret: host-username-stg
+      from_secret: host-username
     password:
-      from_secret: host-pwd-stg
-    port: 22
+      from_secret: host-pwd
+    port: 12205
     script:
-      - kubectl apply -k k8s/qxw/deploy/stg/
+      - kubectl apply -k k8s/qxw/deploy/prd/
   depends_on:
     - scp
 
