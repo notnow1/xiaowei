@@ -195,7 +195,7 @@ public class TargetSettingController extends BaseController {
      * 查询销售订单目标制定列表
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/list/order")
+    @GetMapping("/info/order")
     public AjaxResult listOrder(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectOrderTargetSettingList(targetSettingDTO));
     }
@@ -204,16 +204,16 @@ public class TargetSettingController extends BaseController {
      * 查询销售收入目标制定列表
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/list/income")
-    public AjaxResult listIncome(TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.selectIncomeTargetSettingList(targetSettingDTO));
+    @GetMapping("/info/income")
+    public AjaxResult listIncome(@RequestParam Integer targetYear) {
+        return AjaxResult.success(targetSettingService.selectIncomeTargetSettingList(targetYear));
     }
 
     /**
      * 查询销售收入目标制定列表
      */
 //    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/list/recovery")
+    @GetMapping("/info/recovery")
     public AjaxResult listRecovery(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectRecoveryTargetSettingList(targetSettingDTO));
     }

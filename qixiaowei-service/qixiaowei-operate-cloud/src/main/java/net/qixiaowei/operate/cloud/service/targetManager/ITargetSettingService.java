@@ -152,10 +152,10 @@ public interface ITargetSettingService {
     /**
      * 查询销售收入目标制定列表
      *
-     * @param targetSettingDTO
+     * @param targetYear
      * @return
      */
-    TargetSettingDTO selectIncomeTargetSettingList(TargetSettingDTO targetSettingDTO);
+    TargetSettingDTO selectIncomeTargetSettingList(Integer targetYear);
 
 
     /**
