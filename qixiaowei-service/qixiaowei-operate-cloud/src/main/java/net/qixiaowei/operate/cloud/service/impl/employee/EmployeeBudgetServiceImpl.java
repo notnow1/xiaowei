@@ -598,19 +598,22 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             }
             //职级id去重
             List<Long> collect1 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getOfficialRankSystemId).distinct().collect(Collectors.toList());
-            //职级体系远程调用
-            R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
-            List<OfficialRankSystemDTO> data = listR.getData();
-            if (StringUtils.isNotEmpty(data)){
-                for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
-                    //远程赋值职级名称
-                    for (OfficialRankSystemDTO datum : data) {
-                        if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
-                            employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+            if (StringUtils.isNotEmpty(collect1)){
+                //职级体系远程调用
+                R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
+                List<OfficialRankSystemDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                        //远程赋值职级名称
+                        for (OfficialRankSystemDTO datum : data) {
+                            if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
+                                employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+                            }
                         }
                     }
                 }
             }
+
         }
 
         return employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);

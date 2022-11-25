@@ -578,7 +578,7 @@
         <if test="employee.employeePostId != null">
             and e.employee_post_id =#{employee.employeePostId}
         </if>
-        <if test="employee.officialRankSystemId != null">
+        <if test="employee.employeeRankName != null and employee.employeeRankName != ''">
             and concat(ors.rank_prefix_code, e.employee_rank) =#{employee.employeeRankName}
         </if>
     </select>
