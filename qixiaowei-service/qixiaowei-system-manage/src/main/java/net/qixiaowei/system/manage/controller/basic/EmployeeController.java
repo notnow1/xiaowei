@@ -57,9 +57,10 @@ public class EmployeeController extends BaseController {
      */
     //@RequiresPermissions("system:manage:employee:pageList")
     @GetMapping("/pagePostSalaryReportList")
-    public AjaxResult pagePostSalaryReportList(EmployeeDTO employeeDTO) {
+    public TableDataInfo pagePostSalaryReportList(EmployeeDTO employeeDTO) {
+        startPage();
         List<EmployeeDTO> list = employeeService.pagePostSalaryReportList(employeeDTO);
-        return AjaxResult.success(list);
+        return getDataTable(list);
     }
     /**
      * 导入人员
