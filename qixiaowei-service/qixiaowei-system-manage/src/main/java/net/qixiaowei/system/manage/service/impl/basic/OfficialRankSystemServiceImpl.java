@@ -216,12 +216,26 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 通过Id查找职级上下限
      *
-     * @param officilRankSystemId
+     * @param officilRankSystemId 职级ID
      * @return
      */
     @Override
     public List<Map<String, String>> selectOfficialRankMapBySystemId(Long officilRankSystemId) {
-        return null;
+        if (StringUtils.isNull(officilRankSystemId)) {
+            throw new ServiceException("职级ID不能为空");
+        }
+        List<Map<String, String>> list = new ArrayList<>();
+        OfficialRankSystemDTO officialRankSystemDTO = officialRankSystemMapper.selectOfficialRankSystemByOfficialRankSystemId(officilRankSystemId);
+        String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
+        Integer rankStart = officialRankSystemDTO.getRankStart();
+        Integer rankEnd = officialRankSystemDTO.getRankEnd();
+        for (int i = rankStart; i < rankEnd + 1; i++) {
+            Map<String, String> map = new HashMap<>();
+            map.put("officialRank", String.valueOf(i));
+            map.put("officialRankName", rankPrefixCode + String.valueOf(i));
+            list.add(map);
+        }
+        return list;
     }
 
     /**
