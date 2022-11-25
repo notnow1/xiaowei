@@ -54,4 +54,11 @@ public class RemoteDepartment implements RemoteDepartmentService {
     public R<List<DepartmentDTO>> selectdepartmentIds(@RequestBody List<Long> departmentIds, String source) {
         return R.ok(departmentService.selectDepartmentByDepartmentIds(departmentIds));
     }
+
+    @Override
+    @InnerAuth
+    @PostMapping("/selectAll")
+    public R<List<DepartmentDTO>> selectDepartment(DepartmentDTO departmentDTO, String source) {
+        return R.ok(departmentService.selectDepartmentAll(departmentDTO));
+    }
 }

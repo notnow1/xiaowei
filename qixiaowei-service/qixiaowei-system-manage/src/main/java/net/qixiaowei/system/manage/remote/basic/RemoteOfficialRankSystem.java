@@ -17,6 +17,11 @@ public class RemoteOfficialRankSystem implements RemoteOfficialRankSystemService
     @Autowired
     IOfficialRankSystemService officialRankSystemService;
 
+    @Override
+    public R<List<OfficialRankSystemDTO>> selectAll(String source) {
+        return R.ok(officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO()));
+    }
+
     /**
      * 通过Id查找职级等级列表
      *

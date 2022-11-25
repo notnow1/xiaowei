@@ -38,6 +38,11 @@ public class RemoteDepartmentFallbackFactory implements FallbackFactory<RemoteDe
             public R<List<DepartmentDTO>> selectdepartmentIds(List<Long> departmentIds, String source) {
                 return R.fail("根据id集合获取部门信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<DepartmentDTO>> selectDepartment(DepartmentDTO departmentDTO, String source) {
+                return R.fail("获取部门信息失败:" + throwable.getMessage());
+            }
         };
     }
 }

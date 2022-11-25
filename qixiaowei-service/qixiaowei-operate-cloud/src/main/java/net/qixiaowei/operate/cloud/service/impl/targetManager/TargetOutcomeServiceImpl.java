@@ -452,7 +452,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @param targetOutcomeDtoS 需要删除的目标结果表主键
      * @return 结果
      */
-
     @Override
     public int deleteTargetOutcomeByTargetOutcomeIds(List<TargetOutcomeDTO> targetOutcomeDtoS) {
         List<Long> stringList = new ArrayList<>();
@@ -467,7 +466,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      *
      * @param targetOutcomeDtoS 目标结果表对象
      */
-
     public int insertTargetOutcomes(List<TargetOutcomeDTO> targetOutcomeDtoS) {
         List<TargetOutcome> targetOutcomeList = new ArrayList<>();
 
@@ -695,5 +693,6 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     public List<TargetOutcomeDetailsDTO> selectTargetOutcomeByTargetYears(List<Integer> targetYears, Long indicatorId) {
         return targetOutcomeMapper.selectTargetOutcomeByTargetYears(targetYears, indicatorId);
     }
+
 }
 

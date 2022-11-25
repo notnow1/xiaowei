@@ -128,6 +128,22 @@
             #{item}
         </foreach>
     </select>
+    <select id="selectTargetOutcomeDetailByTargetYear"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO">
+        SELECT
+        td.target_outcome_details_id, td.target_outcome_id, td.indicator_id, td.actual_total, td.actual_january,
+        td.actual_february,
+        td.actual_march, td.actual_april, td.actual_may, td.actual_june, td.actual_july, td.actual_august,
+        td.actual_september,
+        td.actual_october, td.actual_november, td.actual_december, td.delete_flag, td.create_by, td.create_time,
+        td.update_by, td.update_time,
+        t.target_outcome_id, t.target_year
+        FROM target_outcome_details td
+        LEFT JOIN target_outcome t
+        ON td.target_outcome_id = t.target_outcome_id
+        WHERE t.target_year = #{targetYear}
+        AND td.indicator_id = #{indicatorId}
+    </select>
     <!--新增目标结果详情表-->
     <insert id="insertTargetOutcomeDetails" useGeneratedKeys="true" keyProperty="targetOutcomeDetailsId">
         INSERT INTO target_outcome_details

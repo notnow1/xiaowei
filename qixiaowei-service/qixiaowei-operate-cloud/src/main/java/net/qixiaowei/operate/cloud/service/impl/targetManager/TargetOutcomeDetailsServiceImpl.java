@@ -330,5 +330,17 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
         List<TargetOutcomeDetailsExcel> targetOutcomeDetailsExcelList = new ArrayList<>();
         return targetOutcomeDetailsExcelList;
     }
+
+    /**
+     * 通过目标年度查询目标结果详情
+     *
+     * @param targetYear
+     * @param indicatorId
+     * @return
+     */
+    @Override
+    public TargetOutcomeDetailsDTO selectTargetOutcomeDetailByTargetYear(Integer targetYear, Long indicatorId) {
+        return targetOutcomeDetailsMapper.selectTargetOutcomeDetailByTargetYear(targetYear, indicatorId);
+    }
 }
 

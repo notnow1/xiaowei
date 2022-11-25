@@ -158,8 +158,17 @@ public interface IDepartmentService {
 
     /**
      * 根据code查询部门集合
+     *
      * @param departmentCodes
      * @return
      */
     List<DepartmentDTO> selectCodeList(List<String> departmentCodes);
+
+    /**
+     * 查询所有
+     *
+     * @param departmentDTO
+     * @return
+     */
+    List<DepartmentDTO> selectDepartmentAll(DepartmentDTO departmentDTO);
 }

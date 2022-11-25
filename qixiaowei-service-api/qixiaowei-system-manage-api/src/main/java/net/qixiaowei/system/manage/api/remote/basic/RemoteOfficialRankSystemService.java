@@ -19,6 +19,14 @@ public interface RemoteOfficialRankSystemService {
     String API_PREFIX_OFFICIAL = "/officialRankSystem";
 
     /**
+     * 查找职级等级列表
+     *
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_OFFICIAL + "/selectAll")
+    R<List<OfficialRankSystemDTO>> selectAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
      * 通过Id查找职级等级列表
      *
      * @return 结果
