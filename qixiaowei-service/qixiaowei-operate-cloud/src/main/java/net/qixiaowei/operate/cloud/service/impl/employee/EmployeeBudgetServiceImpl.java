@@ -107,12 +107,16 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
 
             //放入数据
             for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                BigDecimal annualAverageNum = new BigDecimal("0");
                 //上年期末人数
                 Integer numberLastYear = employeeBudgetDetailsDTO.getNumberLastYear();
                 //平均新增人数
                 BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
+                if (null != numberLastYear && null != averageAdjust){
+                    annualAverageNum=new BigDecimal(numberLastYear.toString()).add(averageAdjust);
+                }
                 //年度平均人数 = 上年期末数+平均新增人数
-                employeeBudgetDetailsDTO.setAnnualAverageNum(new BigDecimal(numberLastYear.toString()).add(averageAdjust));
+                employeeBudgetDetailsDTO.setAnnualAverageNum(annualAverageNum);
                 List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS1 = mapList.get(employeeBudgetDetailsDTO.getEmployeeBudgetDetailsId());
                 //sterm流求和
                 Integer reduce = employeeBudgetAdjustsDTOS1.stream().filter(Objects::nonNull).map(EmployeeBudgetAdjustsDTO::getNumberAdjust).reduce(0, Integer::sum);
@@ -168,15 +172,15 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             }
         }
 
-        Integer amountAverageAdjust = 0;
+        BigDecimal annualAverageNum = new BigDecimal("0");
         for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
             Integer amountLastYear = budgetDTO.getAmountLastYear();
-            Integer amountAdjust = budgetDTO.getAmountAdjust();
-            if (null != amountLastYear && null != amountAdjust){
-                amountAverageAdjust = amountLastYear + amountAdjust;
+            BigDecimal amountAverageAdjust = budgetDTO.getAmountAverageAdjust();
+            if (null != amountLastYear && null != amountAverageAdjust){
+                annualAverageNum = new BigDecimal(amountLastYear.toString()).add(amountAverageAdjust);
             }
             //年度平均人数 = 上年期末数+平均新增人数
-            budgetDTO.setAnnualAverageNum(amountAverageAdjust);
+            budgetDTO.setAnnualAverageNum(annualAverageNum);
         }
         return employeeBudgetDTOS;
     }

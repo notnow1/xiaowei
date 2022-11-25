@@ -92,7 +92,7 @@ public class EmployeeBudgetDTO {
     /**
      * 年度平均人数
      */
-    private Integer annualAverageNum;
+    private BigDecimal annualAverageNum;
     /**
     * 删除标记:0未删除;1已删除
     */

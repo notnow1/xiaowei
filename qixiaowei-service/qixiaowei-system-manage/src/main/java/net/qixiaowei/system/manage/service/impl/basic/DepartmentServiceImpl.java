@@ -379,7 +379,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public List<DepartmentDTO> queryparent() {
         List<DepartmentDTO> queryparent = departmentMapper.queryparent();
-        return this.createTree(queryparent, 0);;
+        return this.createTree(queryparent, 0);
     }
 
     /**
