@@ -43,6 +43,11 @@ public class RemoteIndicatorFallbackFactory implements FallbackFactory<RemoteInd
             }
 
             @Override
+            public R<List<IndicatorDTO>> selectIsDriverList(String source) {
+                return R.fail("获取指标失败:" + throwable.getMessage());
+            }
+
+            @Override
             public R<List<IndicatorDTO>> selectIndicatorByIds(List<Long> indicatorIds, String source) {
                 return R.fail("获取指标失败:" + throwable.getMessage());
             }

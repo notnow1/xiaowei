@@ -172,4 +172,11 @@ public interface IIndicatorService {
      * @return
      */
     IndicatorDTO selectIndicatorById(Long indicatorId);
+
+    /**
+     * 查找驱动因素为“是”的指标项
+     *
+     * @return
+     */
+    List<IndicatorDTO> selectIsDriverList();
 }

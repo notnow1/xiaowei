@@ -52,6 +52,13 @@ public class RemoteIndicator implements RemoteIndicatorService {
 
     @Override
     @InnerAuth
+    @GetMapping("/isDriverList")
+    public R<List<IndicatorDTO>> selectIsDriverList(String source) {
+        return R.ok(indicatorService.selectIsDriverList());
+    }
+
+    @Override
+    @InnerAuth
     @PostMapping("/listByIds")
     public R<List<IndicatorDTO>> selectIndicatorByIds(@RequestBody List<Long> indicatorIds, String source) {
         return R.ok(indicatorService.selectIndicatorByIds(indicatorIds));

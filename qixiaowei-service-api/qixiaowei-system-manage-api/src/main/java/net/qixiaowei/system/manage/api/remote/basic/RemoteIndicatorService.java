@@ -55,6 +55,14 @@ public interface RemoteIndicatorService {
     R<List<IndicatorDTO>> selectIndicatorList(@RequestBody IndicatorDTO indicatorDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
+     * 是否驱动因素为“是”列表
+     *
+     * @return 结果
+     */
+    @GetMapping(API_PREFIX_INDICATOR + "/isDriverList")
+    R<List<IndicatorDTO>> selectIsDriverList( @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
      * 通过IdsList查找指标列表
      *
      * @param indicatorIds 指标ids

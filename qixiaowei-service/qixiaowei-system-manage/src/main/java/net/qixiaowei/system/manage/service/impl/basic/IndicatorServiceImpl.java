@@ -374,6 +374,13 @@ public class IndicatorServiceImpl implements IIndicatorService {
         return indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
     }
 
+    @Override
+    public List<IndicatorDTO> selectIsDriverList() {
+        IndicatorDTO indicatorDTO = new IndicatorDTO();
+        indicatorDTO.setDrivingFactorFlag(1);
+        return indicatorMapper.selectIndicatorList(indicatorDTO);
+    }
+
     /**
      * 逻辑删除指标表信息
      *
