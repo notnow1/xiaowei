@@ -60,14 +60,14 @@ public class EmployeeBudgetController extends BaseController
      */
     @SneakyThrows
     @GetMapping("/export/details")
-    public void export(@RequestParam EmployeeBudgetDTO employeeBudgetDTO, HttpServletResponse response) {
+    public void export(@RequestParam Map<String, Object> employeeBudget, EmployeeBudgetDTO employeeBudgetDTO, HttpServletResponse response) {
         List<EmployeeBudgetDetailsExcel> employeeBudgetDetailsExcelList = employeeBudgetService.export(employeeBudgetDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("增人/减人工资包列表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+        String fileName = URLEncoder.encode("增人减人工资包列表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), EmployeeBudgetDetailsExcel.class).sheet("增人/减人工资包列表").doWrite(employeeBudgetDetailsExcelList);
+        EasyExcel.write(response.getOutputStream(), EmployeeBudgetDetailsExcel.class).sheet("增人减人工资包列表").doWrite(employeeBudgetDetailsExcelList);
     }
     /**
      * 查询增人/减人工资包列表
