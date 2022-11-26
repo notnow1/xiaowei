@@ -1,19 +1,28 @@
 package net.qixiaowei.operate.cloud.controller.employee;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetExcel;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetImportListener;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetSettingExcel;
 import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +35,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +55,20 @@ public class EmployeeBudgetController extends BaseController
     @Autowired
     private IEmployeeBudgetService employeeBudgetService;
 
-
+    /**
+     * 导出增人/减人工资包列表
+     */
+    @SneakyThrows
+    @GetMapping("/export/details")
+    public void export(@RequestParam Map<String, Object> employeeBudget, EmployeeBudgetDTO employeeBudgetDTO, HttpServletResponse response) {
+        List<EmployeeBudgetDetailsExcel> employeeBudgetDetailsExcelList = employeeBudgetService.export(employeeBudgetDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("增人减人工资包列表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), EmployeeBudgetDetailsExcel.class).sheet("增人减人工资包列表").doWrite(employeeBudgetDetailsExcelList);
+    }
     /**
      * 查询增人/减人工资包列表
      */

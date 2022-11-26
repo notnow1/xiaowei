@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.employee;
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
+import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetExcel;
 
 
@@ -117,4 +118,12 @@ public interface IEmployeeBudgetService{
      * @return
      */
     List<EmployeeBudgetDetailsDTO> salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO);
+
+    /**
+     * 导出增人/减人工资包
+     * @param employeeBudgetDTO
+     * @return
+     */
+    List<EmployeeBudgetDetailsExcel> export(EmployeeBudgetDTO employeeBudgetDTO);
+
 }

@@ -12,6 +12,7 @@ import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetDetails;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
+import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetDetailsExcel;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
@@ -709,6 +710,24 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         }
 
         return employeeBudgetDetailsDTOS;
+    }
+
+    /**
+     * 导出增人/减人工资包
+     * @param employeeBudgetDTO
+     * @return
+     */
+    @Override
+    public List<EmployeeBudgetDetailsExcel> export(EmployeeBudgetDTO employeeBudgetDTO) {
+        List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = this.salaryPackageList(employeeBudgetDTO);
+        //导出增人/减人工资包
+        List<EmployeeBudgetDetailsExcel> employeeBudgetDetailsExcelList = new ArrayList<>();
+        for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+            EmployeeBudgetDetailsExcel employeeBudgetDetailsExcel = new EmployeeBudgetDetailsExcel();
+            BeanUtils.copyProperties(employeeBudgetDetailsDTO,employeeBudgetDetailsExcel);
+            employeeBudgetDetailsExcelList.add(employeeBudgetDetailsExcel);
+        }
+        return employeeBudgetDetailsExcelList;
     }
 
     /**
