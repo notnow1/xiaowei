@@ -11,6 +11,7 @@ import javax.validation.groups.Default;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 绩效考核表
@@ -146,6 +147,10 @@ public class PerformanceAppraisalDTO {
      */
     @NotEmpty(message = "请选择考核任务范围", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
     private List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS;
+    /**
+     * 考核比例统计
+     */
+    private List<Map<String, String>> performanceAppraisalRankDTOS;
 
 }
 

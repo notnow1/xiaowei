@@ -241,7 +241,7 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
     }
 
     /**
-     * 查找根据任务ID对象列表
+     * 查询组织绩效任务考核详情
      *
      * @param performanceAppraisalId
      * @return

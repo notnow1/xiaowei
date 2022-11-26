@@ -11,9 +11,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalImportListener;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalService;
@@ -85,6 +83,24 @@ public class PerformanceAppraisalController extends BaseController {
     public AjaxResult listArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
         List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectOrgAppraisalArchiveList(performanceAppraisalDTO);
         return AjaxResult.success(list);
+    }
+
+    /**
+     * 查询绩效考核表列表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/info/orgArchive/{performanceAppraisalId}")
+    public AjaxResult infoOrgArchive(@PathVariable Long performanceAppraisalId) {
+        return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalArchiveById(performanceAppraisalId));
+    }
+
+    /**
+     * 查询绩效结果排名
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/info/orgRank/{performanceAppraisalId}")
+    public AjaxResult infoOrgRank(@PathVariable Long performanceAppraisalId) {
+        return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalArchiveById(performanceAppraisalId));
     }
 
 

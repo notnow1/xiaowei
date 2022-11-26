@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -70,9 +71,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         setFieldName(officialRankSystemDTOS, appraisal);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
         Integer appraisalObject = appraisal.getAppraisalObject();
-        Integer appraisalFlow = appraisal.getAppraisalFlow();
-        List<DepartmentDTO> departmentData = null;
-        List<EmployeeDTO> employeeData = null;
+        List<DepartmentDTO> departmentData;
+        List<EmployeeDTO> employeeData;
         if (appraisalObject == 1) {//组织
             departmentData = getDepartmentData();
             for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
@@ -97,6 +97,55 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             }
         }
         appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOList);
+        return appraisal;
+    }
+
+    /**
+     * 查询组织绩效任务考核详情
+     *
+     * @param performanceAppraisalId 绩效考核表
+     * @return List
+     */
+    @Override
+    public PerformanceAppraisalDTO selectOrgAppraisalArchiveById(Long performanceAppraisalId) {
+        PerformanceAppraisalDTO appraisal = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
+        if (StringUtils.isNull(appraisal)) {
+            throw new ServiceException("当前考核任务已不存在");
+        }
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = getOfficialRankSystemDTOS();
+        setFieldName(officialRankSystemDTOS, appraisal);
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+        Integer appraisalObject = appraisal.getAppraisalObject();
+        Integer appraisalFlow = appraisal.getAppraisalFlow();//考核流程
+        List<DepartmentDTO> departmentData;
+        List<EmployeeDTO> employeeData;
+        if (appraisalObject == 1) {//组织
+            departmentData = getDepartmentData();
+            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                for (DepartmentDTO departmentDTO : departmentData) {
+                    if (departmentDTO.getDepartmentId().equals(performanceAppraisalObjectsDTO.getAppraisalObjectId())) {
+                        performanceAppraisalObjectsDTO.setAppraisalObjectName(departmentDTO.getDepartmentName());
+                        performanceAppraisalObjectsDTO.setAppraisalObjectCode(departmentDTO.getDepartmentCode());
+                        break;
+                    }
+                }
+            }
+        } else {
+            employeeData = getEmployeeData();
+            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                for (EmployeeDTO employeeDTO : employeeData) {
+                    if (employeeDTO.getEmployeeId().equals(performanceAppraisalObjectsDTO.getAppraisalObjectId())) {
+                        performanceAppraisalObjectsDTO.setAppraisalObjectName(employeeDTO.getEmployeeName());
+                        performanceAppraisalObjectsDTO.setAppraisalObjectCode(employeeDTO.getEmployeeCode());
+                        break;
+                    }
+                }
+            }
+        }
+        appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOList);
+        List<Map<String, String>> list = new ArrayList<>();
+
+        appraisal.setPerformanceAppraisalRankDTOS(null);
         return appraisal;
     }
 
@@ -159,6 +208,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         return performanceAppraisalDTOS;
     }
+
 
     /**
      * 为字段命名

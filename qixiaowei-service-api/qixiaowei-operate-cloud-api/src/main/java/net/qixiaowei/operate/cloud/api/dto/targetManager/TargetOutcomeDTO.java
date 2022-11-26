@@ -1,15 +1,12 @@
 package net.qixiaowei.operate.cloud.api.dto.targetManager;
 
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
-import javax.validation.groups.Default;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 目标结果表
@@ -60,7 +57,7 @@ public class TargetOutcomeDTO {
     /**
      * 创建人
      */
-    private Long createByName;
+    private String createByName;
     /**
      * 创建时间
      */

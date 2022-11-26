@@ -164,6 +164,7 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
                 for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTOByIndicator : targetOutcomeDetailsDTOByIndicators) {
                     if (targetOutcomeDetailsDTOByIndicator.getIndicatorId().equals(indicatorIds.get(i))) {
                         indicatorIds.remove(i);
+                        break;
                     }
                 }
             }
