@@ -158,30 +158,33 @@
     </select>
 <!--    根据部门查询岗位表列表-->
     <select id="selectBydepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
-        select
-            dp.department_id ,
-            p.post_id,
-            p.post_code,
-            p.post_name,
-            p.official_rank_system_id,
-            p.post_rank_lower,
-            p.post_rank,
-            p.post_rank_upper,
-            p.post_description,
-            p.status,
-            p.delete_flag,
-            p.create_by,
-            p.create_time,
-            p.update_by,
-            p.update_time
-        from
-            post p
-                left join department_post dp
-                          on dp.department_post_id  = p.post_id
-                              and dp.delete_flag =0
-        where p.delete_flag =0
+        select  d.department_id ,
+        p.post_id,
+        p.post_code,
+        p.post_name,
+        p.official_rank_system_id,
+        p.post_rank_lower,
+        p.post_rank,
+        p.post_rank_upper,
+        p.post_description,
+        p.status,
+        p.delete_flag,
+        p.create_by,
+        p.create_time,
+        p.update_by,
+        p.update_time
+        from department d
+        left join
+        department_post dp
+        on dp.department_id = d.department_id
+        and dp.delete_flag =0
+        left join post p
+        on p.post_id  =dp.post_id
+        and p.delete_flag =0
+        where d.delete_flag =0
+
         <if test="departmentId != null">
-            and dp.department_id =#{departmentId}
+            and d.department_id = #{departmentId}
         </if>
     </select>
     <!--新增岗位表-->
