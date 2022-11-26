@@ -149,6 +149,7 @@
                tdd.target_decompose_id,
                tdd.employee_id,
                tdd.area_id,
+               td.decompose_target ,
                tdd.department_id,
                tdd.product_id,
                tdd.region_id,
@@ -161,6 +162,9 @@
                tdd.update_by,
                tdd.update_time
         FROM target_decompose_details tdd
+                 left join target_decompose td
+                           on td.target_decompose_id  = tdd .target_decompose_id
+                               and td.delete_flag =0
         WHERE tdd.target_decompose_id = #{targetDecomposeId}
           and tdd.delete_flag = 0
     </select>
