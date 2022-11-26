@@ -180,7 +180,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         department.setUpdateTime(DateUtils.getNowDate());
         department.setUpdateBy(SecurityUtils.getUserId());
         department.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        department.setStatus(0);
+        department.setStatus(1);
         return department;
     }
 
