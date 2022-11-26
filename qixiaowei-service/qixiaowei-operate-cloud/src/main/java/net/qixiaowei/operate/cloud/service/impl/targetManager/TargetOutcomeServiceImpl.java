@@ -18,7 +18,9 @@ import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +49,9 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
 
     @Autowired
     private ITargetOutcomeDetailsService targetOutcomeDetailsService;
+
+    @Autowired
+    private RemoteUserService userService;
 
     /**
      * 查询目标结果表
@@ -270,12 +275,28 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     public List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO) {
         TargetOutcome targetOutcome = new TargetOutcome();
         BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
-        List<Long> createBys = new ArrayList<>();
+        Set<Long> createBys = new HashSet<>();
         List<TargetOutcomeDTO> targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeList(targetOutcome);
         for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
             createBys.add(outcomeDTO.getCreateBy());
         }
         // todo 根据createBys获取创建人名称  setCreateByName
+        R<List<UserDTO>> usersByUserIds = userService.getUsersByUserIds(createBys, SecurityConstants.INNER);
+        List<UserDTO> userDTOS = usersByUserIds.getData();
+        if (usersByUserIds.getCode() != 200) {
+            throw new ServiceException("远程获取用户信息失败");
+        }
+        if (StringUtils.isEmpty(userDTOS)) {
+            throw new ServiceException("用户信息为空 请联系管理员");
+        }
+        for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
+            for (UserDTO userDTO : userDTOS) {
+                if (userDTO.getUserId().equals(outcomeDTO.getCreateBy())) {
+                    outcomeDTO.setCreateByName(userDTO.getUserName());
+                    break;
+                }
+            }
+        }
         return targetOutcomeDTOS;
     }
 

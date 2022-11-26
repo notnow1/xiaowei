@@ -15,12 +15,20 @@ import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
  */
 public interface IPerformanceAppraisalService {
     /**
-     * 查询绩效考核表
+     * 查询绩效任务考核表
      *
      * @param performanceAppraisalId 绩效考核表主键
      * @return 绩效考核表
      */
     PerformanceAppraisalDTO selectPerformanceAppraisalByPerformanceAppraisalId(Long performanceAppraisalId);
+
+    /**
+     * 查询组织绩效任务考核详情
+     *
+     * @param performanceAppraisalDTO 绩效考核表
+     * @return
+     */
+    PerformanceAppraisalDTO selectOrgAppraisalArchiveById(Long performanceAppraisalDTO);
 
     /**
      * 查询绩效考核表列表
@@ -125,5 +133,4 @@ public interface IPerformanceAppraisalService {
      * @return
      */
     List<PerformanceAppraisalExcel> exportPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO);
-
 }
