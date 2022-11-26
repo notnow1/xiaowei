@@ -5,9 +5,11 @@
     <select id="selectPerformanceAppraisalObjectsByPerformAppraisalObjectsId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
-        perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id, evaluation_score, appraisal_result_id, self_defined_columns_flag, appraisal_object_status, delete_flag, create_by, create_time, update_by, update_time
+        perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id,
+        evaluation_score, appraisal_result_id, self_defined_columns_flag, appraisal_object_status, delete_flag,
+        create_by, create_time, update_by, update_time
         FROM performance_appraisal_objects
-        WHERE  perform_appraisal_objects_id=#{performAppraisalObjectsId}
+        WHERE perform_appraisal_objects_id=#{performAppraisalObjectsId}
         and delete_flag=0
     </select>
 
@@ -15,66 +17,82 @@
     <select id="selectPerformanceAppraisalObjectsByPerformAppraisalObjectsIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
-        perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id, evaluation_score, appraisal_result_id, self_defined_columns_flag, appraisal_object_status, delete_flag, create_by, create_time, update_by, update_time
+        perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id,
+        evaluation_score, appraisal_result_id, self_defined_columns_flag, appraisal_object_status, delete_flag,
+        create_by, create_time, update_by, update_time
         FROM performance_appraisal_objects
-        WHERE  perform_appraisal_objects_id in
-            <foreach item="item"
-                     collection="performAppraisalObjectsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE perform_appraisal_objects_id in
+        <foreach item="item"
+                 collection="performAppraisalObjectsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询绩效考核对象表列表-->
-    <select id="selectPerformanceAppraisalObjectsList" resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
+    <select id="selectPerformanceAppraisalObjectsList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
-        perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id, evaluation_score, appraisal_result_id, self_defined_columns_flag, appraisal_object_status, delete_flag, create_by, create_time, update_by, update_time
+        perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id,
+        evaluation_score, appraisal_result_id, self_defined_columns_flag, appraisal_object_status, delete_flag,
+        create_by, create_time, update_by, update_time
         FROM performance_appraisal_objects
         WHERE delete_flag=0
-                <if test="performanceAppraisalObjects.performAppraisalObjectsId != null">
-                    and perform_appraisal_objects_id=#{performanceAppraisalObjects.performAppraisalObjectsId}
-                </if>
-                <if test="performanceAppraisalObjects.performanceAppraisalId != null">
-                    and performance_appraisal_id=#{performanceAppraisalObjects.performanceAppraisalId}
-                </if>
-                <if test="performanceAppraisalObjects.appraisalObjectId != null">
-                    and appraisal_object_id=#{performanceAppraisalObjects.appraisalObjectId}
-                </if>
-                <if test="performanceAppraisalObjects.appraisalPrincipalId != null">
-                    and appraisal_principal_id=#{performanceAppraisalObjects.appraisalPrincipalId}
-                </if>
-                <if test="performanceAppraisalObjects.evaluationScore != null">
-                    and evaluation_score=#{performanceAppraisalObjects.evaluationScore}
-                </if>
-                <if test="performanceAppraisalObjects.appraisalResultId != null">
-                    and appraisal_result_id=#{performanceAppraisalObjects.appraisalResultId}
-                </if>
-                <if test="performanceAppraisalObjects.selfDefinedColumnsFlag != null">
-                    and self_defined_columns_flag=#{performanceAppraisalObjects.selfDefinedColumnsFlag}
-                </if>
-                <if test="performanceAppraisalObjects.appraisalObjectStatus != null">
-                    and appraisal_object_status=#{performanceAppraisalObjects.appraisalObjectStatus}
-                </if>
-                <if test="performanceAppraisalObjects.deleteFlag != null">
-                    and delete_flag=#{performanceAppraisalObjects.deleteFlag}
-                </if>
-                <if test="performanceAppraisalObjects.createBy != null">
-                    and create_by=#{performanceAppraisalObjects.createBy}
-                </if>
-                <if test="performanceAppraisalObjects.createTime != null">
-                    and create_time=#{performanceAppraisalObjects.createTime}
-                </if>
-                <if test="performanceAppraisalObjects.updateBy != null">
-                    and update_by=#{performanceAppraisalObjects.updateBy}
-                </if>
-                <if test="performanceAppraisalObjects.updateTime != null">
-                    and update_time=#{performanceAppraisalObjects.updateTime}
-                </if>
+        <if test="performanceAppraisalObjects.performAppraisalObjectsId != null">
+            and perform_appraisal_objects_id=#{performanceAppraisalObjects.performAppraisalObjectsId}
+        </if>
+        <if test="performanceAppraisalObjects.performanceAppraisalId != null">
+            and performance_appraisal_id=#{performanceAppraisalObjects.performanceAppraisalId}
+        </if>
+        <if test="performanceAppraisalObjects.appraisalObjectId != null">
+            and appraisal_object_id=#{performanceAppraisalObjects.appraisalObjectId}
+        </if>
+        <if test="performanceAppraisalObjects.appraisalPrincipalId != null">
+            and appraisal_principal_id=#{performanceAppraisalObjects.appraisalPrincipalId}
+        </if>
+        <if test="performanceAppraisalObjects.evaluationScore != null">
+            and evaluation_score=#{performanceAppraisalObjects.evaluationScore}
+        </if>
+        <if test="performanceAppraisalObjects.appraisalResultId != null">
+            and appraisal_result_id=#{performanceAppraisalObjects.appraisalResultId}
+        </if>
+        <if test="performanceAppraisalObjects.selfDefinedColumnsFlag != null">
+            and self_defined_columns_flag=#{performanceAppraisalObjects.selfDefinedColumnsFlag}
+        </if>
+        <if test="performanceAppraisalObjects.appraisalObjectStatus != null">
+            and appraisal_object_status=#{performanceAppraisalObjects.appraisalObjectStatus}
+        </if>
+        <if test="performanceAppraisalObjects.deleteFlag != null">
+            and delete_flag=#{performanceAppraisalObjects.deleteFlag}
+        </if>
+        <if test="performanceAppraisalObjects.createBy != null">
+            and create_by=#{performanceAppraisalObjects.createBy}
+        </if>
+        <if test="performanceAppraisalObjects.createTime != null">
+            and create_time=#{performanceAppraisalObjects.createTime}
+        </if>
+        <if test="performanceAppraisalObjects.updateBy != null">
+            and update_by=#{performanceAppraisalObjects.updateBy}
+        </if>
+        <if test="performanceAppraisalObjects.updateTime != null">
+            and update_time=#{performanceAppraisalObjects.updateTime}
+        </if>
+    </select>
+    <select id="selectPerformanceAppraisalObjectsByPerformAppraisalId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
+        SELECT
+        perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id,
+        evaluation_score, appraisal_result_id, self_defined_columns_flag, appraisal_object_status, delete_flag,
+        create_by, create_time, update_by, update_time
+        FROM performance_appraisal_objects
+        WHERE delete_flag=0
+        AND performance_appraisal_id = #{performanceAppraisalId}
     </select>
     <!--新增绩效考核对象表-->
     <insert id="insertPerformanceAppraisalObjects" useGeneratedKeys="true" keyProperty="performAppraisalObjectsId">
-        INSERT INTO performance_appraisal_objects (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,evaluation_score,appraisal_result_id,self_defined_columns_flag,appraisal_object_status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO performance_appraisal_objects
+        (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,evaluation_score,appraisal_result_id,self_defined_columns_flag,appraisal_object_status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{performanceAppraisalObjects.performanceAppraisalId},#{performanceAppraisalObjects.appraisalObjectId},#{performanceAppraisalObjects.appraisalPrincipalId},#{performanceAppraisalObjects.evaluationScore},#{performanceAppraisalObjects.appraisalResultId},#{performanceAppraisalObjects.selfDefinedColumnsFlag},#{performanceAppraisalObjects.appraisalObjectStatus},#{performanceAppraisalObjects.deleteFlag},#{performanceAppraisalObjects.createBy},#{performanceAppraisalObjects.createTime},#{performanceAppraisalObjects.updateBy},#{performanceAppraisalObjects.updateTime})
     </insert>
@@ -82,71 +100,72 @@
     <update id="updatePerformanceAppraisalObjects">
         UPDATE performance_appraisal_objects
         SET
-                    <if test="performanceAppraisalObjects.performanceAppraisalId != null">
-                        performance_appraisal_id=#{performanceAppraisalObjects.performanceAppraisalId},
-                    </if>
-                    <if test="performanceAppraisalObjects.appraisalObjectId != null">
-                        appraisal_object_id=#{performanceAppraisalObjects.appraisalObjectId},
-                    </if>
-                    <if test="performanceAppraisalObjects.appraisalPrincipalId != null">
-                        appraisal_principal_id=#{performanceAppraisalObjects.appraisalPrincipalId},
-                    </if>
-                    <if test="performanceAppraisalObjects.evaluationScore != null">
-                        evaluation_score=#{performanceAppraisalObjects.evaluationScore},
-                    </if>
-                    <if test="performanceAppraisalObjects.appraisalResultId != null">
-                        appraisal_result_id=#{performanceAppraisalObjects.appraisalResultId},
-                    </if>
-                    <if test="performanceAppraisalObjects.selfDefinedColumnsFlag != null">
-                        self_defined_columns_flag=#{performanceAppraisalObjects.selfDefinedColumnsFlag},
-                    </if>
-                    <if test="performanceAppraisalObjects.appraisalObjectStatus != null">
-                        appraisal_object_status=#{performanceAppraisalObjects.appraisalObjectStatus},
-                    </if>
-                    <if test="performanceAppraisalObjects.deleteFlag != null">
-                        delete_flag=#{performanceAppraisalObjects.deleteFlag},
-                    </if>
-                    <if test="performanceAppraisalObjects.createBy != null">
-                        create_by=#{performanceAppraisalObjects.createBy},
-                    </if>
-                    <if test="performanceAppraisalObjects.createTime != null">
-                        create_time=#{performanceAppraisalObjects.createTime},
-                    </if>
-                    <if test="performanceAppraisalObjects.updateBy != null">
-                        update_by=#{performanceAppraisalObjects.updateBy},
-                    </if>
-                    <if test="performanceAppraisalObjects.updateTime != null">
-                        update_time=#{performanceAppraisalObjects.updateTime}
-                    </if>
+        <if test="performanceAppraisalObjects.performanceAppraisalId != null">
+            performance_appraisal_id=#{performanceAppraisalObjects.performanceAppraisalId},
+        </if>
+        <if test="performanceAppraisalObjects.appraisalObjectId != null">
+            appraisal_object_id=#{performanceAppraisalObjects.appraisalObjectId},
+        </if>
+        <if test="performanceAppraisalObjects.appraisalPrincipalId != null">
+            appraisal_principal_id=#{performanceAppraisalObjects.appraisalPrincipalId},
+        </if>
+        <if test="performanceAppraisalObjects.evaluationScore != null">
+            evaluation_score=#{performanceAppraisalObjects.evaluationScore},
+        </if>
+        <if test="performanceAppraisalObjects.appraisalResultId != null">
+            appraisal_result_id=#{performanceAppraisalObjects.appraisalResultId},
+        </if>
+        <if test="performanceAppraisalObjects.selfDefinedColumnsFlag != null">
+            self_defined_columns_flag=#{performanceAppraisalObjects.selfDefinedColumnsFlag},
+        </if>
+        <if test="performanceAppraisalObjects.appraisalObjectStatus != null">
+            appraisal_object_status=#{performanceAppraisalObjects.appraisalObjectStatus},
+        </if>
+        <if test="performanceAppraisalObjects.deleteFlag != null">
+            delete_flag=#{performanceAppraisalObjects.deleteFlag},
+        </if>
+        <if test="performanceAppraisalObjects.createBy != null">
+            create_by=#{performanceAppraisalObjects.createBy},
+        </if>
+        <if test="performanceAppraisalObjects.createTime != null">
+            create_time=#{performanceAppraisalObjects.createTime},
+        </if>
+        <if test="performanceAppraisalObjects.updateBy != null">
+            update_by=#{performanceAppraisalObjects.updateBy},
+        </if>
+        <if test="performanceAppraisalObjects.updateTime != null">
+            update_time=#{performanceAppraisalObjects.updateTime}
+        </if>
         WHERE
-                 perform_appraisal_objects_id=#{performanceAppraisalObjects.performAppraisalObjectsId}
+        perform_appraisal_objects_id=#{performanceAppraisalObjects.performAppraisalObjectsId}
     </update>
     <!--逻辑删除绩效考核对象表-->
     <update id="logicDeletePerformanceAppraisalObjectsByPerformAppraisalObjectsId">
         UPDATE performance_appraisal_objects
-        SET     delete_flag= 1,
-                update_by=#{performanceAppraisalObjects.updateBy},
-                update_time=#{performanceAppraisalObjects.updateTime}
+        SET delete_flag= 1,
+        update_by=#{performanceAppraisalObjects.updateBy},
+        update_time=#{performanceAppraisalObjects.updateTime}
         WHERE
-                perform_appraisal_objects_id=#{performanceAppraisalObjects.performAppraisalObjectsId}
+        perform_appraisal_objects_id=#{performanceAppraisalObjects.performAppraisalObjectsId}
     </update>
     <!--逻辑批量删除绩效考核对象表-->
     <update id="logicDeletePerformanceAppraisalObjectsByPerformAppraisalObjectsIds">
         UPDATE performance_appraisal_objects
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         perform_appraisal_objects_id IN
-            <foreach item="item"
-                     collection="performAppraisalObjectsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        perform_appraisal_objects_id IN
+        <foreach item="item"
+                 collection="performAppraisalObjectsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增绩效考核对象表-->
     <insert id="batchPerformanceAppraisalObjects">
-        INSERT INTO performance_appraisal_objects (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,evaluation_score,appraisal_result_id,self_defined_columns_flag,appraisal_object_status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO performance_appraisal_objects
+        (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,evaluation_score,appraisal_result_id,self_defined_columns_flag,appraisal_object_status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="performanceAppraisalObjectss"
@@ -158,111 +177,117 @@
     <!--物理删除绩效考核对象表-->
     <delete id="deletePerformanceAppraisalObjectsByPerformAppraisalObjectsId">
         DELETE FROM performance_appraisal_objects
-        WHERE  perform_appraisal_objects_id=#{performanceAppraisalObjects}
+        WHERE perform_appraisal_objects_id=#{performanceAppraisalObjects}
 
     </delete>
     <!--物理批量删除绩效考核对象表-->
     <delete id="deletePerformanceAppraisalObjectsByPerformAppraisalObjectsIds">
         DELETE FROM performance_appraisal_objects
-        WHERE  perform_appraisal_objects_id IN
-            <foreach item="item"
-                     collection="performAppraisalObjectsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE perform_appraisal_objects_id IN
+        <foreach item="item"
+                 collection="performAppraisalObjectsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改绩效考核对象表-->
     <update id="updatePerformanceAppraisalObjectss">
         update performance_appraisal_objects
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="performance_appraisal_id=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.performanceAppraisalId != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.performanceAppraisalId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="appraisal_object_id=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.appraisalObjectId != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.appraisalObjectId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="appraisal_principal_id=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.appraisalPrincipalId != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.appraisalPrincipalId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="evaluation_score=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.evaluationScore != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.evaluationScore}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="appraisal_result_id=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.appraisalResultId != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.appraisalResultId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="self_defined_columns_flag=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.selfDefinedColumnsFlag != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.selfDefinedColumnsFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="appraisal_object_status=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.appraisalObjectStatus != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.appraisalObjectStatus}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="performance_appraisal_id=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.performanceAppraisalId != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                        #{item.performanceAppraisalId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_object_id=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.appraisalObjectId != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                        #{item.appraisalObjectId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_principal_id=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.appraisalPrincipalId != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                        #{item.appraisalPrincipalId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="evaluation_score=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.evaluationScore != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.evaluationScore}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_result_id=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.appraisalResultId != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                        #{item.appraisalResultId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="self_defined_columns_flag=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.selfDefinedColumnsFlag != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                        #{item.selfDefinedColumnsFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_object_status=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.appraisalObjectStatus != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                        #{item.appraisalObjectStatus}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="performanceAppraisalObjectsList" separator="or" item="item" index="index">
-                    perform_appraisal_objects_id=#{item.performAppraisalObjectsId}
+            perform_appraisal_objects_id=#{item.performAppraisalObjectsId}
         </foreach>
     </update>
 </mapper>

@@ -77,6 +77,16 @@ public class PerformanceAppraisalController extends BaseController {
         return AjaxResult.success(list);
     }
 
+    /**
+     * 查询绩效考核表列表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/list/orgArchive")
+    public AjaxResult listArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
+        List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectOrgAppraisalArchiveList(performanceAppraisalDTO);
+        return AjaxResult.success(list);
+    }
+
 
     /**
      * 新增绩效考核表
