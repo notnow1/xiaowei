@@ -745,7 +745,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSetting.setIndicatorIds(collect);
         }
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
-        if (StringUtils.isNotEmpty(targetSettingDTOS) && targetSettingDTOS.get(0) != null) {
+        if (StringUtils.isNotEmpty(targetSettingDTOS) && targetSettingDTOS.get(0) != null && targetSettingDTOS.size()==1) {
             List<Long> indicatorIds = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).collect(Collectors.toList());
             R<List<IndicatorDTO>> listR1 = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR1.getData();
@@ -760,7 +760,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
 
         }
-        if (StringUtils.isNotEmpty(targetSettingDTOS)) {
+        if (StringUtils.isNotEmpty(targetSettingDTOS) && targetSettingDTOS.get(0) != null && targetSettingDTOS.size()==1) {
             for (TargetSettingDTO settingDTO : targetSettingDTOS) {
                 //年度目标值
                 BigDecimal targetValue = settingDTO.getTargetValue();
