@@ -750,3 +750,117 @@ CREATE TABLE bonus_pay_objects(
     update_time TIMESTAMP    COMMENT '更新时间' ,
     PRIMARY KEY (bonus_pay_objects_id)
 )  COMMENT = '奖金发放对象表';
+
+
+CREATE TABLE dept_annual_bonus(
+    dept_annual_bonus_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    annual_bonus_year INT NOT NULL   COMMENT '年终奖年度' ,
+    company_annual_bonus DECIMAL(14,2)    COMMENT '公司年终奖总包' ,
+    status TINYINT    COMMENT '状态' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (dept_annual_bonus_id)
+)  COMMENT = '部门年终奖表';
+
+
+CREATE TABLE dept_annual_bonus_operate(
+    dept_annual_bonus_operate_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    dept_annual_bonus_id BIGINT NOT NULL   COMMENT '部门年终奖ID' ,
+    indicator_id BIGINT NOT NULL   COMMENT '指标ID' ,
+    target_value DECIMAL(14,2)    COMMENT '目标值' ,
+    actual_value DECIMAL(14,2)    COMMENT '实际值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (dept_annual_bonus_operate_id)
+)  COMMENT = '部门年终奖经营绩效结果表';
+
+
+CREATE TABLE dept_annual_bonus_factor(
+    dept_annual_bonus_factor_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    department_id BIGINT NOT NULL   COMMENT '部门ID' ,
+    weight DECIMAL(5,2)    COMMENT '权重' ,
+    last_performance_resulted VARCHAR(128)    COMMENT '最近绩效结果' ,
+    performance_rank_factor_id BIGINT    COMMENT '绩效等级系数ID' ,
+    performance_bonus_factor DECIMAL(5,2)    COMMENT '组织绩效奖金系数' ,
+    importance_factor DECIMAL(5,2)    COMMENT '组织重要性系数' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (dept_annual_bonus_factor_id)
+)  COMMENT = '部门年终奖系数表';
+
+
+CREATE TABLE employee_annual_bonus(
+    employee_annual_bonus_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    annual_bonus_year INT NOT NULL   COMMENT '年终奖年度' ,
+    department_id BIGINT NOT NULL   COMMENT '一级部门ID' ,
+    apply_department_id BIGINT    COMMENT '申请部门ID' ,
+    apply_employee_id BIGINT    COMMENT '申请人ID' ,
+    distribute_bonus_amount DECIMAL(14,2)    COMMENT '分配年终奖金额' ,
+    comment_flag TINYINT    COMMENT '发起评议流程标记:0否;1是' ,
+    comment_step TINYINT    COMMENT '评议环节:1管理团队评议;2主管初评+管理团队评议' ,
+    comment_employee_id BIGINT    COMMENT '管理团队评议人' ,
+    comment_date DATE    COMMENT '评议日期' ,
+    status TINYINT    COMMENT '状态:0草稿;1待初评;2待评议;3已评议' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (employee_annual_bonus_id)
+)  COMMENT = '个人年终奖表';
+
+
+CREATE TABLE emp_annual_bonus_objects(
+    emp_annual_bonus_objects_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    employee_annual_bonus_id BIGINT NOT NULL   COMMENT '个人年终奖ID' ,
+    employee_id BIGINT NOT NULL   COMMENT '员工ID' ,
+    choice_flag TINYINT NOT NULL   COMMENT '选中标记:0否;1是' ,
+    performance_rank_factor_id BIGINT    COMMENT '绩效等级系数ID' ,
+    performance_bonus_factor DECIMAL(5,2)    COMMENT '绩效奖金系数' ,
+    attendance_factor DECIMAL(5,2)    COMMENT '考勤系数' ,
+    recommend_value DECIMAL(18,2)    COMMENT '建议值' ,
+    comment_value DECIMAL(18,2)    COMMENT '评议值' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (emp_annual_bonus_objects_id)
+)  COMMENT = '个人年终奖发放对象表';
+
+
+CREATE TABLE emp_annual_bonus_snapshot(
+    emp_annual_bonus_snapshot_id BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    employee_annual_bonus_id BIGINT NOT NULL   COMMENT '个人年终奖ID' ,
+    emp_annual_bonus_objects_id BIGINT NOT NULL   COMMENT '个人年终奖发放对象ID' ,
+    employee_name VARCHAR(64)    COMMENT '员工姓名' ,
+    employee_code VARCHAR(32)    COMMENT '员工工号' ,
+    department_name VARCHAR(64)    COMMENT '部门名称' ,
+    post_name VARCHAR(64)    COMMENT '岗位名称' ,
+    official_rank_name VARCHAR(64)    COMMENT '职级名称' ,
+    seniority VARCHAR(32)    COMMENT '司龄' ,
+    employee_basic_wage DECIMAL(18,2)    COMMENT '基本工资' ,
+    emolument_before_one DECIMAL(18,2)    COMMENT '前一年总薪酬' ,
+    bonus_before_one DECIMAL(18,2)    COMMENT '前一年奖金' ,
+    bonus_before_two DECIMAL(18,2)    COMMENT '前二年奖金' ,
+    last_performance_resulted VARCHAR(128)    COMMENT '最近绩效结果' ,
+    bonus_percentage_one DECIMAL(5,2)    COMMENT '奖金占比一' ,
+    bonus_percentage_two DECIMAL(5,2)    COMMENT '奖金占比二' ,
+    reference_value_one DECIMAL(18,2)    COMMENT '参考值一' ,
+    reference_value_two DECIMAL(18,2)    COMMENT '参考值二' ,
+    delete_flag TINYINT   DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT    COMMENT '创建人' ,
+    create_time TIMESTAMP    COMMENT '创建时间' ,
+    update_by BIGINT    COMMENT '更新人' ,
+    update_time TIMESTAMP    COMMENT '更新时间' ,
+    PRIMARY KEY (emp_annual_bonus_snapshot_id)
+)  COMMENT = '个人年终奖发放快照信息表';
