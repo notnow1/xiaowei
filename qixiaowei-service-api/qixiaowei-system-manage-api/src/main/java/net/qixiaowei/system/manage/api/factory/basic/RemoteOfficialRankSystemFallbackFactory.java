@@ -1,10 +1,7 @@
 package net.qixiaowei.system.manage.api.factory.basic;
 
 import net.qixiaowei.integration.common.domain.R;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
-import net.qixiaowei.system.manage.api.factory.basic.RemoteIndustryFallbackFactory;
-import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

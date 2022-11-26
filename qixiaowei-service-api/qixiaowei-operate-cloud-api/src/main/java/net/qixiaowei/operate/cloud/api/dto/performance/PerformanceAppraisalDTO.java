@@ -49,7 +49,12 @@ public class PerformanceAppraisalDTO {
     /**
      * 绩效等级ID
      */
+    @NotNull(message = "绩效等级ID不能为空", groups = {PerformancePercentageDTO.AddPerformancePercentageDTO.class})
     private Long performanceRankId;
+    /**
+     * 绩效等级名称
+     */
+    private String performanceRankName;
     /**
      * 考核年度
      */

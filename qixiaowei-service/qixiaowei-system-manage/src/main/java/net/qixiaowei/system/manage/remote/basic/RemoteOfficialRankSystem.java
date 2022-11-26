@@ -18,6 +18,8 @@ public class RemoteOfficialRankSystem implements RemoteOfficialRankSystemService
     IOfficialRankSystemService officialRankSystemService;
 
     @Override
+    @InnerAuth
+    @GetMapping("/selectAll")
     public R<List<OfficialRankSystemDTO>> selectAll(String source) {
         return R.ok(officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO()));
     }
@@ -28,6 +30,9 @@ public class RemoteOfficialRankSystem implements RemoteOfficialRankSystemService
      * @param officialRankSystemId
      * @param source
      * @return
+     *
+     *
+     * 】
      */
     @Override
     @InnerAuth

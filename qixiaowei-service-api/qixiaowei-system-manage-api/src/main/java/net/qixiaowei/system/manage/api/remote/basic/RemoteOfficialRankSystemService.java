@@ -23,7 +23,7 @@ public interface RemoteOfficialRankSystemService {
      *
      * @return 结果
      */
-    @PostMapping(API_PREFIX_OFFICIAL + "/selectAll")
+    @GetMapping(API_PREFIX_OFFICIAL + "/selectAll")
     R<List<OfficialRankSystemDTO>> selectAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**

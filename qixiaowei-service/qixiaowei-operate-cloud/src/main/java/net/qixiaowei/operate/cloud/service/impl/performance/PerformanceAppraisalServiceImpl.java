@@ -63,7 +63,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Override
     public PerformanceAppraisalDTO selectPerformanceAppraisalByPerformanceAppraisalId(Long performanceAppraisalId) {
         PerformanceAppraisalDTO appraisal = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
-        Long performanceAppraisalId1 = appraisal.getPerformanceAppraisalId();
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = getOfficialRankSystemDTOS();
+        for (OfficialRankSystemDTO officialRankSystemDTO : officialRankSystemDTOS) {
+            if (appraisal.getPerformanceRankId().equals(officialRankSystemDTO.getOfficialRankSystemId())) {
+                appraisal.setPerformanceRankName(officialRankSystemDTO.getOfficialRankSystemName());
+                break;
+            }
+        }
         int appraisalObject = appraisal.getAppraisalObject();
         if (appraisalObject == 1) {// 组织
             List<DepartmentDTO> departmentData = getDepartmentData();
@@ -131,10 +137,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
-        R<List<OfficialRankSystemDTO>> listR = officialRankSystemService.selectAll(SecurityConstants.INNER);
-        if (listR.getCode() != 200) {
-            throw new ServiceException("");
-        }
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = getOfficialRankSystemDTOS();
         performanceAppraisalDTOS.forEach(appraisal -> {
             // 考核周期类型/考核周期
             switch (appraisal.getCycleType()) {
@@ -183,8 +186,31 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     appraisal.setAppraisalFlowName("仅导入结果");
                     break;
             }
+            for (OfficialRankSystemDTO officialRankSystemDTO : officialRankSystemDTOS) {
+                if (officialRankSystemDTO.getOfficialRankSystemId().equals(appraisal.getPerformanceRankId())) {
+                    appraisal.setPerformanceRankName(officialRankSystemDTO.getOfficialRankSystemName());
+                    break;
+                }
+            }
         });
         return performanceAppraisalDTOS;
+    }
+
+    /**
+     * 获取职级体系等级列表
+     *
+     * @return List
+     */
+    private List<OfficialRankSystemDTO> getOfficialRankSystemDTOS() {
+        R<List<OfficialRankSystemDTO>> listR = officialRankSystemService.selectAll(SecurityConstants.INNER);
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程获取职级体系等级失败");
+        }
+        if (StringUtils.isEmpty(officialRankSystemDTOS)) {
+            throw new ServiceException("职级体系等级数据为空 请检查职级等级配置");
+        }
+        return officialRankSystemDTOS;
     }
 
     /**
