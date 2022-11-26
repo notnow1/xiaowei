@@ -49,7 +49,7 @@
             and appraisal_year=#{performanceAppraisal.appraisalYear}
         </if>
         <if test="performanceAppraisal.appraisalName != null and performanceAppraisal.appraisalName != ''">
-            and appraisal_name=#{performanceAppraisal.appraisalName}
+            and appraisal_name like "%" #{performanceAppraisal.appraisalName} "%"
         </if>
         <if test="performanceAppraisal.cycleFlag != null">
             and cycle_flag=#{performanceAppraisal.cycleFlag}

@@ -1,15 +1,12 @@
 package net.qixiaowei.operate.cloud.api.dto.performance;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.Date;
 import javax.validation.groups.Default;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 绩效考核对象表
@@ -56,7 +53,11 @@ public class PerformanceAppraisalObjectsDTO {
     /**
      * 考核对象编码
      */
-    private Long appraisalObjectCode;
+    private String appraisalObjectCode;
+    /**
+     * 考核对象名称
+     */
+    private String appraisalObjectName;
     /**
      * 考核负责人ID
      */
