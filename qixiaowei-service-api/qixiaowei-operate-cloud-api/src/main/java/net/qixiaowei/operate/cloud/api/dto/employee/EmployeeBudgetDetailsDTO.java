@@ -46,7 +46,10 @@ public class EmployeeBudgetDetailsDTO {
      * 人力预算ID
      */
     private  Long employeeBudgetId;
-
+    /**
+     * 预算年度
+     */
+    private  Integer budgetYear;
     /**
      * 预算部门ID
      */

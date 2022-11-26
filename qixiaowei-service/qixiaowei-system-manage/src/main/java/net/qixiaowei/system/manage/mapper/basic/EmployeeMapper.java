@@ -186,4 +186,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectByBudgeList(@Param("list") List<List<Long>> list);
+
+    /**
+     * 查询在职的所有员工
+     * @param employee
+     * @return
+     */
+    List<EmployeeDTO> selectDropDownEmployeeList(@Param("employee") Employee employee);
 }

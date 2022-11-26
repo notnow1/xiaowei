@@ -107,16 +107,19 @@
         on eb .employee_budget_id = ebd.employee_budget_id
         and eb.delete_flag =0
         where ebd.delete_flag =0
-
+        <if test="employeeBudgetDTO.officialRank != null">
+            and   ebd.official_rank =#{employeeBudgetDTO.officialRank}
+        </if>
         <if test="employeeBudgetDTO.departmentId != null">
             and   eb.department_id=  #{employeeBudgetDTO.departmentId}
         </if>
         <if test="employeeBudgetDTO.officialRankSystemId != null">
             and   eb.official_rank_system_id =#{employeeBudgetDTO.officialRankSystemId}
         </if>
-        <if test="employeeBudgetDTO.officialRank != null">
-            and   ebd.official_rank =#{employeeBudgetDTO.officialRank}
+        <if test="employeeBudgetDTO.budgetYear != null">
+            and   eb.budget_year =#{employeeBudgetDTO.budgetYear}
         </if>
+
     </select>
     <!--新增人力预算明细表-->
     <insert id="insertEmployeeBudgetDetails" useGeneratedKeys="true" keyProperty="employeeBudgetDetailsId">

@@ -11,6 +11,7 @@ import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetAdjusts;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetDetails;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetDetailsExcel;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
@@ -29,6 +30,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -696,12 +699,12 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             }
             List<List<Long>> list = new ArrayList<>();
             //部门id集合
-            List<Long> collect2 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getDepartmentId).filter(Objects::nonNull).collect(Collectors.toList());
+            List<Long> collect2 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getDepartmentId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect2)){
                 list.add(collect2);
             }
             //职级体系ID集合
-            List<Long> collect3 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getOfficialRankSystemId).filter(Objects::nonNull).collect(Collectors.toList());
+            List<Long> collect3 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getOfficialRankSystemId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect3)){
                 list.add(collect3);
             }
@@ -709,6 +712,22 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             this.packPayAmountNum(employeeBudgetDTO, employeeBudgetDetailsDTOS, list);
 
         }
+            //部门名称
+            String departmentName = employeeBudgetDTO.getDepartmentName();
+            if (StringUtils.isNotNull(departmentName)){
+
+                List<EmployeeBudgetDetailsDTO> emolumentPlanDTOList = new ArrayList<>();
+                //模糊查询
+                Pattern pattern = Pattern.compile(employeeBudgetDTO.getDepartmentName());
+                for (EmployeeBudgetDetailsDTO budgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                    Matcher matcher = pattern.matcher(budgetDetailsDTO.getDepartmentName());
+                    if(matcher.find()){  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        emolumentPlanDTOList.add(budgetDetailsDTO);
+                    }
+                }
+                return emolumentPlanDTOList;
+            }
+
 
         return employeeBudgetDetailsDTOS;
     }
@@ -738,7 +757,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @param list
      */
     private void packPayAmountNum(EmployeeBudgetDTO employeeBudgetDTO, List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS, List<List<Long>> list) {
-        if (StringUtils.isNotEmpty(list)){
+        if (StringUtils.isNotEmpty(list) && list.size() == 2){
             R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByBudgeList(list, SecurityConstants.INNER);
             List<EmployeeDTO> data = listR.getData();
             if (StringUtils.isNotEmpty(data)){

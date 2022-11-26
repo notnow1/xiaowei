@@ -79,7 +79,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
-        return employeeMapper.selectEmployeeList(employee);
+        return employeeMapper.selectDropDownEmployeeList(employee);
     }
 
     /**

@@ -654,16 +654,45 @@
         WHERE  e.delete_flag =0
         and e.employee_department_id in
         <foreach item="item"
-                 collection="list.get[0]"
+                 collection="list[0]"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
         and ors.official_rank_system_id in
         <foreach item="item"
-                 collection="list.get[1]"
+                 collection="list[1]"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </select>
+<!--    查询在职的所有员工-->
+    <select id="selectDropDownEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee
+        where delete_flag = 0
+        and   employment_status =1
+        and   status =1
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
