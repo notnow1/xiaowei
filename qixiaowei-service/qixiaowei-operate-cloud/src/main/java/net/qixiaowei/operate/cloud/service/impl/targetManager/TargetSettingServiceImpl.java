@@ -733,6 +733,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         list.add(IndicatorCode.INCOME.getCode());
         //回款金额（含税）
         list.add(IndicatorCode.RECEIVABLE.getCode());
+        //销售毛利
+        list.add(IndicatorCode.GROSS.getCode());
+        //净利润
+        list.add(IndicatorCode.PROFITS.getCode());
         R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
         if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
@@ -741,7 +745,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSetting.setIndicatorIds(collect);
         }
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
-        if (StringUtils.isNotEmpty(targetSettingDTOS)) {
+        if (StringUtils.isNotEmpty(targetSettingDTOS) && targetSettingDTOS.get(0) != null) {
             List<Long> indicatorIds = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).collect(Collectors.toList());
             R<List<IndicatorDTO>> listR1 = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR1.getData();

@@ -137,7 +137,7 @@
             #{item}
         </foreach>
         AND pay_year &lt;={payYear}
-        order by pay_year desc
+        order by pay_year salary_amount desc
     </select>
     <!--新增工资发薪表-->
     <insert id="insertSalaryPay" useGeneratedKeys="true" keyProperty="salaryPayId">
