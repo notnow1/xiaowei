@@ -688,6 +688,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                         for (OfficialRankSystemDTO datum : data) {
                             if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
                                 employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+                                employeeBudgetDetailsDTO.setOfficialRankName(datum.getRankPrefixCode()+employeeBudgetDetailsDTO.getOfficialRank());
                             }
                         }
                     }
