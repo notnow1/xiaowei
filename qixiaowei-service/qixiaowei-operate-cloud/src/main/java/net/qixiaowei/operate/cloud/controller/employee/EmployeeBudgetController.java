@@ -59,8 +59,8 @@ public class EmployeeBudgetController extends BaseController
      * 导出增人/减人工资包列表
      */
     @SneakyThrows
-    @GetMapping("export")
-    public void exportTenant(@RequestParam EmployeeBudgetDTO employeeBudgetDTO, HttpServletResponse response) {
+    @GetMapping("/export/details")
+    public void export(@RequestParam EmployeeBudgetDTO employeeBudgetDTO, HttpServletResponse response) {
         List<EmployeeBudgetDetailsExcel> employeeBudgetDetailsExcelList = employeeBudgetService.export(employeeBudgetDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
