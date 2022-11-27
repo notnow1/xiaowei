@@ -4,6 +4,7 @@ import net.qixiaowei.operate.cloud.api.domain.salary.SalaryPay;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -139,4 +140,12 @@ public interface SalaryPayMapper {
      * @return
      */
     List<SalaryPayDTO> selectSalaryPayBySomeYear(@Param("startYear") Integer startYear, @Param("endYear") Integer endYear);
+
+    /**
+     * 当前月份倒推12个月的“奖金”部分合计
+     * @param budgetYear
+     * @param month
+     * @return
+     */
+    BigDecimal selectBonusActualNum(@Param("budgetYear") int budgetYear, @Param("month")int month);
 }

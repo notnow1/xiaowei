@@ -107,7 +107,7 @@
         on eb .employee_budget_id = ebd.employee_budget_id
         and eb.delete_flag =0
         where ebd.delete_flag =0
-        <if test="employeeBudgetDTO.employeeBudgetDetailsIds  != null and employeeBudgetDTO.employeeBudgetDetailsIds !=0">
+        <if test="employeeBudgetDTO.employeeBudgetDetailsIds  != null and employeeBudgetDTO.employeeBudgetDetailsIds.size() !=0">
             and   ebd.employee_budget_details_id  in
             <foreach item="item"
                      collection="employeeBudgetDTO.employeeBudgetDetailsIds"

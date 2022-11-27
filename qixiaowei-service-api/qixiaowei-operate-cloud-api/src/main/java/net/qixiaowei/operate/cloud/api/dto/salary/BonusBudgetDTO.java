@@ -76,7 +76,7 @@ public class BonusBudgetDTO {
     /**
      * 奖金包实际数
      */
-    private  BigDecimal bonusActualNum;
+    private  BigDecimal bonusActualSum;
 
     /**
      * 总奖金包预算阶梯集合

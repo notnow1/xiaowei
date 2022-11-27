@@ -8,7 +8,9 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
@@ -150,13 +152,24 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      * @param bonusBudgetParametersDTOS
      */
     private void packBounParamIndicatorIds(int budgetYear, List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
+        //当前月份倒推12个月的“奖金”部分合计
+        BigDecimal bonusActualSum = salaryPayMapper.selectBonusActualNum(budgetYear, DateUtils.getMonth());
+
+
+        //远程调用指标是否驱动因素为“是”列表
         R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIsDriverList(SecurityConstants.INNER);
+        //封装奖金驱动因素实际数
+        Map<Long, BigDecimal> indicatorIdBonusMap = new HashMap<>();
         List<IndicatorDTO> data = listR.getData();
         if (StringUtils.isNotEmpty(data)) {
             for (IndicatorDTO datum : data) {
                 BonusBudgetParametersDTO bonusBudgetParametersDTO = new BonusBudgetParametersDTO();
                 //指标id
                 bonusBudgetParametersDTO.setIndicatorId(datum.getIndicatorId());
+                //奖金占比基准值(%)
+                bonusBudgetParametersDTO.setBonusProportionStandard(new BigDecimal("0"));
+                //预计目标达成率(%)
+                bonusBudgetParametersDTO.setTargetCompletionRate(new BigDecimal("0"));
                 bonusBudgetParametersDTOS.add(bonusBudgetParametersDTO);
             }
             //指标id集合
@@ -172,13 +185,27 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             //查询总奖金包预算参数的指标目标 挑战 保底 和奖金驱动因素实际数：从关键经营结果取值，当前月份倒推12个月的合计
             List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = targetOutcomeMapper.selectDrivingFactor(targetOutcome);
             if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOS)) {
-
                 //封装奖金驱动因素实际数
-                packMonth(targetOutcomeDetailsDTOS, DateUtils.getMonth());
+                indicatorIdBonusMap = packMonth(targetOutcomeDetailsDTOS, DateUtils.getMonth());
 
             }
+            if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
+                for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+                    //奖金驱动因素实际数
+                    BigDecimal bonusProportionDrivingFactor = indicatorIdBonusMap.get(bonusBudgetParametersDTO.getIndicatorId());
+                    //奖金占比基准值 公式=奖金包实际数÷奖金驱动因素实际数
+                    if (null != bonusProportionDrivingFactor && bonusProportionDrivingFactor.compareTo(new BigDecimal("0")) != 0 &&
+                            null != bonusActualSum && bonusActualSum.compareTo(new BigDecimal("0")) != 0 ){
+                     BigDecimal bonusProportionStandard =bonusActualSum.divide(bonusProportionDrivingFactor,BigDecimal.ROUND_CEILING);
+                     //奖金占比基准值(%)
+                     bonusBudgetParametersDTO.setBonusProportionStandard(bonusProportionStandard);
+                  }
 
+                }
+            }
         }
+
+
     }
 
     /**
@@ -187,66 +214,81 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      * @param targetOutcomeDetailsDTOS
      * @param month
      */
-    private BigDecimal packMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS, int month) {
-        BigDecimal bonusProportionDrivingFactor = new BigDecimal("0");
-        if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOS)) {
-            //月份数据map集合
-            List<Map<Integer, BigDecimal>> listMap = new ArrayList<>();
-            for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOS) {
-                //所有月份对应的实际值
-                Map<Integer, BigDecimal> map = new HashMap<>();
-                //一月实际值
-                map.put(1, targetOutcomeDetailsDTO.getActualJanuary());
-                //二月实际值
-                map.put(2, targetOutcomeDetailsDTO.getActualFebruary());
-                //三月实际值
-                map.put(3, targetOutcomeDetailsDTO.getActualMarch());
-                //四月实际值
-                map.put(4, targetOutcomeDetailsDTO.getActualApril());
-                //五月实际值
-                map.put(5, targetOutcomeDetailsDTO.getActualMay());
-                //六月实际值
-                map.put(6, targetOutcomeDetailsDTO.getActualJune());
-                //七月实际值
-                map.put(7, targetOutcomeDetailsDTO.getActualJuly());
-                //八月实际值
-                map.put(8, targetOutcomeDetailsDTO.getActualAugust());
-                //九月实际值
-                map.put(9, targetOutcomeDetailsDTO.getActualSeptember());
-                //十月实际值
-                map.put(10, targetOutcomeDetailsDTO.getActualOctober());
-                //十一月实际值
-                map.put(11, targetOutcomeDetailsDTO.getActualNovember());
-                //十二月实际值
-                map.put(12, targetOutcomeDetailsDTO.getActualDecember());
-                listMap.add(map);
-            }
-            if (listMap.size() == 1) {
-                for (Map<Integer, BigDecimal> integerBigDecimalMap : listMap) {
-                    for (Integer key : integerBigDecimalMap.keySet()) {
-                        bonusProportionDrivingFactor = bonusProportionDrivingFactor.add(integerBigDecimalMap.get(key));
-                    }
+    private Map<Long,BigDecimal> packMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS, int month) {
+        //根据指标id 奖金驱动因素实际数Map
+        Map<Long,BigDecimal> bonusMap = new HashMap<>();
 
-                }
-            } else {
-                for (int i = 0; i < listMap.size(); i++) {
-                    for (Integer key : listMap.get(i).keySet()) {
-                        if (i == 0) {
-                            if (key < month) {
-                                bonusProportionDrivingFactor = bonusProportionDrivingFactor.add(listMap.get(i).get(key));
+        //根据指标id分组
+        Map<Long, List<TargetOutcomeDetailsDTO>> indicatorIdMap = targetOutcomeDetailsDTOS.parallelStream().collect(Collectors.groupingBy(TargetOutcomeDetailsDTO::getIndicatorId));
+        if (StringUtils.isNotEmpty(indicatorIdMap)){
+            for (Long aLong : indicatorIdMap.keySet()) {
+                List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS1 = indicatorIdMap.get(aLong);
+                //奖金驱动因素实际数
+                BigDecimal bonusProportionDrivingFactor = new BigDecimal("0");
+                if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOS1)) {
+                    //月份数据map集合
+                    List<Map<Integer, BigDecimal>> listMap = new ArrayList<>();
+                    for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOS1) {
+                        //所有月份对应的实际值
+                        Map<Integer, BigDecimal> map = new HashMap<>();
+                        //一月实际值
+                        map.put(1, targetOutcomeDetailsDTO.getActualJanuary());
+                        //二月实际值
+                        map.put(2, targetOutcomeDetailsDTO.getActualFebruary());
+                        //三月实际值
+                        map.put(3, targetOutcomeDetailsDTO.getActualMarch());
+                        //四月实际值
+                        map.put(4, targetOutcomeDetailsDTO.getActualApril());
+                        //五月实际值
+                        map.put(5, targetOutcomeDetailsDTO.getActualMay());
+                        //六月实际值
+                        map.put(6, targetOutcomeDetailsDTO.getActualJune());
+                        //七月实际值
+                        map.put(7, targetOutcomeDetailsDTO.getActualJuly());
+                        //八月实际值
+                        map.put(8, targetOutcomeDetailsDTO.getActualAugust());
+                        //九月实际值
+                        map.put(9, targetOutcomeDetailsDTO.getActualSeptember());
+                        //十月实际值
+                        map.put(10, targetOutcomeDetailsDTO.getActualOctober());
+                        //十一月实际值
+                        map.put(11, targetOutcomeDetailsDTO.getActualNovember());
+                        //十二月实际值
+                        map.put(12, targetOutcomeDetailsDTO.getActualDecember());
+                        listMap.add(map);
+                    }
+                    if (listMap.size() == 1) {
+                        for (Map<Integer, BigDecimal> integerBigDecimalMap : listMap) {
+                            for (Integer key : integerBigDecimalMap.keySet()) {
+                                bonusProportionDrivingFactor = bonusProportionDrivingFactor.add(integerBigDecimalMap.get(key));
                             }
-                        } else if (i == 1) {
-                            if (key > month) {
-                                bonusProportionDrivingFactor = bonusProportionDrivingFactor.add(listMap.get(i).get(key));
+
+                        }
+                    } else {
+                        for (int i = 0; i < listMap.size(); i++) {
+                            for (Integer key : listMap.get(i).keySet()) {
+                                if (i == 0) {
+                                    if (key < month) {
+                                        bonusProportionDrivingFactor = bonusProportionDrivingFactor.add(listMap.get(i).get(key));
+                                    }
+                                } else if (i == 1) {
+                                    if (key > month) {
+                                        bonusProportionDrivingFactor = bonusProportionDrivingFactor.add(listMap.get(i).get(key));
+                                    }
+                                }
                             }
                         }
                     }
-                }
-            }
 
+                }
+                //添加
+                bonusMap.put(aLong,bonusProportionDrivingFactor);
+            }
         }
 
-        return bonusProportionDrivingFactor;
+
+
+        return bonusMap;
     }
 
     /**
