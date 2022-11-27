@@ -136,7 +136,7 @@
         <foreach collection="employeeIds" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        AND pay_year &lt;={payYear}
+        AND pay_year &lt;=#{payYear}
         order by pay_year,salary_amount desc
     </select>
     <!--新增工资发薪表-->
