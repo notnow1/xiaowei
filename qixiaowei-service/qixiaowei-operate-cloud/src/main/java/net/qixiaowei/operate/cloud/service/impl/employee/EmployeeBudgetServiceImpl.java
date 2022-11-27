@@ -216,18 +216,14 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         if (StringUtils.isNotNull(employeeBudgetDTO)) {
             Pattern pattern = null;
             Pattern pattern1 = null;
-            //部门名称
-            String departmentName2 = employeeBudgetDTO.getDepartmentName();
-            //职级体系名称
-            String officialRankSystemName2 = employeeBudgetDTO.getOfficialRankSystemName();
-            if (StringUtils.isNotNull(departmentName2)) {
+            if (StringUtils.isNotNull(departmentName1)) {
                 //部门模糊查询
-                pattern = Pattern.compile(departmentName2);
+                pattern = Pattern.compile(departmentName1);
             }
 
-            if (StringUtils.isNotNull(officialRankSystemName2)) {
+            if (StringUtils.isNotNull(officialRankSystemName1)) {
                 //职级体系模糊查询
-                pattern1 = Pattern.compile(officialRankSystemName2);
+                pattern1 = Pattern.compile(officialRankSystemName1);
             }
 
             for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
@@ -235,11 +231,11 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 Matcher departmentName = null;
                 //职级体系名称
                 Matcher officialRankSystemName = null;
-                if (StringUtils.isNotNull(departmentName2)){
+                if (StringUtils.isNotNull(departmentName1)){
                     //部门名称
                     departmentName = pattern.matcher(budgetDTO.getDepartmentName());
                 }
-                if (StringUtils.isNotNull(officialRankSystemName2)){
+                if (StringUtils.isNotNull(officialRankSystemName1)){
                     //职级体系名称
                     officialRankSystemName = pattern1.matcher(budgetDTO.getOfficialRankSystemName());
                 }
@@ -260,7 +256,11 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     }
                 }
             }
+            if (StringUtils.isNotNull(departmentName1) || StringUtils.isNotNull(officialRankSystemName1)){
+                return employeeBudgetDTOList;
+            }
         }
+
         return StringUtils.isNotEmpty(employeeBudgetDTOList) ? employeeBudgetDTOList : employeeBudgetDTOS;
     }
 
@@ -803,29 +803,25 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         if (StringUtils.isNotNull(employeeBudgetDTO)) {
             Pattern pattern = null;
             Pattern pattern1 = null;
-            //部门名称
-            String departmentName2 = employeeBudgetDTO.getDepartmentName();
-            //职级体系名称
-            String officialRankSystemName2 = employeeBudgetDTO.getOfficialRankSystemName();
-            if (StringUtils.isNotNull(departmentName2)) {
+            if (StringUtils.isNotNull(departmentName1)) {
                 //部门模糊查询
-                pattern = Pattern.compile(departmentName2);
+                pattern = Pattern.compile(departmentName1);
             }
 
-            if (StringUtils.isNotNull(officialRankSystemName2)) {
+            if (StringUtils.isNotNull(officialRankSystemName1)) {
                 //职级体系模糊查询
-                pattern1 = Pattern.compile(officialRankSystemName2);
+                pattern1 = Pattern.compile(officialRankSystemName1);
             }
             for (EmployeeBudgetDetailsDTO budgetDetailsDTO : employeeBudgetDetailsDTOS) {
                 //部门名称
                 Matcher departmentName = null;
                 //职级体系名称
                 Matcher officialRankSystemName = null;
-                if (StringUtils.isNotNull(budgetDetailsDTO.getDepartmentName())){
+                if (StringUtils.isNotNull(departmentName1)){
                     //部门名称
                     departmentName = pattern.matcher(budgetDetailsDTO.getDepartmentName());
                 }
-                if (StringUtils.isNotNull(budgetDetailsDTO.getOfficialRankSystemName())){
+                if (StringUtils.isNotNull(officialRankSystemName1)){
                     //职级体系名称
                     officialRankSystemName = pattern1.matcher(budgetDetailsDTO.getOfficialRankSystemName());
                 }
@@ -844,6 +840,9 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                         emolumentPlanDTOList.add(budgetDetailsDTO);
                     }
                 }
+            }
+            if (StringUtils.isNotNull(departmentName1) || StringUtils.isNotNull(officialRankSystemName1)){
+                return emolumentPlanDTOList;
             }
         }
         return StringUtils.isNotEmpty(emolumentPlanDTOList) ? emolumentPlanDTOList : employeeBudgetDetailsDTOS;
