@@ -44,6 +44,11 @@ public class EmployeeBudgetDTO {
     @NotNull(message = "ID不能为空", groups = {EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})
     private  Long employeeBudgetId;
     /**
+     * 人力预算详情表id集合
+     */
+    private  List<Long> employeeBudgetDetailsIds;
+
+    /**
      * 预算年度
      */
     @NotNull(message = "预算年度不能为空", groups = {EmployeeBudgetDTO.AddEmployeeBudgetDTO.class, EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class})

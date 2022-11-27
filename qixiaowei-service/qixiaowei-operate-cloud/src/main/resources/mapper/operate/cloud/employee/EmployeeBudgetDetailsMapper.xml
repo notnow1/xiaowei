@@ -107,6 +107,17 @@
         on eb .employee_budget_id = ebd.employee_budget_id
         and eb.delete_flag =0
         where ebd.delete_flag =0
+        <if test="employeeBudgetDTO.employeeBudgetDetailsIds  != null and employeeBudgetDTO.employeeBudgetDetailsIds !=0">
+            and   ebd.employee_budget_details_id  in
+            <foreach item="item"
+                     collection="employeeBudgetDTO.employeeBudgetDetailsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employeeBudgetDTO.officialRank != null">
+            and   ebd.official_rank =#{employeeBudgetDTO.officialRank}
+        </if>
         <if test="employeeBudgetDTO.officialRank != null">
             and   ebd.official_rank =#{employeeBudgetDTO.officialRank}
         </if>

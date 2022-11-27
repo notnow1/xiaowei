@@ -43,6 +43,10 @@ public class EmployeeBudgetDetailsDTO {
      */
     private  Long employeeBudgetDetailsId;
     /**
+     * 人力预算详情表id集合
+     */
+    private  List<Long> employeeBudgetDetailsIds;
+    /**
      * 人力预算ID
      */
     private  Long employeeBudgetId;
