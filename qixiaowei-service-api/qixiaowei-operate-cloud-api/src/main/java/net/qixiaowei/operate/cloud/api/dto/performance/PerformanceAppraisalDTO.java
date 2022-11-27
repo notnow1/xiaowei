@@ -91,14 +91,17 @@ public class PerformanceAppraisalDTO {
     /**
      * 考核开始日期
      */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private LocalDate appraisalStartDate;
     /**
      * 考核结束日期
      */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private LocalDate appraisalEndDate;
     /**
      * 归档日期
      */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private LocalDate filingDate;
     /**
      * 考核流程:1系统流程;2仅导入结果
