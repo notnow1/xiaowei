@@ -25,7 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -354,7 +357,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDtos) {
             OfficialRankDecompose officialRankDecompose = new OfficialRankDecompose();
             BeanUtils.copyProperties(officialRankDecomposeDTO, officialRankDecompose);
-            officialRankDecompose.setOfficialRankSystemId(officialRankSystemId.toString());
+            officialRankDecompose.setOfficialRankSystemId(officialRankSystemId);
             officialRankDecompose.setRankDecomposeDimension(rankDecomposeDimension);
             officialRankDecompose.setCreateBy(SecurityUtils.getUserId());
             officialRankDecompose.setCreateTime(DateUtils.getNowDate());
@@ -380,7 +383,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDtos) {
             OfficialRankDecompose officialRankDecompose = new OfficialRankDecompose();
             BeanUtils.copyProperties(officialRankDecomposeDTO, officialRankDecompose);
-            officialRankDecompose.setOfficialRankSystemId(officialRankSystemId.toString());
+            officialRankDecompose.setOfficialRankSystemId(officialRankSystemId);
             officialRankDecompose.setRankDecomposeDimension(rankDecomposeDimension);
             officialRankDecompose.setCreateBy(SecurityUtils.getUserId());
             officialRankDecompose.setCreateTime(DateUtils.getNowDate());

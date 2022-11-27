@@ -27,7 +27,7 @@ public class OfficialRankDecompose extends BaseEntity {
     /**
      * 职级体系ID
      */
-    private String officialRankSystemId;
+    private Long officialRankSystemId;
     /**
      * 职级分解维度:1部门;2区域;3省份;4产品
      */
