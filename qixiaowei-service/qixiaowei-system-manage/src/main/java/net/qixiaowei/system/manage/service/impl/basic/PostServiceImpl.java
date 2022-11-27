@@ -296,7 +296,6 @@ public class PostServiceImpl implements IPostService {
             postErreo.append(deptPostErreo).append("\n");
         }
         if (postErreo.length() > 1) {
-            postErreo.append("已上数据已被引用 无法删除！");
             throw new ServiceException(postErreo.toString());
         }
 

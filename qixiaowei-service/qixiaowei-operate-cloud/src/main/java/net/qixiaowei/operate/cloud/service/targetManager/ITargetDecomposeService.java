@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.targetManager;
 
 import java.util.List;
 
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
@@ -350,4 +351,11 @@ public interface ITargetDecomposeService {
      * @return
      */
     List<TargetDecomposeDetailsDTO> getDecomposeDetails(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO);
+
+    /**
+     * 目标分解是否被引用
+     * @param departmentId
+     * @return
+     */
+    List<TargetDecompose> queryDeptDecompose(Long departmentId);
 }

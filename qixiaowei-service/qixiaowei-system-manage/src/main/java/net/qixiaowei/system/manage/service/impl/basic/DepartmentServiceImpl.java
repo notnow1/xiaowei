@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -9,6 +10,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -44,6 +47,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
     private PostMapper postMapper;
     @Autowired
     private EmployeeMapper employeeMapper;
+    @Autowired
+    private RemoteDecomposeService remoteDecomposeService;
 
     /**
      * 查询部门表
@@ -299,25 +304,32 @@ public class DepartmentServiceImpl implements IDepartmentService {
         StringBuffer posterreo = new StringBuffer();
         StringBuffer emplerreo = new StringBuffer();
         StringBuffer depterreo = new StringBuffer();
+        StringBuffer decomposesErreo = new StringBuffer();
         int i = 0;
         List<DepartmentDTO> departmentDTOList1 = departmentMapper.selectDepartmentByDepartmentIds(departmentIds);
 
         for (DepartmentDTO dto : departmentDTOList1) {
             // 岗位是否被引用
             List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
-            String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).collect(Collectors.toList()).toString();
-            String departmentName = departmentPostDTOS.stream().map(DepartmentPostDTO::getDepartmentName).distinct().collect(Collectors.toList()).toString();
+            String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
             if (!StringUtils.isEmpty(departmentPostDTOS)) {
-                posterreo.append("组织" + departmentName + "已被岗位" + s + "引用\n");
+                posterreo.append("组织" + dto.getDepartmentName() + "已被岗位" + s + "引用\n");
             }
 
             // 人员是否被引用
             List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
-            String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
-            String employeeDepartmentName = employeeDTOS.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
-
+            String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
             if (!StringUtils.isEmpty(employeeDTOS)) {
-                emplerreo.append("组织" + employeeDepartmentName + "已被人员" + s1 + "引用\n");
+                emplerreo.append("组织" + dto.getDepartmentName() + "已被人员" + s1 + "引用\n");
+            }
+            //远程调用 目标分解是否被引用
+            R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(dto.getDepartmentId());
+            List<TargetDecompose> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)){
+                List<String> collect = data.stream().map(TargetDecompose::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(data)) {
+                    decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解" + collect + "引用\n");
+                }
             }
         }
         //将错误信息放在一个字符串中
@@ -473,22 +485,26 @@ public class DepartmentServiceImpl implements IDepartmentService {
         department.setUpdateBy(SecurityUtils.getUserId());
         //岗位是否被引用
         List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(departmentDTO.getDepartmentId());
-        List<String> collect1 = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).distinct().collect(Collectors.toList());
+        List<String> collect1 = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         if (StringUtils.isNotEmpty(departmentPostDTOS)) {
             posterreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被岗位"+collect1+"引用\n");
         }
         //人员是否被引用
         List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(departmentDTO.getDepartmentId());
-        List<String> collect2 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).distinct().collect(Collectors.toList());
+        List<String> collect2 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         if (!StringUtils.isEmpty(employeeDTOS)) {
             emplerreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被人员"+collect2+"引用\n");
         }
-        //目标分解是否被引用
-        List<TargetDecompose> targetDecomposes = departmentMapper.queryDeptDecompose(departmentDTO.getDepartmentId());
-        List<String> collect = targetDecomposes.stream().map(TargetDecompose::getIndicatorName).distinct().collect(Collectors.toList());
-        if (StringUtils.isNotEmpty(targetDecomposes)) {
-            decomposesErreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被目标分解" + collect + "引用\n");
+        //远程调用 目标分解是否被引用
+        R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(departmentDTO.getDepartmentId());
+        List<TargetDecompose> data = listR.getData();
+        if (StringUtils.isNotEmpty(data)){
+            List<String> collect = data.stream().map(TargetDecompose::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(data)) {
+                decomposesErreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被目标分解" + collect + "引用\n");
+            }
         }
+
         //将错误信息放在一个字符串中
         depterreo.append(posterreo).append(emplerreo).append(decomposesErreo);
         if (depterreo.length() > 0) {
@@ -514,6 +530,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDepartmentByDepartmentIds(DepartmentDTO departmentDTO) {
         StringBuffer posterreo = new StringBuffer();
         StringBuffer emplerreo = new StringBuffer();
@@ -530,23 +547,27 @@ public class DepartmentServiceImpl implements IDepartmentService {
         for (DepartmentDTO dto : departmentDTOList) {
             // 岗位是否被引用
             List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
-            String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).collect(Collectors.toList()).toString();
+            String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
             if (!StringUtils.isEmpty(departmentPostDTOS)) {
                 posterreo.append("组织" + dto.getDepartmentName() + "已被岗位" + s + "引用\n");
             }
 
             // 人员是否被引用
             List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
-            String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
+            String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
             if (!StringUtils.isEmpty(employeeDTOS)) {
                 emplerreo.append("组织名称" + dto.getDepartmentName() + "已被人员" + s1 + "引用\n");
             }
-            //目标分解是否被引用
-            List<TargetDecompose> targetDecomposes = departmentMapper.queryDeptDecompose(dto.getDepartmentId());
-            List<String> collect = targetDecomposes.stream().map(TargetDecompose::getIndicatorName).distinct().collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(targetDecomposes)) {
-                decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解" + collect + "引用\n");
+            //远程调用 目标分解是否被引用
+            R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(dto.getDepartmentId());
+            List<TargetDecompose> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)){
+                List<String> collect = data.stream().map(TargetDecompose::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(collect)) {
+                    decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解" + collect + "引用\n");
+                }
             }
+
         }
         //将错误信息放在一个字符串中
         depterreo.append(posterreo).append(emplerreo).append(decomposesErreo);

@@ -1935,6 +1935,38 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     }
 
     /**
+     * 目标分解是否被引用
+     * @param departmentId
+     * @return
+     */
+    @Override
+    public List<TargetDecompose> queryDeptDecompose(Long departmentId) {
+        List<TargetDecompose> targetDecomposes = targetDecomposeMapper.queryDeptDecompose(departmentId);
+        if (StringUtils.isNotEmpty(targetDecomposes)){
+            //指标id集合
+            List<Long> collect = targetDecomposes.stream().map(TargetDecompose::getIndicatorId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
+            //远程调用指标赋值名称
+            if (StringUtils.isNotEmpty(collect)){
+                R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
+                List<IndicatorDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (TargetDecompose targetDecompose : targetDecomposes) {
+                        for (IndicatorDTO datum : data) {
+                            if (targetDecompose.getIndicatorId() == datum.getIndicatorId()){
+                                targetDecompose.setIndicatorName(datum.getIndicatorName());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return targetDecomposes;
+    }
+
+    /**
      * 封装远程调用数据
      *
      * @param targetDecomposeDetailsDTOList

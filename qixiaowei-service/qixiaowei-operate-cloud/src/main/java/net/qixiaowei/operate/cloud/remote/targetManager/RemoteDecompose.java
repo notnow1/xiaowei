@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.remote.targetManager;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
@@ -75,6 +76,18 @@ public class RemoteDecompose implements RemoteDecomposeService {
     @PostMapping("/decomposeDetails/getDecomposeDetails")
     public R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(@RequestBody TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, String source) {
         return R.ok(targetDecomposeService.getDecomposeDetails(targetDecomposeDetailsDTO));
+    }
+
+    /**
+     * 目标分解是否被引用
+     * @param departmentId
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/decomposeDetails/queryDeptDecompose")
+    public R<List<TargetDecompose>> queryDeptDecompose(Long departmentId) {
+        return R.ok(targetDecomposeService.queryDeptDecompose(departmentId));
     }
 
 }

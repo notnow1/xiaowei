@@ -119,4 +119,11 @@ public interface TargetDecomposeMapper {
      * @return
      */
     List<TargetDecomposeDTO> selectResultList(@Param("targetDecompose") TargetDecompose targetDecompose);
+
+    /**
+     * 目标分解是否被引用
+     * @param departmentId
+     * @return
+     */
+    List<TargetDecompose> queryDeptDecompose(@Param("departmentId") Long departmentId);
 }

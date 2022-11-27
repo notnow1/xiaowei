@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -209,9 +210,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
         // todo 校检是否被引用 被引用无法删除
         for (Long employeeId : employeeIds) {
             List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeId);
-            String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).distinct().collect(Collectors.toList()).toString();
-            String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
-            String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
+            String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+            String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+            String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
             //远程调用目标分解数据
             if (StringUtils.isNotEmpty(employeeDTOList)) {
                 List<Long> collect = employeeDTOList.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
@@ -244,21 +245,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     }
                 }
             }
-            String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
-            for (EmployeeDTO employeeDTO : employeeDTOList) {
-                if (StringUtils.isNotBlank(username)) {
-                    userErreo.append("人员" + employeeDTO.getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
+            String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+
+                if (StringUtils.isNotBlank(username) && !StringUtils.equals(username,"[]")) {
+                    userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
                 }
-                if (StringUtils.isNotBlank(employeeDepartmentName)) {
-                    deptErreo.append("人员" + employeeDTO.getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
+                if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName,"[]")) {
+                    deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
                 }
-                if (StringUtils.isNotBlank(employeePostName)) {
-                    postErreo.append("人员" + employeeDTO.getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
+                if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName,"[]")) {
+                    postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
                 }
-                if (StringUtils.isNotBlank(indicatorName)) {
-                    decomposeErreo.append("人员" + employeeDTO.getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
+                if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName,"[]")) {
+                    decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
                 }
-            }
+
 
         }
 
@@ -593,24 +594,24 @@ public class EmployeeServiceImpl implements IEmployeeService {
         departmentDTO.setExaminationLeaderId(employeeDTO1.getEmployeeId());
         // todo 校检是否被引用 被引用无法删除
         List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeDTO.getEmployeeId());
-        String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).distinct().collect(Collectors.toList()).toString();
-        String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).distinct().collect(Collectors.toList()).toString();
-        String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
-        String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
-        for (EmployeeDTO employeeDTO2 : employeeDTOList) {
-            if (StringUtils.isNotBlank(username)) {
-                userErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
+        String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+
+            if (StringUtils.isNotBlank(username) && !StringUtils.equals(username,"[]")) {
+                userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
             }
-            if (StringUtils.isNotBlank(employeeDepartmentName)) {
-                deptErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
+            if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName,"[]")) {
+                deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
             }
-            if (StringUtils.isNotBlank(employeePostName)) {
-                postErreo.append("人员" + employeeDTO2.getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
+            if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName,"[]")) {
+                postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
             }
-            if (StringUtils.isNotBlank(indicatorName)) {
-                decomposeErreo.append("人员" + employeeDTO.getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
+            if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName,"[]")) {
+                decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
             }
-        }
+
 
         erreoEmp.append(deptErreo).append(postErreo).append(userErreo).append(decomposeErreo);
         if (erreoEmp.length() > 0) {

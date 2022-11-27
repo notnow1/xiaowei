@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.api.factory.targetManager;
 
 
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
@@ -42,6 +43,13 @@ public class RemoteDecomposeFallbackFactory implements FallbackFactory<RemoteDec
             public R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, String source) {
                 return R.fail("根据表字段条件获取目标分解详细信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<TargetDecompose>> queryDeptDecompose(Long departmentId) {
+                return R.fail("根据表字段条件获取目标分解详细信息失败:" + throwable.getMessage());
+            }
+
+
         };
     }
 }

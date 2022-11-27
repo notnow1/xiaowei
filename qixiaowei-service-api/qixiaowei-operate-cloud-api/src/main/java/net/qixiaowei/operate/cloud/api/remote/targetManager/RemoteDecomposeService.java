@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.api.remote.targetManager;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.factory.targetManager.RemoteDecomposeFallbackFactory;
@@ -52,4 +53,11 @@ public interface RemoteDecomposeService {
     @PostMapping("/targetDecompose/remote/decomposeDetails/getDecomposeDetails")
     R<List<TargetDecomposeDetailsDTO>> getDecomposeDetails(@RequestBody TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
+    /**
+     * 目标分解是否被引用
+     * @param departmentId
+     * @return
+     */
+    @GetMapping("/targetDecompose/remote/decomposeDetails/queryDeptDecompose")
+    R<List<TargetDecompose>>  queryDeptDecompose(Long departmentId);
 }

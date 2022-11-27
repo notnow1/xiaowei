@@ -328,6 +328,31 @@
             and td.update_time=#{targetDecompose.updateTime}
         </if>
     </select>
+<!--    目标分解是否被引用-->
+    <select id="queryDeptDecompose"
+            resultType="net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose">
+        SELECT tdd.target_decompose_details_id,
+               tdd.target_decompose_id,
+               tdd.employee_id,
+               tdd.area_id,
+               tdd.department_id,
+               tdd.product_id,
+               tdd.region_id,
+               tdd.industry_id,
+               tdd.principal_employee_id,
+               tdd.amount_target,
+               tdd.delete_flag,
+               tdd.create_by,
+               tdd.create_time,
+               tdd.update_by,
+               tdd.update_time
+        FROM target_decompose_details tdd
+                 left join target_decompose td
+                           on td.target_decompose_id = tdd.target_decompose_id
+                               and td.delete_flag = 0
+        where tdd.department_id=#{departmentId}
+          and tdd.delete_flag = 0
+    </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">
         INSERT INTO target_decompose (target_decompose_type, indicator_id, target_year, target_decompose_dimension_id,
