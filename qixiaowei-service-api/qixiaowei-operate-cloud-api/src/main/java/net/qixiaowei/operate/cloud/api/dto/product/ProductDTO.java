@@ -83,7 +83,7 @@ public class ProductDTO {
     /**
     * 产品类别
     */
-    @NotBlank(message = "产品类别不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
+//    @NotBlank(message = "产品类别不能为空",groups = {ProductDTO.AddProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  String productCategory;
     private  String productCategoryName;
     /**

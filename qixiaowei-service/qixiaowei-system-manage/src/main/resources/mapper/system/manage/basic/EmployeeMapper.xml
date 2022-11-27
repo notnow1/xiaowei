@@ -667,32 +667,37 @@
     </select>
 <!--    查询在职的所有员工-->
     <select id="selectDropDownEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT employee_id,
-               employee_code,
-               employee_name,
-               employee_gender,
-               identity_type,
-               identity_card,
-               employee_birthday,
-               employee_mobile,
-               employee_email,
-               employee_department_id,
-               employee_post_id,
-               employee_rank,
-               employee_basic_wage,
-               employment_date,
-               departure_date,
-               employment_status,
-               status,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
-        FROM employee
-        where delete_flag = 0
-        and   employment_status =1
-        and   status =1
+        SELECT
+               d.department_name as employee_department_name,
+               e.employee_id,
+               e.employee_code,
+               e.employee_name,
+               e.employee_gender,
+               e.identity_type,
+               e.identity_card,
+               e.employee_birthday,
+               e.employee_mobile,
+               e.employee_email,
+               e.employee_department_id,
+               e.employee_post_id,
+               e.employee_rank,
+               e.employee_basic_wage,
+               e.employment_date,
+               e.departure_date,
+               e.employment_status,
+               e.status,
+               e.delete_flag,
+               e.create_by,
+               e.create_time,
+               e.update_by,
+               e.update_time
+        FROM employee e
+        left join department d
+        on e.employee_department_id = d.department_id
+        and d.delete_flag=0
+        where e.delete_flag = 0
+        and   e.employment_status =1
+        and   e.status =1
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">

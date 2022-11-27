@@ -64,6 +64,14 @@ public class TargetOutcomeDetailsDTO {
      */
     private BigDecimal actualTotal;
     /**
+     * 挑战值
+     */
+    private  BigDecimal  challengeValue;
+    /**
+     * 保底值
+     */
+    private BigDecimal guaranteedValue;
+    /**
      * 目标值
      */
     private BigDecimal targetValue;

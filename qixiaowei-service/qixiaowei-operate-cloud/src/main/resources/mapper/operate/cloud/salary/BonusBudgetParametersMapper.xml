@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.BonusBudgetParametersMapper">
+    <!--    查询奖金预算参数表-->
+    <select id="selectBonusBudgetParametersByBonusBudgetParametersId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+        SELECT
+        bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM bonus_budget_parameters
+        WHERE  bonus_budget_parameters_id=#{bonusBudgetParametersId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询奖金预算参数表-->
+    <select id="selectBonusBudgetParametersByBonusBudgetParametersIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+        SELECT
+        bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM bonus_budget_parameters
+        WHERE  bonus_budget_parameters_id in
+            <foreach item="item"
+                     collection="bonusBudgetParametersIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询奖金预算参数表列表-->
+    <select id="selectBonusBudgetParametersList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+        SELECT
+        bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM bonus_budget_parameters
+        WHERE delete_flag=0
+                <if test="bonusBudgetParameters.bonusBudgetParametersId != null">
+                    and bonus_budget_parameters_id=#{bonusBudgetParameters.bonusBudgetParametersId}
+                </if>
+                <if test="bonusBudgetParameters.bonusBudgetId != null">
+                    and bonus_budget_id=#{bonusBudgetParameters.bonusBudgetId}
+                </if>
+                <if test="bonusBudgetParameters.indicatorId != null">
+                    and indicator_id=#{bonusBudgetParameters.indicatorId}
+                </if>
+                <if test="bonusBudgetParameters.bonusWeight != null">
+                    and bonus_weight=#{bonusBudgetParameters.bonusWeight}
+                </if>
+                <if test="bonusBudgetParameters.bonusProportionStandard != null">
+                    and bonus_proportion_standard=#{bonusBudgetParameters.bonusProportionStandard}
+                </if>
+                <if test="bonusBudgetParameters.bonusProportionVariation != null">
+                    and bonus_proportion_variation=#{bonusBudgetParameters.bonusProportionVariation}
+                </if>
+                <if test="bonusBudgetParameters.challengeValue != null">
+                    and challenge_value=#{bonusBudgetParameters.challengeValue}
+                </if>
+                <if test="bonusBudgetParameters.targetValue != null">
+                    and target_value=#{bonusBudgetParameters.targetValue}
+                </if>
+                <if test="bonusBudgetParameters.guaranteedValue != null">
+                    and guaranteed_value=#{bonusBudgetParameters.guaranteedValue}
+                </if>
+                <if test="bonusBudgetParameters.targetCompletionRate != null">
+                    and target_completion_rate=#{bonusBudgetParameters.targetCompletionRate}
+                </if>
+                <if test="bonusBudgetParameters.performanceAfterOne != null">
+                    and performance_after_one=#{bonusBudgetParameters.performanceAfterOne}
+                </if>
+                <if test="bonusBudgetParameters.performanceAfterTwo != null">
+                    and performance_after_two=#{bonusBudgetParameters.performanceAfterTwo}
+                </if>
+                <if test="bonusBudgetParameters.bonusAllowanceAfterOne != null">
+                    and bonus_allowance_after_one=#{bonusBudgetParameters.bonusAllowanceAfterOne}
+                </if>
+                <if test="bonusBudgetParameters.bonusAllowanceAfterTwo != null">
+                    and bonus_allowance_after_two=#{bonusBudgetParameters.bonusAllowanceAfterTwo}
+                </if>
+                <if test="bonusBudgetParameters.deleteFlag != null">
+                    and delete_flag=#{bonusBudgetParameters.deleteFlag}
+                </if>
+                <if test="bonusBudgetParameters.createBy != null">
+                    and create_by=#{bonusBudgetParameters.createBy}
+                </if>
+                <if test="bonusBudgetParameters.createTime != null">
+                    and create_time=#{bonusBudgetParameters.createTime}
+                </if>
+                <if test="bonusBudgetParameters.updateBy != null">
+                    and update_by=#{bonusBudgetParameters.updateBy}
+                </if>
+                <if test="bonusBudgetParameters.updateTime != null">
+                    and update_time=#{bonusBudgetParameters.updateTime}
+                </if>
+    </select>
+    <!--新增奖金预算参数表-->
+    <insert id="insertBonusBudgetParameters" useGeneratedKeys="true" keyProperty="bonusBudgetParametersId">
+        INSERT INTO bonus_budget_parameters (bonus_budget_id,indicator_id,bonus_weight,bonus_proportion_standard,bonus_proportion_variation,challenge_value,target_value,guaranteed_value,target_completion_rate,performance_after_one,performance_after_two,bonus_allowance_after_one,bonus_allowance_after_two,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{bonusBudgetParameters.bonusBudgetId},#{bonusBudgetParameters.indicatorId},#{bonusBudgetParameters.bonusWeight},#{bonusBudgetParameters.bonusProportionStandard},#{bonusBudgetParameters.bonusProportionVariation},#{bonusBudgetParameters.challengeValue},#{bonusBudgetParameters.targetValue},#{bonusBudgetParameters.guaranteedValue},#{bonusBudgetParameters.targetCompletionRate},#{bonusBudgetParameters.performanceAfterOne},#{bonusBudgetParameters.performanceAfterTwo},#{bonusBudgetParameters.bonusAllowanceAfterOne},#{bonusBudgetParameters.bonusAllowanceAfterTwo},#{bonusBudgetParameters.deleteFlag},#{bonusBudgetParameters.createBy},#{bonusBudgetParameters.createTime},#{bonusBudgetParameters.updateBy},#{bonusBudgetParameters.updateTime})
+    </insert>
+    <!--修改奖金预算参数表-->
+    <update id="updateBonusBudgetParameters">
+        UPDATE bonus_budget_parameters
+        SET
+                    <if test="bonusBudgetParameters.bonusBudgetId != null">
+                        bonus_budget_id=#{bonusBudgetParameters.bonusBudgetId},
+                    </if>
+                    <if test="bonusBudgetParameters.indicatorId != null">
+                        indicator_id=#{bonusBudgetParameters.indicatorId},
+                    </if>
+                    <if test="bonusBudgetParameters.bonusWeight != null">
+                        bonus_weight=#{bonusBudgetParameters.bonusWeight},
+                    </if>
+                    <if test="bonusBudgetParameters.bonusProportionStandard != null">
+                        bonus_proportion_standard=#{bonusBudgetParameters.bonusProportionStandard},
+                    </if>
+                    <if test="bonusBudgetParameters.bonusProportionVariation != null">
+                        bonus_proportion_variation=#{bonusBudgetParameters.bonusProportionVariation},
+                    </if>
+                    <if test="bonusBudgetParameters.challengeValue != null">
+                        challenge_value=#{bonusBudgetParameters.challengeValue},
+                    </if>
+                    <if test="bonusBudgetParameters.targetValue != null">
+                        target_value=#{bonusBudgetParameters.targetValue},
+                    </if>
+                    <if test="bonusBudgetParameters.guaranteedValue != null">
+                        guaranteed_value=#{bonusBudgetParameters.guaranteedValue},
+                    </if>
+                    <if test="bonusBudgetParameters.targetCompletionRate != null">
+                        target_completion_rate=#{bonusBudgetParameters.targetCompletionRate},
+                    </if>
+                    <if test="bonusBudgetParameters.performanceAfterOne != null">
+                        performance_after_one=#{bonusBudgetParameters.performanceAfterOne},
+                    </if>
+                    <if test="bonusBudgetParameters.performanceAfterTwo != null">
+                        performance_after_two=#{bonusBudgetParameters.performanceAfterTwo},
+                    </if>
+                    <if test="bonusBudgetParameters.bonusAllowanceAfterOne != null">
+                        bonus_allowance_after_one=#{bonusBudgetParameters.bonusAllowanceAfterOne},
+                    </if>
+                    <if test="bonusBudgetParameters.bonusAllowanceAfterTwo != null">
+                        bonus_allowance_after_two=#{bonusBudgetParameters.bonusAllowanceAfterTwo},
+                    </if>
+                    <if test="bonusBudgetParameters.deleteFlag != null">
+                        delete_flag=#{bonusBudgetParameters.deleteFlag},
+                    </if>
+                    <if test="bonusBudgetParameters.createBy != null">
+                        create_by=#{bonusBudgetParameters.createBy},
+                    </if>
+                    <if test="bonusBudgetParameters.createTime != null">
+                        create_time=#{bonusBudgetParameters.createTime},
+                    </if>
+                    <if test="bonusBudgetParameters.updateBy != null">
+                        update_by=#{bonusBudgetParameters.updateBy},
+                    </if>
+                    <if test="bonusBudgetParameters.updateTime != null">
+                        update_time=#{bonusBudgetParameters.updateTime}
+                    </if>
+        WHERE
+                 bonus_budget_parameters_id=#{bonusBudgetParameters.bonusBudgetParametersId}
+    </update>
+    <!--逻辑删除奖金预算参数表-->
+    <update id="logicDeleteBonusBudgetParametersByBonusBudgetParametersId">
+        UPDATE bonus_budget_parameters
+        SET     delete_flag= 1,
+                update_by=#{bonusBudgetParameters.updateBy},
+                update_time=#{bonusBudgetParameters.updateTime}
+        WHERE
+                bonus_budget_parameters_id=#{bonusBudgetParameters.bonusBudgetParametersId}
+    </update>
+    <!--逻辑批量删除奖金预算参数表-->
+    <update id="logicDeleteBonusBudgetParametersByBonusBudgetParametersIds">
+        UPDATE bonus_budget_parameters
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         bonus_budget_parameters_id IN
+            <foreach item="item"
+                     collection="bonusBudgetParametersIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增奖金预算参数表-->
+    <insert id="batchBonusBudgetParameters">
+        INSERT INTO bonus_budget_parameters (bonus_budget_id,indicator_id,bonus_weight,bonus_proportion_standard,bonus_proportion_variation,challenge_value,target_value,guaranteed_value,target_completion_rate,performance_after_one,performance_after_two,bonus_allowance_after_one,bonus_allowance_after_two,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="bonusBudgetParameterss"
+                 separator=",">
+            (#{item.bonusBudgetId},#{item.indicatorId},#{item.bonusWeight},#{item.bonusProportionStandard},#{item.bonusProportionVariation},#{item.challengeValue},#{item.targetValue},#{item.guaranteedValue},#{item.targetCompletionRate},#{item.performanceAfterOne},#{item.performanceAfterTwo},#{item.bonusAllowanceAfterOne},#{item.bonusAllowanceAfterTwo},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除奖金预算参数表-->
+    <delete id="deleteBonusBudgetParametersByBonusBudgetParametersId">
+        DELETE FROM bonus_budget_parameters
+        WHERE  bonus_budget_parameters_id=#{bonusBudgetParameters}
+
+    </delete>
+    <!--物理批量删除奖金预算参数表-->
+    <delete id="deleteBonusBudgetParametersByBonusBudgetParametersIds">
+        DELETE FROM bonus_budget_parameters
+        WHERE  bonus_budget_parameters_id IN
+            <foreach item="item"
+                     collection="bonusBudgetParametersIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改奖金预算参数表-->
+    <update id="updateBonusBudgetParameterss">
+        update bonus_budget_parameters
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="bonus_budget_id=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.bonusBudgetId != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.bonusBudgetId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="indicator_id=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.indicatorId != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.indicatorId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_weight=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.bonusWeight != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.bonusWeight}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_proportion_standard=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.bonusProportionStandard != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.bonusProportionStandard}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_proportion_variation=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.bonusProportionVariation != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.bonusProportionVariation}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="challenge_value=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.challengeValue != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.challengeValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="target_value=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.targetValue != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.targetValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="guaranteed_value=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.guaranteedValue != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.guaranteedValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="target_completion_rate=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.targetCompletionRate != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.targetCompletionRate}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="performance_after_one=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.performanceAfterOne != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.performanceAfterOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="performance_after_two=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.performanceAfterTwo != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.performanceAfterTwo}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_allowance_after_one=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.bonusAllowanceAfterOne != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.bonusAllowanceAfterOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_allowance_after_two=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.bonusAllowanceAfterTwo != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.bonusAllowanceAfterTwo}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="bonusBudgetParametersList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when bonus_budget_parameters_id=#{item.bonusBudgetParametersId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="bonusBudgetParametersList" separator="or" item="item" index="index">
+                    bonus_budget_parameters_id=#{item.bonusBudgetParametersId}
+        </foreach>
+    </update>
+</mapper>
+
+

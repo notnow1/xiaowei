@@ -123,4 +123,10 @@ public interface TargetOutcomeMapper {
      */
     List<TargetOutcomeDetailsDTO> selectTargetOutcomeByTargetYears(@Param("targetYears") List<Integer> targetYears, @Param("indicatorId") Long indicatorId);
 
+    /**
+     * 根据年份和指标id查询当年数据和前一年数据
+     * @param targetOutcome
+     * @return
+     */
+    List<TargetOutcomeDetailsDTO> selectDrivingFactor(@Param("targetOutcome")TargetOutcome targetOutcome);
 }
