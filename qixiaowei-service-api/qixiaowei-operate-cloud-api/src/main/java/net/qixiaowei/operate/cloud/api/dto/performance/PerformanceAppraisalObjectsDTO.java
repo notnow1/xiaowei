@@ -63,6 +63,10 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private Long appraisalPrincipalId;
     /**
+     * 考核负责人
+     */
+    private String appraisalPrincipalName;
+    /**
      * 评议分数
      */
     private BigDecimal evaluationScore;
@@ -71,6 +75,14 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private Long appraisalResultId;
     /**
+     * 绩效等级ID
+     */
+    private Long performanceRankId;
+    /**
+     * 绩效等级名称
+     */
+    private String performanceRankName;
+    /**
      * 自定义列标记:0否;1是
      */
     private Integer selfDefinedColumnsFlag;
@@ -78,6 +90,10 @@ public class PerformanceAppraisalObjectsDTO {
      * 考核对象状态:1制定目标;2评议;3排名;4归档
      */
     private Integer appraisalObjectStatus;
+    /**
+     * 名次
+     */
+    private Integer rank;
     /**
      * 删除标记:0未删除;1已删除
      */

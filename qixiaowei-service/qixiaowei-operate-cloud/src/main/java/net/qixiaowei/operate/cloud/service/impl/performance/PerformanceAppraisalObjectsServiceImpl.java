@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalObjects;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalObjectsExcel;
@@ -249,6 +248,18 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByPerformAppraisalId(Long performanceAppraisalId) {
         return performanceAppraisalObjectsMapper.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+    }
+
+    /**
+     * 查询组织绩效归档结果排名
+     *
+     * @param appraisalObjectsIds
+     * @param performanceAppraisalId
+     * @return
+     */
+    @Override
+    public List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByIds(List<Long> appraisalObjectsIds, Long performanceAppraisalId) {
+        return performanceAppraisalObjectsMapper.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
     }
 }
 

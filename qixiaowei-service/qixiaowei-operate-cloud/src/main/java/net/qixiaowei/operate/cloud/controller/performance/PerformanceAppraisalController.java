@@ -79,7 +79,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询绩效考核表列表
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @GetMapping("/list/orgArchive")
+    @GetMapping("/pageList/orgArchive")
     public AjaxResult listArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
         List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectOrgAppraisalArchiveList(performanceAppraisalDTO);
         return AjaxResult.success(list);
@@ -95,12 +95,14 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询绩效结果排名
+     * 查询组织绩效结果排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @GetMapping("/info/orgRank/{performanceAppraisalId}")
-    public AjaxResult infoOrgRank(@PathVariable Long performanceAppraisalId) {
-        return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalArchiveById(performanceAppraisalId));
+    @PostMapping("/list/orgRank")
+    public AjaxResult listOrgRank(@RequestBody Map<String, List<Long>> map) {
+        List<Long> appraisalObjectsIds = map.get("appraisalObjectsIds");
+        Long performanceAppraisalId = map.get("performanceAppraisalId").get(0);
+        return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankByDTO(appraisalObjectsIds, performanceAppraisalId));
     }
 
 

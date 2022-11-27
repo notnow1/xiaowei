@@ -150,7 +150,7 @@ public class PerformanceAppraisalDTO {
     /**
      * 考核比例统计
      */
-    private List<Map<String, String>> performanceAppraisalRankDTOS;
+    private List<Map<String, Object>> performanceAppraisalRankDTOS;
 
 }
 

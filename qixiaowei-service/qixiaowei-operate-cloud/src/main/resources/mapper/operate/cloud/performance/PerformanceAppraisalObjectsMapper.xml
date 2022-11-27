@@ -82,12 +82,42 @@
     <select id="selectPerformanceAppraisalObjectsByPerformAppraisalId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
-        perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id,
-        evaluation_score, appraisal_result_id, self_defined_columns_flag, appraisal_object_status, delete_flag,
-        create_by, create_time, update_by, update_time
-        FROM performance_appraisal_objects
-        WHERE delete_flag=0
-        AND performance_appraisal_id = #{performanceAppraisalId}
+        pao.perform_appraisal_objects_id, pao.performance_appraisal_id, pao.appraisal_object_id,
+        pao.appraisal_principal_id,
+        ifnull((pao.evaluation_score),0.00) as evaluation_score, pao.appraisal_result_id, pao.self_defined_columns_flag,
+        pao.appraisal_object_status,
+        pao.delete_flag,
+        pao.create_by, pao.create_time, pao.update_by, pao.update_time,
+        prf.performance_rank_id, prf.performance_rank_name
+        FROM performance_appraisal_objects pao
+            LEFT JOIN performance_rank_factor prf
+                ON prf.performance_rank_factor_id = pao.appraisal_result_id
+                    and prf.delete_flag = 0
+        WHERE pao.delete_flag=0
+        AND pao.performance_appraisal_id = #{performanceAppraisalId}
+        ORDER BY pao.evaluation_score
+    </select>
+    <select id="selectPerformanceAppraisalObjectsByIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
+        SELECT
+        pao.perform_appraisal_objects_id, pao.performance_appraisal_id, pao.appraisal_object_id,
+        pao.appraisal_principal_id,
+        ifnull((pao.evaluation_score),0.00) as evaluation_score, pao.appraisal_result_id, pao.self_defined_columns_flag,
+        pao.appraisal_object_status,
+        pao.delete_flag,
+        pao.create_by, pao.create_time, pao.update_by, pao.update_time,
+        prf.performance_rank_id, prf.performance_rank_name
+        FROM performance_appraisal_objects pao
+            LEFT JOIN performance_rank_factor prf
+                ON prf.performance_rank_factor_id = pao.appraisal_result_id
+                    and prf.delete_flag = 0
+        WHERE pao.delete_flag=0
+        AND pao.performance_appraisal_id = #{performanceAppraisalId}
+        AND pao.appraisal_object_id IN
+        <foreach collection="appraisalObjectsIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY pao.evaluation_score
     </select>
     <!--新增绩效考核对象表-->
     <insert id="insertPerformanceAppraisalObjects" useGeneratedKeys="true" keyProperty="performAppraisalObjectsId">

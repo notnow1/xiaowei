@@ -124,4 +124,13 @@ public interface IPerformanceAppraisalObjectsService {
      * @return
      */
     List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByPerformAppraisalId(Long performanceAppraisalId);
+
+    /**
+     * 查询组织绩效归档结果排名
+     *
+     * @param appraisalObjectsIds
+     * @param performanceAppraisalId
+     * @return
+     */
+    List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByIds(List<Long> appraisalObjectsIds, Long performanceAppraisalId);
 }

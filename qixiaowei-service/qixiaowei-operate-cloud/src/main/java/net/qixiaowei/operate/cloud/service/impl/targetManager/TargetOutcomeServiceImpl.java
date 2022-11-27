@@ -277,6 +277,9 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
         Set<Long> createBys = new HashSet<>();
         List<TargetOutcomeDTO> targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeList(targetOutcome);
+        if (StringUtils.isEmpty(targetOutcomeDTOS)) {
+            return targetOutcomeDTOS;
+        }
         for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
             createBys.add(outcomeDTO.getCreateBy());
         }
@@ -286,14 +289,13 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
         if (usersByUserIds.getCode() != 200) {
             throw new ServiceException("远程获取用户信息失败");
         }
-        if (StringUtils.isEmpty(userDTOS)) {
-            throw new ServiceException("用户信息为空 请联系管理员");
-        }
         for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
-            for (UserDTO userDTO : userDTOS) {
-                if (userDTO.getUserId().equals(outcomeDTO.getCreateBy())) {
-                    outcomeDTO.setCreateByName(userDTO.getUserName());
-                    break;
+            if (StringUtils.isNotEmpty(userDTOS)) {
+                for (UserDTO userDTO : userDTOS) {
+                    if (userDTO.getUserId().equals(outcomeDTO.getCreateBy())) {
+                        outcomeDTO.setCreateByName(userDTO.getUserName());
+                        break;
+                    }
                 }
             }
         }
