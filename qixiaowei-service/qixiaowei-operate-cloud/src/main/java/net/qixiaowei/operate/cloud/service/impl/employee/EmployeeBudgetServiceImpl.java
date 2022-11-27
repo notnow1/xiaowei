@@ -329,15 +329,15 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             }
             //上年期末人数
             Integer amountLastYear = 0;
-            //本年新增人数
+            //列表本年新增人数
             Integer amountAdjust = 0;
             //平均新增数
             BigDecimal amountAverageAdjust = new BigDecimal("0");
             for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                 //上年期末人数
                 amountLastYear = amountLastYear + employeeBudgetDetailsDTO.getNumberLastYear();
-                //本年新增人数
-                amountAdjust = amountAdjust + employeeBudgetDetailsDTO.getNumberLastYear() + employeeBudgetDetailsDTO.getCountAdjust();
+                //列表本年新增人数
+                amountAdjust = amountAdjust +  employeeBudgetDetailsDTO.getCountAdjust();
                 //平均新增数
                 amountAverageAdjust = amountAverageAdjust.add(employeeBudgetDetailsDTO.getAverageAdjust());
             }
