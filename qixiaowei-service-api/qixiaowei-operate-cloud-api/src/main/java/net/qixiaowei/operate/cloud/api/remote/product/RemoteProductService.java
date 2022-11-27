@@ -34,5 +34,5 @@ public interface RemoteProductService {
      * 查询产品列表根绝productIds
      */
     @PostMapping("/product/getName")
-    R<List<ProductDTO>> getName(List<Long> decomposeDimensions, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<List<ProductDTO>> getName(@RequestBody List<Long> decomposeDimensions, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

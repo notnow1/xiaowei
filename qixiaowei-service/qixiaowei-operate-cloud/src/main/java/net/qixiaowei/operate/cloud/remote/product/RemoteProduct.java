@@ -6,7 +6,10 @@ import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -25,7 +28,7 @@ public class RemoteProduct implements RemoteProductService {
     @Override
     @InnerAuth
     @PostMapping("/queryProductQuote")
-    public R<List<ProductDTO>> queryProductQuote(ProductDTO productDTO, String source) {
+    public R<List<ProductDTO>> queryProductQuote(@RequestBody ProductDTO productDTO, String source) {
         return R.ok(productService.queryProductQuote(productDTO));
     }
 
@@ -39,7 +42,7 @@ public class RemoteProduct implements RemoteProductService {
     @Override
     @InnerAuth
     @PostMapping("/getName")
-    public R<List<ProductDTO>> getName(List<Long> productIds, String source) {
+    public R<List<ProductDTO>> getName(@RequestBody List<Long> productIds, String source) {
         return R.ok(productService.selectProductList(productIds));
     }
 }
