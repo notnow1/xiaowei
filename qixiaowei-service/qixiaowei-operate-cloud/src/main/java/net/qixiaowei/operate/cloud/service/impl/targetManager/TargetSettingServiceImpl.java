@@ -1477,7 +1477,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingDTO.setChallengeValue(BigDecimal.ZERO);
                 targetSettingDTO.setTargetValue(BigDecimal.ZERO);
                 targetSettingDTO.setGuaranteedValue(BigDecimal.ZERO);
-                BigDecimal targetValue = targetSettingByIndicator.getTargetValue();
+                BigDecimal targetValue = BigDecimal.ZERO;
+                if (StringUtils.isNull(targetSettingByIndicator.getTargetValue())) {
+                    targetValue = targetSettingByIndicator.getTargetValue();
+                }
                 BigDecimal percentage = setting.getPercentage();
                 BigDecimal income = percentage.multiply(targetValue);
                 targetSettingIncomeVO.setMoney(targetValue);
@@ -1763,7 +1766,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     break;
                 case 1:
                     map = new HashMap<>();
-                    map.put("name", "DSO基线");
+                    map.put("name", "DSO基线（天）");
                     if (recoveryIsNull) {
                         map.put("value", zero);
                     } else {
@@ -1773,7 +1776,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     break;
                 case 2:
                     map = new HashMap<>();
-                    map.put("name", "DSO改进天数");
+                    map.put("name", "DSO改进天数（天）");
                     if (recoveryIsNull) {
                         map.put("value", zero);
                     } else {
@@ -1851,7 +1854,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
         }
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
-        targetSettingRecoveriesDTO.setPrefixType("DSO");
+        targetSettingRecoveriesDTO.setPrefixType("DSO（天）");
         setRecoveriesValue(targetSettingRecoveriesDTO, baselineValue);
         targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
@@ -2117,10 +2120,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                         case "上年年末应收账款余额":
                             targetSettingRecoveryDTO.setBalanceReceivables(new BigDecimal(stringObjectMap.get("value").toString()));
                             break;
-                        case "DSO基线":
+                        case "DSO基线（天）":
                             targetSettingRecoveryDTO.setBaselineValue(Integer.valueOf(stringObjectMap.get("value").toString()));
                             break;
-                        case "DSO改进天数":
+                        case "DSO改进天数（天）":
                             targetSettingRecoveryDTO.setImproveDays(Integer.valueOf(stringObjectMap.get("value").toString()));
                             break;
                         case "平均增值税率（%）":
