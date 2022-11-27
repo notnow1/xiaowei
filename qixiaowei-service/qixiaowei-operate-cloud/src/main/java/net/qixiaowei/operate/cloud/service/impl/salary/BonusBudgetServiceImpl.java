@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -140,9 +141,6 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService{
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = new ArrayList<>();
         //封装总奖金包预算参数指标数据
         packBounParamIndicatorIds(budgetYear, bonusBudgetParametersDTOS);
-
-
-
         return null;
     }
 
@@ -189,6 +187,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService{
      * @param month
      */
     private BigDecimal packMonth(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS, int month) {
+        BigDecimal bonusProportionDrivingFactor = new BigDecimal("0");
         if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOS)){
             //月份数据map集合
             List<Map<Integer, BigDecimal>> listMap = new ArrayList<>();
@@ -220,6 +219,14 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService{
                     //十二月实际值
                     map.put(12,targetOutcomeDetailsDTO.getActualDecember());
                     listMap.add(map);
+                }
+                if (listMap.size()==1){
+                    for (Map<Integer, BigDecimal> integerBigDecimalMap : listMap) {
+                        for (Integer integer : integerBigDecimalMap.keySet()) {
+                            bonusProportionDrivingFactor= bonusProportionDrivingFactor.add(integerBigDecimalMap.get(integer));
+                        }
+
+                    }
                 }
 
         }
