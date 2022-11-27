@@ -335,10 +335,6 @@ public class TargetOutcomeImportListener extends AnalysisEventListener<Map<Integ
         List<String> head14 = new ArrayList<String>();
         head14.add("实际值");
         head14.add("11月");
-        // 第七列
-        List<String> head15 = new ArrayList<String>();
-        head15.add("实际值");
-        head15.add("12月");
         int month = DateUtils.getMonth();
         list.add(head0);
         list.add(head1);

@@ -203,6 +203,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     if (employeeDTO.getEmployeeId().equals(performanceAppraisalObjectsDTO.getAppraisalObjectId())) {
                         performanceAppraisalObjectsDTO.setAppraisalObjectName(employeeDTO.getEmployeeName());
                         performanceAppraisalObjectsDTO.setAppraisalObjectCode(employeeDTO.getEmployeeCode());
+                        performanceAppraisalObjectsDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
                         break;
                     }
                 }
@@ -549,7 +550,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             performanceAppraisal.setAppraisalStatus(1);
         } else {// 仅导入
             performanceAppraisal.setAppraisalStatus(4);
-            performanceAppraisal.setFilingDate(DateUtils.getLocalDate());
         }
         performanceAppraisal.setCreateBy(SecurityUtils.getUserId());
         performanceAppraisal.setCreateTime(DateUtils.getNowDate());
@@ -646,7 +646,24 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public int logicDeletePerformanceAppraisalByPerformanceAppraisalIds(List<Long> performanceAppraisalIds) {
-        return performanceAppraisalMapper.logicDeletePerformanceAppraisalByPerformanceAppraisalIds(performanceAppraisalIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        if (StringUtils.isEmpty(performanceAppraisalIds)) {
+            throw new ServiceException("请选择要删除的考核任务ID");
+        }
+        List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalIds(performanceAppraisalIds);
+        if (StringUtils.isEmpty(performanceAppraisalDTOS) || performanceAppraisalDTOS.size() != performanceAppraisalIds.size()) {
+            throw new ServiceException("要删除的考核任务已不存在");
+        }
+        performanceAppraisalMapper.logicDeletePerformanceAppraisalByPerformanceAppraisalIds(performanceAppraisalIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList =
+                performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalIds(performanceAppraisalIds);
+        if (StringUtils.isEmpty(performanceAppraisalObjectsDTOList)) {
+            return 1;
+        }
+        List<Long> performanceAppraisalObjectsIds = new ArrayList<>();
+        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+            performanceAppraisalObjectsIds.add(performanceAppraisalObjectsDTO.getPerformanceAppraisalId());
+        }
+        return performanceAppraisalObjectsService.logicDeletePerformanceAppraisalObjectsByPerformAppraisalObjectsIds(performanceAppraisalObjectsIds);
     }
 
     /**
@@ -669,11 +686,29 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Override
     public int logicDeletePerformanceAppraisalByPerformanceAppraisalId(PerformanceAppraisalDTO
                                                                                performanceAppraisalDTO) {
+        Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
+        if (StringUtils.isNull(performanceAppraisalId)) {
+            throw new ServiceException("请输入考核任务ID");
+        }
+        PerformanceAppraisalDTO performanceAppraisalById = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
+        if (StringUtils.isNull(performanceAppraisalById)) {
+            throw new ServiceException("当前考核任务不存在");
+        }
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         performanceAppraisal.setPerformanceAppraisalId(performanceAppraisalDTO.getPerformanceAppraisalId());
         performanceAppraisal.setUpdateTime(DateUtils.getNowDate());
         performanceAppraisal.setUpdateBy(SecurityUtils.getUserId());
-        return performanceAppraisalMapper.logicDeletePerformanceAppraisalByPerformanceAppraisalId(performanceAppraisal);
+        performanceAppraisalMapper.logicDeletePerformanceAppraisalByPerformanceAppraisalId(performanceAppraisal);
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+        List<Long> performanceAppraisalObjectIds = new ArrayList<>();
+        if (StringUtils.isEmpty(performanceAppraisalObjectsDTOList)) {
+            return 1;
+        }
+        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+            performanceAppraisalObjectIds.add(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
+        }
+        performanceAppraisalObjectsService.logicDeletePerformanceAppraisalObjectsByPerformAppraisalObjectsIds(performanceAppraisalObjectIds);
+        return 1;
     }
 
     /**

@@ -59,6 +59,10 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private String appraisalObjectName;
     /**
+     * 考核人员部门
+     */
+    private String employeeDepartmentName;
+    /**
      * 考核负责人ID
      */
     private Long appraisalPrincipalId;

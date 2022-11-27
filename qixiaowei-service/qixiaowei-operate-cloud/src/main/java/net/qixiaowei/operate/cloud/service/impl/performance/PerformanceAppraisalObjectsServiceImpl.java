@@ -261,5 +261,16 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
     public List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByIds(List<Long> appraisalObjectsIds, Long performanceAppraisalId) {
         return performanceAppraisalObjectsMapper.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
     }
+
+    /**
+     * 根据考核任务ID集合查找考核对象表
+     *
+     * @param performanceAppraisalIds
+     * @return
+     */
+    @Override
+    public List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByPerformAppraisalIds(List<Long> performanceAppraisalIds) {
+        return performanceAppraisalObjectsMapper.selectPerformanceAppraisalObjectsByPerformAppraisalIds(performanceAppraisalIds);
+    }
 }
 

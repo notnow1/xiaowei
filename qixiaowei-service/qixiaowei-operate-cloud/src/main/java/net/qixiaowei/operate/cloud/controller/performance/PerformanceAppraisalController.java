@@ -1,7 +1,9 @@
 package net.qixiaowei.operate.cloud.controller.performance;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +108,6 @@ public class PerformanceAppraisalController extends BaseController {
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankByDTO(appraisalObjectsIds, performanceAppraisalId));
     }
 
-
     /**
      * 新增绩效考核表
      */
@@ -161,6 +163,31 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
+     * 导入组织绩效归档表
+     */
+    @PostMapping("orgImport")
+    public AjaxResult importOrgPerformanceAppraisal(MultipartFile file) {
+//        List<List<String>> head = TargetDecomposeImportListener.headTemplate(targetDecomposeDTO);
+        String filename = file.getOriginalFilename();
+        if (StringUtils.isBlank(filename)) {
+            throw new RuntimeException("请上传文件!");
+        }
+        if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
+            throw new RuntimeException("请上传正确的excel文件!");
+        }
+        InputStream inputStream;
+        try {
+            PerformanceAppraisalImportListener importListener = new PerformanceAppraisalImportListener(performanceAppraisalService);
+            inputStream = new BufferedInputStream(file.getInputStream());
+            ExcelReaderBuilder builder = EasyExcel.read(inputStream, PerformanceAppraisalExcel.class, importListener);
+            builder.doReadAll();
+        } catch (IOException e) {
+            throw new ServiceException("导入绩效考核表Excel失败");
+        }
+        return AjaxResult.success("操作成功");
+    }
+
+    /**
      * 导出绩效考核表
      */
     @SneakyThrows
@@ -173,5 +200,36 @@ public class PerformanceAppraisalController extends BaseController {
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), PerformanceAppraisalExcel.class).sheet("绩效考核表").doWrite(performanceAppraisalExcelList);
+    }
+
+    /**
+     * 导出组织模板表
+     */
+    @SneakyThrows
+    @GetMapping("export-org-template")
+    public void exportOrgTemplate(@RequestParam Integer appraisalFlow, HttpServletResponse response) {
+        if (appraisalFlow.equals(1)) {//系统流程
+            List<List<String>> head = PerformanceAppraisalImportListener.headOrgSystemTemplate();
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding(CharsetKit.UTF_8);
+            String fileName = URLEncoder.encode("组织绩效归档导入系统模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                    , CharsetKit.UTF_8);
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
+            WriteSheet sheet = EasyExcel.writerSheet(0, "Sheet1").head(head).build();
+            excelWriter.write(new ArrayList<>(), sheet);
+            excelWriter.finish();
+        } else {
+            List<List<String>> head = PerformanceAppraisalImportListener.headOrgSystemTemplate();
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding(CharsetKit.UTF_8);
+            String fileName = URLEncoder.encode("组织绩效归档导入自定义模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                    , CharsetKit.UTF_8);
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
+            WriteSheet sheet = EasyExcel.writerSheet(0, "Sheet1").head(head).build();
+            excelWriter.write(new ArrayList<>(), sheet);
+            excelWriter.finish();
+        }
     }
 }

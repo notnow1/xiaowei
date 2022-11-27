@@ -121,4 +121,12 @@ public interface PerformanceAppraisalObjectsMapper {
      * @return
      */
     List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByIds(@Param("appraisalObjectsIds") List<Long> appraisalObjectsIds, @Param("performanceAppraisalId") Long performanceAppraisalId);
+
+    /**
+     * 根据考核任务ID集合查找考核对象表
+     *
+     * @param performanceAppraisalIds
+     * @return
+     */
+    List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByPerformAppraisalIds(@Param("performanceAppraisalIds") List<Long> performanceAppraisalIds);
 }
