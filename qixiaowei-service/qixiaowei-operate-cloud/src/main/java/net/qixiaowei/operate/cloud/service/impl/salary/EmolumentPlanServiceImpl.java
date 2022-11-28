@@ -55,16 +55,17 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
     @Override
     public EmolumentPlanDTO selectEmolumentPlanByEmolumentPlanId(Long emolumentPlanId) {
         EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.selectEmolumentPlanByEmolumentPlanId(emolumentPlanId);
-        this.queryCalculate(emolumentPlanDTO);
+        //查询薪酬规划详情计算方法
+        EmolumentPlanServiceImpl.queryCalculate(emolumentPlanDTO);
 
         return emolumentPlanMapper.selectEmolumentPlanByEmolumentPlanId(emolumentPlanId);
     }
 
     /**
-     * 查询详情计算方法
+     * 查询薪酬规划详情计算方法
      * @param emolumentPlanDTO
      */
-    private void queryCalculate(EmolumentPlanDTO emolumentPlanDTO) {
+    public static void queryCalculate(EmolumentPlanDTO emolumentPlanDTO) {
         if (StringUtils.isNotNull(emolumentPlanDTO)){
             //预算年销售收入
             BigDecimal revenue = emolumentPlanDTO.getRevenue();
@@ -84,23 +85,23 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
 
             if (null !=erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0"))!=0 && null !=emolumentRevenueImprove && emolumentRevenueImprove.compareTo(new BigDecimal("0"))!=0){
                 //er值 公式=上年E/R值×（1-本年E/R值改进率）
-                BigDecimal subtract = new BigDecimal("1").subtract(emolumentRevenueImprove);
+                BigDecimal subtract = new BigDecimal("100").subtract(emolumentRevenueImprove);
                 //er值
-                BigDecimal multiply = erBeforeOne.multiply(subtract);
+                BigDecimal multiply = erBeforeOne.multiply(subtract).divide(new BigDecimal("100"));
                 emolumentPlanDTO.setEr(multiply);
                 if (null != erImproveAfterOne && erImproveAfterOne.compareTo(new BigDecimal("0"))!= 0){
                     //er值
                     BigDecimal er = emolumentPlanDTO.getEr();
-                    BigDecimal subtract1 = new BigDecimal("1").subtract(erImproveAfterOne);
+                    BigDecimal subtract1 = new BigDecimal("100").subtract(erImproveAfterOne);
                     //预算年后一年E/R值(%)
-                    BigDecimal multiply1 = er.multiply(subtract1);
+                    BigDecimal multiply1 = er.multiply(subtract1).divide(new BigDecimal("100"));
                     emolumentPlanDTO.setErAfterOne(multiply1);
                     if (null != erImproveAfterTwo && erImproveAfterTwo.compareTo(new BigDecimal("0"))!= 0){
                         //预算年后一年E/R值(%)
                         BigDecimal erAfterOne = emolumentPlanDTO.getErAfterOne();
-                        BigDecimal subtract2 = new BigDecimal("1").subtract(erImproveAfterTwo);
+                        BigDecimal subtract2 = new BigDecimal("100").subtract(erImproveAfterTwo);
                         //预算年后二年E/R值(%)
-                        BigDecimal multiply2 = erAfterOne.multiply(subtract2);
+                        BigDecimal multiply2 = erAfterOne.multiply(subtract2).divide(new BigDecimal("100"));
                         emolumentPlanDTO.setErAfterTwo(multiply2);
                     }
                 }
@@ -159,7 +160,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                 }
             }
         }
-
+        //薪酬规划列表list计算
         this.queryCalculateList(emolumentPlanDTOS);
         String createName = emolumentPlanDTO.getCreateName();
         if (StringUtils.isNotNull(createName)){

@@ -2,7 +2,8 @@ package net.qixiaowei.operate.cloud.service.salary;
 
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO;
-
+import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetLaddertersDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO;
 
 
 /**
@@ -105,4 +106,11 @@ public interface IBonusBudgetService{
      * @return
      */
     BonusBudgetDTO addBonusBudgetTamount(int budgetYear);
+
+    /**
+     * 新增总奖金包预算阶梯预制数据
+     * @param bonusBudgetParametersDTOS
+     * @return
+     */
+    BonusBudgetDTO selectBonusBudgetLadderters(List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS);
 }

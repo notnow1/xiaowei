@@ -4,11 +4,16 @@
     <!--    查询目标结果表-->
     <select id="selectTargetOutcomeByTargetOutcomeId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
-        SELECT
-        target_outcome_id, target_year, delete_flag, create_by, create_time, update_by, update_time
+        SELECT target_outcome_id,
+               target_year,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM target_outcome
-        WHERE target_outcome_id=#{targetOutcomeId}
-        and delete_flag=0
+        WHERE target_outcome_id = #{targetOutcomeId}
+          and delete_flag = 0
     </select>
 
     <!--    批量查询目标结果表-->
@@ -58,11 +63,16 @@
     <!--通过targetYear查找Target Outcome DTO-->
     <select id="selectTargetOutcomeByTargetYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
-        SELECT
-        target_outcome_id, target_year, delete_flag, create_by, create_time, update_by, update_time
+        SELECT target_outcome_id,
+               target_year,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM target_outcome
-        WHERE delete_flag=0
-        AND target_year = #{targetYear}
+        WHERE delete_flag = 0
+          AND target_year = #{targetYear}
     </select>
     <!--通过targetYear列表查找Target Outcome DTO-->
     <select id="selectTargetOutcomeByTargetYears"
@@ -82,51 +92,54 @@
             #{item}
         </foreach>
     </select>
-<!--    根据年份和指标id查询当年数据和前一年数据-->
+    <!--    根据年份和指标id查询当年数据和前一年数据-->
     <select id="selectDrivingFactor"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO">
         SELECT
-            to2.target_year,
-            tod.indicator_id,
-            IFNULL(ts.challenge_value,0)  as challenge_value,
-            IFNULL(ts.target_value,0)  as target_value,
-            IFNULL(ts.guaranteed_value,0)  as guaranteed_value,
-            IFNULL(tod.actual_january,0)  as actual_january,
-            IFNULL(tod.actual_february,0)  as actual_february,
-            IFNULL(tod.actual_march,0)  as actual_march,
-            IFNULL(tod.actual_april,0)  as actual_april,
-            IFNULL(tod.actual_may,0)  as actual_may,
-            IFNULL(tod.actual_june,0)  as actual_june,
-            IFNULL(tod.actual_july,0)  as actual_july,
-            IFNULL(tod.actual_august,0)  as actual_august,
-            IFNULL(tod.actual_september,0)  as actual_september,
-            IFNULL(tod.actual_october,0)  as actual_october,
-            IFNULL(tod.actual_november,0)  as actual_november,
-            IFNULL(tod.actual_december,0)  as actual_december
+        to2.target_year,
+        tod.indicator_id,
+        ts.challenge_value,
+        ts.target_value,
+        ts.guaranteed_value,
+        IFNULL(ts.challenge_value,0) as challenge_value,
+        IFNULL(ts.target_value,0) as target_value,
+        IFNULL(ts.guaranteed_value,0) as guaranteed_value,
+        IFNULL(tod.actual_january,0) as actual_january,
+        IFNULL(tod.actual_february,0) as actual_february,
+        IFNULL(tod.actual_march,0) as actual_march,
+        IFNULL(tod.actual_april,0) as actual_april,
+        IFNULL(tod.actual_may,0) as actual_may,
+        IFNULL(tod.actual_june,0) as actual_june,
+        IFNULL(tod.actual_july,0) as actual_july,
+        IFNULL(tod.actual_august,0) as actual_august,
+        IFNULL(tod.actual_september,0) as actual_september,
+        IFNULL(tod.actual_october,0) as actual_october,
+        IFNULL(tod.actual_november,0) as actual_november,
+        IFNULL(tod.actual_december,0) as actual_december
         from target_outcome to2
-                 left join target_outcome_details tod
-                           on to2.target_outcome_id = tod.target_outcome_id
-                               and tod.delete_flag =0
-                 left join target_setting ts
-                           on to2.target_year = ts.target_year
-                               and tod.indicator_id = ts.indicator_id
-                               and ts.delete_flag = 0
-        WHERE  to2.delete_flag = 0
-          and tod.indicator_id in
+        left join target_outcome_details tod
+        on to2.target_outcome_id = tod.target_outcome_id
+        and tod.delete_flag =0
+        left join target_setting ts
+        on to2.target_year = ts.target_year
+        and tod.indicator_id = ts.indicator_id
+        and ts.delete_flag = 0
+        WHERE to2.delete_flag = 0
+        and tod.indicator_id in
         <foreach item="item"
                  collection="targetOutcome.indicatorIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-          and (to2.target_year =#{targetOutcome.targetYear}
-            or to2.target_year =#{targetOutcome.targetYear}-1)
-            order by to2.target_year desc
+        and to2.target_year lt; =#{targetOutcome.targetYear}
+        order by to2.target_year desc
+        LIMIT #{targetOutcome.limitYear}
     </select>
     <!--新增目标结果表-->
     <insert id="insertTargetOutcome" useGeneratedKeys="true" keyProperty="targetOutcomeId">
-        INSERT INTO target_outcome (target_year,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-        (#{targetOutcome.targetYear},#{targetOutcome.deleteFlag},#{targetOutcome.createBy},#{targetOutcome.createTime},#{targetOutcome.updateBy},#{targetOutcome.updateTime})
+        INSERT INTO target_outcome (target_year, delete_flag, create_by, create_time, update_by, update_time)
+        VALUES (#{targetOutcome.targetYear}, #{targetOutcome.deleteFlag}, #{targetOutcome.createBy},
+                #{targetOutcome.createTime}, #{targetOutcome.updateBy}, #{targetOutcome.updateTime})
     </insert>
     <!--修改目标结果表-->
     <update id="updateTargetOutcome">
@@ -157,10 +170,9 @@
     <update id="logicDeleteTargetOutcomeByTargetOutcomeId">
         UPDATE target_outcome
         SET delete_flag= 1,
-        update_by=#{targetOutcome.updateBy},
-        update_time=#{targetOutcome.updateTime}
-        WHERE
-        target_outcome_id=#{targetOutcome.targetOutcomeId}
+            update_by=#{targetOutcome.updateBy},
+            update_time=#{targetOutcome.updateTime}
+        WHERE target_outcome_id = #{targetOutcome.targetOutcomeId}
     </update>
     <!--逻辑批量删除目标结果表-->
     <update id="logicDeleteTargetOutcomeByTargetOutcomeIds">
@@ -189,8 +201,9 @@
 
     <!--物理删除目标结果表-->
     <delete id="deleteTargetOutcomeByTargetOutcomeId">
-        DELETE FROM target_outcome
-        WHERE target_outcome_id=#{targetOutcome}
+        DELETE
+        FROM target_outcome
+        WHERE target_outcome_id = #{targetOutcome}
 
     </delete>
     <!--物理批量删除目标结果表-->

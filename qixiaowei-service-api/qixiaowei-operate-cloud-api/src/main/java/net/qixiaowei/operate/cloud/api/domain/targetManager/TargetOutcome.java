@@ -36,6 +36,9 @@ public class TargetOutcome extends BaseEntity {
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
-
+    /**
+     * 保证倒退12个月的数据 每个id只能有两个
+     */
+    private Integer limitYear;
 }
 

@@ -761,14 +761,14 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 BigDecimal onBasis = settingDTO.getOnBasis();
                 if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
                     if (targetValue != null && targetValue.compareTo(new BigDecimal("0")) != 0) {
-                        targetPercentageComplete = actualTotal.divide(targetValue).setScale(2);
+                        targetPercentageComplete = actualTotal.divide(targetValue,BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
                     }
                 }
                 settingDTO.setTargetPercentageComplete(targetPercentageComplete);
                 //同比 公式=（目标年度年度实际/上年年度实际）-1
                 if (lastActualTotal != null && lastActualTotal.compareTo(new BigDecimal("0")) != 0) {
                     if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
-                        onBasis = actualTotal.divide(lastActualTotal).subtract(new BigDecimal("1")).setScale(2);
+                        onBasis = actualTotal.divide(lastActualTotal,BigDecimal.ROUND_CEILING).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
                     }
                 }
                 settingDTO.setOnBasis(onBasis);

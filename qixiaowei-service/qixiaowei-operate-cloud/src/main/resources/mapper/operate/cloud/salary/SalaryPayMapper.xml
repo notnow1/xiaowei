@@ -179,8 +179,8 @@
     <select id="selectBonusActualNum" resultType="java.math.BigDecimal">
         SELECT SUM(bonus_amount) as bonus_actual_sum
         from salary_pay sp
-        WHERE ((sp.pay_year = #{budgetYear} and sp.pay_month &lt; #{month}) or
-               (sp.pay_year = #{budgetYear} - 1 and sp.pay_month &gt; #{month} - 1))
+        WHERE sp.pay_year = #{budgetYear} and sp.pay_month &lt; #{month}
+          and sp.delete_flag =0
         ORDER by pay_year desc, pay_month desc LIMIT 12
     </select>
 

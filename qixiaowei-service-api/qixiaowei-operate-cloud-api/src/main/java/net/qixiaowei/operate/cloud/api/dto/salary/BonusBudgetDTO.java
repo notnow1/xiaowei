@@ -70,9 +70,18 @@ public class BonusBudgetDTO {
     */
     private BigDecimal amountBonusBudget;
     /**
+     * 总奖金包预算总奖金包预算1
+     */
+    private BigDecimal amountBonusBudgetReferenceValueOne;
+    /**
+     * 总奖金包预算总奖金包预算2
+     */
+    private BigDecimal amountBonusBudgetReferenceValueTwo;
+    /**
     * 预算年度前一年的总奖金包
     */
     private  BigDecimal bonusBeforeOne;
+
     /**
      * 奖金包实际数
      */
@@ -87,6 +96,34 @@ public class BonusBudgetDTO {
      * 未来三年奖金趋势集合
      */
     private List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS;
+    /**
+     * 挑战值
+     */
+    private  BigDecimal bonusChallengeValue;
+    /**
+     * 目标值
+     */
+    private  BigDecimal bonusTargetValue;
+    /**
+     * 保底值
+     */
+    private  BigDecimal bonusGuaranteedValue;
+    /**
+     * 飞跃值
+     */
+    private  BigDecimal bonusLeapValue;
+    /**
+     * 梦想值
+     */
+    private  BigDecimal bonusDreamValue;
+    /**
+     * 最低值
+     */
+    private  BigDecimal bonusMinValue;
+    /**
+     * 是否可编辑权限 0:不可编辑 1:可编辑
+     */
+    private Integer editFlag;
     /**
     * 删除标记:0未删除;1已删除
     */
