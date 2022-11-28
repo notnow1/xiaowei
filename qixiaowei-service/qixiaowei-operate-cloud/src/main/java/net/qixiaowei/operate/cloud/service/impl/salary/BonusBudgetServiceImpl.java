@@ -149,9 +149,17 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         //3 封装总奖金包预算生成
         this.packPaymentBonusBudget(budgetYear,bonusBudgetDTO);
         //4未来三年奖金趋势
-        this.packPaymentBonusBudget(budgetYear,bonusBudgetDTO);
+        this.packFutureBonusTrend(budgetYear,bonusBudgetDTO);
         bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
         return bonusBudgetDTO;
+    }
+
+    /**
+     *
+     * @param budgetYear
+     * @param bonusBudgetDTO
+     */
+    private void packFutureBonusTrend(int budgetYear, BonusBudgetDTO bonusBudgetDTO) {
     }
 
     /**
@@ -508,9 +516,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                          bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor, BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
                         //奖金占比基准值(%)
                         bonusBudgetParametersDTO.setBonusProportionStandard(bonusProportionStandard);
-
                     }
-
                 }
             }
         }

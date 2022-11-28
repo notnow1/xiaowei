@@ -58,7 +58,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
         //查询薪酬规划详情计算方法
         EmolumentPlanServiceImpl.queryCalculate(emolumentPlanDTO);
 
-        return emolumentPlanMapper.selectEmolumentPlanByEmolumentPlanId(emolumentPlanId);
+        return emolumentPlanDTO;
     }
 
     /**
@@ -115,17 +115,17 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             BigDecimal erAfterOne = emolumentPlanDTO.getErAfterOne();
             //预算年后二年E/R值(%)
             BigDecimal erAfterTwo = emolumentPlanDTO.getErAfterTwo();
-            if (null !=revenue && revenue.compareTo(new BigDecimal("0"))!=0 && null !=er && er.compareTo(new BigDecimal("0"))!=0){
+            if (null !=revenue && revenue.compareTo(new BigDecimal("0"))>0 && null !=er && er.compareTo(new BigDecimal("0"))>0){
                 //预算年总薪酬包
                 BigDecimal multiply = revenue.multiply(er);
                 emolumentPlanDTO.setEmolumentPackage(multiply);
             }
-            if (null !=revenueAfterOne && revenueAfterOne.compareTo(new BigDecimal("0"))!=0 && null !=erAfterOne && erAfterOne.compareTo(new BigDecimal("0"))!=0){
+            if (null !=revenueAfterOne && revenueAfterOne.compareTo(new BigDecimal("0"))>0 && null !=erAfterOne && erAfterOne.compareTo(new BigDecimal("0"))>0){
                 //预算年后一年总薪酬包
                 BigDecimal multiply1 = revenueAfterOne.multiply(erAfterOne);
                 emolumentPlanDTO.setEmolumentPackageAfterOne(multiply1);
             }
-            if (null !=revenueAfterTwo && revenueAfterTwo.compareTo(new BigDecimal("0"))!=0 && null !=erAfterTwo && erAfterTwo.compareTo(new BigDecimal("0"))!=0){
+            if (null !=revenueAfterTwo && revenueAfterTwo.compareTo(new BigDecimal("0"))>0 && null !=erAfterTwo && erAfterTwo.compareTo(new BigDecimal("0"))>0){
                 //预算年后二年总薪酬包
                 BigDecimal multiply2 = revenueAfterTwo.multiply(erAfterTwo);
                 emolumentPlanDTO.setEmolumentPackageAfterTwo(multiply2);
@@ -303,7 +303,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
         R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode(), SecurityConstants.INNER);
         IndicatorDTO data = indicatorDTOR.getData();
         if (StringUtils.isNull(data)) {
-            throw new ServiceException("指标数据为空");
+            throw new ServiceException("指标数据不存在 请联系管理员");
         }
 
         EmolumentPlan emolumentPlan = new EmolumentPlan();

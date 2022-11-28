@@ -35,7 +35,7 @@ public class EmolumentPlanController extends BaseController
     @GetMapping("/add/{planYear}")
     public AjaxResult prefabricateAddEmolumentPlan(@PathVariable int planYear){
         EmolumentPlanDTO emolumentPlanDTO = emolumentPlanService.prefabricateAddEmolumentPlan(planYear);
-        return AjaxResult.success(emolumentPlanDTO);
+        return AjaxResult.success(null);
     }
 
     /**
