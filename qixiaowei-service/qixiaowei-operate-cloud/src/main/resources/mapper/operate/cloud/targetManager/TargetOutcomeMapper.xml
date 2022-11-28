@@ -131,7 +131,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        and to2.target_year lt; =#{targetOutcome.targetYear}
+        and to2.target_year &lt;= #{targetOutcome.targetYear}
         order by to2.target_year desc
         LIMIT #{targetOutcome.limitYear}
     </select>
