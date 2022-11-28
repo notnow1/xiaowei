@@ -148,6 +148,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
         //3 封装总奖金包预算生成
         this.packPaymentBonusBudget(budgetYear,bonusBudgetDTO);
+        //4未来三年奖金趋势
+        this.packPaymentBonusBudget(budgetYear,bonusBudgetDTO);
         bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
         return bonusBudgetDTO;
     }
@@ -160,15 +162,41 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
     private void packPaymentBonusBudget(int budgetYear,  BonusBudgetDTO bonusBudgetDTO) {
         EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.selectEmolumentPlanByPlanYear(budgetYear);
         if (StringUtils.isNotNull(emolumentPlanDTO)){
+            //总薪酬包预算
+            BigDecimal emolumentPackage = new BigDecimal("0");
+            //总工资包预算
+            BigDecimal basicWageBonusBudget = new BigDecimal("0");
+            //弹性薪酬包预算 公式=总薪酬包预算-总工资包预算
+            BigDecimal elasticityBonusBudget = new BigDecimal("0");
+            //涨薪包预算
+            BigDecimal raiseSalaryBonusBudget = new BigDecimal("0");
+            //总奖金包预算
+            BigDecimal amountBonusBudget = bonusBudgetDTO.getAmountBonusBudget();
+
             //查询薪酬规划详情计算方法
             EmolumentPlanServiceImpl.queryCalculate(emolumentPlanDTO);
-            //总薪酬包
-            BigDecimal emolumentPackage = emolumentPlanDTO.getEmolumentPackage();
+            //薪酬规划总薪酬包
+             emolumentPackage = emolumentPlanDTO.getEmolumentPackage();
+            //总薪酬包预算
             bonusBudgetDTO.setPaymentBonusBudget(emolumentPackage);
+            //todo  总工资包预算 公式=上年总工资包实际数+本年增人/减人工资包
+            //总工资包预算
+            basicWageBonusBudget = bonusBudgetDTO.getBasicWageBonusBudget();
 
-            //er值
-            BigDecimal er = emolumentPlanDTO.getEr();
 
+            if (null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) > 0 &&
+                    null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) > 0){
+                elasticityBonusBudget =  emolumentPackage.subtract(basicWageBonusBudget);
+                //弹性薪酬包  公式=总薪酬包预算-总工资包预算
+                bonusBudgetDTO.setElasticityBonusBudget(elasticityBonusBudget);
+            }
+
+            if (null != elasticityBonusBudget && elasticityBonusBudget.compareTo(new BigDecimal("0")) > 0 &&
+                    null != amountBonusBudget && amountBonusBudget.compareTo(new BigDecimal("0")) > 0){
+                raiseSalaryBonusBudget =  elasticityBonusBudget.subtract(amountBonusBudget);
+                //公式=弹性薪酬包预算-总奖金包预算。
+                bonusBudgetDTO.setRaiseSalaryBonusBudget(raiseSalaryBonusBudget);
+            }
         }
 
     }
