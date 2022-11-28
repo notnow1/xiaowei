@@ -87,10 +87,6 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private String performanceRankName;
     /**
-     * 自定义列标记:0否;1是
-     */
-    private Integer selfDefinedColumnsFlag;
-    /**
      * 考核对象状态:1制定目标;2评议;3排名;4归档
      */
     private Integer appraisalObjectStatus;

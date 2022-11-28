@@ -91,7 +91,7 @@ public class TargetSettingImportListener<TargetSettingExcel> extends AnalysisEve
         // 目标年度
         List<String> head0 = new ArrayList<String>();
         head0.add("目标年度");
-        // DSO（应收账款周转天数）
+        // ArrayList<>()（应收账款周转天数）
         List<String> head1 = new ArrayList<String>();
         head1.add("DSO（应收账款周转天数）");
         // 期末应收账款余额

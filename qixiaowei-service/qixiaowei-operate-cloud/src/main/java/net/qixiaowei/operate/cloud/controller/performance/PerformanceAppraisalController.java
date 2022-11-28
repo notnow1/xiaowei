@@ -1,19 +1,19 @@
 package net.qixiaowei.operate.cloud.controller.performance;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import com.alibaba.excel.write.metadata.WriteSheet;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalImportListener;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalService;
@@ -23,13 +23,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,9 +81,10 @@ public class PerformanceAppraisalController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @GetMapping("/pageList/orgArchive")
-    public AjaxResult listArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
+    public TableDataInfo listArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
+        startPage();
         List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectOrgAppraisalArchiveList(performanceAppraisalDTO);
-        return AjaxResult.success(list);
+        return getDataTable(list);
     }
 
     /**
@@ -106,6 +105,15 @@ public class PerformanceAppraisalController extends BaseController {
         List<Long> appraisalObjectsIds = map.get("appraisalObjectsIds");
         Long performanceAppraisalId = map.get("performanceAppraisalId").get(0);
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankByDTO(appraisalObjectsIds, performanceAppraisalId));
+    }
+
+    /**
+     * 查询绩效考核表列表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/archiveOrg/{performanceAppraisalId}")
+    public AjaxResult archiveOrg(@PathVariable Long performanceAppraisalId) {
+        return toAjax(performanceAppraisalService.archiveOrg(performanceAppraisalId));
     }
 
     /**
@@ -151,39 +159,14 @@ public class PerformanceAppraisalController extends BaseController {
             throw new RuntimeException("请上传正确的excel文件!");
         }
         InputStream inputStream;
-        try {
-            PerformanceAppraisalImportListener importListener = new PerformanceAppraisalImportListener(performanceAppraisalService);
-            inputStream = new BufferedInputStream(file.getInputStream());
-            ExcelReaderBuilder builder = EasyExcel.read(inputStream, PerformanceAppraisalExcel.class, importListener);
-            builder.doReadAll();
-        } catch (IOException e) {
-            throw new ServiceException("导入绩效考核表Excel失败");
-        }
-        return AjaxResult.success("操作成功");
-    }
-
-    /**
-     * 导入组织绩效归档表
-     */
-    @PostMapping("orgImport")
-    public AjaxResult importOrgPerformanceAppraisal(MultipartFile file) {
-//        List<List<String>> head = TargetDecomposeImportListener.headTemplate(targetDecomposeDTO);
-        String filename = file.getOriginalFilename();
-        if (StringUtils.isBlank(filename)) {
-            throw new RuntimeException("请上传文件!");
-        }
-        if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
-            throw new RuntimeException("请上传正确的excel文件!");
-        }
-        InputStream inputStream;
-        try {
-            PerformanceAppraisalImportListener importListener = new PerformanceAppraisalImportListener(performanceAppraisalService);
-            inputStream = new BufferedInputStream(file.getInputStream());
-            ExcelReaderBuilder builder = EasyExcel.read(inputStream, PerformanceAppraisalExcel.class, importListener);
-            builder.doReadAll();
-        } catch (IOException e) {
-            throw new ServiceException("导入绩效考核表Excel失败");
-        }
+//        try {
+//            PerformanceAppraisalImportListener importListener = new PerformanceAppraisalImportListener(1);
+//            inputStream = new BufferedInputStream(file.getInputStream());
+//            ExcelReaderBuilder builder = EasyExcel.read(inputStream, PerformanceAppraisalExcel.class, importListener);
+//            builder.doReadAll();
+//        } catch (IOException e) {
+//            throw new ServiceException("导入绩效考核表Excel失败");
+//        }
         return AjaxResult.success("操作成功");
     }
 
@@ -203,33 +186,86 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
+     * 导入组织绩效归档表
+     */
+    @PostMapping("orgImport")
+    public AjaxResult importOrgPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file) {
+        Integer importType = performanceAppraisalDTO.getImportType();
+        if (importType.equals(1)) {
+            performanceAppraisalService.importSysOrgPerformanceAppraisal(performanceAppraisalDTO, file);
+        } else {
+            performanceAppraisalService.importCustomOrgPerformanceAppraisal(performanceAppraisalDTO, file);
+        }
+        return AjaxResult.success("操作成功");
+    }
+
+    /**
      * 导出组织模板表
      */
     @SneakyThrows
     @GetMapping("export-org-template")
-    public void exportOrgTemplate(@RequestParam Integer appraisalFlow, HttpServletResponse response) {
-        if (appraisalFlow.equals(1)) {//系统流程
-            List<List<String>> head = PerformanceAppraisalImportListener.headOrgSystemTemplate();
-            response.setContentType("application/vnd.ms-excel");
-            response.setCharacterEncoding(CharsetKit.UTF_8);
-            String fileName = URLEncoder.encode("组织绩效归档导入系统模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                    , CharsetKit.UTF_8);
-            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
-            WriteSheet sheet = EasyExcel.writerSheet(0, "Sheet1").head(head).build();
-            excelWriter.write(new ArrayList<>(), sheet);
-            excelWriter.finish();
-        } else {
-            List<List<String>> head = PerformanceAppraisalImportListener.headOrgSystemTemplate();
-            response.setContentType("application/vnd.ms-excel");
-            response.setCharacterEncoding(CharsetKit.UTF_8);
-            String fileName = URLEncoder.encode("组织绩效归档导入自定义模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                    , CharsetKit.UTF_8);
-            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
-            WriteSheet sheet = EasyExcel.writerSheet(0, "Sheet1").head(head).build();
-            excelWriter.write(new ArrayList<>(), sheet);
-            excelWriter.finish();
+    public void exportOrgTemplate(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+        if (StringUtils.isNull(importType)) {
+            throw new ServiceException("请选择考核流程");
         }
+        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
+        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
+            throw new ServiceException("当前的绩效等级不存在 请联系管理员");
+        }
+        Map<Integer, List<String>> selectMap = new HashMap<>();
+        List<List<String>> head;
+        String fileName;
+        if (importType.equals(1)) {//系统流程
+            head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS);
+            fileName = URLEncoder.encode("组织绩效归档导入系统模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+        } else {
+            head = PerformanceAppraisalImportListener.headOrgCustomTemplate(selectMap, performanceRankFactorDTOS);
+            fileName = URLEncoder.encode("组织绩效归档导入自定义模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+        }
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalService.selectAppraisalObjectList(performanceAppraisalId);
+        EasyExcel.write(response.getOutputStream())
+                .head(head)
+                .sheet("Sheet1")// 设置 sheet 的名字
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+//                    .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) 自定义表头
+                .doWrite(PerformanceAppraisalImportListener.dataOrgTemplateList(performanceAppraisalObjectsDTOList));
+    }
+
+    /**
+     * 导出组织数据表
+     */
+    @SneakyThrows
+    @GetMapping("exportOrg")
+    public void exportOrg(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
+        if (StringUtils.isNull(importType)) {
+            throw new ServiceException("请选择考核流程");
+        }
+        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
+        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
+            throw new ServiceException("当前的绩效等级不存在 请联系管理员");
+        }
+        Map<Integer, List<String>> selectMap = new HashMap<>();
+        List<List<String>> head;
+        String fileName;
+        if (importType.equals(1)) {//系统流程
+            head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS);
+            fileName = URLEncoder.encode("组织绩效归档导入系统模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+        } else {
+            head = PerformanceAppraisalImportListener.headOrgCustomTemplate(selectMap, performanceRankFactorDTOS);
+            fileName = URLEncoder.encode("组织绩效归档导入自定义模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+        }
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalService.selectAppraisalObjectList(performanceAppraisalId);
+        EasyExcel.write(response.getOutputStream())
+                .head(head)
+                .sheet("Sheet1")// 设置 sheet 的名字
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+//                    .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) 自定义表头
+                .doWrite(PerformanceAppraisalImportListener.dataOrgTemplateList(performanceAppraisalObjectsDTOList));
     }
 }

@@ -3,7 +3,9 @@ package net.qixiaowei.operate.cloud.service.performance;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -42,7 +44,7 @@ public interface IPerformanceAppraisalService {
     /**
      * 查询组织绩效归档
      *
-     * @param performanceAppraisalDTO
+     * @param performanceAppraisalDTO 组织绩效
      * @return
      */
     List<PerformanceAppraisalDTO> selectOrgAppraisalArchiveList(PerformanceAppraisalDTO performanceAppraisalDTO);
@@ -50,7 +52,7 @@ public interface IPerformanceAppraisalService {
     /**
      * 查询组织绩效结果排名
      *
-     * @param appraisalObjectsIds
+     * @param appraisalObjectsIds 绩效考核对象ID集合
      * @return
      */
     List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId);
@@ -98,7 +100,7 @@ public interface IPerformanceAppraisalService {
     /**
      * 逻辑删除绩效考核表信息
      *
-     * @param performanceAppraisalDTO
+     * @param performanceAppraisalDTO 绩效考核
      * @return 结果
      */
     int logicDeletePerformanceAppraisalByPerformanceAppraisalId(PerformanceAppraisalDTO performanceAppraisalDTO);
@@ -106,7 +108,7 @@ public interface IPerformanceAppraisalService {
     /**
      * 批量删除绩效考核表
      *
-     * @param PerformanceAppraisalDtos
+     * @param PerformanceAppraisalDtos 绩效考核
      * @return 结果
      */
     int deletePerformanceAppraisalByPerformanceAppraisalIds(List<PerformanceAppraisalDTO> PerformanceAppraisalDtos);
@@ -114,7 +116,7 @@ public interface IPerformanceAppraisalService {
     /**
      * 逻辑删除绩效考核表信息
      *
-     * @param performanceAppraisalDTO
+     * @param performanceAppraisalDTO 绩效考核
      * @return 结果
      */
     int deletePerformanceAppraisalByPerformanceAppraisalId(PerformanceAppraisalDTO performanceAppraisalDTO);
@@ -129,17 +131,50 @@ public interface IPerformanceAppraisalService {
     int deletePerformanceAppraisalByPerformanceAppraisalId(Long performanceAppraisalId);
 
     /**
-     * 导入Excel
+     * 导入系统的组织绩效考核Excel
      *
-     * @param list
+     * @param performanceAppraisalDTO 绩效考核
+     * @param file                    文件
      */
-    void importPerformanceAppraisal(List<PerformanceAppraisalExcel> list);
+    void importSysOrgPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
+
+    /**
+     * 导入自定义的组织绩效考核Excel
+     *
+     * @param performanceAppraisalDTO 绩效考核
+     * @param file                    文件
+     */
+    void importCustomOrgPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
 
     /**
      * 导出Excel
      *
-     * @param performanceAppraisalDTO
+     * @param performanceAppraisalDTO 绩效考核
      * @return
      */
     List<PerformanceAppraisalExcel> exportPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * 根据appraisalId查询对象列表
+     *
+     * @param appraisalId 绩效任务ID
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> selectAppraisalObjectList(Long appraisalId);
+
+    /**
+     * 根据绩效考核ID获取绩效下拉列表
+     *
+     * @param appraisalId 绩效任务ID
+     * @return List
+     */
+    List<PerformanceRankFactorDTO> selectPerformanceRankFactor(Long appraisalId);
+
+    /**
+     * 归档组织
+     *
+     * @param performanceAppraisalId 绩效任务ID
+     * @return int
+     */
+    int archiveOrg(Long performanceAppraisalId);
 }

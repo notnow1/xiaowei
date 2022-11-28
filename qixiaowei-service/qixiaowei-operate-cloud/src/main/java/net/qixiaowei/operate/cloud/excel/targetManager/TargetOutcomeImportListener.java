@@ -451,12 +451,12 @@ public class TargetOutcomeImportListener extends AnalysisEventListener<Map<Integ
     /**
      * 导出模板的Code与名称
      *
-     * @param targetOutcomeDetailsDTOList
-     * @param indicatorService
-     * @return
+     * @param targetOutcomeDetailsDTOList 详情表
+     * @param indicatorService            指标服务
+     * @return Collection
      */
     public static Collection<List<Object>> dataTemplateList(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, RemoteIndicatorService indicatorService) {
-        ArrayList<Long> indicatorIds = new ArrayList<>();
+        List<Long> indicatorIds = new ArrayList<>();
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
             indicatorIds.add(targetOutcomeDetailsDTO.getIndicatorId());
         }

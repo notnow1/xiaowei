@@ -108,25 +108,25 @@ public interface PerformanceAppraisalObjectsMapper {
     /**
      * 查找根据任务ID对象列表
      *
-     * @param performanceAppraisalId
-     * @return
+     * @param performanceAppraisalId 绩效考核ID
+     * @return List
      */
     List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByPerformAppraisalId(@Param("performanceAppraisalId") Long performanceAppraisalId);
 
     /**
      * 查询组织绩效归档结果排名
      *
-     * @param appraisalObjectsIds
-     * @param performanceAppraisalId
-     * @return
+     * @param appraisalObjectsIds    对象ID集合
+     * @param performanceAppraisalId 绩效考核ID
+     * @return List
      */
     List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByIds(@Param("appraisalObjectsIds") List<Long> appraisalObjectsIds, @Param("performanceAppraisalId") Long performanceAppraisalId);
 
     /**
-     * 根据考核任务ID集合查找考核对象表
+     * 根据考核ID查询自定义表
      *
-     * @param performanceAppraisalIds
-     * @return
+     * @param performanceAppraisalIds 绩效考核ID集合
+     * @return List
      */
     List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByPerformAppraisalIds(@Param("performanceAppraisalIds") List<Long> performanceAppraisalIds);
 }

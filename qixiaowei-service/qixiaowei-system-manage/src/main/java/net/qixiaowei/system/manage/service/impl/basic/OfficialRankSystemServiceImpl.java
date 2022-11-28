@@ -172,7 +172,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 }
                 break;
         }
-        throw new ServiceException("改维度暂未配置，请先配置该维度信息");
+        throw new ServiceException("该维度暂未配置，请先配置该维度信息");
     }
 
     /**

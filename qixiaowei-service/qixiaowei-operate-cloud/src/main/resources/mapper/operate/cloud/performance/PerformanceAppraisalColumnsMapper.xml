@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalColumnsMapper">
+    <!--    查询绩效考核自定义列表-->
+    <select id="selectPerformanceAppraisalColumnsByPerformAppraisalColumnsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO">
+        SELECT
+        perform_appraisal_columns_id, performance_appraisal_id, column_name, column_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_appraisal_columns
+        WHERE  perform_appraisal_columns_id=#{performAppraisalColumnsId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询绩效考核自定义列表-->
+    <select id="selectPerformanceAppraisalColumnsByPerformAppraisalColumnsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO">
+        SELECT
+        perform_appraisal_columns_id, performance_appraisal_id, column_name, column_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_appraisal_columns
+        WHERE  perform_appraisal_columns_id in
+            <foreach item="item"
+                     collection="performAppraisalColumnsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询绩效考核自定义列表列表-->
+    <select id="selectPerformanceAppraisalColumnsList" resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO">
+        SELECT
+        perform_appraisal_columns_id, performance_appraisal_id, column_name, column_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_appraisal_columns
+        WHERE delete_flag=0
+                <if test="performanceAppraisalColumns.performAppraisalColumnsId != null">
+                    and perform_appraisal_columns_id=#{performanceAppraisalColumns.performAppraisalColumnsId}
+                </if>
+                <if test="performanceAppraisalColumns.performanceAppraisalId != null">
+                    and performance_appraisal_id=#{performanceAppraisalColumns.performanceAppraisalId}
+                </if>
+                <if test="performanceAppraisalColumns.columnName != null and performanceAppraisalColumns.columnName != ''">
+                    and column_name=#{performanceAppraisalColumns.columnName}
+                </if>
+                <if test="performanceAppraisalColumns.columnValue != null and performanceAppraisalColumns.columnValue != ''">
+                    and column_value=#{performanceAppraisalColumns.columnValue}
+                </if>
+                <if test="performanceAppraisalColumns.sort != null">
+                    and sort=#{performanceAppraisalColumns.sort}
+                </if>
+                <if test="performanceAppraisalColumns.deleteFlag != null">
+                    and delete_flag=#{performanceAppraisalColumns.deleteFlag}
+                </if>
+                <if test="performanceAppraisalColumns.createBy != null">
+                    and create_by=#{performanceAppraisalColumns.createBy}
+                </if>
+                <if test="performanceAppraisalColumns.createTime != null">
+                    and create_time=#{performanceAppraisalColumns.createTime}
+                </if>
+                <if test="performanceAppraisalColumns.updateBy != null">
+                    and update_by=#{performanceAppraisalColumns.updateBy}
+                </if>
+                <if test="performanceAppraisalColumns.updateTime != null">
+                    and update_time=#{performanceAppraisalColumns.updateTime}
+                </if>
+    </select>
+    <!--根据考核ID查询自定义表-->
+    <select id="selectAppraisalColumnsByAppraisalId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO">
+        SELECT
+        pc.perform_appraisal_columns_id, pc.performance_appraisal_id, pc.column_name, pc.column_value,
+        pc.sort, pc.delete_flag, pc.create_by, pc.create_time, pc.update_by, pc.update_time
+        FROM performance_appraisal_columns pc
+            LEFT JOIN performance_appraisal pa
+                ON pc.performance_appraisal_id = pa.performance_appraisal_id
+                    AND pa.delete_flag=0
+        WHERE pc.delete_flag=0
+    </select>
+    <!--新增绩效考核自定义列表-->
+    <insert id="insertPerformanceAppraisalColumns" useGeneratedKeys="true" keyProperty="performAppraisalColumnsId">
+        INSERT INTO performance_appraisal_columns (performance_appraisal_id,column_name,column_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{performanceAppraisalColumns.performanceAppraisalId},#{performanceAppraisalColumns.columnName},#{performanceAppraisalColumns.columnValue},#{performanceAppraisalColumns.sort},#{performanceAppraisalColumns.deleteFlag},#{performanceAppraisalColumns.createBy},#{performanceAppraisalColumns.createTime},#{performanceAppraisalColumns.updateBy},#{performanceAppraisalColumns.updateTime})
+    </insert>
+    <!--修改绩效考核自定义列表-->
+    <update id="updatePerformanceAppraisalColumns">
+        UPDATE performance_appraisal_columns
+        SET
+                    <if test="performanceAppraisalColumns.performanceAppraisalId != null">
+                        performance_appraisal_id=#{performanceAppraisalColumns.performanceAppraisalId},
+                    </if>
+                    <if test="performanceAppraisalColumns.columnName != null and performanceAppraisalColumns.columnName != ''">
+                        column_name=#{performanceAppraisalColumns.columnName},
+                    </if>
+                    <if test="performanceAppraisalColumns.columnValue != null and performanceAppraisalColumns.columnValue != ''">
+                        column_value=#{performanceAppraisalColumns.columnValue},
+                    </if>
+                    <if test="performanceAppraisalColumns.sort != null">
+                        sort=#{performanceAppraisalColumns.sort},
+                    </if>
+                    <if test="performanceAppraisalColumns.deleteFlag != null">
+                        delete_flag=#{performanceAppraisalColumns.deleteFlag},
+                    </if>
+                    <if test="performanceAppraisalColumns.createBy != null">
+                        create_by=#{performanceAppraisalColumns.createBy},
+                    </if>
+                    <if test="performanceAppraisalColumns.createTime != null">
+                        create_time=#{performanceAppraisalColumns.createTime},
+                    </if>
+                    <if test="performanceAppraisalColumns.updateBy != null">
+                        update_by=#{performanceAppraisalColumns.updateBy},
+                    </if>
+                    <if test="performanceAppraisalColumns.updateTime != null">
+                        update_time=#{performanceAppraisalColumns.updateTime}
+                    </if>
+        WHERE
+                 perform_appraisal_columns_id=#{performanceAppraisalColumns.performAppraisalColumnsId}
+    </update>
+    <!--逻辑删除绩效考核自定义列表-->
+    <update id="logicDeletePerformanceAppraisalColumnsByPerformAppraisalColumnsId">
+        UPDATE performance_appraisal_columns
+        SET     delete_flag= 1,
+                update_by=#{performanceAppraisalColumns.updateBy},
+                update_time=#{performanceAppraisalColumns.updateTime}
+        WHERE
+                perform_appraisal_columns_id=#{performanceAppraisalColumns.performAppraisalColumnsId}
+    </update>
+    <!--逻辑批量删除绩效考核自定义列表-->
+    <update id="logicDeletePerformanceAppraisalColumnsByPerformAppraisalColumnsIds">
+        UPDATE performance_appraisal_columns
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         perform_appraisal_columns_id IN
+            <foreach item="item"
+                     collection="performAppraisalColumnsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增绩效考核自定义列表-->
+    <insert id="batchPerformanceAppraisalColumns">
+        INSERT INTO performance_appraisal_columns (performance_appraisal_id,column_name,column_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="performanceAppraisalColumnss"
+                 separator=",">
+            (#{item.performanceAppraisalId},#{item.columnName},#{item.columnValue},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除绩效考核自定义列表-->
+    <delete id="deletePerformanceAppraisalColumnsByPerformAppraisalColumnsId">
+        DELETE FROM performance_appraisal_columns
+        WHERE  perform_appraisal_columns_id=#{performanceAppraisalColumns}
+
+    </delete>
+    <!--物理批量删除绩效考核自定义列表-->
+    <delete id="deletePerformanceAppraisalColumnsByPerformAppraisalColumnsIds">
+        DELETE FROM performance_appraisal_columns
+        WHERE  perform_appraisal_columns_id IN
+            <foreach item="item"
+                     collection="performAppraisalColumnsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改绩效考核自定义列表-->
+    <update id="updatePerformanceAppraisalColumnss">
+        update performance_appraisal_columns
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="performance_appraisal_id=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.performanceAppraisalId != null">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.performanceAppraisalId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="column_name=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.columnName != null and item.columnName != ''">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.columnName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="column_value=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.columnValue != null and item.columnValue != ''">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.columnValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="performanceAppraisalColumnsList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when perform_appraisal_columns_id=#{item.performAppraisalColumnsId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="performanceAppraisalColumnsList" separator="or" item="item" index="index">
+                    perform_appraisal_columns_id=#{item.performAppraisalColumnsId}
+        </foreach>
+    </update>
+</mapper>
+
+
