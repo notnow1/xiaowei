@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -35,7 +36,10 @@ public class EmolumentPlanController extends BaseController
     @GetMapping("/add/{planYear}")
     public AjaxResult prefabricateAddEmolumentPlan(@PathVariable int planYear){
         EmolumentPlanDTO emolumentPlanDTO = emolumentPlanService.prefabricateAddEmolumentPlan(planYear);
-        return AjaxResult.success(null);
+        if (StringUtils.isNull(emolumentPlanDTO)){
+            return AjaxResult.success(new EmolumentPlanDTO());
+        }
+        return AjaxResult.success(emolumentPlanDTO);
     }
 
     /**

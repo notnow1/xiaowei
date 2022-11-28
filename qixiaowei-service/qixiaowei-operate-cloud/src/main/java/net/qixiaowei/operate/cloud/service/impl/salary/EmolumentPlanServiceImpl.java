@@ -117,17 +117,17 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             BigDecimal erAfterTwo = emolumentPlanDTO.getErAfterTwo();
             if (null !=revenue && revenue.compareTo(new BigDecimal("0"))>0 && null !=er && er.compareTo(new BigDecimal("0"))>0){
                 //预算年总薪酬包
-                BigDecimal multiply = revenue.multiply(er);
+                BigDecimal multiply = revenue.multiply(er).divide(new BigDecimal("100"));
                 emolumentPlanDTO.setEmolumentPackage(multiply);
             }
             if (null !=revenueAfterOne && revenueAfterOne.compareTo(new BigDecimal("0"))>0 && null !=erAfterOne && erAfterOne.compareTo(new BigDecimal("0"))>0){
                 //预算年后一年总薪酬包
-                BigDecimal multiply1 = revenueAfterOne.multiply(erAfterOne);
+                BigDecimal multiply1 = revenueAfterOne.multiply(erAfterOne).divide(new BigDecimal("100"));
                 emolumentPlanDTO.setEmolumentPackageAfterOne(multiply1);
             }
             if (null !=revenueAfterTwo && revenueAfterTwo.compareTo(new BigDecimal("0"))>0 && null !=erAfterTwo && erAfterTwo.compareTo(new BigDecimal("0"))>0){
                 //预算年后二年总薪酬包
-                BigDecimal multiply2 = revenueAfterTwo.multiply(erAfterTwo);
+                BigDecimal multiply2 = revenueAfterTwo.multiply(erAfterTwo).divide(new BigDecimal("100"));
                 emolumentPlanDTO.setEmolumentPackageAfterTwo(multiply2);
             }
         }
