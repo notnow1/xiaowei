@@ -115,4 +115,10 @@ public interface EmolumentPlanMapper{
      * @return
      */
     EmolumentPlanDTO prefabricateAddEmolumentPlan(@Param("emolumentPlan") EmolumentPlan emolumentPlan);
+
+    /**
+     * 返回最大年份
+     * @return
+     */
+    int queryLatelyBudgetYear();
 }

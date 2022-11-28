@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -38,6 +39,9 @@ public class BonusBudgetController extends BaseController
     @GetMapping("/add/{budgetYear}")
     public AjaxResult addBonusBudgetTamount(@PathVariable int budgetYear){
         BonusBudgetDTO bonusBudgetDTO = bonusBudgetService.addBonusBudgetTamount(budgetYear);
+        if (StringUtils.isNull(bonusBudgetDTO)){
+            return AjaxResult.success(new BonusBudgetDTO());
+        }
         return AjaxResult.success(bonusBudgetDTO);
     }
 

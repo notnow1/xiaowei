@@ -136,6 +136,12 @@
         WHERE plan_year = #{planYear}
           and delete_flag = 0
     </select>
+<!--    返回最大年份-->
+    <select id="queryLatelyBudgetYear" resultType="java.lang.Integer">
+        SELECT max(plan_year)
+        FROM emolument_plan
+        WHERE  delete_flag = 0
+    </select>
     <!--新增薪酬规划表-->
     <insert id="insertEmolumentPlan" useGeneratedKeys="true" keyProperty="emolumentPlanId">
         INSERT INTO emolument_plan (plan_year, revenue_before_one, revenue, revenue_after_one, revenue_after_two,

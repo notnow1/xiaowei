@@ -316,6 +316,15 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
     }
 
     /**
+     * 返回最大年份
+     * @return
+     */
+    @Override
+    public int queryLatelyBudgetYear() {
+        return emolumentPlanMapper.queryLatelyBudgetYear();
+    }
+
+    /**
      * 新增薪酬规划时预制数据计算
      * @param emolumentPlanDTO
      */

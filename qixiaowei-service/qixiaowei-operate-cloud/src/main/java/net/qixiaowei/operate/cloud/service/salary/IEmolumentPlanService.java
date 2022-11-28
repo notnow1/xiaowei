@@ -105,4 +105,10 @@ public interface IEmolumentPlanService{
      * @return
      */
     EmolumentPlanDTO prefabricateAddEmolumentPlan(int planYear);
+
+    /**
+     * 返回最大年份
+     * @return
+     */
+    int queryLatelyBudgetYear();
 }

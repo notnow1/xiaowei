@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 import net.qixiaowei.operate.cloud.service.salary.IEmolumentPlanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,15 @@ public class EmolumentPlanController extends BaseController
     @Autowired
     private IEmolumentPlanService emolumentPlanService;
 
+    /**
+     * 返回最大年份
+     */
+    //@RequiresPermissions("operate:cloud:bonusBudget:info")
+    @GetMapping("/queryLatelyBudgetYear")
+    public AjaxResult queryLatelyBudgetYear(){
+        int planYear = emolumentPlanService.queryLatelyBudgetYear();
+        return AjaxResult.success(planYear);
+    }
 
     /**
      * 新增薪酬规划时预制数据
