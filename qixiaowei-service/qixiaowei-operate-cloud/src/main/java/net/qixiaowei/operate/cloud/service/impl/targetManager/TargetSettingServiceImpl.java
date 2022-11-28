@@ -1676,7 +1676,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
 //                DSO
             targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
-            targetSettingRecoveriesDTO.setPrefixType("DSO");
+            targetSettingRecoveriesDTO.setPrefixType("DSO（天）");
             targetSettingRecoveriesDTO.setChallengeValue(DSOValue);
             targetSettingRecoveriesDTO.setTargetValue(DSOValue);
             targetSettingRecoveriesDTO.setGuaranteedValue(DSOValue);
