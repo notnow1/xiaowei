@@ -113,4 +113,10 @@ public interface IBonusBudgetService{
      * @return
      */
     BonusBudgetDTO selectBonusBudgetLadderters(List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS);
+
+    /**
+     * 返回最大年份
+     * @return
+     */
+    int queryBonusBudgetYear();
 }

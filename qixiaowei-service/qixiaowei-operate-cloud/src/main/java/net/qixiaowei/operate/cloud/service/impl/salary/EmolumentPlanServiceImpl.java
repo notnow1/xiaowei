@@ -195,9 +195,9 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
 
             if (null !=erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0"))!=0 && null !=emolumentRevenueImprove && emolumentRevenueImprove.compareTo(new BigDecimal("0"))!=0){
                 //er值 公式=上年E/R值×（1-本年E/R值改进率）
-                BigDecimal subtract = new BigDecimal("1").subtract(emolumentRevenueImprove);
+                BigDecimal subtract = new BigDecimal("100").subtract(emolumentRevenueImprove);
                 //er值
-                BigDecimal multiply = erBeforeOne.multiply(subtract);
+                BigDecimal multiply = erBeforeOne.multiply(subtract).divide(new BigDecimal("100"));
                 emolumentPlanDTO.setEr(multiply);
             }
             //总薪酬包 未来年度：公式=销售收入×E/R值
@@ -205,7 +205,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             BigDecimal er = emolumentPlanDTO.getEr();
             if (null !=revenue && revenue.compareTo(new BigDecimal("0"))!=0 && null !=er && er.compareTo(new BigDecimal("0"))!=0){
                 //预算年总薪酬包
-                BigDecimal multiply = revenue.multiply(er);
+                BigDecimal multiply = revenue.multiply(er).divide(new BigDecimal("100"));
                 emolumentPlanDTO.setEmolumentPackage(multiply);
             }
             //E/R值实际改进率（%）：公式=（上年E/R值÷本年E/R值-1）*100%
@@ -270,7 +270,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
     @Override
     public int logicDeleteEmolumentPlanByEmolumentPlanIds(List<Long> emolumentPlanIds) {
         List<EmolumentPlanDTO> emolumentPlanDTOS = emolumentPlanMapper.selectEmolumentPlanByEmolumentPlanIds(emolumentPlanIds);
-        if (StringUtils.isNotEmpty(emolumentPlanDTOS)){
+        if (StringUtils.isEmpty(emolumentPlanDTOS)){
             throw new ServiceException("数据不存在！！！");
         }
         return emolumentPlanMapper.logicDeleteEmolumentPlanByEmolumentPlanIds(emolumentPlanIds, SecurityUtils.getUserId(), DateUtils.getNowDate());

@@ -31,7 +31,15 @@ public class BonusBudgetController extends BaseController
 
     @Autowired
     private IBonusBudgetService bonusBudgetService;
-
+    /**
+     * 返回最大年份
+     */
+    //@RequiresPermissions("operate:cloud:bonusBudget:info")
+    @GetMapping("/queryBonusBudgetYear")
+    public AjaxResult queryLatelyBudgetYear(){
+        int planYear = bonusBudgetService.queryBonusBudgetYear();
+        return AjaxResult.success(planYear);
+    }
     /**
      * 新增奖金预算预制数据
      */

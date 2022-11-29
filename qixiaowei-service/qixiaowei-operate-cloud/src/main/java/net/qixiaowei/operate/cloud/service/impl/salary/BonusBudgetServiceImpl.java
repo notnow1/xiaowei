@@ -1,23 +1,24 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
-import java.math.BigDecimal;
-import java.util.*;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.salary.BonusBudget;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
-import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
-import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetMapper;
+import net.qixiaowei.operate.cloud.mapper.salary.BonusBudgetMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.EmolumentPlanMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
+import net.qixiaowei.operate.cloud.service.salary.IBonusBudgetService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -27,16 +28,11 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.salary.BonusBudget;
-import net.qixiaowei.operate.cloud.mapper.salary.BonusBudgetMapper;
-import net.qixiaowei.operate.cloud.service.salary.IBonusBudgetService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 
 
 /**
@@ -255,6 +251,15 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         //封装总部门奖金预算 必须计算的数据方法
         this.packBounLadderNum(bonusBudgetDTO, bonusBudgetLaddertersDTOS, bonusBudgetParametersDTOS);
         return bonusBudgetDTO;
+    }
+
+    /**
+     * 返回最大年份
+     * @return
+     */
+    @Override
+    public int queryBonusBudgetYear() {
+        return bonusBudgetMapper.queryBonusBudgetYear();
     }
 
     /**

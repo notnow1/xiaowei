@@ -113,7 +113,7 @@
           and indicator_id=#{emolumentPlan.indicatorId}
           and tod.delete_flag=0
     </select>
-<!--    查询薪酬规划表-->
+    <!--    查询薪酬规划表-->
     <select id="selectEmolumentPlanByPlanYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO">
         SELECT emolument_plan_id,
@@ -136,9 +136,12 @@
         WHERE plan_year = #{planYear}
           and delete_flag = 0
     </select>
-<!--    返回最大年份-->
+    <!--    返回最大年份-->
     <select id="queryLatelyBudgetYear" resultType="java.lang.Integer">
-        SELECT max(plan_year)
+        SELECT
+            case when max(plan_year) is null then
+                     IFNULL(max(plan_year),YEAR(NOW()))
+                 else max(plan_year)+1 end as plan_year
         FROM emolument_plan
         WHERE  delete_flag = 0
     </select>

@@ -60,6 +60,15 @@
                     and update_time=#{bonusBudget.updateTime}
                 </if>
     </select>
+<!--    返回最大年份-->
+    <select id="queryBonusBudgetYear" resultType="java.lang.Integer">
+        SELECT
+            case when max(budget_year) is null then
+                     IFNULL(max(budget_year),YEAR(NOW())+1)
+                 else max(budget_year)+1 end as budget_year
+        FROM bonus_budget
+        WHERE  delete_flag = 0
+    </select>
     <!--新增奖金预算表-->
     <insert id="insertBonusBudget" useGeneratedKeys="true" keyProperty="bonusBudgetId">
         INSERT INTO bonus_budget (budget_year,amount_bonus_budget,bonus_before_one,delete_flag,create_by,create_time,update_by,update_time)

@@ -101,4 +101,10 @@ public interface BonusBudgetMapper{
     * @return 结果
     */
     int batchBonusBudget(@Param("bonusBudgets")List<BonusBudget> BonusBudgets);
+
+    /**
+     * 返回最大年份
+     * @return
+     */
+    int queryBonusBudgetYear();
 }
