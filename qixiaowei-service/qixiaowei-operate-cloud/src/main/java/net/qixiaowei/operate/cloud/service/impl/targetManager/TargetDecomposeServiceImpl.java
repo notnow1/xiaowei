@@ -1011,9 +1011,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //行的汇总金额
             BigDecimal validAmountTarget = new BigDecimal("0");
             for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
-                BigDecimal cycleForecast = decomposeDetailCyclesDTO.getCycleForecast();
-                if (null != cycleForecast) {
-                    validAmountTarget = validAmountTarget.add(cycleForecast);
+                BigDecimal cycleTarget = decomposeDetailCyclesDTO.getCycleTarget();
+                if (null != cycleTarget) {
+                    validAmountTarget = validAmountTarget.add(cycleTarget);
                 }
             }
             if (null != amountTarget) {
