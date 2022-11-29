@@ -91,6 +91,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         }
         //根据总奖金id查询奖金预算参数表
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudgetParametersMapper.selectBonusBudgetParametersByBonusBudgetId(bonusBudgetDTO.getBonusBudgetId());
+        //奖金增长率
+        this.packQueryBudgetParameters(bonusBudgetParametersDTOS);
         //封装总奖金包预算生成
         this.packPaymentBonusBudget(bonusBudgetDTO.getBudgetYear(),bonusBudgetDTO);
         //未来三年奖金趋势集合
@@ -104,6 +106,46 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         bonusBudgetDTO.setBonusBudgetLaddertersDTOS(bonusBudgetLaddertersDTOS);
         bonusBudgetDTO.setFutureBonusBudgetLaddertersDTOS(futureBonusBudgetLaddertersDTOS);
         return bonusBudgetDTO;
+    }
+
+    /**
+     *【奖金增长率（%）】：数值字段，保留两位小数，不可编辑。
+     * 公式=权重×业绩增长率×奖金折让系数。
+     * @param bonusBudgetParametersDTOS
+     */
+    private void packQueryBudgetParameters(List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
+        for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+            //奖金增长率后一年
+            BigDecimal bonusGrowthRateAfterOne = new BigDecimal("0");
+            //奖金增长率后二年
+            BigDecimal bonusGrowthRateAfterTwo = new BigDecimal("0");
+            //权重
+            BigDecimal bonusWeight = bonusBudgetParametersDTO.getBonusWeight();
+            //预算年后一年业绩增长率
+            BigDecimal performanceAfterOne = bonusBudgetParametersDTO.getPerformanceAfterOne();
+            //预算年后二年业绩增长率
+            BigDecimal performanceAfterTwo = bonusBudgetParametersDTO.getPerformanceAfterTwo();
+
+            //预算年后一年奖金折让系数
+            BigDecimal bonusAllowanceAfterOne = bonusBudgetParametersDTO.getBonusAllowanceAfterOne();
+            //预算年后二年奖金折让系数
+            BigDecimal bonusAllowanceAfterTwo = bonusBudgetParametersDTO.getBonusAllowanceAfterTwo();
+            //奖金增长率后一年
+            if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0&&
+                    null != performanceAfterOne && performanceAfterOne.compareTo(new BigDecimal("0")) != 0&&
+                    null != bonusAllowanceAfterOne && bonusAllowanceAfterOne.compareTo(new BigDecimal("0")) != 0){
+                bonusGrowthRateAfterOne=bonusWeight.divide(new BigDecimal("100")).multiply(performanceAfterOne.divide(new BigDecimal("100"))).multiply(bonusAllowanceAfterOne);
+                bonusBudgetParametersDTO.setBonusGrowthRateAfterOne(bonusGrowthRateAfterOne);
+            }
+            //奖金增长率后二年
+            if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0&&
+                    null != bonusAllowanceAfterTwo && bonusAllowanceAfterTwo.compareTo(new BigDecimal("0")) != 0&&
+                    null != performanceAfterTwo && performanceAfterTwo.compareTo(new BigDecimal("0")) != 0){
+                bonusGrowthRateAfterTwo=bonusWeight.divide(new BigDecimal("100")).multiply(performanceAfterTwo.divide(new BigDecimal("100"))).multiply(bonusAllowanceAfterTwo);
+                bonusBudgetParametersDTO.setBonusGrowthRateAfterTwo(bonusGrowthRateAfterTwo);
+            }
+
+        }
     }
 
     /**
