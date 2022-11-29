@@ -186,7 +186,7 @@
 <!--    返回上年总工资包实际数：从月度工资数据管理取值（总计值）-->
     <select id="selectSalaryPayAmoutNum" resultType="java.math.BigDecimal">
         SELECT
-            SUM(pay_amount)  as  pay_amount
+            ifnull(SUM(pay_amount),0)  as  pay_amount
         FROM
             salary_pay
         WHERE pay_year = #{budgetYear}

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
-* 奖金预算参数表
+* 未来三年奖金趋势
 * @author TANGMICHI
 * @since 2022-11-26
 */
@@ -25,7 +25,7 @@ public class FutureBonusBudgetLaddertersDTO {
     /**
      * 奖金综合增长率
      */
-    private  BigDecimal BonusCompositeRate;
+    private  BigDecimal bonusCompositeRate;
     /**
      * 总奖金包预算
      */

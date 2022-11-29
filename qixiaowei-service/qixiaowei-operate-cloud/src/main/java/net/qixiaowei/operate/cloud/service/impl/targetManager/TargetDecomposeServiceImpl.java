@@ -953,6 +953,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
+        //已录入
+        targetDecompose.setStatus(Constants.ONE);
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         try {
