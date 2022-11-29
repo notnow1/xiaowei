@@ -395,6 +395,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         BonusBudgetDTO bonusBudgetDTO = new BonusBudgetDTO();
         //1总奖金包预算参数集合
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = new ArrayList<>();
+        //2总奖金包预算阶梯集合
+        List<BonusBudgetLaddertersDTO> bonusBudgetLaddertersDTOS = new ArrayList<>();
         //4未来三年奖金趋势集合
         List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS = new ArrayList<>();
         //封装总奖金包预算参数指标数据
@@ -406,6 +408,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         this.packAddFutureBonusTrend(bonusBudgetDTO, budgetYear, futureBonusBudgetLaddertersDTOS);
         bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
         bonusBudgetDTO.setFutureBonusBudgetLaddertersDTOS(futureBonusBudgetLaddertersDTOS);
+        bonusBudgetDTO.setBonusBudgetLaddertersDTOS(bonusBudgetLaddertersDTOS);
         return bonusBudgetDTO;
     }
 
