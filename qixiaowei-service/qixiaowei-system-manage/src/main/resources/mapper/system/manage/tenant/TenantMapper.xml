@@ -26,6 +26,30 @@
           and t.delete_flag = 0
     </select>
 
+    <select id="selectTenantByDomain"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
+        SELECT t.tenant_id,
+        t.tenant_code,
+        t.tenant_name,
+        t.tenant_address,
+        t.tenant_industry,
+        t.domain,
+        t.admin_account,
+        t.admin_password,
+        t.support_staff,
+        t.login_background,
+        t.tenant_logo,
+        t.tenant_status,
+        t.delete_flag,
+        t.create_by,
+        t.create_time,
+        t.update_by,
+        t.update_time
+        FROM tenant t
+        WHERE t.domain = #{domain}
+        and t.delete_flag = 0
+    </select>
+
     <!--    查询租户表列表-->
     <select id="selectTenantList" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
         select

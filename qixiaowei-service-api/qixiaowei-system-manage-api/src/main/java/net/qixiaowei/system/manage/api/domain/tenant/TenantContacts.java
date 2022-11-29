@@ -42,10 +42,6 @@ public class TenantContacts extends BaseEntity {
      * 联系人职务
      */
      private  String  contactDuty;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

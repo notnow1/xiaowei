@@ -1,11 +1,9 @@
 package net.qixiaowei.operate.cloud.api.domain.product;
 
 
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 /**
 * 产品单位表
@@ -14,7 +12,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class ProductUnit extends BaseEntity {
+public class ProductUnit extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,10 +32,6 @@ public class ProductUnit extends BaseEntity {
      * 保留的小数位(0代表整数;1代表1位小数...)
      */
      private  Integer  reserveDigit;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

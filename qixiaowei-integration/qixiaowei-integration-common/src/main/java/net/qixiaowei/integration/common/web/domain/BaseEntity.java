@@ -46,6 +46,11 @@ public class BaseEntity implements Serializable {
     private String remark;
 
     /**
+     * 删除标记:0未删除;1已删除
+     */
+    private  Integer  deleteFlag;
+
+    /**
      * 请求参数
      */
     private Map<String, Object> params;
@@ -97,6 +102,14 @@ public class BaseEntity implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Integer getDeleteFlag() {
+        return deleteFlag;
+    }
+
+    public void setDeleteFlag(Integer deleteFlag) {
+        this.deleteFlag = deleteFlag;
     }
 
     public Map<String, Object> getParams() {

@@ -1,12 +1,11 @@
 package net.qixiaowei.operate.cloud.api.domain.targetManager;
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 目标制定回款表
@@ -16,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-public class TargetSettingRecovery extends BaseEntity {
+public class TargetSettingRecovery extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,10 +39,7 @@ public class TargetSettingRecovery extends BaseEntity {
      * DSO(应收账款周转天数)改进天数
      */
     private Integer improveDays;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
+
 
 }
 

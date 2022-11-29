@@ -1,13 +1,11 @@
 package net.qixiaowei.operate.cloud.api.domain.salary;
 
 
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
 * 奖金预算参数表
@@ -16,7 +14,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class BonusBudgetParameters extends BaseEntity {
+public class BonusBudgetParameters extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -76,10 +74,6 @@ public class BonusBudgetParameters extends BaseEntity {
      * 预算年后二年奖金折让系数
      */
      private  BigDecimal  bonusAllowanceAfterTwo;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

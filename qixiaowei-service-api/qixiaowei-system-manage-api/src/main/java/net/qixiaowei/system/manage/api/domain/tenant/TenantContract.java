@@ -52,10 +52,6 @@ public class TenantContract extends BaseEntity {
      * 开通的产品包
      */
      private  String  productPackage;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

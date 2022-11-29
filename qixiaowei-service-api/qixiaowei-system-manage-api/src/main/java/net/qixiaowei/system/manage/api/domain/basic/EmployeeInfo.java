@@ -2,10 +2,9 @@ package net.qixiaowei.system.manage.api.domain.basic;
 
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 /**
 * 员工信息
@@ -14,7 +13,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class EmployeeInfo extends BaseEntity {
+public class EmployeeInfo extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 

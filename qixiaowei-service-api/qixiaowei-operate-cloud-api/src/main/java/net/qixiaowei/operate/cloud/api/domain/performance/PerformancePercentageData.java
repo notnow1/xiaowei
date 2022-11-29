@@ -1,13 +1,10 @@
 package net.qixiaowei.operate.cloud.api.domain.performance;
 
-
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
 * 绩效比例数据表
@@ -16,7 +13,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class PerformancePercentageData extends BaseEntity {
+public class PerformancePercentageData extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,10 +37,7 @@ public class PerformancePercentageData extends BaseEntity {
      * 数值,单位:百分号%
      */
      private BigDecimal value;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
+
 
 }
 

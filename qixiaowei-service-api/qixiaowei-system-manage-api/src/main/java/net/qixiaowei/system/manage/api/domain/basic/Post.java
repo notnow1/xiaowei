@@ -1,11 +1,9 @@
 package net.qixiaowei.system.manage.api.domain.basic;
 
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
-import java.util.Date;
 
 /**
  * 岗位表
@@ -15,7 +13,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-public class Post extends BaseEntity {
+public class Post extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -55,10 +53,6 @@ public class Post extends BaseEntity {
      * 状态:0失效;1生效
      */
     private Integer status;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
     /**
      * 职级体系名称
      */

@@ -1,13 +1,10 @@
 package net.qixiaowei.operate.cloud.api.domain.targetManager;
 
-
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
 * 目标结果详情表
@@ -16,7 +13,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class TargetOutcomeDetails extends BaseEntity {
+public class TargetOutcomeDetails extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -84,10 +81,6 @@ public class TargetOutcomeDetails extends BaseEntity {
      * 十二月实际值
      */
      private  BigDecimal  actualDecember;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

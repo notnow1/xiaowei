@@ -1,12 +1,11 @@
 package net.qixiaowei.system.manage.api.domain.basic;
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 职级分解表
@@ -16,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-public class OfficialRankDecompose extends BaseEntity {
+public class OfficialRankDecompose extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,10 +39,6 @@ public class OfficialRankDecompose extends BaseEntity {
      * 工资系数
      */
     private BigDecimal salaryFactor;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
 
 }
 

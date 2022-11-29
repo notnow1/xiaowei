@@ -19,6 +19,7 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
@@ -69,6 +70,9 @@ public class TenantServiceImpl implements ITenantService {
     @Autowired
     private FileConfig fileConfig;
 
+    @Autowired
+    private TenantConfig tenantConfig;
+
     /**
      * 查询租户表
      *
@@ -82,7 +86,7 @@ public class TenantServiceImpl implements ITenantService {
             tenantId = SecurityUtils.getTenantId();
         }
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
-        if (StringUtils.isNull(tenantDTO)){
+        if (StringUtils.isNull(tenantDTO)) {
             throw new ServiceException("租户数据不存在");
         }
         //租户登录背景图片URL
@@ -95,13 +99,13 @@ public class TenantServiceImpl implements ITenantService {
         List<Long> collect1 = Arrays.asList(tenantDTO.getSupportStaff().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         //人员表
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeIds(collect1);
-        if (StringUtils.isNotNull(industryDefaultDTO)){
+        if (StringUtils.isNotNull(industryDefaultDTO)) {
             //行业名称
             tenantDTO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
         }
-        if (StringUtils.isNotEmpty(employeeDTOList)){
+        if (StringUtils.isNotEmpty(employeeDTOList)) {
             //客服人员名称
-            tenantDTO.setSupportStaffName(StringUtils.join(employeeDTOList.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()),","));
+            tenantDTO.setSupportStaffName(StringUtils.join(employeeDTOList.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()), ","));
         }
         //租户联系人
         tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
@@ -111,16 +115,16 @@ public class TenantServiceImpl implements ITenantService {
             String productPackage = tenantContractDTO.getProductPackage();
             List<Long> collect = Arrays.asList(productPackage.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
             List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageIds(collect);
-            if (!StringUtils.isEmpty(productPackageDTOList)){
-                tenantContractDTO.setProductPackage(StringUtils.join(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()),","));
+            if (!StringUtils.isEmpty(productPackageDTOList)) {
+                tenantContractDTO.setProductPackage(StringUtils.join(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()), ","));
             }
         }
         //合同时间
-        if (StringUtils.isNotEmpty(tenantContractDTOS)){
+        if (StringUtils.isNotEmpty(tenantContractDTOS)) {
             //合同开始时间
-            tenantDTO.setContractStartTime(tenantContractDTOS.get(tenantContractDTOS.size()-1).getContractStartTime());
+            tenantDTO.setContractStartTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractStartTime());
             //合同结束时间
-            tenantDTO.setContractEndTime(tenantContractDTOS.get(tenantContractDTOS.size()-1).getContractEndTime());
+            tenantDTO.setContractEndTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractEndTime());
         }
         //租户合同
         tenantDTO.setTenantContractDTOList(tenantContractDTOS);
@@ -156,6 +160,10 @@ public class TenantServiceImpl implements ITenantService {
     @Transactional
     @Override
     public TenantDTO insertTenant(TenantDTO tenantDTO) {
+        String domain = tenantDTO.getDomain();
+        if (tenantConfig.getExistedDomains().contains(domain)) {
+            throw new ServiceException("创建租户失败:域名[" + domain + "]已经被占用!");
+        }
         //租户
         Tenant tenant = new Tenant();
         //租户联系人
@@ -230,14 +238,15 @@ public class TenantServiceImpl implements ITenantService {
 
     /**
      * 导入租户
+     *
      * @param tenantExcels 租户表
      */
     @Override
     public void insertTenant(List<TenantExcel> tenantExcels) {
-       List<Tenant>  tenantList = new ArrayList<>();
+        List<Tenant> tenantList = new ArrayList<>();
         for (TenantExcel tenantExcel : tenantExcels) {
             Tenant tenant = new Tenant();
-            BeanUtils.copyProperties(tenantExcel,tenant);
+            BeanUtils.copyProperties(tenantExcel, tenant);
             tenant.setCreateTime(DateUtils.getNowDate());
             tenant.setUpdateTime(DateUtils.getNowDate());
             tenant.setCreateBy(SecurityUtils.getUserId());
@@ -262,6 +271,10 @@ public class TenantServiceImpl implements ITenantService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateTenant(TenantDTO tenantDTO) {
+        String domain = tenantDTO.getDomain();
+        if (tenantConfig.getExistedDomains().contains(domain)) {
+            throw new ServiceException("修改租户失败:域名[" + domain + "]已经被占用!");
+        }
         int i = 0;
         Tenant tenant = new Tenant();
         //租户联系人
@@ -383,6 +396,10 @@ public class TenantServiceImpl implements ITenantService {
      */
     @Override
     public int updateMyTenantDTO(TenantDTO tenantDTO) {
+        String domain = tenantDTO.getDomain();
+        if (tenantConfig.getExistedDomains().contains(domain)) {
+            throw new ServiceException("修改企业信息失败:域名[" + domain + "]已经被占用!");
+        }
         //租户表
         Tenant tenant = new Tenant();
         //
@@ -395,7 +412,7 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setTenantLogo(fileConfig.getPathOfRemoveDomain(tenant.getTenantLogo()));
         //查询租户数据
         TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
-        if (StringUtils.isNull(tenantDTO1)){
+        if (StringUtils.isNull(tenantDTO1)) {
             throw new ServiceException("租户信息不存在");
         }
         //对比域名是否修改 修改需要保存到域名申请表中
@@ -428,27 +445,28 @@ public class TenantServiceImpl implements ITenantService {
 
     /**
      * 导出租户
+     *
      * @param tenantDTO
      * @return
      */
     @Override
     public List<TenantExcel> exportTenant(TenantDTO tenantDTO) {
         Tenant tenant = new Tenant();
-        BeanUtils.copyProperties(tenantDTO,tenant);
+        BeanUtils.copyProperties(tenantDTO, tenant);
         List<TenantExcel> tenantExcelList = new ArrayList<>();
         List<TenantDTO> tenantDTOList = tenantMapper.selectTenantList(tenant);
 
-        if (StringUtils.isNotEmpty(tenantDTOList)){
+        if (StringUtils.isNotEmpty(tenantDTOList)) {
             for (TenantDTO dto : tenantDTOList) {
                 TenantExcel tenantExcel = new TenantExcel();
-                BeanUtils.copyProperties(dto,tenantExcel);
-                if (dto.getTenantStatus() == 0){
+                BeanUtils.copyProperties(dto, tenantExcel);
+                if (dto.getTenantStatus() == 0) {
                     tenantExcel.setTenantStatusName("待初始化");
-                }else if (dto.getTenantStatus() == 1){
+                } else if (dto.getTenantStatus() == 1) {
                     tenantExcel.setTenantStatusName("正常");
-                }else if (dto.getTenantStatus() == 2){
+                } else if (dto.getTenantStatus() == 2) {
                     tenantExcel.setTenantStatusName("禁用");
-                }else if (dto.getTenantStatus() == 3){
+                } else if (dto.getTenantStatus() == 3) {
                     tenantExcel.setTenantStatusName("过期");
                 }
                 tenantExcelList.add(tenantExcel);

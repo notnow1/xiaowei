@@ -7,3 +7,4 @@ net.qixiaowei.system.manage.api.factory.basic.RemoteDepartmentFallbackFactory
 net.qixiaowei.system.manage.api.factory.basic.RemoteIndustryFallbackFactory
 net.qixiaowei.system.manage.api.factory.basic.RemoteDictionaryDataFallbackFactory
 net.qixiaowei.system.manage.api.factory.basic.RemoteOfficialRankSystemFallbackFactory
+net.qixiaowei.system.manage.api.factory.tenant.RemoteTenantFallbackFactory

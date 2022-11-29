@@ -1,11 +1,9 @@
 package net.qixiaowei.operate.cloud.api.domain.salary;
 
 
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 /**
 * 工资项
@@ -14,7 +12,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class SalaryItem extends BaseEntity {
+public class SalaryItem extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,10 +40,6 @@ public class SalaryItem extends BaseEntity {
      * 排序
      */
      private  Integer  sort;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

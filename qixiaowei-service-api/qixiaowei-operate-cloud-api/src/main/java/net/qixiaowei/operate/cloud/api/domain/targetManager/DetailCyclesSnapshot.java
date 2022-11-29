@@ -1,13 +1,10 @@
 package net.qixiaowei.operate.cloud.api.domain.targetManager;
 
-
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
 * 目标分解详情周期快照表
@@ -16,7 +13,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class DetailCyclesSnapshot extends BaseEntity {
+public class DetailCyclesSnapshot extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,10 +41,6 @@ public class DetailCyclesSnapshot extends BaseEntity {
      * 周期实际值
      */
      private  BigDecimal  cycleActual;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

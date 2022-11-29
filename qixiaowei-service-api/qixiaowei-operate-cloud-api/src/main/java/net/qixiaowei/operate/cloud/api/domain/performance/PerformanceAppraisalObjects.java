@@ -1,22 +1,19 @@
 package net.qixiaowei.operate.cloud.api.domain.performance;
 
-
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
 * 绩效考核对象表
 * @author Graves
-* @since 2022-11-29
+* @since 2022-11-24
 */
 @Data
 @Accessors(chain = true)
-public class PerformanceAppraisalObjects extends BaseEntity {
+public class PerformanceAppraisalObjects extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,14 +45,6 @@ public class PerformanceAppraisalObjects extends BaseEntity {
      * 考核对象状态:1制定目标;2评议;3排名;4归档
      */
      private  Integer  appraisalObjectStatus;
-     /**
-     * 排序
-     */
-     private  Integer  sort;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

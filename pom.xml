@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.qixiaowei</groupId>
@@ -236,10 +236,17 @@
                 <version>${qixiaowei.version}</version>
             </dependency>
 
-            <!-- 定时服务 -->
+            <!-- 定时任务 -->
             <dependency>
                 <groupId>net.qixiaowei</groupId>
                 <artifactId>qixiaowei-integration-job</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
+            <!-- 租户相关 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-integration-tenant</artifactId>
                 <version>${qixiaowei.version}</version>
             </dependency>
 

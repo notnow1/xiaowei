@@ -22,6 +22,14 @@ public interface TenantMapper{
     TenantDTO selectTenantByTenantId(@Param("tenantId")Long tenantId);
 
     /**
+     * 根据域名查询租户表
+     *
+     * @param domain 二级域名
+     * @return 租户表
+     */
+    TenantDTO selectTenantByDomain(@Param("domain")String domain);
+
+    /**
     * 查询租户表列表
     *
     * @param tenant 租户表

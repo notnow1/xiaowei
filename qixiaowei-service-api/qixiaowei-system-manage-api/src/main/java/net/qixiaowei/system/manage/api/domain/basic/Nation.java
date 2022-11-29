@@ -30,10 +30,6 @@ public class Nation extends BaseEntity {
      * 排序
      */
      private  Integer  sort;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

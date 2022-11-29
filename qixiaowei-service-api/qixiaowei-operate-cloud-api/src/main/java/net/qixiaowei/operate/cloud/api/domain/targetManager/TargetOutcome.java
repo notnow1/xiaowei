@@ -1,11 +1,9 @@
 package net.qixiaowei.operate.cloud.api.domain.targetManager;
 
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,7 +14,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class TargetOutcome extends BaseEntity {
+public class TargetOutcome extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,10 +30,6 @@ public class TargetOutcome extends BaseEntity {
      * 指标ID集合
      */
     private List<Long> indicatorIds;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
     /**
      * 保证倒退12个月的数据 每个id只能有两个
      */

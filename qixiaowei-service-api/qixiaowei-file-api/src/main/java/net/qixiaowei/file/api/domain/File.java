@@ -1,7 +1,7 @@
 package net.qixiaowei.file.api.domain;
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import lombok.Data;
 
 /**
@@ -11,7 +11,7 @@ import lombok.Data;
  * @since 2022-10-28
  */
 @Data
-public class File extends BaseEntity {
+public class File extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,10 +43,6 @@ public class File extends BaseEntity {
      * 路径
      */
     private String filePath;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
 
 }
 

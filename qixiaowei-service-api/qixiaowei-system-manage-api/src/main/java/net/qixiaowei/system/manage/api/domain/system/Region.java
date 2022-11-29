@@ -5,7 +5,6 @@ package net.qixiaowei.system.manage.api.domain.system;
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
 
 /**
 * 区域表
@@ -82,10 +81,6 @@ public class Region extends BaseEntity {
      * 排序
      */
      private  Integer  sort;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

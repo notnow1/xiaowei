@@ -155,6 +155,11 @@ public class UserDTO {
      */
     private Map<String, Object> params;
 
+    /**
+     * 租户ID
+     */
+    private Long tenantId;
+
 
 }
 

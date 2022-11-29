@@ -5,7 +5,6 @@ package net.qixiaowei.system.manage.api.domain.system;
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
 
 /**
 * 菜单表
@@ -78,10 +77,6 @@ public class Menu extends BaseEntity {
      * 状态:0失效;1生效
      */
      private  Integer  status;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

@@ -3,7 +3,7 @@ package net.qixiaowei.system.manage.api.domain.basic;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 /**
  * 职级体系表
@@ -13,7 +13,7 @@ import net.qixiaowei.integration.common.web.domain.BaseEntity;
  */
 @Data
 @Accessors(chain = true)
-public class OfficialRankSystem extends BaseEntity {
+public class OfficialRankSystem extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,10 +46,6 @@ public class OfficialRankSystem extends BaseEntity {
      * 状态:0失效;1生效
      */
     private Integer status;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
 
 }
 

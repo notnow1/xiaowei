@@ -1,11 +1,8 @@
 package net.qixiaowei.operate.cloud.api.domain.employee;
 
-
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 /**
 * 人力预算调整表
@@ -14,7 +11,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class EmployeeBudgetAdjusts extends BaseEntity {
+public class EmployeeBudgetAdjusts extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,10 +31,6 @@ public class EmployeeBudgetAdjusts extends BaseEntity {
      * 调整人数
      */
      private  Integer  numberAdjust;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
 
 }
 

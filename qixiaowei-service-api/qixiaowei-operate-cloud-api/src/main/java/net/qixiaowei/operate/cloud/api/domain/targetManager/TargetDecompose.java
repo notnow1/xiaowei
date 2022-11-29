@@ -1,12 +1,11 @@
 package net.qixiaowei.operate.cloud.api.domain.targetManager;
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class TargetDecompose extends BaseEntity {
+public class TargetDecompose extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -87,10 +86,6 @@ public class TargetDecompose extends BaseEntity {
      * 状态:0待录入;1已录入
      */
     private Integer status;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
 
 }
 

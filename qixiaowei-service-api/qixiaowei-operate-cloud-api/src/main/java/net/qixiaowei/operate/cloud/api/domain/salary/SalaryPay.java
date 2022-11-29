@@ -3,7 +3,7 @@ package net.qixiaowei.operate.cloud.api.domain.salary;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
 
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  */
 @Data
 @Accessors(chain = true)
-public class SalaryPay extends BaseEntity {
+public class SalaryPay extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,10 +63,6 @@ public class SalaryPay extends BaseEntity {
      * 发薪金额
      */
     private BigDecimal payAmount;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
 
 }
 

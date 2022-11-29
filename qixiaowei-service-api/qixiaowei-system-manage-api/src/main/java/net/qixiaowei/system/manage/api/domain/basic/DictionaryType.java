@@ -1,11 +1,10 @@
 package net.qixiaowei.system.manage.api.domain.basic;
 
 
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
+
 
 /**
 * 字典类型表
@@ -14,7 +13,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class DictionaryType extends BaseEntity {
+public class DictionaryType extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,10 +45,7 @@ public class DictionaryType extends BaseEntity {
      * 状态:0失效;1生效
      */
      private  Integer  status;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
+
 
 }
 

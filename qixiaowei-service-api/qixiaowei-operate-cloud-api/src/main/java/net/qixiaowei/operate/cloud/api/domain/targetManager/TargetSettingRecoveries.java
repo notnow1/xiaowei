@@ -1,12 +1,11 @@
 package net.qixiaowei.operate.cloud.api.domain.targetManager;
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 目标制定回款集合表
@@ -16,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-public class TargetSettingRecoveries extends BaseEntity {
+public class TargetSettingRecoveries extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,10 +47,6 @@ public class TargetSettingRecoveries extends BaseEntity {
      * 保底值
      */
     private BigDecimal guaranteedValue;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
 
 }
 

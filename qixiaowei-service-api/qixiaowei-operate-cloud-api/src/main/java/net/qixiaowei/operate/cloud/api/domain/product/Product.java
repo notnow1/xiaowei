@@ -1,13 +1,10 @@
 package net.qixiaowei.operate.cloud.api.domain.product;
 
-
-
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
 * 产品表
@@ -16,7 +13,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class Product extends BaseEntity {
+public class Product extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -66,10 +63,7 @@ public class Product extends BaseEntity {
      * 上架标记：0下架;1上架
      */
      private  Integer  listingFlag;
-     /**
-     * 删除标记:0未删除;1已删除
-     */
-     private  Integer  deleteFlag;
+
 
 }
 
