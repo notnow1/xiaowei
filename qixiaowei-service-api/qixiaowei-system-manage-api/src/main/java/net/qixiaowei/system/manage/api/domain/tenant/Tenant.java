@@ -72,10 +72,6 @@ public class Tenant extends BaseEntity {
      * 状态（0待初始化 1正常 2禁用 3过期）
      */
     private Integer tenantStatus;
-    /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
 
     /**
      * 租户行业名称
