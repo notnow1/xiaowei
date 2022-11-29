@@ -145,6 +145,34 @@
         FROM emolument_plan
         WHERE  delete_flag = 0
     </select>
+<!--    批量查询薪酬规划表-->
+    <select id="selectEmolumentPlanByPlanYears"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO">
+        SELECT emolument_plan_id,
+               plan_year,
+               revenue_before_one,
+               revenue,
+               revenue_after_one,
+               revenue_after_two,
+               er_before_one,
+               emolument_revenue_improve,
+               er_improve_after_one,
+               er_improve_after_two,
+               emolument_package_before_one,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM emolument_plan
+        WHERE plan_year in
+        <foreach item="item"
+                 collection="planYears"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and delete_flag = 0
+    </select>
     <!--新增薪酬规划表-->
     <insert id="insertEmolumentPlan" useGeneratedKeys="true" keyProperty="emolumentPlanId">
         INSERT INTO emolument_plan (plan_year, revenue_before_one, revenue, revenue_after_one, revenue_after_two,

@@ -30,6 +30,13 @@ public interface EmolumentPlanMapper{
      */
     EmolumentPlanDTO selectEmolumentPlanByPlanYear(@Param("planYear")int planYear);
     /**
+     * 批量查询薪酬规划表
+     *
+     * @param planYears 薪酬规划表预算年度集合
+     * @return 薪酬规划表
+     */
+    List<EmolumentPlanDTO> selectEmolumentPlanByPlanYears(@Param("planYears")List<Integer> planYears);
+    /**
     * 批量查询薪酬规划表
     *
     * @param emolumentPlanIds 薪酬规划表主键集合

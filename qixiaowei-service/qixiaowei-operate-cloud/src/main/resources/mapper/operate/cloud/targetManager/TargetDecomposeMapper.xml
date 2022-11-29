@@ -151,7 +151,6 @@
           and target_decompose_dimension_id = #{targetDecompose.targetDecomposeDimensionId}
           and time_dimension = #{targetDecompose.timeDimension}
           and target_decompose_type=#{targetDecompose.targetDecomposeType}
-          and indicator_id=#{targetDecompose.indicatorId}
           and delete_flag = 0
     </select>
     <!--    查询滚动预测列表-->

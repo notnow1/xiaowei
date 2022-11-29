@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.mapper.salary;
 
 import java.util.List;
+
+import net.qixiaowei.operate.cloud.api.domain.salary.BonusBudget;
 import net.qixiaowei.operate.cloud.api.domain.salary.BonusBudgetParameters;
 import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO;
 import org.apache.ibatis.annotations.Param;
@@ -22,6 +24,20 @@ public interface BonusBudgetParametersMapper{
     BonusBudgetParametersDTO selectBonusBudgetParametersByBonusBudgetParametersId(@Param("bonusBudgetParametersId")Long bonusBudgetParametersId);
 
 
+    /**
+     * 根据总奖金id查询奖金预算参数表
+     *
+     * @param bonusBudgetId 奖金预算表主表主键
+     * @return 奖金预算参数表
+     */
+    List<BonusBudgetParametersDTO> selectBonusBudgetParametersByBonusBudgetId(@Param("bonusBudgetId")Long bonusBudgetId);
+    /**
+     * 根据总奖金id集合查询奖金预算参数表
+     *
+     * @param bonusBudgetIds 奖金预算表主表主键集合
+     * @return 奖金预算参数表
+     */
+    List<BonusBudgetParametersDTO> selectBonusBudgetParametersByBonusBudgetIds(@Param("bonusBudgetIds") List<Long> bonusBudgetIds);
     /**
     * 批量查询奖金预算参数表
     *

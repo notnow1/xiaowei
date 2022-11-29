@@ -90,6 +90,29 @@
                     and update_time=#{bonusBudgetParameters.updateTime}
                 </if>
     </select>
+<!--    根据总奖金id查询奖金预算参数表-->
+    <select id="selectBonusBudgetParametersByBonusBudgetId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+        SELECT
+            bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM bonus_budget_parameters
+        WHERE  bonus_budget_id=#{bonusBudgetId}
+          and delete_flag=0
+    </select>
+<!--    根据总奖金id集合查询奖金预算参数表-->
+    <select id="selectBonusBudgetParametersByBonusBudgetIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+        SELECT
+        bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM bonus_budget_parameters
+        WHERE  bonus_budget_id in
+        <foreach item="item"
+                 collection="bonusBudgetIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增奖金预算参数表-->
     <insert id="insertBonusBudgetParameters" useGeneratedKeys="true" keyProperty="bonusBudgetParametersId">
         INSERT INTO bonus_budget_parameters (bonus_budget_id,indicator_id,bonus_weight,bonus_proportion_standard,bonus_proportion_variation,challenge_value,target_value,guaranteed_value,target_completion_rate,performance_after_one,performance_after_two,bonus_allowance_after_one,bonus_allowance_after_two,delete_flag,create_by,create_time,update_by,update_time)
