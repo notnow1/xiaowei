@@ -44,7 +44,7 @@ public interface RemoteEmployeeService {
      * @return 结果
      */
     @GetMapping(API_PREFIX_EMPLOYEE + "/employeeId")
-    R<EmployeeDTO> selectByEmployeeId(@RequestParam("employeeId")Long employeeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<EmployeeDTO> selectByEmployeeId(@RequestParam("employeeId") Long employeeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过id集合查找人员列表
@@ -63,5 +63,14 @@ public interface RemoteEmployeeService {
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/selectByBudgeList")
     R<List<EmployeeDTO>> selectByBudgeList(@RequestBody List<List<Long>> list, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据Code集合
+     *
+     * @param assessmentList
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/selectByCodes")
+    R<List<EmployeeDTO>> selectByCodes(@RequestBody List<String> assessmentList, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

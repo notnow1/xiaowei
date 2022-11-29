@@ -46,6 +46,11 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             public R<List<EmployeeDTO>> selectByBudgeList(List<List<Long>> list, String source) {
                 return R.fail("根据部门 职级 获取人员信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<EmployeeDTO>> selectByCodes(List<String> assessmentList, String source) {
+                return R.fail("根据部门 职级 获取人员信息失败:" + throwable.getMessage());
+            }
         };
     }
 }

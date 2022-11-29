@@ -12,7 +12,7 @@ import java.util.Date;
 /**
 * 绩效考核对象表
 * @author Graves
-* @since 2022-11-24
+* @since 2022-11-29
 */
 @Data
 @Accessors(chain = true)
@@ -45,13 +45,13 @@ public class PerformanceAppraisalObjects extends BaseEntity {
      */
      private  Long  appraisalResultId;
      /**
-     * 自定义列标记:0否;1是
-     */
-     private  Integer  selfDefinedColumnsFlag;
-     /**
      * 考核对象状态:1制定目标;2评议;3排名;4归档
      */
      private  Integer  appraisalObjectStatus;
+     /**
+     * 排序
+     */
+     private  Integer  sort;
      /**
      * 删除标记:0未删除;1已删除
      */

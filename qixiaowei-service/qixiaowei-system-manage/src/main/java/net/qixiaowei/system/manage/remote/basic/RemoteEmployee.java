@@ -18,6 +18,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
 
     /**
      * 根据code集合查询人员数据
+     *
      * @param employeeCodes
      * @param source
      * @return
@@ -45,6 +46,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
 
     /**
      * 通过id查找人员
+     *
      * @param employeeId
      * @param source
      * @return
@@ -52,12 +54,13 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @Override
     @InnerAuth
     @GetMapping("/employeeId")
-    public R<EmployeeDTO> selectByEmployeeId(@RequestParam("employeeId")Long employeeId, String source) {
+    public R<EmployeeDTO> selectByEmployeeId(@RequestParam("employeeId") Long employeeId, String source) {
         return R.ok(employeeService.selectEmployeeByEmployeeId(employeeId));
     }
 
     /**
      * 通过id集合查找人员列表
+     *
      * @param employeeIds
      * @param source
      * @return
@@ -71,6 +74,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
 
     /**
      * 根据部门 职级 获取人员信息集合
+     *
      * @param list
      * @param source
      * @return
@@ -80,5 +84,18 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @PostMapping("/selectByBudgeList")
     public R<List<EmployeeDTO>> selectByBudgeList(@RequestBody List<List<Long>> list, String source) {
         return R.ok(employeeService.selectByBudgeList(list));
+    }
+
+    /**
+     * 根据Code集合
+     *
+     * @param assessmentList
+     * @return 结果
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectByCodes")
+    public R<List<EmployeeDTO>> selectByCodes(@RequestBody List<String> assessmentList, String source) {
+        return R.ok(employeeService.selectByCodes(assessmentList));
     }
 }

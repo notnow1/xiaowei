@@ -193,4 +193,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectDropDownEmployeeList(@Param("employee") Employee employee);
+
+    /**
+     * 根据Code集合
+     * @param assessmentList
+     * @return
+     */
+    List<EmployeeDTO> selectByCodes(@Param("assessmentList") List<String> assessmentList);
 }

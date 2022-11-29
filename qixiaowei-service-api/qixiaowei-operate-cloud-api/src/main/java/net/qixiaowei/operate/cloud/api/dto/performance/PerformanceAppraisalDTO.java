@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.api.dto.performance;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,12 +14,15 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.validation.groups.Default;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 绩效考核表
  *
  * @author Graves
- * @since 2022-11-24
+ * @since 2022-11-29
  */
 @Data
 @Accessors(chain = true)
@@ -108,7 +113,7 @@ public class PerformanceAppraisalDTO {
      */
     private Integer isFiling;
     /**
-     * 导入导出类型(0-未归档，1-归档)
+     * 导入导出类型(1系统流程2仅导入结果)
      */
     private Integer importType;
     /**
@@ -123,6 +128,10 @@ public class PerformanceAppraisalDTO {
      * 考核对象:1组织;2员工
      */
     private Integer appraisalObject;
+    /**
+     * 自定义列标记:0否;1是
+     */
+    private Integer selfDefinedColumnsFlag;
     /**
      * 考核状态:1制定目标;2评议;3排名;4归档
      */

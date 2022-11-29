@@ -46,6 +46,10 @@ public class PerformanceRankFactorDTO {
      */
     private Long performanceRankFactorId;
     /**
+     * 绩效考核是否自定义(1-是,0-否)
+     */
+    private Integer selfDefinedColumnsFlag;
+    /**
      * 绩效等级ID
      */
     private Long performanceRankId;

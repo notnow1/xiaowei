@@ -8,7 +8,7 @@
         pa.performance_appraisal_id, pa.performance_rank_id, pa.appraisal_year, pa.appraisal_name, pa.cycle_flag,
         pa.cycle_type,
         pa.cycle_number, pa.appraisal_start_date, pa.appraisal_end_date, pa.filing_date, pa.appraisal_flow,
-        pa.appraisal_object,
+        pa.appraisal_object,pa.self_defined_columns_flag,
         pa.appraisal_status, pa.delete_flag, pa.create_by, pa.create_time, pa.update_by, pa.update_time,
         pr.performance_rank_name
         FROM performance_appraisal pa
@@ -25,7 +25,7 @@
         SELECT
         performance_appraisal_id, performance_rank_id, appraisal_year, appraisal_name, cycle_flag, cycle_type,
         cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow, appraisal_object,
-        appraisal_status, delete_flag, create_by, create_time, update_by, update_time
+        self_defined_columns_flag, appraisal_status, delete_flag, create_by, create_time, update_by, update_time
         FROM performance_appraisal
         WHERE performance_appraisal_id in
         <foreach item="item"
@@ -42,7 +42,8 @@
         SELECT
         pa.performance_appraisal_id, pa.performance_rank_id, pa.appraisal_year, pa.appraisal_name, pa.cycle_flag, pa.cycle_type,
         pa.cycle_number, pa.appraisal_start_date, pa.appraisal_end_date, pa.filing_date, pa.appraisal_flow, pa.appraisal_object,
-        pa.appraisal_status, pa.delete_flag, pa.create_by, pa.create_time, pa.update_by, pa.update_time,
+        pa.self_defined_columns_flag,pa.appraisal_status, pa.delete_flag, pa.create_by, pa.create_time, pa.update_by,
+        pa.update_time,
         pr.performance_rank_name
         FROM performance_appraisal pa
             LEFT JOIN performance_rank pr
@@ -85,6 +86,9 @@
         <if test="performanceAppraisal.appraisalObject != null">
             and pa.appraisal_object=#{performanceAppraisal.appraisalObject}
         </if>
+        <if test="performanceAppraisal.selfDefinedColumnsFlag != null">
+            and pa.self_defined_columns_flag=#{performanceAppraisal.selfDefinedColumnsFlag}
+        </if>
         <if test="performanceAppraisal.appraisalStatus != null">
             and pa.appraisal_status=#{performanceAppraisal.appraisalStatus}
         </if>
@@ -108,7 +112,9 @@
     <select id="selectRankFactorByAppraisalId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO">
         SELECT
-        pa.performance_appraisal_id ,pf.performance_rank_factor_id,
+        pa.performance_appraisal_id,
+        pa.self_defined_columns_flag,
+        pf.performance_rank_factor_id,
         pf.performance_rank_id,
         pf.performance_rank_name,
         pf.bonus_factor,
@@ -129,9 +135,9 @@
     <!--新增绩效考核表-->
     <insert id="insertPerformanceAppraisal" useGeneratedKeys="true" keyProperty="performanceAppraisalId">
         INSERT INTO performance_appraisal
-        (performance_rank_id,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
+        (performance_rank_id,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,self_defined_columns_flag,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{performanceAppraisal.performanceRankId},#{performanceAppraisal.appraisalYear},#{performanceAppraisal.appraisalName},#{performanceAppraisal.cycleFlag},#{performanceAppraisal.cycleType},#{performanceAppraisal.cycleNumber},#{performanceAppraisal.appraisalStartDate},#{performanceAppraisal.appraisalEndDate},#{performanceAppraisal.filingDate},#{performanceAppraisal.appraisalFlow},#{performanceAppraisal.appraisalObject},#{performanceAppraisal.appraisalStatus},#{performanceAppraisal.deleteFlag},#{performanceAppraisal.createBy},#{performanceAppraisal.createTime},#{performanceAppraisal.updateBy},#{performanceAppraisal.updateTime})
+        (#{performanceAppraisal.performanceRankId},#{performanceAppraisal.appraisalYear},#{performanceAppraisal.appraisalName},#{performanceAppraisal.cycleFlag},#{performanceAppraisal.cycleType},#{performanceAppraisal.cycleNumber},#{performanceAppraisal.appraisalStartDate},#{performanceAppraisal.appraisalEndDate},#{performanceAppraisal.filingDate},#{performanceAppraisal.appraisalFlow},#{performanceAppraisal.appraisalObject},#{performanceAppraisal.selfDefinedColumnsFlag},#{performanceAppraisal.appraisalStatus},#{performanceAppraisal.deleteFlag},#{performanceAppraisal.createBy},#{performanceAppraisal.createTime},#{performanceAppraisal.updateBy},#{performanceAppraisal.updateTime})
     </insert>
     <!--修改绩效考核表-->
     <update id="updatePerformanceAppraisal">
@@ -169,6 +175,9 @@
         </if>
         <if test="performanceAppraisal.appraisalObject != null">
             appraisal_object=#{performanceAppraisal.appraisalObject},
+        </if>
+        <if test="performanceAppraisal.selfDefinedColumnsFlag != null">
+            self_defined_columns_flag=#{performanceAppraisal.selfDefinedColumnsFlag},
         </if>
         <if test="performanceAppraisal.appraisalStatus != null">
             appraisal_status=#{performanceAppraisal.appraisalStatus},
@@ -217,12 +226,12 @@
     <!--批量新增绩效考核表-->
     <insert id="batchPerformanceAppraisal">
         INSERT INTO performance_appraisal
-        (performance_rank_id,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
+        (performance_rank_id,appraisal_year,appraisal_name,cycle_flag,cycle_type,cycle_number,appraisal_start_date,appraisal_end_date,filing_date,appraisal_flow,appraisal_object,self_defined_columns_flag,appraisal_status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="performanceAppraisals"
                  separator=",">
-            (#{item.performanceRankId},#{item.appraisalYear},#{item.appraisalName},#{item.cycleFlag},#{item.cycleType},#{item.cycleNumber},#{item.appraisalStartDate},#{item.appraisalEndDate},#{item.filingDate},#{item.appraisalFlow},#{item.appraisalObject},#{item.appraisalStatus},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.performanceRankId},#{item.appraisalYear},#{item.appraisalName},#{item.cycleFlag},#{item.cycleType},#{item.cycleNumber},#{item.appraisalStartDate},#{item.appraisalEndDate},#{item.filingDate},#{item.appraisalFlow},#{item.appraisalObject},#{item.selfDefinedColumnsFlag},#{item.appraisalStatus},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -320,6 +329,13 @@
                 <foreach collection="performanceAppraisalList" item="item" index="index">
                     <if test="item.appraisalObject != null">
                         when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.appraisalObject}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="self_defined_columns_flag=case" suffix="end,">
+                <foreach collection="performanceAppraisalList" item="item" index="index">
+                    <if test="item.selfDefinedColumnsFlag != null">
+                        when performance_appraisal_id=#{item.performanceAppraisalId} then #{item.selfDefinedColumnsFlag}
                     </if>
                 </foreach>
             </trim>

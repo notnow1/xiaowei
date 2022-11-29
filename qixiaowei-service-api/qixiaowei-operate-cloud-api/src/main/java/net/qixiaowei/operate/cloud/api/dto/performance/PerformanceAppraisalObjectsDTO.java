@@ -1,55 +1,51 @@
 package net.qixiaowei.operate.cloud.api.dto.performance;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.experimental.Accessors;
-
-import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import java.util.Date;
+import javax.validation.groups.Default;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
- * 绩效考核对象表
- *
- * @author Graves
- * @since 2022-11-24
- */
+* 绩效考核对象表
+* @author Graves
+* @since 2022-11-29
+*/
 @Data
 @Accessors(chain = true)
 public class PerformanceAppraisalObjectsDTO {
 
     //查询检验
-    public interface QueryPerformanceAppraisalObjectsDTO extends Default {
+    public interface QueryPerformanceAppraisalObjectsDTO extends Default{
 
     }
-
     //新增检验
-    public interface AddPerformanceAppraisalObjectsDTO extends Default {
+    public interface AddPerformanceAppraisalObjectsDTO extends Default{
 
     }
 
     //删除检验
-    public interface DeletePerformanceAppraisalObjectsDTO extends Default {
+    public interface DeletePerformanceAppraisalObjectsDTO extends Default{
 
     }
-
     //修改检验
-    public interface UpdatePerformanceAppraisalObjectsDTO extends Default {
+    public interface UpdatePerformanceAppraisalObjectsDTO extends Default{
 
     }
-
     /**
-     * ID
-     */
-    private Long performAppraisalObjectsId;
+    * ID
+    */
+    private  Long performAppraisalObjectsId;
     /**
-     * 绩效考核ID
-     */
-    private Long performanceAppraisalId;
+    * 绩效考核ID
+    */
+    private  Long performanceAppraisalId;
     /**
-     * 考核对象ID
-     */
-    private Long appraisalObjectId;
+    * 考核对象ID
+    */
+    private  Long appraisalObjectId;
     /**
      * 考核对象编码
      */
@@ -87,35 +83,40 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private String performanceRankName;
     /**
-     * 考核对象状态:1制定目标;2评议;3排名;4归档
+     * 是否可以下载附件
      */
-    private Integer appraisalObjectStatus;
+    private Integer isAttachment;
+
     /**
-     * 名次
-     */
-    private Integer rank;
+    * 考核对象状态:1制定目标;2评议;3排名;4归档
+    */
+    private  Integer appraisalObjectStatus;
     /**
-     * 删除标记:0未删除;1已删除
-     */
-    private Integer deleteFlag;
+    * 排序
+    */
+    private  Integer sort;
     /**
-     * 创建人
-     */
-    private Long createBy;
+    * 删除标记:0未删除;1已删除
+    */
+    private  Integer deleteFlag;
     /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
+    * 创建人
+    */
+    private  Long createBy;
     /**
-     * 更新人
-     */
-    private Long updateBy;
+    * 创建时间
+    */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private  Date  createTime;
     /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
+    * 更新人
+    */
+    private  Long updateBy;
+    /**
+    * 更新时间
+    */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private  Date  updateTime;
 
 }
 

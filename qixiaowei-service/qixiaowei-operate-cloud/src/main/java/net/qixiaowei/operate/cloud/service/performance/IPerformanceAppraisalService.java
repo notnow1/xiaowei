@@ -1,12 +1,14 @@
 package net.qixiaowei.operate.cloud.service.performance;
 
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -40,6 +42,14 @@ public interface IPerformanceAppraisalService {
      * @return 绩效考核表集合
      */
     List<PerformanceAppraisalDTO> selectPerformanceAppraisalList(PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * 查询组织绩效归档
+     *
+     * @param performanceAppraisalDTO 组织绩效
+     * @return
+     */
+    List<PerformanceAppraisalDTO> selectPerAppraisalArchiveList(PerformanceAppraisalDTO performanceAppraisalDTO);
 
     /**
      * 查询组织绩效归档
@@ -153,6 +163,20 @@ public interface IPerformanceAppraisalService {
      * @return
      */
     List<PerformanceAppraisalExcel> exportPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * @param performanceAppraisalId    考核对象ID
+     * @param performanceRankFactorDTOS
+     * @return Collection
+     */
+    Collection<List<Object>> dataCustomSysList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS);
+
+    /**
+     * @param performanceAppraisalId    考核对象ID
+     * @param performanceRankFactorDTOS
+     * @return Collection
+     */
+    Collection<List<Object>> dataOrgSysList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS);
 
     /**
      * 根据appraisalId查询对象列表

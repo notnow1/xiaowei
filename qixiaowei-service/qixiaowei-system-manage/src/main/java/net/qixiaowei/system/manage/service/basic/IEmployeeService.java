@@ -164,4 +164,11 @@ public interface IEmployeeService{
      * @return
      */
     List<EmployeeDTO> selectByBudgeList(List<List<Long>> list);
+
+    /**
+     * 根据Code集合根据Code集合
+     * @param assessmentList
+     * @return
+     */
+    List<EmployeeDTO> selectByCodes(List<String> assessmentList);
 }

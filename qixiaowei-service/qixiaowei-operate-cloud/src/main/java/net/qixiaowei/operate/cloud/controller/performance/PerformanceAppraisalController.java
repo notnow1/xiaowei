@@ -11,11 +11,13 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalImportListener;
+import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalColumnsService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -26,10 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -43,6 +42,9 @@ public class PerformanceAppraisalController extends BaseController {
 
     @Autowired
     private IPerformanceAppraisalService performanceAppraisalService;
+
+    @Autowired
+    private IPerformanceAppraisalColumnsService performanceAppraisalColumnsService;
 
 
     /**
@@ -81,9 +83,20 @@ public class PerformanceAppraisalController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @GetMapping("/pageList/orgArchive")
-    public TableDataInfo listArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
+    public TableDataInfo listOrgArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
         List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectOrgAppraisalArchiveList(performanceAppraisalDTO);
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询绩效考核表列表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/pageList/perArchive")
+    public TableDataInfo listPerArchive(PerformanceAppraisalDTO performanceAppraisalDTO) {
+        startPage();
+        List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectPerAppraisalArchiveList(performanceAppraisalDTO);
         return getDataTable(list);
     }
 
@@ -235,37 +248,37 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 导出组织数据表
+     * 导出组织模板表
      */
     @SneakyThrows
     @GetMapping("exportOrg")
-    public void exportOrg(@RequestParam Integer importType, @RequestParam Long performanceAppraisalId, HttpServletResponse response) {
-        if (StringUtils.isNull(importType)) {
-            throw new ServiceException("请选择考核流程");
-        }
+    public void exportOrg(@RequestParam Long performanceAppraisalId, HttpServletResponse response) {
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
         if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("当前的绩效等级不存在 请联系管理员");
+            throw new ServiceException("当前的绩效等级不存在 请联系管理员,检查绩效等级");
         }
+        Integer selfDefinedColumnsFlag = performanceRankFactorDTOS.get(0).getSelfDefinedColumnsFlag();
         Map<Integer, List<String>> selectMap = new HashMap<>();
         List<List<String>> head;
         String fileName;
-        if (importType.equals(1)) {//系统流程
+        Collection<List<Object>> lists;
+        if (selfDefinedColumnsFlag == 0) {
             head = PerformanceAppraisalImportListener.headOrgSystemTemplate(selectMap, performanceRankFactorDTOS);
-            fileName = URLEncoder.encode("组织绩效归档导入系统模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+            lists = performanceAppraisalService.dataOrgSysList(performanceAppraisalId, performanceRankFactorDTOS);
         } else {
-            head = PerformanceAppraisalImportListener.headOrgCustomTemplate(selectMap, performanceRankFactorDTOS);
-            fileName = URLEncoder.encode("组织绩效归档导入自定义模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
+            List<PerformanceAppraisalColumnsDTO> appraisalColumnsDTOList = performanceAppraisalColumnsService.selectAppraisalColumnsByAppraisalId(performanceAppraisalId);
+            head = PerformanceAppraisalImportListener.headOrgCustom(selectMap, performanceRankFactorDTOS,appraisalColumnsDTOList);
+            lists = performanceAppraisalService.dataCustomSysList(performanceAppraisalId, performanceRankFactorDTOS);
         }
+        fileName = URLEncoder.encode("组织绩效归档导出" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000), CharsetKit.UTF_8);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalService.selectAppraisalObjectList(performanceAppraisalId);
         EasyExcel.write(response.getOutputStream())
                 .head(head)
                 .sheet("Sheet1")// 设置 sheet 的名字
                 .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
 //                    .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) 自定义表头
-                .doWrite(PerformanceAppraisalImportListener.dataOrgTemplateList(performanceAppraisalObjectsDTOList));
+                .doWrite(lists);
     }
 }

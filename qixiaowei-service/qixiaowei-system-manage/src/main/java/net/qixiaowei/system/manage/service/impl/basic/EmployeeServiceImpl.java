@@ -558,6 +558,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return  employeeMapper.selectByBudgeList(list);
     }
 
+    /**
+     * 根据Code集合
+     * @param assessmentList
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> selectByCodes(List<String> assessmentList) {
+        return  employeeMapper.selectByCodes(assessmentList);
+    }
+
 
     /**
      * 逻辑删除员工表信息

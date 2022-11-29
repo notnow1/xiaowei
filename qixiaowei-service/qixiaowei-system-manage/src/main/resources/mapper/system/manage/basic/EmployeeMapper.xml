@@ -699,6 +699,48 @@
         and   e.employment_status =1
         and   e.status =1
     </select>
+    <select id="selectByCodes" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        e.create_by,
+        e.create_time,
+        e.update_by,
+        e.update_time
+        FROM
+        employee e
+        left join post p
+        on
+        e.employee_post_id = p.post_id
+        and p.delete_flag = 0
+        left JOIN official_rank_system ors
+        on
+        ors.official_rank_system_id = p.official_rank_system_id
+        AND ors.delete_flag =0
+        WHERE  e.delete_flag =0
+        and e.employee_code in
+        <foreach item="item"
+                 collection="assessmentList"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
         INSERT INTO employee (employee_code, employee_name, employee_gender, identity_type, identity_card,
