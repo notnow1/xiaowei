@@ -9,10 +9,10 @@ import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
-* 奖金预算参数表
-* @author TANGMICHI
-* @since 2022-11-26
-*/
+ * 奖金预算参数表
+ * @author TANGMICHI
+ * @since 2022-11-26
+ */
 @Data
 @Accessors(chain = true)
 public class BonusBudgetParametersDTO {
@@ -35,24 +35,28 @@ public class BonusBudgetParametersDTO {
 
     }
     /**
-    * ID
-    */
+     * ID
+     */
     private  Long bonusBudgetParametersId;
     /**
-    * 奖金预算ID
-    */
+     * 奖金预算ID
+     */
     private  Long bonusBudgetId;
     /**
-    * 指标ID
-    */
+     * 指标ID
+     */
     private  Long indicatorId;
     /**
-    * 奖金权重(%)
-    */
+     * 指标名称
+     */
+    private  String indicatorName;
+    /**
+     * 奖金权重(%)
+     */
     private  BigDecimal bonusWeight;
     /**
-    * 奖金占比基准值(%)
-    */
+     * 奖金占比基准值(%)
+     */
     private  BigDecimal bonusProportionStandard;
     /**
      *奖金增长率后一年
@@ -69,61 +73,61 @@ public class BonusBudgetParametersDTO {
      */
     private  BigDecimal bonusProportionDrivingFactor;
     /**
-    * 奖金占比浮动差值
-    */
+     * 奖金占比浮动差值
+     */
     private BigDecimal bonusProportionVariation;
     /**
-    * 挑战值
-    */
+     * 挑战值
+     */
     private  BigDecimal challengeValue;
     /**
-    * 目标值
-    */
+     * 目标值
+     */
     private  BigDecimal targetValue;
     /**
-    * 保底值
-    */
+     * 保底值
+     */
     private  BigDecimal guaranteedValue;
     /**
-    * 预计目标达成率(%)
-    */
+     * 预计目标达成率(%)
+     */
     private  BigDecimal targetCompletionRate;
     /**
-    * 预算年后一年业绩增长率
-    */
+     * 预算年后一年业绩增长率
+     */
     private  BigDecimal performanceAfterOne;
     /**
-    * 预算年后二年业绩增长率
-    */
+     * 预算年后二年业绩增长率
+     */
     private  BigDecimal performanceAfterTwo;
     /**
-    * 预算年后一年奖金折让系数
-    */
+     * 预算年后一年奖金折让系数
+     */
     private  BigDecimal bonusAllowanceAfterOne;
     /**
-    * 预算年后二年奖金折让系数
-    */
+     * 预算年后二年奖金折让系数
+     */
     private  BigDecimal bonusAllowanceAfterTwo;
     /**
-    * 删除标记:0未删除;1已删除
-    */
+     * 删除标记:0未删除;1已删除
+     */
     private  Integer deleteFlag;
     /**
-    * 创建人
-    */
+     * 创建人
+     */
     private  Long createBy;
     /**
-    * 创建时间
-    */
+     * 创建时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  createTime;
     /**
-    * 更新人
-    */
+     * 更新人
+     */
     private  Long updateBy;
     /**
-    * 更新时间
-    */
+     * 更新时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
 

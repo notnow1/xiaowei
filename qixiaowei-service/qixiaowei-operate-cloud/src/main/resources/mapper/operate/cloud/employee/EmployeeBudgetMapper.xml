@@ -90,6 +90,20 @@
         </if>
         and budget_cycle in (1,2)
     </select>
+<!--    根据职级体系id批量查询人力预算表-->
+    <select id="selectEmployeeBudgetByOfficialRankSystemIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO">
+        SELECT
+        employee_budget_id, budget_year, department_id, official_rank_system_id, budget_cycle, amount_last_year, amount_adjust, amount_average_adjust, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_budget
+        WHERE  employee_budget_id in
+        <foreach item="item"
+                 collection="officialRankSystemIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增人力预算表-->
     <insert id="insertEmployeeBudget" useGeneratedKeys="true" keyProperty="employeeBudgetId">
         INSERT INTO employee_budget (budget_year,department_id,official_rank_system_id,budget_cycle,amount_last_year,amount_adjust,amount_average_adjust,delete_flag,create_by,create_time,update_by,update_time)

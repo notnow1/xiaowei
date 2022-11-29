@@ -1,11 +1,5 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import lombok.SneakyThrows;
-import net.qixiaowei.integration.common.exception.ServiceException;
-import net.qixiaowei.integration.common.text.CharsetKit;
-import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -16,17 +10,8 @@ import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO;
 import net.qixiaowei.operate.cloud.service.salary.IDeptBonusBudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -44,12 +29,22 @@ public class DeptBonusBudgetController extends BaseController
     @Autowired
     private IDeptBonusBudgetService deptBonusBudgetService;
 
-
+    /**
+     * 新增部门奖金包预算预制数据
+     */
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:add")
+    //@Log(title = "新增部门奖金包预算表", businessType = BusinessType.INSERT)
+    @GetMapping("/add/{budgetYear}")
+    public AjaxResult addDeptBonusBudgetTamount(@PathVariable int budgetYear) {
+        DeptBonusBudgetDTO deptBonusBudgetDTO = deptBonusBudgetService.addDeptBonusBudgetTamount(budgetYear);
+        return AjaxResult.success();
+    }
+    
 
     /**
     * 查询部门奖金包预算表详情
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:info")
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:info")
     @GetMapping("/info/{deptBonusBudgetId}")
     public AjaxResult info(@PathVariable Long deptBonusBudgetId){
     DeptBonusBudgetDTO deptBonusBudgetDTO = deptBonusBudgetService.selectDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudgetId);
@@ -59,7 +54,7 @@ public class DeptBonusBudgetController extends BaseController
     /**
     * 分页查询部门奖金包预算表列表
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:pageList")
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(DeptBonusBudgetDTO deptBonusBudgetDTO){
     startPage();
@@ -70,7 +65,7 @@ public class DeptBonusBudgetController extends BaseController
     /**
     * 查询部门奖金包预算表列表
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:list")
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:list")
     @GetMapping("/list")
     public AjaxResult list(DeptBonusBudgetDTO deptBonusBudgetDTO){
     List<DeptBonusBudgetDTO> list = deptBonusBudgetService.selectDeptBonusBudgetList(deptBonusBudgetDTO);
@@ -81,8 +76,8 @@ public class DeptBonusBudgetController extends BaseController
     /**
     * 新增部门奖金包预算表
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:add")
-    @Log(title = "新增部门奖金包预算表", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:add")
+    //@Log(title = "新增部门奖金包预算表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO) {
     return AjaxResult.success(deptBonusBudgetService.insertDeptBonusBudget(deptBonusBudgetDTO));
@@ -92,8 +87,8 @@ public class DeptBonusBudgetController extends BaseController
     /**
     * 修改部门奖金包预算表
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:edit")
-    @Log(title = "修改部门奖金包预算表", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:edit")
+    //@Log(title = "修改部门奖金包预算表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO)
     {
@@ -103,8 +98,8 @@ public class DeptBonusBudgetController extends BaseController
     /**
     * 逻辑删除部门奖金包预算表
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:remove")
-    @Log(title = "删除部门奖金包预算表", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:remove")
+    //@Log(title = "删除部门奖金包预算表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO)
     {
@@ -113,8 +108,8 @@ public class DeptBonusBudgetController extends BaseController
     /**
     * 批量修改部门奖金包预算表
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:edits")
-    @Log(title = "批量修改部门奖金包预算表", businessType = BusinessType.UPDATE)
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:edits")
+    //@Log(title = "批量修改部门奖金包预算表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<DeptBonusBudgetDTO> deptBonusBudgetDtos)
     {
@@ -124,8 +119,8 @@ public class DeptBonusBudgetController extends BaseController
     /**
     * 批量新增部门奖金包预算表
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:insertDeptBonusBudgets")
-    @Log(title = "批量新增部门奖金包预算表", businessType = BusinessType.INSERT)
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:insertDeptBonusBudgets")
+    //@Log(title = "批量新增部门奖金包预算表", businessType = BusinessType.INSERT)
     @PostMapping("/insertDeptBonusBudgets")
     public AjaxResult insertDeptBonusBudgets(@RequestBody List<DeptBonusBudgetDTO> deptBonusBudgetDtos)
     {
@@ -135,8 +130,8 @@ public class DeptBonusBudgetController extends BaseController
     /**
     * 逻辑批量删除部门奖金包预算表
     */
-    @RequiresPermissions("operate:cloud:deptBonusBudget:removes")
-    @Log(title = "批量删除部门奖金包预算表", businessType = BusinessType.DELETE)
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:removes")
+    //@Log(title = "批量删除部门奖金包预算表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  deptBonusBudgetIds)
     {

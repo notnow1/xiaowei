@@ -99,4 +99,10 @@ public interface IDeptBonusBudgetService{
     */
     int deleteDeptBonusBudgetByDeptBonusBudgetId(Long deptBonusBudgetId);
 
+    /**
+     * 新增部门奖金包预算预制数据
+     * @param budgetYear
+     * @return
+     */
+    DeptBonusBudgetDTO addDeptBonusBudgetTamount(int budgetYear);
 }

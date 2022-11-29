@@ -1,18 +1,29 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.DeptBonusBudget;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO;
+import net.qixiaowei.operate.cloud.mapper.ExampleMapper;
+import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.DeptBonusBudgetMapper;
 import net.qixiaowei.operate.cloud.service.salary.IDeptBonusBudgetService;
+import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -24,6 +35,10 @@ import java.util.List;
 public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService{
     @Autowired
     private DeptBonusBudgetMapper deptBonusBudgetMapper;
+    @Autowired
+    private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
+    @Autowired
+    private EmployeeBudgetMapper employeeBudgetMapper;
 
     /**
     * 查询部门奖金包预算表
@@ -110,7 +125,33 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService{
     return deptBonusBudgetMapper.deleteDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudgetId);
     }
 
-     /**
+    /**
+     * 新增部门奖金包预算预制数据
+     * 1查询所有职级
+     * 2根据职级id查询人力预算数据
+     * 3计算不存在 在人力预算数据里面的职级体系
+     * @param budgetYear
+     * @return
+     */
+    @Override
+    public DeptBonusBudgetDTO addDeptBonusBudgetTamount(int budgetYear) {
+        //远程查询所有职级
+        R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(new ArrayList<>(), SecurityConstants.INNER);
+        List<OfficialRankSystemDTO> data = listR.getData();
+        if (StringUtils.isEmpty(data)){
+            throw new ServiceException("无职级数据 请联系管理员！");
+        }
+        List<Long> collect = data.stream().map(OfficialRankSystemDTO::getOfficialRankSystemId).collect(Collectors.toList());
+
+        List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectEmployeeBudgetByOfficialRankSystemIds(collect);
+        if (StringUtils.isNotEmpty(employeeBudgetDTOList)){
+            List<Long> collect1 = employeeBudgetDTOList.stream().map(EmployeeBudgetDTO::getOfficialRankSystemId).collect(Collectors.toList());
+
+        }
+        return null;
+    }
+
+    /**
      * 逻辑删除部门奖金包预算表信息
      *
      * @param  deptBonusBudgetDTO 部门奖金包预算表
