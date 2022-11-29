@@ -36,6 +36,14 @@ public interface IPerformanceAppraisalService {
     PerformanceAppraisalDTO selectOrgAppraisalArchiveById(Long performanceAppraisalDTO);
 
     /**
+     * 查询组织绩效任务考核详情
+     *
+     * @param performanceAppraisalId 绩效考核表
+     * @return List
+     */
+    PerformanceAppraisalDTO selectPerAppraisalArchiveById(Long performanceAppraisalId);
+
+    /**
      * 查询绩效考核表列表
      *
      * @param performanceAppraisalDTO 绩效考核表
@@ -149,12 +157,30 @@ public interface IPerformanceAppraisalService {
     void importSysOrgPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
 
     /**
+     * 导入系统的个人绩效考核Excel
+     *
+     * @param performanceAppraisalDTO 绩效考核
+     * @param file                    文件
+     */
+    void importSysPerPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
+
+    /**
      * 导入自定义的组织绩效考核Excel
      *
      * @param performanceAppraisalDTO 绩效考核
      * @param file                    文件
      */
     void importCustomOrgPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
+
+
+    /**
+     * 导入自定义的个人绩效考核Excel
+     *
+     * @param performanceAppraisalDTO 绩效考核
+     * @param file                    文件
+     */
+//    void importCustomPerPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
+
 
     /**
      * 导出Excel
@@ -184,7 +210,15 @@ public interface IPerformanceAppraisalService {
      * @param appraisalId 绩效任务ID
      * @return List
      */
-    List<PerformanceAppraisalObjectsDTO> selectAppraisalObjectList(Long appraisalId);
+    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalObjectList(Long appraisalId);
+
+    /**
+     * 根据appraisalId查询对象列表
+     *
+     * @param appraisalId 绩效任务ID
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> selectPerAppraisalObjectList(Long appraisalId);
 
     /**
      * 根据绩效考核ID获取绩效下拉列表
@@ -195,10 +229,11 @@ public interface IPerformanceAppraisalService {
     List<PerformanceRankFactorDTO> selectPerformanceRankFactor(Long appraisalId);
 
     /**
-     * 归档组织
+     * 归档组
      *
      * @param performanceAppraisalId 绩效任务ID
      * @return int
      */
-    int archiveOrg(Long performanceAppraisalId);
+    int archive(Long performanceAppraisalId);
+
 }
