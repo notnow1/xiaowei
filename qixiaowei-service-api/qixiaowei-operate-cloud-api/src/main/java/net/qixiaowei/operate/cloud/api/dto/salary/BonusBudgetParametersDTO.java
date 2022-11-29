@@ -55,9 +55,15 @@ public class BonusBudgetParametersDTO {
     */
     private  BigDecimal bonusProportionStandard;
     /**
-     *奖金增长率
+     *奖金增长率后一年
      */
-    private BigDecimal bonusGrowthRate;
+    private BigDecimal bonusGrowthRateAfterOne;
+    /**
+     * 奖金增长率后二年
+     */
+    private BigDecimal bonusGrowthRateAfterTwo;
+
+
     /**
      * 奖金驱动因素实际数
      */
