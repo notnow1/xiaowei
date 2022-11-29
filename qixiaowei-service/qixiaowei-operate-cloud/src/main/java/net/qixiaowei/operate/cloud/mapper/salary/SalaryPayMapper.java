@@ -148,4 +148,11 @@ public interface SalaryPayMapper {
      * @return
      */
     BigDecimal selectBonusActualNum(@Param("budgetYear") int budgetYear, @Param("month")int month);
+
+    /**
+     * 返回上年总工资包实际数：从月度工资数据管理取值（总计值）
+     * @return
+     * @param budgetYear
+     */
+    BigDecimal selectSalaryPayAmoutNum(@Param("budgetYear") int budgetYear);
 }

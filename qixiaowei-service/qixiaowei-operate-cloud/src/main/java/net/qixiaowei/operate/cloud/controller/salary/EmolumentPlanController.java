@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
+import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
@@ -36,6 +37,11 @@ public class EmolumentPlanController extends BaseController
     @GetMapping("/queryLatelyBudgetYear")
     public AjaxResult queryLatelyBudgetYear(){
         int planYear = emolumentPlanService.queryLatelyBudgetYear();
+        if (StringUtils.isNotNull(planYear)){
+            planYear=planYear+1;
+        }else {
+            planYear= DateUtils.getYear();
+        }
         return AjaxResult.success(planYear);
     }
 

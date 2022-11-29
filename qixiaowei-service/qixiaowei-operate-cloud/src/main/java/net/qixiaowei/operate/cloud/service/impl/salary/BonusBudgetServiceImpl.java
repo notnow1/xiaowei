@@ -8,15 +8,24 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
-import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetLaddertersDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.*;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
+import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
+import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.EmolumentPlanMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -25,7 +34,6 @@ import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.BonusBudget;
-import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.mapper.salary.BonusBudgetMapper;
 import net.qixiaowei.operate.cloud.service.salary.IBonusBudgetService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
@@ -50,6 +58,16 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
     private TargetOutcomeMapper targetOutcomeMapper;
     @Autowired
     private EmolumentPlanMapper emolumentPlanMapper;
+    @Autowired
+    private EmployeeBudgetDetailsMapper employeeBudgetDetailsMapper;
+
+    @Autowired
+    private RemoteDepartmentService remoteDepartmentService;
+    @Autowired
+    private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
+    @Autowired
+    private RemoteEmployeeService remoteEmployeeService;
+
 
     /**
      * 查询奖金预算表
@@ -147,15 +165,14 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         this.packBounParamIndicatorIds(budgetYear, bonusBudgetParametersDTOS);
 
         //3 封装总奖金包预算生成
-        this.packPaymentBonusBudget(budgetYear,bonusBudgetDTO);
+        this.packPaymentBonusBudget(budgetYear, bonusBudgetDTO);
         //4未来三年奖金趋势
-        this.packFutureBonusTrend(budgetYear,bonusBudgetDTO);
+        this.packFutureBonusTrend(budgetYear, bonusBudgetDTO);
         bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
         return bonusBudgetDTO;
     }
 
     /**
-     *
      * @param budgetYear
      * @param bonusBudgetDTO
      */
@@ -164,12 +181,13 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
     /**
      * 封装总奖金包预算生成
+     *
      * @param budgetYear
      * @param bonusBudgetDTO
      */
-    private void packPaymentBonusBudget(int budgetYear,  BonusBudgetDTO bonusBudgetDTO) {
+    private void packPaymentBonusBudget(int budgetYear, BonusBudgetDTO bonusBudgetDTO) {
         EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.selectEmolumentPlanByPlanYear(budgetYear);
-        if (StringUtils.isNotNull(emolumentPlanDTO)){
+        if (StringUtils.isNotNull(emolumentPlanDTO)) {
             //总薪酬包预算
             BigDecimal emolumentPackage = new BigDecimal("0");
             //总工资包预算
@@ -184,25 +202,36 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             //查询薪酬规划详情计算方法
             EmolumentPlanServiceImpl.queryCalculate(emolumentPlanDTO);
             //薪酬规划总薪酬包
-             emolumentPackage = emolumentPlanDTO.getEmolumentPackage();
+            emolumentPackage = emolumentPlanDTO.getEmolumentPackage();
             //总薪酬包预算
             bonusBudgetDTO.setPaymentBonusBudget(emolumentPackage);
-            //todo  总工资包预算 公式=上年总工资包实际数+本年增人/减人工资包
-            //总工资包预算
-            basicWageBonusBudget = bonusBudgetDTO.getBasicWageBonusBudget();
+
+            //总工资包预算 公式=上年总工资包实际数+本年增人/减人工资包合计
+            //上年总工资包实际数
+            BigDecimal salarySum = salaryPayMapper.selectSalaryPayAmoutNum(budgetYear);
+            //从增人/减人工资包取值（增人/减人工资包列，合计行）
+            EmployeeBudgetDTO employeeBudgetDTO = new EmployeeBudgetDTO();
+            employeeBudgetDTO.setBudgetYear(budgetYear);
+            BigDecimal increaseAndDecreasePaySum = this.salaryPackageList(employeeBudgetDTO);
+
+            if (null != salarySum && salarySum.compareTo(new BigDecimal("0")) > 0 &&
+                    null != increaseAndDecreasePaySum && increaseAndDecreasePaySum.compareTo(new BigDecimal("0")) > 0) {
+                //总工资包预算
+                basicWageBonusBudget = salarySum.add(increaseAndDecreasePaySum);
+            }
 
 
             if (null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) > 0 &&
-                    null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) > 0){
-                elasticityBonusBudget =  emolumentPackage.subtract(basicWageBonusBudget);
+                    null != basicWageBonusBudget && basicWageBonusBudget.compareTo(new BigDecimal("0")) > 0) {
+                elasticityBonusBudget = emolumentPackage.subtract(basicWageBonusBudget);
                 //弹性薪酬包  公式=总薪酬包预算-总工资包预算
                 bonusBudgetDTO.setElasticityBonusBudget(elasticityBonusBudget);
             }
 
             if (null != elasticityBonusBudget && elasticityBonusBudget.compareTo(new BigDecimal("0")) > 0 &&
-                    null != amountBonusBudget && amountBonusBudget.compareTo(new BigDecimal("0")) > 0){
-                raiseSalaryBonusBudget =  elasticityBonusBudget.subtract(amountBonusBudget);
-                //公式=弹性薪酬包预算-总奖金包预算。
+                    null != amountBonusBudget && amountBonusBudget.compareTo(new BigDecimal("0")) > 0) {
+                raiseSalaryBonusBudget = elasticityBonusBudget.subtract(amountBonusBudget);
+                //涨薪包预算 公式=弹性薪酬包预算-总奖金包预算。
                 bonusBudgetDTO.setRaiseSalaryBonusBudget(raiseSalaryBonusBudget);
             }
         }
@@ -421,39 +450,39 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 //最低值 公式=对应行的奖金驱动因素/比值×对应列的基准值（梦想值、飞跃值、挑战值、目标值、保底值、最低值）
                 BigDecimal minValue = new BigDecimal("0");
                 //挑战值
-                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0"))>0 &&
-                    null != bonusChallengeValue && bonusChallengeValue.compareTo(new BigDecimal("0"))>0){
-                    challengeValue= bonusProportionRatio1.multiply(bonusChallengeValue);
+                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0")) > 0 &&
+                        null != bonusChallengeValue && bonusChallengeValue.compareTo(new BigDecimal("0")) > 0) {
+                    challengeValue = bonusProportionRatio1.multiply(bonusChallengeValue);
                     bonusBudgetLaddertersDTO.setChallengeValue(challengeValue);
                 }
                 //目标值
-                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0"))>0 &&
-                        null != bonusTargetValue && bonusTargetValue.compareTo(new BigDecimal("0"))>0){
-                    targetValue= bonusProportionRatio1.multiply(bonusTargetValue);
+                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0")) > 0 &&
+                        null != bonusTargetValue && bonusTargetValue.compareTo(new BigDecimal("0")) > 0) {
+                    targetValue = bonusProportionRatio1.multiply(bonusTargetValue);
                     bonusBudgetLaddertersDTO.setTargetValue(targetValue);
                 }
                 //保底值
-                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0"))>0 &&
-                        null != bonusGuaranteedValue && bonusGuaranteedValue.compareTo(new BigDecimal("0"))>0){
-                    guaranteedValue= bonusProportionRatio1.multiply(bonusGuaranteedValue);
+                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0")) > 0 &&
+                        null != bonusGuaranteedValue && bonusGuaranteedValue.compareTo(new BigDecimal("0")) > 0) {
+                    guaranteedValue = bonusProportionRatio1.multiply(bonusGuaranteedValue);
                     bonusBudgetLaddertersDTO.setGuaranteedValue(guaranteedValue);
                 }
                 //飞跃值
-                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0"))>0 &&
-                        null != bonusLeapValue && bonusLeapValue.compareTo(new BigDecimal("0"))>0){
-                    leapValue= bonusProportionRatio1.multiply(bonusLeapValue);
+                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0")) > 0 &&
+                        null != bonusLeapValue && bonusLeapValue.compareTo(new BigDecimal("0")) > 0) {
+                    leapValue = bonusProportionRatio1.multiply(bonusLeapValue);
                     bonusBudgetLaddertersDTO.setLeapValue(leapValue);
                 }
                 //梦想值
-                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0"))>0 &&
-                        null != bonusDreamValue && bonusDreamValue.compareTo(new BigDecimal("0"))>0){
-                    dreamValue= bonusProportionRatio1.multiply(bonusDreamValue);
+                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0")) > 0 &&
+                        null != bonusDreamValue && bonusDreamValue.compareTo(new BigDecimal("0")) > 0) {
+                    dreamValue = bonusProportionRatio1.multiply(bonusDreamValue);
                     bonusBudgetLaddertersDTO.setDreamValue(dreamValue);
                 }
                 //最低值
-                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0"))>0 &&
-                        null != bonusMinValue && bonusMinValue.compareTo(new BigDecimal("0"))>0){
-                    minValue= bonusProportionRatio1.multiply(bonusMinValue);
+                if (null != bonusProportionRatio1 && bonusProportionRatio1.compareTo(new BigDecimal("0")) > 0 &&
+                        null != bonusMinValue && bonusMinValue.compareTo(new BigDecimal("0")) > 0) {
+                    minValue = bonusProportionRatio1.multiply(bonusMinValue);
                     bonusBudgetLaddertersDTO.setMinValue(minValue);
                 }
             }
@@ -513,7 +542,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //奖金占比基准值 公式=奖金包实际数÷奖金驱动因素实际数
                     if (null != bonusProportionDrivingFactor && bonusProportionDrivingFactor.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusActualSum && bonusActualSum.compareTo(new BigDecimal("0")) != 0) {
-                         bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor, BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
+                        bonusProportionStandard = bonusActualSum.divide(bonusProportionDrivingFactor, BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
                         //奖金占比基准值(%)
                         bonusBudgetParametersDTO.setBonusProportionStandard(bonusProportionStandard);
                     }
@@ -692,6 +721,140 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             bonusBudgetList.add(bonusBudget);
         }
         return bonusBudgetMapper.updateBonusBudgets(bonusBudgetList);
+    }
+
+    /**
+     * 查询增人减人工资包
+     *
+     * @param employeeBudgetDTO
+     * @return
+     */
+    public BigDecimal salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO) {
+        //增人减人工资包合计
+        BigDecimal increaseAndDecreasePaySum = new BigDecimal("0");
+        List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.salaryPackageList(employeeBudgetDTO);
+        if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
+            //部门id去重
+            List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getDepartmentId).distinct().collect(Collectors.toList());
+            //远程调用组织
+            if (StringUtils.isNotEmpty(collect)) {
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
+                List<DepartmentDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)) {
+                    //远程赋值部门名称
+                    for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                        for (DepartmentDTO datum : data) {
+                            if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getDepartmentId()) {
+                                employeeBudgetDetailsDTO.setDepartmentName(datum.getDepartmentName());
+                            }
+                        }
+                    }
+                }
+            }
+            //职级id去重
+            List<Long> collect1 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getOfficialRankSystemId).distinct().collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect1)) {
+                //职级体系远程调用
+                R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
+                List<OfficialRankSystemDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)) {
+                    for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                        //远程赋值职级名称
+                        for (OfficialRankSystemDTO datum : data) {
+                            if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()) {
+                                employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+                                employeeBudgetDetailsDTO.setOfficialRankName(datum.getRankPrefixCode() + employeeBudgetDetailsDTO.getOfficialRank());
+                            }
+                        }
+                    }
+                }
+            }
+            List<List<Long>> list = new ArrayList<>();
+            //部门id集合
+            List<Long> collect2 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getDepartmentId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect2)) {
+                list.add(collect2);
+            }
+            //职级体系ID集合
+            List<Long> collect3 = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getOfficialRankSystemId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect3)) {
+                list.add(collect3);
+            }
+            //封装增人减人工资
+            this.packPayAmountNum(employeeBudgetDTO, employeeBudgetDetailsDTOS, list);
+
+        }
+
+        if (StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
+            for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                BigDecimal increaseAndDecreasePay = employeeBudgetDetailsDTO.getIncreaseAndDecreasePay();
+                if (null != increaseAndDecreasePay && increaseAndDecreasePay.compareTo(new BigDecimal("0")) != 0)
+                    increaseAndDecreasePaySum = increaseAndDecreasePaySum.add(increaseAndDecreasePay);
+            }
+        }
+        return increaseAndDecreasePaySum;
+    }
+
+    /**
+     * 封装增人减人工资
+     *
+     * @param employeeBudgetDTO
+     * @param employeeBudgetDetailsDTOS
+     * @param list
+     */
+    private void packPayAmountNum(EmployeeBudgetDTO employeeBudgetDTO, List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS, List<List<Long>> list) {
+        if (StringUtils.isNotEmpty(list) && list.size() == 2) {
+            R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByBudgeList(list, SecurityConstants.INNER);
+            List<EmployeeDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data) && StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
+                for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                    //人员id集合
+                    List<Long> employeeIds = new ArrayList<>();
+                    for (EmployeeDTO datum : data) {
+                        //部门id 和个人职级相等
+                        if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() &&
+                                employeeBudgetDetailsDTO.getOfficialRank() == datum.getEmployeeRank()) {
+                            //人员id
+                            employeeIds.add(datum.getEmployeeId());
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(employeeIds)) {
+                        //人员数量
+                        int size = employeeIds.size();
+                        //根据人员id集合查询工资发薪表数据 计算该部门该职级体系下 根据职级等级分组的上年平均工资
+                        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayByBudggetEmployeeIds(employeeIds, employeeBudgetDTO.getBudgetYear());
+                        if (salaryPayDTOS.size() < 12) {
+                            //发薪金额总计
+                            BigDecimal payAmountSum = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            if (null != payAmountSum && size > 0) {
+                                BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)));
+                                //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
+                            }
+                        } else if (salaryPayDTOS.size() > 12) {
+                            List<SalaryPayDTO> salaryPayDTOS1 = salaryPayDTOS.subList(0, 11);
+                            BigDecimal payAmountSum = salaryPayDTOS1.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            if (null != payAmountSum && size > 0) {
+                                BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)));
+                                //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
+                            }
+                        }
+                        //上年平均工资
+                        BigDecimal agePayAmountLastYear = employeeBudgetDetailsDTO.getAgePayAmountLastYear();
+                        //平均新增数
+                        BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
+                        if (null != agePayAmountLastYear && null != averageAdjust && agePayAmountLastYear.compareTo(new BigDecimal("0")) != 0 && averageAdjust.compareTo(new BigDecimal("0")) != 0) {
+                            //增人/减人工资包  公式=平均规划新增人数×上年平均工资。可为负数（代表部门人数减少）
+                            BigDecimal increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust);
+                            employeeBudgetDetailsDTO.setIncreaseAndDecreasePay(increaseAndDecreasePay);
+                        }
+
+                    }
+
+                }
+            }
+        }
     }
 }
 
