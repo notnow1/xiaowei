@@ -555,7 +555,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     if (StringUtils.isNotEmpty(targetDecomposeDTOS1)) {
                         BigDecimal sum = targetDecomposeDTOS1.stream()
                                 .filter(friend -> friend.getTargetPercentageComplete() != null)
-                                .map(TargetDecomposeDTO::getTargetPercentageComplete)
+                                .map(TargetDecomposeDTO::getTargetPercentageComplete).filter(Objects::nonNull)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
                         if (StringUtils.isNotEmpty(targetDecomposeDTOS1) && targetDecomposeDTOS1.size() - 1 != 0) {
                             targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1)), BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));

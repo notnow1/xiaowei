@@ -906,7 +906,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                         List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayByBudggetEmployeeIds(employeeIds, employeeBudgetDTO.getBudgetYear());
                         if (salaryPayDTOS.size() < 12) {
                             //发薪金额总计
-                            BigDecimal payAmountSum = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            BigDecimal payAmountSum = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                             if (null != payAmountSum && size > 0) {
                                 BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),BigDecimal.ROUND_CEILING);
                                 //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
@@ -914,7 +914,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                             }
                         } else if (salaryPayDTOS.size() > 12) {
                             List<SalaryPayDTO> salaryPayDTOS1 = salaryPayDTOS.subList(0, 11);
-                            BigDecimal payAmountSum = salaryPayDTOS1.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            BigDecimal payAmountSum = salaryPayDTOS1.stream().map(SalaryPayDTO::getPayAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                             if (null != payAmountSum && size > 0) {
                                 BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),BigDecimal.ROUND_CEILING);
                                 //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
