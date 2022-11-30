@@ -66,9 +66,9 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private String postName;
     /**
-     * 岗位职级名称
+     * 个人职级名称
      */
-    private String postRankName;
+    private String appraisalRankName;
     /**
      * 员工职级
      */

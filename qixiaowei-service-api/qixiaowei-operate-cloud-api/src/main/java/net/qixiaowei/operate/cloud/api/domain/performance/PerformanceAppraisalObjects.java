@@ -45,6 +45,11 @@ public class PerformanceAppraisalObjects extends TenantEntity {
      * 考核对象状态:1制定目标;2评议;3排名;4归档
      */
      private  Integer  appraisalObjectStatus;
+     /**
+     * 排序
+     */
+     private  Integer  sort;
+
 
 }
 

@@ -190,8 +190,6 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDtos) {
             PerformanceAppraisalObjects performanceAppraisalObjects = new PerformanceAppraisalObjects();
             BeanUtils.copyProperties(performanceAppraisalObjectsDTO, performanceAppraisalObjects);
-            performanceAppraisalObjects.setCreateBy(SecurityUtils.getUserId());
-            performanceAppraisalObjects.setCreateTime(DateUtils.getNowDate());
             performanceAppraisalObjects.setUpdateTime(DateUtils.getNowDate());
             performanceAppraisalObjects.setUpdateBy(SecurityUtils.getUserId());
             performanceAppraisalObjectsList.add(performanceAppraisalObjects);

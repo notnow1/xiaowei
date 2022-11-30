@@ -172,14 +172,13 @@ public interface IPerformanceAppraisalService {
      */
     void importCustomOrgPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
 
-
     /**
      * 导入自定义的个人绩效考核Excel
      *
      * @param performanceAppraisalDTO 绩效考核
      * @param file                    文件
      */
-//    void importCustomPerPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
+    void importCustomPerPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file);
 
 
     /**
@@ -192,17 +191,31 @@ public interface IPerformanceAppraisalService {
 
     /**
      * @param performanceAppraisalId    考核对象ID
-     * @param performanceRankFactorDTOS
+     * @param performanceRankFactorDTOS 绩效考核等级
      * @return Collection
      */
-    Collection<List<Object>> dataCustomSysList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS);
+    Collection<List<Object>> dataOrgCustomList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS);
 
     /**
      * @param performanceAppraisalId    考核对象ID
-     * @param performanceRankFactorDTOS
+     * @param performanceRankFactorDTOS 绩效考核等级
      * @return Collection
      */
     Collection<List<Object>> dataOrgSysList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS);
+
+    /**
+     * @param performanceAppraisalId    考核对象ID
+     * @param performanceRankFactorDTOS 绩效考核等级
+     * @return Collection
+     */
+    Collection<List<Object>> dataPerCustomList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS);
+
+    /**
+     * @param performanceAppraisalId    考核对象ID
+     * @param performanceRankFactorDTOS 绩效考核等级
+     * @return Collection
+     */
+    Collection<List<Object>> dataPerSysList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS);
 
     /**
      * 根据appraisalId查询对象列表
