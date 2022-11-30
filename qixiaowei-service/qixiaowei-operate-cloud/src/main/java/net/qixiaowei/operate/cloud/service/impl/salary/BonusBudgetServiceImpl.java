@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -532,7 +533,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 futureBonusBudgetLaddertersDTO.setAmountBonusBudget(amountBonusBudget1);
                 if (null != amountBonusBudget1 && amountBonusBudget1.compareTo(new BigDecimal("0")) !=0 &&
                         null != bonusBeforeOne && bonusBeforeOne.compareTo(new BigDecimal("0")) !=0 ){
-                    multiply = amountBonusBudget1.divide(bonusBeforeOne,BigDecimal.ROUND_CEILING).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
+                    multiply = amountBonusBudget1.divide(bonusBeforeOne, 4, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
                 }
                 futureBonusBudgetLaddertersDTO.setBonusCompositeRate(multiply);
             } else if (i == 2) {
