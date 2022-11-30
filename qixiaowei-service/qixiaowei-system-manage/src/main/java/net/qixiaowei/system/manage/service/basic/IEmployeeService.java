@@ -1,6 +1,8 @@
 package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
+import java.util.Map;
+
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
@@ -46,6 +48,14 @@ public interface IEmployeeService{
      * @return 员工表集合
      */
     List<EmployeeDTO> selectCodeList(List<String> employeeCodes);
+
+    /**
+     * 通过部门，岗位，职级集合查询员工表
+     *
+     * @param idMaps id集合表
+     * @return 员工表集合
+     */
+    List<EmployeeDTO> selectEmployeeByPDRIds(Map<String, List<String>> idMaps);
     /**
      * 查询员工单条信息
      *

@@ -134,10 +134,8 @@ public class PerformanceAppraisalController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @PostMapping("/list/perRank")
-    public AjaxResult listPerRank(@RequestBody Map<String, List<Long>> map) {
-        List<Long> appraisalObjectsIds = map.get("appraisalObjectsIds");
-        Long performanceAppraisalId = map.get("performanceAppraisalId").get(0);
-        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(appraisalObjectsIds, performanceAppraisalId));
+    public AjaxResult listPerRank(@RequestBody Map<String, List<String>> map) {
+        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(map));
     }
 
     /**

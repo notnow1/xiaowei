@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 人员服务
@@ -82,4 +83,15 @@ public interface RemoteEmployeeService {
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/departmentAndOfficialRankSystem")
     R<List<EmployeeDTO>> selectDepartmentAndOfficialRankSystem(@RequestBody List<Long> departmentIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 通过部门，岗位，职级集合查询员工表
+     *
+     * @param idMaps id集合
+     * @param source
+     * @return
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByPDRIds")
+    R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String, List<String>> idMaps, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
 }
