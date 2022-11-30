@@ -540,41 +540,14 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 BigDecimal add = new BigDecimal("0");
                 futureBonusBudgetLaddertersDTO.setBudgetYear(budgetYear);
                 // 奖金增长率  预算年度+1、预算年度+2：各奖金驱动因素的奖金增长率合计（若权重、业绩增长率、奖金折让系数取不到数，则视为0）
-                if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
-                    for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
-                        //奖金权重(%)
-                        BigDecimal bonusWeight = bonusBudgetParametersDTO.getBonusWeight();
-                        //预算年后一年业绩增长率
-                        BigDecimal performanceAfterOne = bonusBudgetParametersDTO.getPerformanceAfterOne();
-                        //预算年后一年奖金折让系数
-                        BigDecimal bonusAllowanceAfterOne = bonusBudgetParametersDTO.getBonusAllowanceAfterOne();
-                        if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0&&
-                                null != performanceAfterOne && performanceAfterOne.compareTo(new BigDecimal("0")) != 0&&
-                                null != bonusAllowanceAfterOne && bonusAllowanceAfterOne.compareTo(new BigDecimal("0")) != 0){
-                            add = bonusWeight.add(performanceAfterOne).add(bonusAllowanceAfterOne);
-                        }
-                    }
-                }
+
+                 add = bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getBonusGrowthRateAfterOne).reduce(BigDecimal.ZERO, BigDecimal::add);
                 futureBonusBudgetLaddertersDTO.setBonusCompositeRate(add);
             }else if (i == 3) {
                 BigDecimal add = new BigDecimal("0");
                 futureBonusBudgetLaddertersDTO.setBudgetYear(budgetYear);
                 // 奖金增长率  预算年度+1、预算年度+2：各奖金驱动因素的奖金增长率合计（若权重、业绩增长率、奖金折让系数取不到数，则视为0）
-                if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
-                    for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
-                        //奖金权重(%)
-                        BigDecimal bonusWeight = bonusBudgetParametersDTO.getBonusWeight();
-                        //预算年后一年业绩增长率
-                        BigDecimal performanceAfterTwo = bonusBudgetParametersDTO.getPerformanceAfterTwo();
-                        //预算年后一年奖金折让系数
-                        BigDecimal bonusAllowanceAfterTwo = bonusBudgetParametersDTO.getBonusAllowanceAfterTwo();
-                        if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0&&
-                                null != performanceAfterTwo && performanceAfterTwo.compareTo(new BigDecimal("0")) != 0&&
-                                null != bonusAllowanceAfterTwo && bonusAllowanceAfterTwo.compareTo(new BigDecimal("0")) != 0){
-                            add = bonusWeight.add(performanceAfterTwo).add(bonusAllowanceAfterTwo);
-                        }
-                    }
-                }
+                add = bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getBonusGrowthRateAfterTwo).reduce(BigDecimal.ZERO, BigDecimal::add);
                 futureBonusBudgetLaddertersDTO.setBonusCompositeRate(add);
             }
             futureBonusBudgetLaddertersDTOS.add(futureBonusBudgetLaddertersDTO);
@@ -586,6 +559,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     BigDecimal multiply = new BigDecimal("0");
                     //上年总奖金包规划值
                     BigDecimal amountBonusBudget2 = futureBonusBudgetLaddertersDTOS.get(i-1).getAmountBonusBudget();
+                    //奖金综合增长率
                     BigDecimal bonusCompositeRate = futureBonusBudgetLaddertersDTOS.get(i - 1).getBonusCompositeRate();
                     if (null != amountBonusBudget2 && amountBonusBudget2.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusCompositeRate && bonusCompositeRate.compareTo(new BigDecimal("0")) != 0){
