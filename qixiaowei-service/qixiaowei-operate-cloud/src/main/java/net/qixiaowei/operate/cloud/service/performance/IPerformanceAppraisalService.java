@@ -71,9 +71,17 @@ public interface IPerformanceAppraisalService {
      * 查询组织绩效结果排名
      *
      * @param appraisalObjectsIds 绩效考核对象ID集合
-     * @return
+     * @return List
      */
     List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId);
+
+    /**
+     *
+     * @param appraisalObjectsIds 绩效考核对象ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> selectPerAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId);
+
 
     /**
      * 新增绩效考核表
@@ -248,5 +256,4 @@ public interface IPerformanceAppraisalService {
      * @return int
      */
     int archive(Long performanceAppraisalId);
-
 }

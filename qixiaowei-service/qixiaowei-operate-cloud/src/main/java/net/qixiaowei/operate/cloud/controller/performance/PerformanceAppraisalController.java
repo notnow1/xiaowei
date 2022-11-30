@@ -130,6 +130,17 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
+     * 查询个人绩效结果排名
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @PostMapping("/list/perRank")
+    public AjaxResult listPerRank(@RequestBody Map<String, List<Long>> map) {
+        List<Long> appraisalObjectsIds = map.get("appraisalObjectsIds");
+        Long performanceAppraisalId = map.get("performanceAppraisalId").get(0);
+        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(appraisalObjectsIds, performanceAppraisalId));
+    }
+
+    /**
      * 查询绩效考核表列表
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")

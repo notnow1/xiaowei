@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -114,6 +116,10 @@ public class PerformanceAppraisalObjectsDTO {
      * 排序
      */
     private Integer sort;
+    /**
+     * 考核比例统计
+     */
+    private List<Map<String, Object>> performanceAppraisalRankDTOS;
     /**
      * 删除标记:0未删除;1已删除
      */
