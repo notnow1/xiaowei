@@ -200,4 +200,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectByCodes(@Param("assessmentList") List<String> assessmentList);
+
+    /**
+     * 相同部门下 相同职级的 在职人数
+     * @param departmentIds
+     * @return
+     */
+    List<EmployeeDTO> selectDepartmentAndOfficialRankSystem(@Param("departmentIds") List<Long> departmentIds);
 }

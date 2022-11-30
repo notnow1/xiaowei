@@ -470,6 +470,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
         return departmentMapper.selectDepartmentList(departmentDTO);
     }
 
+    /**
+     * 查询所有部门
+     * @return
+     */
+    @Override
+    public List<DepartmentDTO> getAll() {
+        return departmentMapper.getAll();
+    }
+
+
+
 
     @Transactional
     @Override

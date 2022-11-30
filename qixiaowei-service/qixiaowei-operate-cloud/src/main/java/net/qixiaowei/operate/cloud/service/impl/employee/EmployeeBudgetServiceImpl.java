@@ -113,35 +113,44 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(collect)) {
             List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);
-            //根据人力预算明细表id分组
-            Map<Long, List<EmployeeBudgetAdjustsDTO>> mapList = employeeBudgetAdjustsDTOS.parallelStream().collect(Collectors.groupingBy(EmployeeBudgetAdjustsDTO::getEmployeeBudgetDetailsId));
-
-
-            //放入数据
-            for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
-                BigDecimal annualAverageNum = new BigDecimal("0");
-                //上年期末人数
-                Integer numberLastYear = employeeBudgetDetailsDTO.getNumberLastYear();
-                //平均新增人数
-                BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
-                if (null != numberLastYear && null != averageAdjust) {
-                    annualAverageNum = new BigDecimal(numberLastYear.toString()).add(averageAdjust);
-                }
-                //年度平均人数 = 上年期末数+平均新增人数
-                employeeBudgetDetailsDTO.setAnnualAverageNum(annualAverageNum);
-                List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS1 = mapList.get(employeeBudgetDetailsDTO.getEmployeeBudgetDetailsId());
-                //sterm流求和
-                Integer reduce = employeeBudgetAdjustsDTOS1.stream().filter(Objects::nonNull).map(EmployeeBudgetAdjustsDTO::getNumberAdjust).reduce(0, Integer::sum);
-                //年度规划人数
-                employeeBudgetDetailsDTO.setAnnualPlanningNum(reduce);
-                //年末总计
-                employeeBudgetDetailsDTO.setEndYearSum(numberLastYear + reduce);
-                employeeBudgetDetailsDTO.setEmployeeBudgetAdjustsDTOS(employeeBudgetAdjustsDTOS1);
-            }
+            EmployeeBudgetServiceImpl.packEmployeeBudgetDetailsNum(employeeBudgetDetailsDTOS, employeeBudgetAdjustsDTOS);
         }
 
         employeeBudgetDTO.setEmployeeBudgetDetailsDTOS(employeeBudgetDetailsDTOS);
         return employeeBudgetDTO;
+    }
+
+    /**
+     *
+     * @param employeeBudgetDetailsDTOS
+     * @param employeeBudgetAdjustsDTOS
+     */
+    public static void packEmployeeBudgetDetailsNum(List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS, List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS) {
+        //根据人力预算明细表id分组
+        Map<Long, List<EmployeeBudgetAdjustsDTO>> mapList = employeeBudgetAdjustsDTOS.parallelStream().collect(Collectors.groupingBy(EmployeeBudgetAdjustsDTO::getEmployeeBudgetDetailsId));
+
+
+        //放入数据
+        for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+            BigDecimal annualAverageNum = new BigDecimal("0");
+            //上年期末人数
+            Integer numberLastYear = employeeBudgetDetailsDTO.getNumberLastYear();
+            //平均新增人数
+            BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
+            if (null != numberLastYear && null != averageAdjust) {
+                annualAverageNum = new BigDecimal(numberLastYear.toString()).add(averageAdjust);
+            }
+            //年度平均人数 = 上年期末数+平均新增人数
+            employeeBudgetDetailsDTO.setAnnualAverageNum(annualAverageNum);
+            List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS1 = mapList.get(employeeBudgetDetailsDTO.getEmployeeBudgetDetailsId());
+            //sterm流求和
+            Integer reduce = employeeBudgetAdjustsDTOS1.stream().filter(Objects::nonNull).map(EmployeeBudgetAdjustsDTO::getNumberAdjust).reduce(0, Integer::sum);
+            //年度规划人数
+            employeeBudgetDetailsDTO.setAnnualPlanningNum(reduce);
+            //年末总计
+            employeeBudgetDetailsDTO.setEndYearSum(numberLastYear + reduce);
+            employeeBudgetDetailsDTO.setEmployeeBudgetAdjustsDTOS(employeeBudgetAdjustsDTOS1);
+        }
     }
 
     /**

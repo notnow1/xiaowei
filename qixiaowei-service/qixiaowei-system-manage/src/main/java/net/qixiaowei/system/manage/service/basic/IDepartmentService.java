@@ -171,4 +171,12 @@ public interface IDepartmentService {
      * @return
      */
     List<DepartmentDTO> selectDepartmentAll(DepartmentDTO departmentDTO);
+
+    /**
+     * 查询所有部门
+     * @return
+     */
+    List<DepartmentDTO> getAll();
+
+
 }

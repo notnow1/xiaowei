@@ -122,8 +122,8 @@ public class ProductServiceImpl implements IProductService {
         List<ProductDTO> productDTOList = productMapper.selectProductList(product);
         if (StringUtils.isNotEmpty(productDTOList)){
             List<String> collect = productDTOList.stream().map(ProductDTO::getProductCategory).collect(Collectors.toList());
-
-            List<Long> collect2 = collect.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                List<Long> collect2 = collect.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
                 if (StringUtils.isNotEmpty(collect2)){
                     //远程调用查询字典数据
                     R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(collect2, SecurityConstants.INNER);
@@ -131,13 +131,14 @@ public class ProductServiceImpl implements IProductService {
                     if (StringUtils.isNotEmpty(data)){
                         for (ProductDTO dto : productDTOList) {
                             for (DictionaryDataDTO datum : data) {
-                            if (Long.valueOf(dto.getProductCategory()).equals(datum.getDictionaryDataId())){
-                                dto.setProductCategoryName(datum.getDictionaryLabel());
-                            }
+                                if (Long.valueOf(dto.getProductCategory()).equals(datum.getDictionaryDataId())){
+                                    dto.setProductCategoryName(datum.getDictionaryLabel());
+                                }
                             }
                         }
                     }
                 }
+            }
         }
         if (!CheckObjectIsNullUtils.isNull(productDTO)) {
             return productDTOList;

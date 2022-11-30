@@ -52,10 +52,6 @@ public class DeptBonusBudgetDTO {
      */
     private List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS;
     /**
-     * 部门奖金预算项目表
-     */
-    private List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS;
-    /**
     * 删除标记:0未删除;1已删除
     */
     private  Integer deleteFlag;

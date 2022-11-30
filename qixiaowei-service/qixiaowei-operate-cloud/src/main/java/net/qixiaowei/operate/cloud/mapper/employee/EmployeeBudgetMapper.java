@@ -31,12 +31,13 @@ public interface EmployeeBudgetMapper{
     List<EmployeeBudgetDTO> selectEmployeeBudgetByEmployeeBudgetIds(@Param("employeeBudgetIds") List<Long> employeeBudgetIds);
 
     /**
-     * 根据职级体系id批量查询人力预算表
+     * 根据部门id集合批量查询人力预算表
      *
-     * @param officialRankSystemIds 根据职级体系id集合
+     * @param departmentIds 根据部门id集合
+     * @param budgetYear
      * @return 人力预算表
      */
-    List<EmployeeBudgetDTO> selectEmployeeBudgetByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
+    List<EmployeeBudgetDTO> selectEmployeeBudgetByOfficialRankSystemIds(@Param("departmentIds") List<Long> departmentIds, @Param("budgetYear") int budgetYear);
 
     /**
     * 查询人力预算表列表

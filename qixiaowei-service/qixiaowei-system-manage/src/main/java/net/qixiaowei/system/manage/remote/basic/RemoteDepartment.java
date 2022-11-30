@@ -61,4 +61,16 @@ public class RemoteDepartment implements RemoteDepartmentService {
     public R<List<DepartmentDTO>> selectDepartment(DepartmentDTO departmentDTO, String source) {
         return R.ok(departmentService.selectDepartmentAll(departmentDTO));
     }
+
+    /**
+     * 查询所有部门
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/getAll")
+    public R<List<DepartmentDTO>> getAll(String source) {
+        return R.ok(departmentService.getAll());
+    }
 }

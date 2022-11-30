@@ -96,13 +96,14 @@
         SELECT
         employee_budget_id, budget_year, department_id, official_rank_system_id, budget_cycle, amount_last_year, amount_adjust, amount_average_adjust, delete_flag, create_by, create_time, update_by, update_time
         FROM employee_budget
-        WHERE  employee_budget_id in
+        WHERE  department_id in
         <foreach item="item"
-                 collection="officialRankSystemIds"
+                 collection="departmentIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
         and delete_flag=0
+        and budget_year=#{budgetYear}
     </select>
     <!--新增人力预算表-->
     <insert id="insertEmployeeBudget" useGeneratedKeys="true" keyProperty="employeeBudgetId">

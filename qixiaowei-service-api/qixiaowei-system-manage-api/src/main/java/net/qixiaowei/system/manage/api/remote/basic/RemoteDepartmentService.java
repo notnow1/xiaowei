@@ -56,4 +56,15 @@ public interface RemoteDepartmentService {
      */
     @PostMapping(API_PREFIX_DEPARTMEN + "/selectAll")
     R<List<DepartmentDTO>> selectDepartment(@RequestBody DepartmentDTO departmentDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 查找部门列表
+     *
+     * @param source
+     * @return
+     */
+    @GetMapping(API_PREFIX_DEPARTMEN + "/getAll")
+    R<List<DepartmentDTO>> getAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+
 }

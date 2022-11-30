@@ -476,6 +476,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
         bonusBudgetDTO.setFutureBonusBudgetLaddertersDTOS(futureBonusBudgetLaddertersDTOS);
         bonusBudgetDTO.setBonusBudgetLaddertersDTOS(bonusBudgetLaddertersDTOS);
+        bonusBudgetDTO.setBudgetYear(budgetYear);
         return bonusBudgetDTO;
     }
 
