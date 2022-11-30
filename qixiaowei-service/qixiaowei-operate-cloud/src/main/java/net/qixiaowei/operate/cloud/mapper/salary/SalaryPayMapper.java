@@ -171,4 +171,13 @@ public interface SalaryPayMapper {
      * @param budgetYear
      */
     BigDecimal selectSalaryPayAmoutNum(@Param("budgetYear") int budgetYear);
+
+    /**
+     * 部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
+     *
+     * @param employeeId
+     * @param payYear
+     * @return
+     */
+    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeIds") Long employeeId,@Param("payYear") Integer payYear);
 }
