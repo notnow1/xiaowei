@@ -20,10 +20,6 @@ public class File extends TenantEntity {
      */
     private Long fileId;
     /**
-     * 租户ID
-     */
-    private Long tenantId;
-    /**
      * 来源
      */
     private String source;
