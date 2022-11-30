@@ -5,14 +5,13 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
-import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
 * 部门奖金预算明细表
 * @author TANGMICHI
-* @since 2022-11-29
+* @since 2022-11-30
 */
 @Data
 @Accessors(chain = true)
@@ -52,9 +51,9 @@ public class DeptBonusBudgetDetailsDTO {
     */
     private BigDecimal deptBonusPercentage;
     /**
-     * 部门奖金预算项目表
-     */
-    private List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS;
+    * 部门重要性系数
+    */
+    private  BigDecimal departmentImportanceFactor;
     /**
     * 删除标记:0未删除;1已删除
     */

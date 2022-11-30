@@ -5,7 +5,7 @@
     <select id="selectDeptBonusBudgetDetailsByDeptBonusBudgetDetailsId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDetailsDTO">
         SELECT
-        dept_bonus_budget_details_id, dept_bonus_budget_id, department_id, dept_bonus_percentage, delete_flag, create_by, create_time, update_by, update_time
+        dept_bonus_budget_details_id, dept_bonus_budget_id, department_id, dept_bonus_percentage, department_importance_factor, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_details
         WHERE  dept_bonus_budget_details_id=#{deptBonusBudgetDetailsId}
         and delete_flag=0
@@ -15,7 +15,7 @@
     <select id="selectDeptBonusBudgetDetailsByDeptBonusBudgetDetailsIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDetailsDTO">
         SELECT
-        dept_bonus_budget_details_id, dept_bonus_budget_id, department_id, dept_bonus_percentage, delete_flag, create_by, create_time, update_by, update_time
+        dept_bonus_budget_details_id, dept_bonus_budget_id, department_id, dept_bonus_percentage, department_importance_factor, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_details
         WHERE  dept_bonus_budget_details_id in
             <foreach item="item"
@@ -29,7 +29,7 @@
     <!--    查询部门奖金预算明细表列表-->
     <select id="selectDeptBonusBudgetDetailsList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDetailsDTO">
         SELECT
-        dept_bonus_budget_details_id, dept_bonus_budget_id, department_id, dept_bonus_percentage, delete_flag, create_by, create_time, update_by, update_time
+        dept_bonus_budget_details_id, dept_bonus_budget_id, department_id, dept_bonus_percentage, department_importance_factor, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_details
         WHERE delete_flag=0
                 <if test="deptBonusBudgetDetails.deptBonusBudgetDetailsId != null">
@@ -43,6 +43,9 @@
                 </if>
                 <if test="deptBonusBudgetDetails.deptBonusPercentage != null">
                     and dept_bonus_percentage=#{deptBonusBudgetDetails.deptBonusPercentage}
+                </if>
+                <if test="deptBonusBudgetDetails.departmentImportanceFactor != null">
+                    and department_importance_factor=#{deptBonusBudgetDetails.departmentImportanceFactor}
                 </if>
                 <if test="deptBonusBudgetDetails.deleteFlag != null">
                     and delete_flag=#{deptBonusBudgetDetails.deleteFlag}
@@ -62,9 +65,9 @@
     </select>
     <!--新增部门奖金预算明细表-->
     <insert id="insertDeptBonusBudgetDetails" useGeneratedKeys="true" keyProperty="deptBonusBudgetDetailsId">
-        INSERT INTO dept_bonus_budget_details (dept_bonus_budget_id,department_id,dept_bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_bonus_budget_details (dept_bonus_budget_id,department_id,dept_bonus_percentage,department_importance_factor,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{deptBonusBudgetDetails.deptBonusBudgetId},#{deptBonusBudgetDetails.departmentId},#{deptBonusBudgetDetails.deptBonusPercentage},#{deptBonusBudgetDetails.deleteFlag},#{deptBonusBudgetDetails.createBy},#{deptBonusBudgetDetails.createTime},#{deptBonusBudgetDetails.updateBy},#{deptBonusBudgetDetails.updateTime})
+        (#{deptBonusBudgetDetails.deptBonusBudgetId},#{deptBonusBudgetDetails.departmentId},#{deptBonusBudgetDetails.deptBonusPercentage},#{deptBonusBudgetDetails.departmentImportanceFactor},#{deptBonusBudgetDetails.deleteFlag},#{deptBonusBudgetDetails.createBy},#{deptBonusBudgetDetails.createTime},#{deptBonusBudgetDetails.updateBy},#{deptBonusBudgetDetails.updateTime})
     </insert>
     <!--修改部门奖金预算明细表-->
     <update id="updateDeptBonusBudgetDetails">
@@ -78,6 +81,9 @@
                     </if>
                     <if test="deptBonusBudgetDetails.deptBonusPercentage != null">
                         dept_bonus_percentage=#{deptBonusBudgetDetails.deptBonusPercentage},
+                    </if>
+                    <if test="deptBonusBudgetDetails.departmentImportanceFactor != null">
+                        department_importance_factor=#{deptBonusBudgetDetails.departmentImportanceFactor},
                     </if>
                     <if test="deptBonusBudgetDetails.deleteFlag != null">
                         delete_flag=#{deptBonusBudgetDetails.deleteFlag},
@@ -122,12 +128,12 @@
     </update>
     <!--批量新增部门奖金预算明细表-->
     <insert id="batchDeptBonusBudgetDetails">
-        INSERT INTO dept_bonus_budget_details (dept_bonus_budget_id,department_id,dept_bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_bonus_budget_details (dept_bonus_budget_id,department_id,dept_bonus_percentage,department_importance_factor,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="deptBonusBudgetDetailss"
                  separator=",">
-            (#{item.deptBonusBudgetId},#{item.departmentId},#{item.deptBonusPercentage},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.deptBonusBudgetId},#{item.departmentId},#{item.deptBonusPercentage},#{item.departmentImportanceFactor},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -169,6 +175,13 @@
                         <foreach collection="deptBonusBudgetDetailsList" item="item" index="index">
                                 <if test="item.deptBonusPercentage != null">
                                     when dept_bonus_budget_details_id=#{item.deptBonusBudgetDetailsId} then #{item.deptBonusPercentage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_importance_factor=case" suffix="end,">
+                        <foreach collection="deptBonusBudgetDetailsList" item="item" index="index">
+                                <if test="item.departmentImportanceFactor != null">
+                                    when dept_bonus_budget_details_id=#{item.deptBonusBudgetDetailsId} then #{item.departmentImportanceFactor}
                                 </if>
                         </foreach>
                 </trim>

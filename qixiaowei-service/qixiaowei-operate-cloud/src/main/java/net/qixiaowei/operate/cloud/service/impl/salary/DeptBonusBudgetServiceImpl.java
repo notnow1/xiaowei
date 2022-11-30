@@ -1,6 +1,5 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -14,8 +13,6 @@ import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
-import net.qixiaowei.operate.cloud.mapper.ExampleMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetMapper;
@@ -23,10 +20,8 @@ import net.qixiaowei.operate.cloud.mapper.salary.DeptBonusBudgetMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.impl.employee.EmployeeBudgetServiceImpl;
 import net.qixiaowei.operate.cloud.service.salary.IDeptBonusBudgetService;
-import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
