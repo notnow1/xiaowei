@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -149,14 +150,14 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0&&
                         null != performanceAfterOne && performanceAfterOne.compareTo(new BigDecimal("0")) != 0&&
                         null != bonusAllowanceAfterOne && bonusAllowanceAfterOne.compareTo(new BigDecimal("0")) != 0){
-                    bonusGrowthRateAfterOne=bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING).multiply(performanceAfterOne.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusAllowanceAfterOne);
+                    bonusGrowthRateAfterOne=bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING).multiply(performanceAfterOne.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusAllowanceAfterOne).multiply(new BigDecimal("100"));
                     bonusBudgetParametersDTO.setBonusGrowthRateAfterOne(bonusGrowthRateAfterOne);
                 }
                 //奖金增长率后二年
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0&&
                         null != bonusAllowanceAfterTwo && bonusAllowanceAfterTwo.compareTo(new BigDecimal("0")) != 0&&
                         null != performanceAfterTwo && performanceAfterTwo.compareTo(new BigDecimal("0")) != 0){
-                    bonusGrowthRateAfterTwo=bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING).multiply(performanceAfterTwo.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusAllowanceAfterTwo);
+                    bonusGrowthRateAfterTwo=bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING).multiply(performanceAfterTwo.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusAllowanceAfterTwo).multiply(new BigDecimal("100"));
                     bonusBudgetParametersDTO.setBonusGrowthRateAfterTwo(bonusGrowthRateAfterTwo);
                 }
 
@@ -517,23 +518,22 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      * @param bonusBudgetParametersDTOS
      */
     private void packQueryFutureBonusTrend(BonusBudgetDTO bonusBudgetDTO, int budgetYear, List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS, List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
-        //返回上年总工资包实际数：从月度工资数据管理取值（总计值）
-        BigDecimal amountBonusBudget = salaryPayMapper.selectSalaryPayAmoutNum(budgetYear);
+        BigDecimal bonusBeforeOne = bonusBudgetDTO.getBonusBeforeOne();
         //预算年度奖金包预算
         BigDecimal amountBonusBudget1 = bonusBudgetDTO.getAmountBonusBudget();
         for (int i = 0; i < 5; i++) {
             FutureBonusBudgetLaddertersDTO futureBonusBudgetLaddertersDTO = new FutureBonusBudgetLaddertersDTO();
             if (i == 0) {
                 futureBonusBudgetLaddertersDTO.setBudgetYear(budgetYear - 1);
-                futureBonusBudgetLaddertersDTO.setAmountBonusBudget(amountBonusBudget);
+                futureBonusBudgetLaddertersDTO.setAmountBonusBudget(bonusBeforeOne);
             } else if (i == 1) {
                 BigDecimal multiply = new BigDecimal("0");
                 futureBonusBudgetLaddertersDTO.setBudgetYear(budgetYear);
                 // 奖金增长率  预算年度：公式=（预算年度奖金包规划值÷上年奖金包实际值-1）×100%
                 futureBonusBudgetLaddertersDTO.setAmountBonusBudget(amountBonusBudget1);
                 if (null != amountBonusBudget1 && amountBonusBudget1.compareTo(new BigDecimal("0")) !=0 &&
-                        null != amountBonusBudget && amountBonusBudget.compareTo(new BigDecimal("0")) !=0 ){
-                    multiply = amountBonusBudget1.divide(amountBonusBudget,BigDecimal.ROUND_CEILING).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
+                        null != bonusBeforeOne && bonusBeforeOne.compareTo(new BigDecimal("0")) !=0 ){
+                    multiply = amountBonusBudget1.divide(bonusBeforeOne, 4, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
                 }
                 futureBonusBudgetLaddertersDTO.setBonusCompositeRate(multiply);
             } else if (i == 2) {
@@ -541,13 +541,13 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 futureBonusBudgetLaddertersDTO.setBudgetYear(budgetYear);
                 // 奖金增长率  预算年度+1、预算年度+2：各奖金驱动因素的奖金增长率合计（若权重、业绩增长率、奖金折让系数取不到数，则视为0）
 
-                 add = bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getBonusGrowthRateAfterOne).reduce(BigDecimal.ZERO, BigDecimal::add);
+                 add = bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getBonusGrowthRateAfterOne).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                 futureBonusBudgetLaddertersDTO.setBonusCompositeRate(add);
             }else if (i == 3) {
                 BigDecimal add = new BigDecimal("0");
                 futureBonusBudgetLaddertersDTO.setBudgetYear(budgetYear);
                 // 奖金增长率  预算年度+1、预算年度+2：各奖金驱动因素的奖金增长率合计（若权重、业绩增长率、奖金折让系数取不到数，则视为0）
-                add = bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getBonusGrowthRateAfterTwo).reduce(BigDecimal.ZERO, BigDecimal::add);
+                add = bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getBonusGrowthRateAfterTwo).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                 futureBonusBudgetLaddertersDTO.setBonusCompositeRate(add);
             }
             futureBonusBudgetLaddertersDTOS.add(futureBonusBudgetLaddertersDTO);
@@ -560,7 +560,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //上年总奖金包规划值
                     BigDecimal amountBonusBudget2 = futureBonusBudgetLaddertersDTOS.get(i-1).getAmountBonusBudget();
                     //奖金综合增长率
-                    BigDecimal bonusCompositeRate = futureBonusBudgetLaddertersDTOS.get(i - 1).getBonusCompositeRate();
+                    BigDecimal bonusCompositeRate = futureBonusBudgetLaddertersDTOS.get(i).getBonusCompositeRate();
                     if (null != amountBonusBudget2 && amountBonusBudget2.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusCompositeRate && bonusCompositeRate.compareTo(new BigDecimal("0")) != 0){
                         multiply = amountBonusBudget2.multiply(new BigDecimal("1").add(bonusCompositeRate.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)));
@@ -1359,7 +1359,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                         List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayByBudggetEmployeeIds(employeeIds, employeeBudgetDTO.getBudgetYear());
                         if (salaryPayDTOS.size() < 12) {
                             //发薪金额总计
-                            BigDecimal payAmountSum = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            BigDecimal payAmountSum = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                             if (null != payAmountSum && size > 0) {
                                 BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),BigDecimal.ROUND_CEILING);
                                 //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
@@ -1367,7 +1367,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                             }
                         } else if (salaryPayDTOS.size() > 12) {
                             List<SalaryPayDTO> salaryPayDTOS1 = salaryPayDTOS.subList(0, 11);
-                            BigDecimal payAmountSum = salaryPayDTOS1.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            BigDecimal payAmountSum = salaryPayDTOS1.stream().map(SalaryPayDTO::getPayAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                             if (null != payAmountSum && size > 0) {
                                 BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),BigDecimal.ROUND_CEILING);
                                 //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数

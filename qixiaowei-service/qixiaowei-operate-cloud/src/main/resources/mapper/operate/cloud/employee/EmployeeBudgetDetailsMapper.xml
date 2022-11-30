@@ -79,15 +79,31 @@
     <select id="selectEmployeeBudgetDetailsByEmployeeBudgetIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO">
         SELECT
-        employee_budget_details_id, employee_budget_id, official_rank, number_last_year, count_adjust, average_adjust, delete_flag, create_by, create_time, update_by, update_time
-        FROM employee_budget_details
-        WHERE  employee_budget_id in
+        eb.department_id ,
+        eb.official_rank_system_id ,
+        ebd.employee_budget_details_id,
+        ebd.employee_budget_id,
+        ebd.official_rank,
+        ebd.number_last_year,
+        ebd.count_adjust,
+        ebd.average_adjust,
+        ebd.delete_flag,
+        ebd.create_by,
+        ebd.create_time,
+        ebd.update_by,
+        ebd.update_time
+        FROM
+        employee_budget_details ebd
+        left join employee_budget eb
+        on eb.employee_budget_id  =ebd.employee_budget_id
+        and eb.delete_flag = 0
+        where ebd.employee_budget_id in
         <foreach item="item"
                  collection="employeeBudgetIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        and delete_flag=0
+        and ebd.delete_flag=0
     </select>
     <!--    查询增人/减人工资包列表-->
     <select id="salaryPackageList"

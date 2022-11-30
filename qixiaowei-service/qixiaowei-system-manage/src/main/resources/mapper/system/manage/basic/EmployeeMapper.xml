@@ -846,7 +846,10 @@
         SELECT
         e.employee_id ,
         e.employee_department_id ,
-        e.employee_rank,
+        case
+        when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
+        as employeeRankName,
         COUNT(e.employee_id) as annualAverageNum
         FROM
         employee e
@@ -864,7 +867,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        group by employee_rank
+        group by employeeRankName
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
