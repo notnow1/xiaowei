@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 区域服务
+ * 指标服务
  */
 @FeignClient(contextId = "remoteIndicatorService", value = ServiceNameConstants.SYSTEM_MANAGE_SERVICE, fallbackFactory = RemoteIndicatorFallbackFactory.class)
 public interface RemoteIndicatorService {

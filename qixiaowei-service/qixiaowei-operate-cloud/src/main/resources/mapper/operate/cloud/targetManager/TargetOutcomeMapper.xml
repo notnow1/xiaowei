@@ -132,6 +132,7 @@
             #{item}
         </foreach>
         and to2.target_year &lt;= #{targetOutcome.targetYear}
+        and ts.target_year =#{targetOutcome.targetYear}
         order by to2.target_year desc
         LIMIT #{targetOutcome.limitYear}
     </select>
