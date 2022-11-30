@@ -170,6 +170,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     performanceAppraisalObjectsDTO.setPostName(employeeDTO.getEmployeePostName());
                     performanceAppraisalObjectsDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
                     performanceAppraisalObjectsDTO.setAppraisalRankName(employeeDTO.getEmployeeRankName());
+                    String principalName = getPrincipalName(performanceAppraisalObjectsDTO.getAppraisalPrincipalId(), employeeData);//考核负责人名称
+                    performanceAppraisalObjectsDTO.setAppraisalPrincipalName(principalName);
                     break;
                 }
             }
@@ -197,6 +199,25 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
+     * 根据考核人ID获取名称
+     *
+     * @param appraisalPrincipalId 考核人ID
+     * @param employeeData         人员list
+     * @return String
+     */
+    private String getPrincipalName(Long appraisalPrincipalId, List<EmployeeDTO> employeeData) {
+        if (StringUtils.isNull(appraisalPrincipalId)) {
+            return null;
+        }
+        for (EmployeeDTO employeeDatum : employeeData) {
+            if (employeeDatum.getEmployeeId().equals(appraisalPrincipalId)) {
+                return employeeDatum.getEmployeeName();
+            }
+        }
+        return null;
+    }
+
+    /**
      * 查询组织绩效归档结果排名
      *
      * @param appraisalObjectsIds    考核对象ID集合
@@ -204,22 +225,23 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return List
      */
     @Override
-    public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId) {
+    public PerformanceAppraisalDTO selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId) {
         if (StringUtils.isNull(performanceAppraisalId)) {
             throw new ServiceException("请输入绩效考核ID");
-        }
-        if (StringUtils.isEmpty(appraisalObjectsIds)) {
-            return new ArrayList<>();
         }
         PerformanceAppraisalDTO appraisal = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
         if (StringUtils.isNull(appraisal)) {
             throw new ServiceException("当前绩效考核已不存在");
         }
+        if (StringUtils.isEmpty(appraisalObjectsIds)) {
+            return appraisal;
+        }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
         if (StringUtils.isEmpty(performanceAppraisalObjectsDTOS)) {
-            return performanceAppraisalObjectsDTOS;
+            return appraisal;
         }
         setCodeAndName(appraisal, performanceAppraisalObjectsDTOS);
+        appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOS);
         // 添加考核比例统计
         HashMap<String, BigDecimal> performanceRankMap = new HashMap<>();
         Integer sum = 0;
@@ -235,7 +257,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (String rank : performanceRankMap.keySet()) {
             BigDecimal number = performanceRankMap.get(rank);
             if (sum.equals(0)) {
-                return performanceAppraisalObjectsDTOS;
+                return appraisal;
             }
             BigDecimal proportion = number.divide(new BigDecimal(sum), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
             map.put("performanceRankName", rank);
@@ -244,32 +266,43 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             performanceAppraisalRankList.add(map);
         }
         appraisal.setPerformanceAppraisalRankDTOS(performanceAppraisalRankList);
-        return performanceAppraisalObjectsDTOS;
+        return appraisal;
     }
 
     /**
      * 查询个人绩效归档结果排名
      *
-     * @param appraisalObjectsIds 绩效考核对象ID集合
+     * @param idMaps 查询绩效ID集合
      * @return List
      */
     @Override
-    public List<PerformanceAppraisalObjectsDTO> selectPerAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId) {
-        if (StringUtils.isNull(performanceAppraisalId)) {
+    public PerformanceAppraisalDTO selectPerAppraisalRankByDTO(Map<String, List<String>> idMaps) {
+        List<String> performanceAppraisalIds = idMaps.get("performanceAppraisalId");
+        if (StringUtils.isEmpty(performanceAppraisalIds)) {
             throw new ServiceException("请输入绩效考核ID");
         }
-        if (StringUtils.isEmpty(appraisalObjectsIds)) {
-            return new ArrayList<>();
-        }
+        Long performanceAppraisalId = Long.valueOf(performanceAppraisalIds.get(0));
         PerformanceAppraisalDTO appraisal = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
         if (StringUtils.isNull(appraisal)) {
             throw new ServiceException("当前绩效考核已不存在");
         }
+        R<List<EmployeeDTO>> listR = employeeService.selectEmployeeByPDRIds(idMaps, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程失败 请联系管理员");
+        }
+        List<Long> appraisalObjectsIds = new ArrayList<>();
+        if (StringUtils.isNotEmpty(employeeDTOS)) {
+            for (EmployeeDTO employeeDTO : employeeDTOS) {
+                appraisalObjectsIds.add(employeeDTO.getEmployeeId());
+            }
+        }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
         if (StringUtils.isEmpty(performanceAppraisalObjectsDTOS)) {
-            return performanceAppraisalObjectsDTOS;
+            return appraisal;
         }
         setCodeAndName(appraisal, performanceAppraisalObjectsDTOS);
+        appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOS);
         // 添加考核比例统计
         HashMap<String, BigDecimal> performanceRankMap = new HashMap<>();
         Integer sum = 0;
@@ -285,7 +318,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (String rank : performanceRankMap.keySet()) {
             BigDecimal number = performanceRankMap.get(rank);
             if (sum.equals(0)) {
-                return performanceAppraisalObjectsDTOS;
+                return appraisal;
             }
             BigDecimal proportion = number.divide(new BigDecimal(sum), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
             map.put("performanceRankName", rank);
@@ -294,7 +327,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             performanceAppraisalRankList.add(map);
         }
         appraisal.setPerformanceAppraisalRankDTOS(performanceAppraisalRankList);
-        return performanceAppraisalObjectsDTOS;
+        return appraisal;
     }
 
     /**

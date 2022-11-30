@@ -1,12 +1,11 @@
 package net.qixiaowei.system.manage.mapper.basic;
 
-import java.util.List;
-
 import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -48,6 +47,16 @@ public interface EmployeeMapper {
      * @return 员工表集合
      */
     List<EmployeeDTO> selectEmployeeList(@Param("employee") Employee employee);
+
+    /**
+     * 通过部门，岗位，职级集合查询员工表
+     *
+     * @param departmentIds     部门
+     * @param postIds           岗位
+     * @param employeeRankNames 职级名称
+     * @return 员工表集合
+     */
+    List<EmployeeDTO> selectEmployeeByPDRIds(@Param("departmentIds") List<Long> departmentIds, @Param("postIds") List<Long> postIds, @Param("employeeRankNames") List<String> employeeRankNames);
 
     /**
      * 查询未分配用户的员工表列表
@@ -147,27 +156,31 @@ public interface EmployeeMapper {
 
     /**
      * 根据code批量查询人员信息
+     *
      * @param employeeCodes
      * @return
      */
-    List<EmployeeDTO> selectEmployeeByEmployeeCodes(@Param("employeeCodes")List<String> employeeCodes);
+    List<EmployeeDTO> selectEmployeeByEmployeeCodes(@Param("employeeCodes") List<String> employeeCodes);
 
     /**
      * 根据身份证号批量查询人员信息
+     *
      * @param identityCards
      * @return
      */
-    List<EmployeeDTO> selectEmployeeByIdCards(@Param("identityCards")List<String> identityCards);
+    List<EmployeeDTO> selectEmployeeByIdCards(@Param("identityCards") List<String> identityCards);
 
     /**
      * 根据code查询员工表列表
+     *
      * @param employeeCodes
      * @return
      */
-    List<EmployeeDTO> selectCodeList(@Param("employeeCodes")List<String> employeeCodes);
+    List<EmployeeDTO> selectCodeList(@Param("employeeCodes") List<String> employeeCodes);
 
     /**
      * 分页查询岗位薪酬报表
+     *
      * @param employee
      * @return
      */
@@ -175,6 +188,7 @@ public interface EmployeeMapper {
 
     /**
      * 新增人力预算上年期末数集合
+     *
      * @param employee
      * @return
      */
@@ -182,6 +196,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据部门 职级 获取人员信息集合
+     *
      * @param list
      * @return
      */
@@ -189,6 +204,7 @@ public interface EmployeeMapper {
 
     /**
      * 查询在职的所有员工
+     *
      * @param employee
      * @return
      */
@@ -196,6 +212,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据Code集合
+     *
      * @param assessmentList
      * @return
      */
@@ -203,6 +220,7 @@ public interface EmployeeMapper {
 
     /**
      * 相同部门下 相同职级的 在职人数
+     *
      * @param departmentIds
      * @return
      */

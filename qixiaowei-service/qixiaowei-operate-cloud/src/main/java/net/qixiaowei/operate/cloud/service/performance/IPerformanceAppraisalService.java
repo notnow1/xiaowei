@@ -1,7 +1,6 @@
 package net.qixiaowei.operate.cloud.service.performance;
 
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
@@ -10,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -73,14 +73,13 @@ public interface IPerformanceAppraisalService {
      * @param appraisalObjectsIds 绩效考核对象ID集合
      * @return List
      */
-    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId);
+    PerformanceAppraisalDTO selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId);
 
     /**
-     *
      * @param appraisalObjectsIds 绩效考核对象ID集合
      * @return List
      */
-    List<PerformanceAppraisalObjectsDTO> selectPerAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId);
+    PerformanceAppraisalDTO selectPerAppraisalRankByDTO(Map<String, List<String>> appraisalObjectsIds);
 
 
     /**

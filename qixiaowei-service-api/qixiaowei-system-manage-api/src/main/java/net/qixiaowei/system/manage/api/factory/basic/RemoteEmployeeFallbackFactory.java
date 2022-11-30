@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 人员服务降级处理
@@ -56,6 +57,11 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             @Override
             public R<List<EmployeeDTO>> selectDepartmentAndOfficialRankSystem(List<Long> departmentIds, String source) {
                 return R.fail("获取相同部门下 相同职级的 在职人数信息失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<EmployeeDTO>> selectEmployeeByPDRIds(Map<String, List<String>> idMaps, String source) {
+                return R.fail("通过部门，岗位，职级集合查询员工表信息失败:" + throwable.getMessage());
             }
         };
     }

@@ -20,14 +20,12 @@ import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.mapper.basic.*;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -92,6 +90,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public List<EmployeeDTO> selectCodeList(List<String> employeeCodes) {
         return employeeMapper.selectCodeList(employeeCodes);
+    }
+
+    /**
+     * 通过部门，岗位，职级集合查询员工表
+     *
+     * @param idMaps id集合表
+     * @return 员工表集合
+     */
+    public List<EmployeeDTO> selectEmployeeByPDRIds(Map<String, List<String>> idMaps) {
+        List<String> departmentIds = idMaps.get("departmentIds");
+        List<Long> departments = departmentIds.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        List<String> postIds = idMaps.get("postIds");
+        List<Long> post = departmentIds.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        List<String> employeeRankNames = idMaps.get("rankNames");
+        return employeeMapper.selectEmployeeByPDRIds(departments, post, employeeRankNames);
     }
 
 
@@ -247,18 +260,18 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
             String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
 
-                if (StringUtils.isNotBlank(username) && !StringUtils.equals(username,"[]")) {
-                    userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
-                }
-                if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName,"[]")) {
-                    deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
-                }
-                if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName,"[]")) {
-                    postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
-                }
-                if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName,"[]")) {
-                    decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
-                }
+            if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
+                userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
+            }
+            if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName, "[]")) {
+                deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
+            }
+            if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName, "[]")) {
+                postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
+            }
+            if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
+                decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
+            }
 
 
         }
@@ -534,7 +547,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
 
         //比对职级级别 相同的赋值 不同的赋0
-        if (StringUtils.isNotEmpty(officialRankSystemDTOs) && StringUtils.isNotEmpty(employeeDTOList) && employeeDTOList.get(0) != null ) {
+        if (StringUtils.isNotEmpty(officialRankSystemDTOs) && StringUtils.isNotEmpty(employeeDTOList) && employeeDTOList.get(0) != null) {
             for (OfficialRankSystemDTO rankSystemDTO : officialRankSystemDTOs) {
                 for (EmployeeDTO dto : employeeDTOList) {
                     if (StringUtils.equals(rankSystemDTO.getRankCodeName(), dto.getEmployeeRankName())) {
@@ -550,32 +563,35 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 根据部门 职级 获取人员信息集合
+     *
      * @param list
      * @return
      */
     @Override
     public List<EmployeeDTO> selectByBudgeList(List<List<Long>> list) {
-        return  employeeMapper.selectByBudgeList(list);
+        return employeeMapper.selectByBudgeList(list);
     }
 
     /**
      * 根据Code集合
+     *
      * @param assessmentList
      * @return
      */
     @Override
     public List<EmployeeDTO> selectByCodes(List<String> assessmentList) {
-        return  employeeMapper.selectByCodes(assessmentList);
+        return employeeMapper.selectByCodes(assessmentList);
     }
 
     /**
      * 相同部门下 相同职级的 在职人数
+     *
      * @param departmentIds
      * @return
      */
     @Override
     public List<EmployeeDTO> selectDepartmentAndOfficialRankSystem(List<Long> departmentIds) {
-        return  employeeMapper.selectDepartmentAndOfficialRankSystem(departmentIds);
+        return employeeMapper.selectDepartmentAndOfficialRankSystem(departmentIds);
     }
 
 
@@ -619,18 +635,18 @@ public class EmployeeServiceImpl implements IEmployeeService {
         String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
         String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
 
-            if (StringUtils.isNotBlank(username) && !StringUtils.equals(username,"[]")) {
-                userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
-            }
-            if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName,"[]")) {
-                deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
-            }
-            if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName,"[]")) {
-                postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
-            }
-            if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName,"[]")) {
-                decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
-            }
+        if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
+            userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
+        }
+        if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName, "[]")) {
+            deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
+        }
+        if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName, "[]")) {
+            postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
+        }
+        if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
+            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
+        }
 
 
         erreoEmp.append(deptErreo).append(postErreo).append(userErreo).append(decomposeErreo);
