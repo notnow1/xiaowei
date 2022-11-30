@@ -234,6 +234,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             throw new ServiceException("当前绩效考核已不存在");
         }
         if (StringUtils.isEmpty(appraisalObjectsIds)) {
+            List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+            appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOS);
             return appraisal;
         }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
@@ -296,6 +298,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             for (EmployeeDTO employeeDTO : employeeDTOS) {
                 appraisalObjectsIds.add(employeeDTO.getEmployeeId());
             }
+        }
+        if (StringUtils.isEmpty(appraisalObjectsIds)) {
+            List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+            appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOS);
+            return appraisal;
         }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
         if (StringUtils.isEmpty(performanceAppraisalObjectsDTOS)) {
