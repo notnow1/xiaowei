@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.remote.basic;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
@@ -97,5 +98,18 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @PostMapping("/selectByCodes")
     public R<List<EmployeeDTO>> selectByCodes(@RequestBody List<String> assessmentList, String source) {
         return R.ok(employeeService.selectByCodes(assessmentList));
+    }
+
+    /**
+     * 相同部门下 相同职级的 在职人数
+     * @param departmentIds
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/departmentAndOfficialRankSystem")
+    public R<List<EmployeeDTO>> selectDepartmentAndOfficialRankSystem(@RequestBody  List<Long> departmentIds, String source) {
+        return R.ok(employeeService.selectDepartmentAndOfficialRankSystem(departmentIds));
     }
 }

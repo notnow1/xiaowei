@@ -149,14 +149,14 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0&&
                         null != performanceAfterOne && performanceAfterOne.compareTo(new BigDecimal("0")) != 0&&
                         null != bonusAllowanceAfterOne && bonusAllowanceAfterOne.compareTo(new BigDecimal("0")) != 0){
-                    bonusGrowthRateAfterOne=bonusWeight.divide(new BigDecimal("100")).multiply(performanceAfterOne.divide(new BigDecimal("100"))).multiply(bonusAllowanceAfterOne);
+                    bonusGrowthRateAfterOne=bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING).multiply(performanceAfterOne.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusAllowanceAfterOne);
                     bonusBudgetParametersDTO.setBonusGrowthRateAfterOne(bonusGrowthRateAfterOne);
                 }
                 //奖金增长率后二年
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0&&
                         null != bonusAllowanceAfterTwo && bonusAllowanceAfterTwo.compareTo(new BigDecimal("0")) != 0&&
                         null != performanceAfterTwo && performanceAfterTwo.compareTo(new BigDecimal("0")) != 0){
-                    bonusGrowthRateAfterTwo=bonusWeight.divide(new BigDecimal("100")).multiply(performanceAfterTwo.divide(new BigDecimal("100"))).multiply(bonusAllowanceAfterTwo);
+                    bonusGrowthRateAfterTwo=bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING).multiply(performanceAfterTwo.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusAllowanceAfterTwo);
                     bonusBudgetParametersDTO.setBonusGrowthRateAfterTwo(bonusGrowthRateAfterTwo);
                 }
 
@@ -476,6 +476,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
         bonusBudgetDTO.setFutureBonusBudgetLaddertersDTOS(futureBonusBudgetLaddertersDTOS);
         bonusBudgetDTO.setBonusBudgetLaddertersDTOS(bonusBudgetLaddertersDTOS);
+        bonusBudgetDTO.setBudgetYear(budgetYear);
         return bonusBudgetDTO;
     }
 
@@ -532,7 +533,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 futureBonusBudgetLaddertersDTO.setAmountBonusBudget(amountBonusBudget1);
                 if (null != amountBonusBudget1 && amountBonusBudget1.compareTo(new BigDecimal("0")) !=0 &&
                         null != amountBonusBudget && amountBonusBudget.compareTo(new BigDecimal("0")) !=0 ){
-                    multiply = amountBonusBudget1.divide(amountBonusBudget).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
+                    multiply = amountBonusBudget1.divide(amountBonusBudget,BigDecimal.ROUND_CEILING).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
                 }
                 futureBonusBudgetLaddertersDTO.setBonusCompositeRate(multiply);
             } else if (i == 2) {
@@ -588,7 +589,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     BigDecimal bonusCompositeRate = futureBonusBudgetLaddertersDTOS.get(i - 1).getBonusCompositeRate();
                     if (null != amountBonusBudget2 && amountBonusBudget2.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusCompositeRate && bonusCompositeRate.compareTo(new BigDecimal("0")) != 0){
-                        multiply = amountBonusBudget2.multiply(new BigDecimal("1").add(bonusCompositeRate.divide(new BigDecimal("100"))));
+                        multiply = amountBonusBudget2.multiply(new BigDecimal("1").add(bonusCompositeRate.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)));
                         futureBonusBudgetLaddertersDTOS.get(i).setAmountBonusBudget(multiply);
                     }
                 }
@@ -817,7 +818,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusProportionStandard && bonusProportionStandard.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"))).multiply(bonusWeight.divide(new BigDecimal("100")));
+                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING));
                     //总奖金包预算总奖金包预算1 公式=各项（奖金驱动因素的目标值×奖金占比基准值×权重）的和
                     amountBonusBudgetReferenceValueOne = amountBonusBudgetReferenceValueOne.add(multiply);
                 }
@@ -826,7 +827,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                         null != bonusProportionStandard && bonusProportionStandard.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0 &&
                         null != targetCompletionRate && targetCompletionRate.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"))).multiply(bonusWeight.divide(new BigDecimal("100"))).multiply(targetCompletionRate.divide(new BigDecimal("100")));
+                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(targetCompletionRate.divide(new BigDecimal("100")));
                     //总奖金包预算总奖金包预算1 公式=各项（奖金驱动因素的目标值×奖金占比基准值×权重×预算准确率）的和
                     amountBonusBudgetReferenceValueTwo = amountBonusBudgetReferenceValueTwo.add(multiply);
                 }
@@ -874,7 +875,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             if (null != amountBonusBudgetReferenceValueOne && amountBonusBudgetReferenceValueOne.compareTo(new BigDecimal("0")) != 0 &&
                     null != bonusTargetValue && bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
                 //奖金驱动因素/比值 公式=总奖金包预算参考值1÷目标值
-                bonusProportionRatio = amountBonusBudgetReferenceValueOne.divide(bonusTargetValue).multiply(new BigDecimal("100"));
+                bonusProportionRatio = amountBonusBudgetReferenceValueOne.divide(bonusTargetValue,BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
             }
             //总奖金包预算总奖金包预算1
             bonusBudgetDTO.setAmountBonusBudgetReferenceValueOne(amountBonusBudgetReferenceValueOne);
@@ -1386,7 +1387,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                             //发薪金额总计
                             BigDecimal payAmountSum = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
                             if (null != payAmountSum && size > 0) {
-                                BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)));
+                                BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),BigDecimal.ROUND_CEILING);
                                 //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
                             }
@@ -1394,7 +1395,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                             List<SalaryPayDTO> salaryPayDTOS1 = salaryPayDTOS.subList(0, 11);
                             BigDecimal payAmountSum = salaryPayDTOS1.stream().map(SalaryPayDTO::getPayAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
                             if (null != payAmountSum && size > 0) {
-                                BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)));
+                                BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),BigDecimal.ROUND_CEILING);
                                 //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
                             }

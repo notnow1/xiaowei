@@ -178,9 +178,10 @@ public interface DepartmentMapper{
      */
     List<Integer> selectLevel();
 
+
     /**
-     * 目标分解是否被引用
-     * @param departmentId
+     * 查询所有部门
+     * @return
      */
-    List<TargetDecompose> queryDeptDecompose(@Param("departmentId") Long departmentId);
+    List<DepartmentDTO> getAll();
 }

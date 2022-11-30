@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.api.factory.basic;
 
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import org.slf4j.Logger;
@@ -50,6 +51,11 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             @Override
             public R<List<EmployeeDTO>> selectByCodes(List<String> assessmentList, String source) {
                 return R.fail("根据部门 职级 获取人员信息失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<EmployeeDTO>> selectDepartmentAndOfficialRankSystem(List<Long> departmentIds, String source) {
+                return R.fail("获取相同部门下 相同职级的 在职人数信息失败:" + throwable.getMessage());
             }
         };
     }

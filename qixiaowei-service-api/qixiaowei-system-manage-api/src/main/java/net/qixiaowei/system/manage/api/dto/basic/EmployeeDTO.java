@@ -313,5 +313,9 @@ public class EmployeeDTO implements Serializable {
      * 预算年度
      */
     private int planYear;
+    /**
+     * 相同部门相同职级平均人数
+     */
+    private BigDecimal annualAverageNum;
 }
 

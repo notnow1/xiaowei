@@ -171,4 +171,11 @@ public interface IEmployeeService{
      * @return
      */
     List<EmployeeDTO> selectByCodes(List<String> assessmentList);
+
+    /**
+     * 相同部门下 相同职级的 在职人数
+     * @param departmentIds
+     * @return
+     */
+    List<EmployeeDTO> selectDepartmentAndOfficialRankSystem(List<Long> departmentIds);
 }
