@@ -103,16 +103,18 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         setFieldName(appraisal);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
         Integer appraisalObject = appraisal.getAppraisalObject();
-        List<DepartmentDTO> departmentData;
         HashMap<String, BigDecimal> performanceRankMap = new HashMap<>();
         Integer sum = 0;
-        departmentData = getDepartmentData();
+        List<DepartmentDTO> departmentData = getDepartmentData();
+        List<EmployeeDTO> employeeData = getEmployeeData();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
             sum = setRankMap(performanceRankMap, performanceAppraisalObjectsDTO, sum);
             for (DepartmentDTO departmentDTO : departmentData) {
                 if (departmentDTO.getDepartmentId().equals(performanceAppraisalObjectsDTO.getAppraisalObjectId())) {
                     performanceAppraisalObjectsDTO.setAppraisalObjectName(departmentDTO.getDepartmentName());
                     performanceAppraisalObjectsDTO.setAppraisalObjectCode(departmentDTO.getDepartmentCode());
+                    String principalName = getPrincipalName(performanceAppraisalObjectsDTO.getAppraisalPrincipalId(), employeeData);//考核负责人名称
+                    performanceAppraisalObjectsDTO.setAppraisalPrincipalName(principalName);
                     break;
                 }
             }
