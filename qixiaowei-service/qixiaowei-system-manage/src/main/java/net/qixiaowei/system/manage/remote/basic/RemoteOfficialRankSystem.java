@@ -44,7 +44,7 @@ public class RemoteOfficialRankSystem implements RemoteOfficialRankSystemService
     /**
      * 通过Id查找职级上下限
      *
-     * @param officialRankSystemId
+     * @param officialRankSystemId 职级体系ID
      * @param source
      * @return
      */

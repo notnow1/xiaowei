@@ -28,12 +28,12 @@
             p.update_by,
             p.update_time
         from
-            post p
-                left join official_rank_system ors
-                          on p.official_rank_system_id = ors .official_rank_system_id
-                              and ors .delete_flag = 0
+        post p
+        left join official_rank_system ors
+        on p.official_rank_system_id = ors .official_rank_system_id
+        and ors .delete_flag = 0
         where
-            p.delete_flag = 0
+        p.delete_flag = 0
         and p.post_id=#{postId}
     </select>
 
@@ -43,13 +43,13 @@
         SELECT
             post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
         FROM post
-        WHERE  post_id in
+        WHERE post_id in
         <foreach item="item"
                  collection="postIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-          and delete_flag=0
+        and delete_flag=0
     </select>
     <!--    查询岗位表列表-->
     <select id="selectPostList" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
@@ -83,11 +83,11 @@
         and ors .delete_flag = 0
         <if test="post.departmentId != null ">
             left join department_post dp
-            on dp.post_id  = p.post_id
+            on dp.post_id = p.post_id
             and dp .delete_flag = 0
             and dp.department_id =#{post.departmentId}
             left join department d
-            on d.department_id  = dp.department_id
+            on d.department_id = dp.department_id
             and d.delete_flag = 0
         </if>
         where
@@ -108,18 +108,18 @@
             and p.official_rank_system_id like '%${post.officialRankSystemId}%'
         </if>
         <if test="post.postRankLowerName != null and  post.postRankLowerName != '' ">
-           and  case when ors.rank_prefix_code is null then p.post_rank_lower
-            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_lower) end
-             like '%${post.postRankLowerName}%'
+            and case when ors.rank_prefix_code is null then p.post_rank_lower
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end
+            like '%${post.postRankLowerName}%'
         </if>
         <if test="post.postRankName != null and post.postRankName != '' ">
-          and   case when ors.rank_prefix_code is null then p.post_rank_upper
-            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_upper) end
+            and case when ors.rank_prefix_code is null then p.post_rank_upper
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end
             like '%${post.postRankName}%'
         </if>
         <if test="post.postRankUpperName != null and post.postRankUpperName != '' ">
-           and  case when ors.rank_prefix_code is null then p.post_rank
-            when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end
+            and case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end
             like '%${post.postRankUpperName}%'
         </if>
         <if test="post.postDescription != null and post.postDescription != ''">
@@ -129,13 +129,13 @@
             and p.status =#{post.status}
         </if>
     </select>
-<!--    查询岗位表Code-->
+    <!--    查询岗位表Code-->
     <select id="selectPostCode" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
         SELECT
             post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
         FROM post
-        WHERE  post_code=#{postCode}
-          and delete_flag=0
+        WHERE post_code=#{postCode}
+        and delete_flag=0
     </select>
     <select id="selectPostByOfficialRankSystemIds"
             resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
@@ -148,17 +148,17 @@
             #{item}
         </foreach>
     </select>
-<!--    查询岗位表名称-->
+    <!--    查询岗位表名称-->
     <select id="selectPostName" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
         SELECT
             post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
         FROM post
-        WHERE  post_name=#{postName}
-          and delete_flag=0
+        WHERE post_name=#{postName}
+        and delete_flag=0
     </select>
-<!--    根据部门查询岗位表列表-->
+    <!--    根据部门查询岗位表列表-->
     <select id="selectBydepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
-        select  d.department_id ,
+        select d.department_id ,
         p.post_id,
         p.post_code,
         p.post_name,
@@ -179,7 +179,7 @@
         on dp.department_id = d.department_id
         and dp.delete_flag =0
         left join post p
-        on p.post_id  =dp.post_id
+        on p.post_id =dp.post_id
         and p.delete_flag =0
         where d.delete_flag =0
 
@@ -187,9 +187,46 @@
             and d.department_id = #{departmentId}
         </if>
     </select>
+    <!--    查询岗位表列表-->
+    <select id="selectPostListByOfficialRank" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
+        select
+        ors.official_rank_system_name,
+        ors.rank_prefix_code,
+        p.post_id,
+        p.post_code,
+        p.post_name,
+        p.official_rank_system_id,
+        p.post_rank_lower,
+        p.post_rank_upper,
+        p.post_rank,
+        case when ors.rank_prefix_code is null then p.post_rank_lower
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end as
+        post_rank_lower_name,
+        case when ors.rank_prefix_code is null then p.post_rank_upper
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end as
+        post_rank_upper_name,
+        case when ors.rank_prefix_code is null then p.post_rank
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
+        p.post_description,
+        p.status,
+        p.delete_flag,
+        p.create_by,
+        p.create_time,
+        p.update_by,
+        p.update_time
+        from
+        post p
+        left join official_rank_system ors
+        on p.official_rank_system_id = ors .official_rank_system_id
+        and ors .delete_flag = 0
+        where
+        p.delete_flag = 0
+        and d.official_rank_system_id = #{officialRankSystemId}
+    </select>
     <!--新增岗位表-->
     <insert id="insertPost" useGeneratedKeys="true" keyProperty="postId">
-        INSERT INTO post (post_code,post_name,official_rank_system_id,post_rank_lower,post_rank,post_rank_upper,post_description,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO post
+        (post_code,post_name,official_rank_system_id,post_rank_lower,post_rank,post_rank_upper,post_description,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{post.postCode},#{post.postName},#{post.officialRankSystemId},#{post.postRankLower},#{post.postRank},#{post.postRankUpper},#{post.postDescription},#{post.status},#{post.deleteFlag},#{post.createBy},#{post.createTime},#{post.updateBy},#{post.updateTime})
     </insert>
@@ -197,74 +234,75 @@
     <update id="updatePost">
         UPDATE post
         SET
-                    <if test="post.postCode != null and post.postCode != ''">
-                        post_code=#{post.postCode},
-                    </if>
-                    <if test="post.postName != null and post.postName != ''">
-                        post_name=#{post.postName},
-                    </if>
-                    <if test="post.officialRankSystemId != null">
-                        official_rank_system_id=#{post.officialRankSystemId},
-                    </if>
-                    <if test="post.postRankLower != null">
-                        post_rank_lower=#{post.postRankLower},
-                    </if>
-                    <if test="post.postRank != null">
-                        post_rank=#{post.postRank},
-                    </if>
-                    <if test="post.postRankUpper != null">
-                        post_rank_upper=#{post.postRankUpper},
-                    </if>
-                    <if test="post.postDescription != null and post.postDescription != ''">
-                        post_description=#{post.postDescription},
-                    </if>
-                    <if test="post.status != null">
-                        status=#{post.status},
-                    </if>
-                    <if test="post.deleteFlag != null">
-                        delete_flag=#{post.deleteFlag},
-                    </if>
-                    <if test="post.createBy != null">
-                        create_by=#{post.createBy},
-                    </if>
-                    <if test="post.createTime != null">
-                        create_time=#{post.createTime},
-                    </if>
-                    <if test="post.updateBy != null">
-                        update_by=#{post.updateBy},
-                    </if>
-                    <if test="post.updateTime != null">
-                        update_time=#{post.updateTime}
-                    </if>
+        <if test="post.postCode != null and post.postCode != ''">
+            post_code=#{post.postCode},
+        </if>
+        <if test="post.postName != null and post.postName != ''">
+            post_name=#{post.postName},
+        </if>
+        <if test="post.officialRankSystemId != null">
+            official_rank_system_id=#{post.officialRankSystemId},
+        </if>
+        <if test="post.postRankLower != null">
+            post_rank_lower=#{post.postRankLower},
+        </if>
+        <if test="post.postRank != null">
+            post_rank=#{post.postRank},
+        </if>
+        <if test="post.postRankUpper != null">
+            post_rank_upper=#{post.postRankUpper},
+        </if>
+        <if test="post.postDescription != null and post.postDescription != ''">
+            post_description=#{post.postDescription},
+        </if>
+        <if test="post.status != null">
+            status=#{post.status},
+        </if>
+        <if test="post.deleteFlag != null">
+            delete_flag=#{post.deleteFlag},
+        </if>
+        <if test="post.createBy != null">
+            create_by=#{post.createBy},
+        </if>
+        <if test="post.createTime != null">
+            create_time=#{post.createTime},
+        </if>
+        <if test="post.updateBy != null">
+            update_by=#{post.updateBy},
+        </if>
+        <if test="post.updateTime != null">
+            update_time=#{post.updateTime}
+        </if>
         WHERE
-                 post_id=#{post.postId}
+        post_id=#{post.postId}
     </update>
     <!--逻辑删除岗位表-->
     <update id="logicDeletePostByPostId">
         UPDATE post
-        SET     delete_flag= 1,
-                update_by=#{post.updateBy},
-                update_time=#{post.updateTime}
+        SET delete_flag= 1,
+        update_by=#{post.updateBy},
+        update_time=#{post.updateTime}
         WHERE
-                post_id=#{post.postId}
+        post_id=#{post.postId}
     </update>
     <!--逻辑批量删除岗位表-->
     <update id="logicDeletePostByPostIds">
         UPDATE post
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         post_id IN
-            <foreach item="item"
-                     collection="postIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        post_id IN
+        <foreach item="item"
+                 collection="postIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增岗位表-->
     <insert id="batchPost">
-        INSERT INTO post (post_code,post_name,official_rank_system_id,post_rank_lower,post_rank,post_rank_upper,post_description,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO post
+        (post_code,post_name,official_rank_system_id,post_rank_lower,post_rank,post_rank_upper,post_description,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="posts"
@@ -276,18 +314,18 @@
     <!--物理删除岗位表-->
     <delete id="deletePostByPostId">
         DELETE FROM post
-        WHERE  post_id=#{post}
+        WHERE post_id=#{post}
 
     </delete>
     <!--物理批量删除岗位表-->
     <delete id="deletePostByPostIds">
         DELETE FROM post
-        WHERE  post_id IN
-            <foreach item="item"
-                     collection="postIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE post_id IN
+        <foreach item="item"
+                 collection="postIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改岗位表-->
     <update id="updatePosts">
@@ -295,99 +333,99 @@
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="post_code=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.postCode != null and item.postCode != ''">
-                                 when post_id=#{item.postId} then #{item.postCode}
-                             </if>
+                    <if test="item.postCode != null and item.postCode != ''">
+                        when post_id=#{item.postId} then #{item.postCode}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="post_name=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.postName != null and item.postName != ''">
-                                 when post_id=#{item.postId} then #{item.postName}
-                             </if>
+                    <if test="item.postName != null and item.postName != ''">
+                        when post_id=#{item.postId} then #{item.postName}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="official_rank_system_id=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.officialRankSystemId != null">
-                                 when post_id=#{item.postId} then #{item.officialRankSystemId}
-                             </if>
+                    <if test="item.officialRankSystemId != null">
+                        when post_id=#{item.postId} then #{item.officialRankSystemId}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="post_rank_lower=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.postRankLower != null">
-                                 when post_id=#{item.postId} then #{item.postRankLower}
-                             </if>
+                    <if test="item.postRankLower != null">
+                        when post_id=#{item.postId} then #{item.postRankLower}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="post_rank=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.postRank != null">
-                                 when post_id=#{item.postId} then #{item.postRank}
-                             </if>
+                    <if test="item.postRank != null">
+                        when post_id=#{item.postId} then #{item.postRank}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="post_rank_upper=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.postRankUpper != null">
-                                 when post_id=#{item.postId} then #{item.postRankUpper}
-                             </if>
+                    <if test="item.postRankUpper != null">
+                        when post_id=#{item.postId} then #{item.postRankUpper}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="post_description=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.postDescription != null and item.postDescription != ''">
-                                 when post_id=#{item.postId} then #{item.postDescription}
-                             </if>
+                    <if test="item.postDescription != null and item.postDescription != ''">
+                        when post_id=#{item.postId} then #{item.postDescription}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="status=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.status != null">
-                                 when post_id=#{item.postId} then #{item.status}
-                             </if>
+                    <if test="item.status != null">
+                        when post_id=#{item.postId} then #{item.status}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when post_id=#{item.postId} then #{item.deleteFlag}
-                             </if>
+                    <if test="item.deleteFlag != null">
+                        when post_id=#{item.postId} then #{item.deleteFlag}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when post_id=#{item.postId} then #{item.createBy}
-                             </if>
+                    <if test="item.createBy != null">
+                        when post_id=#{item.postId} then #{item.createBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when post_id=#{item.postId} then #{item.createTime}
-                             </if>
+                    <if test="item.createTime != null">
+                        when post_id=#{item.postId} then #{item.createTime}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when post_id=#{item.postId} then #{item.updateBy}
-                             </if>
+                    <if test="item.updateBy != null">
+                        when post_id=#{item.postId} then #{item.updateBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="postList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when post_id=#{item.postId} then #{item.updateTime}
-                             </if>
+                    <if test="item.updateTime != null">
+                        when post_id=#{item.postId} then #{item.updateTime}
+                    </if>
                 </foreach>
             </trim>
         </trim>
         where
         <foreach collection="postList" separator="or" item="item" index="index">
-                    post_id=#{item.postId}
+            post_id=#{item.postId}
         </foreach>
     </update>
 </mapper>
