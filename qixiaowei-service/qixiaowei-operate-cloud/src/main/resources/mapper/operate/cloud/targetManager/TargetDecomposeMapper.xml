@@ -4,10 +4,9 @@
     <!--    查询销售订单目标分解表-->
     <select id="selectTargetDecomposeByTargetDecomposeId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
-        SELECT
-               IFNULL(ts.challenge_value,0) as challenge_value,
-               IFNULL(ts.guaranteed_value,0) as guaranteed_value,
-               IFNULL(ts.target_value,0) as target_value,
+        SELECT IFNULL(ts.challenge_value, 0)  as challenge_value,
+               IFNULL(ts.guaranteed_value, 0) as guaranteed_value,
+               IFNULL(ts.target_value, 0)     as target_value,
                td.target_decompose_id,
                td.target_decompose_type,
                td.indicator_id,
@@ -15,9 +14,9 @@
                td.target_decompose_dimension_id,
                td.decomposition_dimension,
                td.time_dimension,
-               IFNULL(td.decompose_target,0) as decompose_target,
-               IFNULL(td.forecast_year,0) as forecast_year,
-               IFNULL(td.actual_total,0) as actual_total,
+               IFNULL(td.decompose_target, 0) as decompose_target,
+               IFNULL(td.forecast_year, 0)    as forecast_year,
+               IFNULL(td.actual_total, 0)     as actual_total,
                td.status,
                td.delete_flag,
                td.create_by,
@@ -88,7 +87,7 @@
             and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
         </if>
         <if test="targetDecompose.targetYear != null">
-            and td.target_year  =#{targetDecompose.targetYear}
+            and td.target_year =#{targetDecompose.targetYear}
         </if>
         <if test="targetDecompose.targetDecomposeDimensionId != null">
             and td.target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
@@ -150,7 +149,7 @@
         WHERE target_year = #{targetDecompose.targetYear}
           and target_decompose_dimension_id = #{targetDecompose.targetDecomposeDimensionId}
           and time_dimension = #{targetDecompose.timeDimension}
-          and target_decompose_type=#{targetDecompose.targetDecomposeType}
+          and target_decompose_type = #{targetDecompose.targetDecomposeType}
           and delete_flag = 0
     </select>
     <!--    查询滚动预测列表-->
@@ -250,8 +249,8 @@
                update_by,
                update_time
         FROM target_decompose
-        where time_dimension =#{timeDimension}
-          and target_decompose_type in (1,2,3)
+        where time_dimension = #{timeDimension}
+          and target_decompose_type in (1, 2, 3)
     </select>
     <!--    查询经营结果分析报表列表-->
     <select id="selectResultList"
@@ -327,7 +326,7 @@
             and td.update_time=#{targetDecompose.updateTime}
         </if>
     </select>
-<!--    目标分解是否被引用-->
+    <!--    目标分解是否被引用-->
     <select id="queryDeptDecompose"
             resultType="net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose">
         SELECT tdd.target_decompose_details_id,
@@ -349,8 +348,38 @@
                  left join target_decompose td
                            on td.target_decompose_id = tdd.target_decompose_id
                                and td.delete_flag = 0
-        where tdd.department_id=#{departmentId}
+        where tdd.department_id = #{departmentId}
           and tdd.delete_flag = 0
+    </select>
+    <!--    查询目标分解预制数据年份-->
+    <select id="selectMaxYear"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
+        SELECT
+        target_setting_id,
+        target_setting_type,
+        indicator_id,
+        <if test="targetDecompose.targetYear == null">
+            max(target_year) as target_year,
+        </if>
+        <if test="targetDecompose.targetYear != null">
+            target_year,
+        </if>
+        percentage,
+        challenge_value,
+        target_value,
+        guaranteed_value,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM target_setting
+        where target_setting_type=#{targetDecompose.targetDecomposeType}
+        <if test="targetDecompose.targetYear != null">
+         and  target_year=#{targetDecompose.targetYear}
+        </if>
+        and delete_flag = 0
     </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">

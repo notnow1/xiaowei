@@ -182,6 +182,9 @@ public class TargetDecomposeDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
-
+    /**
+     * 是否可以分解年份
+     */
+    private Boolean decommpFlag;
 }
 

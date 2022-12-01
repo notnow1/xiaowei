@@ -846,6 +846,7 @@
         SELECT
         e.employee_id ,
         e.employee_department_id ,
+        ors.official_rank_system_id,
         case
         when ors.rank_prefix_code is null then e.employee_rank
         when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end

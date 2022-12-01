@@ -179,5 +179,5 @@ public interface SalaryPayMapper {
      * @param payYear
      * @return
      */
-    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeIds") Long employeeId,@Param("payYear") Integer payYear);
+    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId,@Param("payYear") Integer payYear);
 }

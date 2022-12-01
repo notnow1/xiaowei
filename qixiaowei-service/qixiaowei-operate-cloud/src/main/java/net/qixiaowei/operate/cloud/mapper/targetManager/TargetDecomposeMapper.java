@@ -126,4 +126,11 @@ public interface TargetDecomposeMapper {
      * @return
      */
     List<TargetDecompose> queryDeptDecompose(@Param("departmentId") Long departmentId);
+
+    /**
+     * 查询目标分解预制数据年份
+     * @param targetDecompose
+     * @return
+     */
+    TargetDecomposeDTO selectMaxYear(@Param("targetDecompose") TargetDecompose targetDecompose);
 }

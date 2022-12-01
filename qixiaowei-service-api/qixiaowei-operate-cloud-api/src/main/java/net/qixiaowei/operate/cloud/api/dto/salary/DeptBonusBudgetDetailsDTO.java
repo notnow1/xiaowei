@@ -5,6 +5,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -47,9 +48,26 @@ public class DeptBonusBudgetDetailsDTO {
     */
     private  Long departmentId;
     /**
+     * 部门名称
+     */
+    private  String departmentName;
+    /**
+     *
+     */
+    private List<DeptBonusBudgetItemsDTO>  we;
+    /**
+     * 部门奖金总计
+     */
+    private BigDecimal deptBonusSum;
+    /**
     * 部门奖金占比
     */
     private BigDecimal deptBonusPercentage;
+
+    /**
+     * 部门奖金占比参考值
+     */
+    private BigDecimal deptBonusPercentageReference;
     /**
     * 部门重要性系数
     */

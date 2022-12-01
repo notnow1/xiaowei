@@ -44,9 +44,21 @@ public class DeptBonusBudgetDTO {
     */
     private  Integer budgetYear;
     /**
+     * 总奖金包预算
+     */
+    private BigDecimal amountBonusBudget;
+    /**
     * 战略奖比例
     */
     private BigDecimal strategyAwardPercentage;
+    /**
+     * 战略奖金额
+     */
+    private BigDecimal strategyAwardAmount;
+    /**
+     * 部门总奖金包
+     */
+    private BigDecimal deptAmountBonus;
     /**
      * 部门奖金预算明细表
      */

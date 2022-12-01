@@ -358,4 +358,11 @@ public interface ITargetDecomposeService {
      * @return
      */
     List<TargetDecompose> queryDeptDecompose(Long departmentId);
+
+    /**
+     *查询目标分解预制数据年份
+     * @param targetDecomposeDTO
+     * @return
+     */
+    TargetDecomposeDTO selectMaxYear(TargetDecomposeDTO targetDecomposeDTO);
 }

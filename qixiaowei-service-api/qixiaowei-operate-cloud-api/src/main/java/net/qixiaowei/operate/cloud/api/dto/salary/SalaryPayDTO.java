@@ -108,6 +108,10 @@ public class SalaryPayDTO {
      */
     private BigDecimal otherDeductions;
     /**
+     * 总薪酬包
+     */
+    private BigDecimal paymentBonus;
+    /**
      * 发薪金额
      */
     private BigDecimal payAmount;

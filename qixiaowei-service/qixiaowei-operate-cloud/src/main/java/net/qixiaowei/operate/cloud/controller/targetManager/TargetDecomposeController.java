@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,14 @@ public class TargetDecomposeController extends BaseController {
     @Autowired
     private ITargetDecomposeService targetDecomposeService;
 
+    /**
+     * 查询目标分解预制数据年份
+     */
+//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @PostMapping("/getYear")
+    public AjaxResult listOrder(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
+        return AjaxResult.success(targetDecomposeService.selectMaxYear(targetDecomposeDTO));
+    }
 
     /**
      * 查询经营结果分析报表详情
