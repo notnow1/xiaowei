@@ -67,17 +67,17 @@ public class TenantController extends BaseController {
      * 查询单个租户
      */
     //@RequiresPermissions("system:manage:tenant:pageList")
-    @GetMapping("/info")
+    @GetMapping("/info/")
     public AjaxResult queryTenantDTO() {
         return AjaxResult.success(tenantService.selectTenantByTenantId());
     }
     /**
-     * 修改单个租户
+     * 修改企业信息
      */
     //@RequiresPermissions("system:manage:tenant:pageList")
     @PostMapping("/updateInfo")
     public AjaxResult updateMyTenantDTO(@RequestBody @Validated(TenantDTO.UpdateTenantInfoDTO.class) TenantDTO tenantDTO) {
-        return AjaxResult.success(tenantService.updateMyTenantDTO(tenantDTO));
+        return AjaxResult.success(tenantService.updateMyTenant(tenantDTO));
     }
 
     /**
