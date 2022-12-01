@@ -108,4 +108,11 @@ public interface OfficialRankEmolumentMapper{
      * @return
      */
     List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentBySystemId(Long officialRankSystemId);
+
+    /**
+     * 通过职级ID集合获取职级薪酬表
+     * @param officialRankSystemIds 职级ID集合
+     * @return
+     */
+    List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentBySystemIds(List<Long> officialRankSystemIds);
 }
