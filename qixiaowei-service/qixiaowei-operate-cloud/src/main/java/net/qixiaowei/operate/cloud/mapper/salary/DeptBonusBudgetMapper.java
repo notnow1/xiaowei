@@ -107,5 +107,5 @@ public interface DeptBonusBudgetMapper{
      * @return
      * @param deptBonusBudget
      */
-    DeptBonusBudgetDTO queryDeptBonusBudgetYear(DeptBonusBudget deptBonusBudget);
+    DeptBonusBudgetDTO queryDeptBonusBudgetYear(@Param("deptBonusBudget") DeptBonusBudget deptBonusBudget);
 }
