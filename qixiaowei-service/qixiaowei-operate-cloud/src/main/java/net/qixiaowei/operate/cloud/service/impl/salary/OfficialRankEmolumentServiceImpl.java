@@ -1,31 +1,29 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
-import java.math.BigDecimal;
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.salary.OfficialRankEmolument;
+import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
+import net.qixiaowei.operate.cloud.excel.salary.OfficialRankEmolumentExcel;
+import net.qixiaowei.operate.cloud.mapper.salary.OfficialRankEmolumentMapper;
+import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import net.qixiaowei.system.manage.api.remote.basic.RemotePostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
-
-import org.springframework.transaction.annotation.Transactional;
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.salary.OfficialRankEmolument;
-import net.qixiaowei.operate.cloud.excel.salary.OfficialRankEmolumentExcel;
-import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
-import net.qixiaowei.operate.cloud.mapper.salary.OfficialRankEmolumentMapper;
-import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import net.qixiaowei.integration.common.exception.ServiceException;
+import java.util.List;
 
 
 /**
@@ -49,11 +47,12 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
     /**
      * 查询职级薪酬表
      *
-     * @param officialRankSystemId 职级薪酬表主键
+     * @param officialRankEmolument 职级薪酬表
      * @return 职级薪酬表
      */
     @Override
-    public OfficialRankEmolumentDTO selectOfficialRankEmolumentByOfficialRankEmolumentId(Long officialRankSystemId) {
+    public OfficialRankEmolumentDTO selectOfficialRankEmolumentByOfficialRankEmolumentId(OfficialRankEmolumentDTO officialRankEmolument) {
+        Long officialRankSystemId = officialRankEmolument.getOfficialRankSystemId();
         OfficialRankSystemDTO officialRankSystemDTO;
         if (StringUtils.isNull(officialRankSystemId)) {
             List<OfficialRankSystemDTO> officialRankSystemDTOS = getOfficialRankSystemDTOS();
@@ -75,20 +74,12 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         if (StringUtils.isEmpty(officialRankEmolumentDTOS)) { // 没有值
             Integer rankStart = officialRankSystemDTO.getRankStart();
             Integer rankEnd = officialRankSystemDTO.getRankEnd();
-            List<String> rankList = new ArrayList<>();
             List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
             for (Integer end = rankEnd; end > rankStart; end--) {
                 OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
-                List<String> postList = new ArrayList<>();
-                if (StringUtils.isNotEmpty(postDTOS)) {
-                    for (PostDTO postDTO : postDTOS) {
-                        if (postDTO.getPostRankUpper() > end && postDTO.getPostRankLower() < end) {
-                            postList.add(postDTO.getPostName());
-                        }
-                    }
-                }
+                List<String> postList = getPostList(postDTOS, end);
                 officialRankEmolumentDTO.setPostList(postList);
-                officialRankEmolumentDTO.setOfficialRankName("rankPrefixCode" + end);
+                officialRankEmolumentDTO.setOfficialRankName(rankPrefixCode + end);
                 officialRankEmolumentDTO.setSalaryCap(BigDecimal.ZERO);
                 officialRankEmolumentDTO.setSalaryFloor(BigDecimal.ZERO);
                 officialRankEmolumentDTO.setSalaryMedian(BigDecimal.ZERO);
@@ -102,10 +93,51 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             officialRankEmolumentDTO.setOfficialRankEmolumentDTOList(officialRankEmolumentDTOList);
             return officialRankEmolumentDTO;
         }
-        for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOS) {
-
+        for (int i = 0; i < officialRankEmolumentDTOS.size(); i++) {
+            OfficialRankEmolumentDTO rankEmolumentDTO = officialRankEmolumentDTOS.get(i);
+            BigDecimal nextSalaryMedian = officialRankEmolumentDTOS.get(i + 1).getSalaryMedian();
+            rankEmolumentDTO.setOfficialRankName(rankPrefixCode + rankEmolumentDTO.getOfficialRank());
+            // 宽幅
+            BigDecimal wide = rankEmolumentDTO.getSalaryCap().subtract(rankEmolumentDTO.getSalaryFloor());
+            rankEmolumentDTO.setSalaryWide(wide);
+            // 递增率
+            if (i == officialRankEmolumentDTOS.size() - 1) {
+                rankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
+            } else {
+                if (nextSalaryMedian.compareTo(BigDecimal.ZERO) != 0) {
+                    BigDecimal increaseRate = (rankEmolumentDTO.getSalaryMedian().subtract(nextSalaryMedian)).divide(nextSalaryMedian, 2, RoundingMode.HALF_UP);
+                    rankEmolumentDTO.setIncreaseRate(increaseRate);
+                } else {
+                    rankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
+                }
+            }
+            // 岗位
+            List<String> postList = getPostList(postDTOS, rankEmolumentDTO.getOfficialRank());
+            rankEmolumentDTO.setPostList(postList);
         }
-        return null;
+        OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
+        officialRankEmolumentDTO.setOfficialRankSystemId(officialRankSystemDTO.getOfficialRankSystemId());
+        officialRankEmolumentDTO.setOfficialRankSystemName(officialRankSystemDTO.getOfficialRankSystemName());
+        officialRankEmolumentDTO.setOfficialRankEmolumentDTOList(officialRankEmolumentDTOS);
+        return officialRankEmolumentDTO;
+    }
+
+    /**
+     * 获取岗位列表
+     *
+     * @param postDTOS 岗位DTO
+     * @param end      结束
+     */
+    private List<String> getPostList(List<PostDTO> postDTOS, Integer end) {
+        List<String> postList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(postDTOS)) {
+            for (PostDTO postDTO : postDTOS) {
+                if (postDTO.getPostRankUpper() > end && postDTO.getPostRankLower() < end) {
+                    postList.add(postDTO.getPostName());
+                }
+            }
+        }
+        return postList;
     }
 
     /**

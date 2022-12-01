@@ -16,10 +16,10 @@ public interface IOfficialRankEmolumentService {
     /**
      * 查询职级薪酬表
      *
-     * @param officialRankSystemId 职级薪酬表主键
+     * @param officialRankEmolumentDTO 职级薪酬表主键
      * @return 职级薪酬表
      */
-    OfficialRankEmolumentDTO selectOfficialRankEmolumentByOfficialRankEmolumentId(Long officialRankSystemId);
+    OfficialRankEmolumentDTO selectOfficialRankEmolumentByOfficialRankEmolumentId(OfficialRankEmolumentDTO officialRankEmolumentDTO);
 
     /**
      * 查询职级薪酬表列表
