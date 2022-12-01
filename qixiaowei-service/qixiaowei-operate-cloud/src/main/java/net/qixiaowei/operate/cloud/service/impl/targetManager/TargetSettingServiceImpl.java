@@ -1214,7 +1214,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     BigDecimal subtract = historyActual.subtract(beforeRate);
                     BigDecimal divide;
                     if (beforeRate.compareTo(BigDecimal.ZERO) != 0) {
-                        divide = subtract.divide(beforeRate, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                        divide = subtract.divide(beforeRate, 4, RoundingMode.HALF_DOWN).multiply(new BigDecimal(100));
                     } else {
                         divide = BigDecimal.ZERO;
                     }
