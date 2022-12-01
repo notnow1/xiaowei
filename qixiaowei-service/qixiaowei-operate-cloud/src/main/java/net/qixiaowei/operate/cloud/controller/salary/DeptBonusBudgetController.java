@@ -10,6 +10,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.service.salary.IDeptBonusBudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -111,7 +112,7 @@ public class DeptBonusBudgetController extends BaseController
     //@RequiresPermissions("operate:cloud:deptBonusBudget:edit")
     //@Log(title = "修改部门奖金包预算表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO)
+    public AjaxResult editSave(@RequestBody @Validated(DeptBonusBudgetDTO.UpdateDeptBonusBudgetDTO.class) DeptBonusBudgetDTO deptBonusBudgetDTO)
     {
     return toAjax(deptBonusBudgetService.updateDeptBonusBudget(deptBonusBudgetDTO));
     }
@@ -122,7 +123,7 @@ public class DeptBonusBudgetController extends BaseController
     //@RequiresPermissions("operate:cloud:deptBonusBudget:remove")
     //@Log(title = "删除部门奖金包预算表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO)
+    public AjaxResult remove(@RequestBody @Validated(DeptBonusBudgetDTO.DeleteDeptBonusBudgetDTO.class) DeptBonusBudgetDTO deptBonusBudgetDTO)
     {
     return toAjax(deptBonusBudgetService.logicDeleteDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudgetDTO));
     }

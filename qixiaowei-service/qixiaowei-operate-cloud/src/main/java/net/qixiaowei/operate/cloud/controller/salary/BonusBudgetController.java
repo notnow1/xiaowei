@@ -10,8 +10,10 @@ import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetLaddertersDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.service.salary.IBonusBudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -111,7 +113,7 @@ public class BonusBudgetController extends BaseController
     //@RequiresPermissions("operate:cloud:bonusBudget:edit")
     //@Log(title = "修改奖金预算表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody BonusBudgetDTO bonusBudgetDTO)
+    public AjaxResult editSave(@RequestBody @Validated(BonusBudgetDTO.UpdateBonusBudgetDTO.class)  BonusBudgetDTO bonusBudgetDTO)
     {
     return toAjax(bonusBudgetService.updateBonusBudget(bonusBudgetDTO));
     }
@@ -122,7 +124,7 @@ public class BonusBudgetController extends BaseController
     //@RequiresPermissions("operate:cloud:bonusBudget:remove")
     //@Log(title = "删除奖金预算表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody BonusBudgetDTO bonusBudgetDTO)
+    public AjaxResult remove(@RequestBody @Validated(BonusBudgetDTO.DeleteBonusBudgetDTO.class) BonusBudgetDTO bonusBudgetDTO)
     {
     return toAjax(bonusBudgetService.logicDeleteBonusBudgetByBonusBudgetId(bonusBudgetDTO));
     }

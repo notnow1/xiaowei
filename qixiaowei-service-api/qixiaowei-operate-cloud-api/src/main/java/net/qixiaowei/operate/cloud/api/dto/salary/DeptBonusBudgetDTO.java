@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -39,6 +40,7 @@ public class DeptBonusBudgetDTO {
     /**
     * ID
     */
+    @NotNull(message = "调整人数人数不能为空", groups = {DeptBonusBudgetDTO.DeleteDeptBonusBudgetDTO.class, DeptBonusBudgetDTO.UpdateDeptBonusBudgetDTO.class})
     private  Long deptBonusBudgetId;
     /**
     * 预算年度
