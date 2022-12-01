@@ -96,7 +96,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 分页查询list
      *
-     * @param officialRankSystemDTO
+     * @param officialRankSystemDTO 职级体系表
      * @return
      */
     @Override

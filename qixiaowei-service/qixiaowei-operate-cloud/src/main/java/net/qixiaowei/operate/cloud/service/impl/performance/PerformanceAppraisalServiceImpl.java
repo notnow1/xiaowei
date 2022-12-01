@@ -303,11 +303,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         if (StringUtils.isEmpty(appraisalObjectsIds)) {
             List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+            setCodeAndName(appraisal, performanceAppraisalObjectsDTOS);
             appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOS);
             return appraisal;
         }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
         if (StringUtils.isEmpty(performanceAppraisalObjectsDTOS)) {
+            setCodeAndName(appraisal, performanceAppraisalObjectsDTOS);
             return appraisal;
         }
         setCodeAndName(appraisal, performanceAppraisalObjectsDTOS);

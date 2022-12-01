@@ -1,0 +1,308 @@
+package net.qixiaowei.operate.cloud.service.impl.salary;
+
+import java.util.List;
+
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
+import org.springframework.beans.factory.annotation.Autowired;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+
+import org.springframework.transaction.annotation.Transactional;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.salary.OfficialRankEmolument;
+import net.qixiaowei.operate.cloud.excel.salary.OfficialRankEmolumentExcel;
+import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
+import net.qixiaowei.operate.cloud.mapper.salary.OfficialRankEmolumentMapper;
+import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
+
+
+/**
+ * OfficialRankEmolumentService业务层处理
+ *
+ * @author Graves
+ * @since 2022-11-30
+ */
+@Service
+public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentService {
+    @Autowired
+    private OfficialRankEmolumentMapper officialRankEmolumentMapper;
+
+    @Autowired
+    private RemoteOfficialRankSystemService officialRankSystemService;
+
+
+    /**
+     * 查询职级薪酬表
+     *
+     * @param officialRankSystemId 职级薪酬表主键
+     * @return 职级薪酬表
+     */
+    @Override
+    public OfficialRankEmolumentDTO selectOfficialRankEmolumentByOfficialRankEmolumentId(Long officialRankSystemId) {
+        OfficialRankSystemDTO officialRankSystemDTO;
+        if (StringUtils.isNull(officialRankSystemId)) {
+            List<OfficialRankSystemDTO> officialRankSystemDTOS = getOfficialRankSystemDTOS();
+            if (StringUtils.isEmpty(officialRankSystemDTOS)) {
+                throw new ServiceException("职级配置为空 请检查数据");
+            }
+            officialRankSystemDTO = officialRankSystemDTOS.get(0);
+            officialRankSystemId = officialRankSystemDTO.getOfficialRankSystemId();
+        } else {
+            officialRankSystemDTO = getOfficialRankSystemById(officialRankSystemId);
+        }
+        String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();//前缀
+        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
+        if (StringUtils.isEmpty(officialRankEmolumentDTOS)) { // 没有值
+            Integer rankStart = officialRankSystemDTO.getRankStart();
+            Integer rankEnd = officialRankSystemDTO.getRankEnd();
+            List<String> rankList = new ArrayList<>();
+            for (Integer end = rankEnd; end > rankStart; end--) {
+
+            }
+        }
+        for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOS) {
+
+        }
+        return null;
+    }
+
+    /**
+     * 查询职级薪酬表列表
+     *
+     * @param officialRankEmolumentDTO 职级薪酬表
+     * @return 职级薪酬表
+     */
+    @Override
+    public List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentList(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        Long officialRankSystemId = officialRankEmolumentDTO.getOfficialRankSystemId();
+
+
+        OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+        BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
+        return officialRankEmolumentMapper.selectOfficialRankEmolumentList(officialRankEmolument);
+    }
+
+    /**
+     * 通过ID获取职级体系表
+     *
+     * @param officialRankSystemId 职级ID
+     * @return List
+     */
+    private OfficialRankSystemDTO getOfficialRankSystemById(Long officialRankSystemId) {
+        R<OfficialRankSystemDTO> listR = officialRankSystemService.selectById(officialRankSystemId, SecurityConstants.INNER);
+        OfficialRankSystemDTO officialRankSystemDTO = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程调用失败 请联系管理员");
+        }
+        return officialRankSystemDTO;
+    }
+
+    /**
+     * 远程获取职级体系表
+     *
+     * @return List
+     */
+    private List<OfficialRankSystemDTO> getOfficialRankSystemDTOS() {
+        R<List<OfficialRankSystemDTO>> listR = officialRankSystemService.selectAll(SecurityConstants.INNER);
+        List<OfficialRankSystemDTO> officialRankSystemDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程调用失败 请联系管理员");
+        }
+        return officialRankSystemDTOS;
+    }
+
+    /**
+     * 新增职级薪酬表
+     *
+     * @param officialRankEmolumentDTO 职级薪酬表
+     * @return 结果
+     */
+    @Override
+    public OfficialRankEmolumentDTO insertOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+        BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
+        officialRankEmolument.setCreateBy(SecurityUtils.getUserId());
+        officialRankEmolument.setCreateTime(DateUtils.getNowDate());
+        officialRankEmolument.setUpdateTime(DateUtils.getNowDate());
+        officialRankEmolument.setUpdateBy(SecurityUtils.getUserId());
+        officialRankEmolument.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        officialRankEmolumentMapper.insertOfficialRankEmolument(officialRankEmolument);
+        officialRankEmolumentDTO.setOfficialRankEmolumentId(officialRankEmolument.getOfficialRankEmolumentId());
+        return officialRankEmolumentDTO;
+    }
+
+    /**
+     * 修改职级薪酬表
+     *
+     * @param officialRankEmolumentDTO 职级薪酬表
+     * @return 结果
+     */
+    @Override
+    public int updateOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+        BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
+        officialRankEmolument.setUpdateTime(DateUtils.getNowDate());
+        officialRankEmolument.setUpdateBy(SecurityUtils.getUserId());
+        return officialRankEmolumentMapper.updateOfficialRankEmolument(officialRankEmolument);
+    }
+
+    /**
+     * 逻辑批量删除职级薪酬表
+     *
+     * @param officialRankEmolumentIds 主键集合
+     * @return 结果
+     */
+    @Override
+    public int logicDeleteOfficialRankEmolumentByOfficialRankEmolumentIds(List<Long> officialRankEmolumentIds) {
+        return officialRankEmolumentMapper.logicDeleteOfficialRankEmolumentByOfficialRankEmolumentIds(officialRankEmolumentIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * 物理删除职级薪酬表信息
+     *
+     * @param officialRankEmolumentId 职级薪酬表主键
+     * @return 结果
+     */
+    @Override
+    public int deleteOfficialRankEmolumentByOfficialRankEmolumentId(Long officialRankEmolumentId) {
+        return officialRankEmolumentMapper.deleteOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolumentId);
+    }
+
+    /**
+     * 逻辑删除职级薪酬表信息
+     *
+     * @param officialRankEmolumentDTO 职级薪酬表
+     * @return 结果
+     */
+    @Override
+    public int logicDeleteOfficialRankEmolumentByOfficialRankEmolumentId(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+        officialRankEmolument.setOfficialRankEmolumentId(officialRankEmolumentDTO.getOfficialRankEmolumentId());
+        officialRankEmolument.setUpdateTime(DateUtils.getNowDate());
+        officialRankEmolument.setUpdateBy(SecurityUtils.getUserId());
+        return officialRankEmolumentMapper.logicDeleteOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolument);
+    }
+
+    /**
+     * 物理删除职级薪酬表信息
+     *
+     * @param officialRankEmolumentDTO 职级薪酬表
+     * @return 结果
+     */
+
+    @Override
+    public int deleteOfficialRankEmolumentByOfficialRankEmolumentId(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+        BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
+        return officialRankEmolumentMapper.deleteOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolument.getOfficialRankEmolumentId());
+    }
+
+    /**
+     * 物理批量删除职级薪酬表
+     *
+     * @param officialRankEmolumentDtos 需要删除的职级薪酬表主键
+     * @return 结果
+     */
+
+    @Override
+    public int deleteOfficialRankEmolumentByOfficialRankEmolumentIds(List<OfficialRankEmolumentDTO> officialRankEmolumentDtos) {
+        List<Long> stringList = new ArrayList();
+        for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDtos) {
+            stringList.add(officialRankEmolumentDTO.getOfficialRankEmolumentId());
+        }
+        return officialRankEmolumentMapper.deleteOfficialRankEmolumentByOfficialRankEmolumentIds(stringList);
+    }
+
+    /**
+     * 批量新增职级薪酬表信息
+     *
+     * @param officialRankEmolumentDtos 职级薪酬表对象
+     */
+
+    public int insertOfficialRankEmoluments(List<OfficialRankEmolumentDTO> officialRankEmolumentDtos) {
+        List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList();
+
+        for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDtos) {
+            OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+            BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
+            officialRankEmolument.setCreateBy(SecurityUtils.getUserId());
+            officialRankEmolument.setCreateTime(DateUtils.getNowDate());
+            officialRankEmolument.setUpdateTime(DateUtils.getNowDate());
+            officialRankEmolument.setUpdateBy(SecurityUtils.getUserId());
+            officialRankEmolument.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            officialRankEmolumentList.add(officialRankEmolument);
+        }
+        return officialRankEmolumentMapper.batchOfficialRankEmolument(officialRankEmolumentList);
+    }
+
+    /**
+     * 批量修改职级薪酬表信息
+     *
+     * @param officialRankEmolumentDtos 职级薪酬表对象
+     */
+
+    public int updateOfficialRankEmoluments(List<OfficialRankEmolumentDTO> officialRankEmolumentDtos) {
+        List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList();
+
+        for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDtos) {
+            OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+            BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
+            officialRankEmolument.setCreateBy(SecurityUtils.getUserId());
+            officialRankEmolument.setCreateTime(DateUtils.getNowDate());
+            officialRankEmolument.setUpdateTime(DateUtils.getNowDate());
+            officialRankEmolument.setUpdateBy(SecurityUtils.getUserId());
+            officialRankEmolumentList.add(officialRankEmolument);
+        }
+        return officialRankEmolumentMapper.updateOfficialRankEmoluments(officialRankEmolumentList);
+    }
+
+    /**
+     * 导入Excel
+     *
+     * @param list
+     */
+    @Override
+    public void importOfficialRankEmolument(List<OfficialRankEmolumentExcel> list) {
+        List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList<>();
+        list.forEach(l -> {
+            OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+            BeanUtils.copyProperties(l, officialRankEmolument);
+            officialRankEmolument.setCreateBy(SecurityUtils.getUserId());
+            officialRankEmolument.setCreateTime(DateUtils.getNowDate());
+            officialRankEmolument.setUpdateTime(DateUtils.getNowDate());
+            officialRankEmolument.setUpdateBy(SecurityUtils.getUserId());
+            officialRankEmolument.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            officialRankEmolumentList.add(officialRankEmolument);
+        });
+        try {
+            officialRankEmolumentMapper.batchOfficialRankEmolument(officialRankEmolumentList);
+        } catch (Exception e) {
+            throw new ServiceException("导入职级薪酬表失败");
+        }
+    }
+
+    /**
+     * 导出Excel
+     *
+     * @param officialRankEmolumentDTO
+     * @return
+     */
+    @Override
+    public List<OfficialRankEmolumentExcel> exportOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
+        BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
+        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentMapper.selectOfficialRankEmolumentList(officialRankEmolument);
+        List<OfficialRankEmolumentExcel> officialRankEmolumentExcelList = new ArrayList<>();
+        return officialRankEmolumentExcelList;
+    }
+}
+

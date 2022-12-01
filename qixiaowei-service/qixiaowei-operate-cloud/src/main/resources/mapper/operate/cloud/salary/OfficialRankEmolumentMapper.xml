@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.OfficialRankEmolumentMapper">
+    <!--    查询职级薪酬表-->
+    <select id="selectOfficialRankEmolumentByOfficialRankEmolumentId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO">
+        SELECT
+        official_rank_emolument_id, official_rank_system_id, official_rank, salary_cap, salary_floor, salary_median,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_emolument
+        WHERE official_rank_emolument_id=#{officialRankEmolumentId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询职级薪酬表-->
+    <select id="selectOfficialRankEmolumentByOfficialRankEmolumentIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO">
+        SELECT
+        official_rank_emolument_id, official_rank_system_id, official_rank, salary_cap, salary_floor, salary_median,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_emolument
+        WHERE official_rank_emolument_id in
+        <foreach item="item"
+                 collection="officialRankEmolumentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询职级薪酬表列表-->
+    <select id="selectOfficialRankEmolumentList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO">
+        SELECT
+        official_rank_emolument_id, official_rank_system_id, official_rank, salary_cap, salary_floor, salary_median,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_emolument
+        WHERE delete_flag=0
+        <if test="officialRankEmolument.officialRankEmolumentId != null">
+            and official_rank_emolument_id=#{officialRankEmolument.officialRankEmolumentId}
+        </if>
+        <if test="officialRankEmolument.officialRankSystemId != null">
+            and official_rank_system_id=#{officialRankEmolument.officialRankSystemId}
+        </if>
+        <if test="officialRankEmolument.officialRank != null">
+            and official_rank=#{officialRankEmolument.officialRank}
+        </if>
+        <if test="officialRankEmolument.salaryCap != null">
+            and salary_cap=#{officialRankEmolument.salaryCap}
+        </if>
+        <if test="officialRankEmolument.salaryFloor != null">
+            and salary_floor=#{officialRankEmolument.salaryFloor}
+        </if>
+        <if test="officialRankEmolument.salaryMedian != null">
+            and salary_median=#{officialRankEmolument.salaryMedian}
+        </if>
+        <if test="officialRankEmolument.deleteFlag != null">
+            and delete_flag=#{officialRankEmolument.deleteFlag}
+        </if>
+        <if test="officialRankEmolument.createBy != null">
+            and create_by=#{officialRankEmolument.createBy}
+        </if>
+        <if test="officialRankEmolument.createTime != null">
+            and create_time=#{officialRankEmolument.createTime}
+        </if>
+        <if test="officialRankEmolument.updateBy != null">
+            and update_by=#{officialRankEmolument.updateBy}
+        </if>
+        <if test="officialRankEmolument.updateTime != null">
+            and update_time=#{officialRankEmolument.updateTime}
+        </if>
+    </select>
+    <!--    通过职级ID获取职级薪酬表-->
+    <select id="selectOfficialRankEmolumentBySystemId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO">
+        SELECT
+        official_rank_emolument_id, official_rank_system_id, official_rank, salary_cap, salary_floor, salary_median,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_emolument
+        WHERE delete_flag=0
+        AND official_rank_system_id = #{officialRankSystemId}
+        ORDER BY official_rank DESC
+    </select>
+    <!--新增职级薪酬表-->
+    <insert id="insertOfficialRankEmolument" useGeneratedKeys="true" keyProperty="officialRankEmolumentId">
+        INSERT INTO official_rank_emolument
+        (official_rank_system_id,official_rank,salary_cap,salary_floor,salary_median,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{officialRankEmolument.officialRankSystemId},#{officialRankEmolument.officialRank},#{officialRankEmolument.salaryCap},#{officialRankEmolument.salaryFloor},#{officialRankEmolument.salaryMedian},#{officialRankEmolument.deleteFlag},#{officialRankEmolument.createBy},#{officialRankEmolument.createTime},#{officialRankEmolument.updateBy},#{officialRankEmolument.updateTime})
+    </insert>
+    <!--修改职级薪酬表-->
+    <update id="updateOfficialRankEmolument">
+        UPDATE official_rank_emolument
+        SET
+        <if test="officialRankEmolument.officialRankSystemId != null">
+            official_rank_system_id=#{officialRankEmolument.officialRankSystemId},
+        </if>
+        <if test="officialRankEmolument.officialRank != null">
+            official_rank=#{officialRankEmolument.officialRank},
+        </if>
+        <if test="officialRankEmolument.salaryCap != null">
+            salary_cap=#{officialRankEmolument.salaryCap},
+        </if>
+        <if test="officialRankEmolument.salaryFloor != null">
+            salary_floor=#{officialRankEmolument.salaryFloor},
+        </if>
+        <if test="officialRankEmolument.salaryMedian != null">
+            salary_median=#{officialRankEmolument.salaryMedian},
+        </if>
+        <if test="officialRankEmolument.deleteFlag != null">
+            delete_flag=#{officialRankEmolument.deleteFlag},
+        </if>
+        <if test="officialRankEmolument.createBy != null">
+            create_by=#{officialRankEmolument.createBy},
+        </if>
+        <if test="officialRankEmolument.createTime != null">
+            create_time=#{officialRankEmolument.createTime},
+        </if>
+        <if test="officialRankEmolument.updateBy != null">
+            update_by=#{officialRankEmolument.updateBy},
+        </if>
+        <if test="officialRankEmolument.updateTime != null">
+            update_time=#{officialRankEmolument.updateTime}
+        </if>
+        WHERE
+        official_rank_emolument_id=#{officialRankEmolument.officialRankEmolumentId}
+    </update>
+    <!--逻辑删除职级薪酬表-->
+    <update id="logicDeleteOfficialRankEmolumentByOfficialRankEmolumentId">
+        UPDATE official_rank_emolument
+        SET delete_flag= 1,
+        update_by=#{officialRankEmolument.updateBy},
+        update_time=#{officialRankEmolument.updateTime}
+        WHERE
+        official_rank_emolument_id=#{officialRankEmolument.officialRankEmolumentId}
+    </update>
+    <!--逻辑批量删除职级薪酬表-->
+    <update id="logicDeleteOfficialRankEmolumentByOfficialRankEmolumentIds">
+        UPDATE official_rank_emolument
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        official_rank_emolument_id IN
+        <foreach item="item"
+                 collection="officialRankEmolumentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增职级薪酬表-->
+    <insert id="batchOfficialRankEmolument">
+        INSERT INTO official_rank_emolument
+        (official_rank_system_id,official_rank,salary_cap,salary_floor,salary_median,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="officialRankEmoluments"
+                 separator=",">
+            (#{item.officialRankSystemId},#{item.officialRank},#{item.salaryCap},#{item.salaryFloor},#{item.salaryMedian},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除职级薪酬表-->
+    <delete id="deleteOfficialRankEmolumentByOfficialRankEmolumentId">
+        DELETE FROM official_rank_emolument
+        WHERE official_rank_emolument_id=#{officialRankEmolument}
+
+    </delete>
+    <!--物理批量删除职级薪酬表-->
+    <delete id="deleteOfficialRankEmolumentByOfficialRankEmolumentIds">
+        DELETE FROM official_rank_emolument
+        WHERE official_rank_emolument_id IN
+        <foreach item="item"
+                 collection="officialRankEmolumentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改职级薪酬表-->
+    <update id="updateOfficialRankEmoluments">
+        update official_rank_emolument
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="official_rank_system_id=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.officialRankSystemId != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then
+                        #{item.officialRankSystemId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="official_rank=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.officialRank != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.officialRank}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="salary_cap=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.salaryCap != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.salaryCap}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="salary_floor=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.salaryFloor != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.salaryFloor}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="salary_median=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.salaryMedian != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.salaryMedian}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="officialRankEmolumentList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when official_rank_emolument_id=#{item.officialRankEmolumentId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="officialRankEmolumentList" separator="or" item="item" index="index">
+            official_rank_emolument_id=#{item.officialRankEmolumentId}
+        </foreach>
+    </update>
+</mapper>
+
+
