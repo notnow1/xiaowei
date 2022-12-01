@@ -668,6 +668,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<Long> performAppraisalObjectsIds = new ArrayList<>();
         // 顺便排序
         int sort = 0;
+        if (StringUtils.isEmpty(performanceAppraisalObjectsDTOS)) {
+            throw new ServiceException("请选择考核任务范围");
+        }
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
             Long objectId = performanceAppraisalObjectsDTO.getAppraisalObjectId();
             if (performAppraisalObjectsIds.contains(objectId)) {
