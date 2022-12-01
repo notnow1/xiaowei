@@ -7,10 +7,13 @@ import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.service.salary.IDeptBonusBudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -35,10 +38,20 @@ public class DeptBonusBudgetController extends BaseController
      */
     //@RequiresPermissions("operate:cloud:bonusBudget:info")
     @GetMapping("/queryDeptBonusBudgetYear")
-    public AjaxResult queryDeptBonusBudgetYear(){
-        int planYear = deptBonusBudgetService.queryDeptBonusBudgetYear();
-        return AjaxResult.success(planYear);
+    public AjaxResult queryDeptBonusBudgetYear(DeptBonusBudgetDTO deptBonusBudgetDTO){
+        return AjaxResult.success(deptBonusBudgetService.queryDeptBonusBudgetYear(deptBonusBudgetDTO));
     }
+    /**
+     *实时查询部门奖金包预算明细参考值数据
+     */
+    //@RequiresPermissions("operate:cloud:deptBonusBudget:add")
+    //@Log(title = "新增部门奖金包预算表", businessType = BusinessType.INSERT)
+    @PostMapping("/realTime")
+    public AjaxResult realTimeQueryDeptBonusBudget(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO) {
+        List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOList = deptBonusBudgetService.realTimeQueryDeptBonusBudget(deptBonusBudgetDTO);
+        return AjaxResult.success(deptBonusBudgetDetailsDTOList);
+    }
+
     /**
      * 新增部门奖金包预算预制数据
      */
@@ -49,7 +62,6 @@ public class DeptBonusBudgetController extends BaseController
         DeptBonusBudgetDTO deptBonusBudgetDTO = deptBonusBudgetService.addDeptBonusBudgetTamount(budgetYear);
         return AjaxResult.success(deptBonusBudgetDTO);
     }
-    
 
     /**
     * 查询部门奖金包预算表详情
@@ -100,7 +112,7 @@ public class DeptBonusBudgetController extends BaseController
     //@RequiresPermissions("operate:cloud:deptBonusBudget:edit")
     //@Log(title = "修改部门奖金包预算表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO)
+    public AjaxResult editSave(@RequestBody @Validated(DeptBonusBudgetDTO.UpdateDeptBonusBudgetDTO.class) DeptBonusBudgetDTO deptBonusBudgetDTO)
     {
     return toAjax(deptBonusBudgetService.updateDeptBonusBudget(deptBonusBudgetDTO));
     }
@@ -111,7 +123,7 @@ public class DeptBonusBudgetController extends BaseController
     //@RequiresPermissions("operate:cloud:deptBonusBudget:remove")
     //@Log(title = "删除部门奖金包预算表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO)
+    public AjaxResult remove(@RequestBody @Validated(DeptBonusBudgetDTO.DeleteDeptBonusBudgetDTO.class) DeptBonusBudgetDTO deptBonusBudgetDTO)
     {
     return toAjax(deptBonusBudgetService.logicDeleteDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudgetDTO));
     }

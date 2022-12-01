@@ -6,8 +6,10 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 /**
 * 奖金预算表
@@ -38,6 +40,7 @@ public class BonusBudgetDTO {
     /**
     * ID
     */
+    @NotNull(message = "调整人数人数不能为空", groups = {BonusBudgetDTO.DeleteBonusBudgetDTO.class, BonusBudgetDTO.UpdateBonusBudgetDTO.class})
     private  Long bonusBudgetId;
     /**
     * 预算年度

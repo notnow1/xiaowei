@@ -123,6 +123,12 @@ public interface ITenantService{
     int updateMyTenantDTO(TenantDTO tenantDTO);
 
     /**
+     * 修改企业信息
+     * @return
+     */
+    int updateMyTenant(TenantDTO tenantDTO);
+
+    /**
      * 导出Excel
      * @param tenantDTO
      * @return
