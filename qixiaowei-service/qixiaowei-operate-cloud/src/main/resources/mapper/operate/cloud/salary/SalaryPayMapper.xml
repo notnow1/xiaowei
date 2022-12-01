@@ -220,26 +220,27 @@
 <!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）-->
     <select id="selectDeptBonusBudgetPay" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
-        sp.salary_amount +sp.allowance_amount +sp.welfare_amount  as test,
-        salary_pay_id,
-        employee_id,
-        pay_year,
-        pay_month,
-        salary_amount,
-        allowance_amount,
-        welfare_amount,
-        bonus_amount,
-        withhold_remit_tax,
-        other_deductions,
-        pay_amount,
-        delete_flag,
-        create_by,
-        create_time,
-        update_by,
-        update_time
+        sp.salary_amount +sp.allowance_amount +sp.welfare_amount+sp.bonus_amount  as paymentBonus,
+        sp.salary_pay_id,
+        sp.employee_id,
+        sp.pay_year,
+        sp.pay_month,
+        sp.salary_amount,
+        sp.allowance_amount,
+        sp.welfare_amount,
+        sp.bonus_amount,
+        sp.withhold_remit_tax,
+        sp.other_deductions,
+        sp.pay_amount,
+        sp.delete_flag,
+        sp.create_by,
+        sp.create_time,
+        sp.update_by,
+        sp.update_time
         FROM
-        operate_cloud.salary_pay sp
-        where sp.pay_year = 2022
+        salary_pay sp
+        where sp.pay_year &lt;= #{payYear}
+        and  sp.employee_id=#{employeeId}
         and  sp.delete_flag =0
         ORDER BY sp.pay_year DESC ,sp.pay_month DESC
         limit 12
