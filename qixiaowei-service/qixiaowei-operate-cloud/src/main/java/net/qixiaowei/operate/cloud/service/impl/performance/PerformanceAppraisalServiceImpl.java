@@ -351,9 +351,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Integer appraisalObject = appraisal.getAppraisalObject();
         List<DepartmentDTO> departmentData;
         List<EmployeeDTO> employeeData;
+        int rank = 0;
         if (appraisalObject == 1) {//组织
             departmentData = getDepartmentData();
             for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                performanceAppraisalObjectsDTO.setRank(rank);
                 for (DepartmentDTO departmentDTO : departmentData) {
                     if (departmentDTO.getDepartmentId().equals(performanceAppraisalObjectsDTO.getAppraisalObjectId())) {
                         performanceAppraisalObjectsDTO.setAppraisalObjectName(departmentDTO.getDepartmentName());
@@ -361,18 +363,23 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                         break;
                     }
                 }
+                rank++;
             }
         } else {
             employeeData = getEmployeeData();
             for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                performanceAppraisalObjectsDTO.setRank(rank);
                 for (EmployeeDTO employeeDTO : employeeData) {
                     if (employeeDTO.getEmployeeId().equals(performanceAppraisalObjectsDTO.getAppraisalObjectId())) {
                         performanceAppraisalObjectsDTO.setAppraisalObjectName(employeeDTO.getEmployeeName());
                         performanceAppraisalObjectsDTO.setAppraisalObjectCode(employeeDTO.getEmployeeCode());
                         performanceAppraisalObjectsDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
+                        performanceAppraisalObjectsDTO.setPostName(employeeDTO.getEmployeePostName());
+                        performanceAppraisalObjectsDTO.setAppraisalRankName(employeeDTO.getEmployeeRankName());
                         break;
                     }
                 }
+                rank++;
             }
         }
     }

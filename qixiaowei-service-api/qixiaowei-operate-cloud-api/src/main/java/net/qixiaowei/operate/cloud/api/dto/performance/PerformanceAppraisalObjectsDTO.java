@@ -48,6 +48,10 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private Long performAppraisalObjectsId;
     /**
+     * 名次
+     */
+    private Integer rank;
+    /**
      * 绩效考核ID
      */
     private Long performanceAppraisalId;
