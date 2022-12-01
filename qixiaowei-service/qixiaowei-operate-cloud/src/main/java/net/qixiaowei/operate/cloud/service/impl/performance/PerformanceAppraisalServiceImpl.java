@@ -124,12 +124,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOList);
         List<Map<String, Object>> performanceAppraisalRankList = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
         performanceRankMap.remove(null);
         if (StringUtils.isEmpty(performanceRankMap)) {
             return appraisal;
         }
         for (String rank : performanceRankMap.keySet()) {
+            Map<String, Object> map = new HashMap<>();
             BigDecimal number = performanceRankMap.get(rank);
             if (sum.equals(0)) {
                 return appraisal;
@@ -186,12 +186,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOList);
         List<Map<String, Object>> performanceAppraisalRankList = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
         performanceRankMap.remove(null);
         if (StringUtils.isEmpty(performanceRankMap)) {
             return appraisal;
         }
         for (String rank : performanceRankMap.keySet()) {
+            Map<String, Object> map = new HashMap<>();
             BigDecimal number = performanceRankMap.get(rank);
             if (sum.equals(0)) {
                 return appraisal;
@@ -260,9 +260,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             sum = setRankMap(performanceRankMap, performanceAppraisalObjectsDTO, sum);
         }
         List<Map<String, Object>> performanceAppraisalRankList = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
         performanceRankMap.remove(null);
         for (String rank : performanceRankMap.keySet()) {
+            Map<String, Object> map = new HashMap<>();
             BigDecimal number = performanceRankMap.get(rank);
             if (sum.equals(0)) {
                 return appraisal;
@@ -325,9 +325,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             sum = setRankMap(performanceRankMap, performanceAppraisalObjectsDTO, sum);
         }
         List<Map<String, Object>> performanceAppraisalRankList = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
         performanceRankMap.remove(null);
         for (String rank : performanceRankMap.keySet()) {
+            Map<String, Object> map = new HashMap<>();
             BigDecimal number = performanceRankMap.get(rank);
             if (sum.equals(0)) {
                 return appraisal;
