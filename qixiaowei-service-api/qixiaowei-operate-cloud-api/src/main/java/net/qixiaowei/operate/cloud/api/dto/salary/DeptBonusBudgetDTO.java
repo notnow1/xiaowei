@@ -48,6 +48,10 @@ public class DeptBonusBudgetDTO {
      */
     private BigDecimal amountBonusBudget;
     /**
+     * 部门奖金预算是否可编辑
+     */
+    private Boolean deptBonusAddFlag;
+    /**
     * 战略奖比例
     */
     private BigDecimal strategyAwardPercentage;
