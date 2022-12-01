@@ -1969,6 +1969,25 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     }
 
     /**
+     * 查询目标分解预制数据年份
+     * @param targetDecomposeDTO
+     * @return
+     */
+    @Override
+    public TargetDecomposeDTO selectMaxYear(TargetDecomposeDTO targetDecomposeDTO) {
+        TargetDecompose targetDecompose = new TargetDecompose();
+        BeanUtils.copyProperties(targetDecomposeDTO,targetDecompose);
+        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectMaxYear(targetDecompose);
+        if (StringUtils.isNull(targetDecomposeDTO1)){
+            targetDecomposeDTO1.setDecommpFlag(false);
+        }else {
+            targetDecomposeDTO1.setDecommpFlag(true);
+        }
+
+        return targetDecomposeDTO1;
+    }
+
+    /**
      * 封装远程调用数据
      *
      * @param targetDecomposeDetailsDTOList
