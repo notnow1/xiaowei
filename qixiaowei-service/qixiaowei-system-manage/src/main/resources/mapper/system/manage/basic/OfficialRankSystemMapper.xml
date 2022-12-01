@@ -21,10 +21,10 @@
         FROM official_rank_system
         WHERE delete_flag=0
         <if test="officialRankSystem.officialRankSystemId != null">
-            and official_rank_system_id like "%" #{officialRankSystem.officialRankSystemId} "%"
+            and official_rank_system_id = #{officialRankSystem.officialRankSystemId}
         </if>
         <if test="officialRankSystem.officialRankSystemName != null and officialRankSystem.officialRankSystemName != ''">
-            and official_rank_system_name like "%" #{officialRankSystem.officialRankSystemName} "%"
+            and official_rank_system_name like concat('%', #{officialRankSystem.officialRankSystemName}, '%')
         </if>
         <!--        <if test="officialRankSystem.rankPrefixCode != null and officialRankSystem.rankPrefixCode != ''">-->
         <!--            and rank_prefix_code like "%" #{officialRankSystem.rankPrefixCode} "%"-->
@@ -45,7 +45,7 @@
             and delete_flag = #{officialRankSystem.deleteFlag}
         </if>
         <if test="officialRankSystem.createBy != null">
-            and create_by like "%" #{officialRankSystem.createBy} "%"
+            and create_by = #{officialRankSystem.createBy}
         </if>
         <!-- 开始时间检索 -->
         <if test="officialRankSystem.params.createTimeStart != null and officialRankSystem.params.createTimeStart != ''">
@@ -56,7 +56,7 @@
             AND date_format(create_time,'%y%m%d') &lt;= date_format(#{officialRankSystem.params.createTimeEnd},'%y%m%d')
         </if>
         <if test="officialRankSystem.updateBy != null">
-            and update_by like "%" #{officialRankSystem.updateBy} "%"
+            and update_by = #{officialRankSystem.updateBy}
         </if>
     </select>
     <select id="officialRankByName" resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">

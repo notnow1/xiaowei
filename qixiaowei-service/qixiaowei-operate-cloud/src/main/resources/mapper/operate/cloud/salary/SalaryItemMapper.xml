@@ -29,7 +29,7 @@
             and second_level_item=#{salaryItem.secondLevelItem}
         </if>
         <if test="salaryItem.thirdLevelItem != null and salaryItem.thirdLevelItem != ''">
-            and third_level_item like "%" #{salaryItem.thirdLevelItem} "%"
+            and third_level_item like concat('%', #{salaryItem.thirdLevelItem}, '%')
         </if>
         <if test="salaryItem.scope != null">
             and scope=#{salaryItem.scope}

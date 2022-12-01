@@ -114,4 +114,12 @@ public interface PerformanceAppraisalMapper {
      * @return List
      */
     List<PerformanceRankFactorDTO> selectRankFactorByAppraisalId(@Param("appraisalId") Long appraisalId);
+
+    /**
+     * 通过考核名称获取考核列表
+     *
+     * @param appraisalName 考核名称
+     * @return
+     */
+    List<PerformanceAppraisalDTO> selectPerformanceAppraisalListByName(@Param("appraisalName") String appraisalName);
 }

@@ -656,9 +656,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     private List<PerformanceAppraisalObjectsDTO> checkAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO) {
         String appraisalName = performanceAppraisalDTO.getAppraisalName();
-        PerformanceAppraisal performanceAppraisalName = new PerformanceAppraisal();
-        performanceAppraisalName.setAppraisalName(appraisalName);
-        List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisalName);
+        if (StringUtils.isNull(appraisalName)) {
+            throw new ServiceException("考核任务名称不能为空");
+        }
+        List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalListByName(appraisalName);
         if (StringUtils.isNotEmpty(performanceAppraisalDTOS)) {
             throw new ServiceException("考核任务名称重复");
         }

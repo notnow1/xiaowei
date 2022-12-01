@@ -29,10 +29,10 @@
             and ancestors=#{industry.ancestors}
         </if>
         <if test="industry.industryCode != null and industry.industryCode != ''">
-            and industry_code like "%" #{industry.industryCode} "%"
+            and industry_code like concat('%', #{industry.industryCode}, '%')
         </if>
         <if test="industry.industryName != null and industry.industryName != ''">
-            and industry_name like "%" #{industry.industryName} "%"
+            and industry_name like concat('%', #{industry.industryName}, '%')
         </if>
         <if test="industry.level != null and industry.level != ''">
             and level=#{industry.level}

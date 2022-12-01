@@ -38,10 +38,10 @@
             and t1.indicator_type=#{indicator.indicatorType}
         </if>
         <if test="indicator.indicatorCode != null and indicator.indicatorCode != ''">
-            and t1.indicator_code like "%" #{indicator.indicatorCode} "%"
+            and t1.indicator_code like concat('%', #{indicator.indicatorCode}, '%')
         </if>
         <if test="indicator.indicatorName != null and indicator.indicatorName != ''">
-            and t1.indicator_name like "%" #{indicator.indicatorName} "%"
+            and t1.indicator_name like concat('%', #{indicator.indicatorName}, '%')
         </if>
         <if test="indicator.sort != null">
             and t1.sort=#{indicator.sort}

@@ -12,9 +12,9 @@
         pa.appraisal_status, pa.delete_flag, pa.create_by, pa.create_time, pa.update_by, pa.update_time,
         pr.performance_rank_name
         FROM performance_appraisal pa
-            LEFT JOIN performance_rank pr
-                ON pa.performance_rank_id=pr.performance_rank_id
-                    AND pr.delete_flag=0
+        LEFT JOIN performance_rank pr
+        ON pa.performance_rank_id=pr.performance_rank_id
+        AND pr.delete_flag=0
         WHERE pa.performance_appraisal_id=#{performanceAppraisalId}
         AND pa.delete_flag=0
     </select>
@@ -40,16 +40,18 @@
     <select id="selectPerformanceAppraisalList"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">
         SELECT
-        pa.performance_appraisal_id, pa.performance_rank_id, pa.appraisal_year, pa.appraisal_name, pa.cycle_flag, pa.cycle_type,
-        pa.cycle_number, pa.appraisal_start_date, pa.appraisal_end_date, pa.filing_date, pa.appraisal_flow, pa.appraisal_object,
+        pa.performance_appraisal_id, pa.performance_rank_id, pa.appraisal_year, pa.appraisal_name, pa.cycle_flag,
+        pa.cycle_type,
+        pa.cycle_number, pa.appraisal_start_date, pa.appraisal_end_date, pa.filing_date, pa.appraisal_flow,
+        pa.appraisal_object,
         pa.self_defined_columns_flag,pa.appraisal_status, pa.delete_flag, pa.create_by, pa.create_time, pa.update_by,
         pa.update_time,
         pr.performance_rank_name
         FROM performance_appraisal pa
-            LEFT JOIN performance_rank pr
-                ON pa.performance_rank_id = pr.performance_rank_id
-                AND pr.delete_flag=0
-            WHERE pa.delete_flag=0
+        LEFT JOIN performance_rank pr
+        ON pa.performance_rank_id = pr.performance_rank_id
+        AND pr.delete_flag=0
+        WHERE pa.delete_flag=0
         <if test="performanceAppraisal.performanceAppraisalId != null">
             and pa.performance_appraisal_id=#{performanceAppraisal.performanceAppraisalId}
         </if>
@@ -60,7 +62,7 @@
             and pa.appraisal_year=#{performanceAppraisal.appraisalYear}
         </if>
         <if test="performanceAppraisal.appraisalName != null and performanceAppraisal.appraisalName != ''">
-            and pa.appraisal_name like "%" #{performanceAppraisal.appraisalName} "%"
+            and pa.appraisal_name like concat('%', #{performanceAppraisal.appraisalName}, '%')
         </if>
         <if test="performanceAppraisal.cycleFlag != null">
             and pa.cycle_flag=#{performanceAppraisal.cycleFlag}
@@ -125,12 +127,22 @@
         pf.update_by,
         pf.update_time
         FROM performance_appraisal pa
-            LEFT JOIN performance_rank_factor pf
-                ON pf.performance_rank_id = pa.performance_rank_id
-                AND pf.delete_flag = 0
+        LEFT JOIN performance_rank_factor pf
+        ON pf.performance_rank_id = pa.performance_rank_id
+        AND pf.delete_flag = 0
         WHERE
         pf.delete_flag = 0
         AND pa.performance_appraisal_id = #{appraisalId}
+    </select>
+    <select id="selectPerformanceAppraisalListByName"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">
+        SELECT
+        performance_appraisal_id, performance_rank_id, appraisal_year, appraisal_name, cycle_flag, cycle_type,
+        cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow, appraisal_object,
+        self_defined_columns_flag, appraisal_status, delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_appraisal
+        WHERE delete_flag=0
+        AND appraisal_name = #{appraisalName}
     </select>
     <!--新增绩效考核表-->
     <insert id="insertPerformanceAppraisal" useGeneratedKeys="true" keyProperty="performanceAppraisalId">

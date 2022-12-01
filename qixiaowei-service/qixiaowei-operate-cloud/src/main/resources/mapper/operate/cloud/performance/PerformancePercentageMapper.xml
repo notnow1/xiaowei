@@ -34,13 +34,13 @@
             and performance_percentage_id=#{performancePercentageDTO.performancePercentageId}
         </if>
         <if test="performancePercentageDTO.performancePercentageName != null and performancePercentageDTO.performancePercentageName != ''">
-            and t1.performance_percentage_name like "%" #{performancePercentageDTO.performancePercentageName} "%"
+            and t1.performance_percentage_name like concat('%', #{performancePercentageDTO.performancePercentageName}, '%')
         </if>
         <if test="performancePercentageDTO.orgPerformanceRankName != null and performancePercentageDTO.orgPerformanceRankName != ''">
-            and t2.performance_rank_name like "%" #{performancePercentageDTO.orgPerformanceRankName} "%"
+            and t2.performance_rank_name like concat('%', #{performancePercentageDTO.orgPerformanceRankName}, '%')
         </if>
         <if test="performancePercentageDTO.personPerformanceRankName != null and performancePercentageDTO.personPerformanceRankName != ''">
-            and t3.performance_rank_name like "%" #{performancePercentageDTO.personPerformanceRankName} "%"
+            and t3.performance_rank_name like concat('%', #{performancePercentageDTO.personPerformanceRankName}, '%')
         </if>
         <if test="performancePercentageDTO.orgPerformanceRankId != null">
             and t2.org_performance_rank_id=#{performancePercentageDTO.orgPerformanceRankId}
