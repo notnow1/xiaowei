@@ -2,7 +2,7 @@ package net.qixiaowei.operate.cloud.service.salary;
 
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO;
-
+import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDetailsDTO;
 
 
 /**
@@ -109,6 +109,14 @@ public interface IDeptBonusBudgetService{
     /**
      * 返回部门奖金预算最大年份
      * @return
+     * @param deptBonusBudgetDTO
      */
-    int queryDeptBonusBudgetYear();
+    DeptBonusBudgetDTO queryDeptBonusBudgetYear(DeptBonusBudgetDTO deptBonusBudgetDTO);
+
+    /**
+     * 实时查询部门奖金包预算明细参考值数据
+     * @param deptBonusBudgetDTO
+     * @return
+     */
+    List<DeptBonusBudgetDetailsDTO> realTimeQueryDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO);
 }

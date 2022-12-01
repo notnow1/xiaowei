@@ -105,6 +105,7 @@ public interface DeptBonusBudgetMapper{
     /**
      * 返回部门奖金预算最大年份
      * @return
+     * @param deptBonusBudget
      */
-    int queryDeptBonusBudgetYear();
+    DeptBonusBudgetDTO queryDeptBonusBudgetYear(DeptBonusBudget deptBonusBudget);
 }

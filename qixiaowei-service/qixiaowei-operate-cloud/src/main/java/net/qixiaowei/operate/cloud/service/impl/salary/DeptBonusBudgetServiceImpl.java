@@ -551,10 +551,40 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * 返回部门奖金预算最大年份
      *
      * @return
+     * @param deptBonusBudgetDTO
      */
     @Override
-    public int queryDeptBonusBudgetYear() {
-        return deptBonusBudgetMapper.queryDeptBonusBudgetYear();
+    public DeptBonusBudgetDTO queryDeptBonusBudgetYear(DeptBonusBudgetDTO deptBonusBudgetDTO) {
+        DeptBonusBudgetDTO deptBonusBudgetDTO2 = new DeptBonusBudgetDTO();
+        DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
+        BeanUtils.copyProperties(deptBonusBudgetDTO,deptBonusBudget);
+        DeptBonusBudgetDTO deptBonusBudgetDTO1 = deptBonusBudgetMapper.queryDeptBonusBudgetYear(deptBonusBudget);
+
+        if (StringUtils.isNull(deptBonusBudgetDTO)){
+            deptBonusBudgetDTO.setDeptBonusAddFlag(false);
+            return deptBonusBudgetDTO2;
+        }else {
+            deptBonusBudgetDTO.setDeptBonusAddFlag(true);
+            return deptBonusBudgetDTO1;
+        }
+    }
+
+    /**
+     * 实时查询部门奖金包预算明细参考值数据
+     * @param deptBonusBudgetDTO
+     * @return
+     */
+    @Override
+    public List<DeptBonusBudgetDetailsDTO> realTimeQueryDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO) {
+        //查询部门
+        List<DepartmentDTO> departmentAll = this.getDepartmentAll();
+        //部门总奖金包
+        BigDecimal deptAmountBonus = deptBonusBudgetDTO.getDeptAmountBonus();
+
+        List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOList = deptBonusBudgetDTO.getDeptBonusBudgetDetailsDTOS();
+        //详情时实时计算部门奖金参考值
+        packdetails(departmentAll, deptBonusBudgetDTO, deptAmountBonus, deptBonusBudgetDetailsDTOList);
+        return deptBonusBudgetDetailsDTOList;
     }
 
     /**
