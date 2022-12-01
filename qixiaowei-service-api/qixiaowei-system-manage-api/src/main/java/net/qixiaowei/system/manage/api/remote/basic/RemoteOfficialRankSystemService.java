@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.api.remote.basic;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteOfficialRankSystemFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -50,4 +51,15 @@ public interface RemoteOfficialRankSystemService {
      */
     @PostMapping(API_PREFIX_OFFICIAL + "/selectByIds")
     R<List<OfficialRankSystemDTO>> selectByIds(@RequestBody List<Long> officialRankSystemIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+
+    /**
+     * 根据职级体系ID查找分解表
+     *
+     * @return 结果
+     */
+    @GetMapping(API_PREFIX_OFFICIAL + "/selectDecomposeById")
+    R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeBySystemId(@RequestParam("officialRankSystemId") Long officialRankSystemId,
+                                                                        @RequestParam("rankDecomposeDimension") Integer rankDecomposeDimension,
+                                                                        @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

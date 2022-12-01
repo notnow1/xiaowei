@@ -91,6 +91,10 @@ public class OfficialRankEmolumentDTO {
      */
     private List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList;
     /**
+     * 职级确定薪酬
+     */
+    private List<Object> officialRankDecomposeDTOS;
+    /**
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;

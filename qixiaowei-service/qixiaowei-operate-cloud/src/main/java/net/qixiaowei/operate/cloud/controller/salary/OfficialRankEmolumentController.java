@@ -30,51 +30,45 @@ import java.util.List;
 import java.util.Map;
 
 
-
 /**
-*
-* @author Graves
-* @since 2022-11-30
-*/
+ * @author Graves
+ * @since 2022-11-30
+ */
 @RestController
 @RequestMapping("officialRankEmolument")
-public class OfficialRankEmolumentController extends BaseController
-{
+public class OfficialRankEmolumentController extends BaseController {
 
 
     @Autowired
     private IOfficialRankEmolumentService officialRankEmolumentService;
 
 
-
     /**
-    * 查询职级薪酬表详情
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:info")
+     * 查询职级薪酬表详情
+     */
+    // @RequiresPermissions("operate:cloud:officialRankEmolument:info")
     @GetMapping("/info")
-    public AjaxResult info(OfficialRankEmolumentDTO officialRankEmolumentDTO){
-    return AjaxResult.success(officialRankEmolumentService.selectOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolumentDTO));
+    public AjaxResult info(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        return AjaxResult.success(officialRankEmolumentService.selectOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolumentDTO));
     }
 
     /**
-    * 查询职级薪酬表列表
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:list")
-    @GetMapping("/list")
-    public AjaxResult list(OfficialRankEmolumentDTO officialRankEmolumentDTO){
-    List<OfficialRankEmolumentDTO> list = officialRankEmolumentService.selectOfficialRankEmolumentList(officialRankEmolumentDTO);
-    return AjaxResult.success(list);
+     * 查看该职级的分解信息
+     */
+    // @RequiresPermissions("operate:cloud:officialRankEmolument:list")
+    @GetMapping("/decomposeInfo")
+    public AjaxResult list(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        return AjaxResult.success(officialRankEmolumentService.selectOfficialDecomposeList(officialRankEmolumentDTO));
     }
 
     /**
-    * 修改职级薪酬表
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:edit")
+     * 修改职级薪酬表
+     */
+    // @RequiresPermissions("operate:cloud:officialRankEmolument:edit")
     @Log(title = "修改职级薪酬表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody OfficialRankEmolumentDTO officialRankEmolumentDTO)
-    {
-    return toAjax(officialRankEmolumentService.updateOfficialRankEmolument(officialRankEmolumentDTO));
+    public AjaxResult editSave(@RequestBody OfficialRankEmolumentDTO officialRankEmolumentDTO) {
+        return toAjax(officialRankEmolumentService.updateOfficialRankEmolument(officialRankEmolumentDTO));
     }
 
 }

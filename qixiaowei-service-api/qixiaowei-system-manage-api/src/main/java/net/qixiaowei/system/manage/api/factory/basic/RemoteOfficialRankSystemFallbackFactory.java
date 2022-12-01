@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.api.factory.basic;
 
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.slf4j.Logger;
@@ -34,6 +35,11 @@ public class RemoteOfficialRankSystemFallbackFactory implements FallbackFactory<
 
             @Override
             public R<List<OfficialRankSystemDTO>> selectByIds(List<Long> officialRankSystemIds, String source) {
+                return R.fail("根据ID集合获取职级信息失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeBySystemId(Long officialRankSystemId, Integer rankDecomposeDimension, String source) {
                 return R.fail("根据ID集合获取职级信息失败:" + throwable.getMessage());
             }
         };

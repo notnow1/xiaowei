@@ -66,6 +66,22 @@ public class OfficialRankDecomposeDTO {
      */
     private BigDecimal salaryFactor;
     /**
+     * 工资上限
+     */
+    private BigDecimal salaryCap;
+    /**
+     * 工资下限
+     */
+    private BigDecimal salaryFloor;
+    /**
+     * 工资中位数
+     */
+    private BigDecimal salaryMedian;
+    /**
+     * 工资宽幅
+     */
+    private BigDecimal salaryWide;
+    /**
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;

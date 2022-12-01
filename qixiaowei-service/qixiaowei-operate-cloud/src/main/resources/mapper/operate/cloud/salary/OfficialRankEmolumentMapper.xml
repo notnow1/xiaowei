@@ -94,6 +94,17 @@
             #{item}
         </foreach>
     </select>
+    <!--根据职级体系ID和职级获取-->
+    <select id="selectOfficialRankEmolumentByRank"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO">
+        SELECT
+        official_rank_emolument_id, official_rank_system_id, official_rank, salary_cap, salary_floor, salary_median,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_emolument
+        WHERE delete_flag=0
+        AND official_rank_system_id = #{officialRankSystemId}
+        AND official_rank = #{rank}
+    </select>
     <!--新增职级薪酬表-->
     <insert id="insertOfficialRankEmolument" useGeneratedKeys="true" keyProperty="officialRankEmolumentId">
         INSERT INTO official_rank_emolument

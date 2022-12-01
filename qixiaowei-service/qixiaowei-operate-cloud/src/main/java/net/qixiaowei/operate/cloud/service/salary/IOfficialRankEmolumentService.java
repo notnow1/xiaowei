@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
 import net.qixiaowei.operate.cloud.excel.salary.OfficialRankEmolumentExcel;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 
 
 /**
@@ -116,4 +117,12 @@ public interface IOfficialRankEmolumentService {
      * @return
      */
     List<OfficialRankEmolumentExcel> exportOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO);
+
+    /**
+     * 查看该职级的分解信息
+     *
+     * @param officialRankEmolumentDTO 职级体系ID
+     * @return
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialDecomposeList(OfficialRankEmolumentDTO officialRankEmolumentDTO);
 }

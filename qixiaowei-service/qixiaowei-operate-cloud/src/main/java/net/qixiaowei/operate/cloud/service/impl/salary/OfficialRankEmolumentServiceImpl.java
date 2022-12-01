@@ -13,6 +13,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
 import net.qixiaowei.operate.cloud.excel.salary.OfficialRankEmolumentExcel;
 import net.qixiaowei.operate.cloud.mapper.salary.OfficialRankEmolumentMapper;
 import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
@@ -101,7 +102,6 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         }
         for (int i = 0; i < officialRankEmolumentDTOS.size(); i++) {
             OfficialRankEmolumentDTO rankEmolumentDTO = officialRankEmolumentDTOS.get(i);
-            BigDecimal nextSalaryMedian = officialRankEmolumentDTOS.get(i + 1).getSalaryMedian();
             rankEmolumentDTO.setOfficialRank(rankEmolumentDTO.getOfficialRank());
             rankEmolumentDTO.setOfficialRankName(rankPrefixCode + rankEmolumentDTO.getOfficialRank());
             // 宽幅
@@ -111,6 +111,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             if (i == officialRankEmolumentDTOS.size() - 1) {
                 rankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
             } else {
+                BigDecimal nextSalaryMedian = officialRankEmolumentDTOS.get(i + 1).getSalaryMedian();
                 if (nextSalaryMedian.compareTo(BigDecimal.ZERO) != 0) {
                     BigDecimal increaseRate = (rankEmolumentDTO.getSalaryMedian().subtract(nextSalaryMedian)).divide(nextSalaryMedian, 2, RoundingMode.HALF_UP);
                     rankEmolumentDTO.setIncreaseRate(increaseRate);
@@ -139,7 +140,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         List<String> postList = new ArrayList<>();
         if (StringUtils.isNotEmpty(postDTOS)) {
             for (PostDTO postDTO : postDTOS) {
-                if (postDTO.getPostRankUpper() > end && postDTO.getPostRankLower() < end) {
+                if (postDTO.getPostRankUpper() >= end && postDTO.getPostRankLower() <= end) {
                     postList.add(postDTO.getPostName());
                 }
             }
@@ -383,16 +384,68 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
     /**
      * 导出Excel
      *
-     * @param officialRankEmolumentDTO
-     * @return
+     * @param officialRankEmolumentDTO excel
+     * @return List
      */
     @Override
     public List<OfficialRankEmolumentExcel> exportOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
         OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
         BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
         List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentMapper.selectOfficialRankEmolumentList(officialRankEmolument);
-        List<OfficialRankEmolumentExcel> officialRankEmolumentExcelList = new ArrayList<>();
-        return officialRankEmolumentExcelList;
+        return new ArrayList<>();
+    }
+
+    /**
+     * 查看该职级的分解信息
+     *
+     * @param officialEmolumentDTO 职级体系信息
+     * @return
+     */
+    @Override
+    public List<OfficialRankDecomposeDTO> selectOfficialDecomposeList(OfficialRankEmolumentDTO officialEmolumentDTO) {
+        Long officialRankSystemId = officialEmolumentDTO.getOfficialRankSystemId();
+        Integer officialRank = officialEmolumentDTO.getOfficialRank();// 职级
+        if (StringUtils.isNull(officialRankSystemId)) {
+            throw new ServiceException("职级体系ID不能为空");
+        }
+        if (StringUtils.isNull(officialRank)) {
+            throw new ServiceException("职级不能为空");
+        }
+        R<OfficialRankSystemDTO> listR = officialRankSystemService.selectById(officialRankSystemId, SecurityConstants.INNER);
+        OfficialRankSystemDTO officialRankSystemDTO = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程调用失败 请联系管理员");
+        }
+        if (StringUtils.isNull(officialRankSystemDTO)) {
+            throw new ServiceException("当前职级不存在 请联系管理员");
+        }
+        Integer rankDecomposeDimension = officialRankSystemDTO.getRankDecomposeDimension();
+        R<List<OfficialRankDecomposeDTO>> officialDecomposeR = officialRankSystemService.selectOfficialDecomposeBySystemId(officialRankSystemId, rankDecomposeDimension, SecurityConstants.INNER);
+        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialDecomposeR.getData();
+        if (officialDecomposeR.getCode() != 200) {
+            throw new ServiceException("远程调用失败 请联系管理员");
+        }
+        // 获取当前的内容
+        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(officialRankSystemId, officialRank);
+        if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {
+            throw new ServiceException("请先录入数据");
+        }
+        OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentDTOS.get(0);
+        BigDecimal salaryCap = emolumentDTO.getSalaryCap();
+        BigDecimal salaryFloor = emolumentDTO.getSalaryFloor();
+        BigDecimal salaryMedian = emolumentDTO.getSalaryMedian();
+        BigDecimal salaryWide = emolumentDTO.getSalaryCap().subtract(emolumentDTO.getSalaryFloor());
+
+        // 宽幅
+        BigDecimal wide = emolumentDTO.getSalaryCap().subtract(emolumentDTO.getSalaryFloor());
+        for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+            BigDecimal salaryFactor = officialRankDecomposeDTO.getSalaryFactor();
+            officialEmolumentDTO.setSalaryCap(salaryCap.multiply(salaryFactor));
+            officialEmolumentDTO.setSalaryFloor(salaryFloor.multiply(salaryFactor));
+            officialEmolumentDTO.setSalaryMedian(salaryMedian.multiply(salaryFactor));
+            officialEmolumentDTO.setSalaryWide(salaryWide.multiply(salaryFactor));
+        }
+        return officialRankDecomposeDTOS;
     }
 }
 

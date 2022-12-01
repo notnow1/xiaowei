@@ -107,12 +107,19 @@ public interface OfficialRankEmolumentMapper{
      * @param officialRankSystemId 职级ID
      * @return
      */
-    List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentBySystemId(Long officialRankSystemId);
+    List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentBySystemId(@Param("officialRankSystemId") Long officialRankSystemId);
 
     /**
      * 通过职级ID集合获取职级薪酬表
      * @param officialRankSystemIds 职级ID集合
      * @return
      */
-    List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentBySystemIds(List<Long> officialRankSystemIds);
+    List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentBySystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
+
+    /**
+     * 根据职级体系ID和职级获取
+     * @param officialRankSystemId 职级ID
+     * @return
+     */
+    List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentByRank(@Param("officialRankSystemId") Long officialRankSystemId, @Param("rank") Integer rank);
 }
