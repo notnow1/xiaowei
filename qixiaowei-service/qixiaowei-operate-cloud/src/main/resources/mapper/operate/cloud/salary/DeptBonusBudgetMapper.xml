@@ -29,32 +29,51 @@
     <!--    查询部门奖金包预算表列表-->
     <select id="selectDeptBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
         SELECT
-        dept_bonus_budget_id, budget_year, strategy_award_percentage, delete_flag, create_by, create_time, update_by, update_time
-        FROM dept_bonus_budget
-        WHERE delete_flag=0
+        IFNULL(bb.amount_bonus_budget *  dbb.strategy_award_percentage,0) as strategyAwardAmount,
+        bb.amount_bonus_budget,
+        IFNULL(amount_bonus_budget - IFNULL(bb.amount_bonus_budget *  dbb.strategy_award_percentage,0),0)  as deptAmountBonus,
+        dbbd.dept_bonus_percentage,
+        dbb.dept_bonus_budget_id,
+        dbb.budget_year,
+        dbb.strategy_award_percentage,
+        dbb.delete_flag,
+        dbb.create_by,
+        dbb.create_time,
+        dbb.update_by,
+        dbb.update_time
+        FROM
+        dept_bonus_budget dbb
+        left join bonus_budget bb
+        on bb.budget_year = dbb.budget_year
+        and bb.delete_flag =0
+        left join dept_bonus_budget_details dbbd
+        on dbb .dept_bonus_budget_id  = dbbd.dept_bonus_budget_id
+        and dbbd.delete_flag =0
+        WHERE
+        dbb.delete_flag = 0
                 <if test="deptBonusBudget.deptBonusBudgetId != null">
-                    and dept_bonus_budget_id=#{deptBonusBudget.deptBonusBudgetId}
+                    and dbb.dept_bonus_budget_id=#{deptBonusBudget.deptBonusBudgetId}
                 </if>
                 <if test="deptBonusBudget.budgetYear != null">
-                    and budget_year=#{deptBonusBudget.budgetYear}
+                    and dbb.budget_year=#{deptBonusBudget.budgetYear}
                 </if>
                 <if test="deptBonusBudget.strategyAwardPercentage != null">
-                    and strategy_award_percentage=#{deptBonusBudget.strategyAwardPercentage}
+                    and dbb.strategy_award_percentage=#{deptBonusBudget.strategyAwardPercentage}
                 </if>
                 <if test="deptBonusBudget.deleteFlag != null">
-                    and delete_flag=#{deptBonusBudget.deleteFlag}
+                    and dbb.delete_flag=#{deptBonusBudget.deleteFlag}
                 </if>
                 <if test="deptBonusBudget.createBy != null">
-                    and create_by=#{deptBonusBudget.createBy}
+                    and dbb.create_by=#{deptBonusBudget.createBy}
                 </if>
                 <if test="deptBonusBudget.createTime != null">
-                    and create_time=#{deptBonusBudget.createTime}
+                    and dbb.create_time=#{deptBonusBudget.createTime}
                 </if>
                 <if test="deptBonusBudget.updateBy != null">
-                    and update_by=#{deptBonusBudget.updateBy}
+                    and dbb.update_by=#{deptBonusBudget.updateBy}
                 </if>
                 <if test="deptBonusBudget.updateTime != null">
-                    and update_time=#{deptBonusBudget.updateTime}
+                    and dbb.update_time=#{deptBonusBudget.updateTime}
                 </if>
     </select>
 <!--    返回部门奖金预算最大年份-->
@@ -62,7 +81,7 @@
         SELECT             case when max(budget_year) is null then
                                     IFNULL(max(budget_year),YEAR(NOW())+1)
                                 else max(budget_year)+1 end as budget_year
-        FROM dept_annual_bonus
+        FROM dept_bonus_budget
         where delete_flag = 0
     </select>
     <!--新增部门奖金包预算表-->

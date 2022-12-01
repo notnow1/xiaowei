@@ -24,15 +24,19 @@ import net.qixiaowei.operate.cloud.service.salary.IDeptBonusBudgetService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -70,6 +74,8 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
     private DeptBonusBudgetDetailsMapper deptBonusBudgetDetailsMapper;
     @Autowired
     private DeptBonusBudgetItemsMapper deptBonusBudgetItemsMapper;
+    @Autowired
+    private RemoteUserService remoteUserService;
 
     /**
      * 查询部门奖金包预算表
@@ -79,7 +85,41 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     @Override
     public DeptBonusBudgetDTO selectDeptBonusBudgetByDeptBonusBudgetId(Long deptBonusBudgetId) {
-        return deptBonusBudgetMapper.selectDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudgetId);
+        DeptBonusBudgetDTO deptBonusBudgetDTO = deptBonusBudgetMapper.selectDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudgetId);
+        if (StringUtils.isNull(deptBonusBudgetDTO)){
+            throw new ServiceException("数据不存在 请联系管理员！");
+        }
+        //根据部门奖金预算主表id查询部门奖金预算明细表集合
+        List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = deptBonusBudgetDetailsMapper.selectDeptBonusBudgetDetailsByDeptBonusBudgetId(deptBonusBudgetId);
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)){
+            //部门奖金预算明细表id集合
+            List<Long> collect = deptBonusBudgetDetailsDTOS.stream().map(DeptBonusBudgetDetailsDTO::getDeptBonusBudgetDetailsId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                //根据部门奖金预算明细表id集合批量查询部门奖金预算项目表集合
+                List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS = deptBonusBudgetItemsMapper.selectDeptBonusBudgetItemsByDeptBonusBudgetDetailsIds(collect);
+
+                if (StringUtils.isNotEmpty(deptBonusBudgetItemsDTOS)){
+
+                    //根据部门奖金预算明细表id分组
+                    Map<Long, List<DeptBonusBudgetItemsDTO>> listMap = deptBonusBudgetItemsDTOS.parallelStream().collect(Collectors.groupingBy(DeptBonusBudgetItemsDTO::getDeptBonusBudgetDetailsId));
+                    for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
+                        //部门奖总计
+                        BigDecimal deptBonusSum = deptBonusBudgetDetailsDTO.getDeptBonusSum();
+                        List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS1 = listMap.get(deptBonusBudgetDetailsDTO.getDeptBonusBudgetDetailsId());
+                        for (DeptBonusBudgetItemsDTO deptBonusBudgetItemsDTO : deptBonusBudgetItemsDTOS1) {
+                            //奖金金额
+                            BigDecimal bonusAmount = new BigDecimal("0");
+                            //奖金占比
+                            BigDecimal bonusPercentage = deptBonusBudgetItemsDTO.getBonusPercentage();
+                            bonusAmount= deptBonusSum.multiply(bonusPercentage);
+                            deptBonusBudgetItemsDTO.setBonusAmount(bonusAmount);
+                        }
+                        deptBonusBudgetDetailsDTO.setDeptBonusBudgetItemsDTOS(deptBonusBudgetItemsDTOS1);
+                    }
+                }
+            }
+        }
+        return deptBonusBudgetDTO;
     }
 
     /**
@@ -93,8 +133,34 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
         List<DeptBonusBudgetDTO> deptBonusBudgetDTOS = deptBonusBudgetMapper.selectDeptBonusBudgetList(deptBonusBudget);
-        if (StringUtils.isNotEmpty(deptBonusBudgetDTOS)){
-
+        if (StringUtils.isNotEmpty(deptBonusBudgetDTOS)) {
+            Set<Long> collect = deptBonusBudgetDTOS.stream().map(DeptBonusBudgetDTO::getCreateBy).collect(Collectors.toSet());
+            //远程调用人员查询姓名
+            R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect, SecurityConstants.INNER);
+            List<UserDTO> data = usersByUserIds.getData();
+            if (StringUtils.isNotEmpty(data)) {
+                for (DeptBonusBudgetDTO bonusBudgetDTO : deptBonusBudgetDTOS) {
+                    for (UserDTO datum : data) {
+                        if (bonusBudgetDTO.getCreateBy() == datum.getUserId()) {
+                            bonusBudgetDTO.setCreateByName(datum.getEmployeeName());
+                        }
+                    }
+                }
+            }
+        }
+        //模糊查询名称
+        String createByName = deptBonusBudgetDTO.getCreateByName();
+        if (StringUtils.isNotNull(createByName)) {
+            List<DeptBonusBudgetDTO> deptBonusBudgetDTOList = new ArrayList<>();
+            //模糊查询
+            Pattern pattern = Pattern.compile(deptBonusBudgetDTO.getCreateByName());
+            for (DeptBonusBudgetDTO bonusBudgetDTO : deptBonusBudgetDTOS) {
+                Matcher matcher = pattern.matcher(bonusBudgetDTO.getCreateByName());
+                if (matcher.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                    deptBonusBudgetDTOList.add(bonusBudgetDTO);
+                }
+            }
+            return deptBonusBudgetDTOList;
         }
 
         return deptBonusBudgetDTOS;
@@ -429,6 +495,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         //封装动态奖金类别：从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目 和封装各部门的奖金 占比
         packDeptBonusBudgetItemsDTOS(deptBonusBudgetDetailsDTOS, deptBonusBudgetItemsDTOS);
         deptBonusBudgetDTO.setDeptBonusBudgetDetailsDTOS(deptBonusBudgetDetailsDTOS);
+        deptBonusBudgetDTO.setBudgetYear(budgetYear);
         return deptBonusBudgetDTO;
     }
 
@@ -461,7 +528,9 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             deptBonusBudgetItemsDTO.setSalaryItemName(salaryItemDTO.getThirdLevelItem());
             deptBonusBudgetItemsDTOS.add(deptBonusBudgetItemsDTO);
         }
-        deptBonusBudgetDetailsDTOS.get(0).setDeptBonusBudgetItemsDTOS(deptBonusBudgetItemsDTOS);
+        for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
+            deptBonusBudgetDetailsDTO.setDeptBonusBudgetItemsDTOS(deptBonusBudgetItemsDTOS);
+        }
     }
 
     /**

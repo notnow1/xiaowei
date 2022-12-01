@@ -70,15 +70,30 @@
     <select id="selectDeptBonusBudgetItemsByDeptBonusBudgetDetailsIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetItemsDTO">
         SELECT
-        dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
-        FROM dept_bonus_budget_items
-        WHERE  dept_bonus_budget_details_id in
+        si.third_level_item as salaryItemName,
+        dbbi.dept_bonus_budget_items_id,
+        dbbi.dept_bonus_budget_id,
+        dbbi.dept_bonus_budget_details_id,
+        dbbi.salary_item_id,
+        dbbi.bonus_percentage,
+        dbbi.sort,
+        dbbi.delete_flag,
+        dbbi.create_by,
+        dbbi.create_time,
+        dbbi.update_by,
+        dbbi.update_time
+        FROM
+        dept_bonus_budget_items dbbi
+        left join salary_item si
+        on si.salary_item_id  =dbbi .salary_item_id
+        and si.delete_flag =0
+        WHERE  dbbi.dept_bonus_budget_details_id in
         <foreach item="item"
                  collection="deptBonusBudgetDetailsIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        and delete_flag=0
+        and dbbi.delete_flag=0
     </select>
     <!--新增部门奖金预算项目表-->
     <insert id="insertDeptBonusBudgetItems" useGeneratedKeys="true" keyProperty="deptBonusBudgetItemsId">
