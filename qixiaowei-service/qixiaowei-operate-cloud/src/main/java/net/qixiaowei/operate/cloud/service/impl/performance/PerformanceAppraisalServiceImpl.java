@@ -14,15 +14,13 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.*;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalMapper;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalColumnsService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalObjectsService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalService;
+import net.qixiaowei.operate.cloud.service.performance.IPerformancePercentageService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
@@ -62,6 +60,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
 
     @Autowired
     private IPerformanceAppraisalColumnsService performanceAppraisalColumnsService;
+
+    @Autowired
+    private IPerformancePercentageService performancePercentageService;
 
     /**
      * 查询绩效考核表详情
@@ -1799,6 +1800,28 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisal.setUpdateTime(DateUtils.getNowDate());
         performanceAppraisal.setUpdateBy(SecurityUtils.getUserId());
         return performanceAppraisalMapper.updatePerformanceAppraisal(performanceAppraisal);
+    }
+
+    /**
+     * 根据绩效考核ID查找比例
+     *
+     * @param performanceAppraisalId 绩效考核id
+     * @return
+     */
+    @Override
+    public List<PerformancePercentageDTO> selectPerformancePercentageByPerformanceAppraisalId(Long performanceAppraisalId) {
+        if (StringUtils.isNull(performanceAppraisalId)) {
+            throw new ServiceException("绩效考核ID为空");
+        }
+        PerformanceAppraisalDTO performanceAppraisalById = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
+        if (StringUtils.isNull(performanceAppraisalById)) {
+            throw new ServiceException("当前绩效考核任务已不存在");
+        }
+        Long performanceRankId = performanceAppraisalById.getPerformanceRankId();
+        if (StringUtils.isNull(performanceRankId)) {
+            throw new ServiceException("当前绩效考核任务数据异常 绩效等级数据丢失");
+        }
+        return performancePercentageService.selectPerformancePercentageByPersonId(performanceRankId);
     }
 
 }

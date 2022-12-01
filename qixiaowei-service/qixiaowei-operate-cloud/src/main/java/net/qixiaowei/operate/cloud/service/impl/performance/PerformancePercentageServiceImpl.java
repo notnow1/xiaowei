@@ -1,33 +1,28 @@
 package net.qixiaowei.operate.cloud.service.impl.performance;
 
-import java.math.BigDecimal;
-import java.util.*;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.performance.PerformancePercentage;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRank;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDataDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import net.qixiaowei.operate.cloud.mapper.performance.PerformancePercentageMapper;
 import net.qixiaowei.operate.cloud.service.performance.IPerformancePercentageDataService;
+import net.qixiaowei.operate.cloud.service.performance.IPerformancePercentageService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankFactorService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankService;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
-import java.util.stream.Collectors;
-
 import org.springframework.transaction.annotation.Transactional;
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.performance.PerformancePercentage;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
-import net.qixiaowei.operate.cloud.mapper.performance.PerformancePercentageMapper;
-import net.qixiaowei.operate.cloud.service.performance.IPerformancePercentageService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+
+import java.util.*;
 
 
 /**
@@ -132,8 +127,6 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      */
     @Override
     public List<PerformancePercentageDTO> selectPerformancePercentageList(PerformancePercentageDTO performancePercentageDTO) {
-        String orgPerformanceRankName = performancePercentageDTO.getOrgPerformanceRankName();
-        String personPerformanceRankName = performancePercentageDTO.getPersonPerformanceRankName();
         List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageList(performancePercentageDTO);
         if (StringUtils.isEmpty(performancePercentageDTOS)) {
             return performancePercentageDTOS;
@@ -262,6 +255,33 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
     public int isQuote(Long performanceRankId, Integer performanceRankCategory) {
         performancePercentageMapper.isQuote(performanceRankId, performanceRankCategory);
         return 0;
+    }
+
+    /**
+     * 查询绩效比例表详情
+     *
+     * @param performanceRankId 个人绩效等级ID
+     * @return List
+     */
+    @Override
+    public List<PerformancePercentageDTO> selectPerformancePercentageByPersonId(Long performanceRankId) {
+        List<PerformancePercentageDTO> performancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageByPersonId(performanceRankId);
+        if (StringUtils.isEmpty(performancePercentageDTOS)) {
+            return performancePercentageDTOS;
+        }
+        ArrayList<Long> orgPerformanceRankIds = new ArrayList<>();
+        for (PerformancePercentageDTO percentageDTO : performancePercentageDTOS) {
+            orgPerformanceRankIds.add(percentageDTO.getOrgPerformanceRankId());
+        }
+        List<PerformanceRank> orgPerformanceRanks = performanceRankService.selectPerformanceRank(orgPerformanceRankIds);
+        Map<Long, String> orgPerformanceRankMap = new HashMap<>();
+        for (PerformanceRank orgPerformanceRank : orgPerformanceRanks) {
+            orgPerformanceRankMap.put(orgPerformanceRank.getPerformanceRankId(), orgPerformanceRank.getPerformanceRankName());
+        }
+        for (PerformancePercentageDTO percentageDTO : performancePercentageDTOS) {
+            percentageDTO.setOrgPerformanceRankName(orgPerformanceRankMap.get(percentageDTO.getOrgPerformanceRankId()));
+        }
+        return performancePercentageDTOS;
     }
 
     /**

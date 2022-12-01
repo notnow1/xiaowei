@@ -51,13 +51,17 @@ public class OfficialRankEmolumentDTO {
      */
     private Long officialRankSystemId;
     /**
+     * 职级体系名称
+     */
+    private String officialRankSystemName;
+    /**
      * 职级
      */
     private Integer officialRank;
     /**
      * 职级名称
      */
-    private Integer officialRankName;
+    private String officialRankName;
     /**
      * 岗位
      */
@@ -79,9 +83,13 @@ public class OfficialRankEmolumentDTO {
      */
     private BigDecimal salaryWide;
     /**
-     * 工资宽幅
+     * 工资递增率
      */
     private BigDecimal increaseRate;
+    /**
+     * 职级确定薪酬
+     */
+    private List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList;
     /**
      * 删除标记:0未删除;1已删除
      */

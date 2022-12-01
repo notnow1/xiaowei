@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -7,7 +8,9 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
+import net.qixiaowei.system.manage.api.remote.basic.RemotePostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,9 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
     @Autowired
     private RemoteOfficialRankSystemService officialRankSystemService;
 
+    @Autowired
+    private RemotePostService postService;
+
 
     /**
      * 查询职级薪酬表
@@ -61,13 +67,40 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         }
         String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();//前缀
         List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
+        R<List<PostDTO>> listR = postService.selectPostListByOfficialRank(officialRankSystemId, SecurityConstants.INNER);
+        List<PostDTO> postDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("岗位远程调用失败 请联系管理员");
+        }
         if (StringUtils.isEmpty(officialRankEmolumentDTOS)) { // 没有值
             Integer rankStart = officialRankSystemDTO.getRankStart();
             Integer rankEnd = officialRankSystemDTO.getRankEnd();
             List<String> rankList = new ArrayList<>();
+            List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
             for (Integer end = rankEnd; end > rankStart; end--) {
-
+                OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
+                List<String> postList = new ArrayList<>();
+                if (StringUtils.isNotEmpty(postDTOS)) {
+                    for (PostDTO postDTO : postDTOS) {
+                        if (postDTO.getPostRankUpper() > end && postDTO.getPostRankLower() < end) {
+                            postList.add(postDTO.getPostName());
+                        }
+                    }
+                }
+                officialRankEmolumentDTO.setPostList(postList);
+                officialRankEmolumentDTO.setOfficialRankName("rankPrefixCode" + end);
+                officialRankEmolumentDTO.setSalaryCap(BigDecimal.ZERO);
+                officialRankEmolumentDTO.setSalaryFloor(BigDecimal.ZERO);
+                officialRankEmolumentDTO.setSalaryMedian(BigDecimal.ZERO);
+                officialRankEmolumentDTO.setSalaryWide(BigDecimal.ZERO);
+                officialRankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
+                officialRankEmolumentDTOList.add(officialRankEmolumentDTO);
             }
+            OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
+            officialRankEmolumentDTO.setOfficialRankSystemId(officialRankSystemDTO.getOfficialRankSystemId());
+            officialRankEmolumentDTO.setOfficialRankSystemName(officialRankSystemDTO.getOfficialRankSystemName());
+            officialRankEmolumentDTO.setOfficialRankEmolumentDTOList(officialRankEmolumentDTOList);
+            return officialRankEmolumentDTO;
         }
         for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOS) {
 
@@ -83,9 +116,6 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      */
     @Override
     public List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentList(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
-        Long officialRankSystemId = officialRankEmolumentDTO.getOfficialRankSystemId();
-
-
         OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
         BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
         return officialRankEmolumentMapper.selectOfficialRankEmolumentList(officialRankEmolument);

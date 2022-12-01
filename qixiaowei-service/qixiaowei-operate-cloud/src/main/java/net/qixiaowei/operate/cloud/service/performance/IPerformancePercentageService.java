@@ -101,4 +101,12 @@ public interface IPerformancePercentageService {
      * @return
      */
     int isQuote(Long performanceRankId, Integer performanceRankCategory);
+
+    /**
+     * 根据个人绩效等级ID查询绩效等级
+     *
+     * @param performanceRankId 个人绩效等级ID
+     * @return
+     */
+    List<PerformancePercentageDTO> selectPerformancePercentageByPersonId(Long performanceRankId);
 }

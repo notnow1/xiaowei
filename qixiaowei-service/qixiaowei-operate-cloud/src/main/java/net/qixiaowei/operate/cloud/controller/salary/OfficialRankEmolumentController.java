@@ -54,7 +54,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 查询职级薪酬表详情
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:info")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:info")
     @GetMapping("/info/{officialRankSystemId}")
     public AjaxResult info(@PathVariable Long officialRankSystemId){
     OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentService.selectOfficialRankEmolumentByOfficialRankEmolumentId(officialRankSystemId);
@@ -64,7 +64,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 分页查询职级薪酬表列表
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:pageList")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(OfficialRankEmolumentDTO officialRankEmolumentDTO){
     startPage();
@@ -75,7 +75,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 查询职级薪酬表列表
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:list")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:list")
     @GetMapping("/list")
     public AjaxResult list(OfficialRankEmolumentDTO officialRankEmolumentDTO){
     List<OfficialRankEmolumentDTO> list = officialRankEmolumentService.selectOfficialRankEmolumentList(officialRankEmolumentDTO);
@@ -86,7 +86,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 新增职级薪酬表
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:add")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:add")
     @Log(title = "新增职级薪酬表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody OfficialRankEmolumentDTO officialRankEmolumentDTO) {
@@ -97,7 +97,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 修改职级薪酬表
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:edit")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:edit")
     @Log(title = "修改职级薪酬表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody OfficialRankEmolumentDTO officialRankEmolumentDTO)
@@ -108,7 +108,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 逻辑删除职级薪酬表
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:remove")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:remove")
     @Log(title = "删除职级薪酬表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody OfficialRankEmolumentDTO officialRankEmolumentDTO)
@@ -118,7 +118,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 批量修改职级薪酬表
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:edits")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:edits")
     @Log(title = "批量修改职级薪酬表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<OfficialRankEmolumentDTO> officialRankEmolumentDtos)
@@ -129,7 +129,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 批量新增职级薪酬表
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:insertOfficialRankEmoluments")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:insertOfficialRankEmoluments")
     @Log(title = "批量新增职级薪酬表", businessType = BusinessType.INSERT)
     @PostMapping("/insertOfficialRankEmoluments")
     public AjaxResult insertOfficialRankEmoluments(@RequestBody List<OfficialRankEmolumentDTO> officialRankEmolumentDtos)
@@ -140,7 +140,7 @@ public class OfficialRankEmolumentController extends BaseController
     /**
     * 逻辑批量删除职级薪酬表
     */
-    @RequiresPermissions("operate:cloud:officialRankEmolument:removes")
+   // @RequiresPermissions("operate:cloud:officialRankEmolument:removes")
     @Log(title = "批量删除职级薪酬表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  officialRankEmolumentIds)

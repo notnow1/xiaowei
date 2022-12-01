@@ -129,4 +129,12 @@ public interface PerformancePercentageMapper {
      * @return
      */
     PerformancePercentageDTO selectPerformancePercentageByPerformancePercentageName(@Param("performancePercentageName") String performancePercentageName);
+
+    /**
+     * 查询绩效比例表详情
+     *
+     * @param performanceRankId 个人绩效等级ID
+     * @return
+     */
+    List<PerformancePercentageDTO> selectPerformancePercentageByPersonId(@Param("performanceRankId") Long performanceRankId);
 }

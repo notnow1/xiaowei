@@ -138,10 +138,20 @@ public class PerformanceAppraisalController extends BaseController {
         return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(map));
     }
 
-
+    /**
+     * 根据绩效考核ID查找比例
+     *
+     * @param performanceAppraisalId 绩效考核id
+     * @return
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/list/performancePercentage/{performanceAppraisalId}")
+    public AjaxResult listPercentage(@PathVariable Long performanceAppraisalId) {
+        return AjaxResult.success(performanceAppraisalService.selectPerformancePercentageByPerformanceAppraisalId(performanceAppraisalId));
+    }
 
     /**
-     * 查询绩效考核表列表
+     * 归档
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @GetMapping("/archive/{performanceAppraisalId}")
