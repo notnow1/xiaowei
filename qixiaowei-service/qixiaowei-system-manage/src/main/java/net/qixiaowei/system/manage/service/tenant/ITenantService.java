@@ -20,6 +20,13 @@ public interface ITenantService{
     TenantDTO selectTenantByTenantId(Long tenantId);
 
     /**
+     * 查询企业信息
+     *
+     * @param
+     * @return 租户表
+     */
+    TenantDTO selectTenantByTenantId();
+    /**
     * 查询租户表列表
     *
     * @param tenantDTO 租户表

@@ -81,10 +81,66 @@ public class TenantServiceImpl implements ITenantService {
      */
     @Override
     public TenantDTO selectTenantByTenantId(Long tenantId) {
-        //为空时从token里面取数据
-        if (null == tenantId) {
-            tenantId = SecurityUtils.getTenantId();
+        TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
+        if (StringUtils.isNull(tenantDTO)) {
+            throw new ServiceException("租户数据不存在");
         }
+        //租户登录背景图片URL
+        tenantDTO.setLoginBackground(fileConfig.getFullDomain(tenantDTO.getLoginBackground()));
+        //租户logo图片URL
+        tenantDTO.setTenantLogo(fileConfig.getFullDomain(tenantDTO.getTenantLogo()));
+        //行业
+        IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantDTO.getTenantIndustry());
+        //客服人员
+        List<Long> collect1 = Arrays.asList(tenantDTO.getSupportStaff().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        //人员表
+        List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeIds(collect1);
+        if (StringUtils.isNotNull(industryDefaultDTO)) {
+            //行业名称
+            tenantDTO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
+        }
+        if (StringUtils.isNotEmpty(employeeDTOList)) {
+            //客服人员名称
+            tenantDTO.setSupportStaffName(StringUtils.join(employeeDTOList.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()), ","));
+        }
+        //租户联系人
+        tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
+        //租赁模块
+        List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
+        for (TenantContractDTO tenantContractDTO : tenantContractDTOS) {
+            String productPackage = tenantContractDTO.getProductPackage();
+            List<Long> collect = Arrays.asList(productPackage.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageIds(collect);
+            if (!StringUtils.isEmpty(productPackageDTOList)) {
+                tenantContractDTO.setProductPackage(StringUtils.join(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()), ","));
+            }
+        }
+        //合同时间
+        if (StringUtils.isNotEmpty(tenantContractDTOS)) {
+            //合同开始时间
+            tenantDTO.setContractStartTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractStartTime());
+            //合同结束时间
+            tenantDTO.setContractEndTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractEndTime());
+        }
+        //租户合同
+        tenantDTO.setTenantContractDTOList(tenantContractDTOS);
+        //租户域名申请表
+        List<TenantDomainApprovalDTO> tenantDomainApprovalDTOS = tenantDomainApprovalMapper.selectTenantDomainApprovalByTenantId(tenantId);
+        tenantDTO.setTenantDomainApprovalDTOList(tenantDomainApprovalDTOS);
+        if (!StringUtils.isEmpty(tenantDomainApprovalDTOS)) {
+            //申请状态:0待审核;1审核通过;2审核驳回
+            tenantDTO.setApprovalStatus(tenantDomainApprovalDTOS.get(tenantDomainApprovalDTOS.size() - 1).getApprovalStatus());
+        }
+        return tenantDTO;
+    }
+
+    /**
+     * 查询企业信息
+     * @return
+     */
+    @Override
+    public TenantDTO selectTenantByTenantId() {
+        Long tenantId = SecurityUtils.getTenantId();
         TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
         if (StringUtils.isNull(tenantDTO)) {
             throw new ServiceException("租户数据不存在");

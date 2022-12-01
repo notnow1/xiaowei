@@ -31,6 +31,14 @@ public interface DeptBonusBudgetItemsMapper{
     List<DeptBonusBudgetItemsDTO> selectDeptBonusBudgetItemsByDeptBonusBudgetItemsIds(@Param("deptBonusBudgetItemsIds") List<Long> deptBonusBudgetItemsIds);
 
     /**
+     * 根据部门奖金预算明细表id集合批量查询部门奖金预算项目表
+     *
+     * @param deptBonusBudgetDetailsIds 部门奖金预算明细表主键集合
+     * @return 部门奖金预算项目表
+     */
+    List<DeptBonusBudgetItemsDTO> selectDeptBonusBudgetItemsByDeptBonusBudgetDetailsIds(@Param("deptBonusBudgetDetailsIds") List<Long> deptBonusBudgetDetailsIds);
+
+    /**
     * 查询部门奖金预算项目表列表
     *
     * @param deptBonusBudgetItems 部门奖金预算项目表
