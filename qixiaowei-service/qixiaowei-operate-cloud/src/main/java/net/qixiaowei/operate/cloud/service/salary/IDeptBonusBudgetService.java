@@ -105,4 +105,10 @@ public interface IDeptBonusBudgetService{
      * @return
      */
     DeptBonusBudgetDTO addDeptBonusBudgetTamount(int budgetYear);
+
+    /**
+     * 返回部门奖金预算最大年份
+     * @return
+     */
+    int queryDeptBonusBudgetYear();
 }

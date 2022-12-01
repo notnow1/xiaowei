@@ -101,4 +101,10 @@ public interface DeptBonusBudgetMapper{
     * @return 结果
     */
     int batchDeptBonusBudget(@Param("deptBonusBudgets")List<DeptBonusBudget> DeptBonusBudgets);
+
+    /**
+     * 返回部门奖金预算最大年份
+     * @return
+     */
+    int queryDeptBonusBudgetYear();
 }

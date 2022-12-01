@@ -9,6 +9,8 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.DeptBonusBudget;
+import net.qixiaowei.operate.cloud.api.domain.salary.DeptBonusBudgetDetails;
+import net.qixiaowei.operate.cloud.api.domain.salary.DeptBonusBudgetItems;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
@@ -64,6 +66,10 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
     private BonusBudgetMapper bonusBudgetMapper;
     @Autowired
     private SalaryItemMapper salaryItemMapper;
+    @Autowired
+    private DeptBonusBudgetDetailsMapper deptBonusBudgetDetailsMapper;
+    @Autowired
+    private DeptBonusBudgetItemsMapper deptBonusBudgetItemsMapper;
 
     /**
      * 查询部门奖金包预算表
@@ -86,7 +92,12 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
     public List<DeptBonusBudgetDTO> selectDeptBonusBudgetList(DeptBonusBudgetDTO deptBonusBudgetDTO) {
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
-        return deptBonusBudgetMapper.selectDeptBonusBudgetList(deptBonusBudget);
+        List<DeptBonusBudgetDTO> deptBonusBudgetDTOS = deptBonusBudgetMapper.selectDeptBonusBudgetList(deptBonusBudget);
+        if (StringUtils.isNotEmpty(deptBonusBudgetDTOS)){
+
+        }
+
+        return deptBonusBudgetDTOS;
     }
 
     /**
@@ -97,16 +108,138 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     @Override
     public DeptBonusBudgetDTO insertDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO) {
+        //部门奖金包预算表
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
+        //部门奖金预算明细表集合
+        List<DeptBonusBudgetDetails> deptBonusBudgetDetailsList = new ArrayList<>();
+        //部门奖金预算项目表集合
+        List<DeptBonusBudgetItems> deptBonusBudgetItemsList = new ArrayList<>();
+        //前台传入部门奖金预算明细表集合数据
+        List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = deptBonusBudgetDTO.getDeptBonusBudgetDetailsDTOS();
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
+
         deptBonusBudget.setCreateBy(SecurityUtils.getUserId());
         deptBonusBudget.setCreateTime(DateUtils.getNowDate());
         deptBonusBudget.setUpdateTime(DateUtils.getNowDate());
         deptBonusBudget.setUpdateBy(SecurityUtils.getUserId());
         deptBonusBudget.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        deptBonusBudgetMapper.insertDeptBonusBudget(deptBonusBudget);
+        try {
+            deptBonusBudgetMapper.insertDeptBonusBudget(deptBonusBudget);
+        } catch (Exception e) {
+            throw new ServiceException("插入部门奖金预算失败");
+        }
+
+        //批量新增部门奖金预算明细表
+        packBatchDeptBonusBudgetDetails(deptBonusBudget, deptBonusBudgetDetailsList, deptBonusBudgetDetailsDTOS);
+        //批量新增部门奖金预算项目表
+        packBatchDeptBonusBudgetItems(deptBonusBudget, deptBonusBudgetDetailsList, deptBonusBudgetItemsList, deptBonusBudgetDetailsDTOS);
         deptBonusBudgetDTO.setDeptBonusBudgetId(deptBonusBudget.getDeptBonusBudgetId());
         return deptBonusBudgetDTO;
+    }
+
+    /**
+     * 封装批量新增部门奖金预算项目表
+     *
+     * @param deptBonusBudget
+     * @param deptBonusBudgetDetailsList
+     * @param deptBonusBudgetItemsList
+     * @param deptBonusBudgetDetailsDTOS
+     */
+    private void packBatchDeptBonusBudgetItems(DeptBonusBudget deptBonusBudget, List<DeptBonusBudgetDetails> deptBonusBudgetDetailsList, List<DeptBonusBudgetItems> deptBonusBudgetItemsList, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS) {
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
+            for (int i = 0; i < deptBonusBudgetDetailsDTOS.size(); i++) {
+                List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS = deptBonusBudgetDetailsDTOS.get(i).getDeptBonusBudgetItemsDTOS();
+                if (StringUtils.isNotEmpty(deptBonusBudgetItemsDTOS)) {
+                    int sort = 1;
+                    for (DeptBonusBudgetItemsDTO deptBonusBudgetItemsDTO : deptBonusBudgetItemsDTOS) {
+                        DeptBonusBudgetItems deptBonusBudgetItems = new DeptBonusBudgetItems();
+                        BeanUtils.copyProperties(deptBonusBudgetItemsDTO, deptBonusBudgetItems);
+                        deptBonusBudgetItems.setSort(sort);
+                        //部门奖金包预算主表id
+                        deptBonusBudgetItems.setDeptBonusBudgetId(deptBonusBudget.getDeptBonusBudgetId());
+                        //部门奖金预算明细表id
+                        deptBonusBudgetItems.setDeptBonusBudgetDetailsId(deptBonusBudgetDetailsList.get(i).getDeptBonusBudgetDetailsId());
+                        deptBonusBudgetItems.setCreateBy(SecurityUtils.getUserId());
+                        deptBonusBudgetItems.setCreateTime(DateUtils.getNowDate());
+                        deptBonusBudgetItems.setUpdateTime(DateUtils.getNowDate());
+                        deptBonusBudgetItems.setUpdateBy(SecurityUtils.getUserId());
+                        deptBonusBudgetItems.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                        deptBonusBudgetItemsList.add(deptBonusBudgetItems);
+                        sort++;
+                    }
+                }
+            }
+
+        }
+        if (StringUtils.isNotEmpty(deptBonusBudgetItemsList)) {
+            try {
+                deptBonusBudgetItemsMapper.batchDeptBonusBudgetItems(deptBonusBudgetItemsList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增部门奖金预算项目表失败");
+            }
+        }
+    }
+
+    /**
+     * 批量新增部门奖金预算明细表
+     *
+     * @param deptBonusBudget
+     * @param deptBonusBudgetDetailsList
+     * @param deptBonusBudgetDetailsDTOS
+     */
+    private void packBatchDeptBonusBudgetDetails(DeptBonusBudget deptBonusBudget, List<DeptBonusBudgetDetails> deptBonusBudgetDetailsList, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS) {
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
+            for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
+                DeptBonusBudgetDetails deptBonusBudgetDetails = new DeptBonusBudgetDetails();
+                BeanUtils.copyProperties(deptBonusBudgetDetailsDTO, deptBonusBudgetDetails);
+                //部门奖金包预算主表id
+                deptBonusBudgetDetails.setDeptBonusBudgetId(deptBonusBudget.getDeptBonusBudgetId());
+                deptBonusBudgetDetails.setCreateBy(SecurityUtils.getUserId());
+                deptBonusBudgetDetails.setCreateTime(DateUtils.getNowDate());
+                deptBonusBudgetDetails.setUpdateTime(DateUtils.getNowDate());
+                deptBonusBudgetDetails.setUpdateBy(SecurityUtils.getUserId());
+                deptBonusBudgetDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                deptBonusBudgetDetailsList.add(deptBonusBudgetDetails);
+            }
+        }
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsList)) {
+            try {
+                deptBonusBudgetDetailsMapper.batchDeptBonusBudgetDetails(deptBonusBudgetDetailsList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增部门奖金预算明细表失败");
+            }
+        }
+    }
+
+    /**
+     * 批量新增部门奖金预算明细表
+     *
+     * @param deptBonusBudget
+     * @param deptBonusBudgetDetailsList
+     * @param deptBonusBudgetDetailsDTOS
+     */
+    private void packBatchDeptBonusBudgetDetails1(DeptBonusBudget deptBonusBudget, List<DeptBonusBudgetDetails> deptBonusBudgetDetailsList, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS) {
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
+            for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
+                DeptBonusBudgetDetails deptBonusBudgetDetails = new DeptBonusBudgetDetails();
+                BeanUtils.copyProperties(deptBonusBudgetDetailsDTO, deptBonusBudgetDetails);
+                //部门奖金包预算主表id
+                deptBonusBudgetDetails.setDeptBonusBudgetId(deptBonusBudget.getDeptBonusBudgetId());
+                deptBonusBudgetDetails.setCreateBy(SecurityUtils.getUserId());
+                deptBonusBudgetDetails.setCreateTime(DateUtils.getNowDate());
+                deptBonusBudgetDetails.setUpdateTime(DateUtils.getNowDate());
+                deptBonusBudgetDetails.setUpdateBy(SecurityUtils.getUserId());
+                deptBonusBudgetDetails.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                deptBonusBudgetDetailsList.add(deptBonusBudgetDetails);
+            }
+        }
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsList)) {
+            try {
+                deptBonusBudgetDetailsMapper.batchDeptBonusBudgetDetails(deptBonusBudgetDetailsList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增部门奖金预算明细表失败");
+            }
+        }
     }
 
     /**
@@ -117,11 +250,86 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     @Override
     public int updateDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO) {
+        int i = 0;
+        //部门奖金包预算表
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
+        //部门奖金预算明细表集合
+        List<DeptBonusBudgetDetails> deptBonusBudgetDetailsList = new ArrayList<>();
+        //部门奖金预算项目表集合
+        List<DeptBonusBudgetItems> deptBonusBudgetItemsList = new ArrayList<>();
+        //前台传入部门奖金预算明细表集合数据
+        List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = deptBonusBudgetDTO.getDeptBonusBudgetDetailsDTOS();
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
         deptBonusBudget.setUpdateTime(DateUtils.getNowDate());
         deptBonusBudget.setUpdateBy(SecurityUtils.getUserId());
-        return deptBonusBudgetMapper.updateDeptBonusBudget(deptBonusBudget);
+        try {
+            i = deptBonusBudgetMapper.updateDeptBonusBudget(deptBonusBudget);
+        } catch (Exception e) {
+            throw new ServiceException("插入部门奖金预算失败");
+        }
+
+        //批量修改部门奖金预算明细表
+        packUpdateDeptBonusBudgetDetailss(deptBonusBudgetDetailsList, deptBonusBudgetDetailsDTOS);
+        //批量修改部门奖金项目预算
+        packUpdateDeptBonusBudgetItems(deptBonusBudgetItemsList, deptBonusBudgetDetailsDTOS);
+        deptBonusBudgetDTO.setDeptBonusBudgetId(deptBonusBudget.getDeptBonusBudgetId());
+        return i;
+    }
+
+    /**
+     * 封装批量修改部门奖金预算明细表
+     *
+     * @param deptBonusBudgetItemsList
+     * @param deptBonusBudgetDetailsDTOS
+     */
+    private void packUpdateDeptBonusBudgetItems(List<DeptBonusBudgetItems> deptBonusBudgetItemsList, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS) {
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
+            for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
+                List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS = deptBonusBudgetDetailsDTO.getDeptBonusBudgetItemsDTOS();
+                if (StringUtils.isNotEmpty(deptBonusBudgetItemsDTOS)) {
+                    for (DeptBonusBudgetItemsDTO deptBonusBudgetItemsDTO : deptBonusBudgetItemsDTOS) {
+                        DeptBonusBudgetItems deptBonusBudgetItems = new DeptBonusBudgetItems();
+                        BeanUtils.copyProperties(deptBonusBudgetItemsDTO, deptBonusBudgetItems);
+                        deptBonusBudgetItems.setUpdateBy(SecurityUtils.getUserId());
+                        deptBonusBudgetItems.setUpdateTime(DateUtils.getNowDate());
+                        deptBonusBudgetItemsList.add(deptBonusBudgetItems);
+                    }
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(deptBonusBudgetItemsList)) {
+            try {
+                deptBonusBudgetItemsMapper.updateDeptBonusBudgetItemss(deptBonusBudgetItemsList);
+            } catch (Exception e) {
+                throw new ServiceException("批量修改部门奖金预算项目表失败");
+            }
+        }
+    }
+
+    /**
+     * 封装批量修改部门奖金项目预算
+     *
+     * @param deptBonusBudgetDetailsList
+     * @param deptBonusBudgetDetailsDTOS
+     */
+    private void packUpdateDeptBonusBudgetDetailss(List<DeptBonusBudgetDetails> deptBonusBudgetDetailsList, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS) {
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
+            for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
+                DeptBonusBudgetDetails deptBonusBudgetDetails = new DeptBonusBudgetDetails();
+                BeanUtils.copyProperties(deptBonusBudgetDetailsDTO, deptBonusBudgetDetails);
+                deptBonusBudgetDetails.setUpdateBy(SecurityUtils.getUserId());
+                deptBonusBudgetDetails.setUpdateTime(DateUtils.getNowDate());
+                deptBonusBudgetDetailsList.add(deptBonusBudgetDetails);
+            }
+        }
+
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsList)) {
+            try {
+                deptBonusBudgetDetailsMapper.updateDeptBonusBudgetDetailss(deptBonusBudgetDetailsList);
+            } catch (Exception e) {
+                throw new ServiceException("批量修改部门奖金预算明细表");
+            }
+        }
     }
 
     /**
@@ -132,7 +340,37 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     @Override
     public int logicDeleteDeptBonusBudgetByDeptBonusBudgetIds(List<Long> deptBonusBudgetIds) {
-        return deptBonusBudgetMapper.logicDeleteDeptBonusBudgetByDeptBonusBudgetIds(deptBonusBudgetIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        int i = 0;
+        List<DeptBonusBudgetDTO> deptBonusBudgetDTOS = deptBonusBudgetMapper.selectDeptBonusBudgetByDeptBonusBudgetIds(deptBonusBudgetIds);
+        if (StringUtils.isEmpty(deptBonusBudgetDTOS)) {
+            throw new ServiceException("数据不存在 请联系管理员！");
+        }
+
+        try {
+            i = deptBonusBudgetMapper.logicDeleteDeptBonusBudgetByDeptBonusBudgetIds(deptBonusBudgetIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("逻辑批量删除部门奖金包预算失败");
+        }
+        List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = deptBonusBudgetDetailsMapper.selectDeptBonusBudgetDetailsByDeptBonusBudgetIds(deptBonusBudgetIds);
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
+            List<Long> collect = deptBonusBudgetDetailsDTOS.stream().map(DeptBonusBudgetDetailsDTO::getDeptBonusBudgetDetailsId).collect(Collectors.toList());
+            try {
+                deptBonusBudgetDetailsMapper.logicDeleteDeptBonusBudgetDetailsByDeptBonusBudgetDetailsIds(collect, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("逻辑批量删除部门奖金预算明细表失败");
+            }
+            List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS = deptBonusBudgetItemsMapper.selectDeptBonusBudgetItemsByDeptBonusBudgetDetailsIds(collect);
+            if (StringUtils.isNotEmpty(deptBonusBudgetItemsDTOS)) {
+                List<Long> collect1 = deptBonusBudgetItemsDTOS.stream().map(DeptBonusBudgetItemsDTO::getDeptBonusBudgetItemsId).collect(Collectors.toList());
+                try {
+                    deptBonusBudgetItemsMapper.logicDeleteDeptBonusBudgetItemsByDeptBonusBudgetItemsIds(collect1, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("逻辑批量删除部门奖金预算项目表失败");
+                }
+            }
+        }
+
+        return i;
     }
 
     /**
@@ -163,7 +401,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         //部门奖金预算明细表集合
         List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = new ArrayList<>();
         //部门奖金预算项目表集合
-        List<DeptBonusBudgetItemsDTO>  deptBonusBudgetItemsDTOS = new ArrayList<>();
+        List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS = new ArrayList<>();
         //部门id 职级平均人数
         Map<Long, Map<String, BigDecimal>> mapEmployeeAve = new HashMap<>();
         //部门id 职级平均薪酬
@@ -189,20 +427,31 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         //封装部门奖金总计
         packDeptBonusSum(deptBonusBudgetDetailsDTOS, deptAmountBonus);
         //封装动态奖金类别：从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目 和封装各部门的奖金 占比
-        packDeptBonusBudgetItemsDTOS(deptBonusBudgetDetailsDTOS,deptBonusBudgetItemsDTOS);
+        packDeptBonusBudgetItemsDTOS(deptBonusBudgetDetailsDTOS, deptBonusBudgetItemsDTOS);
         deptBonusBudgetDTO.setDeptBonusBudgetDetailsDTOS(deptBonusBudgetDetailsDTOS);
         return deptBonusBudgetDTO;
     }
 
     /**
-     *封装各部门的奖金 占比 和封装动态奖金类别：从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目
+     * 返回部门奖金预算最大年份
+     *
+     * @return
+     */
+    @Override
+    public int queryDeptBonusBudgetYear() {
+        return deptBonusBudgetMapper.queryDeptBonusBudgetYear();
+    }
+
+    /**
+     * 封装各部门的奖金 占比 和封装动态奖金类别：从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目
+     *
      * @param deptBonusBudgetDetailsDTOS
      * @param deptBonusBudgetItemsDTOS
      */
     private void packDeptBonusBudgetItemsDTOS(List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS, List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS) {
         //部门奖金预算预制数据 从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryAddPrefabricate();
-        if (StringUtils.isEmpty(salaryItemDTOS)){
+        if (StringUtils.isEmpty(salaryItemDTOS)) {
             throw new ServiceException("工资项未配置 请联系管理员！");
         }
         for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
@@ -217,17 +466,18 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
 
     /**
      * 封装部门奖金总计
+     *
      * @param deptBonusBudgetDetailsDTOS
      * @param deptAmountBonus
      */
     private void packDeptBonusSum(List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS, BigDecimal deptAmountBonus) {
-        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)){
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
 
             for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
                 //部门奖金占比参考值
                 BigDecimal deptBonusPercentageReference = deptBonusBudgetDetailsDTO.getDeptBonusPercentageReference();
                 if (null != deptAmountBonus && deptAmountBonus.compareTo(new BigDecimal("0")) != 0 &&
-                        null != deptAmountBonus && deptAmountBonus.compareTo(new BigDecimal("0")) != 0){
+                        null != deptAmountBonus && deptAmountBonus.compareTo(new BigDecimal("0")) != 0) {
                     BigDecimal bigDecimal = deptAmountBonus.multiply(deptBonusPercentageReference).setScale(2, BigDecimal.ROUND_HALF_DOWN);
                     //部门奖金总计
                     deptBonusBudgetDetailsDTO.setDeptBonusSum(bigDecimal);
@@ -239,6 +489,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
 
     /**
      * 封装部门奖金参考值
+     *
      * @param departmentAll
      * @param deptBonusBudgetDetailsDTOS
      * @param topDeptPaymentMap
@@ -261,16 +512,16 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         //一级部门带包数
                         BigDecimal topDeptPay = topDeptPaymentMap.get(aLong);
                         //部门组织重要性系数
-                        BigDecimal departmentImportanceFactor= deptBonusBudgetDetailsDTO.getDepartmentImportanceFactor();
-                    if (null != topDeptPay && topDeptPay.compareTo(new BigDecimal("0")) != 0 &&
-                            null != departmentImportanceFactor && departmentImportanceFactor.compareTo(new BigDecimal("0")) != 0){
-                        nowTopDeptPay = topDeptPay.multiply(departmentImportanceFactor).setScale(2,BigDecimal.ROUND_HALF_DOWN);
-                    }
-                    if (null != nowTopDeptPay && nowTopDeptPay.compareTo(new BigDecimal("0")) != 0 &&
-                            null != topDeptPaySum && topDeptPaySum.compareTo(new BigDecimal("0")) != 0){
-                        BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("0"));
-                        deptBonusBudgetDetailsDTO.setDeptBonusPercentageReference(multiply);
-                    }
+                        BigDecimal departmentImportanceFactor = deptBonusBudgetDetailsDTO.getDepartmentImportanceFactor();
+                        if (null != topDeptPay && topDeptPay.compareTo(new BigDecimal("0")) != 0 &&
+                                null != departmentImportanceFactor && departmentImportanceFactor.compareTo(new BigDecimal("0")) != 0) {
+                            nowTopDeptPay = topDeptPay.multiply(departmentImportanceFactor).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+                        }
+                        if (null != nowTopDeptPay && nowTopDeptPay.compareTo(new BigDecimal("0")) != 0 &&
+                                null != topDeptPaySum && topDeptPaySum.compareTo(new BigDecimal("0")) != 0) {
+                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("0"));
+                            deptBonusBudgetDetailsDTO.setDeptBonusPercentageReference(multiply);
+                        }
                     }
                 }
             }
@@ -663,11 +914,52 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     @Override
     public int logicDeleteDeptBonusBudgetByDeptBonusBudgetId(DeptBonusBudgetDTO deptBonusBudgetDTO) {
+        int i = 0;
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
         deptBonusBudget.setDeptBonusBudgetId(deptBonusBudgetDTO.getDeptBonusBudgetId());
         deptBonusBudget.setUpdateTime(DateUtils.getNowDate());
         deptBonusBudget.setUpdateBy(SecurityUtils.getUserId());
-        return deptBonusBudgetMapper.logicDeleteDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudget);
+        //部门奖金预算主表主键
+        Long deptBonusBudgetId = deptBonusBudget.getDeptBonusBudgetId();
+
+        DeptBonusBudgetDTO deptBonusBudgetDTO1 = deptBonusBudgetMapper.selectDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudgetId);
+        if (StringUtils.isNull(deptBonusBudgetDTO1)) {
+            throw new ServiceException("部门奖金预算数据不存在 请联系管理员！");
+        }
+
+        try {
+            i = deptBonusBudgetMapper.logicDeleteDeptBonusBudgetByDeptBonusBudgetId(deptBonusBudget);
+        } catch (Exception e) {
+            throw new ServiceException("删除部门奖金预算失败");
+        }
+        //部门奖金预算明细表集合
+        List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = deptBonusBudgetDetailsMapper.selectDeptBonusBudgetDetailsByDeptBonusBudgetId(deptBonusBudgetId);
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
+            List<Long> collect = deptBonusBudgetDetailsDTOS.stream().map(DeptBonusBudgetDetailsDTO::getDeptBonusBudgetDetailsId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)) {
+                try {
+                    deptBonusBudgetDetailsMapper.logicDeleteDeptBonusBudgetDetailsByDeptBonusBudgetDetailsIds(collect, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("逻辑批量删除部门奖金预算明细表失败");
+                }
+
+                List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS = deptBonusBudgetItemsMapper.selectDeptBonusBudgetItemsByDeptBonusBudgetDetailsIds(collect);
+                if (StringUtils.isNotEmpty(deptBonusBudgetItemsDTOS)) {
+                    List<Long> collect1 = deptBonusBudgetItemsDTOS.stream().map(DeptBonusBudgetItemsDTO::getDeptBonusBudgetItemsId).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(collect1)) {
+                        try {
+                            deptBonusBudgetItemsMapper.logicDeleteDeptBonusBudgetItemsByDeptBonusBudgetItemsIds(collect1, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                        } catch (Exception e) {
+                            throw new ServiceException("逻辑批量删除部门奖金预算项目表失败");
+                        }
+                    }
+
+                }
+            }
+        }
+
+
+        return i;
     }
 
     /**

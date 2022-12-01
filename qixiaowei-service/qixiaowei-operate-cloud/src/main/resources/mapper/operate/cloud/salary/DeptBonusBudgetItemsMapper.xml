@@ -66,6 +66,20 @@
                     and update_time=#{deptBonusBudgetItems.updateTime}
                 </if>
     </select>
+<!--    根据部门奖金预算明细表id集合批量查询部门奖金预算项目表-->
+    <select id="selectDeptBonusBudgetItemsByDeptBonusBudgetDetailsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetItemsDTO">
+        SELECT
+        dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
+        FROM dept_bonus_budget_items
+        WHERE  dept_bonus_budget_details_id in
+        <foreach item="item"
+                 collection="deptBonusBudgetDetailsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增部门奖金预算项目表-->
     <insert id="insertDeptBonusBudgetItems" useGeneratedKeys="true" keyProperty="deptBonusBudgetItemsId">
         INSERT INTO dept_bonus_budget_items (dept_bonus_budget_id,dept_bonus_budget_details_id,salary_item_id,bonus_percentage,sort,delete_flag,create_by,create_time,update_by,update_time)

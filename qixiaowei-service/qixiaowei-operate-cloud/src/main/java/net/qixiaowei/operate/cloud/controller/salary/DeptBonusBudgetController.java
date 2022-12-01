@@ -29,6 +29,16 @@ public class DeptBonusBudgetController extends BaseController
     @Autowired
     private IDeptBonusBudgetService deptBonusBudgetService;
 
+
+    /**
+     * 返回部门奖金预算最大年份
+     */
+    //@RequiresPermissions("operate:cloud:bonusBudget:info")
+    @GetMapping("/queryDeptBonusBudgetYear")
+    public AjaxResult queryDeptBonusBudgetYear(){
+        int planYear = deptBonusBudgetService.queryDeptBonusBudgetYear();
+        return AjaxResult.success(planYear);
+    }
     /**
      * 新增部门奖金包预算预制数据
      */
@@ -37,7 +47,7 @@ public class DeptBonusBudgetController extends BaseController
     @GetMapping("/add/{budgetYear}")
     public AjaxResult addDeptBonusBudgetTamount(@PathVariable int budgetYear) {
         DeptBonusBudgetDTO deptBonusBudgetDTO = deptBonusBudgetService.addDeptBonusBudgetTamount(budgetYear);
-        return AjaxResult.success();
+        return AjaxResult.success(deptBonusBudgetDTO);
     }
     
 
