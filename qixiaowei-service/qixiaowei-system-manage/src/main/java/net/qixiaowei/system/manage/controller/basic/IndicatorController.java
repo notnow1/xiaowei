@@ -58,9 +58,13 @@ public class IndicatorController extends BaseController {
 //    @RequiresPermissions("system:manage:indicator:list")
     @GetMapping("/treeList")
     public AjaxResult treeList(IndicatorDTO indicatorDTO) {
+        Integer indicatorType = indicatorDTO.getIndicatorType();
+        indicatorDTO.setIndicatorType(null);
         if (!CheckObjectIsNullUtils.isNull(indicatorDTO)) {
+            indicatorDTO.setIndicatorType(indicatorType);
             return AjaxResult.success(indicatorService.selectIndicatorList(indicatorDTO));
         }
+        indicatorDTO.setIndicatorType(indicatorType);
         return AjaxResult.success(indicatorService.selectTreeList(indicatorDTO));
     }
 
