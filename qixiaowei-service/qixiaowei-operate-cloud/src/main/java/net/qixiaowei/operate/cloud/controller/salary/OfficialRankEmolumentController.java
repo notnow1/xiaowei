@@ -57,17 +57,6 @@ public class OfficialRankEmolumentController extends BaseController
     }
 
     /**
-    * 分页查询职级薪酬表列表
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:pageList")
-    @GetMapping("/pageList")
-    public TableDataInfo pageList(OfficialRankEmolumentDTO officialRankEmolumentDTO){
-    startPage();
-    List<OfficialRankEmolumentDTO> list = officialRankEmolumentService.selectOfficialRankEmolumentList(officialRankEmolumentDTO);
-    return getDataTable(list);
-    }
-
-    /**
     * 查询职级薪酬表列表
     */
    // @RequiresPermissions("operate:cloud:officialRankEmolument:list")
@@ -76,18 +65,6 @@ public class OfficialRankEmolumentController extends BaseController
     List<OfficialRankEmolumentDTO> list = officialRankEmolumentService.selectOfficialRankEmolumentList(officialRankEmolumentDTO);
     return AjaxResult.success(list);
     }
-
-
-    /**
-    * 新增职级薪酬表
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:add")
-    @Log(title = "新增职级薪酬表", businessType = BusinessType.INSERT)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody OfficialRankEmolumentDTO officialRankEmolumentDTO) {
-    return AjaxResult.success(officialRankEmolumentService.insertOfficialRankEmolument(officialRankEmolumentDTO));
-    }
-
 
     /**
     * 修改职级薪酬表
@@ -100,85 +77,4 @@ public class OfficialRankEmolumentController extends BaseController
     return toAjax(officialRankEmolumentService.updateOfficialRankEmolument(officialRankEmolumentDTO));
     }
 
-    /**
-    * 逻辑删除职级薪酬表
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:remove")
-    @Log(title = "删除职级薪酬表", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody OfficialRankEmolumentDTO officialRankEmolumentDTO)
-    {
-    return toAjax(officialRankEmolumentService.logicDeleteOfficialRankEmolumentByOfficialRankEmolumentId(officialRankEmolumentDTO));
-    }
-    /**
-    * 批量修改职级薪酬表
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:edits")
-    @Log(title = "批量修改职级薪酬表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<OfficialRankEmolumentDTO> officialRankEmolumentDtos)
-    {
-    return toAjax(officialRankEmolumentService.updateOfficialRankEmoluments(officialRankEmolumentDtos));
-    }
-
-    /**
-    * 批量新增职级薪酬表
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:insertOfficialRankEmoluments")
-    @Log(title = "批量新增职级薪酬表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertOfficialRankEmoluments")
-    public AjaxResult insertOfficialRankEmoluments(@RequestBody List<OfficialRankEmolumentDTO> officialRankEmolumentDtos)
-    {
-    return toAjax(officialRankEmolumentService.insertOfficialRankEmoluments(officialRankEmolumentDtos));
-    }
-
-    /**
-    * 逻辑批量删除职级薪酬表
-    */
-   // @RequiresPermissions("operate:cloud:officialRankEmolument:removes")
-    @Log(title = "批量删除职级薪酬表", businessType = BusinessType.DELETE)
-    @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<Long>  officialRankEmolumentIds)
-    {
-    return toAjax(officialRankEmolumentService.logicDeleteOfficialRankEmolumentByOfficialRankEmolumentIds(officialRankEmolumentIds));
-    }
-
-    /**
-    * 导入职级薪酬表
-    */
-    @PostMapping("import")
-    public AjaxResult importOfficialRankEmolument(MultipartFile file) {
-    String filename = file.getOriginalFilename();
-    if (StringUtils.isBlank(filename)) {
-    throw new RuntimeException("请上传文件!");
-    }
-    if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
-    throw new RuntimeException("请上传正确的excel文件!");
-    }
-    InputStream inputStream;
-    try {
-    OfficialRankEmolumentImportListener importListener = new OfficialRankEmolumentImportListener(officialRankEmolumentService);
-    inputStream = new BufferedInputStream(file.getInputStream());
-    ExcelReaderBuilder builder = EasyExcel.read(inputStream, OfficialRankEmolumentExcel.class, importListener);
-    builder.doReadAll();
-    } catch (IOException e) {
-    throw new ServiceException("导入职级薪酬表Excel失败");
-    }
-    return AjaxResult.success("操作成功");
-    }
-
-    /**
-    * 导出职级薪酬表
-    */
-    @SneakyThrows
-    @GetMapping("export")
-    public void exportOfficialRankEmolument(@RequestParam Map<String, Object> officialRankEmolument,OfficialRankEmolumentDTO officialRankEmolumentDTO, HttpServletResponse response) {
-    List<OfficialRankEmolumentExcel> officialRankEmolumentExcelList = officialRankEmolumentService.exportOfficialRankEmolument(officialRankEmolumentDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("职级薪酬表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-        , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), OfficialRankEmolumentExcel.class).sheet("职级薪酬表").doWrite(officialRankEmolumentExcelList);
-        }
 }

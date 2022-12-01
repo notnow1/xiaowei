@@ -64,7 +64,12 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         } else {
             officialRankSystemDTO = getOfficialRankSystemById(officialRankSystemId);
         }
-        String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();//前缀
+        String rankPrefixCode;//前缀
+        if (StringUtils.isNull(officialRankSystemDTO.getRankPrefixCode())) {
+            rankPrefixCode = "";
+        } else {
+            rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
+        }
         List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
         R<List<PostDTO>> listR = postService.selectPostListByOfficialRank(officialRankSystemId, SecurityConstants.INNER);
         List<PostDTO> postDTOS = listR.getData();
@@ -78,6 +83,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             for (Integer end = rankEnd; end > rankStart; end--) {
                 OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
                 List<String> postList = getPostList(postDTOS, end);
+                officialRankEmolumentDTO.setOfficialRank(end);
                 officialRankEmolumentDTO.setPostList(postList);
                 officialRankEmolumentDTO.setOfficialRankName(rankPrefixCode + end);
                 officialRankEmolumentDTO.setSalaryCap(BigDecimal.ZERO);
@@ -96,6 +102,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         for (int i = 0; i < officialRankEmolumentDTOS.size(); i++) {
             OfficialRankEmolumentDTO rankEmolumentDTO = officialRankEmolumentDTOS.get(i);
             BigDecimal nextSalaryMedian = officialRankEmolumentDTOS.get(i + 1).getSalaryMedian();
+            rankEmolumentDTO.setOfficialRank(rankEmolumentDTO.getOfficialRank());
             rankEmolumentDTO.setOfficialRankName(rankPrefixCode + rankEmolumentDTO.getOfficialRank());
             // 宽幅
             BigDecimal wide = rankEmolumentDTO.getSalaryCap().subtract(rankEmolumentDTO.getSalaryFloor());
@@ -210,11 +217,32 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      */
     @Override
     public int updateOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
-        OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
-        BeanUtils.copyProperties(officialRankEmolumentDTO, officialRankEmolument);
-        officialRankEmolument.setUpdateTime(DateUtils.getNowDate());
-        officialRankEmolument.setUpdateBy(SecurityUtils.getUserId());
-        return officialRankEmolumentMapper.updateOfficialRankEmolument(officialRankEmolument);
+        Long officialRankSystemId = officialRankEmolumentDTO.getOfficialRankSystemId();
+        if (StringUtils.isNull(officialRankSystemId)) {
+            throw new ServiceException("职级等级ID为空");
+        }
+        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentDTO.getOfficialRankEmolumentDTOList();
+        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(officialRankSystemId);
+        if (StringUtils.isEmpty(officialRankEmolumentDTOList)) {
+            throw new ServiceException("当前的职级薪酬表为空 请先配置");
+        }
+        if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {// 新增
+            for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOList) {
+                rankEmolumentDTO.setOfficialRankSystemId(officialRankSystemId);
+            }
+            return insertOfficialRankEmoluments(officialRankEmolumentDTOList);
+        }
+        // 更新
+        List<OfficialRankEmolumentDTO> officialRankEmolumentList = new ArrayList<>();
+        for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOList) {
+            OfficialRankEmolumentDTO emolumentDTO = new OfficialRankEmolumentDTO();
+            emolumentDTO.setOfficialRankEmolumentId(rankEmolumentDTO.getOfficialRankEmolumentId());
+            emolumentDTO.setSalaryCap(rankEmolumentDTO.getSalaryCap());
+            emolumentDTO.setSalaryFloor(rankEmolumentDTO.getSalaryFloor());
+            emolumentDTO.setSalaryMedian(rankEmolumentDTO.getSalaryMedian());
+            officialRankEmolumentList.add(emolumentDTO);
+        }
+        return updateOfficialRankEmoluments(officialRankEmolumentList);//批量更新
     }
 
     /**
@@ -277,7 +305,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
 
     @Override
     public int deleteOfficialRankEmolumentByOfficialRankEmolumentIds(List<OfficialRankEmolumentDTO> officialRankEmolumentDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDtos) {
             stringList.add(officialRankEmolumentDTO.getOfficialRankEmolumentId());
         }
@@ -291,7 +319,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      */
 
     public int insertOfficialRankEmoluments(List<OfficialRankEmolumentDTO> officialRankEmolumentDtos) {
-        List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList();
+        List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList<>();
 
         for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDtos) {
             OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
@@ -313,7 +341,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      */
 
     public int updateOfficialRankEmoluments(List<OfficialRankEmolumentDTO> officialRankEmolumentDtos) {
-        List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList();
+        List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList<>();
 
         for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDtos) {
             OfficialRankEmolument officialRankEmolument = new OfficialRankEmolument();
