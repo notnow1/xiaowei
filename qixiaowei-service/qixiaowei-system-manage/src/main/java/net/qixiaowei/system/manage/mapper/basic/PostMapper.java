@@ -136,4 +136,12 @@ public interface PostMapper {
      * @return
      */
     List<PostDTO> selectBydepartmentId(@Param("departmentId") Long departmentId);
+
+    /**
+     * 根据部门查询岗位表列表
+     * @param officialRankSystemId 职级体系ID
+     * @return
+     */
+    List<PostDTO> selectPostListByOfficialRank(@Param("officialRankSystemId") Long officialRankSystemId);
+
 }

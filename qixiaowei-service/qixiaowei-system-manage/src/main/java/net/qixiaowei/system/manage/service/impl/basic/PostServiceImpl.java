@@ -16,6 +16,7 @@ import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
 import net.qixiaowei.system.manage.service.basic.IPostService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -443,6 +444,16 @@ public class PostServiceImpl implements IPostService {
             postList.add(post);
         }
         return postMapper.updatePosts(postList);
+    }
+
+    /**
+     * 根据部门查询岗位表列表
+     * @param officialRankSystemId 职级体系ID
+     * @return List
+     */
+    @Override
+    public List<PostDTO> selectPostListByOfficialRank(@Param("officialRankSystemId") Long officialRankSystemId){
+        return postMapper.selectPostListByOfficialRank(officialRankSystemId);
     }
 }
 

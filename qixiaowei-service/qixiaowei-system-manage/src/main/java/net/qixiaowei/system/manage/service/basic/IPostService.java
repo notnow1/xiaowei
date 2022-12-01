@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -104,4 +105,11 @@ public interface IPostService{
      * @return
      */
     List<PostDTO> selectBydepartmentId(Long departmentId);
+
+    /**
+     * 根据部门查询岗位表列表
+     * @param officialRankSystemId 职级体系ID
+     * @return List
+     */
+    List<PostDTO> selectPostListByOfficialRank(@Param("officialRankSystemId") Long officialRankSystemId);
 }
