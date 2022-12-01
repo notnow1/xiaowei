@@ -1975,16 +1975,19 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public TargetDecomposeDTO selectMaxYear(TargetDecomposeDTO targetDecomposeDTO) {
+        TargetDecomposeDTO targetDecomposeDTO2 = new TargetDecomposeDTO();
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO,targetDecompose);
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectMaxYear(targetDecompose);
         if (StringUtils.isNull(targetDecomposeDTO1)){
-            targetDecomposeDTO1.setDecommpFlag(false);
+            targetDecomposeDTO2.setDecommpFlag(false);
+            return targetDecomposeDTO2;
         }else {
             targetDecomposeDTO1.setDecommpFlag(true);
+            return targetDecomposeDTO1;
         }
 
-        return targetDecomposeDTO1;
+
     }
 
     /**

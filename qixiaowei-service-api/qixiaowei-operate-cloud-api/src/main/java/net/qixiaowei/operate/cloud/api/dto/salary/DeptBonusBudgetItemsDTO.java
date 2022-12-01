@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 /**
 * 部门奖金预算项目表
 * @author TANGMICHI
-* @since 2022-11-29
+* @since 2022-12-01
 */
 @Data
 @Accessors(chain = true)
@@ -51,9 +51,21 @@ public class DeptBonusBudgetItemsDTO {
     */
     private  Long salaryItemId;
     /**
+     * 工资项名称
+     */
+    private  String salaryItemName;
+    /**
     * 奖金占比
     */
-    private BigDecimal bonusPercentage;
+    private  BigDecimal bonusPercentage;
+    /**
+     * 奖金金额
+     */
+    private BigDecimal bonusAmount;
+    /**
+    * 排序
+    */
+    private  Integer sort;
     /**
     * 删除标记:0未删除;1已删除
     */

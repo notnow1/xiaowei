@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -52,9 +53,10 @@ public class DeptBonusBudgetDetailsDTO {
      */
     private  String departmentName;
     /**
-     *
+     *部门奖金预算项目表集合
      */
-    private List<DeptBonusBudgetItemsDTO>  we;
+    private List<DeptBonusBudgetItemsDTO>  deptBonusBudgetItemsDTOS;
+
     /**
      * 部门奖金总计
      */

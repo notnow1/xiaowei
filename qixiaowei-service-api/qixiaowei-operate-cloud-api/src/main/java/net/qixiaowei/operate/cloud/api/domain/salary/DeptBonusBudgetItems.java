@@ -2,7 +2,7 @@ package net.qixiaowei.operate.cloud.api.domain.salary;
 
 
 
-import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
+import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,11 +12,11 @@ import java.util.Date;
 /**
 * 部门奖金预算项目表
 * @author TANGMICHI
-* @since 2022-11-29
+* @since 2022-12-01
 */
 @Data
 @Accessors(chain = true)
-public class DeptBonusBudgetItems extends TenantEntity {
+public class DeptBonusBudgetItems extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,6 +40,11 @@ public class DeptBonusBudgetItems extends TenantEntity {
      * 奖金占比
      */
      private BigDecimal bonusPercentage;
+     /**
+     * 排序
+     */
+     private  Integer  sort;
+
 
 }
 

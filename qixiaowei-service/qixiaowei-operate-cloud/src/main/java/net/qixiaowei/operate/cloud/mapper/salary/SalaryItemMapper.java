@@ -16,6 +16,13 @@ import java.util.Date;
  * @since 2022-10-05
  */
 public interface SalaryItemMapper {
+
+    /**
+     * 部门奖金预算预制数据 从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目
+     *
+     */
+    List<SalaryItemDTO> selectSalaryAddPrefabricate();
+
     /**
      * 查询工资项
      *

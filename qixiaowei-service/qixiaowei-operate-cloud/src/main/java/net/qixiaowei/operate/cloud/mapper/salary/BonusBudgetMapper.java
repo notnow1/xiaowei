@@ -13,6 +13,15 @@ import java.util.Date;
 * @since 2022-11-26
 */
 public interface BonusBudgetMapper{
+
+    /**
+     * 根据年份查询奖金预算表
+     *
+     * @param budgetYear 奖金预算表主键
+     * @return 奖金预算表
+     */
+    BonusBudgetDTO selectBonusBudgetByBudgetYear(@Param("budgetYear")int budgetYear);
+
     /**
     * 查询奖金预算表
     *
