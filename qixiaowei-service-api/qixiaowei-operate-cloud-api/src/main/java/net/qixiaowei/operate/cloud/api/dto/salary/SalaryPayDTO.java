@@ -116,6 +116,14 @@ public class SalaryPayDTO {
      */
     private BigDecimal payAmount;
     /**
+     * 固定占比（%）
+     */
+    private BigDecimal fixedProportion;
+    /**
+     * 浮动占比（%）
+     */
+    private BigDecimal floatProportion;
+    /**
      * 月度工资数据
      */
     private List<SalaryPayDTO> salaryPayDTOList;

@@ -134,8 +134,8 @@
                update_time
         FROM salary_Pay
         WHERE pay_year = #{payYear}
-          AND pay_month &gt; #{startMonth}
-          AND pay_month &lt; #{endMonth}
+          AND pay_month &gt;= #{startMonth}
+          AND pay_month &lt;= #{endMonth}
     </select>
     <!--多个年份的所有-->
     <select id="selectSalaryPayBySomeYear"
