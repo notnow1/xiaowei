@@ -401,7 +401,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     /**
      * 更新校验
      *
-     * @param salaryPayDTO
+     * @param salaryPayDTO dto
      */
     private void updateCheck(SalaryPayDTO salaryPayDTO) {
         Long salaryPayId = salaryPayDTO.getSalaryPayId();
@@ -433,45 +433,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             if (!salaryPayDTOS.get(0).getSalaryPayId().equals(salaryPayId)) {
                 throw new ServiceException("已存在当前月份的员工");
             }
-        }
-        if (StringUtils.isEmpty(salaryPayDTOList)) {
-            throw new ServiceException("月度工资数据不可以为空");
-        }
-        if (salaryPayDTOList.size() > 1) {
-            throw new ServiceException("月度工资数据只能为一行");
-        }
-        if (StringUtils.isEmpty(salaryItemDTOList)) {
-            throw new ServiceException("月度工资数据详情不可以为空");
-        }
-        List<Long> salaryItemIds = new ArrayList<>();
-        for (SalaryItemDTO salaryItemDTO : salaryItemDTOList) {
-            salaryItemIds.add(salaryItemDTO.getSalaryItemId());
-        }
-        List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemBySalaryItemIds(salaryItemIds);
-        if (salaryItemDTOS.size() != salaryItemIds.size()) {
-            throw new ServiceException("工资数据详情数据异常");
-        }
-    }
-
-    /**
-     * 更新校验
-     *
-     * @param payTime           时间
-     * @param employeeId        员工ID
-     * @param salaryPayDTOList  工资发薪列表
-     * @param salaryItemDTOList 工资项列表
-     * @param salaryPayByTime   工资时间
-     */
-    private void updateCheck(Date payTime, Long employeeId, List<SalaryPayDTO> salaryPayDTOList, List<SalaryItemDTO> salaryItemDTOList, SalaryPay salaryPayByTime) {
-        if (StringUtils.isNull(payTime)) {
-            throw new ServiceException("时间不能为空");
-        }
-        if (StringUtils.isNull(employeeId)) {
-            throw new ServiceException("员工不能为空");
-        }
-        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayList(salaryPayByTime);
-        if (StringUtils.isNotEmpty(salaryPayDTOS)) {
-            throw new ServiceException("已存在当前月份的员工");
         }
         if (StringUtils.isEmpty(salaryPayDTOList)) {
             throw new ServiceException("月度工资数据不可以为空");
@@ -681,10 +642,10 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         if (CheckObjectIsNullUtils.isNull(salaryStructureDTO)) {
             salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(year, 0, month);
         } else {
-            int startYear = DateUtils.getYear(salaryStructureDTO.getStartTime());
-            int endYear = DateUtils.getYear(salaryStructureDTO.getEndTime());
-            int startMonth = DateUtils.getMonth(salaryStructureDTO.getStartTime());
-            int endMonth = DateUtils.getMonth(salaryStructureDTO.getEndTime());
+            int startYear = DateUtils.getYear(salaryStructureDTO.getTimeStart());
+            int endYear = DateUtils.getYear(salaryStructureDTO.getTimeEnd());
+            int startMonth = DateUtils.getMonth(salaryStructureDTO.getTimeStart());
+            int endMonth = DateUtils.getMonth(salaryStructureDTO.getTimeEnd());
             if (endYear - startYear == 0) {// 当前年份
                 salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(endYear, startMonth, endMonth);
             } else if (endYear - startYear == 1) {

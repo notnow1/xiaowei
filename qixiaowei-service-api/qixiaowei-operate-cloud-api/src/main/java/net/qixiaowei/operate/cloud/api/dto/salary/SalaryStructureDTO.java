@@ -79,12 +79,12 @@ public class SalaryStructureDTO {
      * 开始时间
      */
     @JsonFormat(pattern = "yyyy/MM", timezone = "GMT+8")
-    private Date startTime;
+    private Date timeStart;
     /**
      * 结束时间
      */
     @JsonFormat(pattern = "yyyy/MM", timezone = "GMT+8")
-    private Date endTime;
+    private Date timeEnd;
     /**
      * 报表列表
      */
