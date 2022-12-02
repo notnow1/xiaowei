@@ -21,6 +21,14 @@ public interface DeptBonusBudgetMapper{
     */
     DeptBonusBudgetDTO selectDeptBonusBudgetByDeptBonusBudgetId(@Param("deptBonusBudgetId")Long deptBonusBudgetId);
 
+    /**
+     * 根据年份查询部门奖金包预算表
+     *
+     * @param budgetYear 年份
+     * @return 部门奖金包预算表
+     */
+    DeptBonusBudgetDTO selectDeptBonusBudgetBybudgetYear(@Param("budgetYear")int budgetYear);
+
 
     /**
     * 批量查询部门奖金包预算表
