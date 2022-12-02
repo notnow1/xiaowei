@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.EmpAnnualBonusSnapshotMapper">
+    <!--    查询个人年终奖发放快照信息表-->
+    <select id="selectEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+        SELECT
+        emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM emp_annual_bonus_snapshot
+        WHERE  emp_annual_bonus_snapshot_id=#{empAnnualBonusSnapshotId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询个人年终奖发放快照信息表-->
+    <select id="selectEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+        SELECT
+        emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM emp_annual_bonus_snapshot
+        WHERE  emp_annual_bonus_snapshot_id in
+            <foreach item="item"
+                     collection="empAnnualBonusSnapshotIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询个人年终奖发放快照信息表列表-->
+    <select id="selectEmpAnnualBonusSnapshotList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+        SELECT
+        emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM emp_annual_bonus_snapshot
+        WHERE delete_flag=0
+                <if test="empAnnualBonusSnapshot.empAnnualBonusSnapshotId != null">
+                    and emp_annual_bonus_snapshot_id=#{empAnnualBonusSnapshot.empAnnualBonusSnapshotId}
+                </if>
+                <if test="empAnnualBonusSnapshot.employeeAnnualBonusId != null">
+                    and employee_annual_bonus_id=#{empAnnualBonusSnapshot.employeeAnnualBonusId}
+                </if>
+                <if test="empAnnualBonusSnapshot.empAnnualBonusObjectsId != null">
+                    and emp_annual_bonus_objects_id=#{empAnnualBonusSnapshot.empAnnualBonusObjectsId}
+                </if>
+                <if test="empAnnualBonusSnapshot.employeeName != null and empAnnualBonusSnapshot.employeeName != ''">
+                    and employee_name=#{empAnnualBonusSnapshot.employeeName}
+                </if>
+                <if test="empAnnualBonusSnapshot.employeeCode != null and empAnnualBonusSnapshot.employeeCode != ''">
+                    and employee_code=#{empAnnualBonusSnapshot.employeeCode}
+                </if>
+                <if test="empAnnualBonusSnapshot.departmentName != null and empAnnualBonusSnapshot.departmentName != ''">
+                    and department_name=#{empAnnualBonusSnapshot.departmentName}
+                </if>
+                <if test="empAnnualBonusSnapshot.postName != null and empAnnualBonusSnapshot.postName != ''">
+                    and post_name=#{empAnnualBonusSnapshot.postName}
+                </if>
+                <if test="empAnnualBonusSnapshot.officialRankName != null and empAnnualBonusSnapshot.officialRankName != ''">
+                    and official_rank_name=#{empAnnualBonusSnapshot.officialRankName}
+                </if>
+                <if test="empAnnualBonusSnapshot.seniority != null and empAnnualBonusSnapshot.seniority != ''">
+                    and seniority=#{empAnnualBonusSnapshot.seniority}
+                </if>
+                <if test="empAnnualBonusSnapshot.employeeBasicWage != null">
+                    and employee_basic_wage=#{empAnnualBonusSnapshot.employeeBasicWage}
+                </if>
+                <if test="empAnnualBonusSnapshot.emolumentBeforeOne != null">
+                    and emolument_before_one=#{empAnnualBonusSnapshot.emolumentBeforeOne}
+                </if>
+                <if test="empAnnualBonusSnapshot.bonusBeforeOne != null">
+                    and bonus_before_one=#{empAnnualBonusSnapshot.bonusBeforeOne}
+                </if>
+                <if test="empAnnualBonusSnapshot.bonusBeforeTwo != null">
+                    and bonus_before_two=#{empAnnualBonusSnapshot.bonusBeforeTwo}
+                </if>
+                <if test="empAnnualBonusSnapshot.lastPerformanceResulted != null and empAnnualBonusSnapshot.lastPerformanceResulted != ''">
+                    and last_performance_resulted=#{empAnnualBonusSnapshot.lastPerformanceResulted}
+                </if>
+                <if test="empAnnualBonusSnapshot.bonusPercentageOne != null">
+                    and bonus_percentage_one=#{empAnnualBonusSnapshot.bonusPercentageOne}
+                </if>
+                <if test="empAnnualBonusSnapshot.bonusPercentageTwo != null">
+                    and bonus_percentage_two=#{empAnnualBonusSnapshot.bonusPercentageTwo}
+                </if>
+                <if test="empAnnualBonusSnapshot.referenceValueOne != null">
+                    and reference_value_one=#{empAnnualBonusSnapshot.referenceValueOne}
+                </if>
+                <if test="empAnnualBonusSnapshot.referenceValueTwo != null">
+                    and reference_value_two=#{empAnnualBonusSnapshot.referenceValueTwo}
+                </if>
+                <if test="empAnnualBonusSnapshot.deleteFlag != null">
+                    and delete_flag=#{empAnnualBonusSnapshot.deleteFlag}
+                </if>
+                <if test="empAnnualBonusSnapshot.createBy != null">
+                    and create_by=#{empAnnualBonusSnapshot.createBy}
+                </if>
+                <if test="empAnnualBonusSnapshot.createTime != null">
+                    and create_time=#{empAnnualBonusSnapshot.createTime}
+                </if>
+                <if test="empAnnualBonusSnapshot.updateBy != null">
+                    and update_by=#{empAnnualBonusSnapshot.updateBy}
+                </if>
+                <if test="empAnnualBonusSnapshot.updateTime != null">
+                    and update_time=#{empAnnualBonusSnapshot.updateTime}
+                </if>
+    </select>
+    <!--新增个人年终奖发放快照信息表-->
+    <insert id="insertEmpAnnualBonusSnapshot" useGeneratedKeys="true" keyProperty="empAnnualBonusSnapshotId">
+        INSERT INTO emp_annual_bonus_snapshot (employee_annual_bonus_id,emp_annual_bonus_objects_id,employee_name,employee_code,department_name,post_name,official_rank_name,seniority,employee_basic_wage,emolument_before_one,bonus_before_one,bonus_before_two,last_performance_resulted,bonus_percentage_one,bonus_percentage_two,reference_value_one,reference_value_two,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{empAnnualBonusSnapshot.employeeAnnualBonusId},#{empAnnualBonusSnapshot.empAnnualBonusObjectsId},#{empAnnualBonusSnapshot.employeeName},#{empAnnualBonusSnapshot.employeeCode},#{empAnnualBonusSnapshot.departmentName},#{empAnnualBonusSnapshot.postName},#{empAnnualBonusSnapshot.officialRankName},#{empAnnualBonusSnapshot.seniority},#{empAnnualBonusSnapshot.employeeBasicWage},#{empAnnualBonusSnapshot.emolumentBeforeOne},#{empAnnualBonusSnapshot.bonusBeforeOne},#{empAnnualBonusSnapshot.bonusBeforeTwo},#{empAnnualBonusSnapshot.lastPerformanceResulted},#{empAnnualBonusSnapshot.bonusPercentageOne},#{empAnnualBonusSnapshot.bonusPercentageTwo},#{empAnnualBonusSnapshot.referenceValueOne},#{empAnnualBonusSnapshot.referenceValueTwo},#{empAnnualBonusSnapshot.deleteFlag},#{empAnnualBonusSnapshot.createBy},#{empAnnualBonusSnapshot.createTime},#{empAnnualBonusSnapshot.updateBy},#{empAnnualBonusSnapshot.updateTime})
+    </insert>
+    <!--修改个人年终奖发放快照信息表-->
+    <update id="updateEmpAnnualBonusSnapshot">
+        UPDATE emp_annual_bonus_snapshot
+        SET
+                    <if test="empAnnualBonusSnapshot.employeeAnnualBonusId != null">
+                        employee_annual_bonus_id=#{empAnnualBonusSnapshot.employeeAnnualBonusId},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.empAnnualBonusObjectsId != null">
+                        emp_annual_bonus_objects_id=#{empAnnualBonusSnapshot.empAnnualBonusObjectsId},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.employeeName != null and empAnnualBonusSnapshot.employeeName != ''">
+                        employee_name=#{empAnnualBonusSnapshot.employeeName},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.employeeCode != null and empAnnualBonusSnapshot.employeeCode != ''">
+                        employee_code=#{empAnnualBonusSnapshot.employeeCode},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.departmentName != null and empAnnualBonusSnapshot.departmentName != ''">
+                        department_name=#{empAnnualBonusSnapshot.departmentName},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.postName != null and empAnnualBonusSnapshot.postName != ''">
+                        post_name=#{empAnnualBonusSnapshot.postName},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.officialRankName != null and empAnnualBonusSnapshot.officialRankName != ''">
+                        official_rank_name=#{empAnnualBonusSnapshot.officialRankName},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.seniority != null and empAnnualBonusSnapshot.seniority != ''">
+                        seniority=#{empAnnualBonusSnapshot.seniority},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.employeeBasicWage != null">
+                        employee_basic_wage=#{empAnnualBonusSnapshot.employeeBasicWage},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.emolumentBeforeOne != null">
+                        emolument_before_one=#{empAnnualBonusSnapshot.emolumentBeforeOne},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.bonusBeforeOne != null">
+                        bonus_before_one=#{empAnnualBonusSnapshot.bonusBeforeOne},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.bonusBeforeTwo != null">
+                        bonus_before_two=#{empAnnualBonusSnapshot.bonusBeforeTwo},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.lastPerformanceResulted != null and empAnnualBonusSnapshot.lastPerformanceResulted != ''">
+                        last_performance_resulted=#{empAnnualBonusSnapshot.lastPerformanceResulted},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.bonusPercentageOne != null">
+                        bonus_percentage_one=#{empAnnualBonusSnapshot.bonusPercentageOne},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.bonusPercentageTwo != null">
+                        bonus_percentage_two=#{empAnnualBonusSnapshot.bonusPercentageTwo},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.referenceValueOne != null">
+                        reference_value_one=#{empAnnualBonusSnapshot.referenceValueOne},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.referenceValueTwo != null">
+                        reference_value_two=#{empAnnualBonusSnapshot.referenceValueTwo},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.deleteFlag != null">
+                        delete_flag=#{empAnnualBonusSnapshot.deleteFlag},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.createBy != null">
+                        create_by=#{empAnnualBonusSnapshot.createBy},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.createTime != null">
+                        create_time=#{empAnnualBonusSnapshot.createTime},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.updateBy != null">
+                        update_by=#{empAnnualBonusSnapshot.updateBy},
+                    </if>
+                    <if test="empAnnualBonusSnapshot.updateTime != null">
+                        update_time=#{empAnnualBonusSnapshot.updateTime}
+                    </if>
+        WHERE
+                 emp_annual_bonus_snapshot_id=#{empAnnualBonusSnapshot.empAnnualBonusSnapshotId}
+    </update>
+    <!--逻辑删除个人年终奖发放快照信息表-->
+    <update id="logicDeleteEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotId">
+        UPDATE emp_annual_bonus_snapshot
+        SET     delete_flag= 1,
+                update_by=#{empAnnualBonusSnapshot.updateBy},
+                update_time=#{empAnnualBonusSnapshot.updateTime}
+        WHERE
+                emp_annual_bonus_snapshot_id=#{empAnnualBonusSnapshot.empAnnualBonusSnapshotId}
+    </update>
+    <!--逻辑批量删除个人年终奖发放快照信息表-->
+    <update id="logicDeleteEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotIds">
+        UPDATE emp_annual_bonus_snapshot
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         emp_annual_bonus_snapshot_id IN
+            <foreach item="item"
+                     collection="empAnnualBonusSnapshotIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增个人年终奖发放快照信息表-->
+    <insert id="batchEmpAnnualBonusSnapshot">
+        INSERT INTO emp_annual_bonus_snapshot (employee_annual_bonus_id,emp_annual_bonus_objects_id,employee_name,employee_code,department_name,post_name,official_rank_name,seniority,employee_basic_wage,emolument_before_one,bonus_before_one,bonus_before_two,last_performance_resulted,bonus_percentage_one,bonus_percentage_two,reference_value_one,reference_value_two,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="empAnnualBonusSnapshots"
+                 separator=",">
+            (#{item.employeeAnnualBonusId},#{item.empAnnualBonusObjectsId},#{item.employeeName},#{item.employeeCode},#{item.departmentName},#{item.postName},#{item.officialRankName},#{item.seniority},#{item.employeeBasicWage},#{item.emolumentBeforeOne},#{item.bonusBeforeOne},#{item.bonusBeforeTwo},#{item.lastPerformanceResulted},#{item.bonusPercentageOne},#{item.bonusPercentageTwo},#{item.referenceValueOne},#{item.referenceValueTwo},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除个人年终奖发放快照信息表-->
+    <delete id="deleteEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotId">
+        DELETE FROM emp_annual_bonus_snapshot
+        WHERE  emp_annual_bonus_snapshot_id=#{empAnnualBonusSnapshot}
+
+    </delete>
+    <!--物理批量删除个人年终奖发放快照信息表-->
+    <delete id="deleteEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotIds">
+        DELETE FROM emp_annual_bonus_snapshot
+        WHERE  emp_annual_bonus_snapshot_id IN
+            <foreach item="item"
+                     collection="empAnnualBonusSnapshotIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改个人年终奖发放快照信息表-->
+    <update id="updateEmpAnnualBonusSnapshots">
+        update emp_annual_bonus_snapshot
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="employee_annual_bonus_id=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.employeeAnnualBonusId != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.employeeAnnualBonusId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="emp_annual_bonus_objects_id=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.empAnnualBonusObjectsId != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.empAnnualBonusObjectsId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="employee_name=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.employeeName != null and item.employeeName != ''">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.employeeName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="employee_code=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.employeeCode != null and item.employeeCode != ''">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.employeeCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_name=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.departmentName != null and item.departmentName != ''">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.departmentName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="post_name=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.postName != null and item.postName != ''">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.postName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="official_rank_name=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.officialRankName != null and item.officialRankName != ''">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.officialRankName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="seniority=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.seniority != null and item.seniority != ''">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.seniority}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="employee_basic_wage=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.employeeBasicWage != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.employeeBasicWage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="emolument_before_one=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.emolumentBeforeOne != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.emolumentBeforeOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_before_one=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.bonusBeforeOne != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.bonusBeforeOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_before_two=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.bonusBeforeTwo != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.bonusBeforeTwo}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="last_performance_resulted=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.lastPerformanceResulted != null and item.lastPerformanceResulted != ''">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.lastPerformanceResulted}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_percentage_one=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.bonusPercentageOne != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.bonusPercentageOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_percentage_two=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.bonusPercentageTwo != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.bonusPercentageTwo}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="reference_value_one=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.referenceValueOne != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.referenceValueOne}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="reference_value_two=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.referenceValueTwo != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.referenceValueTwo}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="empAnnualBonusSnapshotList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="empAnnualBonusSnapshotList" separator="or" item="item" index="index">
+                    emp_annual_bonus_snapshot_id=#{item.empAnnualBonusSnapshotId}
+        </foreach>
+    </update>
+</mapper>
+
+

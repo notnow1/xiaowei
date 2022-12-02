@@ -4,6 +4,7 @@ package ${entityPackage};
 
 import net.qixiaowei.integration.common.web.domain.BaseEntity;
 import lombok.Data;
+import java.math.BigDecimal;
 import lombok.experimental.Accessors;
 import java.util.Date;
 
@@ -21,7 +22,7 @@ public class ${entity} extends BaseEntity {
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
     <#if field.comment!?length gt 0>
-        <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime" &&"${field.propertyName}"!="remark">
+        <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime" &&"${field.propertyName}"!="remark" &&"${field.propertyName}"!="deleteFlag">
      /**
      * ${field.comment}
      */
