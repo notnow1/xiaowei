@@ -4,17 +4,21 @@
     <!--    查询部门奖金包预算表-->
     <select id="selectDeptBonusBudgetByDeptBonusBudgetId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
-        SELECT dept_bonus_budget_id,
-               budget_year,
-               strategy_award_percentage,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
-        FROM dept_bonus_budget
-        WHERE dept_bonus_budget_id = #{deptBonusBudgetId}
-          and delete_flag = 0
+        SELECT db.amount_bonus_budget,
+               dbb.dept_bonus_budget_id,
+               dbb.budget_year,
+               dbb.strategy_award_percentage,
+               dbb.delete_flag,
+               dbb.create_by,
+               dbb.create_time,
+               dbb.update_by,
+               dbb.update_time
+        FROM dept_bonus_budget dbb
+        left join bonus_budget db
+        on db.budget_year = dbb.budget_year
+        and db.delete_flag = 0
+        WHERE dbb.dept_bonus_budget_id = #{deptBonusBudgetId}
+          and dbb.delete_flag = 0
     </select>
 
     <!--    批量查询部门奖金包预算表-->
@@ -38,7 +42,7 @@
         SELECT
         IFNULL(bb.amount_bonus_budget * dbb.strategy_award_percentage,0) as strategyAwardAmount,
         bb.amount_bonus_budget,
-        IFNULL(amount_bonus_budget - IFNULL(bb.amount_bonus_budget * dbb.strategy_award_percentage,0),0) as
+        IFNULL(amount_bonus_budget - IFNULL(bb.amount_bonus_budget * (dbb.strategy_award_percentage/100),0),0) as
         deptAmountBonus,
 --         dbbd.dept_bonus_percentage,
         dbb.dept_bonus_budget_id,
