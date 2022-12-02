@@ -60,13 +60,17 @@ public class SalaryPayDTO {
      */
     private String employeePostName;
     /**
+     * 个人职级名称
+     */
+    private String employeeRankName;
+    /**
      * 岗位职级
      */
     private String postRank;
     /**
      * 岗位职级名称
      */
-    private String employeeRankName;
+    private String postRankName;
     /**
      * 部门ID
      */

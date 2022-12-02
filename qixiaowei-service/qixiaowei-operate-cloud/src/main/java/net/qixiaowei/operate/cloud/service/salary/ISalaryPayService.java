@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayExcel;
@@ -120,10 +121,20 @@ public interface ISalaryPayService {
     List<SalaryPayExcel> exportSalaryPay(SalaryPayDTO salaryPayDTO);
 
     /**
-     * 查询薪酬架构报表列表
+     * 薪酬架构报表
      *
-     * @param salaryStructureDTO
+     * @param salaryStructureDTO 薪酬架构报表
      * @return
      */
-    SalaryStructureDTO selectSalaryPayStructureList(SalaryStructureDTO salaryStructureDTO);
+    SalaryStructureDTO selectSalaryPayStructure(SalaryStructureDTO salaryStructureDTO);
+
+
+    /**
+     * 查询薪酬架构报表列表
+     *
+     * @param salaryStructureDTO 薪酬架构报表
+     * @return
+     */
+    TableDataInfo selectSalaryPayStructureList(SalaryStructureDTO salaryStructureDTO);
+
 }

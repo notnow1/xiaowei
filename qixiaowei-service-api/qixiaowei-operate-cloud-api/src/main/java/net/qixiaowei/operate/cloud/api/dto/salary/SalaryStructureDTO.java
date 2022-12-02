@@ -74,7 +74,7 @@ public class SalaryStructureDTO {
     /**
      * 部门名称
      */
-    private String postName;
+    private String departmentName;
     /**
      * 开始时间
      */
@@ -89,6 +89,14 @@ public class SalaryStructureDTO {
      * 报表列表
      */
     private List<SalaryPayDTO> salaryPayDTOList;
+    /**
+     * 页数
+     */
+    private Integer pageNum;
+    /**
+     * 页数
+     */
+    private Integer pageSize;
 
 }
 

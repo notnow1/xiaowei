@@ -85,7 +85,16 @@ public class SalaryPayController extends BaseController {
      * 查询薪酬架构报表列表
      */
     //@RequiresPermissions("operate:cloud:salaryPay:list")
-    @GetMapping("/list/structure")
+    @GetMapping("/structure")
+    public AjaxResult structure(SalaryStructureDTO salaryStructureDTO) {
+        return AjaxResult.success(salaryPayService.selectSalaryPayStructure(salaryStructureDTO));
+    }
+
+    /**
+     * 查询薪酬架构报表列表
+     */
+    //@RequiresPermissions("operate:cloud:salaryPay:list")
+    @GetMapping("/pageList/structure")
     public AjaxResult listStructure(SalaryStructureDTO salaryStructureDTO) {
         return AjaxResult.success(salaryPayService.selectSalaryPayStructureList(salaryStructureDTO));
     }
