@@ -107,6 +107,35 @@ public class EmpAnnualBonusSnapshotDTO {
     */
     private  BigDecimal referenceValueTwo;
     /**
+     * 员工ID
+     */
+    private  Long employeeId;
+    /**
+     * 选中标记:0否;1是
+     */
+    private  Integer choiceFlag;
+    /**
+     * 绩效等级系数ID
+     */
+    private  Long performanceRankFactorId;
+    /**
+     * 绩效奖金系数
+     */
+    private BigDecimal performanceBonusFactor;
+    /**
+     * 考勤系数
+     */
+    private  BigDecimal attendanceFactor;
+    /**
+     * 建议值
+     */
+    private  BigDecimal recommendValue;
+    /**
+     * 评议值
+     */
+    private  BigDecimal commentValue;
+
+    /**
     * 删除标记:0未删除;1已删除
     */
     private  Integer deleteFlag;
