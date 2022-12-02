@@ -262,6 +262,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     @Override
     public DeptBonusBudgetDTO insertDeptBonusBudget(DeptBonusBudgetDTO deptBonusBudgetDTO) {
+
         //部门奖金包预算表
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
         //部门奖金预算明细表集合
@@ -271,7 +272,10 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         //前台传入部门奖金预算明细表集合数据
         List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = deptBonusBudgetDTO.getDeptBonusBudgetDetailsDTOS();
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
-
+        DeptBonusBudgetDTO deptBonusBudgetDTO1 = deptBonusBudgetMapper.selectDeptBonusBudgetBybudgetYear(deptBonusBudget.getBudgetYear());
+        if (StringUtils.isNotNull(deptBonusBudgetDTO1)){
+            throw new ServiceException("已存在"+deptBonusBudget.getBudgetYear()+"年数据 无需重复添加！");
+        }
         deptBonusBudget.setCreateBy(SecurityUtils.getUserId());
         deptBonusBudget.setCreateTime(DateUtils.getNowDate());
         deptBonusBudget.setUpdateTime(DateUtils.getNowDate());

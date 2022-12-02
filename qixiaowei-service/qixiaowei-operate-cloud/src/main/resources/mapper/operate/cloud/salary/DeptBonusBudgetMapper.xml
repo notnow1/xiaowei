@@ -104,6 +104,21 @@
             and budget_year=#{deptBonusBudget.budgetYear}
         </if>
     </select>
+<!--    根据年份查询部门奖金包预算表-->
+    <select id="selectDeptBonusBudgetBybudgetYear"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+        SELECT dbb.dept_bonus_budget_id,
+               dbb.budget_year,
+               dbb.strategy_award_percentage,
+               dbb.delete_flag,
+               dbb.create_by,
+               dbb.create_time,
+               dbb.update_by,
+               dbb.update_time
+        FROM dept_bonus_budget dbb
+        WHERE dbb.budget_year = #{budgetYear}
+          and dbb.delete_flag = 0
+    </select>
 
     <!--新增部门奖金包预算表-->
     <insert id="insertDeptBonusBudget" useGeneratedKeys="true" keyProperty="deptBonusBudgetId">
