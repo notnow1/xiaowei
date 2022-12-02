@@ -683,7 +683,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         } else {
             int startYear = DateUtils.getYear(salaryStructureDTO.getStartTime());
             int endYear = DateUtils.getYear(salaryStructureDTO.getEndTime());
-            int startMonth = DateUtils.getMonth(salaryStructureDTO.getEndTime());
+            int startMonth = DateUtils.getMonth(salaryStructureDTO.getStartTime());
             int endMonth = DateUtils.getMonth(salaryStructureDTO.getEndTime());
             if (endYear - startYear == 0) {// 当前年份
                 salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(endYear, startMonth, endMonth);
