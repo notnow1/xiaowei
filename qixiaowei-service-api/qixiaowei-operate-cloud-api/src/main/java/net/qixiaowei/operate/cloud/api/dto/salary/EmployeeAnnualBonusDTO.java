@@ -6,6 +6,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -79,6 +80,11 @@ public class EmployeeAnnualBonusDTO {
     * 状态:0草稿;1待初评;2待评议;3已评议
     */
     private  Integer status;
+    /**
+     * 快照表
+     */
+    private List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList;
+
     /**
     * 删除标记:0未删除;1已删除
     */
