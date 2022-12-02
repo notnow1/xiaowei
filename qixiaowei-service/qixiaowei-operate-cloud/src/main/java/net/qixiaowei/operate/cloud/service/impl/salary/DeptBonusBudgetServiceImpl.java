@@ -91,6 +91,8 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         if (StringUtils.isNull(deptBonusBudgetDTO)) {
             throw new ServiceException("数据不存在 请联系管理员！");
         }
+        //封装部门奖金主表实体类数据
+        this.packDeptBonusBudget(deptBonusBudgetDTO.getBudgetYear(), deptBonusBudgetDTO);
         //部门总奖金包
         BigDecimal deptAmountBonus = deptBonusBudgetDTO.getDeptAmountBonus();
 
@@ -119,7 +121,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                 BigDecimal bonusAmount = new BigDecimal("0");
                                 //奖金占比
                                 BigDecimal bonusPercentage = deptBonusBudgetItemsDTO.getBonusPercentage();
-                                bonusAmount = deptBonusSum.multiply(bonusPercentage);
+                                bonusAmount = deptBonusSum.multiply(bonusPercentage.divide(new BigDecimal("100")));
                                 deptBonusBudgetItemsDTO.setBonusAmount(bonusAmount);
                             }
                         }
@@ -129,7 +131,35 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 }
             }
         }
+        //赋值组织名称
+        this.packDeptName(deptBonusBudgetDetailsDTOS);
+        deptBonusBudgetDTO.setDeptBonusBudgetDetailsDTOS(deptBonusBudgetDetailsDTOS);
         return deptBonusBudgetDTO;
+    }
+
+    /**
+     * 封装赋值组织名称
+     * @param deptBonusBudgetDetailsDTOS
+     */
+    private void packDeptName(List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS) {
+        if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)){
+            List<Long> collect = deptBonusBudgetDetailsDTOS.stream().map(DeptBonusBudgetDetailsDTO::getDepartmentId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                //远程调用组织信息
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
+                List<DepartmentDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
+                        for (DepartmentDTO datum : data) {
+                            if (deptBonusBudgetDetailsDTO.getDepartmentId() == datum.getDepartmentId()){
+                                deptBonusBudgetDetailsDTO.setDepartmentName(datum.getDepartmentName());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     /**
@@ -141,6 +171,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @param deptBonusBudgetDetailsDTOS
      */
     private void packdetails(List<DepartmentDTO> departmentAll, DeptBonusBudgetDTO deptBonusBudgetDTO, BigDecimal deptAmountBonus, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS) {
+
         for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
             //部门总计
             BigDecimal deptBonusSum = new BigDecimal("0");
@@ -148,7 +179,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             BigDecimal deptBonusPercentage = deptBonusBudgetDetailsDTO.getDeptBonusPercentage();
             if (null != deptAmountBonus && deptAmountBonus.compareTo(new BigDecimal("0")) != 0 &&
                     null != deptBonusPercentage && deptBonusPercentage.compareTo(new BigDecimal("0")) != 0) {
-                deptBonusSum = deptAmountBonus.multiply(deptBonusPercentage).setScale(2, RoundingMode.CEILING);
+                deptBonusSum = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
             }
             deptBonusBudgetDetailsDTO.setDeptBonusSum(deptBonusSum);
         }
@@ -168,8 +199,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         Map<Long, BigDecimal> deptImportFactorMap = this.packDeptImportFactor(departmentAll);
         //封装∑（各一级部门带包数×各一级部门组织重要性系数）
         BigDecimal topDeptPaySum = this.packTopDeptPayMentSum(topDeptPaymentMap, deptImportFactorMap);
-        //封装部门奖金主表实体类数据
-        this.packDeptBonusBudget(deptBonusBudgetDTO.getBudgetYear(), deptBonusBudgetDTO);
+
         //封装部门奖金参考值
         packDepartmentImportanceFactor(departmentAll, deptBonusBudgetDetailsDTOS, topDeptPaymentMap, topDeptPaySum);
     }
@@ -590,6 +620,8 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOList = deptBonusBudgetDTO.getDeptBonusBudgetDetailsDTOS();
         //详情时实时计算部门奖金参考值
         packdetails(departmentAll, deptBonusBudgetDTO, deptAmountBonus, deptBonusBudgetDetailsDTOList);
+        //赋值组织名称
+        this.packDeptName(deptBonusBudgetDetailsDTOList);
         return deptBonusBudgetDetailsDTOList;
     }
 
@@ -650,10 +682,12 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     private void packDepartmentImportanceFactor(List<DepartmentDTO> departmentAll, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS, Map<Long, BigDecimal> topDeptPaymentMap, BigDecimal topDeptPaySum) {
         //赋值所有部门
-        for (DepartmentDTO departmentDTO : departmentAll) {
-            DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO = new DeptBonusBudgetDetailsDTO();
-            BeanUtils.copyProperties(departmentDTO, deptBonusBudgetDetailsDTO);
-            deptBonusBudgetDetailsDTOS.add(deptBonusBudgetDetailsDTO);
+        if (StringUtils.isEmpty(deptBonusBudgetDetailsDTOS)){
+            for (DepartmentDTO departmentDTO : departmentAll) {
+                DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO = new DeptBonusBudgetDetailsDTO();
+                BeanUtils.copyProperties(departmentDTO, deptBonusBudgetDetailsDTO);
+                deptBonusBudgetDetailsDTOS.add(deptBonusBudgetDetailsDTO);
+            }
         }
         //部门奖金参考值 公式=【当前一级部门带包数×当前一级部门组织重要性系数÷∑（各一级部门带包数×各一级部门组织重要性系数）】×100%
         if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)) {
