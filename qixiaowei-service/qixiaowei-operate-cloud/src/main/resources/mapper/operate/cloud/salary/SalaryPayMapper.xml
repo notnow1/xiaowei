@@ -157,8 +157,8 @@
                update_by,
                update_time
         FROM salary_Pay
-        WHERE pay_year &gt; #{startYear}
-          AND pay_year &lt; #{endYear}
+        WHERE pay_year &gt;= #{startYear}
+          AND pay_year &lt;= #{endYear}
     </select>
     <!--    根据人员ID集合和年份查找工资发薪信息-->
     <select id="selectSalaryPayByBudggetEmployeeIds"

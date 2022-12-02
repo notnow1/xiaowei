@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 工资发薪表
+ * 薪酬架构表
  *
  * @author Graves
  * @since 2022-11-17
@@ -72,14 +72,18 @@ public class SalaryStructureDTO {
      */
     private Long postId;
     /**
+     * 部门名称
+     */
+    private String postName;
+    /**
      * 开始时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM", timezone = "GMT+8")
     private Date startTime;
     /**
      * 结束时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM", timezone = "GMT+8")
     private Date endTime;
     /**
      * 报表列表

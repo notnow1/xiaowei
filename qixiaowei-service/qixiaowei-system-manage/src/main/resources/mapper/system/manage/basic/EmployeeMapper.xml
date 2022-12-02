@@ -508,6 +508,9 @@
         on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
         WHERE ee.delete_flag=0
+        <if test="employee.employeePostId != null">
+            and e.employee_post_id =#{employee.employeePostId}
+        </if>
         AND ee.employee_id in
         <foreach item="item"
                  collection="employeeIds"

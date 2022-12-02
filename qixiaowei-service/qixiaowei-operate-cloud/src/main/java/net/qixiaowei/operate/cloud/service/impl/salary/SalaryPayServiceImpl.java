@@ -14,7 +14,6 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingOrderDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayExcel;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
@@ -673,59 +672,86 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      */
     @Override
     public SalaryStructureDTO selectSalaryPayStructureList(SalaryStructureDTO salaryStructureDTO) {
+        // 处理工资发薪列表
         // 默认当前年份的1月到现在的月份
-        // 默认当前所有部门
         SalaryStructureDTO salaryStructure = new SalaryStructureDTO();
+        List<SalaryPayDTO> salaryPayDTOList = new ArrayList<>();
+        int month = DateUtils.getMonth();
+        int year = DateUtils.getYear();
         if (CheckObjectIsNullUtils.isNull(salaryStructureDTO)) {
-            int month = DateUtils.getMonth();
-            int year = DateUtils.getYear();
-            List<SalaryPayDTO> salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(year, 0, month);
-            BigDecimal salaryAmountSum = BigDecimal.ZERO;
-            BigDecimal allowanceAmountSum = BigDecimal.ZERO;
-            BigDecimal welfareAmountSum = BigDecimal.ZERO;
-            BigDecimal bonusAmountSum = BigDecimal.ZERO;
-            List<Long> employeeIds = new ArrayList<>();
-            // 获取工资，津贴，福利，奖金合计
-            for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
-                salaryAmountSum = salaryAmountSum.add(salaryPayDTO.getSalaryAmount());
-                allowanceAmountSum = allowanceAmountSum.add(salaryPayDTO.getAllowanceAmount());
-                welfareAmountSum = welfareAmountSum.add(salaryPayDTO.getWelfareAmount());
-                bonusAmountSum = bonusAmountSum.add(salaryPayDTO.getBonusAmount());
-                Long employeeId = salaryPayDTO.getEmployeeId();
-                employeeIds.add(employeeId);
+            salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(year, 0, month);
+        } else {
+            int startYear = DateUtils.getYear(salaryStructureDTO.getStartTime());
+            int endYear = DateUtils.getYear(salaryStructureDTO.getEndTime());
+            int startMonth = DateUtils.getMonth(salaryStructureDTO.getEndTime());
+            int endMonth = DateUtils.getMonth(salaryStructureDTO.getEndTime());
+            if (endYear - startYear == 0) {// 当前年份
+                salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(endYear, startMonth, endMonth);
+            } else if (endYear - startYear == 1) {
+                salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(startYear, startMonth, 12);
+                salaryPayDTOList.addAll(salaryPayMapper.selectSalaryPayBySomeMonth(endYear, 1, endMonth));
+            } else if (endYear - startYear > 1) {
+                salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(startYear, startMonth, 12);
+                salaryPayDTOList.addAll(salaryPayMapper.selectSalaryPayBySomeYear(startYear + 1, endYear - 1));
+                salaryPayDTOList.addAll(salaryPayMapper.selectSalaryPayBySomeMonth(endYear, 1, endMonth));
+            } else {
+                throw new ServiceException("结束年份不可以小于开始年份");
             }
-            salaryStructure.setSalaryAmountSum(salaryAmountSum);
-            salaryStructure.setAllowanceAmountSum(allowanceAmountSum);
-            salaryStructure.setWelfareAmountSum(welfareAmountSum);
-            salaryStructure.setBonusAmountSum(bonusAmountSum);
-            salaryStructure.setSalaryPayDTOList(salaryPayDTOList);
-            // 为员工赋值
-            R<List<EmployeeDTO>> employeeDTOR = employeeService.selectByEmployeeIds(employeeIds, SecurityConstants.INNER);
-            List<EmployeeDTO> employeeDTOS = employeeDTOR.getData();
-            if (employeeDTOR.getCode() != 200) {
-                throw new ServiceException(employeeDTOR.getMsg());
-            }
-            if (StringUtils.isEmpty(employeeDTOS)) {
-                throw new ServiceException("当前人员信息已不存在，请检查员工配置");
-            }
-            for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
-                for (EmployeeDTO employeeDTO : employeeDTOS) {
-                    if (salaryPayDTO.getEmployeeId().equals(employeeDTO.getEmployeeId())) {
-                        salaryPayDTO.setEmployeeRankName(employeeDTO.getEmployeeRankName());
-                        salaryPayDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
-                        salaryPayDTO.setEmployeeDepartmentId(employeeDTO.getEmployeeDepartmentId());
-                        break;
-                    }
-                }
-            }
-            List<SalaryPayDTO> salaryPayDTOS = calculateAmount(salaryPayDTOList);
-            salaryStructure.setSalaryPayDTOList(salaryPayDTOS);
+        }
+        // 处理员工列表
+        String postName = salaryStructureDTO.getPostName();
+        R<List<EmployeeDTO>> employeeDTOR;
+        if (StringUtils.isEmpty(salaryPayDTOList)) {
             return salaryStructure;
         }
-        EmployeeDTO employeeDTO = new EmployeeDTO();
-        employeeDTO.setEmployeePostId(salaryStructureDTO.getPostId());
-        R<List<EmployeeDTO>> listR = employeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
-        return null;
+        if (StringUtils.isNotNull(postName)) {
+            EmployeeDTO employeeDTO = new EmployeeDTO();
+            employeeDTO.setEmployeePostName(postName);
+            employeeDTOR = employeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
+        } else {
+            List<Long> employeeIds = new ArrayList<>();
+            for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
+                employeeIds.add(salaryPayDTO.getEmployeeId());
+            }
+            employeeDTOR = employeeService.selectByEmployeeIds(employeeIds, SecurityConstants.INNER);
+        }
+        List<EmployeeDTO> employeeDTOS = employeeDTOR.getData();
+        if (employeeDTOR.getCode() != 200) {
+            throw new ServiceException(employeeDTOR.getMsg());
+        }
+        if (StringUtils.isEmpty(employeeDTOS)) {
+            throw new ServiceException("当前人员信息已不存在，请检查员工配置");
+        }
+        BigDecimal salaryAmountSum = BigDecimal.ZERO;
+        BigDecimal allowanceAmountSum = BigDecimal.ZERO;
+        BigDecimal welfareAmountSum = BigDecimal.ZERO;
+        BigDecimal bonusAmountSum = BigDecimal.ZERO;
+
+        // 获取工资，津贴，福利，奖金合计
+        for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
+            salaryAmountSum = salaryAmountSum.add(salaryPayDTO.getSalaryAmount());
+            allowanceAmountSum = allowanceAmountSum.add(salaryPayDTO.getAllowanceAmount());
+            welfareAmountSum = welfareAmountSum.add(salaryPayDTO.getWelfareAmount());
+            bonusAmountSum = bonusAmountSum.add(salaryPayDTO.getBonusAmount());
+        }
+        salaryStructure.setSalaryAmountSum(salaryAmountSum);
+        salaryStructure.setAllowanceAmountSum(allowanceAmountSum);
+        salaryStructure.setWelfareAmountSum(welfareAmountSum);
+        salaryStructure.setBonusAmountSum(bonusAmountSum);
+        salaryStructure.setSalaryPayDTOList(salaryPayDTOList);
+        for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
+            for (EmployeeDTO employeeDTO : employeeDTOS) {
+                if (salaryPayDTO.getEmployeeId().equals(employeeDTO.getEmployeeId())) {
+                    salaryPayDTO.setEmployeeRankName(employeeDTO.getEmployeeRankName());
+                    salaryPayDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
+                    salaryPayDTO.setEmployeeDepartmentId(employeeDTO.getEmployeeDepartmentId());
+                    break;
+                }
+            }
+        }
+        List<SalaryPayDTO> salaryPayDTOS = calculateAmount(salaryPayDTOList);
+        salaryStructure.setSalaryPayDTOList(salaryPayDTOS);
+        return salaryStructure;
     }
 
     /**
@@ -762,9 +788,16 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 //总计
                 BigDecimal paymentBonus = fixedValue.add(bonusAmountValue);
                 //固定占比（%）
-                BigDecimal fixedProportion = fixedValue.divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                BigDecimal fixedProportion;
                 //浮动占比（%）
-                BigDecimal floatProportion = bonusAmountValue.divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                BigDecimal floatProportion;
+                if (paymentBonus.compareTo(BigDecimal.ZERO) != 0) {
+                    fixedProportion = fixedValue.divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                    floatProportion = bonusAmountValue.divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                } else {
+                    fixedProportion = BigDecimal.ZERO;
+                    floatProportion = BigDecimal.ZERO;
+                }
                 SalaryPayDTO salaryPayDTO = new SalaryPayDTO();
                 salaryPayDTO.setEmployeeRankName(rankName);
                 salaryPayDTO.setEmployeeDepartmentName(departmentName);
