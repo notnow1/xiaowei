@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -83,7 +85,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
             for (Integer end = rankEnd; end > rankStart; end--) {
                 OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
-                List<String> postList = getPostList(postDTOS, end);
+                List<Map<String, Object>> postList = getPostList(postDTOS, end);
                 officialRankEmolumentDTO.setOfficialRank(end);
                 officialRankEmolumentDTO.setPostList(postList);
                 officialRankEmolumentDTO.setOfficialRankName(rankPrefixCode + end);
@@ -120,7 +122,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                 }
             }
             // 岗位
-            List<String> postList = getPostList(postDTOS, rankEmolumentDTO.getOfficialRank());
+            List<Map<String, Object>> postList = getPostList(postDTOS, rankEmolumentDTO.getOfficialRank());
             rankEmolumentDTO.setPostList(postList);
         }
         OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
@@ -136,12 +138,15 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      * @param postDTOS 岗位DTO
      * @param end      结束
      */
-    private List<String> getPostList(List<PostDTO> postDTOS, Integer end) {
-        List<String> postList = new ArrayList<>();
+    private List<Map<String, Object>> getPostList(List<PostDTO> postDTOS, Integer end) {
+        List<Map<String, Object>> postList = new ArrayList<>();
         if (StringUtils.isNotEmpty(postDTOS)) {
             for (PostDTO postDTO : postDTOS) {
                 if (postDTO.getPostRankUpper() >= end && postDTO.getPostRankLower() <= end) {
-                    postList.add(postDTO.getPostName());
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", postDTO.getPostId());
+                    map.put("name", postDTO.getPostName());
+                    postList.add(map);
                 }
             }
         }

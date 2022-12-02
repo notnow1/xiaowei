@@ -1,16 +1,14 @@
 package net.qixiaowei.operate.cloud.api.dto.salary;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.groups.Default;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import javax.validation.groups.Default;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.Map;
 
 /**
  * 职级薪酬表
@@ -65,7 +63,7 @@ public class OfficialRankEmolumentDTO {
     /**
      * 岗位
      */
-    private List<String> postList;
+    private List<Map<String, Object>> postList;
     /**
      * 工资上限
      */
