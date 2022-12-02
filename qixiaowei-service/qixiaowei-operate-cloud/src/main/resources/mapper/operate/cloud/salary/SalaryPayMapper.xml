@@ -132,10 +132,11 @@
                create_time,
                update_by,
                update_time
-        FROM salary_Pay
+        FROM salary_pay
         WHERE pay_year = #{payYear}
-          AND pay_month &gt;= #{startMonth}
-          AND pay_month &lt;= #{endMonth}
+          AND pay_month
+          BETWEEN #{startMonth}
+          AND #{endMonth}
     </select>
     <!--多个年份的所有-->
     <select id="selectSalaryPayBySomeYear"
@@ -156,9 +157,10 @@
                create_time,
                update_by,
                update_time
-        FROM salary_Pay
-        WHERE pay_year &gt;= #{startYear}
-          AND pay_year &lt;= #{endYear}
+        FROM salary_pay
+        WHERE pay_year
+          BETWEEN #{startYear}
+          AND #{endYear}
     </select>
     <!--    根据人员ID集合和年份查找工资发薪信息-->
     <select id="selectSalaryPayByBudggetEmployeeIds"
