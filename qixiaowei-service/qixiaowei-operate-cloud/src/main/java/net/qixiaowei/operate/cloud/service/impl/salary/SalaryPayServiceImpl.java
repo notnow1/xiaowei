@@ -827,6 +827,12 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         return tableDataInfo(HttpStatus.SUCCESS, partition, salaryPayDTOS.size());
     }
 
+    @Override
+    public List<SalaryPayDTO> selectSalaryPayBySalaryPayIds(List<Long> salaryPayIds) {
+
+        return null;
+    }
+
     /**
      * 给发薪表赋值
      *

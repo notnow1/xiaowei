@@ -132,4 +132,12 @@ public interface SalaryPayDetailsMapper {
      * @return
      */
     int logicDeleteSalaryPayDetailsBySalaryPayIds(@Param("salaryPayIds") List<Long> salaryPayIds, @Param("updateTime") Date updateTime, @Param("updateBy") Long updateBy);
+
+    /**
+     * 通过发薪集合查找详情表
+     *
+     * @param salaryPayIds
+     * @return
+     */
+    List<SalaryPayDetailsDTO> selectSalaryPayDetailsBySalaryPayIds(@Param("salaryPayIds") List<Long> salaryPayIds);
 }

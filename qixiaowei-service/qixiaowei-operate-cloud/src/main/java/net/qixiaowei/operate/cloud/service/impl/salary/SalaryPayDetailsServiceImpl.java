@@ -269,5 +269,16 @@ public class SalaryPayDetailsServiceImpl implements ISalaryPayDetailsService {
     public int logicDeleteSalaryPayDetailsBySalaryPayIds(List<Long> salaryPayIds) {
         return salaryPayDetailsMapper.logicDeleteSalaryPayDetailsBySalaryPayIds(salaryPayIds, DateUtils.getNowDate(), SecurityUtils.getUserId());
     }
+
+    /**
+     * 通过发薪集合查找详情表
+     *
+     * @param salaryPayIds 发薪Ids
+     * @return
+     */
+    @Override
+    public List<SalaryPayDetailsDTO> selectSalaryPayDetailsBySalaryPayIds(List<Long> salaryPayIds) {
+        return salaryPayDetailsMapper.selectSalaryPayDetailsBySalaryPayIds(salaryPayIds);
+    }
 }
 

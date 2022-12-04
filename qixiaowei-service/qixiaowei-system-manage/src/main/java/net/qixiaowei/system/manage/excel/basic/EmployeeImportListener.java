@@ -239,7 +239,6 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
             String s = EmployeeImportListener.packData(i);
             data.add(s);
             if (i<employeeExcelList.size()){
-
                 ExcelUtils.packList(employeeExcelList.get(i),data);
             }
             list.add(data);

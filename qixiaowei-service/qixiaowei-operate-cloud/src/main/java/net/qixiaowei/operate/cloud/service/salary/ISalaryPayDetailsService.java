@@ -140,4 +140,12 @@ public interface ISalaryPayDetailsService {
      * @return
      */
     int logicDeleteSalaryPayDetailsBySalaryPayIds(List<Long> salaryPayIds);
+
+    /**
+     * 通过发薪集合查找详情表
+     *
+     * @param salaryPayIds 发薪Ids
+     * @return
+     */
+    List<SalaryPayDetailsDTO> selectSalaryPayDetailsBySalaryPayIds(List<Long> salaryPayIds);
 }

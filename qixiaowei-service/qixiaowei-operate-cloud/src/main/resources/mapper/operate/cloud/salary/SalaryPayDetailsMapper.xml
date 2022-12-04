@@ -71,20 +71,39 @@
     </select>
     <select id="selectSalaryPayDetailsBySalaryPayId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
+        SELECT salary_pay_details_id,
+               salary_pay_id,
+               salary_item_id,
+               amount,
+               sort,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM salary_pay_details
+        WHERE delete_flag = 0
+          AND salary_pay_id = #{salaryPayId}
+        ORDER BY sort
+    </select>
+    <select id="selectSalaryPayDetailsBySalaryPayIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
         SELECT
         salary_pay_details_id, salary_pay_id, salary_item_id, amount, sort, delete_flag, create_by, create_time,
         update_by, update_time
         FROM salary_pay_details
         WHERE delete_flag=0
-        AND salary_pay_id = #{salaryPayId}
-        ORDER BY sort
+        <foreach collection="salaryPayIds" separator="," open="(" close=")" item="item" index="index">
+            #{item}
+        </foreach>
     </select>
     <!--新增工资发薪明细表-->
     <insert id="insertSalaryPayDetails" useGeneratedKeys="true" keyProperty="salaryPayDetailsId">
         INSERT INTO salary_pay_details
-        (salary_pay_id,salary_item_id,amount,sort,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-        (#{salaryPayDetails.salaryPayId},#{salaryPayDetails.salaryItemId},#{salaryPayDetails.amount},#{salaryPayDetails.sort},#{salaryPayDetails.deleteFlag},#{salaryPayDetails.createBy},#{salaryPayDetails.createTime},#{salaryPayDetails.updateBy},#{salaryPayDetails.updateTime})
+        (salary_pay_id, salary_item_id, amount, sort, delete_flag, create_by, create_time, update_by, update_time)
+        VALUES (#{salaryPayDetails.salaryPayId}, #{salaryPayDetails.salaryItemId}, #{salaryPayDetails.amount},
+                #{salaryPayDetails.sort}, #{salaryPayDetails.deleteFlag}, #{salaryPayDetails.createBy},
+                #{salaryPayDetails.createTime}, #{salaryPayDetails.updateBy}, #{salaryPayDetails.updateTime})
     </insert>
     <!--修改工资发薪明细表-->
     <update id="updateSalaryPayDetails">

@@ -137,4 +137,11 @@ public interface ISalaryPayService {
      */
     TableDataInfo selectSalaryPayStructureList(SalaryStructureDTO salaryStructureDTO);
 
+    /**
+     * 通过Id集合查找发行表
+     *
+     * @param salaryPayIds 薪酬发行ID集合
+     * @return List
+     */
+    List<SalaryPayDTO> selectSalaryPayBySalaryPayIds(List<Long> salaryPayIds);
 }

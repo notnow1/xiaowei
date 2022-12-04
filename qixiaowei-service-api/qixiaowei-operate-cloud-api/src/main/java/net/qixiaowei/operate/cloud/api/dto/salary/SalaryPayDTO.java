@@ -157,6 +157,14 @@ public class SalaryPayDTO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+    /**
+     * 工资发薪ID集合
+     */
+    private List<Long> salaryPayIds;
+    /**
+     * 是否勾选（0-仅勾选数据,1-所有符合条件数据）
+     */
+    private Integer isSelect;
 
 }
 

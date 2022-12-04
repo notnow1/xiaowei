@@ -4,10 +4,12 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
@@ -19,6 +21,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayExcel;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayImportListener;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
+import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -48,6 +48,9 @@ public class SalaryPayController extends BaseController {
 
     @Autowired
     private ISalaryItemService salaryItemService;
+
+    @Autowired
+    private ISalaryPayDetailsService salaryPayDetailsService;
 
 
     /**
@@ -183,15 +186,24 @@ public class SalaryPayController extends BaseController {
      * 导出工资发薪表
      */
     @SneakyThrows
-    @GetMapping("export")
-    public void exportSalaryPay(@RequestParam Map<String, Object> salaryPay, SalaryPayDTO salaryPayDTO, HttpServletResponse response) {
-        List<SalaryPayExcel> salaryPayExcelList = salaryPayService.exportSalaryPay(salaryPayDTO);
+    @PostMapping("export")
+    public void exportSalaryPay(@RequestBody SalaryPayDTO salaryPayDTO, HttpServletResponse response) {
+        List<SalaryPayDTO> salaryPayDTOS;
+        if (salaryPayDTO.getIsSelect() == 1) {
+            salaryPayDTOS = salaryPayService.selectSalaryPayList(new SalaryPayDTO());
+        } else {
+            salaryPayDTOS = salaryPayService.selectSalaryPayBySalaryPayIds(salaryPayDTO.getSalaryPayIds());
+        }
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("工资发薪表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), SalaryPayExcel.class).sheet("工资发薪表").doWrite(salaryPayExcelList);
+        EasyExcel.write(response.getOutputStream())
+                .sheet("工资发薪表")// 设置 sheet 的名字
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(SalaryPayImportListener.dataList(salaryPayDTOS, salaryPayDetailsService, salaryItemService));
     }
 
     /**

@@ -5,7 +5,13 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
+import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
+import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +41,7 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
      * 缓存的数据列表
      */
     List<Map<Integer, String>> list = new ArrayList<>();
+
 
     @Override
     public void invoke(Map<Integer, String> data, AnalysisContext context) {
@@ -72,6 +79,27 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
             }});
         }
         return list;
+    }
+
+    /**
+     * 封装导出数据
+     *
+     * @param salaryPayDTOS           公子发薪表
+     * @param salaryPayDetailsService 详情服务
+     * @param salaryItemService       工资项服务
+     * @return
+     */
+    public static List<List<Object>> dataList(List<SalaryPayDTO> salaryPayDTOS, ISalaryPayDetailsService salaryPayDetailsService, ISalaryItemService salaryItemService) {
+        if (StringUtils.isEmpty(salaryPayDTOS)) {
+            throw new ServiceException("工资发薪列表为空");
+        }
+        List<Long> salaryPayIds = new ArrayList<>();
+        for (SalaryPayDTO salaryPayDTO : salaryPayDTOS) {
+            salaryPayIds.add(salaryPayDTO.getSalaryPayId());
+        }
+        List<SalaryPayDetailsDTO> salaryPayDetailsDTOS = salaryPayDetailsService.selectSalaryPayDetailsBySalaryPayIds(salaryPayIds);
+
+        return null;
     }
 }
 
