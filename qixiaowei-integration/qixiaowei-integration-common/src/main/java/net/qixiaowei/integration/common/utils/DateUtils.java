@@ -1,5 +1,6 @@
 package net.qixiaowei.integration.common.utils;
 
+import net.qixiaowei.integration.common.exception.ServiceException;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.lang.management.ManagementFactory;
@@ -457,6 +458,45 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         ZoneId zoneId = ZoneId.systemDefault();
         // atZone()方法返回在指定时区从此Instant生成的ZonedDateTime。
         return instant.atZone(zoneId).toLocalDate();
+    }
+
+    /**
+     * 获取String类型的年份
+     *
+     * @param stringDate
+     * @return
+     */
+    public static int getYear(String stringDate) {
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yyyy-MM").parse(stringDate);
+        } catch (ParseException e) {
+            throw new ServiceException("时间转化失败 请检查时间格式");
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        // 获取当前年
+        return calendar.get(Calendar.YEAR);
+    }
+
+    /**
+     * 获取String类型的月份
+     *
+     * @param stringDate
+     * @return
+     */
+    public static int getMonth(String stringDate) {
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yyyy-MM").parse(stringDate);
+        } catch (ParseException e) {
+            throw new ServiceException("时间转化失败 请检查时间格式");
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        // 获取当前年
+        return calendar.get(Calendar.YEAR);
     }
 
 }

@@ -583,32 +583,165 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     @Override
     @Transactional
     public void importSalaryPay(List<Map<Integer, String>> list) {
-        List<SalaryPay> salaryPayList = new ArrayList<>();
+        if (StringUtils.isEmpty(list)) {
+            throw new ServiceException("请使用系统的excel模板导入");
+        }
         Map<Integer, String> head = list.get(0);
         list.remove(0);
+        list.remove(1);
         if (StringUtils.isEmpty(list)) {
-            throw new ServiceException("数据为空");
+            throw new ServiceException("当前excel数据为空 请填充数据");
         }
-        list.forEach(map -> {
-            for (Integer index : map.keySet()) {
-                if (StringUtils.isNull(map.get(index))) {
-                    map.put(index, "0");
+        List<String> employeeCodes = new ArrayList<>();
+        List<String> dateList = new ArrayList<>();
+        for (Map<Integer, String> map : list) {
+            if (StringUtils.isNull(map.get(0))) {
+                continue;
+            }
+            employeeCodes.add(map.get(0));// 员工编码
+            if (StringUtils.isNull(map.get(1))) {
+                throw new ServiceException("请输入 " + map.get(0) + " 员工工号发薪年月");
+            }
+            dateList.add(map.get(1));// 发薪年月
+            map.remove(0);
+            map.remove(1);
+        }
+        if (StringUtils.isEmpty(employeeCodes)) {
+            throw new ServiceException("当前员工编码未存在 请检查员工配置");
+        }
+        R<List<EmployeeDTO>> employeeR = employeeService.selectByCodes(employeeCodes, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = employeeR.getData();
+        if (employeeR.getCode() != 200) {
+            throw new ServiceException("远程调用失败 请联系管理员");
+        }
+        if (employeeDTOS.size() == employeeCodes.size()) {
+            throw new ServiceException("员工编码有误 请核对");
+        }
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
+        if (StringUtils.isEmpty(salaryItemDTOS)) {
+            throw new ServiceException("当前工资项未进行任何配置，请联系管理员");
+        }
+        for (int j = 0; j < list.size(); j++) {
+            Map<Integer, String> map = list.get(j);
+            SalaryPay salaryPay = new SalaryPay();
+            BigDecimal salaryAmount = BigDecimal.ZERO;//工资金额
+            BigDecimal allowanceAmount = BigDecimal.ZERO;//津贴金额
+            BigDecimal welfareAmount = BigDecimal.ZERO;//福利金额
+            BigDecimal bonusAmount = BigDecimal.ZERO;//奖金金额
+            BigDecimal withholdRemitTax = BigDecimal.ZERO;//代扣代缴金额
+            BigDecimal otherDeductions = BigDecimal.ZERO;//其他扣款金额
+            BigDecimal payAmount;//发薪金额
+            List<SalaryPayDetailsDTO> salaryPayDetailsDTOAfter = new ArrayList<>();
+            for (int i = 2; i < map.size(); i++) {
+                SalaryPayDetailsDTO salaryPayDetailsDTO = new SalaryPayDetailsDTO();
+                for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+                    if (head.get(i).equals(salaryItemDTO.getThirdLevelItem())) {
+                        BigDecimal amount;
+                        if (StringUtils.isNull(map.get(i))) {
+                            amount = BigDecimal.ZERO;
+                        } else {
+                            amount = new BigDecimal(map.get(i));
+                        }
+                        salaryPayDetailsDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
+                        salaryPayDetailsDTO.setAmount(amount);
+                        salaryPayDetailsDTO.setSort(i - 2);
+                        switch (salaryItemDTO.getSecondLevelItem()) {
+                            case 1:
+                        }
+                        switch (salaryItemDTO.getSecondLevelItem()) {
+                            case 1:
+                                salaryAmount.add(amount);
+                                break;
+                            case 2:
+                                allowanceAmount.add(amount);
+                                break;
+                            case 3:
+                                welfareAmount.add(amount);
+                                break;
+                            case 4:
+                                bonusAmount.add(amount);
+                                break;
+                            case 5:
+                                withholdRemitTax.add(amount);
+                                break;
+                            case 6:
+                                otherDeductions.add(amount);
+                                break;
+                        }
+                    }
+                    salaryPayDetailsDTOAfter.add(salaryPayDetailsDTO);
+                    break;
                 }
             }
-        });
-//        SalaryPay salaryPay = new SalaryPay();
-//        BeanUtils.copyProperties(map, salaryPay);
-//        salaryPay.setCreateBy(SecurityUtils.getUserId());
-//        salaryPay.setCreateTime(DateUtils.getNowDate());
-//        salaryPay.setUpdateTime(DateUtils.getNowDate());
-//        salaryPay.setUpdateBy(SecurityUtils.getUserId());
-//        salaryPay.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-//        salaryPayList.add(salaryPay);
+            int year = DateUtils.getYear(dateList.get(j));
+            int month = DateUtils.getMonth(dateList.get(j));
+            String employeeCode = employeeCodes.get(j);
+            Long employeeId = null;
+            for (EmployeeDTO employeeDTO : employeeDTOS) {
+                if (employeeCode.equals(employeeDTO.getEmployeeCode())) {
+                    employeeId = employeeDTO.getEmployeeId();
+                    break;
+                }
+            }
+            payAmount = salaryAmount.add(allowanceAmount).add(welfareAmount).add(bonusAmount).subtract(withholdRemitTax).subtract(otherDeductions);
+            salaryPay.setSalaryAmount(salaryAmount);
+            salaryPay.setAllowanceAmount(allowanceAmount);
+            salaryPay.setWelfareAmount(welfareAmount);
+            salaryPay.setBonusAmount(bonusAmount);
+            salaryPay.setWithholdRemitTax(withholdRemitTax);
+            salaryPay.setOtherDeductions(otherDeductions);
+            salaryPay.setPayAmount(payAmount);
+            salaryPay.setUpdateBy(SecurityUtils.getUserId());
+            salaryPay.setUpdateTime(DateUtils.getNowDate());
+            SalaryPayDTO salaryPayDTOByYearAndMonth = salaryPayMapper.selectSalaryPayByYearAndMonth(employeeId, year, month);
+            if (StringUtils.isNotNull(salaryPayDTOByYearAndMonth)) {
+                salaryPay.setSalaryPayId(salaryPayDTOByYearAndMonth.getSalaryPayId());
+//                salaryPayMapper.updateSalaryPay(salaryPay);
+            } else {
+                salaryPay.setPayYear(year);
+                salaryPay.setPayMonth(month);
+                salaryPay.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                salaryPay.setCreateBy(SecurityUtils.getUserId());
+                salaryPay.setCreateTime(DateUtils.getNowDate());
+                salaryPay.setEmployeeId(employeeId);
+//                salaryPayMapper.insertSalaryPay(salaryPay);
+            }
+            for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOAfter) {
+                salaryPayDetailsDTO.setSalaryPayId(salaryPay.getSalaryPayId());
+            }
+            List<SalaryPayDetailsDTO> salaryPayDetailsDTOBefore = salaryPayDetailsService.selectSalaryPayDetailsBySalaryPayId(salaryPay.getSalaryPayId());
+            // 交集
+            List<SalaryPayDetailsDTO> updateSalaryPayDetail =
+                    salaryPayDetailsDTOAfter.stream().filter(salaryPayDetailsDTO ->
+                            salaryPayDetailsDTOBefore.stream().map(SalaryPayDetailsDTO::getSalaryItemId)
+                                    .collect(Collectors.toList()).contains(salaryPayDetailsDTO.getSalaryItemId())
+                    ).collect(Collectors.toList());
+            // 差集 Before中After的补集
+            List<SalaryPayDetailsDTO> delSalaryPayDetail =
+                    salaryPayDetailsDTOBefore.stream().filter(salaryPayDetailsDTO ->
+                            !salaryPayDetailsDTOAfter.stream().map(SalaryPayDetailsDTO::getSalaryItemId)
+                                    .collect(Collectors.toList()).contains(salaryPayDetailsDTO.getSalaryItemId())
+                    ).collect(Collectors.toList());
+            // 差集 After中Before的补集
+            List<SalaryPayDetailsDTO> addSalaryPayDetail =
+                    salaryPayDetailsDTOAfter.stream().filter(salaryPayDetailsDTO ->
+                            !salaryPayDetailsDTOBefore.stream().map(SalaryPayDetailsDTO::getSalaryItemId)
+                                    .collect(Collectors.toList()).contains(salaryPayDetailsDTO.getSalaryItemId())
+                    ).collect(Collectors.toList());
+            try {
+                if (StringUtils.isNotEmpty(delSalaryPayDetail)) {
+//                    salaryPayDetailsService.deleteSalaryPayDetailsBySalaryPayDetailsIds(delSalaryPayDetail);
+                }
+                if (StringUtils.isNotEmpty(addSalaryPayDetail)) {
+//                    salaryPayDetailsService.insertSalaryPayDetailss(addSalaryPayDetail);
+                }
+                if (StringUtils.isNotEmpty(updateSalaryPayDetail)) {
+//                    salaryPayDetailsService.updateSalaryPayDetailss(updateSalaryPayDetail);
+                }
+            } catch (ServiceException e) {
+                throw new ServiceException("更新数据失败");
+            }
 
-        try {
-//            salaryPayMapper.batchSalaryPay(salaryPayList);
-        } catch (Exception e) {
-            throw new ServiceException("导入工资发薪表失败");
         }
     }
 

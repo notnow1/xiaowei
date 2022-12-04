@@ -179,5 +179,16 @@ public interface SalaryPayMapper {
      * @param payYear
      * @return
      */
-    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId,@Param("payYear") Integer payYear);
+    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear);
+
+    /**
+     * 根据年份 月份 员工ID查询发薪表
+     *
+     * @param employeeId 员工id
+     * @param year       年
+     * @param month      月
+     * @return
+     */
+    SalaryPayDTO selectSalaryPayByYearAndMonth(@Param("employeeId") Long employeeId, @Param("year") int year, @Param("month") int month);
+
 }

@@ -250,7 +250,7 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
         }
         List<PerformanceRankFactorDTO> performanceRankFactorBefore
                 = performanceRankFactorMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
-        // 交集
+        //
         List<PerformanceRankFactorDTO> updatePerformanceRankFactor =
                 performanceRankFactorAfter.stream().filter(performanceRankFactorDTO ->
                         performanceRankFactorBefore.stream().map(PerformanceRankFactorDTO::getPerformanceRankFactorId)

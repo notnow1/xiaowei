@@ -147,7 +147,7 @@ public class SalaryPayDetailsServiceImpl implements ISalaryPayDetailsService {
 
     @Override
     public int deleteSalaryPayDetailsBySalaryPayDetailsIds(List<SalaryPayDetailsDTO> salaryPayDetailsDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDtos) {
             stringList.add(salaryPayDetailsDTO.getSalaryPayDetailsId());
         }
@@ -161,7 +161,7 @@ public class SalaryPayDetailsServiceImpl implements ISalaryPayDetailsService {
      */
 
     public int insertSalaryPayDetailss(List<SalaryPayDetailsDTO> salaryPayDetailsDtos) {
-        List<SalaryPayDetails> salaryPayDetailsList = new ArrayList();
+        List<SalaryPayDetails> salaryPayDetailsList = new ArrayList<>();
 
         for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDtos) {
             SalaryPayDetails salaryPayDetails = new SalaryPayDetails();
@@ -183,7 +183,7 @@ public class SalaryPayDetailsServiceImpl implements ISalaryPayDetailsService {
      */
 
     public int updateSalaryPayDetailss(List<SalaryPayDetailsDTO> salaryPayDetailsDtos) {
-        List<SalaryPayDetails> salaryPayDetailsList = new ArrayList();
+        List<SalaryPayDetails> salaryPayDetailsList = new ArrayList<>();
 
         for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDtos) {
             SalaryPayDetails salaryPayDetails = new SalaryPayDetails();
