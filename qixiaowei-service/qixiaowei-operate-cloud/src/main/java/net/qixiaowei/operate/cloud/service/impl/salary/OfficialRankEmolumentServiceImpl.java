@@ -115,7 +115,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             } else {
                 BigDecimal nextSalaryMedian = officialRankEmolumentDTOS.get(i + 1).getSalaryMedian();
                 if (nextSalaryMedian.compareTo(BigDecimal.ZERO) != 0) {
-                    BigDecimal increaseRate = (rankEmolumentDTO.getSalaryMedian().subtract(nextSalaryMedian)).divide(nextSalaryMedian, 4, RoundingMode.HALF_UP).subtract(new BigDecimal(100));
+                    BigDecimal increaseRate = (rankEmolumentDTO.getSalaryMedian().subtract(nextSalaryMedian)).divide(nextSalaryMedian, 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
                     rankEmolumentDTO.setIncreaseRate(increaseRate);
                 } else {
                     rankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
