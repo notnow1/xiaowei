@@ -22,13 +22,13 @@ public class ${entity} extends BaseEntity {
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
     <#if field.comment!?length gt 0>
-        <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime" &&"${field.propertyName}"!="remark" &&"${field.propertyName}"!="deleteFlag">
+        <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime" &&"${field.propertyName}"!="remark" &&"${field.propertyName}"!="deleteFlag" && field_has_next>
      /**
      * ${field.comment}
      */
         </#if>
     </#if>
-    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark">
+    <#if "${field.propertyName}"!="createBy"&&"${field.propertyName}"!="createTime" &&"${field.propertyName}"!="updateBy" &&"${field.propertyName}"!="updateTime"&&"${field.propertyName}"!="remark" &&"${field.propertyName}"!="deleteFlag" && (field_has_next && "${field.propertyName}"!="tenantId")>
      private <#if "${field.propertyType}"=="LocalDateTime" || "${field.propertyType}"=="LocalDate"> Date <#else> ${field.propertyType}</#if>  ${field.propertyName};
     </#if>
 </#list>

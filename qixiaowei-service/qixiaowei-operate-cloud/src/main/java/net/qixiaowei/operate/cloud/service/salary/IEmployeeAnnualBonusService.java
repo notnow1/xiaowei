@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
 import java.util.List;
+
+import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO;
 
 
@@ -99,4 +101,10 @@ public interface IEmployeeAnnualBonusService{
     */
     int deleteEmployeeAnnualBonusByEmployeeAnnualBonusId(Long employeeAnnualBonusId);
 
+    /**
+     * 个人年终奖表选择部门后预制数据
+     * @param employeeAnnualBonusDTO
+     * @return
+     */
+    List<EmpAnnualBonusSnapshotDTO> addPrefabricate(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
 }
