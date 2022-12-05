@@ -200,17 +200,23 @@ public interface ITargetSettingService {
     /**
      * 获取指标树结构列表
      *
-     * @return
+     * @return Tree
      */
     List<Tree<Long>> selectIndicatorTree(TargetSettingDTO targetSettingDTO);
 
     /**
      * 批量保存目标制定
      *
-     * @param targetSettingDTOS
-     * @return
+     * @param targetSettingDTOS 指标集合
+     * @return TargetSettingDTO
      */
     TargetSettingDTO saveTargetSettings(List<TargetSettingDTO> targetSettingDTOS);
 
-
+    /**
+     * 指标ID集合获取
+     *
+     * @param indicatorIds 指标ID结合
+     * @return List
+     */
+    List<TargetSettingDTO> selectByIndicatorIds(List<Long> indicatorIds);
 }
