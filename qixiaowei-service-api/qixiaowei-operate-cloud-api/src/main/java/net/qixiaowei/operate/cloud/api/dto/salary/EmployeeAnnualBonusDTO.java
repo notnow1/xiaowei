@@ -49,13 +49,25 @@ public class EmployeeAnnualBonusDTO {
     */
     private  Long departmentId;
     /**
+     * 部门名称
+     */
+    private  String departmentName;
+    /**
     * 申请部门ID
     */
     private  Long applyDepartmentId;
     /**
+     * 申请部门名称
+     */
+    private  String applyDepartmentName;
+    /**
     * 申请人ID
     */
     private  Long applyEmployeeId;
+    /**
+     * 申请人名称
+     */
+    private  String applyEmployeeName;
     /**
     * 分配年终奖金额
     */
@@ -81,9 +93,9 @@ public class EmployeeAnnualBonusDTO {
     */
     private  Integer status;
     /**
-     * 快照表
+     * 个人年终奖发放快照信息及发放对象表集合
      */
-    private List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList;
+    private List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs;
 
     /**
     * 删除标记:0未删除;1已删除
