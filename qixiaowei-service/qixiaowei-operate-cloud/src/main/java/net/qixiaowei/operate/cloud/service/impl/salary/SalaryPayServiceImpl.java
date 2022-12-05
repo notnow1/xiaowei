@@ -625,7 +625,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         }
         for (int j = 0; j < list.size(); j++) {
             Map<Integer, String> map = list.get(j);
-            if (head.size() != map.size()) {
+            if (head.size() - 2 != map.size()) {
                 throw new ServiceException("请检查excel表的格式是否正确");
             }
             SalaryPay salaryPay = new SalaryPay();
@@ -713,6 +713,14 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 salaryPayDetailsDTO.setSalaryPayId(salaryPay.getSalaryPayId());
             }
             List<SalaryPayDetailsDTO> salaryPayDetailsDTOBefore = salaryPayDetailsService.selectSalaryPayDetailsBySalaryPayId(salaryPay.getSalaryPayId());
+            for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOAfter) {
+                for (SalaryPayDetailsDTO payDetailsDTO : salaryPayDetailsDTOBefore) {
+                    if (salaryPayDetailsDTO.getSalaryItemId().equals(payDetailsDTO.getSalaryItemId())) {
+                        salaryPayDetailsDTO.setSalaryPayDetailsId(payDetailsDTO.getSalaryItemId());
+                    }
+                }
+            }
+
             // 交集
             List<SalaryPayDetailsDTO> updateSalaryPayDetail =
                     salaryPayDetailsDTOAfter.stream().filter(salaryPayDetailsDTO ->
