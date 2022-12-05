@@ -61,7 +61,7 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
 
             @Override
             public R<List<EmployeeDTO>> selectEmployeeByPDRIds(Map<String, List<String>> idMaps, String source) {
-
+                return R.fail("通过部门，岗位，职级集合查询员工信息失败:" + throwable.getMessage());
             }
 
             @Override
