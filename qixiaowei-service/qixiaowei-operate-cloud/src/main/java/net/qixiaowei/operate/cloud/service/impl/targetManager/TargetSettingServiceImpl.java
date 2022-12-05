@@ -302,9 +302,9 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 处理数据 给数据赋上一些指标的值
      *
-     * @param targetSettingDTOS
-     * @param targetSettingList
-     * @param sort
+     * @param targetSettingDTOS 目标制定列表
+     * @param targetSettingList 目标制定列表
+     * @param sort              排序
      */
     private void setIndicatorValue(List<TargetSettingDTO> targetSettingDTOS, List<TargetSettingDTO> targetSettingList, int sort) {
         //给targetSettingDTOS排序 ,然后放进targetSettingList
@@ -352,8 +352,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * list转化树结构
      *
-     * @param targetSettingDTOS
-     * @return
+     * @param targetSettingDTOS 目标制定列表
+     * @return list
      */
     private static List<Tree<Long>> listToTree(List<TargetSettingDTO> targetSettingDTOS) {
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
@@ -485,6 +485,18 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
         targetSettingDTO.setTargetYear(targetYear);
         return targetSettingDTO;
+    }
+
+    /**
+     * 指标ID集合获取
+     *
+     * @param indicatorIds 指标ID结合
+     * @return
+     */
+    @Override
+    public List<TargetSettingDTO> selectByIndicatorIds(List<Long> indicatorIds) {
+        targetSettingMapper.selectTargetSettingByIndicators(indicatorIds, null);
+        return null;
     }
 
 
@@ -1857,10 +1869,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSettingRecoveriesDTO.setPrefixType("DSO（天）");
         setRecoveriesValue(targetSettingRecoveriesDTO, baselineValue);
         targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
-        targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
-        targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
-        setRecoveriesValue(targetSettingRecoveriesDTO, BigDecimal.ZERO);
-        targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
 //        【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
         targetSettingRecoveriesDTO.setPrefixType("期末应收账款余额");
@@ -1884,6 +1892,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         BigDecimal guaranteedGoal = recoveryDTO.getBalanceReceivables()
                 .add((saleIncomeGoal.getGuaranteedValue().multiply(((targetSettingByIndicator.getPercentage().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)).add(BigDecimal.valueOf(1))))))
                 .subtract(periodReceivables.getGuaranteedValue());
+        targetSettingRecoveriesDTO.setChallengeValue(challengeGoal);
+        targetSettingRecoveriesDTO.setTargetValue(targetGoal);
+        targetSettingRecoveriesDTO.setGuaranteedValue(guaranteedGoal);
+        targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
         targetSettingRecoveriesDTO.setPrefixType("合计");
         setRecoveriesValue(targetSettingRecoveriesDTO, BigDecimal.ZERO);
