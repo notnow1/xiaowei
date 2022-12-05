@@ -306,6 +306,10 @@ public class EmployeeDTO implements Serializable {
      */
     private String workingAge;
     /**
+     * 个人年终奖快照司龄
+     */
+    private String seniority;
+    /**
      * 上年期末数
      */
     private Integer amountLastYear;

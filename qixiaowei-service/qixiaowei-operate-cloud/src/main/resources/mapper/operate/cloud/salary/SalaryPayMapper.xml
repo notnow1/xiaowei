@@ -269,6 +269,59 @@
           AND pay_year = #{year}
           AND pay_month = #{month}
     </select>
+<!--    个人年终奖最近三年的薪酬情况-->
+    <select id="selectSalaryPayCondition" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+        SELECT sp.employee_id,
+               sp.pay_year,
+               sp.pay_month,
+               sp1.bonusBeforeTwo,
+               sp2.bonusBeforeOne,
+               sp3.emolumentBeforeOne,
+               sp4.employeeBasicWage
+        FROM salary_pay sp
+                 left join (SELECT employee_id,
+                                   case when pay_year = #{payYear} - 2 then sum(bonus_amount) end as bonusBeforeTwo
+                            FROM salary_pay
+                            WHERE pay_year = #{payYear}
+                              and delete_flag = 0
+                            group by employee_id
+                            order by pay_year desc, pay_month desc) sp1
+                           on sp1.employee_id = sp.employee_id
+                 left join (SELECT employee_id,
+                                   case when pay_year = #{payYear} - 1 then sum(bonus_amount) end as bonusBeforeOne
+                            FROM salary_pay
+                            WHERE pay_year = #{payYear}
+                              and delete_flag = 0
+                            group by employee_id
+                            order by pay_year desc, pay_month desc) sp2
+                           on sp2.employee_id = sp.employee_id
+                 left join (SELECT employee_id,
+                                   case when pay_year = #{payYear} - 1 then sum(pay_amount) end as emolumentBeforeOne
+                            FROM salary_pay
+                            WHERE pay_year = #{payYear}
+                              and delete_flag = 0
+                            group by employee_id
+                            order by pay_year desc, pay_month desc) sp3
+                           on sp3.employee_id = sp.employee_id
+
+                 left join (SELECT employee_id,
+                                   salary_amount as employeeBasicWage
+                            FROM salary_pay
+                            WHERE pay_year = #{payYear}
+                              and delete_flag = 0
+                            group by employee_id
+                            order by pay_year desc, pay_month desc) sp4
+                           on sp4.employee_id = sp.employee_id
+        WHERE sp.employee_id in
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND sp.delete_flag = 0
+        AND sp.pay_year=#{payYear}
+        GROUP BY sp.employee_id
+    </select>
 
     <!--新增工资发薪表-->
     <insert id="insertSalaryPay" useGeneratedKeys="true" keyProperty="salaryPayId">

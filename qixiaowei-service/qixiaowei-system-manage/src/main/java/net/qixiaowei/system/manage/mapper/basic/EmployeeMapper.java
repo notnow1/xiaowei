@@ -225,4 +225,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectDepartmentAndOfficialRankSystem(@Param("departmentIds") List<Long> departmentIds);
+
+    /**
+     * 查询部门下所有人员
+     * @param departmentId
+     * @return
+     */
+    List<EmployeeDTO> selectEmployeeByDepts(@Param("departmentId") Long departmentId);
 }
