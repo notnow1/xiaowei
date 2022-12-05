@@ -466,10 +466,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @param stringDate
      * @return
      */
-    public static int getYear(String stringDate) {
+    public static int getYear(final String format, String stringDate) {
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM").parse(stringDate);
+            date = new SimpleDateFormat(format).parse(stringDate);
         } catch (ParseException e) {
             throw new ServiceException("时间转化失败 请检查时间格式");
         }
@@ -486,10 +486,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @param stringDate
      * @return
      */
-    public static int getMonth(String stringDate) {
+    public static int getMonth(final String format, String stringDate) {
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM").parse(stringDate);
+            date = new SimpleDateFormat(format).parse(stringDate);
         } catch (ParseException e) {
             throw new ServiceException("时间转化失败 请检查时间格式");
         }
@@ -498,5 +498,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         // 获取当前年
         return calendar.get(Calendar.YEAR);
     }
+
 
 }

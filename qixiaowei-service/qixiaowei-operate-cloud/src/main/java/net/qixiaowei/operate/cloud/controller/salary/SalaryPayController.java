@@ -176,10 +176,15 @@ public class SalaryPayController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-        List<Map<Integer, String>> targetSettingExcelList = read.doReadAllSync();
-        salaryPayService.importSalaryPay(targetSettingExcelList);
-        return AjaxResult.success();
+        try {
+            //构建读取器
+            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+            read.sheet()
+                    .registerReadListener(new SalaryPayImportListener(salaryPayService)).doRead();
+        } catch (IOException e) {
+            throw new ServiceException("导入人员信息配置Excel失败");
+        }
+        return AjaxResult.success("操作成功");
     }
 
     /**
