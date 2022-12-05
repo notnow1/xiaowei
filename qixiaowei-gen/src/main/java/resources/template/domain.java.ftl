@@ -2,7 +2,7 @@ package ${entityPackage};
 
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import lombok.Data;
 import java.math.BigDecimal;
 import lombok.experimental.Accessors;
@@ -15,7 +15,7 @@ import java.util.Date;
 */
 @Data
 @Accessors(chain = true)
-public class ${entity} extends BaseEntity {
+public class ${entity} extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
