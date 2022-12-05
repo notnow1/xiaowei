@@ -569,6 +569,7 @@ CREATE TABLE salary_pay_details(
 CREATE TABLE performance_appraisal(
     performance_appraisal_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     performance_rank_id BIGINT UNSIGNED NOT NULL   COMMENT '绩效等级ID' ,
+    performance_rank_name VARCHAR(64)    COMMENT '绩效等级名称' ,
     appraisal_year SMALLINT UNSIGNED NOT NULL   COMMENT '考核年度' ,
     appraisal_name VARCHAR(128)    COMMENT '考核名称' ,
     cycle_flag TINYINT UNSIGNED NOT NULL   COMMENT '周期性考核标记:0否;1是' ,
@@ -596,9 +597,11 @@ CREATE TABLE performance_appraisal_objects(
     performance_appraisal_id BIGINT UNSIGNED NOT NULL   COMMENT '绩效考核ID' ,
     appraisal_object_id BIGINT UNSIGNED NOT NULL   COMMENT '考核对象ID' ,
     appraisal_principal_id BIGINT UNSIGNED    COMMENT '考核负责人ID' ,
+    appraisal_principal_name VARCHAR(64)    COMMENT '考核负责人姓名' ,
     evaluation_score DECIMAL(5,2)    COMMENT '评议分数' ,
-    appraisal_result_id BIGINT UNSIGNED    COMMENT '考核结果(绩效等级ID)' ,
-    appraisal_object_status TINYINT UNSIGNED NOT NULL   COMMENT '考核对象状态:1制定目标;2评议;3排名;4归档' ,
+    appraisal_result_id BIGINT UNSIGNED    COMMENT '考核结果(绩效等级系数ID)' ,
+    appraisal_result VARCHAR(64)    COMMENT '考核结果' ,
+    appraisal_object_status TINYINT UNSIGNED NOT NULL   COMMENT '考核对象状态:1待制定目标;2已制定目标-草稿;3待评议;4已评议-草稿;5待排名' ,
     sort SMALLINT UNSIGNED    COMMENT '排序' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
@@ -610,10 +613,35 @@ CREATE TABLE performance_appraisal_objects(
 )  COMMENT = '绩效考核对象表';
 
 
+CREATE TABLE perform_appraisal_object_snap(
+    appraisal_object_snap_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    perform_appraisal_objects_id BIGINT UNSIGNED NOT NULL   COMMENT '绩效考核对象ID' ,
+    appraisal_object_name VARCHAR(64)    COMMENT '考核对象名称' ,
+    appraisal_object_code VARCHAR(32)    COMMENT '考核对象编码' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    department_name VARCHAR(64)    COMMENT '部门名称' ,
+    post_id BIGINT UNSIGNED    COMMENT '岗位ID' ,
+    post_name VARCHAR(64)    COMMENT '岗位名称' ,
+    official_rank_system_id BIGINT UNSIGNED    COMMENT '职级体系ID' ,
+    official_rank INT UNSIGNED    COMMENT '职级' ,
+    official_rank_name VARCHAR(16)    COMMENT '职级名称' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (appraisal_object_snap_id)
+)  COMMENT = '绩效考核对象快照表';
+
+
 CREATE TABLE performance_appraisal_items(
     perform_appraisal_items_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     perform_appraisal_objects_id BIGINT UNSIGNED NOT NULL   COMMENT '绩效考核对象ID' ,
     indicator_id BIGINT UNSIGNED NOT NULL   COMMENT '指标ID' ,
+    indicator_name VARCHAR(64)    COMMENT '指标名称' ,
+    indicator_value_type TINYINT UNSIGNED    COMMENT '指标值类型:1金额;2比率' ,
+    examine_direction TINYINT UNSIGNED    COMMENT '考核方向:0反向;1正向' ,
     challenge_value DECIMAL(18,2)    COMMENT '挑战值' ,
     target_value DECIMAL(18,2)    COMMENT '目标值' ,
     guaranteed_value DECIMAL(18,2)    COMMENT '保底值' ,
@@ -738,6 +766,7 @@ CREATE TABLE dept_bonus_budget_items(
     dept_bonus_budget_details_id BIGINT UNSIGNED NOT NULL   COMMENT '部门奖金预算明细ID' ,
     salary_item_id BIGINT UNSIGNED NOT NULL   COMMENT '工资项ID' ,
     bonus_percentage DECIMAL(5,2)    COMMENT '奖金占比' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
     create_time DATETIME NOT NULL   COMMENT '创建时间' ,
@@ -804,6 +833,7 @@ CREATE TABLE dept_annual_bonus(
     dept_annual_bonus_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     annual_bonus_year SMALLINT UNSIGNED NOT NULL   COMMENT '年终奖年度' ,
     company_annual_bonus DECIMAL(14,2)    COMMENT '公司年终奖总包' ,
+    department_annual_bonus DECIMAL(14,2)    COMMENT '部门年终奖总包' ,
     status TINYINT UNSIGNED NOT NULL   COMMENT '状态' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
@@ -819,6 +849,7 @@ CREATE TABLE dept_annual_bonus_operate(
     dept_annual_bonus_operate_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     dept_annual_bonus_id BIGINT UNSIGNED NOT NULL   COMMENT '部门年终奖ID' ,
     indicator_id BIGINT UNSIGNED NOT NULL   COMMENT '指标ID' ,
+    indicator_name VARCHAR(64)    COMMENT '指标名称' ,
     target_value DECIMAL(14,2)    COMMENT '目标值' ,
     actual_value DECIMAL(14,2)    COMMENT '实际值' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
@@ -836,9 +867,13 @@ CREATE TABLE dept_annual_bonus_factor(
     department_id BIGINT UNSIGNED NOT NULL   COMMENT '部门ID' ,
     weight DECIMAL(5,2)    COMMENT '权重' ,
     last_performance_resulted VARCHAR(128)    COMMENT '最近绩效结果' ,
+    performance_rank_id BIGINT UNSIGNED    COMMENT '绩效等级ID' ,
     performance_rank_factor_id BIGINT UNSIGNED    COMMENT '绩效等级系数ID' ,
+    performance_rank VARCHAR(16)    COMMENT '绩效' ,
     performance_bonus_factor DECIMAL(5,2)    COMMENT '组织绩效奖金系数' ,
     importance_factor DECIMAL(5,2)    COMMENT '组织重要性系数' ,
+    bonus_percentage DECIMAL(5,2)    COMMENT '奖金占比' ,
+    distribute_bonus DECIMAL(14,2)    COMMENT '可分配年终奖' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
     create_time DATETIME NOT NULL   COMMENT '创建时间' ,
@@ -853,12 +888,16 @@ CREATE TABLE employee_annual_bonus(
     employee_annual_bonus_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     annual_bonus_year SMALLINT UNSIGNED NOT NULL   COMMENT '年终奖年度' ,
     department_id BIGINT UNSIGNED NOT NULL   COMMENT '一级部门ID' ,
+    department_name VARCHAR(64)    COMMENT '一级部门名称' ,
     apply_department_id BIGINT UNSIGNED    COMMENT '申请部门ID' ,
+    apply_department_name VARCHAR(64)    COMMENT '申请部门名称' ,
     apply_employee_id BIGINT UNSIGNED    COMMENT '申请人ID' ,
+    apply_employee_name VARCHAR(64)    COMMENT '申请人姓名' ,
     distribute_bonus_amount DECIMAL(14,2)    COMMENT '分配年终奖金额' ,
     comment_flag TINYINT UNSIGNED    COMMENT '发起评议流程标记:0否;1是' ,
     comment_step TINYINT UNSIGNED    COMMENT '评议环节:1管理团队评议;2主管初评+管理团队评议' ,
-    comment_employee_id BIGINT UNSIGNED    COMMENT '管理团队评议人' ,
+    comment_employee_id BIGINT UNSIGNED    COMMENT '管理团队评议人ID' ,
+    comment_employee_name VARCHAR(64)    COMMENT '管理团队评议人' ,
     comment_date DATE    COMMENT '评议日期' ,
     status TINYINT UNSIGNED    COMMENT '状态:0草稿;1待初评;2待评议;3已评议' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
@@ -876,7 +915,9 @@ CREATE TABLE emp_annual_bonus_objects(
     employee_annual_bonus_id BIGINT UNSIGNED NOT NULL   COMMENT '个人年终奖ID' ,
     employee_id BIGINT UNSIGNED NOT NULL   COMMENT '员工ID' ,
     choice_flag TINYINT UNSIGNED NOT NULL   COMMENT '选中标记:0否;1是' ,
+    performance_rank_id BIGINT UNSIGNED    COMMENT '绩效等级ID' ,
     performance_rank_factor_id BIGINT UNSIGNED    COMMENT '绩效等级系数ID' ,
+    performance_rank VARCHAR(16)    COMMENT '绩效' ,
     performance_bonus_factor DECIMAL(5,2)    COMMENT '绩效奖金系数' ,
     attendance_factor DECIMAL(5,2)    COMMENT '考勤系数' ,
     recommend_value DECIMAL(18,2)    COMMENT '建议值' ,
@@ -918,3 +959,102 @@ CREATE TABLE emp_annual_bonus_snapshot(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (emp_annual_bonus_snapshot_id)
 )  COMMENT = '个人年终奖发放快照信息表';
+
+
+CREATE TABLE dept_salary_adjust_plan(
+    dept_salary_adjust_plan_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '预算年度' ,
+    salary_adjust_total DECIMAL(14,2)    COMMENT '调薪总数' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (dept_salary_adjust_plan_id)
+)  COMMENT = '部门调薪计划表';
+
+
+CREATE TABLE dept_salary_adjust_item(
+    dept_salary_adjust_item_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    dept_salary_adjust_plan_id BIGINT UNSIGNED NOT NULL   COMMENT '部门调薪计划ID' ,
+    department_id BIGINT UNSIGNED NOT NULL   COMMENT '部门ID' ,
+    coverage_percentage DECIMAL(6,2)    COMMENT '覆盖比例' ,
+    adjustment_percentage DECIMAL(6,2)    COMMENT '调整比例' ,
+    adjustment_time DATE    COMMENT '调整时间' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (dept_salary_adjust_item_id)
+)  COMMENT = '部门调薪项表';
+
+
+CREATE TABLE emp_salary_adjust_plan(
+    emp_salary_adjust_plan_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    employee_id BIGINT UNSIGNED NOT NULL   COMMENT '员工ID' ,
+    effective_date DATETIME NOT NULL   COMMENT '生效日期' ,
+    adjustment_type VARCHAR(16) NOT NULL   COMMENT '调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开' ,
+    adjust_department_id BIGINT UNSIGNED    COMMENT '调整部门ID' ,
+    adjust_department_name VARCHAR(64)    COMMENT '调整部门名称' ,
+    adjust_post_id BIGINT UNSIGNED    COMMENT '调整岗位ID' ,
+    adjust_post_name VARCHAR(64)    COMMENT '调整岗位名称' ,
+    official_rank_system_id BIGINT UNSIGNED    COMMENT '调整职级体系ID' ,
+    adjust_official_rank INT UNSIGNED    COMMENT '调整职级' ,
+    adjust_official_rank_name VARCHAR(16)    COMMENT '调整职级名称' ,
+    adjust_emolument DECIMAL(18,2)    COMMENT '调整薪酬' ,
+    adjust_explain VARCHAR(256)    COMMENT '调整说明' ,
+    status TINYINT UNSIGNED NOT NULL   COMMENT '状态(0草稿;1生效)' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (emp_salary_adjust_plan_id)
+)  COMMENT = '个人调薪计划表';
+
+
+CREATE TABLE emp_salary_adjust_snap(
+    emp_salary_adjust_snap_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    emp_salary_adjust_plan_id BIGINT UNSIGNED NOT NULL   COMMENT '个人调薪计划ID' ,
+    employee_name VARCHAR(64)    COMMENT '员工姓名' ,
+    employment_date DATE    COMMENT '入职日期' ,
+    seniority VARCHAR(32)    COMMENT '司龄' ,
+    department_id BIGINT UNSIGNED    COMMENT '原部门ID' ,
+    department_name VARCHAR(64)    COMMENT '原部门名称' ,
+    post_id BIGINT UNSIGNED    COMMENT '原岗位ID' ,
+    post_name VARCHAR(64)    COMMENT '原岗位名称' ,
+    official_rank_system_id BIGINT UNSIGNED    COMMENT '原职级体系ID' ,
+    official_rank INT UNSIGNED    COMMENT '原职级' ,
+    official_rank_name VARCHAR(16)    COMMENT '原职级名称' ,
+    basic_wage DECIMAL(18,2)    COMMENT '基本工资(当前薪酬)' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (emp_salary_adjust_snap_id)
+)  COMMENT = '个人调薪快照表';
+
+
+CREATE TABLE emp_salary_adjust_perform(
+    emp_salary_adjust_perform_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    emp_salary_adjust_plan_id BIGINT UNSIGNED NOT NULL   COMMENT '个人调薪计划ID' ,
+    performance_appraisal_id BIGINT UNSIGNED NOT NULL   COMMENT '绩效考核ID' ,
+    perform_appraisal_objects_id BIGINT UNSIGNED NOT NULL   COMMENT '绩效考核对象ID' ,
+    cycle_type TINYINT UNSIGNED NOT NULL   COMMENT '周期类型:1月度;2季度;3半年度;4年度' ,
+    cycle_number TINYINT UNSIGNED NOT NULL   COMMENT '考核周期' ,
+    filing_date DATE    COMMENT '归档日期' ,
+    appraisal_result VARCHAR(64)    COMMENT '考核结果' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (emp_salary_adjust_perform_id)
+)  COMMENT = '个人调薪绩效记录表';
