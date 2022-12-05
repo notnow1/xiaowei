@@ -5,10 +5,7 @@
     <select id="select${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>"
             resultType="${dtoPackage}.${entity}DTO">
         SELECT
-        <#list table.commonFields as field>
-            ${field.name},
-        </#list>
-        ${table.fieldNames}
+        <#list table.fields as field><#if field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>
         FROM ${table.name}
         WHERE <#list table.fields as field><#if field.keyFlag> ${field.name}=#${leftBrace}${field.propertyName}${rightBrace}</#if></#list>
         and delete_flag=0
@@ -18,10 +15,7 @@
     <select id="select${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>s"
             resultType="${dtoPackage}.${entity}DTO">
         SELECT
-        <#list table.commonFields as field>
-            ${field.name},
-        </#list>
-        ${table.fieldNames}
+        <#list table.fields as field><#if field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>
         FROM ${table.name}
         WHERE <#list table.fields as field><#if field.keyFlag> ${field.name} in
             <foreach item="item"
@@ -36,47 +30,35 @@
     <!--    查询${table.comment!}列表-->
     <select id="select${entity}List" resultType="${dtoPackage}.${entity}DTO">
         SELECT
-        <#list table.commonFields as field>
-            ${field.name},
-        </#list>
-        ${table.fieldNames}
+        <#list table.fields as field><#if field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>
         FROM ${table.name}
         WHERE delete_flag=0
         <#list table.fields as field>
-            <#if "${field.propertyType}"!="String">
-                <if test="${entity?uncap_first}.${field.propertyName} != null">
-                    and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
-                </if>
-            <#else>
-                <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
-                    and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
-                </if>
+            <#if field_has_next && "${field.propertyName}"!="tenantId">
+                    <#if "${field.propertyType}"!="String">
+                        <if test="${entity?uncap_first}.${field.propertyName} != null">
+                            and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                        </if>
+                    <#else>
+                        <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                            and ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                        </if>
+                    </#if>
             </#if>
         </#list>
     </select>
     <!--新增${table.comment!}-->
     <insert id="insert${entity}" useGeneratedKeys="true" keyProperty="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>">
-        INSERT INTO ${table.name} (<#list table.fields as field><#if !field.keyFlag><#if !field_has_next>${field.name}<#else>${field.name},</#if></#if></#list>)
+        INSERT INTO ${table.name} (<#list table.fields as field><#if field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>)
         VALUES
-        (<#list table.fields as field><#if !field.keyFlag><#if !field_has_next>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}<#else>#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},</#if></#if></#list>)
+        (<#list table.fields as field><#if !field.keyFlag && field_has_next && "${field.propertyName}"!="updateTime">#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},<#elseif "${field.propertyName}"=="updateTime">#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}</#if></#list>)
     </insert>
     <!--修改${table.comment!}-->
     <update id="update${entity}">
         UPDATE ${table.name}
         SET
         <#list table.fields as field>
-            <#if !field.keyFlag>
-               <#if !field_has_next>
-                <#if "${field.propertyType}"!="String">
-                    <if test="${entity?uncap_first}.${field.propertyName} != null">
-                        ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
-                    </if>
-                <#else>
-                    <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
-                        ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
-                    </if>
-                </#if>
-            <#else>
+            <#if !field.keyFlag && field_has_next && "${field.propertyName}"!="updateTime">
                 <#if "${field.propertyType}"!="String">
                     <if test="${entity?uncap_first}.${field.propertyName} != null">
                         ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
@@ -86,7 +68,16 @@
                         ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},
                     </if>
                 </#if>
-            </#if>
+            <#elseif  "${field.propertyName}"=="updateTime">
+                <#if "${field.propertyType}"!="String">
+                    <if test="${entity?uncap_first}.${field.propertyName} != null">
+                        ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                    </if>
+                <#else>
+                    <if test="${entity?uncap_first}.${field.propertyName} != null and ${entity?uncap_first}.${field.propertyName} != ''">
+                        ${field.name}=#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}
+                    </if>
+                </#if>
             </#if>
         </#list>
         WHERE
@@ -138,12 +129,12 @@
     </update>
     <!--批量新增${table.comment!}-->
     <insert id="batch${entity}">
-        INSERT INTO ${table.name} (<#list table.fields as field><#if !field.keyFlag><#if !field_has_next>${field.name}<#else>${field.name},</#if></#if></#list>)
+        INSERT INTO ${table.name} (<#list table.fields as field><#if field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>)
         VALUES
         <foreach item="item" index="index"
                  collection="${entity?uncap_first}s"
                  separator=",">
-            (<#list table.fields as field><#if !field.keyFlag><#if !field_has_next>#${leftBrace}item.${field.propertyName}${rightBrace}<#else>#${leftBrace}item.${field.propertyName}${rightBrace},</#if></#if></#list>)
+            (<#list table.fields as field><#if !field.keyFlag && field_has_next && "${field.propertyName}"!="updateTime">#${leftBrace}item.${field.propertyName}${rightBrace},<#elseif "${field.propertyName}"=="updateTime">#${leftBrace}item.${field.propertyName}${rightBrace}</#if></#list>)
         </foreach>
     </insert>
 
@@ -169,9 +160,9 @@
         update ${table.name}
         <trim prefix="set" suffixOverrides=",">
         <#list table.fields as field >
-            <#if !field.keyFlag>
+            <#if !field.keyFlag && (field_has_next && "${field.propertyName}"!="tenantId")>
                 <trim prefix="${field.name}=case" suffix="end,">
-                    <#if !field.keyFlag>
+                    <#if !field.keyFlag && (field_has_next && "${field.propertyName}"!="tenantId")>
                         <foreach collection="${entity?uncap_first}List" item="item" index="index">
                             <#if "${field.propertyType}"!="String">
                                 <if test="item.${field.propertyName} != null">

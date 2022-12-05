@@ -201,4 +201,11 @@ public interface SalaryPayMapper {
      */
     List<EmpAnnualBonusSnapshotDTO> selectSalaryPayCondition(@Param("employeeIds") List<Long> employeeIds, @Param("payYear") int payYear);
 
+    /**
+     * 员工倒推12个月的薪酬合计和奖金合计
+     * @param employeeId
+     * @param payYear
+     * @return
+     */
+    SalaryPayDTO selectSalaryPaySumAndBonusSum(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear);
 }

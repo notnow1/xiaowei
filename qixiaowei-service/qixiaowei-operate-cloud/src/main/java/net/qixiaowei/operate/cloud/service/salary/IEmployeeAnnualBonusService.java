@@ -107,4 +107,11 @@ public interface IEmployeeAnnualBonusService{
      * @return
      */
     List<EmpAnnualBonusSnapshotDTO> addPrefabricate(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
+
+    /**
+     * 新增提交个人年终奖表
+     * @param employeeAnnualBonusDTO
+     * @return
+     */
+    EmployeeAnnualBonusDTO submitSave(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
 }

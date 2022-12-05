@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * EmpAnnualBonusObjectsMapper接口
 * @author TANGMICHI
-* @since 2022-12-02
+* @since 2022-12-05
 */
 public interface EmpAnnualBonusObjectsMapper{
     /**
@@ -28,14 +28,6 @@ public interface EmpAnnualBonusObjectsMapper{
      * @return 个人年终奖发放对象表
      */
     List<EmpAnnualBonusObjectsDTO> selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(@Param("employeeAnnualBonusId")Long employeeAnnualBonusId);
-
-    /**
-    * 批量查询个人年终奖发放对象表
-    *
-    * @param empAnnualBonusObjectsIds 个人年终奖发放对象表主键集合
-    * @return 个人年终奖发放对象表
-    */
-    List<EmpAnnualBonusObjectsDTO> selectEmpAnnualBonusObjectsByEmpAnnualBonusObjectsIds(@Param("empAnnualBonusObjectsIds") List<Long> empAnnualBonusObjectsIds);
     /**
      * 根据个人年终奖主表id集合批量查询个人年终奖发放对象表
      *
@@ -43,6 +35,13 @@ public interface EmpAnnualBonusObjectsMapper{
      * @return 个人年终奖发放对象表
      */
     List<EmpAnnualBonusObjectsDTO> selectEmpAnnualBonusObjectsByEmployeeAnnualBonusIds(@Param("employeeAnnualBonusIds") List<Long> employeeAnnualBonusIds);
+    /**
+    * 批量查询个人年终奖发放对象表
+    *
+    * @param empAnnualBonusObjectsIds 个人年终奖发放对象表主键集合
+    * @return 个人年终奖发放对象表
+    */
+    List<EmpAnnualBonusObjectsDTO> selectEmpAnnualBonusObjectsByEmpAnnualBonusObjectsIds(@Param("empAnnualBonusObjectsIds") List<Long> empAnnualBonusObjectsIds);
 
     /**
     * 查询个人年终奖发放对象表列表
