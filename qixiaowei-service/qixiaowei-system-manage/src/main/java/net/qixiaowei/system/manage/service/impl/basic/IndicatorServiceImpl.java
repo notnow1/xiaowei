@@ -5,12 +5,16 @@ import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.remote.targetManager.RemoteTargetSetting;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingService;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
@@ -40,7 +44,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Autowired
     private IndicatorCategoryMapper indicatorCategoryMapper;
 
-
+    @Autowired
+    private RemoteTargetSetting targetSettingService;
 
     /**
      * 查询指标表
@@ -284,8 +289,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
      * @return boolean
      */
     private boolean isQuote(List<Long> indicatorIds) {
-
-        return false;
+        R<List<TargetSettingDTO>> listR = targetSettingService.queryIndicatorSetting(indicatorIds, SecurityConstants.INNER);
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程调用失败");
+        }
+        List<TargetSettingDTO> targetSettingDTOS = listR.getData();
+        return StringUtils.isNotEmpty(targetSettingDTOS);
     }
 
     /**

@@ -109,9 +109,9 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
      * 封装导出数据
      *
      * @param salaryPayDTOS           公子发薪表
-     * @param salaryPayDetailsService 详情服务
      * @param salaryItemService       工资项服务
-     * @return
+     * @param salaryPayDetailsService 详情服务
+     * @return List
      */
     public static List<List<Object>> dataList(List<SalaryPayDTO> salaryPayDTOS, ISalaryPayDetailsService salaryPayDetailsService, ISalaryItemService salaryItemService) {
         if (StringUtils.isEmpty(salaryPayDTOS)) {
@@ -122,6 +122,8 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
             salaryPayIds.add(salaryPayDTO.getSalaryPayId());
         }
         List<SalaryPayDetailsDTO> salaryPayDetailsDTOS = salaryPayDetailsService.selectSalaryPayDetailsBySalaryPayIds(salaryPayIds);
+
+
 
         return null;
     }

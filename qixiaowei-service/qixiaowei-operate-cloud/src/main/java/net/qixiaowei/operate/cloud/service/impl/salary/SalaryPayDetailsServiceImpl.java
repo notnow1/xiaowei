@@ -262,7 +262,7 @@ public class SalaryPayDetailsServiceImpl implements ISalaryPayDetailsService {
     /**
      * 通过工资ID列表删除列表
      *
-     * @param salaryPayIds
+     * @param salaryPayIds 工资发薪Id集合
      * @return
      */
     @Override

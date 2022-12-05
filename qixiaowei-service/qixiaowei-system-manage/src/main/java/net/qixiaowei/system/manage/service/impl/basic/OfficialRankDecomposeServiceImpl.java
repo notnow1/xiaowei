@@ -355,6 +355,9 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
         Long officialRankSystemId = officialRankSystem.getOfficialRankSystemId();
         Integer rankDecomposeDimension = officialRankSystem.getRankDecomposeDimension();
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDtos) {
+            if (StringUtils.isNull(officialRankDecomposeDTO.getSalaryFactor())) {
+                throw new ServiceException("职级分解系数不可以为空");
+            }
             OfficialRankDecompose officialRankDecompose = new OfficialRankDecompose();
             BeanUtils.copyProperties(officialRankDecomposeDTO, officialRankDecompose);
             officialRankDecompose.setOfficialRankSystemId(officialRankSystemId);

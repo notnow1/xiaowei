@@ -364,6 +364,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         // 分解为度校验
         List<Long> decomposeDimensions = new ArrayList<>();
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOAfter) {
+            if (StringUtils.isNull(officialRankDecomposeDTO.getSalaryFactor())) {
+                throw new ServiceException("职级分解系数不可以为空");
+            }
             Long decomposeDimension = officialRankDecomposeDTO.getDecomposeDimension();
             if (decomposeDimensions.contains(decomposeDimension)) {
                 throw new ServiceException("分解维度不能重复");

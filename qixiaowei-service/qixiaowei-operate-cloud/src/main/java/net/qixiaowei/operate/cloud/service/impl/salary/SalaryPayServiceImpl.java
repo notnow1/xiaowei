@@ -981,7 +981,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             }
             salaryPayDTO.setSalaryPayDetailsDTOList(salaryPayDetailsDTOS);
         }
-        return null;
+        return salaryPayDTOS;
     }
 
     /**

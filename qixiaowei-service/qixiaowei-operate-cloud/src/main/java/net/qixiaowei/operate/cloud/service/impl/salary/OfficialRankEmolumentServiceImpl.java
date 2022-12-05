@@ -445,10 +445,10 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         BigDecimal wide = emolumentDTO.getSalaryCap().subtract(emolumentDTO.getSalaryFloor());
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
             BigDecimal salaryFactor = officialRankDecomposeDTO.getSalaryFactor();
-            officialEmolumentDTO.setSalaryCap(salaryCap.multiply(salaryFactor));
-            officialEmolumentDTO.setSalaryFloor(salaryFloor.multiply(salaryFactor));
-            officialEmolumentDTO.setSalaryMedian(salaryMedian.multiply(salaryFactor));
-            officialEmolumentDTO.setSalaryWide(salaryWide.multiply(salaryFactor));
+            officialRankDecomposeDTO.setSalaryCap(salaryCap.multiply(salaryFactor));
+            officialRankDecomposeDTO.setSalaryFloor(salaryFloor.multiply(salaryFactor));
+            officialRankDecomposeDTO.setSalaryMedian(salaryMedian.multiply(salaryFactor));
+            officialRankDecomposeDTO.setSalaryWide(salaryWide.multiply(salaryFactor));
         }
         return officialRankDecomposeDTOS;
     }
