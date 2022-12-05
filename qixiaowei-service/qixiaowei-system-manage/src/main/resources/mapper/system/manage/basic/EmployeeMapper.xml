@@ -879,6 +879,60 @@
         </foreach>
         group by employeeRankName
     </select>
+<!--    查询部门下所有人员-->
+    <select id="selectEmployeeByDepts" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        select
+        DISTINCT
+        case when TIMESTAMPDIFF(month,e.employment_date,NOW())=0 then concat(1,'月')
+        when TIMESTAMPDIFF(month,e.employment_date,NOW()) &lt; 12 then
+        concat(TIMESTAMPDIFF(month,e.employment_date,NOW()),'月')
+        when TIMESTAMPDIFF(month,e.employment_date,NOW()) &gt; 12 then
+        concat(TIMESTAMPDIFF(month,e.employment_date,NOW())/12,'年', case when
+        TIMESTAMPDIFF(month,e.employment_date,NOW())%12=0 then '月' when TIMESTAMPDIFF(month,e.employment_date,NOW())%12
+        &gt; 0 then concat(TIMESTAMPDIFF(month,e.employment_date,NOW()),'月') end ) end as seniority,
+        p.post_name as employee_post_name,
+        p.post_code,
+        d.department_name as employee_department_name,
+        d.department_leader_id as in_charge,
+        d.department_code,
+        ors.official_rank_system_name,
+        case when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,e.employee_rank) end as
+        employee_rank_name,
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag
+        from
+        employee e
+        left join post p
+        on p.post_id =e.employee_post_id
+        and p.delete_flag =0
+        left join department d
+        on d.department_id = e.employee_department_id
+        and d.delete_flag =0
+        left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
+        and ors.delete_flag = 0
+        where
+        e.delete_flag = 0
+        <if test="employee.employeeDepartmentId != null">
+            and e.employee_department_id =#{departmentId}
+        </if>
+    </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
         INSERT INTO employee (employee_code, employee_name, employee_gender, identity_type, identity_card,

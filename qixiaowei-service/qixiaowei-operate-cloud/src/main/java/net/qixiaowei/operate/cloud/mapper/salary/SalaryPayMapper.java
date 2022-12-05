@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.mapper.salary;
 
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryPay;
+import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -190,5 +192,13 @@ public interface SalaryPayMapper {
      * @return
      */
     SalaryPayDTO selectSalaryPayByYearAndMonth(@Param("employeeId") Long employeeId, @Param("year") int year, @Param("month") int month);
+
+    /**
+     * 个人年终奖最近三年的薪酬情况
+     * @param employeeIds
+     * @param payYear
+     * @return
+     */
+    List<EmpAnnualBonusSnapshotDTO> selectSalaryPayCondition(@Param("employeeIds") List<Long> employeeIds, @Param("payYear") int payYear);
 
 }

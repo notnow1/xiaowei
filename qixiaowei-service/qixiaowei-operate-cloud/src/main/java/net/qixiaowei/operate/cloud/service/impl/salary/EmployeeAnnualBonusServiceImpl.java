@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -14,7 +16,9 @@ import net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO;
 import net.qixiaowei.operate.cloud.mapper.salary.EmpAnnualBonusObjectsMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.EmpAnnualBonusSnapshotMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.EmployeeAnnualBonusMapper;
+import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.salary.IEmployeeAnnualBonusService;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -40,6 +45,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     private EmpAnnualBonusSnapshotMapper empAnnualBonusSnapshotMapper;
     @Autowired
     private RemoteEmployeeService remoteEmployeeService;
+    @Autowired
+    private SalaryPayMapper salaryPayMapper;
 
     /**
      * 查询个人年终奖表
@@ -167,7 +174,30 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      */
     @Override
     public List<EmpAnnualBonusSnapshotDTO> addPrefabricate(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        //个人年终奖发放快照信息及发放对象表集合
+        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList = new ArrayList<>();
         //远程查看部门下人员信息
+        R<List<EmployeeDTO>> listR = remoteEmployeeService.selectEmployeeByDepts(employeeAnnualBonusDTO.getDepartmentId(), SecurityConstants.INNER);
+        List<EmployeeDTO> data = listR.getData();
+        if (StringUtils.isNotEmpty(data)){
+            for (EmployeeDTO datum : data) {
+                EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO = new EmpAnnualBonusSnapshotDTO();
+                BeanUtils.copyProperties(datum,empAnnualBonusSnapshotDTO);
+                //部门名称
+                empAnnualBonusSnapshotDTO.setDepartmentName(datum.getEmployeeDepartmentName());
+                //岗位名称
+                empAnnualBonusSnapshotDTO.setPostName(datum.getEmployeePostName());
+                //职级
+                empAnnualBonusSnapshotDTO.setOfficialRankName(datum.getEmployeeRankName());
+                empAnnualBonusSnapshotDTOList.add(empAnnualBonusSnapshotDTO);
+            }
+        }
+        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOList)){
+            List<Long> collect = empAnnualBonusSnapshotDTOList.stream().map(EmpAnnualBonusSnapshotDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList1 = salaryPayMapper.selectSalaryPayCondition(collect, employeeAnnualBonusDTO.getAnnualBonusYear());
+            }
+        }
 
         return null;
     }

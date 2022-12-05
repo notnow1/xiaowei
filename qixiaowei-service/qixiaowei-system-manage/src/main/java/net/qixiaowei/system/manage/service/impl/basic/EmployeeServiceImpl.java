@@ -594,6 +594,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return employeeMapper.selectDepartmentAndOfficialRankSystem(departmentIds);
     }
 
+    /**
+     * 查询部门下所有人员
+     * @param departmentId
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> selectEmployeeByDepts(Long departmentId) {
+        return employeeMapper.selectEmployeeByDepts(departmentId);
+    }
+
 
     /**
      * 逻辑删除员工表信息

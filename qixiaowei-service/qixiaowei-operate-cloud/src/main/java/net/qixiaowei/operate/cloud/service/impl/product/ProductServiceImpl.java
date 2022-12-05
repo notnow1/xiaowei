@@ -117,10 +117,10 @@ public class ProductServiceImpl implements IProductService {
         BeanUtils.copyProperties(productDTO, product);
         //查询数据
         List<ProductDTO> productDTOList = productMapper.selectProductList(product);
-        if (StringUtils.isNotEmpty(productDTOList)){
-            List<String> collect = productDTOList.stream().map(ProductDTO::getProductCategory).filter(Objects::nonNull).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(productDTOList) && productDTOList.get(1) != null){
+            List<String> collect = productDTOList.stream().map(ProductDTO::getProductCategory).filter(StringUtils::isNotBlank).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect)){
-                List<Long> collect2 = collect.stream().filter(Objects::nonNull).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+                List<Long> collect2 = collect.stream().filter(StringUtils::isNotBlank).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
                 if (StringUtils.isNotEmpty(collect2)){
                     //远程调用查询字典数据
                     R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByDictionaryDataIds(collect2, SecurityConstants.INNER);

@@ -94,4 +94,12 @@ public interface RemoteEmployeeService {
     @PostMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByPDRIds")
     R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String, List<String>> idMaps, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
+    /**
+     * 查询部门下所有人员
+     * @param departmentId
+     * @param source
+     * @return
+     */
+    @GetMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByDepts")
+    R<List<EmployeeDTO>>selectEmployeeByDepts(Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }
