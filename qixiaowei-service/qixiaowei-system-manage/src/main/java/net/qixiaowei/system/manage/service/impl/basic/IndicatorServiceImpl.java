@@ -11,6 +11,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingService;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -39,6 +40,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Autowired
     private IndicatorCategoryMapper indicatorCategoryMapper;
 
+
+
     /**
      * 查询指标表
      *
@@ -64,8 +67,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
     public List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO) {
         List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
         for (IndicatorDTO dto : indicatorDTOS) {
-            String indicatorCode = dto.getIndicatorCode();
-            if (IndicatorCode.contains(indicatorCode)) {
+            Integer isPreset = IndicatorCode.selectIsPreset(dto.getIndicatorCode());
+            if (isPreset == 1 || isPreset == 2) {
                 dto.setIsPreset(1);
             } else {
                 dto.setIsPreset(0);
@@ -265,7 +268,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
     /**
      * 添加子级
      *
-     * @param indicatorIds
+     * @param indicatorIds 指标ID集合
      */
     private void addSons(List<Long> indicatorIds) {
         List<Long> sons = indicatorMapper.selectSons(indicatorIds);//获取子级
@@ -275,12 +278,13 @@ public class IndicatorServiceImpl implements IIndicatorService {
     }
 
     /**
-     * todo 引用校验
+     * 引用校验
      *
-     * @param indicatorIds
-     * @return
+     * @param indicatorIds 指标ID集合
+     * @return boolean
      */
     private boolean isQuote(List<Long> indicatorIds) {
+
         return false;
     }
 
@@ -300,8 +304,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
     /**
      * 指标详情
      *
-     * @param indicatorId
-     * @return
+     * @param indicatorId 指标ID
+     * @return IndicatorDTO
      */
     @Override
     public IndicatorDTO detailIndicator(Long indicatorId) {
@@ -313,9 +317,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
             throw new ServiceException("该指标已经不存在");
         }
         if (IndicatorCode.contains(dto.getIndicatorCode())) {
-            dto.setIsPreset(1);
-        } else {
-            dto.setIsPreset(0);
+            Integer isPreset = IndicatorCode.selectIsPreset(dto.getIndicatorCode());
+            if (isPreset == 1 || isPreset == 2) {
+                dto.setIsPreset(1);
+            } else {
+                dto.setIsPreset(0);
+            }
         }
         return dto;
     }
@@ -323,7 +330,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
     /**
      * 获取指标最大层级
      *
-     * @return
+     * @return List
      */
     @Override
     public List<Integer> getLevel() {
@@ -333,8 +340,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
     /**
      * 通过CodeList查找指标列表
      *
-     * @param indicatorCodes
-     * @return
+     * @param indicatorCodes 指标编码
+     * @return IndicatorDTOS
      */
     @Override
     public List<IndicatorDTO> selectIndicatorByCodeList(List<String> indicatorCodes) {

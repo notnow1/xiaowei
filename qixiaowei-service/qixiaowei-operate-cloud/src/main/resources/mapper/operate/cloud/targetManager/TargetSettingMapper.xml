@@ -5,11 +5,11 @@
     <select id="selectTargetSettingByTargetSettingId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
-            target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value,
-            guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value,
+        guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
         FROM target_setting
         WHERE target_setting_id=#{targetSettingId}
-          and delete_flag=0
+        and delete_flag=0
     </select>
 
     <!--    批量查询目标制定-->
@@ -84,12 +84,12 @@
     <select id="selectTargetSettingByTargetYearAndIndicator"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
-            target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value,
-            guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
+        target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value, target_value,
+        guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time
         FROM target_setting
         WHERE delete_flag = 0
-          AND target_year = #{targetYear}
-          AND target_setting_type = #{targetSettingType}
+        AND target_year = #{targetYear}
+        AND target_setting_type = #{targetSettingType}
     </select>
     <select id="selectTargetSettingByIndicator"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
@@ -109,12 +109,12 @@
     <select id="selectAnalyseList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
-        sum(tod.actual_august)  as actual_august,
-        sum(tod2.actual_august)  as last_actual_august,
+        sum(tod.actual_august) as actual_august,
+        sum(tod2.actual_august) as last_actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
-        '订单（不含税）'  as indicator_name,
+        '订单（不含税）' as indicator_name,
         ts.target_year,
         ts.percentage,
         sum(ts.challenge_value) as challenge_value,
@@ -144,12 +144,12 @@
         </if>
         union
         SELECT
-        sum(tod.actual_august)  as actual_august,
-        sum(tod2.actual_august)  as last_actual_august,
+        sum(tod.actual_august) as actual_august,
+        sum(tod2.actual_august) as last_actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
-        '销售收入'  as indicator_name,
+        '销售收入' as indicator_name,
         ts.target_year,
         ts.percentage,
         sum(ts.challenge_value) as challenge_value,
@@ -179,12 +179,12 @@
         </if>
         union
         SELECT
-        sum(tod.actual_august)  as actual_august,
-        sum(tod2.actual_august)  as last_actual_august,
+        sum(tod.actual_august) as actual_august,
+        sum(tod2.actual_august) as last_actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
-        '回款金额（含税）'  as indicator_name,
+        '回款金额（含税）' as indicator_name,
         ts.target_year,
         ts.percentage,
         sum(ts.challenge_value) as challenge_value,
@@ -214,12 +214,12 @@
         </if>
         union
         SELECT
-        sum(tod.actual_august)  as actual_august,
-        sum(tod2.actual_august)  as last_actual_august,
+        sum(tod.actual_august) as actual_august,
+        sum(tod2.actual_august) as last_actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
-        '销售毛利'  as indicator_name,
+        '销售毛利' as indicator_name,
         ts.target_year,
         ts.percentage,
         sum(ts.challenge_value) as challenge_value,
@@ -249,12 +249,12 @@
         </if>
         union
         SELECT
-        sum(tod.actual_august)  as actual_august,
-        sum(tod2.actual_august)  as last_actual_august,
+        sum(tod.actual_august) as actual_august,
+        sum(tod2.actual_august) as last_actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
-        '净利润'  as indicator_name,
+        '净利润' as indicator_name,
         ts.target_year,
         ts.percentage,
         sum(ts.challenge_value) as challenge_value,
@@ -361,7 +361,9 @@
         challenge_value,target_value, guaranteed_value,sort, delete_flag, create_by, create_time, update_by, update_time
         FROM target_setting
         WHERE delete_flag=0
-        AND target_year = #{targetYear}
+        <if test="targetYear!=null">
+            AND target_year = #{targetYear}
+        </if>
         AND indicator_id
         IN
         <foreach collection="indicatorIds" open="(" close=")" item="item" index="index" separator=",">
@@ -373,7 +375,7 @@
         INSERT INTO target_setting
         (target_setting_type,indicator_id,target_year,percentage,challenge_value,target_value,guaranteed_value,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-            (#{targetSetting.targetSettingType},#{targetSetting.indicatorId},#{targetSetting.targetYear},#{targetSetting.percentage},#{targetSetting.challengeValue},#{targetSetting.targetValue},#{targetSetting.guaranteedValue},#{targetSetting.sort},#{targetSetting.deleteFlag},#{targetSetting.createBy},#{targetSetting.createTime},#{targetSetting.updateBy},#{targetSetting.updateTime})
+        (#{targetSetting.targetSettingType},#{targetSetting.indicatorId},#{targetSetting.targetYear},#{targetSetting.percentage},#{targetSetting.challengeValue},#{targetSetting.targetValue},#{targetSetting.guaranteedValue},#{targetSetting.sort},#{targetSetting.deleteFlag},#{targetSetting.createBy},#{targetSetting.createTime},#{targetSetting.updateBy},#{targetSetting.updateTime})
     </insert>
     <!--修改目标制定-->
     <update id="updateTargetSetting">
@@ -425,10 +427,10 @@
     <update id="logicDeleteTargetSettingByTargetSettingId">
         UPDATE target_setting
         SET delete_flag= 1,
-            update_by=#{targetSetting.updateBy},
-            update_time=#{targetSetting.updateTime}
+        update_by=#{targetSetting.updateBy},
+        update_time=#{targetSetting.updateTime}
         WHERE
-            target_setting_id=#{targetSetting.targetSettingId}
+        target_setting_id=#{targetSetting.targetSettingId}
     </update>
     <!--逻辑批量删除目标制定-->
     <update id="logicDeleteTargetSettingByTargetSettingIds">

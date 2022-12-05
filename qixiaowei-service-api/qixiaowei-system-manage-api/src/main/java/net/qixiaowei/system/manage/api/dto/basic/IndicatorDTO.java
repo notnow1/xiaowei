@@ -134,6 +134,7 @@ public class IndicatorDTO {
     private List<IndustryDTO> children;
     /**
      * 是否预置(1-预置，0-非预置)
+     * 是否预置（1-不可删除预置数据，0-可删除预置数据） 指标
      */
     private Integer isPreset;
     /**

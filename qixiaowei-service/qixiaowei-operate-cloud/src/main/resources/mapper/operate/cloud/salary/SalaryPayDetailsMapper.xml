@@ -84,7 +84,7 @@
         FROM salary_pay_details
         WHERE delete_flag = 0
           AND salary_pay_id = #{salaryPayId}
-        ORDER BY sort
+        ORDER BY sort ASC
     </select>
     <select id="selectSalaryPayDetailsBySalaryPayIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
@@ -96,6 +96,7 @@
         <foreach collection="salaryPayIds" separator="," open="(" close=")" item="item" index="index">
             #{item}
         </foreach>
+        ORDER BY sort ASC
     </select>
     <!--新增工资发薪明细表-->
     <insert id="insertSalaryPayDetails" useGeneratedKeys="true" keyProperty="salaryPayDetailsId">

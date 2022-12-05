@@ -193,12 +193,7 @@ public class SalaryPayController extends BaseController {
     @SneakyThrows
     @PostMapping("export")
     public void exportSalaryPay(@RequestBody SalaryPayDTO salaryPayDTO, HttpServletResponse response) {
-        List<SalaryPayDTO> salaryPayDTOS;
-        if (salaryPayDTO.getIsSelect() == 1) {
-            salaryPayDTOS = salaryPayService.selectSalaryPayList(new SalaryPayDTO());
-        } else {
-            salaryPayDTOS = salaryPayService.selectSalaryPayBySalaryPayIds(salaryPayDTO.getSalaryPayIds());
-        }
+        List<SalaryPayDTO> salaryPayDTOS = salaryPayService.selectSalaryPayBySalaryPay(salaryPayDTO.getIsSelect(), salaryPayDTO.getSalaryPayIds());
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("工资发薪表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)

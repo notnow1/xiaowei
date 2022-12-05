@@ -140,8 +140,9 @@ public interface ISalaryPayService {
     /**
      * 通过Id集合查找发行表
      *
+     * @param isSelect     是否选中
      * @param salaryPayIds 薪酬发行ID集合
      * @return List
      */
-    List<SalaryPayDTO> selectSalaryPayBySalaryPayIds(List<Long> salaryPayIds);
+    List<SalaryPayDTO> selectSalaryPayBySalaryPay(Integer isSelect, List<Long> salaryPayIds);
 }

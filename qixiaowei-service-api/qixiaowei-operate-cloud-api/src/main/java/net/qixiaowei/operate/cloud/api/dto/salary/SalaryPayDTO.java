@@ -136,6 +136,10 @@ public class SalaryPayDTO {
      */
     private List<SalaryItemDTO> salaryItemDTOList;
     /**
+     * 月度工资数据详情
+     */
+    private List<SalaryPayDetailsDTO> salaryPayDetailsDTOList;
+    /**
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
