@@ -109,8 +109,26 @@
     <select id="selectAnalyseList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
-        sum(tod.actual_august) as actual_august,
-        sum(tod2.actual_august) as last_actual_august,
+        actual_august,
+        last_actual_august,
+        target_setting_id,
+        target_setting_type,
+        indicator_id,
+        indicator_name,
+        target_year,
+        percentage,
+        challenge_value,
+        target_value,
+        guaranteed_value,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time from (
+        SELECT
+        sum(tod.actual_august)  as actual_august,
+        sum(tod2.actual_august)  as last_actual_august,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -282,6 +300,7 @@
         <if test="targetSetting.targetYear != null">
             and ts.target_year=#{targetSetting.targetYear}
         </if>
+        ) as analyse
     </select>
     <select id="selectTargetSettingByTypes"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
