@@ -930,7 +930,7 @@
         where
         e.delete_flag = 0
         <if test="employee.employeeDepartmentId != null">
-            and e.employee_department_id =#{departmentId}
+            and find_in_set(#{departmentId}, e.employee_department_id)
         </if>
     </select>
     <!--新增员工表-->

@@ -73,6 +73,10 @@ public class EmployeeAnnualBonusDTO {
     */
     private BigDecimal distributeBonusAmount;
     /**
+     * 申请年终奖金额
+     */
+    private BigDecimal applyBonusAmount;
+    /**
     * 发起评议流程标记:0否;1是
     */
     private  Integer commentFlag;
@@ -87,6 +91,7 @@ public class EmployeeAnnualBonusDTO {
     /**
     * 评议日期
     */
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
     private LocalDate commentDate;
     /**
     * 状态:0草稿;1待初评;2待评议;3已评议

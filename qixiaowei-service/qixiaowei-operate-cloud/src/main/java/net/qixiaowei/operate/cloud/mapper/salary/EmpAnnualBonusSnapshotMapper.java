@@ -21,6 +21,13 @@ public interface EmpAnnualBonusSnapshotMapper{
     */
     EmpAnnualBonusSnapshotDTO selectEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotId(@Param("empAnnualBonusSnapshotId")Long empAnnualBonusSnapshotId);
 
+    /**
+     * 根据个人年终奖主表id查询快照信息表
+     *
+     * @param employeeAnnualBonusId 个人年终奖主表id
+     * @return 个人年终奖发放快照信息表
+     */
+    List<EmpAnnualBonusSnapshotDTO> selectEmpAnnualBonusSnapshotByEmployeeAnnualBonusId(@Param("employeeAnnualBonusId")Long employeeAnnualBonusId);
 
     /**
     * 批量查询个人年终奖发放快照信息表
@@ -29,6 +36,14 @@ public interface EmpAnnualBonusSnapshotMapper{
     * @return 个人年终奖发放快照信息表
     */
     List<EmpAnnualBonusSnapshotDTO> selectEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotIds(@Param("empAnnualBonusSnapshotIds") List<Long> empAnnualBonusSnapshotIds);
+
+    /**
+     * 根据个人年终奖主表id集合批量查询个人年终奖发放快照信息表
+     *
+     * @param employeeAnnualBonusIds 个人年终奖主表id集合
+     * @return 个人年终奖发放快照信息表
+     */
+    List<EmpAnnualBonusSnapshotDTO> selectEmpAnnualBonusSnapshotByEmployeeAnnualBonusIds(@Param("employeeAnnualBonusIds") List<Long> employeeAnnualBonusIds);
 
     /**
     * 查询个人年终奖发放快照信息表列表

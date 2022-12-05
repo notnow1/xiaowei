@@ -102,6 +102,29 @@
                     and update_time=#{empAnnualBonusSnapshot.updateTime}
                 </if>
     </select>
+<!--    根据个人年终奖主表id查询快照信息表-->
+    <select id="selectEmpAnnualBonusSnapshotByEmployeeAnnualBonusId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+        SELECT
+            emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM emp_annual_bonus_snapshot
+        WHERE  employee_annual_bonus_id=#{employeeAnnualBonusId}
+          and delete_flag=0
+    </select>
+<!--    根据个人年终奖主表id集合批量查询个人年终奖发放快照信息表-->
+    <select id="selectEmpAnnualBonusSnapshotByEmployeeAnnualBonusIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+        SELECT
+        emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
+        FROM emp_annual_bonus_snapshot
+        WHERE  employee_annual_bonus_id in
+        <foreach item="item"
+                 collection="employeeAnnualBonusIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增个人年终奖发放快照信息表-->
     <insert id="insertEmpAnnualBonusSnapshot" useGeneratedKeys="true" keyProperty="empAnnualBonusSnapshotId">
         INSERT INTO emp_annual_bonus_snapshot (employee_annual_bonus_id,emp_annual_bonus_objects_id,employee_name,employee_code,department_name,post_name,official_rank_name,seniority,employee_basic_wage,emolument_before_one,bonus_before_one,bonus_before_two,last_performance_resulted,bonus_percentage_one,bonus_percentage_two,reference_value_one,reference_value_two,delete_flag,create_by,create_time,update_by,update_time)
