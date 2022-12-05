@@ -12,6 +12,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
+import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,24 +36,47 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
      * key是sheetName，value是相应sheet的解析数据
      */
     private final Map<String, List<Map<Integer, String>>> dataMap = new HashMap<>();
-
+    /**
+     * 默认每隔3000条存储数据库
+     */
+    private int batchCount = 3000;
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      * 缓存的数据列表
      */
     List<Map<Integer, String>> list = new ArrayList<>();
-
+    /**
+     * 工资发薪服务
+     */
+    private final ISalaryPayService salaryPayService;
 
     @Override
-    public void invoke(Map<Integer, String> data, AnalysisContext context) {
-        String sheetName = context.readSheetHolder().getSheetName();
-        dataMap.computeIfAbsent(sheetName, k -> new ArrayList<>());
-        dataMap.get(sheetName).add(data);
+    public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
+        list.add(headMap);
+    }
+
+    @Override
+    public void invoke(Map<Integer, String> map, AnalysisContext context) {
+        list.add(map);
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext analysisContext) {
         logger.info("Excel解析完成");
+        // 达到BATCH_COUNT，则调用importer方法入库，防止数据几万条数据在内存，容易OOM
+        if (list.size() >= batchCount) {
+            // 调用importer方法
+            salaryPayService.importSalaryPay(list);
+            // 存储完成清理list
+            list.clear();
+        }
+        //防止重复执行
+        if (StringUtils.isNotEmpty(list)) {
+            // 调用importer方法
+            salaryPayService.importSalaryPay(list);
+            // 存储完成清理list
+            list.clear();
+        }
     }
 
     /**

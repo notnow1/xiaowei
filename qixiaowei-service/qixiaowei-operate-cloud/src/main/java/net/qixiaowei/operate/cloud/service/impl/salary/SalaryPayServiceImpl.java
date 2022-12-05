@@ -587,8 +587,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             throw new ServiceException("请使用系统的excel模板导入");
         }
         Map<Integer, String> head = list.get(0);
-        list.remove(0);
         list.remove(1);
+        list.remove(0);
         if (StringUtils.isEmpty(list)) {
             throw new ServiceException("当前excel数据为空 请填充数据");
         }
@@ -606,6 +606,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             map.remove(0);
             map.remove(1);
         }
+        List<Integer> monthList = parseMonthCh(dateList);
+        List<Integer> yearList = parseYearCh(dateList);
         if (StringUtils.isEmpty(employeeCodes)) {
             throw new ServiceException("当前员工编码未存在 请检查员工配置");
         }
@@ -614,7 +616,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         if (employeeR.getCode() != 200) {
             throw new ServiceException("远程调用失败 请联系管理员");
         }
-        if (employeeDTOS.size() == employeeCodes.size()) {
+        if (employeeDTOS.size() != employeeCodes.size()) {
             throw new ServiceException("员工编码有误 请核对");
         }
         List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
@@ -623,6 +625,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         }
         for (int j = 0; j < list.size(); j++) {
             Map<Integer, String> map = list.get(j);
+            if (head.size() - 2 != map.size()) {
+                throw new ServiceException("请检查excel表的格式是否正确");
+            }
             SalaryPay salaryPay = new SalaryPay();
             BigDecimal salaryAmount = BigDecimal.ZERO;//工资金额
             BigDecimal allowanceAmount = BigDecimal.ZERO;//津贴金额
@@ -632,7 +637,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             BigDecimal otherDeductions = BigDecimal.ZERO;//其他扣款金额
             BigDecimal payAmount;//发薪金额
             List<SalaryPayDetailsDTO> salaryPayDetailsDTOAfter = new ArrayList<>();
-            for (int i = 2; i < map.size(); i++) {
+            for (int i = 2; i < map.size() + 2; i++) {
                 SalaryPayDetailsDTO salaryPayDetailsDTO = new SalaryPayDetailsDTO();
                 for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
                     if (head.get(i).equals(salaryItemDTO.getThirdLevelItem())) {
@@ -647,34 +652,32 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                         salaryPayDetailsDTO.setSort(i - 2);
                         switch (salaryItemDTO.getSecondLevelItem()) {
                             case 1:
-                        }
-                        switch (salaryItemDTO.getSecondLevelItem()) {
-                            case 1:
-                                salaryAmount.add(amount);
+                                salaryAmount = salaryAmount.add(amount);
                                 break;
                             case 2:
-                                allowanceAmount.add(amount);
+                                allowanceAmount = allowanceAmount.add(amount);
                                 break;
                             case 3:
-                                welfareAmount.add(amount);
+                                welfareAmount = welfareAmount.add(amount);
                                 break;
                             case 4:
-                                bonusAmount.add(amount);
+                                bonusAmount = bonusAmount.add(amount);
                                 break;
                             case 5:
-                                withholdRemitTax.add(amount);
+                                withholdRemitTax = withholdRemitTax.add(amount);
                                 break;
                             case 6:
-                                otherDeductions.add(amount);
+                                otherDeductions = otherDeductions.add(amount);
                                 break;
                         }
+                        salaryPayDetailsDTOAfter.add(salaryPayDetailsDTO);
+                        break;
                     }
-                    salaryPayDetailsDTOAfter.add(salaryPayDetailsDTO);
-                    break;
                 }
             }
-            int year = DateUtils.getYear(dateList.get(j));
-            int month = DateUtils.getMonth(dateList.get(j));
+
+            int month = monthList.get(j);
+            int year = yearList.get(j);
             String employeeCode = employeeCodes.get(j);
             Long employeeId = null;
             for (EmployeeDTO employeeDTO : employeeDTOS) {
@@ -704,12 +707,20 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 salaryPay.setCreateBy(SecurityUtils.getUserId());
                 salaryPay.setCreateTime(DateUtils.getNowDate());
                 salaryPay.setEmployeeId(employeeId);
-//                salaryPayMapper.insertSalaryPay(salaryPay);
+                salaryPayMapper.insertSalaryPay(salaryPay);
             }
             for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOAfter) {
                 salaryPayDetailsDTO.setSalaryPayId(salaryPay.getSalaryPayId());
             }
             List<SalaryPayDetailsDTO> salaryPayDetailsDTOBefore = salaryPayDetailsService.selectSalaryPayDetailsBySalaryPayId(salaryPay.getSalaryPayId());
+            for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOAfter) {
+                for (SalaryPayDetailsDTO payDetailsDTO : salaryPayDetailsDTOBefore) {
+                    if (salaryPayDetailsDTO.getSalaryItemId().equals(payDetailsDTO.getSalaryItemId())) {
+                        salaryPayDetailsDTO.setSalaryPayDetailsId(payDetailsDTO.getSalaryItemId());
+                    }
+                }
+            }
+
             // 交集
             List<SalaryPayDetailsDTO> updateSalaryPayDetail =
                     salaryPayDetailsDTOAfter.stream().filter(salaryPayDetailsDTO ->
@@ -730,13 +741,13 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                     ).collect(Collectors.toList());
             try {
                 if (StringUtils.isNotEmpty(delSalaryPayDetail)) {
-//                    salaryPayDetailsService.deleteSalaryPayDetailsBySalaryPayDetailsIds(delSalaryPayDetail);
+                    salaryPayDetailsService.deleteSalaryPayDetailsBySalaryPayDetailsIds(delSalaryPayDetail);
                 }
                 if (StringUtils.isNotEmpty(addSalaryPayDetail)) {
-//                    salaryPayDetailsService.insertSalaryPayDetailss(addSalaryPayDetail);
+                    salaryPayDetailsService.insertSalaryPayDetailss(addSalaryPayDetail);
                 }
                 if (StringUtils.isNotEmpty(updateSalaryPayDetail)) {
-//                    salaryPayDetailsService.updateSalaryPayDetailss(updateSalaryPayDetail);
+                    salaryPayDetailsService.updateSalaryPayDetailss(updateSalaryPayDetail);
                 }
             } catch (ServiceException e) {
                 throw new ServiceException("更新数据失败");
@@ -745,6 +756,72 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         }
     }
 
+    /**
+     * 解析中文月份
+     *
+     * @param dateList 中文年月List
+     * @return monthList
+     */
+    public static List<Integer> parseMonthCh(List<String> dateList) {
+        List<Integer> monthList = new ArrayList<>();
+        for (String dateString : dateList) {
+            String chMonth = dateString.split("-")[0];
+            switch (chMonth) {
+                case "一月":
+                    monthList.add(1);
+                    break;
+                case "二月":
+                    monthList.add(2);
+                    break;
+                case "三月":
+                    monthList.add(3);
+                    break;
+                case "四月":
+                    monthList.add(4);
+                    break;
+                case "五月":
+                    monthList.add(5);
+                    break;
+                case "六月":
+                    monthList.add(6);
+                    break;
+                case "七月":
+                    monthList.add(7);
+                    break;
+                case "八月":
+                    monthList.add(8);
+                    break;
+                case "九月":
+                    monthList.add(9);
+                    break;
+                case "十月":
+                    monthList.add(10);
+                    break;
+                case "十一月":
+                    monthList.add(11);
+                    break;
+                case "十二月":
+                    monthList.add(12);
+                    break;
+            }
+        }
+        return monthList;
+    }
+
+    /**
+     * 解析中文年份
+     *
+     * @param dateList 中文年月List
+     * @return yearList
+     */
+    public static List<Integer> parseYearCh(List<String> dateList) {
+        List<Integer> yearList = new ArrayList<>();
+        for (String dateString : dateList) {
+            String chYear = "20" + dateString.split("-")[1];
+            yearList.add(Integer.valueOf(chYear));
+        }
+        return yearList;
+    }
 
     /**
      * 导出Excel
@@ -827,6 +904,12 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         return tableDataInfo(HttpStatus.SUCCESS, partition, salaryPayDTOS.size());
     }
 
+    /**
+     * 通过Id集合查找发行表
+     *
+     * @param salaryPayIds 薪酬发行ID集合
+     * @return
+     */
     @Override
     public List<SalaryPayDTO> selectSalaryPayBySalaryPayIds(List<Long> salaryPayIds) {
 
