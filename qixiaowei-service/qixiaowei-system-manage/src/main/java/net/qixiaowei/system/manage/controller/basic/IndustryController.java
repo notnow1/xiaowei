@@ -7,6 +7,8 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.service.basic.IIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +28,11 @@ public class IndustryController extends BaseController {
     @Autowired
     private IIndustryService industryService;
 
+
     /**
      * 分页查询行业列表
      */
-//    @RequiresPermissions("system:manage:industry:pageList")
+    @RequiresPermissions("system:manage:industry:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(IndustryDTO industryDTO) {
         startPage();
@@ -38,18 +41,9 @@ public class IndustryController extends BaseController {
     }
 
     /**
-     * 查询行业列表
-     */
-//    @RequiresPermissions("system:manage:industry:list")
-    @GetMapping("/list")
-    public AjaxResult list(IndustryDTO industryDTO) {
-        List<IndustryDTO> list = industryService.selectIndustryList(industryDTO);
-        return AjaxResult.success(list);
-    }
-
-    /**
      * 查询行业树结构列表
      */
+    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
     @GetMapping("/treeList")
     public AjaxResult treeList(IndustryDTO industryDTO) {
         if (!CheckObjectIsNullUtils.isNull(industryDTO)) {
@@ -58,11 +52,10 @@ public class IndustryController extends BaseController {
         return AjaxResult.success(industryService.selectIndustryTreeList(industryDTO));
     }
 
-
     /**
      * 获取启用行业列表
      */
-//    @RequiresPermissions("system:manage:industry:list")
+    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
     @GetMapping("/enableList")
     public AjaxResult enableList(IndustryDTO industryDTO) {
         return AjaxResult.success(industryService.getEnableList(industryDTO));
@@ -71,6 +64,7 @@ public class IndustryController extends BaseController {
     /**
      * 获取启用行业类型
      */
+    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
     @GetMapping("/enableType")
     public AjaxResult enableType(IndustryDTO industryDTO) {
         return AjaxResult.success(industryService.getEnableType(industryDTO));
@@ -79,7 +73,7 @@ public class IndustryController extends BaseController {
     /**
      * 修改启用行业类型
      */
-//    @RequiresPermissions("system:manage:industry:list")
+    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
     @PostMapping("/enableEdit")
     public AjaxResult enableEdit(@RequestBody IndustryDTO industryDTO) {
         Integer configValue = industryDTO.getConfigValue();
@@ -89,8 +83,7 @@ public class IndustryController extends BaseController {
     /**
      * 新增行业
      */
-//    @RequiresPermissions("system:manage:industry:add")
-    @Log(title = "新增行业", businessType = BusinessType.INSERT)
+    @RequiresPermissions("system:manage:industry:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndustryDTO industryDTO) {
         return AjaxResult.success(industryService.insertIndustry(industryDTO));
@@ -99,8 +92,7 @@ public class IndustryController extends BaseController {
     /**
      * 修改行业
      */
-//    @RequiresPermissions("system:manage:industry:edit")
-    @Log(title = "修改行业", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("system:manage:industry:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody IndustryDTO industryDTO) {
         return toAjax(industryService.updateIndustry(industryDTO));
@@ -109,7 +101,7 @@ public class IndustryController extends BaseController {
     /**
      * 行业配置详情
      */
-//    @RequiresPermissions("operate:cloud:performanceRank:edit")
+    @RequiresPermissions(value = {"system:manage:industry:info", "system:manage:industry:edit"}, logical = Logical.OR)
     @GetMapping("/info/{industryId}")
     public AjaxResult info(@PathVariable Long industryId) {
         return AjaxResult.success(industryService.detailIndustry(industryId));
@@ -118,8 +110,7 @@ public class IndustryController extends BaseController {
     /**
      * 逻辑删除行业
      */
-//    @RequiresPermissions("system:manage:industry:remove")
-    @Log(title = "删除行业", businessType = BusinessType.DELETE)
+    @RequiresPermissions("system:manage:industry:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody IndustryDTO industryDTO) {
         Long industryId = industryDTO.getIndustryId();
@@ -129,12 +120,10 @@ public class IndustryController extends BaseController {
         return toAjax(industryService.logicDeleteIndustryByIndustryId(industryId));
     }
 
-
     /**
      * 逻辑批量删除行业
      */
-//    @RequiresPermissions("system:manage:industry:removes")
-    @Log(title = "批量删除行业", businessType = BusinessType.DELETE)
+    @RequiresPermissions("system:manage:industry:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> industryIds) {
         return toAjax(industryService.logicDeleteIndustryByIndustryIds(industryIds));
@@ -143,9 +132,19 @@ public class IndustryController extends BaseController {
     /**
      * 获取指标最大层级
      */
-//    @RequiresPermissions("system:manage:indicator:list")
+    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
     @GetMapping("/selectLevel")
     public AjaxResult level() {
         return AjaxResult.success(industryService.getLevel());
+    }
+
+
+    /**
+     * 查询行业列表
+     */
+    @GetMapping("/list")
+    public AjaxResult list(IndustryDTO industryDTO) {
+        List<IndustryDTO> list = industryService.selectIndustryList(industryDTO);
+        return AjaxResult.success(list);
     }
 }
