@@ -232,4 +232,18 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectEmployeeByDepts(@Param("departmentId") Long departmentId);
+
+    /**
+     * 根据部门id查询员工表列表
+     * @param employeeDepartmentId
+     * @return
+     */
+    List<EmployeeDTO> queryEmployeeByDept(@Param("employeeDepartmentId") Long employeeDepartmentId);
+
+    /**
+     * 查询员工表列表(下拉框)
+     * @param employee
+     * @return
+     */
+    List<EmployeeDTO> selectDropEmployeeList(Employee employee);
 }

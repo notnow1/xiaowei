@@ -41,6 +41,16 @@ public class EmployeeAnnualBonusController extends BaseController
         List<EmpAnnualBonusSnapshotDTO> list = employeeAnnualBonusService.addPrefabricate(employeeAnnualBonusDTO);
         return AjaxResult.success(list);
     }
+
+    /**
+     * 实时查询个人年终奖表详情
+     */
+    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:info")
+    @PostMapping("/realTimeDetails")
+    public AjaxResult realTimeDetails(@RequestBody  EmployeeAnnualBonusDTO employeeAnnualBonusDTO){
+        List<EmpAnnualBonusSnapshotDTO> list =employeeAnnualBonusService.realTimeDetails(employeeAnnualBonusDTO);
+        return AjaxResult.success(list);
+    }
     /**
     * 查询个人年终奖表详情
     */
@@ -50,6 +60,7 @@ public class EmployeeAnnualBonusController extends BaseController
     EmployeeAnnualBonusDTO employeeAnnualBonusDTO = employeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusId);
         return AjaxResult.success(employeeAnnualBonusDTO);
     }
+
 
     /**
     * 分页查询个人年终奖表列表

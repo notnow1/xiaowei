@@ -41,6 +41,13 @@ public interface IEmployeeService{
      * @return 员工表集合
      */
     List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO);
+
+    /**
+     * 查询员工表列表(下拉框)
+     * @param employeeDTO
+     * @return
+     */
+    List<EmployeeDTO> selectDropEmployeeList(EmployeeDTO employeeDTO);
     /**
      * 根据code查询员工表列表
      *
@@ -195,4 +202,11 @@ public interface IEmployeeService{
      * @return
      */
     List<EmployeeDTO> selectEmployeeByDepts(Long departmentId);
+
+    /**
+     * 根据部门id查询员工表列表
+     * @param employeeDepartmentId
+     * @return
+     */
+    List<EmployeeDTO> queryEmployeeByDept(Long employeeDepartmentId);
 }

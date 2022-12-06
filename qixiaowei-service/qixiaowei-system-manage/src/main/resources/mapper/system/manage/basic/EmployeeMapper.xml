@@ -934,6 +934,67 @@
             and find_in_set(#{departmentId}, e.employee_department_id)
         </if>
     </select>
+<!--    根据部门id查询员工表列表-->
+    <select id="queryEmployeeByDept" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               tenant_id
+        FROM employee
+        where delete_flag= 0
+        and status=1
+        <if test="employeeDepartmentId != null">
+            employee_department_id=#{employeeDepartmentId},
+        </if>
+    </select>
+<!--    查询员工表列表(下拉框)-->
+    <select id="selectDropEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT employee_id,
+               employee_code,
+               employee_name,
+               employee_gender,
+               identity_type,
+               identity_card,
+               employee_birthday,
+               employee_mobile,
+               employee_email,
+               employee_department_id,
+               employee_post_id,
+               employee_rank,
+               employee_basic_wage,
+               employment_date,
+               departure_date,
+               employment_status,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               tenant_id
+        FROM employee
+        where delete_flag=0
+        and status=1
+    </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
         INSERT INTO employee (employee_code, employee_name, employee_gender, identity_type, identity_card,

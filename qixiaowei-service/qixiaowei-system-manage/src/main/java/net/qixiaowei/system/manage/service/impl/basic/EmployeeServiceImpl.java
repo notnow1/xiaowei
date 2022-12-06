@@ -82,6 +82,18 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     /**
+     * 查询员工表列表(下拉框)
+     * @param employeeDTO
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> selectDropEmployeeList(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        return employeeMapper.selectDropEmployeeList(employee);
+    }
+
+    /**
      * 根据code查询员工表列表
      *
      * @param employeeCodes code集合
@@ -602,6 +614,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public List<EmployeeDTO> selectEmployeeByDepts(Long departmentId) {
         return employeeMapper.selectEmployeeByDepts(departmentId);
+    }
+
+    /**
+     * 根据部门id查询员工表列表
+     * @param employeeDepartmentId
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> queryEmployeeByDept(Long employeeDepartmentId) {
+        return employeeMapper.queryEmployeeByDept(employeeDepartmentId);
     }
 
 

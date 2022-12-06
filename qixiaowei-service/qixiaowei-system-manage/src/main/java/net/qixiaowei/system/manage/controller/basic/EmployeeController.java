@@ -43,6 +43,15 @@ public class EmployeeController extends BaseController {
     @Autowired
     private IEmployeeService employeeService;
 
+    /**
+     * 根据部门id查询员工表列表
+     */
+    //@RequiresPermissions("system:manage:employee:list")
+    @GetMapping("/queryEmployeeByDept/{employeeDepartmentId}")
+    public AjaxResult queryEmployeeByDept(@PathVariable Long employeeDepartmentId) {
+        List<EmployeeDTO> list = employeeService.queryEmployeeByDept(employeeDepartmentId);
+        return AjaxResult.success(list);
+    }
 
     /**
      * 新增人力预算上年期末数集合预制数据
@@ -146,12 +155,12 @@ public class EmployeeController extends BaseController {
     }
 
     /**
-     * 查询员工表列表
+     * 查询员工表列表(下拉框)
      */
     //@RequiresPermissions("system:manage:employee:list")
     @GetMapping("/list")
     public AjaxResult list(EmployeeDTO employeeDTO) {
-        List<EmployeeDTO> list = employeeService.selectEmployeeList(employeeDTO);
+        List<EmployeeDTO> list = employeeService.selectDropEmployeeList(employeeDTO);
         return AjaxResult.success(list);
     }
 

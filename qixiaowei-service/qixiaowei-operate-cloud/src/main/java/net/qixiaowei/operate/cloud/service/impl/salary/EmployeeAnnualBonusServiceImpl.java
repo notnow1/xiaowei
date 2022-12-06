@@ -652,6 +652,35 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     }
 
     /**
+     * 实时查询个人年终奖表详情
+     * @param employeeAnnualBonusDTO
+     * @return
+     */
+    @Override
+    public List<EmpAnnualBonusSnapshotDTO> realTimeDetails(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        //所有员工的薪酬奖金合计
+        BigDecimal allPaymentBonusSum = new BigDecimal("0");
+        //所有员工的奖金金额合计
+        BigDecimal allBonusAmountSum = new BigDecimal("0");
+        //员工奖金基数=员工倒推12个月的薪酬合计（若期间出现断层，则继续往前倒推，直至取满12个月，若实在无法取满12个月，则可以取几个月就取几个月）
+        Map<Long,BigDecimal> paymentBonusSumMap = new HashMap<>();
+        //员工上年奖金额=倒推12个月的工资条数据中的总奖金包（若期间出现断层，则继续往前倒推，直至取满12个月，若实在无法取满12个月，则可以取几个月就取几个月）
+        Map<Long,BigDecimal> bonusAmountSumMap = new HashMap<>();
+
+        //分配年终奖金额
+        BigDecimal distributeBonusAmount = employeeAnnualBonusDTO.getDistributeBonusAmount();
+        //个人年终奖发放快照信息及发放对象表集合
+        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOs();
+        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)){
+            //参考值一 二数据计算必须数据
+            packPerformanceRank(employeeAnnualBonusDTO, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOs);
+            //封装计算参考值
+            packReferenceValue(distributeBonusAmount, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOs);
+        }
+        return empAnnualBonusSnapshotDTOs;
+    }
+
+    /**
      * 保存提交 修改数据
      *
      * @param empAnnualBonusSnapshotDTOs

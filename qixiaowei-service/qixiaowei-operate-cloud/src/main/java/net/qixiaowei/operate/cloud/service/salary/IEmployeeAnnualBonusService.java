@@ -114,4 +114,11 @@ public interface IEmployeeAnnualBonusService{
      * @return
      */
     EmployeeAnnualBonusDTO submitSave(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
+
+    /**
+     * 实时查询个人年终奖表详情
+     * @param employeeAnnualBonusDTO
+     * @return
+     */
+    List<EmpAnnualBonusSnapshotDTO> realTimeDetails(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
 }
