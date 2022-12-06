@@ -1,7 +1,6 @@
 package net.qixiaowei.operate.cloud.mapper.performance;
 
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalObjects;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import org.apache.ibatis.annotations.Param;
@@ -134,11 +133,18 @@ public interface PerformanceAppraisalObjectsMapper {
 
     /**
      * 查询每个员工的最近三次绩效和奖金系数
-     *
      * @param employeeId 员工id
      * @return
      */
     List<PerformanceRankFactorDTO> selectPerformanceRankFactorByEmployeeId(@Param("employeeId") Long employeeId);
+
+    /**
+     * 绩效等级id查询绩效等级
+     * @param performanceRankId  绩效等级id
+     * @return
+     */
+    List<PerformanceRankFactorDTO> selectPerformanceRankFactorByPerformanceRankId(@Param("performanceRankId") Long performanceRankId);
+
 
     /**
      * 分页查询组织绩效制定

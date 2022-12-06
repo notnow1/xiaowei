@@ -275,10 +275,10 @@
         SELECT sp.employee_id,
                sp.pay_year,
                sp.pay_month,
-               sp1.bonusBeforeTwo,
-               sp2.bonusBeforeOne,
-               sp3.emolumentBeforeOne,
-               sp4.employeeBasicWage
+               IFNULL(sp1.bonusBeforeTwo,0),
+               IFNULL(sp2.bonusBeforeOne,0) ,
+               IFNULL(sp3.emolumentBeforeOne,0),
+               IFNULL(sp4.employeeBasicWage,0)
         FROM salary_pay sp
                  left join (SELECT employee_id,
                                    case when pay_year = #{payYear} - 2 then sum(bonus_amount) end as bonusBeforeTwo
