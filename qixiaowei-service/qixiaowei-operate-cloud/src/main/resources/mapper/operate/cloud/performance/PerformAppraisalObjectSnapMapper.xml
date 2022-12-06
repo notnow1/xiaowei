@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.performance.PerformAppraisalObjectSnapMapper">
+    <!--    查询绩效考核对象快照表-->
+    <select id="selectPerformAppraisalObjectSnapByAppraisalObjectSnapId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformAppraisalObjectSnapDTO">
+        SELECT
+        appraisal_object_snap_id, perform_appraisal_objects_id, appraisal_object_name, appraisal_object_code,
+        department_id, department_name, post_id, post_name, official_rank_system_id, official_rank, official_rank_name,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM perform_appraisal_object_snap
+        WHERE appraisal_object_snap_id=#{appraisalObjectSnapId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询绩效考核对象快照表-->
+    <select id="selectPerformAppraisalObjectSnapByAppraisalObjectSnapIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformAppraisalObjectSnapDTO">
+        SELECT
+        appraisal_object_snap_id, perform_appraisal_objects_id, appraisal_object_name, appraisal_object_code,
+        department_id, department_name, post_id, post_name, official_rank_system_id, official_rank, official_rank_name,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM perform_appraisal_object_snap
+        WHERE appraisal_object_snap_id in
+        <foreach item="item"
+                 collection="appraisalObjectSnapIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询绩效考核对象快照表列表-->
+    <select id="selectPerformAppraisalObjectSnapList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformAppraisalObjectSnapDTO">
+        SELECT
+        appraisal_object_snap_id, perform_appraisal_objects_id, appraisal_object_name, appraisal_object_code,
+        department_id, department_name, post_id, post_name, official_rank_system_id, official_rank, official_rank_name,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM perform_appraisal_object_snap
+        WHERE delete_flag=0
+        <if test="performAppraisalObjectSnap.appraisalObjectSnapId != null">
+            and appraisal_object_snap_id=#{performAppraisalObjectSnap.appraisalObjectSnapId}
+        </if>
+        <if test="performAppraisalObjectSnap.performAppraisalObjectsId != null">
+            and perform_appraisal_objects_id=#{performAppraisalObjectSnap.performAppraisalObjectsId}
+        </if>
+        <if test="performAppraisalObjectSnap.appraisalObjectName != null and performAppraisalObjectSnap.appraisalObjectName != ''">
+            and appraisal_object_name=#{performAppraisalObjectSnap.appraisalObjectName}
+        </if>
+        <if test="performAppraisalObjectSnap.appraisalObjectCode != null and performAppraisalObjectSnap.appraisalObjectCode != ''">
+            and appraisal_object_code=#{performAppraisalObjectSnap.appraisalObjectCode}
+        </if>
+        <if test="performAppraisalObjectSnap.departmentId != null">
+            and department_id=#{performAppraisalObjectSnap.departmentId}
+        </if>
+        <if test="performAppraisalObjectSnap.departmentName != null and performAppraisalObjectSnap.departmentName != ''">
+            and department_name=#{performAppraisalObjectSnap.departmentName}
+        </if>
+        <if test="performAppraisalObjectSnap.postId != null">
+            and post_id=#{performAppraisalObjectSnap.postId}
+        </if>
+        <if test="performAppraisalObjectSnap.postName != null and performAppraisalObjectSnap.postName != ''">
+            and post_name=#{performAppraisalObjectSnap.postName}
+        </if>
+        <if test="performAppraisalObjectSnap.officialRankSystemId != null">
+            and official_rank_system_id=#{performAppraisalObjectSnap.officialRankSystemId}
+        </if>
+        <if test="performAppraisalObjectSnap.officialRank != null">
+            and official_rank=#{performAppraisalObjectSnap.officialRank}
+        </if>
+        <if test="performAppraisalObjectSnap.officialRankName != null and performAppraisalObjectSnap.officialRankName != ''">
+            and official_rank_name=#{performAppraisalObjectSnap.officialRankName}
+        </if>
+        <if test="performAppraisalObjectSnap.deleteFlag != null">
+            and delete_flag=#{performAppraisalObjectSnap.deleteFlag}
+        </if>
+        <if test="performAppraisalObjectSnap.createBy != null">
+            and create_by=#{performAppraisalObjectSnap.createBy}
+        </if>
+        <if test="performAppraisalObjectSnap.createTime != null">
+            and create_time=#{performAppraisalObjectSnap.createTime}
+        </if>
+        <if test="performAppraisalObjectSnap.updateBy != null">
+            and update_by=#{performAppraisalObjectSnap.updateBy}
+        </if>
+        <if test="performAppraisalObjectSnap.updateTime != null">
+            and update_time=#{performAppraisalObjectSnap.updateTime}
+        </if>
+    </select>
+    <!--通过对象ID集合查询快照-->
+    <select id="selectPerformAppraisalObjectSnapByAppraisalObjectsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformAppraisalObjectSnapDTO">
+        SELECT
+        appraisal_object_snap_id, perform_appraisal_objects_id, appraisal_object_name, appraisal_object_code,
+        department_id, department_name, post_id, post_name, official_rank_system_id, official_rank, official_rank_name,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM perform_appraisal_object_snap
+        WHERE delete_flag=0
+        AND perform_appraisal_objects_id IN
+        <foreach collection="performanceObjectIds" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
+    <!--新增绩效考核对象快照表-->
+    <insert id="insertPerformAppraisalObjectSnap" useGeneratedKeys="true" keyProperty="appraisalObjectSnapId">
+        INSERT INTO perform_appraisal_object_snap
+        (perform_appraisal_objects_id,appraisal_object_name,appraisal_object_code,department_id,department_name,post_id,post_name,official_rank_system_id,official_rank,official_rank_name,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{performAppraisalObjectSnap.performAppraisalObjectsId},#{performAppraisalObjectSnap.appraisalObjectName},#{performAppraisalObjectSnap.appraisalObjectCode},#{performAppraisalObjectSnap.departmentId},#{performAppraisalObjectSnap.departmentName},#{performAppraisalObjectSnap.postId},#{performAppraisalObjectSnap.postName},#{performAppraisalObjectSnap.officialRankSystemId},#{performAppraisalObjectSnap.officialRank},#{performAppraisalObjectSnap.officialRankName},#{performAppraisalObjectSnap.deleteFlag},#{performAppraisalObjectSnap.createBy},#{performAppraisalObjectSnap.createTime},#{performAppraisalObjectSnap.updateBy},#{performAppraisalObjectSnap.updateTime})
+    </insert>
+    <!--修改绩效考核对象快照表-->
+    <update id="updatePerformAppraisalObjectSnap">
+        UPDATE perform_appraisal_object_snap
+        SET
+        <if test="performAppraisalObjectSnap.performAppraisalObjectsId != null">
+            perform_appraisal_objects_id=#{performAppraisalObjectSnap.performAppraisalObjectsId},
+        </if>
+        <if test="performAppraisalObjectSnap.appraisalObjectName != null and performAppraisalObjectSnap.appraisalObjectName != ''">
+            appraisal_object_name=#{performAppraisalObjectSnap.appraisalObjectName},
+        </if>
+        <if test="performAppraisalObjectSnap.appraisalObjectCode != null and performAppraisalObjectSnap.appraisalObjectCode != ''">
+            appraisal_object_code=#{performAppraisalObjectSnap.appraisalObjectCode},
+        </if>
+        <if test="performAppraisalObjectSnap.departmentId != null">
+            department_id=#{performAppraisalObjectSnap.departmentId},
+        </if>
+        <if test="performAppraisalObjectSnap.departmentName != null and performAppraisalObjectSnap.departmentName != ''">
+            department_name=#{performAppraisalObjectSnap.departmentName},
+        </if>
+        <if test="performAppraisalObjectSnap.postId != null">
+            post_id=#{performAppraisalObjectSnap.postId},
+        </if>
+        <if test="performAppraisalObjectSnap.postName != null and performAppraisalObjectSnap.postName != ''">
+            post_name=#{performAppraisalObjectSnap.postName},
+        </if>
+        <if test="performAppraisalObjectSnap.officialRankSystemId != null">
+            official_rank_system_id=#{performAppraisalObjectSnap.officialRankSystemId},
+        </if>
+        <if test="performAppraisalObjectSnap.officialRank != null">
+            official_rank=#{performAppraisalObjectSnap.officialRank},
+        </if>
+        <if test="performAppraisalObjectSnap.officialRankName != null and performAppraisalObjectSnap.officialRankName != ''">
+            official_rank_name=#{performAppraisalObjectSnap.officialRankName},
+        </if>
+        <if test="performAppraisalObjectSnap.deleteFlag != null">
+            delete_flag=#{performAppraisalObjectSnap.deleteFlag},
+        </if>
+        <if test="performAppraisalObjectSnap.createBy != null">
+            create_by=#{performAppraisalObjectSnap.createBy},
+        </if>
+        <if test="performAppraisalObjectSnap.createTime != null">
+            create_time=#{performAppraisalObjectSnap.createTime},
+        </if>
+        <if test="performAppraisalObjectSnap.updateBy != null">
+            update_by=#{performAppraisalObjectSnap.updateBy},
+        </if>
+        <if test="performAppraisalObjectSnap.updateTime != null">
+            update_time=#{performAppraisalObjectSnap.updateTime}
+        </if>
+        WHERE
+        appraisal_object_snap_id=#{performAppraisalObjectSnap.appraisalObjectSnapId}
+    </update>
+    <!--逻辑删除绩效考核对象快照表-->
+    <update id="logicDeletePerformAppraisalObjectSnapByAppraisalObjectSnapId">
+        UPDATE perform_appraisal_object_snap
+        SET delete_flag= 1,
+        update_by=#{performAppraisalObjectSnap.updateBy},
+        update_time=#{performAppraisalObjectSnap.updateTime}
+        WHERE
+        appraisal_object_snap_id=#{performAppraisalObjectSnap.appraisalObjectSnapId}
+    </update>
+    <!--逻辑批量删除绩效考核对象快照表-->
+    <update id="logicDeletePerformAppraisalObjectSnapByAppraisalObjectSnapIds">
+        UPDATE perform_appraisal_object_snap
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        appraisal_object_snap_id IN
+        <foreach item="item"
+                 collection="appraisalObjectSnapIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增绩效考核对象快照表-->
+    <insert id="batchPerformAppraisalObjectSnap">
+        INSERT INTO perform_appraisal_object_snap
+        (perform_appraisal_objects_id,appraisal_object_name,appraisal_object_code,department_id,department_name,post_id,post_name,official_rank_system_id,official_rank,official_rank_name,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="performAppraisalObjectSnaps"
+                 separator=",">
+            (#{item.performAppraisalObjectsId},#{item.appraisalObjectName},#{item.appraisalObjectCode},#{item.departmentId},#{item.departmentName},#{item.postId},#{item.postName},#{item.officialRankSystemId},#{item.officialRank},#{item.officialRankName},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除绩效考核对象快照表-->
+    <delete id="deletePerformAppraisalObjectSnapByAppraisalObjectSnapId">
+        DELETE FROM perform_appraisal_object_snap
+        WHERE appraisal_object_snap_id=#{performAppraisalObjectSnap}
+
+    </delete>
+    <!--物理批量删除绩效考核对象快照表-->
+    <delete id="deletePerformAppraisalObjectSnapByAppraisalObjectSnapIds">
+        DELETE FROM perform_appraisal_object_snap
+        WHERE appraisal_object_snap_id IN
+        <foreach item="item"
+                 collection="appraisalObjectSnapIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改绩效考核对象快照表-->
+    <update id="updatePerformAppraisalObjectSnaps">
+        update perform_appraisal_object_snap
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="perform_appraisal_objects_id=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.performAppraisalObjectsId != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then
+                        #{item.performAppraisalObjectsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_object_name=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.appraisalObjectName != null and item.appraisalObjectName != ''">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.appraisalObjectName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_object_code=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.appraisalObjectCode != null and item.appraisalObjectCode != ''">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.appraisalObjectCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_name=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.departmentName != null and item.departmentName != ''">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.departmentName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="post_id=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.postId != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.postId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="post_name=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.postName != null and item.postName != ''">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.postName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="official_rank_system_id=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.officialRankSystemId != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.officialRankSystemId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="official_rank=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.officialRank != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.officialRank}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="official_rank_name=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.officialRankName != null and item.officialRankName != ''">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.officialRankName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="performAppraisalObjectSnapList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when appraisal_object_snap_id=#{item.appraisalObjectSnapId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="performAppraisalObjectSnapList" separator="or" item="item" index="index">
+            appraisal_object_snap_id=#{item.appraisalObjectSnapId}
+        </foreach>
+    </update>
+</mapper>
+
+
