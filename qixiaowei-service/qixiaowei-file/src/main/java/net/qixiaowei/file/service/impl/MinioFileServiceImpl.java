@@ -47,7 +47,7 @@ public class MinioFileServiceImpl implements IFileService {
     @Override
     public FileDTO uploadFile(MultipartFile file, String source) throws Exception {
         //前面用租户id区分
-        String fileName = SecurityUtils.getTenantId() + "/" + source + "/" + FileUploadUtils.extractFilename(file);
+        String fileName = FileLogic.PREFIX + SecurityUtils.getTenantId() + "/" + source + "/" + FileUploadUtils.extractFilename(file);
         PutObjectArgs args = PutObjectArgs.builder()
                 .bucket(minioConfig.getBucketName())
                 .object(fileName)

@@ -67,6 +67,14 @@ public interface RoleMapper {
     int insertRole(@Param("role") Role role);
 
     /**
+     * 初始化租户角色表
+     *
+     * @param role 角色表
+     * @return 结果
+     */
+    int initTenantRole(@Param("role") Role role);
+
+    /**
      * 修改角色表
      *
      * @param role 角色表

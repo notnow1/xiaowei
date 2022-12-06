@@ -25,6 +25,13 @@
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-integration-security</artifactId>
         </dependency>
+
+        <!-- Druid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
     </dependencies>
 
 

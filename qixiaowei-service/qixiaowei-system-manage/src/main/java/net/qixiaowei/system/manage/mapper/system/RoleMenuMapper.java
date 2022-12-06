@@ -117,4 +117,12 @@ public interface RoleMenuMapper{
     * @return 结果
     */
     int batchRoleMenu(@Param("roleMenus")List<RoleMenu> RoleMenus);
+
+    /**
+     * 批量初始化租户角色菜单表
+     *
+     * @param RoleMenus 角色菜单表列表
+     * @return 结果
+     */
+    int batchInitTenantRoleMenu(@Param("roleMenus")List<RoleMenu> RoleMenus);
 }

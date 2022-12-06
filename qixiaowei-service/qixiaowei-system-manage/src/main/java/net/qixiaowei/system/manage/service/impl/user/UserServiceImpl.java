@@ -2,20 +2,25 @@ package net.qixiaowei.system.manage.service.impl.user;
 
 import java.util.*;
 
+import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
+import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
+import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.system.manage.service.system.IRoleMenuService;
 import net.qixiaowei.system.manage.service.system.IUserRoleService;
@@ -32,6 +37,8 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -60,10 +67,27 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private IEmployeeService employeeService;
 
+    @Autowired
+    private TenantConfig tenantConfig;
+
+    @Autowired
+    private TenantMapper tenantMapper;
+
 
     @Override
-    public LoginUserVO getUserByUserAccount(String userAccount) {
-        UserDTO userDTO = userMapper.selectUserByUserAccount(userAccount);
+    @IgnoreTenant
+    public LoginUserVO getUserByUserAccount(String userAccount, String domain) {
+        Long tenantId = 0L;
+        if (StringUtils.isNotEmpty(domain)) {
+            domain = domain.replace("." + tenantConfig.getMainDomain(), "");
+            if (StringUtils.isNotEmpty(domain) && !"www".equals(domain)) {
+                TenantDTO tenantDTO = tenantMapper.selectTenantByDomain(domain);
+                if (StringUtils.isNotNull(tenantDTO)) {
+                    tenantId = tenantDTO.getTenantId();
+                }
+            }
+        }
+        UserDTO userDTO = userMapper.selectUserByUserAccountAndTenantId(userAccount, tenantId);
         if (StringUtils.isNull(userDTO)) {
             throw new ServiceException("用户名或密码错误");
         }
@@ -84,6 +108,9 @@ public class UserServiceImpl implements IUserService {
         UserInfoVO userInfoVO = new UserInfoVO();
         Long userId = SecurityUtils.getUserId();
         UserDTO userDTO = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userDTO)) {
+            throw new ServiceException("用户不存在");
+        }
         //角色集合
         Set<String> roles = userRoleService.getRoleCodes(userDTO);
         //权限集合
@@ -175,7 +202,7 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         Integer status = user.getStatus();
         if (StringUtils.isNull(status)) {
-            user.setStatus(1);
+            user.setStatus(BusinessConstants.NORMAL);
         }
         //新增用户
         int row = userMapper.insertUser(user);

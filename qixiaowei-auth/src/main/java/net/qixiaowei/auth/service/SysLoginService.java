@@ -14,6 +14,8 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 登录校验方法
  */
@@ -31,7 +33,7 @@ public class SysLoginService {
     /**
      * 登录
      */
-    public LoginUserVO login(String userAccount, String password) {
+    public LoginUserVO login(HttpServletRequest request, String userAccount, String password) {
         // 用户名或密码为空 错误
         if (StringUtils.isAnyBlank(userAccount, password)) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "用户/密码必须填写");
@@ -50,7 +52,8 @@ public class SysLoginService {
             throw new ServiceException("用户名不在指定范围");
         }
         // 查询用户信息
-        R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, SecurityConstants.INNER);
+        String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
+        R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
         if (StringUtils.isNull(userResult) || StringUtils.isNull(userResult.getData())) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "登录用户不存在");
             throw new ServiceException("登录用户：" + userAccount + " 不存在");

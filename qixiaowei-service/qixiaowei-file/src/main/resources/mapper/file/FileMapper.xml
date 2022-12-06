@@ -71,9 +71,9 @@
     </select>
     <!--新增文件表-->
     <insert id="insertFile" useGeneratedKeys="true" keyProperty="fileId">
-        INSERT INTO file (tenant_id,source,file_name,file_format,file_size,file_path,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO file (source,file_name,file_format,file_size,file_path)
         VALUES
-        (#{file.tenantId},#{file.source},#{file.fileName},#{file.fileFormat},#{file.fileSize},#{file.filePath},#{file.deleteFlag},#{file.createBy},#{file.createTime},#{file.updateBy},#{file.updateTime})
+        (#{file.source},#{file.fileName},#{file.fileFormat},#{file.fileSize},#{file.filePath})
     </insert>
     <!--修改文件表-->
     <update id="updateFile">

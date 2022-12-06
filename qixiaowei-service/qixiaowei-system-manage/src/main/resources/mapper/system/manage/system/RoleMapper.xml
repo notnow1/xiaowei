@@ -96,6 +96,14 @@
         VALUES
         (#{role.roleCode},#{role.roleName},#{role.dataScope},#{role.productPackage},#{role.sort},#{role.remark},#{role.status},#{role.deleteFlag},#{role.createBy},#{role.createTime},#{role.updateBy},#{role.updateTime})
     </insert>
+
+    <!--初始化租户角色表-->
+    <insert id="initTenantRole" useGeneratedKeys="true" keyProperty="roleId">
+        INSERT INTO role (role_code,role_name,data_scope,product_package,sort,remark,status,tenant_id)
+        VALUES
+        (#{role.roleCode},#{role.roleName},#{role.dataScope},#{role.productPackage},#{role.sort},#{role.remark},#{role.status},#{role.tenantId})
+    </insert>
+
     <!--修改角色表-->
     <update id="updateRole">
         UPDATE role
@@ -163,7 +171,7 @@
             </foreach>
     </update>
     <!--批量新增角色表-->
-    <insert id="batchRole">
+    <insert id="batchRole" >
         INSERT INTO role (role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

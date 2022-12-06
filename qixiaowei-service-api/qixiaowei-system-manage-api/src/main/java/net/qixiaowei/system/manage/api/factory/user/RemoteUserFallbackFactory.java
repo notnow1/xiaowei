@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
         log.error("用户服务调用失败:{}", throwable.getMessage());
         return new RemoteUserService() {
             @Override
-            public R<LoginUserVO> getUserInfo(String username, String source) {
+            public R<LoginUserVO> getUserInfo(String userAccount, String domain, String source) {
                 return R.fail("获取用户失败:" + throwable.getMessage());
             }
 
