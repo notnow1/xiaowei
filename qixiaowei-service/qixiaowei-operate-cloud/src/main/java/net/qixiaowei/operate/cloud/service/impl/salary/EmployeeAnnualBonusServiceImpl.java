@@ -434,14 +434,26 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
                         for (EmpAnnualBonusSnapshotDTO annualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList1) {
                             if (empAnnualBonusSnapshotDTO.getEmployeeId() == annualBonusSnapshotDTO.getEmployeeId()) {
+                                BigDecimal employeeBasicWage = new BigDecimal("0");
+                                BigDecimal emolumentBeforeOne = new BigDecimal("0");
+                                BigDecimal bonusBeforeOne = new BigDecimal("0");
+                                BigDecimal bonusBeforeTwo = new BigDecimal("0");
                                 //基本工资
-                                annualBonusSnapshotDTO.setEmployeeBasicWage(annualBonusSnapshotDTO.getEmployeeBasicWage());
+                                 employeeBasicWage = annualBonusSnapshotDTO.getEmployeeBasicWage();
                                 //前一年总薪酬
-                                annualBonusSnapshotDTO.setEmolumentBeforeOne(annualBonusSnapshotDTO.getEmolumentBeforeOne());
+                                 emolumentBeforeOne = annualBonusSnapshotDTO.getEmolumentBeforeOne();
                                 //前一年奖金
-                                annualBonusSnapshotDTO.setBonusBeforeOne(annualBonusSnapshotDTO.getBonusBeforeOne());
+                                 bonusBeforeOne = annualBonusSnapshotDTO.getBonusBeforeOne();
                                 //前二年奖金
-                                annualBonusSnapshotDTO.setBonusBeforeTwo(annualBonusSnapshotDTO.getBonusBeforeTwo());
+                                 bonusBeforeTwo = annualBonusSnapshotDTO.getBonusBeforeTwo();
+                                //基本工资
+                                annualBonusSnapshotDTO.setEmployeeBasicWage(employeeBasicWage);
+                                //前一年总薪酬
+                                annualBonusSnapshotDTO.setEmolumentBeforeOne(emolumentBeforeOne);
+                                //前一年奖金
+                                annualBonusSnapshotDTO.setBonusBeforeOne(bonusBeforeOne);
+                                //前二年奖金
+                                annualBonusSnapshotDTO.setBonusBeforeTwo(bonusBeforeTwo);
                             }
                         }
                     }
@@ -680,14 +692,14 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         //分配年终奖金额
         BigDecimal distributeBonusAmount = employeeAnnualBonusDTO.getDistributeBonusAmount();
         //个人年终奖发放快照信息及发放对象表集合
-        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOs();
-        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
+        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOsTwo = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOsTwo();
+        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOsTwo)) {
             //参考值一 二数据计算必须数据
-            packPerformanceRank(employeeAnnualBonusDTO, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOs);
+            packPerformanceRank(employeeAnnualBonusDTO, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOsTwo);
             //封装计算参考值
-            packReferenceValue(distributeBonusAmount, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOs);
+            packReferenceValue(distributeBonusAmount, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOsTwo);
         }
-        return empAnnualBonusSnapshotDTOs;
+        return empAnnualBonusSnapshotDTOsTwo;
     }
 
     /**

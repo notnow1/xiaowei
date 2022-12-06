@@ -106,6 +106,10 @@ public class EmployeeAnnualBonusDTO {
      */
     private List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs;
     /**
+     * 实时请求人员数据list
+     */
+    private List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOsTwo;
+    /**
      * 是否可提交 0可 1不可
      */
     private Boolean submitFlag;
