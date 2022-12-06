@@ -1,35 +1,17 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
-import org.springframework.stereotype.Controller;
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.builder.ExcelReaderBuilder;
-import lombok.SneakyThrows;
-import net.qixiaowei.integration.common.exception.ServiceException;
-import net.qixiaowei.integration.common.text.CharsetKit;
-import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO;
 import net.qixiaowei.operate.cloud.service.salary.IDeptAnnualBonusService;
-import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.integration.common.web.controller.BaseController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+
+import java.util.List;
 
 
 
@@ -49,6 +31,15 @@ public class DeptAnnualBonusController extends BaseController
 
 
 
+    /**
+     * 部门年终奖预制数据
+     */
+    @RequiresPermissions("operate:cloud:deptAnnualBonus:info")
+    @GetMapping("/addPrefabricate/{annualBonusYear}")
+    public AjaxResult addPrefabricate(@PathVariable int annualBonusYear){
+        DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusService.addPrefabricate(annualBonusYear);
+        return AjaxResult.success(deptAnnualBonusDTO);
+    }
     /**
     * 查询部门年终奖表详情
     */

@@ -99,4 +99,10 @@ public interface IDeptAnnualBonusService{
     */
     int deleteDeptAnnualBonusByDeptAnnualBonusId(Long deptAnnualBonusId);
 
+    /**
+     * 部门年终奖预制数据
+     * @param annualBonusYear
+     * @return
+     */
+    DeptAnnualBonusDTO addPrefabricate(int annualBonusYear);
 }

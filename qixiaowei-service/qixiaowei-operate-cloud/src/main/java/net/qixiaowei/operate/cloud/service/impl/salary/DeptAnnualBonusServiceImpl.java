@@ -110,7 +110,17 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
     return deptAnnualBonusMapper.deleteDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonusId);
     }
 
-     /**
+    /**
+     * 部门年终奖预制数据
+     * @param annualBonusYear
+     * @return
+     */
+    @Override
+    public DeptAnnualBonusDTO addPrefabricate(int annualBonusYear) {
+        return null;
+    }
+
+    /**
      * 逻辑删除部门年终奖表信息
      *
      * @param  deptAnnualBonusDTO 部门年终奖表
