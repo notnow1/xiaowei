@@ -1,13 +1,11 @@
 package net.qixiaowei.operate.cloud.service.impl.performance;
 
-import java.util.List;
+import java.util.*;
 
 import net.qixiaowei.integration.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalObjects;
@@ -164,7 +162,6 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
 
     public int insertPerformanceAppraisalObjectss(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDtos) {
         List<PerformanceAppraisalObjects> performanceAppraisalObjectsList = new ArrayList<>();
-
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDtos) {
             PerformanceAppraisalObjects performanceAppraisalObjects = new PerformanceAppraisalObjects();
             BeanUtils.copyProperties(performanceAppraisalObjectsDTO, performanceAppraisalObjects);
@@ -175,7 +172,18 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
             performanceAppraisalObjects.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             performanceAppraisalObjectsList.add(performanceAppraisalObjects);
         }
-        return performanceAppraisalObjectsMapper.batchPerformanceAppraisalObjects(performanceAppraisalObjectsList);
+        int i = performanceAppraisalObjectsMapper.batchPerformanceAppraisalObjects(performanceAppraisalObjectsList);
+        Map<Long,Long> hashMap=new HashMap<>();
+        for (PerformanceAppraisalObjects performanceAppraisalObjects : performanceAppraisalObjectsList) {
+            hashMap.put(performanceAppraisalObjects.getAppraisalObjectId(),performanceAppraisalObjects.getPerformAppraisalObjectsId());
+        }
+        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDto : performanceAppraisalObjectsDtos) {
+            Long objectId = performanceAppraisalObjectsDto.getAppraisalObjectId();
+            if(hashMap.containsKey(objectId)){
+                performanceAppraisalObjectsDto.setPerformAppraisalObjectsId(hashMap.get(objectId));
+            }
+        }
+        return i;
     }
 
     /**

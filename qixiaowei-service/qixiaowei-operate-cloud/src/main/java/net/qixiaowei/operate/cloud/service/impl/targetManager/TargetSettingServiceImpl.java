@@ -616,11 +616,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 向库存值
      *
-     * @param targetYear
-     * @param noEdit
-     * @param updateTargetSetting
-     * @param delTargetSetting
-     * @param addTargetSetting
+     * @param targetYear          目标年度
+     * @param noEdit              不可编辑
+     * @param updateTargetSetting 更新
+     * @param delTargetSetting    删除
+     * @param addTargetSetting    新增
      */
     private void storageValue(Integer targetYear, List<Long> noEdit, List<TargetSettingDTO> updateTargetSetting, List<TargetSettingDTO> delTargetSetting, List<TargetSettingDTO> addTargetSetting) {
         // 对新增进行筛选，讲新增的预置数据数据删除

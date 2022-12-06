@@ -102,7 +102,7 @@
         <if test="performanceAppraisal.updateTime != null">
             and update_time=#{performanceAppraisal.updateTime}
         </if>
-        ORDER BY pa.appraisal_year,pa.cycle_number
+        ORDER BY appraisal_year,cycle_number
     </select>
     <select id="selectRankFactorByAppraisalId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO">

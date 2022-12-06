@@ -340,53 +340,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
-     * 给对象赋值 名称和编码
-     *
-     * @param appraisal                          考核表
-     * @param performanceAppraisalObjectsDTOList 绩效考核对象
-     */
-    private void setCodeAndName(PerformanceAppraisalDTO appraisal, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList) {
-        List<Long> performanceObjectIds = new ArrayList<>();
-        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-            performanceObjectIds.add(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
-        }
-        Integer appraisalObject = appraisal.getAppraisalObject();
-        List<DepartmentDTO> departmentData;
-        List<EmployeeDTO> employeeData;
-        int rank = 1;
-        if (appraisalObject == 1) {//组织
-            departmentData = getDepartmentData();
-            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-                performanceAppraisalObjectsDTO.setRank(rank);
-                for (DepartmentDTO departmentDTO : departmentData) {
-                    if (departmentDTO.getDepartmentId().equals(performanceAppraisalObjectsDTO.getAppraisalObjectId())) {
-                        performanceAppraisalObjectsDTO.setAppraisalObjectName(departmentDTO.getDepartmentName());
-                        performanceAppraisalObjectsDTO.setAppraisalObjectCode(departmentDTO.getDepartmentCode());
-                        break;
-                    }
-                }
-                rank++;
-            }
-        } else {
-            employeeData = getEmployeeData();
-            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-                performanceAppraisalObjectsDTO.setRank(rank);
-                for (EmployeeDTO employeeDTO : employeeData) {
-                    if (employeeDTO.getEmployeeId().equals(performanceAppraisalObjectsDTO.getAppraisalObjectId())) {
-                        performanceAppraisalObjectsDTO.setAppraisalObjectName(employeeDTO.getEmployeeName());
-                        performanceAppraisalObjectsDTO.setAppraisalObjectCode(employeeDTO.getEmployeeCode());
-                        performanceAppraisalObjectsDTO.setDepartmentName(employeeDTO.getEmployeeDepartmentName());
-                        performanceAppraisalObjectsDTO.setPostName(employeeDTO.getEmployeePostName());
-                        performanceAppraisalObjectsDTO.setOfficialRankName(employeeDTO.getEmployeeRankName());
-                        break;
-                    }
-                }
-                rank++;
-            }
-        }
-    }
-
-    /**
      * 给绩效等级
      *
      * @param performanceRankMap             绩效比例Map
@@ -523,6 +476,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 appraisal.setAppraisalFlowName("仅导入结果");
                 break;
         }
+        if (StringUtils.isNull(appraisal.getFilingDate())) {
+            appraisal.setIsFiling(0);
+        } else {
+            appraisal.setIsFiling(1);
+        }
     }
 
     /**
@@ -605,9 +563,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     } else {
                         performanceAppraisalObjectsDTOList = matchEmployeeObject(employeeData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow);
                     }
+                    performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
                     List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
-                    performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
-                    return performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+                    return performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
             }
         }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList;// 对象List
@@ -624,9 +582,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         } else {
             performanceAppraisalObjectsDTOList = matchEmployeeObject(employeeData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow);
         }
+        performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
         List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
-        performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
-        return performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+        return performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
     }
 
     /**
@@ -683,12 +641,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         } else {
             performanceAppraisalObjectsDTOList.addAll(matchEmployeeObject(employeeData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow));
         }
-        List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
         performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
-        for (int j = 0; j < performAppraisalObjectSnapDTOS.size(); j++) {
-            PerformAppraisalObjectSnapDTO performAppraisalObjectSnapDTO = performAppraisalObjectSnapDTOS.get(i);
-            performAppraisalObjectSnapDTO.setPerformAppraisalObjectsId(performanceAppraisalObjectsDTOList.get(i).getPerformAppraisalObjectsId());
-        }
+        List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
         performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
     }
 
@@ -739,7 +693,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             throw new ServiceException("远程获取失败");
         }
         if (StringUtils.isEmpty(employeeDTOS)) {
-            throw new ServiceException("个人信息为空，请检查");
+            throw new ServiceException("人员信息为空，请检查");
         }
         return employeeDTOS;
     }
@@ -896,10 +850,19 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             return 1;
         }
         List<Long> performanceAppraisalObjectsIds = new ArrayList<>();
+        List<Long> performanceAppraisalSnapIds = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-            performanceAppraisalObjectsIds.add(performanceAppraisalObjectsDTO.getPerformanceAppraisalId());
+            performanceAppraisalObjectsIds.add(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
         }
-        return performanceAppraisalObjectsService.logicDeletePerformanceAppraisalObjectsByPerformAppraisalObjectsIds(performanceAppraisalObjectsIds);
+        performanceAppraisalObjectsService.logicDeletePerformanceAppraisalObjectsByPerformAppraisalObjectsIds(performanceAppraisalObjectsIds);
+        List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = performAppraisalObjectSnapService.selectPerformAppraisalObjectSnapByAppraisalObjectsIds(performanceAppraisalObjectsIds);
+        if (StringUtils.isEmpty(performAppraisalObjectSnapDTOS)) {
+            throw new ServiceException("快照表数据异常 请联系管理员");
+        }
+        for (PerformAppraisalObjectSnapDTO performAppraisalObjectSnapDTO : performAppraisalObjectSnapDTOS) {
+            performanceAppraisalSnapIds.add(performAppraisalObjectSnapDTO.getAppraisalObjectSnapId());
+        }
+        return performAppraisalObjectSnapService.logicDeletePerformAppraisalObjectSnapByAppraisalObjectSnapIds(performanceAppraisalSnapIds);
     }
 
     /**
@@ -937,6 +900,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalMapper.logicDeletePerformanceAppraisalByPerformanceAppraisalId(performanceAppraisal);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
         List<Long> performanceAppraisalObjectIds = new ArrayList<>();
+        List<Long> performanceAppraisalSnapIds = new ArrayList<>();
         if (StringUtils.isEmpty(performanceAppraisalObjectsDTOList)) {
             return 1;
         }
@@ -944,7 +908,14 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             performanceAppraisalObjectIds.add(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
         }
         performanceAppraisalObjectsService.logicDeletePerformanceAppraisalObjectsByPerformAppraisalObjectsIds(performanceAppraisalObjectIds);
-        return 1;
+        List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = performAppraisalObjectSnapService.selectPerformAppraisalObjectSnapByAppraisalObjectsIds(performanceAppraisalObjectIds);
+        if (StringUtils.isEmpty(performAppraisalObjectSnapDTOS)) {
+            throw new ServiceException("快照表数据异常 请联系管理员");
+        }
+        for (PerformAppraisalObjectSnapDTO performAppraisalObjectSnapDTO : performAppraisalObjectSnapDTOS) {
+            performanceAppraisalSnapIds.add(performAppraisalObjectSnapDTO.getAppraisalObjectSnapId());
+        }
+        return performAppraisalObjectSnapService.logicDeletePerformAppraisalObjectSnapByAppraisalObjectSnapIds(performanceAppraisalSnapIds);
     }
 
     /**
