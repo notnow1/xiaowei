@@ -96,7 +96,7 @@ public class EmployeeAnnualBonusDTO {
     * 评议日期
     */
     @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
-    private LocalDate commentDate;
+    private Date commentDate;
     /**
     * 状态:0草稿;1待初评;2待评议;3已评议
     */

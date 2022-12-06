@@ -117,7 +117,7 @@ public class ProductServiceImpl implements IProductService {
         BeanUtils.copyProperties(productDTO, product);
         //查询数据
         List<ProductDTO> productDTOList = productMapper.selectProductList(product);
-        if (StringUtils.isNotEmpty(productDTOList) && productDTOList.get(1) != null){
+        if (StringUtils.isNotEmpty(productDTOList)){
             List<String> collect = productDTOList.stream().map(ProductDTO::getProductCategory).filter(StringUtils::isNotBlank).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect)){
                 List<Long> collect2 = collect.stream().filter(StringUtils::isNotBlank).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());

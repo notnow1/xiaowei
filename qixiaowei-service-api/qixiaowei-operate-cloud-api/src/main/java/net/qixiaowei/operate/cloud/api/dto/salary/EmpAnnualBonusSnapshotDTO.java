@@ -119,6 +119,14 @@ public class EmpAnnualBonusSnapshotDTO {
      */
     private  Long performanceRankFactorId;
     /**
+     * 绩效等级ID
+     */
+    private  Long performanceRankId;
+    /**
+     * 绩效名称
+     */
+    private  String performanceRank;
+    /**
      * 绩效奖金系数
      */
     private BigDecimal performanceBonusFactor;

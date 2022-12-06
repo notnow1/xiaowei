@@ -104,6 +104,45 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    根据个人年终奖id查询子表集合-->
+    <select id="selectEmpAnnualBonusObjectsAndSnapshot"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+        SELECT
+            eabo.emp_annual_bonus_objects_id,
+            eabo.employee_id,
+            eabo.choice_flag,
+            eabo.performance_rank_id,
+            eabo.performance_rank_factor_id,
+            eabo.performance_rank,
+            eabo.performance_bonus_factor,
+            eabo.attendance_factor,
+            eabo.recommend_value,
+            eabo.comment_value,
+            eabs.emp_annual_bonus_snapshot_id,
+            eabs.employee_name,
+            eabs.employee_code,
+            eabs.department_name,
+            eabs.post_name,
+            eabs.official_rank_name,
+            eabs.seniority,
+            eabs.employee_basic_wage,
+            eabs.emolument_before_one,
+            eabs.bonus_before_one,
+            eabs.bonus_before_two,
+            eabs.last_performance_resulted,
+            eabs.bonus_percentage_one,
+            eabs.bonus_percentage_two,
+            eabs.reference_value_one,
+            eabs.reference_value_two
+        from
+            emp_annual_bonus_objects eabo
+                left join emp_annual_bonus_snapshot eabs
+                          on eabo.emp_annual_bonus_objects_id =eabs.emp_annual_bonus_objects_id
+                          and eabs.employee_annual_bonus_id =#{employeeAnnualBonusId}
+                          and eabs.delete_flag =0
+        WHERE eabo .delete_flag =0
+          and eabo.employee_annual_bonus_id =#{employeeAnnualBonusId}
+    </select>
 
     <!--新增个人年终奖发放对象表-->
     <insert id="insertEmpAnnualBonusObjects" useGeneratedKeys="true" keyProperty="empAnnualBonusObjectsId">

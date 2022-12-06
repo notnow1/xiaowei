@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.mapper.salary;
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmpAnnualBonusObjects;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -114,4 +115,11 @@ public interface EmpAnnualBonusObjectsMapper{
     * @return 结果
     */
     int batchEmpAnnualBonusObjects(@Param("empAnnualBonusObjectss")List<EmpAnnualBonusObjects> EmpAnnualBonusObjectss);
+
+    /**
+     * 根据个人年终奖id查询子表集合
+     * @param employeeAnnualBonusId
+     * @return
+     */
+    List<EmpAnnualBonusSnapshotDTO> selectEmpAnnualBonusObjectsAndSnapshot(@Param("employeeAnnualBonusId") Long employeeAnnualBonusId);
 }
