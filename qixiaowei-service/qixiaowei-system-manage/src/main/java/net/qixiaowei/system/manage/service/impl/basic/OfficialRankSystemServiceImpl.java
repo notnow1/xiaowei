@@ -348,7 +348,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             throw new ServiceException("职级体系终止级别不能小于职级初始级别");
         }
         OfficialRankSystemDTO officialRankByName = officialRankSystemMapper.officialRankByName(officialRankSystemName);
-        OfficialRankSystemDTO officialRankByPrefixCode = officialRankSystemMapper.officialRankByPrefixCode(rankPrefixCode);
+//        OfficialRankSystemDTO officialRankByPrefixCode = officialRankSystemMapper.officialRankByPrefixCode(rankPrefixCode);
         if (StringUtils.isNotNull(officialRankByName)) {
             if (!officialRankByName.getOfficialRankSystemId().equals(officialRankSystemId)) {
                 throw new ServiceException("职级体系名称重复");
