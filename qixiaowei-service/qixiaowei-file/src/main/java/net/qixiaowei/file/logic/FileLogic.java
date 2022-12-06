@@ -28,6 +28,8 @@ import java.util.Date;
 @Slf4j
 public class FileLogic {
 
+    public static final String PREFIX = "tenant_";
+
     @Autowired
     private FileMapper fileMapper;
 

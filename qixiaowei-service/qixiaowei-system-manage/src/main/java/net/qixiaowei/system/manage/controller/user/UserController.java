@@ -58,7 +58,7 @@ public class UserController extends BaseController {
      * 新增用户表
      */
     @RequiresPermissions("system:manage:user:add")
-    @Log(title = "新增用户表", businessType = BusinessType.INSERT)
+//    @Log(title = "新增用户表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@Validated(UserDTO.AddUserDTO.class) @RequestBody UserDTO userDTO) {
         return AjaxResult.success(userService.insertUser(userDTO));
@@ -88,7 +88,7 @@ public class UserController extends BaseController {
      * 修改用户表
      */
     @RequiresPermissions("system:manage:user:edit")
-    @Log(title = "修改用户表", businessType = BusinessType.UPDATE)
+//    @Log(title = "修改用户表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@Validated(UserDTO.UpdateUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.updateUser(userDTO));
@@ -98,7 +98,7 @@ public class UserController extends BaseController {
      * 逻辑删除用户表
      */
     @RequiresPermissions("system:manage:user:remove")
-    @Log(title = "删除用户表", businessType = BusinessType.DELETE)
+//    @Log(title = "删除用户表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.logicDeleteUserByUserId(userDTO));
@@ -108,7 +108,7 @@ public class UserController extends BaseController {
      * 逻辑批量删除用户表
      */
     @RequiresPermissions("system:manage:user:removes")
-    @Log(title = "批量删除用户表", businessType = BusinessType.DELETE)
+//    @Log(title = "批量删除用户表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody Set<Long> userIds) {
         return toAjax(userService.logicDeleteUserByUserIds(userIds));
@@ -128,7 +128,7 @@ public class UserController extends BaseController {
      * 重置密码
      */
     @RequiresPermissions("system:manage:user:resetPwd")
-    @Log(title = "重置密码", businessType = BusinessType.UPDATE)
+//    @Log(title = "重置密码", businessType = BusinessType.UPDATE)
     @PostMapping("/resetPwd")
     public AjaxResult resetPwd(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
         return toAjax(userService.resetPwd(userDTO));
@@ -138,7 +138,7 @@ public class UserController extends BaseController {
      * 用户授权角色
      */
     @RequiresPermissions("system:manage:user:authRoles")
-    @Log(title = "用户授权角色", businessType = BusinessType.GRANT)
+//    @Log(title = "用户授权角色", businessType = BusinessType.GRANT)
     @PostMapping("/authRoles")
     public AjaxResult authRoles(@Validated @RequestBody AuthRolesDTO authRolesDTO) {
         userService.authRoles(authRolesDTO);

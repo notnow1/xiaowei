@@ -75,6 +75,12 @@
             <artifactId>qixiaowei-integration-datasource</artifactId>
         </dependency>
 
+        <!-- qixiaowei integration tenant -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-tenant</artifactId>
+        </dependency>
+
     </dependencies>
 
 

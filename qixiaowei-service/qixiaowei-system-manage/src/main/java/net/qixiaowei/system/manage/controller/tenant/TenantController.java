@@ -67,7 +67,7 @@ public class TenantController extends BaseController {
      * 查询单个租户
      */
     //@RequiresPermissions("system:manage:tenant:pageList")
-    @GetMapping("/info/")
+    @GetMapping("/info")
     public AjaxResult queryTenantDTO() {
         return AjaxResult.success(tenantService.selectTenantByTenantId());
     }

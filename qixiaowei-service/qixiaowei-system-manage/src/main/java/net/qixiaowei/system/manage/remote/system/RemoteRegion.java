@@ -4,11 +4,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
-import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
-import net.qixiaowei.system.manage.api.vo.LoginUserVO;
-import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.service.system.IRegionService;
-import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

@@ -19,6 +19,6 @@ public interface TokenConstants
     /**
      * 令牌秘钥
      */
-    String SECRET = "abcdefghijklmnopqrstuvwxyz";
+    String SECRET = "qi91440300xiaoMA5H8U3KXUwei";
 
 }

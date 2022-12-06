@@ -10,6 +10,8 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
 * UserService接口
@@ -18,7 +20,7 @@ import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
 */
 public interface IUserService{
 
-    LoginUserVO getUserByUserAccount(String userAccount);
+    LoginUserVO getUserByUserAccount(String userAccount, String domain);
 
     UserInfoVO getInfo();
 

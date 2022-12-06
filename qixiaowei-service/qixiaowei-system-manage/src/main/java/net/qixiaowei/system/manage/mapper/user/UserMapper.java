@@ -53,6 +53,15 @@ public interface UserMapper {
      * 查询用户表
      *
      * @param userAccount 用户帐号
+     * @param tenantId 租户ID
+     * @return 用户表
+     */
+    UserDTO selectUserByUserAccountAndTenantId(@Param("userAccount") String userAccount, @Param("tenantId") Long tenantId);
+
+    /**
+     * 查询用户表
+     *
+     * @param userAccount 用户帐号
      * @return 用户表
      */
     UserDTO selectUserByUserAccount(@Param("userAccount") String userAccount);
@@ -104,6 +113,14 @@ public interface UserMapper {
      * @return 结果
      */
     int insertUser(@Param("user") User user);
+
+    /**
+     * 初始化租户用户表
+     *
+     * @param user 用户表
+     * @return 结果
+     */
+    int initTenantUser(@Param("user") User user);
 
     /**
      * 修改用户表

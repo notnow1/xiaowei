@@ -21,6 +21,7 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
+import net.qixiaowei.system.manage.logic.tenant.TenantLogic;
 import net.qixiaowei.system.manage.mapper.basic.EmployeeMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndustryDefaultMapper;
 import net.qixiaowei.system.manage.mapper.productPackage.ProductPackageMapper;
@@ -72,6 +73,9 @@ public class TenantServiceImpl implements ITenantService {
 
     @Autowired
     private TenantConfig tenantConfig;
+
+    @Autowired
+    private TenantLogic tenantLogic;
 
     /**
      * 查询租户表
@@ -136,6 +140,7 @@ public class TenantServiceImpl implements ITenantService {
 
     /**
      * 查询企业信息
+     *
      * @return
      */
     @Override
@@ -226,12 +231,8 @@ public class TenantServiceImpl implements ITenantService {
         List<TenantContacts> tenantContactsList = new ArrayList<>();
         //租户合同
         List<TenantContract> tenantContractList = new ArrayList<>();
-        //租户域名
-        TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
         //copy
         BeanUtils.copyProperties(tenantDTO, tenant);
-        //用户表
-        UserDTO userDTO = userMapper.selectUserByUserId(SecurityUtils.getUserId());
 //        //拼接本人用户id
 //        tenant.setSupportStaff(tenant.getSupportStaff() + "," + userDTO.getEmployeeId());
         tenant.setSupportStaff(tenant.getSupportStaff());
@@ -240,12 +241,8 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setCreateTime(DateUtils.getNowDate());
         tenant.setUpdateTime(DateUtils.getNowDate());
         tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        //插入租户表
-        try {
-            tenantMapper.insertTenant(tenant);
-        } catch (Exception e) {
-            throw new ServiceException("插入租户表失败" + e);
-        }
+        //1、插入租户
+        tenantMapper.insertTenant(tenant);
         //copy租户联系人
         tenantContactsList = tenantDTO.getTenantContactsDTOList().stream().distinct().map(info -> {
             TenantContacts tenantContacts = new TenantContacts();
@@ -259,15 +256,8 @@ public class TenantServiceImpl implements ITenantService {
             tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             return tenantContacts;
         }).collect(Collectors.toList());
-
-
-        try {
-            tenantContactsMapper.batchTenantContacts(tenantContactsList);
-        } catch (Exception e) {
-            throw new ServiceException("插入租户联系人失败" + e);
-        }
-
-
+        //2、插入租户联系人
+        tenantContactsMapper.batchTenantContacts(tenantContactsList);
         //copy租户合同人
         tenantContractList = tenantDTO.getTenantContractDTOList().stream().distinct().map(info -> {
             TenantContract tenantContract = new TenantContract();
@@ -281,12 +271,10 @@ public class TenantServiceImpl implements ITenantService {
             tenantContract.setDeleteFlag(0);
             return tenantContract;
         }).collect(Collectors.toList());
-
-        try {
-            tenantContractMapper.batchTenantContract(tenantContractList);
-        } catch (Exception e) {
-            throw new ServiceException("插入租户合同人失败" + e);
-        }
+        //3、插入租户合同
+        tenantContractMapper.batchTenantContract(tenantContractList);
+        //4、初始化租户数据
+        tenantLogic.initTenantData(tenant);
         //返回数据
         tenantDTO.setTenantId(tenant.getTenantId());
         return tenantDTO;
@@ -501,6 +489,7 @@ public class TenantServiceImpl implements ITenantService {
 
     /**
      * 修改企业信息
+     *
      * @return
      */
     @Override

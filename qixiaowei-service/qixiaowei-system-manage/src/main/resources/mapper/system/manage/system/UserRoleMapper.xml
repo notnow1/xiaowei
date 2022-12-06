@@ -82,6 +82,14 @@
         VALUES
         (#{userRole.userId},#{userRole.roleId},#{userRole.deleteFlag},#{userRole.createBy},#{userRole.createTime},#{userRole.updateBy},#{userRole.updateTime})
     </insert>
+
+    <!--新增租户用户角色表-->
+    <insert id="initTenantUserRole" useGeneratedKeys="true" keyProperty="userRoleId">
+        INSERT INTO user_role (user_id,role_id,tenant_id)
+        VALUES
+        (#{userRole.userId},#{userRole.roleId},#{userRole.tenantId})
+    </insert>
+
     <!--修改用户角色表-->
     <update id="updateUserRole">
         UPDATE user_role

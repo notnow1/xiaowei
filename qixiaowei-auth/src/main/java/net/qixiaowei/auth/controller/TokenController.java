@@ -30,9 +30,9 @@ public class TokenController {
     private SysLoginService sysLoginService;
 
     @PostMapping("/login")
-    public R<?> login(@RequestBody LoginBody loginBody) {
+    public R<?> login(HttpServletRequest request, @RequestBody LoginBody loginBody) {
         // 用户登录
-        LoginUserVO userInfo = sysLoginService.login(loginBody.getUserAccount(), loginBody.getPassword());
+        LoginUserVO userInfo = sysLoginService.login(request, loginBody.getUserAccount(), loginBody.getPassword());
         // 获取登录token
         return R.ok(tokenService.createToken(userInfo));
     }

@@ -134,6 +134,17 @@
         </foreach>
     </insert>
 
+    <!--批量初始化租户角色菜单表-->
+    <insert id="batchInitTenantRoleMenu">
+        INSERT INTO role_menu (role_id,menu_id,tenant_id)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="roleMenus"
+                 separator=",">
+            (#{item.roleId},#{item.menuId},#{item.tenantId})
+        </foreach>
+    </insert>
+
     <!--物理删除角色菜单表-->
     <delete id="deleteRoleMenuByRoleMenuId">
         DELETE FROM role_menu

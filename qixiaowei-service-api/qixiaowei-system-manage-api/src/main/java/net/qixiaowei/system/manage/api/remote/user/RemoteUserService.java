@@ -10,6 +10,7 @@ import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public interface RemoteUserService {
      * @return 结果
      */
     @GetMapping(API_PREFIX_USER + "/info")
-    R<LoginUserVO> getUserInfo(@RequestParam("userAccount") String userAccount, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<LoginUserVO> getUserInfo(@RequestParam("userAccount") String userAccount, @RequestParam("domain") String domain, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过用户ID查询用户信息
@@ -53,7 +54,7 @@ public interface RemoteUserService {
      * 注册用户信息
      *
      * @param userVO 用户信息
-     * @param source  请求来源
+     * @param source 请求来源
      * @return 结果
      */
     @PostMapping(API_PREFIX_USER + "/user/register")
