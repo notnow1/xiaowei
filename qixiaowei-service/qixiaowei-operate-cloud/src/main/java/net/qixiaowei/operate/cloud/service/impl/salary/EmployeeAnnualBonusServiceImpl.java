@@ -222,14 +222,15 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 BeanUtils.copyProperties(empAnnualBonusSnapshotDTO, empAnnualBonusSnapshot);
                 BeanUtils.copyProperties(empAnnualBonusSnapshotDTO, empAnnualBonusObjects);
                 //个人年终奖ID
-                empAnnualBonusObjects.setEmployeeAnnualBonusId(empAnnualBonusObjects.getEmployeeAnnualBonusId());
+                empAnnualBonusObjects.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
                 //个人年终奖ID
-                empAnnualBonusSnapshot.setEmployeeAnnualBonusId(empAnnualBonusObjects.getEmployeeAnnualBonusId());
+                empAnnualBonusSnapshot.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
                 empAnnualBonusObjects.setCreateBy(SecurityUtils.getUserId());
                 empAnnualBonusObjects.setCreateTime(DateUtils.getNowDate());
                 empAnnualBonusObjects.setUpdateTime(DateUtils.getNowDate());
                 empAnnualBonusObjects.setUpdateBy(SecurityUtils.getUserId());
                 empAnnualBonusObjects.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+
                 empAnnualBonusSnapshot.setCreateBy(SecurityUtils.getUserId());
                 empAnnualBonusSnapshot.setCreateTime(DateUtils.getNowDate());
                 empAnnualBonusSnapshot.setUpdateTime(DateUtils.getNowDate());
@@ -244,7 +245,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             try {
                 empAnnualBonusObjectsMapper.batchEmpAnnualBonusObjects(empAnnualBonusObjectsList);
             } catch (Exception e) {
-                throw new ServiceException("批量插入个人年中奖发放对象失败");
+                throw new ServiceException("批量插入个人年终奖发放对象失败");
             }
         }
         if (StringUtils.isNotEmpty(empAnnualBonusSnapshotList) && StringUtils.isNotEmpty(empAnnualBonusObjectsList)) {
@@ -422,6 +423,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 empAnnualBonusSnapshotDTO.setPostName(datum.getEmployeePostName());
                 //职级
                 empAnnualBonusSnapshotDTO.setOfficialRankName(datum.getEmployeeRankName());
+                empAnnualBonusSnapshotDTO.setChoiceFlag(0);
                 empAnnualBonusSnapshotDTOList.add(empAnnualBonusSnapshotDTO);
             }
         }
