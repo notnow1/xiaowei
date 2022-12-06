@@ -5,7 +5,7 @@
     <select id="selectEmpAnnualBonusObjectsByEmpAnnualBonusObjectsId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
         SELECT
-        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_factor_id, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
+        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
         WHERE  emp_annual_bonus_objects_id=#{empAnnualBonusObjectsId}
         and delete_flag=0
@@ -15,9 +15,9 @@
     <select id="selectEmpAnnualBonusObjectsByEmpAnnualBonusObjectsIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
         SELECT
-        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_factor_id, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
+        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
-        WHERE  employee_annual_bonus_id in
+        WHERE  emp_annual_bonus_objects_id in
             <foreach item="item"
                      collection="empAnnualBonusObjectsIds"
                      index="index" open="(" separator="," close=")">
@@ -29,7 +29,7 @@
     <!--    查询个人年终奖发放对象表列表-->
     <select id="selectEmpAnnualBonusObjectsList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
         SELECT
-        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_factor_id, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
+        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
         WHERE delete_flag=0
                 <if test="empAnnualBonusObjects.empAnnualBonusObjectsId != null">
@@ -44,8 +44,14 @@
                 <if test="empAnnualBonusObjects.choiceFlag != null">
                     and choice_flag=#{empAnnualBonusObjects.choiceFlag}
                 </if>
+                <if test="empAnnualBonusObjects.performanceRankId != null">
+                    and performance_rank_id=#{empAnnualBonusObjects.performanceRankId}
+                </if>
                 <if test="empAnnualBonusObjects.performanceRankFactorId != null">
                     and performance_rank_factor_id=#{empAnnualBonusObjects.performanceRankFactorId}
+                </if>
+                <if test="empAnnualBonusObjects.performanceRank != null and empAnnualBonusObjects.performanceRank != ''">
+                    and performance_rank=#{empAnnualBonusObjects.performanceRank}
                 </if>
                 <if test="empAnnualBonusObjects.performanceBonusFactor != null">
                     and performance_bonus_factor=#{empAnnualBonusObjects.performanceBonusFactor}
@@ -75,20 +81,20 @@
                     and update_time=#{empAnnualBonusObjects.updateTime}
                 </if>
     </select>
-<!--    根据个人年终奖主表id查询个人年终奖发放对象表-->
+    <!--    根据个人年终奖主表id查询个人年终奖发放对象表-->
     <select id="selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
         SELECT
-            emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_factor_id, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
+            emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
         WHERE  employee_annual_bonus_id=#{employeeAnnualBonusId}
           and delete_flag=0
     </select>
-<!--    根据个人年终奖主表id集合批量查询个人年终奖发放对象表-->
+    <!--    根据个人年终奖主表id集合批量查询个人年终奖发放对象表-->
     <select id="selectEmpAnnualBonusObjectsByEmployeeAnnualBonusIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
         SELECT
-        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_factor_id, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
+        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
         WHERE  emp_annual_bonus_objects_id in
         <foreach item="item"
@@ -98,11 +104,12 @@
         </foreach>
         and delete_flag=0
     </select>
+
     <!--新增个人年终奖发放对象表-->
     <insert id="insertEmpAnnualBonusObjects" useGeneratedKeys="true" keyProperty="empAnnualBonusObjectsId">
-        INSERT INTO emp_annual_bonus_objects (employee_annual_bonus_id,employee_id,choice_flag,performance_rank_factor_id,performance_bonus_factor,attendance_factor,recommend_value,comment_value,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO emp_annual_bonus_objects (employee_annual_bonus_id,employee_id,choice_flag,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,attendance_factor,recommend_value,comment_value,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{empAnnualBonusObjects.employeeAnnualBonusId},#{empAnnualBonusObjects.employeeId},#{empAnnualBonusObjects.choiceFlag},#{empAnnualBonusObjects.performanceRankFactorId},#{empAnnualBonusObjects.performanceBonusFactor},#{empAnnualBonusObjects.attendanceFactor},#{empAnnualBonusObjects.recommendValue},#{empAnnualBonusObjects.commentValue},#{empAnnualBonusObjects.deleteFlag},#{empAnnualBonusObjects.createBy},#{empAnnualBonusObjects.createTime},#{empAnnualBonusObjects.updateBy},#{empAnnualBonusObjects.updateTime})
+        (#{empAnnualBonusObjects.employeeAnnualBonusId},#{empAnnualBonusObjects.employeeId},#{empAnnualBonusObjects.choiceFlag},#{empAnnualBonusObjects.performanceRankId},#{empAnnualBonusObjects.performanceRankFactorId},#{empAnnualBonusObjects.performanceRank},#{empAnnualBonusObjects.performanceBonusFactor},#{empAnnualBonusObjects.attendanceFactor},#{empAnnualBonusObjects.recommendValue},#{empAnnualBonusObjects.commentValue},#{empAnnualBonusObjects.deleteFlag},#{empAnnualBonusObjects.createBy},#{empAnnualBonusObjects.createTime},#{empAnnualBonusObjects.updateBy},#{empAnnualBonusObjects.updateTime})
     </insert>
     <!--修改个人年终奖发放对象表-->
     <update id="updateEmpAnnualBonusObjects">
@@ -117,8 +124,14 @@
                     <if test="empAnnualBonusObjects.choiceFlag != null">
                         choice_flag=#{empAnnualBonusObjects.choiceFlag},
                     </if>
+                    <if test="empAnnualBonusObjects.performanceRankId != null">
+                        performance_rank_id=#{empAnnualBonusObjects.performanceRankId},
+                    </if>
                     <if test="empAnnualBonusObjects.performanceRankFactorId != null">
                         performance_rank_factor_id=#{empAnnualBonusObjects.performanceRankFactorId},
+                    </if>
+                    <if test="empAnnualBonusObjects.performanceRank != null and empAnnualBonusObjects.performanceRank != ''">
+                        performance_rank=#{empAnnualBonusObjects.performanceRank},
                     </if>
                     <if test="empAnnualBonusObjects.performanceBonusFactor != null">
                         performance_bonus_factor=#{empAnnualBonusObjects.performanceBonusFactor},
@@ -174,13 +187,13 @@
             </foreach>
     </update>
     <!--批量新增个人年终奖发放对象表-->
-    <insert id="batchEmpAnnualBonusObjects" useGeneratedKeys="true" keyProperty="empAnnualBonusObjectsId">
-        INSERT INTO emp_annual_bonus_objects (employee_annual_bonus_id,employee_id,choice_flag,performance_rank_factor_id,performance_bonus_factor,attendance_factor,recommend_value,comment_value,delete_flag,create_by,create_time,update_by,update_time)
+    <insert id="batchEmpAnnualBonusObjects">
+        INSERT INTO emp_annual_bonus_objects (employee_annual_bonus_id,employee_id,choice_flag,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,attendance_factor,recommend_value,comment_value,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="empAnnualBonusObjectss"
                  separator=",">
-            (#{item.employeeAnnualBonusId},#{item.employeeId},#{item.choiceFlag},#{item.performanceRankFactorId},#{item.performanceBonusFactor},#{item.attendanceFactor},#{item.recommendValue},#{item.commentValue},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.employeeAnnualBonusId},#{item.employeeId},#{item.choiceFlag},#{item.performanceRankId},#{item.performanceRankFactorId},#{item.performanceRank},#{item.performanceBonusFactor},#{item.attendanceFactor},#{item.recommendValue},#{item.commentValue},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -225,10 +238,24 @@
                                 </if>
                         </foreach>
                 </trim>
+                <trim prefix="performance_rank_id=case" suffix="end,">
+                        <foreach collection="empAnnualBonusObjectsList" item="item" index="index">
+                                <if test="item.performanceRankId != null">
+                                    when emp_annual_bonus_objects_id=#{item.empAnnualBonusObjectsId} then #{item.performanceRankId}
+                                </if>
+                        </foreach>
+                </trim>
                 <trim prefix="performance_rank_factor_id=case" suffix="end,">
                         <foreach collection="empAnnualBonusObjectsList" item="item" index="index">
                                 <if test="item.performanceRankFactorId != null">
                                     when emp_annual_bonus_objects_id=#{item.empAnnualBonusObjectsId} then #{item.performanceRankFactorId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="performance_rank=case" suffix="end,">
+                        <foreach collection="empAnnualBonusObjectsList" item="item" index="index">
+                                <if test="item.performanceRank != null and item.performanceRank != ''">
+                                    when emp_annual_bonus_objects_id=#{item.empAnnualBonusObjectsId} then #{item.performanceRank}
                                 </if>
                         </foreach>
                 </trim>

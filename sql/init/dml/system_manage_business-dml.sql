@@ -71,19 +71,17 @@ INSERT INTO dictionary_type (dictionary_type_id, dictionary_type, dictionary_nam
 -- ----------------------------
 -- init of dictionary_data
 -- ----------------------------
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 1, '通用件', '1', 0, 1, '', 0, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, '标准件', '2', 0, 2, '', 0, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(3, 1, '自制件', '3', 0, 3, '', 0, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(4, 1, '外购件', '4', 0, 4, '', 0, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(5, 1, '外协件', '5', 0, 5, '', 0, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(6, 1, '原材料', '6', 0, 6, '', 0, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 1, '通用件', '1', 1, 1, '', 1, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, '标准件', '2', 0, 2, '', 1, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(3, 1, '自制件', '3', 0, 3, '', 1, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(4, 1, '外购件', '4', 0, 4, '', 1, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(5, 1, '外协件', '5', 0, 5, '', 1, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO dictionary_data (dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(6, 1, '原材料', '6', 0, 6, '', 1, 0, 1, sysdate(), 1, sysdate());
 
 
 -- ----------------------------
 -- init of industry_default
 -- ----------------------------
-
-
 INSERT INTO `industry_default`(`industry_id`, `parent_industry_id`, `ancestors`, `industry_code`, `industry_name`, `level`, `status`, `delete_flag`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (36, 0, NULL, '110000', '农林牧渔', 1, 1, 0, 0, sysdate(), 0, sysdate());
 INSERT INTO `industry_default`(`industry_id`, `parent_industry_id`, `ancestors`, `industry_code`, `industry_name`, `level`, `status`, `delete_flag`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (47, 0, NULL, '210000', '采掘', 1, 1, 0, 0, sysdate(), 0, sysdate());
 INSERT INTO `industry_default`(`industry_id`, `parent_industry_id`, `ancestors`, `industry_code`, `industry_name`, `level`, `status`, `delete_flag`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES (51, 0, NULL, '220000', '化工', 1, 1, 0, 0, sysdate(), 0, sysdate());

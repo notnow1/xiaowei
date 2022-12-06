@@ -74,7 +74,7 @@ public class EmployeeAnnualBonusController extends BaseController
 
 
     /**
-    * 新增个人年终奖表
+    * 新增保存个人年终奖表
     */
     //@RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
     //@Log(title = "新增个人年终奖表", businessType = BusinessType.INSERT)
@@ -82,10 +82,18 @@ public class EmployeeAnnualBonusController extends BaseController
     public AjaxResult addSave(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
     return AjaxResult.success(employeeAnnualBonusService.insertEmployeeAnnualBonus(employeeAnnualBonusDTO));
     }
-
+    /**
+     * 新增提交个人年终奖表
+     */
+    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
+    //@Log(title = "新增个人年终奖表", businessType = BusinessType.INSERT)
+    @PostMapping("/submit")
+    public AjaxResult submitSave(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        return AjaxResult.success(employeeAnnualBonusService.submitSave(employeeAnnualBonusDTO));
+    }
 
     /**
-    * 修改个人年终奖表
+    * 保存修改个人年终奖表
     */
     //@RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
     //@Log(title = "修改个人年终奖表", businessType = BusinessType.UPDATE)

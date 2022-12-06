@@ -438,7 +438,7 @@ CREATE TABLE official_rank_system(
     rank_prefix_code VARCHAR(16)    COMMENT '级别前缀编码' ,
     rank_start INT UNSIGNED    COMMENT '起始级别' ,
     rank_end INT UNSIGNED    COMMENT '终止级别' ,
-    rank_decompose_dimension TINYINT UNSIGNED NOT NULL   COMMENT '职级分解维度:1部门;2区域;3省份;4产品' ,
+    rank_decompose_dimension TINYINT UNSIGNED    COMMENT '职级分解维度:1部门;2区域;3省份;4产品' ,
     status TINYINT UNSIGNED NOT NULL   COMMENT '状态:0失效;1生效' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,

@@ -104,6 +104,10 @@ public class SalaryPayDTO {
      */
     private BigDecimal bonusAmount;
     /**
+     * 倒退12个月奖金金额合计
+     */
+    private BigDecimal bonusAmountSum;
+    /**
      * 代扣代缴金额
      */
     private BigDecimal withholdRemitTax;
@@ -115,6 +119,10 @@ public class SalaryPayDTO {
      * 总薪酬包
      */
     private BigDecimal paymentBonus;
+    /**
+     * 薪酬合计
+     */
+    private BigDecimal paymentBonusSum;
     /**
      * 发薪金额
      */

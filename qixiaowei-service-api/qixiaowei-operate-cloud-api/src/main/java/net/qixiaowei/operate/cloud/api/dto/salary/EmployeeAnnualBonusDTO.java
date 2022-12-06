@@ -89,6 +89,10 @@ public class EmployeeAnnualBonusDTO {
     */
     private  Long commentEmployeeId;
     /**
+     * 管理团队评议名称
+     */
+    private  String commentEmployeeName;
+    /**
     * 评议日期
     */
     @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
@@ -101,7 +105,10 @@ public class EmployeeAnnualBonusDTO {
      * 个人年终奖发放快照信息及发放对象表集合
      */
     private List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs;
-
+    /**
+     * 是否可提交 0可 1不可
+     */
+    private Boolean submitFlag;
     /**
     * 删除标记:0未删除;1已删除
     */
