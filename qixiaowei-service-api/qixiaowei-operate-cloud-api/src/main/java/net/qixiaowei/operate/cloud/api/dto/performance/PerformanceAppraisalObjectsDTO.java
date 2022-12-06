@@ -168,9 +168,17 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private Integer sort;
     /**
+     * 是否提交（1-提交，0-保存）
+     */
+    private Integer isSubmit;
+    /**
      * 考核比例统计
      */
     private List<Map<String, Object>> performanceAppraisalRankDTOS;
+    /**
+     * 制定指标信息
+     */
+    private List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS;
     /**
      * 删除标记:0未删除;1已删除
      */

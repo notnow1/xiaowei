@@ -280,4 +280,12 @@ public interface IPerformanceAppraisalService {
      * @return
      */
     PerformanceAppraisalObjectsDTO selectOrgAppraisalDevelopById(Long performAppraisalObjectsId);
+
+    /**
+     * 保存/提交绩效考核-制定-组织
+     *
+     * @param performanceAppraisalObjectsDTO 绩效考核DTO
+     * @return
+     */
+    PerformanceAppraisalObjectsDTO updateOrgDevelopPerformanceAppraisal(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 }

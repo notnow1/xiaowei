@@ -67,6 +67,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Autowired
     private IPerformAppraisalObjectSnapService performAppraisalObjectSnapService;
 
+    @Autowired
+    private IPerformanceAppraisalItemsService performanceAppraisalItemsService;
+
     /**
      * 查询绩效考核表详情
      *
@@ -1863,7 +1866,126 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public PerformanceAppraisalObjectsDTO selectOrgAppraisalDevelopById(Long performAppraisalObjectsId) {
-        return performanceAppraisalMapper.selectOrgAppraisalObjectByObjectId(performAppraisalObjectsId);
+        PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = performanceAppraisalMapper.selectOrgAppraisalObjectByObjectId(performAppraisalObjectsId);
+        setObjectFieldName(performanceAppraisalObjectsDTO);
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performAppraisalObjectsId);
+        if (StringUtils.isEmpty(performanceAppraisalItemsDTOS)) {
+            return performanceAppraisalObjectsDTO;
+        }
+        performanceAppraisalObjectsDTO.setPerformanceAppraisalItemsDTOS(performanceAppraisalItemsDTOS);
+        return performanceAppraisalObjectsDTO;
+    }
+
+    /**
+     * 保存/提交绩效考核-制定-组织
+     *
+     * @param performanceAppraisalObjectsDTO 绩效考核DTO
+     * @return
+     */
+    @Override
+    @Transactional
+    public PerformanceAppraisalObjectsDTO updateOrgDevelopPerformanceAppraisal(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+        Long performAppraisalObjectsId = performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId();
+        if (StringUtils.isNull(performAppraisalObjectsId)) {
+            throw new ServiceException("绩效考核对象ID不能为空");
+        }
+        PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTOByObjectId = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalObjectsId(performAppraisalObjectsId);
+        if (StringUtils.isNull(performanceAppraisalObjectsDTOByObjectId)) {
+            throw new ServiceException("当前绩效考核对象已不存在");
+        }
+        Long performanceAppraisalId = performanceAppraisalObjectsDTOByObjectId.getPerformanceAppraisalId();
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+        // 更新绩效考核任务
+        PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
+        appraisalDTO.setPerformanceAppraisalId(performanceAppraisalId);
+        if (performanceAppraisalObjectsDTOList.size() == 1) {
+            appraisalDTO.setAppraisalStatus(2);
+            updatePerformanceAppraisal(appraisalDTO);
+        } else if (performanceAppraisalObjectsDTOList.size() > 1) {
+            int submitSum = 1;
+            for (PerformanceAppraisalObjectsDTO appraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                if (appraisalObjectsDTO.getAppraisalObjectStatus() > 1) {
+                    submitSum += 1;
+                }
+            }
+            if (submitSum == performanceAppraisalObjectsDTOList.size()) {
+                appraisalDTO.setAppraisalStatus(2);
+                updatePerformanceAppraisal(appraisalDTO);
+            }
+        }
+        // 更新绩效考核对象
+        Long appraisalPrincipalId = performanceAppraisalObjectsDTO.getAppraisalPrincipalId();
+        if (StringUtils.isNull(appraisalPrincipalId)) {
+            List<EmployeeDTO> employeeDTOS = getEmployeeData();
+            for (EmployeeDTO employeeDTO : employeeDTOS) {
+                if (Objects.equals(appraisalPrincipalId, employeeDTO.getEmployeeId())) {
+                    performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
+                    break;
+                }
+            }
+        }
+        PerformanceAppraisalObjectsDTO performanceAppraisalObjects = new PerformanceAppraisalObjectsDTO();
+        performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
+        performanceAppraisalObjects.setAppraisalPrincipalId(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
+        performanceAppraisalObjects.setAppraisalPrincipalName(performanceAppraisalObjectsDTO.getAppraisalPrincipalName());
+        if (performanceAppraisalObjectsDTOByObjectId.getIsSubmit() == 0) {
+            performanceAppraisalObjects.setAppraisalObjectStatus(2);
+        } else if (performanceAppraisalObjectsDTOByObjectId.getIsSubmit() == 1) {
+            performanceAppraisalObjects.setAppraisalObjectStatus(3);
+        }
+        performanceAppraisalObjectsService.updatePerformanceAppraisalObjects(performanceAppraisalObjects);
+        // 更新评议指标信息
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsAfter = performanceAppraisalObjectsDTO.getPerformanceAppraisalItemsDTOS();
+        if (StringUtils.isEmpty(performanceAppraisalItemsAfter)) {
+            return performanceAppraisalObjectsDTO;
+        }
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsBefore = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performAppraisalObjectsId);
+        operateItemValue(performanceAppraisalItemsBefore, performanceAppraisalItemsAfter);
+        return performanceAppraisalObjectsDTO;
+    }
+
+    /**
+     * 处理评议指标信息
+     *
+     * @param performanceAppraisalItemsBefore 库值
+     * @param performanceAppraisalItemsAfter  后来的
+     */
+    private void operateItemValue(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsBefore, List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsAfter) {
+        // 交集
+        List<PerformanceAppraisalItemsDTO> updatePerformanceAppraisalItem =
+                performanceAppraisalItemsAfter.stream().filter(performanceAppraisalItemsDTO ->
+                        performanceAppraisalItemsBefore.stream().map(PerformanceAppraisalItemsDTO::getIndicatorId)
+                                .collect(Collectors.toList()).contains(performanceAppraisalItemsDTO.getIndicatorId())
+                ).collect(Collectors.toList());
+        // 差集 Before中After的补集
+        List<PerformanceAppraisalItemsDTO> delPerformanceAppraisalItem =
+                performanceAppraisalItemsBefore.stream().filter(performanceAppraisalItemsDTO ->
+                        !performanceAppraisalItemsAfter.stream().map(PerformanceAppraisalItemsDTO::getIndicatorId)
+                                .collect(Collectors.toList()).contains(performanceAppraisalItemsDTO.getIndicatorId())
+                ).collect(Collectors.toList());
+        // 差集 After中Before的补集
+        List<PerformanceAppraisalItemsDTO> addPerformanceAppraisalItem =
+                performanceAppraisalItemsAfter.stream().filter(performanceAppraisalItemsDTO ->
+                        !performanceAppraisalItemsBefore.stream().map(PerformanceAppraisalItemsDTO::getIndicatorId)
+                                .collect(Collectors.toList()).contains(performanceAppraisalItemsDTO.getIndicatorId())
+                ).collect(Collectors.toList());
+        try {
+            if (StringUtils.isNotEmpty(delPerformanceAppraisalItem)) {
+                List<Long> performanceAppraisalItems = new ArrayList<>();
+                for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : delPerformanceAppraisalItem) {
+                    performanceAppraisalItems.add(performanceAppraisalItemsDTO.getPerformAppraisalItemsId());
+                }
+                performanceAppraisalItemsService.logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds(performanceAppraisalItems);
+            }
+            if (StringUtils.isNotEmpty(addPerformanceAppraisalItem)) {
+                performanceAppraisalItemsService.insertPerformanceAppraisalItemss(addPerformanceAppraisalItem);
+            }
+            if (StringUtils.isNotEmpty(updatePerformanceAppraisalItem)) {
+                performanceAppraisalItemsService.updatePerformanceAppraisalItemsS(updatePerformanceAppraisalItem);
+            }
+        } catch (ServiceException e) {
+            throw new ServiceException(e.toString());
+        }
     }
 
     /**
