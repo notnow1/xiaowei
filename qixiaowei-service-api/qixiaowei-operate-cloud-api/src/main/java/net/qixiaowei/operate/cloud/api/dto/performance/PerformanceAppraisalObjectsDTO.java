@@ -10,6 +10,7 @@ import java.util.Date;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -49,6 +50,30 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private Long performAppraisalObjectsId;
     /**
+     * 考核名称
+     */
+    private String appraisalName;
+    /**
+     * 考核年度
+     */
+    private Integer appraisalYear;
+    /**
+     * 考核周期
+     */
+    private Integer cycleNumber;
+    /**
+     * 考核周期名称
+     */
+    private String cycleNumberName;
+    /**
+     * 周期类型:1月度;2季度;3半年度;4年度
+     */
+    private Integer cycleType;
+    /**
+     * 周期类型:1月度;2季度;3半年度;4年度
+     */
+    private String CycleTypeName;
+    /**
      * 名次
      */
     private Integer rank;
@@ -72,31 +97,31 @@ public class PerformanceAppraisalObjectsDTO {
     /**
      * 部门ID
      */
-    private  Long departmentId;
+    private Long departmentId;
     /**
      * 部门名称
      */
-    private  String departmentName;
+    private String departmentName;
     /**
      * 岗位ID
      */
-    private  Long postId;
+    private Long postId;
     /**
      * 岗位名称
      */
-    private  String postName;
+    private String postName;
     /**
      * 职级体系ID
      */
-    private  Long officialRankSystemId;
+    private Long officialRankSystemId;
     /**
      * 职级
      */
-    private  Integer officialRank;
+    private Integer officialRank;
     /**
      * 职级名称
      */
-    private  String officialRankName;
+    private String officialRankName;
 
     /**
      * 考核负责人ID
@@ -130,6 +155,14 @@ public class PerformanceAppraisalObjectsDTO {
      * 考核对象状态:1待制定目标;2已制定目标-草稿;3待评议;4已评议-草稿;5待排名
      */
     private Integer appraisalObjectStatus;
+    /**
+     * 考核对象状态列表
+     */
+    private List<Integer> appraisalObjectStatusList;
+    /**
+     * 考核对象状态:1待制定目标;2已制定目标-草稿;3待评议;4已评议-草稿;5待排名
+     */
+    private String appraisalObjectStatusName;
     /**
      * 排序
      */

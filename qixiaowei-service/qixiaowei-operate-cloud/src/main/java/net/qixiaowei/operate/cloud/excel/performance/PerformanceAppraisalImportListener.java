@@ -5,8 +5,10 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 
@@ -55,12 +57,12 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         List<String> head0 = new ArrayList<String>();
         head0.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
         head0.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head0.add("考核对象");
+        head0.add("组织编码");
         // 第1列
         List<String> head1 = new ArrayList<String>();
         head1.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
         head1.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
-        head1.add("组织编码");
+        head1.add("考核对象");
         // 第2列
         List<String> head2 = new ArrayList<String>();
         head2.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
@@ -108,13 +110,13 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         head0.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
         head0.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
         head0.add("   3、用户可在后面追加、编辑自定义列。");
-        head0.add("考核对象");
+        head0.add("组织编码");
         // 第2列
         List<String> head1 = new ArrayList<String>();
         head1.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
         head1.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
         head1.add("   3、用户可在后面追加、编辑自定义列。");
-        head1.add("组织编码");
+        head1.add("考核对象");
         // 第2列
         List<String> head2 = new ArrayList<String>();
         head2.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
@@ -172,13 +174,13 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
         head0.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
         head0.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
         head0.add("   3、用户可在后面追加、编辑自定义列。");
-        head0.add("考核对象");
+        head0.add("组织编码");
         // 第2列
         List<String> head1 = new ArrayList<String>();
         head1.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
         head1.add("   2、【考核结果】为下拉选择项，枚举值根据绩效考核任务中所选的绩效等级带出，同时增加“不考核”选项。");
         head1.add("   3、用户可在后面追加、编辑自定义列。");
-        head1.add("组织编码");
+        head1.add("考核对象");
         // 第2列
         List<String> head2 = new ArrayList<String>();
         head2.add("注：1、【考核对象】根据绩效考核任务中的范围带出。");
@@ -454,17 +456,23 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
 
     /**
      * @param performanceAppraisalObjectsDTOList 考核对象列表
+     * @param appraisalDTO
      * @return Collection
      */
-    public static Collection<List<Object>> dataTemplateList(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList) {
+    public static Collection<List<Object>> dataTemplateList(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList, PerformanceAppraisalDTO appraisalDTO) {
+        if (StringUtils.isNull(appraisalDTO)) {
+            throw new ServiceException("当前要导出的绩效任务不存在");
+        }
         List<List<Object>> list = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
             List<Object> data = new ArrayList<Object>();
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());
-            data.add(performanceAppraisalObjectsDTO.getPostName());
-            data.add(performanceAppraisalObjectsDTO.getDepartmentName());
-            data.add(performanceAppraisalObjectsDTO.getOfficialRankName());
+            if (appraisalDTO.getAppraisalObject() == 2) {
+                data.add(performanceAppraisalObjectsDTO.getPostName());
+                data.add(performanceAppraisalObjectsDTO.getDepartmentName());
+                data.add(performanceAppraisalObjectsDTO.getOfficialRankName());
+            }
             list.add(data);
         }
         return list;

@@ -264,4 +264,20 @@ public interface IPerformanceAppraisalService {
      * @return
      */
     List<PerformancePercentageDTO> selectPerformancePercentageByPerformanceAppraisalId(Long performanceAppraisalId);
+
+    /**
+     * 查询绩效考核表列表-组织-制定
+     *
+     * @param performanceAppraisalObjectsDTO 绩效考核DTO
+     * @return
+     */
+    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+
+    /**
+     * 查询绩效考核表列表-组织-制定-详情
+     *
+     * @param performAppraisalObjectsId 绩效考核对象ID
+     * @return
+     */
+    PerformanceAppraisalObjectsDTO selectOrgAppraisalDevelopById(Long performAppraisalObjectsId);
 }

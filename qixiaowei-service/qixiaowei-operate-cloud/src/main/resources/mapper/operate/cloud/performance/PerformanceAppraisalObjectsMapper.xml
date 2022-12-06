@@ -120,15 +120,15 @@
     </select>
     <select id="selectPerformanceAppraisalObjectsByIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
-        pao.perform_appraisal_objects_id,
+        SELECT pao.perform_appraisal_objects_id,
         pao.performance_appraisal_id,
         pao.appraisal_object_id,
         pao.appraisal_principal_id,
-        ifnull(evaluation_score,0.00) as pao.evaluation_score,
+        ifnull(evaluation_score,0.00 ) AS evaluation_score,
         pao.appraisal_result_id,
         pao.sort,
         pao.appraisal_object_status,
-        pao.appraisal_principal_name
+        pao.appraisal_principal_name,
         pao.delete_flag,
         pao.create_by,
         pao.create_time,
@@ -157,11 +157,12 @@
     </select>
     <select id="selectPerformanceAppraisalObjectsByPerformAppraisalIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
+        SELECT
         pao.perform_appraisal_objects_id,
         pao.performance_appraisal_id,
         pao.appraisal_object_id,
         pao.appraisal_principal_id,
-        ifnull(evaluation_score,0.00) as pao.evaluation_score,
+        ifnull(evaluation_score,0.00) as evaluation_score,
         pao.appraisal_result_id,
         pao.sort,
         pao.appraisal_object_status,
@@ -215,6 +216,39 @@
           and pao.appraisal_object_id =#{employeeId}
         ORDER BY pao.update_time DESC
             LIMIT 3
+    </select>
+    <select id="selectOrgAppraisalDevelopList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
+        SELECT
+        pao.perform_appraisal_objects_id,
+        pao.performance_appraisal_id,
+        pao.appraisal_object_id,
+        pao.appraisal_principal_id,
+        ifnull(evaluation_score,0.00) as evaluation_score,
+        pao.appraisal_result_id,
+        pao.sort,
+        pao.appraisal_object_status,
+        pao.appraisal_principal_name
+        pao.delete_flag,
+        pao.create_by,
+        pao.create_time,
+        pao.update_by,
+        pao.update_time,
+        pas.appraisal_object_name,
+        pas.appraisal_object_code,
+        pas.department_id,
+        pas.department_name,
+        pas.post_id,
+        pas.post_name,
+        pas.official_rank_system_id,
+        pas.official_rank,
+        pas.official_rank_name
+        FROM performance_appraisal_objects pao
+        LEFT JOIN perform_appraisal_object_snap pas
+        ON pao.perform_appraisal_objects_id = pas.perform_appraisal_objects_id
+        AND pas.delete_flag=0
+        WHERE pao.delete_flag=0
+        ORDER BY pao.evaluation_score,pao.sort
     </select>
     <!--新增绩效考核对象表-->
     <insert id="insertPerformanceAppraisalObjects" useGeneratedKeys="true" keyProperty="performAppraisalObjectsId">

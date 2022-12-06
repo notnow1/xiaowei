@@ -1,13 +1,13 @@
 package net.qixiaowei.operate.cloud.mapper.performance;
 
-import java.util.List;
-
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -122,4 +122,20 @@ public interface PerformanceAppraisalMapper {
      * @return
      */
     List<PerformanceAppraisalDTO> selectPerformanceAppraisalListByName(@Param("appraisalName") String appraisalName);
+
+    /**
+     * 查询绩效考核表列表-组织-制定
+     *
+     * @param performanceAppraisalObjectsDTO 绩效考核DTO
+     * @return
+     */
+    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalObjectList(@Param("performanceAppraisalObjectsDTO") PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+
+    /**
+     * 查询绩效考核表列表-组织-制定-详情
+     *
+     * @param performAppraisalObjectsId 绩效考核ID
+     * @return 绩效考核对象
+     */
+    PerformanceAppraisalObjectsDTO selectOrgAppraisalObjectByObjectId(Long performAppraisalObjectsId);
 }

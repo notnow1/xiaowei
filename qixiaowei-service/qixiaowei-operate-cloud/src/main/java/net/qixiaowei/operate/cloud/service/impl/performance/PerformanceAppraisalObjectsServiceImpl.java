@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.impl.performance;
 import java.util.*;
 
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -173,13 +174,13 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
             performanceAppraisalObjectsList.add(performanceAppraisalObjects);
         }
         int i = performanceAppraisalObjectsMapper.batchPerformanceAppraisalObjects(performanceAppraisalObjectsList);
-        Map<Long,Long> hashMap=new HashMap<>();
+        Map<Long, Long> hashMap = new HashMap<>();
         for (PerformanceAppraisalObjects performanceAppraisalObjects : performanceAppraisalObjectsList) {
-            hashMap.put(performanceAppraisalObjects.getAppraisalObjectId(),performanceAppraisalObjects.getPerformAppraisalObjectsId());
+            hashMap.put(performanceAppraisalObjects.getAppraisalObjectId(), performanceAppraisalObjects.getPerformAppraisalObjectsId());
         }
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDto : performanceAppraisalObjectsDtos) {
             Long objectId = performanceAppraisalObjectsDto.getAppraisalObjectId();
-            if(hashMap.containsKey(objectId)){
+            if (hashMap.containsKey(objectId)) {
                 performanceAppraisalObjectsDto.setPerformAppraisalObjectsId(hashMap.get(objectId));
             }
         }
@@ -277,6 +278,17 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByPerformAppraisalIds(List<Long> performanceAppraisalIds) {
         return performanceAppraisalObjectsMapper.selectPerformanceAppraisalObjectsByPerformAppraisalIds(performanceAppraisalIds);
+    }
+
+    /**
+     * 分页查询组织绩效制定
+     *
+     * @param performanceAppraisalDTO 绩效考核DTO
+     * @return
+     */
+    @Override
+    public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalDTO performanceAppraisalDTO) {
+        return performanceAppraisalObjectsMapper.selectOrgAppraisalDevelopList(performanceAppraisalDTO);
     }
 }
 
