@@ -5,6 +5,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -122,6 +123,10 @@ public class EmpAnnualBonusSnapshotDTO {
      * 绩效等级ID
      */
     private  Long performanceRankId;
+    /**
+     *绩效名称集合
+     */
+    private List<String> performanceRanks;
     /**
      * 绩效名称
      */

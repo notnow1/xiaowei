@@ -430,34 +430,43 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             List<Long> collect = empAnnualBonusSnapshotDTOList.stream().map(EmpAnnualBonusSnapshotDTO::getEmployeeId).distinct().collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect)) {
                 List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList1 = salaryPayMapper.selectSalaryPayCondition(collect, employeeAnnualBonusDTO.getAnnualBonusYear());
-                if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOList1)) {
-                    for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
+                for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
+                    BigDecimal employeeBasicWage = new BigDecimal("0");
+                    BigDecimal emolumentBeforeOne = new BigDecimal("0");
+                    BigDecimal bonusBeforeOne = new BigDecimal("0");
+                    BigDecimal bonusBeforeTwo = new BigDecimal("0");
+                    if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOList1)) {
                         for (EmpAnnualBonusSnapshotDTO annualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList1) {
                             if (empAnnualBonusSnapshotDTO.getEmployeeId() == annualBonusSnapshotDTO.getEmployeeId()) {
-                                BigDecimal employeeBasicWage = new BigDecimal("0");
-                                BigDecimal emolumentBeforeOne = new BigDecimal("0");
-                                BigDecimal bonusBeforeOne = new BigDecimal("0");
-                                BigDecimal bonusBeforeTwo = new BigDecimal("0");
-                                //基本工资
-                                 employeeBasicWage = annualBonusSnapshotDTO.getEmployeeBasicWage();
-                                //前一年总薪酬
-                                 emolumentBeforeOne = annualBonusSnapshotDTO.getEmolumentBeforeOne();
-                                //前一年奖金
-                                 bonusBeforeOne = annualBonusSnapshotDTO.getBonusBeforeOne();
-                                //前二年奖金
-                                 bonusBeforeTwo = annualBonusSnapshotDTO.getBonusBeforeTwo();
-                                //基本工资
-                                annualBonusSnapshotDTO.setEmployeeBasicWage(employeeBasicWage);
-                                //前一年总薪酬
-                                annualBonusSnapshotDTO.setEmolumentBeforeOne(emolumentBeforeOne);
-                                //前一年奖金
-                                annualBonusSnapshotDTO.setBonusBeforeOne(bonusBeforeOne);
-                                //前二年奖金
-                                annualBonusSnapshotDTO.setBonusBeforeTwo(bonusBeforeTwo);
+
+                                if (null != annualBonusSnapshotDTO.getEmployeeBasicWage()) {
+                                    //基本工资
+                                    employeeBasicWage = annualBonusSnapshotDTO.getEmployeeBasicWage();
+                                }
+                                if (null != annualBonusSnapshotDTO.getEmolumentBeforeOne()) {
+                                    //前一年总薪酬
+                                    emolumentBeforeOne = annualBonusSnapshotDTO.getEmolumentBeforeOne();
+                                }
+                                if (null != annualBonusSnapshotDTO.getBonusBeforeOne()) {
+                                    //前一年奖金
+                                    bonusBeforeOne = annualBonusSnapshotDTO.getBonusBeforeOne();
+                                }
+                                if (null != annualBonusSnapshotDTO.getBonusBeforeTwo()) {
+                                    //前二年奖金
+                                    bonusBeforeTwo = annualBonusSnapshotDTO.getBonusBeforeTwo();
+                                }
+
                             }
                         }
                     }
-
+                    //基本工资
+                    empAnnualBonusSnapshotDTO.setEmployeeBasicWage(employeeBasicWage);
+                    //前一年总薪酬
+                    empAnnualBonusSnapshotDTO.setEmolumentBeforeOne(emolumentBeforeOne);
+                    //前一年奖金
+                    empAnnualBonusSnapshotDTO.setBonusBeforeOne(bonusBeforeOne);
+                    //前二年奖金
+                    empAnnualBonusSnapshotDTO.setBonusBeforeTwo(bonusBeforeTwo);
                 }
             }
             //封装绩效
@@ -532,12 +541,20 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByEmployeeId(empAnnualBonusSnapshotDTO.getEmployeeId());
             if (StringUtils.isNotEmpty(performanceRankFactorDTOS)) {
                 PerformanceRankFactorDTO performanceRankFactorDTO = performanceRankFactorDTOS.get(1);
+                Long performanceRankId = performanceRankFactorDTO.getPerformanceRankId();
                 //绩效名称
                 empAnnualBonusSnapshotDTO.setPerformanceRank(performanceRankFactorDTO.getPerformanceRankName());
                 //绩效等级ID
-                empAnnualBonusSnapshotDTO.setPerformanceRankId(performanceRankFactorDTO.getPerformanceRankId());
+                empAnnualBonusSnapshotDTO.setPerformanceRankId(performanceRankId);
+                if (null != performanceRankId){
+                    List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
+                    if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)){
+                        empAnnualBonusSnapshotDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
+                    }
+                }
                 //绩效等级系数ID
                 empAnnualBonusSnapshotDTO.setPerformanceRankFactorId(performanceRankFactorDTO.getPerformanceRankFactorId());
+
                 //绩效奖金系数
                 empAnnualBonusSnapshotDTO.setPerformanceBonusFactor(performanceRankFactorDTO.getBonusFactor());
                 //最近绩效结果

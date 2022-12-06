@@ -138,5 +138,12 @@ public interface PerformanceAppraisalObjectsMapper {
      */
     List<PerformanceRankFactorDTO> selectPerformanceRankFactorByEmployeeId(@Param("employeeId") Long employeeId);
 
+    /**
+     * 绩效等级id查询绩效等级
+     * @param performanceRankId  绩效等级id
+     * @return
+     */
+    List<PerformanceRankFactorDTO> selectPerformanceRankFactorByPerformanceRankId(@Param("performanceRankId") Long performanceRankId);
+
 
 }

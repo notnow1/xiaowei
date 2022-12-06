@@ -216,6 +216,23 @@
         ORDER BY pao.update_time DESC
             LIMIT 3
     </select>
+<!--    绩效等级id查询绩效等级-->
+    <select id="selectPerformanceRankFactorByPerformanceRankId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO">
+        SELECT performance_rank_factor_id,
+               performance_rank_id,
+               performance_rank_name,
+               bonus_factor,
+               sort,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM performance_rank_factor
+        where delete_flag=0
+        and performance_rank_id=#{performanceRankId}
+    </select>
     <!--新增绩效考核对象表-->
     <insert id="insertPerformanceAppraisalObjects" useGeneratedKeys="true" keyProperty="performAppraisalObjectsId">
         INSERT INTO performance_appraisal_objects
