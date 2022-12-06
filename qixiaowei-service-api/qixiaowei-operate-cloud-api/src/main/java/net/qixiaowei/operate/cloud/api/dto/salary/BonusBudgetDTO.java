@@ -40,7 +40,7 @@ public class BonusBudgetDTO {
     /**
     * ID
     */
-    @NotNull(message = "调整人数人数不能为空", groups = {BonusBudgetDTO.DeleteBonusBudgetDTO.class, BonusBudgetDTO.UpdateBonusBudgetDTO.class})
+    @NotNull(message = "奖金预算id不能为空", groups = {BonusBudgetDTO.DeleteBonusBudgetDTO.class, BonusBudgetDTO.UpdateBonusBudgetDTO.class})
     private  Long bonusBudgetId;
     /**
     * 预算年度

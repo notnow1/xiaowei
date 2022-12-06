@@ -2,21 +2,20 @@ package net.qixiaowei.operate.cloud.api.domain.salary;
 
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import lombok.Data;
-import lombok.experimental.Accessors;
-
 import java.math.BigDecimal;
+import lombok.experimental.Accessors;
 import java.util.Date;
 
 /**
 * 个人年终奖发放快照信息表
 * @author TANGMICHI
-* @since 2022-12-02
+* @since 2022-12-06
 */
 @Data
 @Accessors(chain = true)
-public class EmpAnnualBonusSnapshot extends BaseEntity {
+public class EmpAnnualBonusSnapshot extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,7 +62,7 @@ public class EmpAnnualBonusSnapshot extends BaseEntity {
      /**
      * 前一年总薪酬
      */
-     private BigDecimal emolumentBeforeOne;
+     private  BigDecimal  emolumentBeforeOne;
      /**
      * 前一年奖金
      */
@@ -92,7 +91,6 @@ public class EmpAnnualBonusSnapshot extends BaseEntity {
      * 参考值二
      */
      private  BigDecimal  referenceValueTwo;
-
 
 }
 

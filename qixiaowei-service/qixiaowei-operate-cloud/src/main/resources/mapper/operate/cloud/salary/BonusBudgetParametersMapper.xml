@@ -113,6 +113,47 @@
         </foreach>
         and delete_flag=0
     </select>
+<!--    根据年份查询总奖金包-->
+    <select id="selectBonusBudgetParametersByAnnualBonusYear"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+        SELECT bb.bonus_budget_id,
+               ts.target_value,
+               tod.actual_total,
+               bbp.bonus_budget_parameters_id,
+               bbp.bonus_budget_id,
+               bbp.indicator_id,
+               bbp.bonus_weight,
+               bbp.bonus_proportion_standard,
+               bbp.bonus_proportion_variation,
+               bbp.challenge_value,
+               bbp.target_value,
+               bbp.guaranteed_value,
+               bbp.target_completion_rate,
+               bbp.performance_after_one,
+               bbp.performance_after_two,
+               bbp.bonus_allowance_after_one,
+               bbp.bonus_allowance_after_two,
+               bbp.delete_flag,
+               bbp.create_by,
+               bbp.create_time,
+               bbp.update_by,
+               bbp.update_time
+        from bonus_budget_parameters bbp
+                 left join bonus_budget bb
+                           on bb.bonus_budget_id = bbp.bonus_budget_id
+                               and bb.delete_flag = 0
+                 left join target_setting ts
+                           on ts.target_year = bb.budget_year
+                               and ts.delete_flag = 0
+                 left join target_outcome to2
+                           on to2.target_year = bb.budget_year
+                               and ts.delete_flag = 0
+                 left join target_outcome_details tod
+                           on tod.target_outcome_id = to2.target_outcome_id
+                               and tod.delete_flag = 0
+        WHERE bbp.delete_flag = 0
+          and bb.budget_year = #{annualBonusYear}
+    </select>
     <!--新增奖金预算参数表-->
     <insert id="insertBonusBudgetParameters" useGeneratedKeys="true" keyProperty="bonusBudgetParametersId">
         INSERT INTO bonus_budget_parameters (bonus_budget_id,indicator_id,bonus_weight,bonus_proportion_standard,bonus_proportion_variation,challenge_value,target_value,guaranteed_value,target_completion_rate,performance_after_one,performance_after_two,bonus_allowance_after_one,bonus_allowance_after_two,delete_flag,create_by,create_time,update_by,update_time)

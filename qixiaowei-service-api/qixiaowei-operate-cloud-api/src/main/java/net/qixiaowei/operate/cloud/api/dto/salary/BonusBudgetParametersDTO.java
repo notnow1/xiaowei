@@ -85,6 +85,10 @@ public class BonusBudgetParametersDTO {
      */
     private  BigDecimal targetValue;
     /**
+     * (部门年终奖用)实际值
+     */
+    private  BigDecimal actualValue;
+    /**
      * 保底值
      */
     private  BigDecimal guaranteedValue;

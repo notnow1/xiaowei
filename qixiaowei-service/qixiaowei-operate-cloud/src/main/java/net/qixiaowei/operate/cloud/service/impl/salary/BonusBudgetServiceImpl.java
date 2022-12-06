@@ -875,6 +875,132 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
     }
 
+
+    /**
+     * 封装总部门奖金预算 必须计算的数据方法
+     *
+     * @param bonusBudgetDTO
+     * @param bonusBudgetParametersDTOS
+     */
+    public static void packBounLadderNum(BonusBudgetDTO bonusBudgetDTO, List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
+        //总奖金包预算总奖金包预算1
+        BigDecimal amountBonusBudgetReferenceValueOne = new BigDecimal("0");
+        //总奖金包预算总奖金包预算2
+        BigDecimal amountBonusBudgetReferenceValueTwo = new BigDecimal("0");
+        //挑战值
+        BigDecimal bonusChallengeValue = new BigDecimal("0");
+        //保底值
+        BigDecimal bonusGuaranteedValue = new BigDecimal("0");
+        //目标值
+        BigDecimal bonusTargetValue = new BigDecimal("0");
+        //飞跃值
+        BigDecimal bonusLeapValue = new BigDecimal("0");
+        //梦想值
+        BigDecimal bonusDreamValue = new BigDecimal("0");
+        //最低值
+        BigDecimal bonusMinValue = new BigDecimal("0");
+        //奖金驱动因素/比值（%） 第四行 公式=总奖金包预算参考值1÷目标值
+        BigDecimal bonusProportionRatio = new BigDecimal("0");
+        //奖金驱动因素/比值（%）的行间差额 公式=各项（奖金驱动因素的奖金占比浮动差值×权重）的和
+        BigDecimal bonusProportionDifference = new BigDecimal("0");
+        if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
+            for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+                //目标值
+                BigDecimal targetValue = bonusBudgetParametersDTO.getTargetValue();
+                //挑战值
+                BigDecimal challengeValue = bonusBudgetParametersDTO.getChallengeValue();
+                //保底值
+                BigDecimal guaranteedValue = bonusBudgetParametersDTO.getGuaranteedValue();
+                //奖金占比基准值
+                BigDecimal bonusProportionStandard = bonusBudgetParametersDTO.getBonusProportionStandard();
+                //奖金占比浮动差值
+                BigDecimal bonusProportionVariation = bonusBudgetParametersDTO.getBonusProportionVariation();
+                //奖金权重(%)
+                BigDecimal bonusWeight = bonusBudgetParametersDTO.getBonusWeight();
+                //预算准确率
+                BigDecimal targetCompletionRate = bonusBudgetParametersDTO.getTargetCompletionRate();
+                //总奖金包预算总奖金包预算1
+                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
+                        null != bonusProportionStandard && bonusProportionStandard.compareTo(new BigDecimal("0")) != 0 &&
+                        null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
+                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING));
+                    //总奖金包预算总奖金包预算1 公式=各项（奖金驱动因素的目标值×奖金占比基准值×权重）的和
+                    amountBonusBudgetReferenceValueOne = amountBonusBudgetReferenceValueOne.add(multiply);
+                }
+                //总奖金包预算总奖金包预算2
+                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
+                        null != bonusProportionStandard && bonusProportionStandard.compareTo(new BigDecimal("0")) != 0 &&
+                        null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0 &&
+                        null != targetCompletionRate && targetCompletionRate.compareTo(new BigDecimal("0")) != 0) {
+                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(bonusWeight.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)).multiply(targetCompletionRate.divide(new BigDecimal("100")));
+                    //总奖金包预算总奖金包预算1 公式=各项（奖金驱动因素的目标值×奖金占比基准值×权重×预算准确率）的和
+                    amountBonusBudgetReferenceValueTwo = amountBonusBudgetReferenceValueTwo.add(multiply);
+                }
+                //目标值 公式 =各项（奖金驱动因素的目标值×权重）之和
+                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
+                        null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
+                    BigDecimal multiply = targetValue.multiply(bonusWeight).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
+                    //目标值 公式 =各项（奖金驱动因素的目标值×权重）之和
+                    bonusTargetValue = bonusTargetValue.add(multiply);
+                }
+                //挑战值 公式 =各项（奖金驱动因素的挑战值×权重）之和
+                if (null != challengeValue && challengeValue.compareTo(new BigDecimal("0")) != 0 &&
+                        null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
+                    BigDecimal multiply = challengeValue.multiply(bonusWeight).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
+                    //挑战值 公式 =各项（奖金驱动因素的挑战值×权重）之和
+                    bonusChallengeValue = bonusChallengeValue.add(multiply);
+                }
+                //保底值 公式 =各项（奖金驱动因素的保底值×权重）之和
+                if (null != guaranteedValue && guaranteedValue.compareTo(new BigDecimal("0")) != 0 &&
+                        null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
+                    BigDecimal multiply = guaranteedValue.multiply(bonusWeight).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
+                    //保底值 公式 =各项（奖金驱动因素的保底值×权重）之和
+                    bonusGuaranteedValue = bonusGuaranteedValue.add(multiply);
+                }
+                //奖金驱动因素/比值（%）的行间差额 公式 =各项（奖金驱动因素的奖金占比浮动差值×权重）的和
+                if (null != bonusProportionVariation && bonusProportionVariation.compareTo(new BigDecimal("0")) != 0 &&
+                        null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
+                    BigDecimal multiply = bonusProportionVariation.multiply(bonusWeight).divide(new BigDecimal("100"), BigDecimal.ROUND_CEILING);
+                    //奖金驱动因素/比值（%）的行间差额 公式 =各项（奖金驱动因素的奖金占比浮动差值×权重）的和
+                    bonusProportionDifference = bonusProportionDifference.add(multiply);
+                }
+            }
+            //最低值 公式=保底值×0.8
+            if (null != bonusGuaranteedValue && bonusGuaranteedValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusMinValue = bonusGuaranteedValue.multiply(new BigDecimal("0.8"));
+            }
+            //飞跃值 公式=挑战值×1.2
+            if (null != bonusChallengeValue && bonusChallengeValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusLeapValue = bonusChallengeValue.multiply(new BigDecimal("1.2"));
+            }
+            //梦想值 公式=挑战值×1.5
+            if (null != bonusChallengeValue && bonusChallengeValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusDreamValue = bonusChallengeValue.multiply(new BigDecimal("1.5"));
+            }
+            if (null != amountBonusBudgetReferenceValueOne && amountBonusBudgetReferenceValueOne.compareTo(new BigDecimal("0")) != 0 &&
+                    null != bonusTargetValue && bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
+                //奖金驱动因素/比值 公式=总奖金包预算参考值1÷目标值
+                bonusProportionRatio = amountBonusBudgetReferenceValueOne.divide(bonusTargetValue,BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
+            }
+            //总奖金包预算总奖金包预算1
+            bonusBudgetDTO.setAmountBonusBudgetReferenceValueOne(amountBonusBudgetReferenceValueOne);
+            //总奖金包预算总奖金包预算2
+            bonusBudgetDTO.setAmountBonusBudgetReferenceValueTwo(amountBonusBudgetReferenceValueTwo);
+            //挑战值
+            bonusBudgetDTO.setBonusChallengeValue(bonusChallengeValue);
+            //目标值
+            bonusBudgetDTO.setBonusTargetValue(bonusTargetValue);
+            //保底值
+            bonusBudgetDTO.setBonusGuaranteedValue(bonusGuaranteedValue);
+            //飞跃值
+            bonusBudgetDTO.setBonusLeapValue(bonusLeapValue);
+            //梦想值
+            bonusBudgetDTO.setBonusDreamValue(bonusDreamValue);
+            //最低值
+            bonusBudgetDTO.setBonusMinValue(bonusMinValue);
+        }
+    }
+
     /**
      * 封装总部门奖金预算阶梯数据集合
      *
