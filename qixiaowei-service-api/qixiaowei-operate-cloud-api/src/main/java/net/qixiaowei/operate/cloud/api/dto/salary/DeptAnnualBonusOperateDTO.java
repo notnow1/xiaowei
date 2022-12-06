@@ -5,69 +5,71 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
-import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
-* 部门年终奖表
+* 部门年终奖经营绩效结果表
 * @author TANGMICHI
 * @since 2022-12-06
 */
 @Data
 @Accessors(chain = true)
-public class DeptAnnualBonusDTO {
+public class DeptAnnualBonusOperateDTO {
 
     //查询检验
-    public interface QueryDeptAnnualBonusDTO extends Default{
+    public interface QueryDeptAnnualBonusOperateDTO extends Default{
 
     }
     //新增检验
-    public interface AddDeptAnnualBonusDTO extends Default{
+    public interface AddDeptAnnualBonusOperateDTO extends Default{
 
     }
 
     //删除检验
-    public interface DeleteDeptAnnualBonusDTO extends Default{
+    public interface DeleteDeptAnnualBonusOperateDTO extends Default{
 
     }
     //修改检验
-    public interface UpdateDeptAnnualBonusDTO extends Default{
+    public interface UpdateDeptAnnualBonusOperateDTO extends Default{
 
     }
     /**
     * ID
     */
+    private  Long deptAnnualBonusOperateId;
+    /**
+    * 部门年终奖ID
+    */
     private  Long deptAnnualBonusId;
     /**
-    * 年终奖年度
+    * 指标ID
     */
-    private  Integer annualBonusYear;
+    private  Long indicatorId;
     /**
-    * 公司年终奖总包
+    * 指标名称
     */
-    private  BigDecimal companyAnnualBonus;
+    private  String indicatorName;
     /**
-    * 部门年终奖总包
-    */
-    private  BigDecimal departmentAnnualBonus;
-
-    /**
-     * 年初总奖金包预算（不考虑目标完成率）
+     * 奖金权重(%)
      */
-    private BigDecimal beYearAmountBonusBudget;
+    private  BigDecimal bonusWeight;
     /**
-     * 年底应发总奖金包（根据实际业绩测算)
-     */
-    private BigDecimal beYearAmountBonusBudget2;
-    /**
-     * 部门年终奖经营绩效结果表集合
-     */
-    private List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOs;
-    /**
-    * 状态
+    * 目标值
     */
-    private  Integer status;
+    private  BigDecimal targetValue;
+    /**
+    * 实际值
+    */
+    private  BigDecimal actualValue;
+    /**
+     * 目标超额完成率（%）
+     */
+    private  BigDecimal targetExcessPerComp;
+    /**
+     *奖金系数（实际）
+     */
+    private  BigDecimal actualPerformanceBonusFactor;
     /**
     * 删除标记:0未删除;1已删除
     */
