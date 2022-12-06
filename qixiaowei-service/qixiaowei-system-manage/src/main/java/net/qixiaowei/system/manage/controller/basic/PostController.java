@@ -1,6 +1,9 @@
 package net.qixiaowei.system.manage.controller.basic;
 
 import java.util.List;
+
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,125 +17,93 @@ import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 
 
-
-
 /**
-*
-* @author TANGMICHI
-* @since 2022-09-30
-*/
+ * @author TANGMICHI
+ * @since 2022-09-30
+ */
 @RestController
 @RequestMapping("post")
-public class PostController extends BaseController
-{
+public class PostController extends BaseController {
 
 
     @Autowired
     private IPostService postService;
 
+
     /**
-    * 分页查询岗位表列表
-    */
-    //@RequiresPermissions("system:manage:post:pageList")
+     * 分页查询岗位表列表
+     */
+    @RequiresPermissions("system:manage:post:pageList")
     @GetMapping("/pageList")
-    public TableDataInfo pageList(PostDTO postDTO){
-    startPage();
-    List<PostDTO> list = postService.selectPostList(postDTO);
-    return getDataTable(list);
+    public TableDataInfo pageList(PostDTO postDTO) {
+        startPage();
+        List<PostDTO> list = postService.selectPostList(postDTO);
+        return getDataTable(list);
     }
 
     /**
-    * 查询岗位表列表
-    */
-    //@RequiresPermissions("system:manage:post:list")
+     * 新增岗位表
+     */
+    @RequiresPermissions("system:manage:post:add")
+    @PostMapping("/add")
+    public AjaxResult addSave(@RequestBody @Validated(PostDTO.AddPostDTO.class) PostDTO postDTO) {
+        return AjaxResult.success(postService.insertPost(postDTO));
+    }
+
+    /**
+     * 修改岗位表
+     */
+    @RequiresPermissions("system:manage:post:edit")
+    @PostMapping("/edit")
+    public AjaxResult editSave(@RequestBody @Validated(PostDTO.UpdatePostDTO.class) PostDTO postDTO) {
+        return toAjax(postService.updatePost(postDTO));
+    }
+
+    /**
+     * 查询岗位详情
+     */
+    @RequiresPermissions(value = {"system:manage:post:info", "system:manage:post:edit"}, logical = Logical.OR)
+    @GetMapping("/info/{postId}")
+    public AjaxResult list(@PathVariable Long postId) {
+        PostDTO postDTO = postService.selectPostByPostId(postId);
+        return AjaxResult.success(postDTO);
+    }
+
+    /**
+     * 逻辑删除岗位表
+     */
+    @RequiresPermissions("system:manage:post:remove")
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody @Validated(PostDTO.DeletePostDTO.class) PostDTO postDTO) {
+        return toAjax(postService.logicDeletePostByPostId(postDTO));
+    }
+
+    /**
+     * 逻辑批量删除岗位表
+     */
+    @RequiresPermissions("system:manage:post:remove")
+    @PostMapping("/removes")
+    public AjaxResult removes(@RequestBody List<Long> postIds) {
+        return toAjax(postService.logicDeletePostByPostIds(postIds));
+    }
+
+    /**
+     * 查询岗位表列表
+     */
     @GetMapping("/list")
-    public AjaxResult list(PostDTO postDTO){
-    List<PostDTO> list = postService.selectPostList(postDTO);
-    return AjaxResult.success(list);
+    public AjaxResult list(PostDTO postDTO) {
+        List<PostDTO> list = postService.selectPostList(postDTO);
+        return AjaxResult.success(list);
     }
 
     /**
      * 根据部门查询岗位表列表
      */
-    //@RequiresPermissions("system:manage:post:list")
     @GetMapping("/postList/{departmentId}")
-    public AjaxResult selectBydepartmentId(@PathVariable Long departmentId){
+    public AjaxResult selectBydepartmentId(@PathVariable Long departmentId) {
         List<PostDTO> list = postService.selectBydepartmentId(departmentId);
         return AjaxResult.success(list);
     }
 
 
-    /**
-     * 查询岗位详情
-     */
-    //@RequiresPermissions("system:manage:post:list")
-    @GetMapping("/info/{postId}")
-    public AjaxResult list(@PathVariable Long postId){
-        PostDTO postDTO = postService.selectPostByPostId(postId);
-        return AjaxResult.success(postDTO);
-    }
-    /**
-    * 新增岗位表
-    */
-    //@RequiresPermissions("system:manage:post:add")
-    //@Log(title = "新增岗位表", businessType = BusinessType.INSERT)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody @Validated(PostDTO.AddPostDTO.class) PostDTO postDTO) {
-    return AjaxResult.success(postService.insertPost(postDTO));
-    }
-
-
-    /**
-    * 修改岗位表
-    */
-    //@RequiresPermissions("system:manage:post:edit")
-    //@Log(title = "修改岗位表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody @Validated(PostDTO.UpdatePostDTO.class) PostDTO postDTO)
-    {
-    return toAjax(postService.updatePost(postDTO));
-    }
-
-    /**
-    * 逻辑删除岗位表
-    */
-    //@RequiresPermissions("system:manage:post:remove")
-    //@Log(title = "删除岗位表", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody @Validated(PostDTO.DeletePostDTO.class) PostDTO postDTO)
-    {
-    return toAjax(postService.logicDeletePostByPostId(postDTO));
-    }
-    /**
-    * 批量修改岗位表
-    */
-    //@RequiresPermissions("system:manage:post:edits")
-    //@Log(title = "批量修改岗位表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<PostDTO> postDtos)
-    {
-    return toAjax(postService.updatePosts(postDtos));
-    }
-
-    /**
-    * 批量新增岗位表
-    */
-    //@RequiresPermissions("system:manage:post:insertPosts")
-    //@Log(title = "批量新增岗位表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertPosts")
-    public AjaxResult insertPosts(@RequestBody List<PostDTO> postDtos)
-    {
-    return toAjax(postService.insertPosts(postDtos));
-    }
-
-    /**
-    * 逻辑批量删除岗位表
-    */
-    //@RequiresPermissions("system:manage:post:removes")
-    //@Log(title = "批量删除岗位表", businessType = BusinessType.DELETE)
-    @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody  List<Long>  postIds)
-    {
-    return toAjax(postService.logicDeletePostByPostIds(postIds));
-    }
 }

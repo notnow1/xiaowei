@@ -2,14 +2,14 @@ package net.qixiaowei.system.manage.controller.productPackage;
 
 import java.util.List;
 
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
 import net.qixiaowei.system.manage.service.productPackage.IProductPackageService;
 import net.qixiaowei.integration.common.web.controller.BaseController;
@@ -28,11 +28,28 @@ public class ProductPackageController extends BaseController {
     @Autowired
     private IProductPackageService productPackageService;
 
+    /**
+     * 新增产品包
+     */
+    @RequiresPermissions("system:manage:productPackage:add")
+    @PostMapping("/add")
+    public AjaxResult addSave(@RequestBody ProductPackageDTO productPackageDTO) {
+        return toAjax(productPackageService.insertProductPackage(productPackageDTO));
+    }
+
+    /**
+     * 修改产品包
+     */
+    @RequiresPermissions("system:manage:productPackage:edit")
+    @PostMapping("/edit")
+    public AjaxResult editSave(@RequestBody ProductPackageDTO productPackageDTO) {
+        return toAjax(productPackageService.updateProductPackage(productPackageDTO));
+    }
 
     /**
      * 查询产品包详情
      */
-    //@RequiresPermissions("system:manage:productPackage:info")
+    @RequiresPermissions(value = {"system:manage:productPackage:info", "system:manage:productPackage:edit"}, logical = Logical.OR)
     @GetMapping("/info/{productPackageId}")
     public AjaxResult info(@PathVariable Long productPackageId) {
         ProductPackageDTO productPackageDTO = productPackageService.selectProductPackageByProductPackageId(productPackageId);
@@ -42,7 +59,7 @@ public class ProductPackageController extends BaseController {
     /**
      * 分页查询产品包列表
      */
-    //@RequiresPermissions("system:manage:productPackage:pageList")
+    @RequiresPermissions("system:manage:productPackage:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(ProductPackageDTO productPackageDTO) {
         startPage();
@@ -51,41 +68,9 @@ public class ProductPackageController extends BaseController {
     }
 
     /**
-     * 查询所有产品包列表
-     */
-    //@RequiresPermissions("system:manage:productPackage:list")
-    @GetMapping("/list")
-    public AjaxResult list() {
-        return AjaxResult.success(productPackageService.selectProductPackageAll());
-    }
-
-
-    /**
-     * 新增产品包
-     */
-    //@RequiresPermissions("system:manage:productPackage:add")
-    //@Log(title = "新增产品包", businessType = BusinessType.INSERT)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody ProductPackageDTO productPackageDTO) {
-        return toAjax(productPackageService.insertProductPackage(productPackageDTO));
-    }
-
-
-    /**
-     * 修改产品包
-     */
-    //@RequiresPermissions("system:manage:productPackage:edit")
-    //@Log(title = "修改产品包", businessType = BusinessType.UPDATE)
-    @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody ProductPackageDTO productPackageDTO) {
-        return toAjax(productPackageService.updateProductPackage(productPackageDTO));
-    }
-
-    /**
      * 逻辑删除产品包
      */
-    //@RequiresPermissions("system:manage:productPackage:remove")
-    //@Log(title = "删除产品包", businessType = BusinessType.DELETE)
+    @RequiresPermissions("system:manage:productPackage:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody ProductPackageDTO productPackageDTO) {
         return toAjax(productPackageService.logicDeleteProductPackageByProductPackageId(productPackageDTO));
@@ -94,30 +79,18 @@ public class ProductPackageController extends BaseController {
     /**
      * 批量修改产品包
      */
-    //@RequiresPermissions("system:manage:productPackage:edits")
-    //@Log(title = "批量修改产品包", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("system:manage:productPackage:edits")
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<ProductPackageDTO> productPackageDtos) {
         return toAjax(productPackageService.updateProductPackages(productPackageDtos));
     }
 
     /**
-     * 批量新增产品包
+     * 查询所有产品包列表
      */
-    //@RequiresPermissions("system:manage:productPackage:insertProductPackages")
-    //@Log(title = "批量新增产品包", businessType = BusinessType.INSERT)
-    @PostMapping("/insertProductPackages")
-    public AjaxResult insertProductPackages(@RequestBody List<ProductPackageDTO> productPackageDtos) {
-        return toAjax(productPackageService.insertProductPackages(productPackageDtos));
+    @GetMapping("/list")
+    public AjaxResult list() {
+        return AjaxResult.success(productPackageService.selectProductPackageAll());
     }
 
-    /**
-     * 逻辑批量删除产品包
-     */
-    //@RequiresPermissions("system:manage:productPackage:removes")
-    @Log(title = "批量删除产品包", businessType = BusinessType.DELETE)
-    @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<Long> productPackageIds) {
-        return toAjax(productPackageService.logicDeleteProductPackageByProductPackageIds(productPackageIds));
-    }
 }

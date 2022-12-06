@@ -117,4 +117,11 @@ public interface BonusBudgetParametersMapper{
     * @return 结果
     */
     int batchBonusBudgetParameters(@Param("bonusBudgetParameterss")List<BonusBudgetParameters> BonusBudgetParameterss);
+
+    /**
+     * 根据年份查询总奖金包
+     * @param annualBonusYear
+     * @return
+     */
+    List<BonusBudgetParametersDTO> selectBonusBudgetParametersByAnnualBonusYear(@Param("annualBonusYear") int annualBonusYear);
 }

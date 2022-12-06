@@ -3,8 +3,8 @@ package net.qixiaowei.system.manage.controller.basic;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.service.basic.IOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class OfficialRankSystemController extends BaseController {
     /**
      * 分页查询职级体系表列表
      */
-//    @RequiresPermissions("system:manage:officialRankSystem:pageList")
+    @RequiresPermissions("system:manage:officialRankSystem:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(OfficialRankSystemDTO officialRankSystemDTO) {
         startPage();
@@ -37,20 +37,9 @@ public class OfficialRankSystemController extends BaseController {
     }
 
     /**
-     * 查询职级体系表列表
-     */
-//    @RequiresPermissions("system:manage:officialRankSystem:list")
-    @GetMapping("/list")
-    public AjaxResult list(OfficialRankSystemDTO officialRankSystemDTO) {
-        List<OfficialRankSystemDTO> list = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
-        return AjaxResult.success(list);
-    }
-
-    /**
      * 新增职级体系表
      */
-//    @RequiresPermissions("system:manage:officialRankSystem:add")
-    @Log(title = "新增职级体系表", businessType = BusinessType.INSERT)
+    @RequiresPermissions("system:manage:officialRankSystem:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody OfficialRankSystemDTO officialRankSystemDTO) {
         return AjaxResult.success(officialRankSystemService.insertOfficialRankSystem(officialRankSystemDTO));
@@ -59,8 +48,7 @@ public class OfficialRankSystemController extends BaseController {
     /**
      * 修改职级体系表
      */
-//    @RequiresPermissions("system:manage:officialRankSystem:edit")
-    @Log(title = "修改职级体系表", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("system:manage:officialRankSystem:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody OfficialRankSystemDTO officialRankSystemDTO) {
         return toAjax(officialRankSystemService.updateOfficialRankSystem(officialRankSystemDTO));
@@ -69,8 +57,7 @@ public class OfficialRankSystemController extends BaseController {
     /**
      * 根据officialRankSystemId查询职级体系表详情
      */
-//    @RequiresPermissions("system:manage:officialRankSystem:add")
-    @Log(title = "职级体系表详情")
+    @RequiresPermissions(value = {"system:manage:officialRankSystem:info", "system:manage:officialRankSystem:edit"}, logical = Logical.OR)
     @GetMapping("/info/{officialRankSystemId}")
     public AjaxResult info(@PathVariable Long officialRankSystemId) {
         return AjaxResult.success(officialRankSystemService.detailOfficialRankSystem(officialRankSystemId));
@@ -79,8 +66,7 @@ public class OfficialRankSystemController extends BaseController {
     /**
      * 逻辑删除职级体系表
      */
-//    @RequiresPermissions("system:manage:officialRankSystem:remove")
-    @Log(title = "删除职级体系表", businessType = BusinessType.DELETE)
+    @RequiresPermissions("system:manage:officialRankSystem:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody OfficialRankSystemDTO officialRankSystemDTO) {
         return toAjax(officialRankSystemService.logicDeleteOfficialRankSystemByOfficialRankSystemId(officialRankSystemDTO));
@@ -89,18 +75,17 @@ public class OfficialRankSystemController extends BaseController {
     /**
      * 逻辑批量删除职级体系表
      */
-//    @RequiresPermissions("system:manage:officialRankSystem:removes")
-    @Log(title = "批量删除职级体系表", businessType = BusinessType.DELETE)
+    @RequiresPermissions("system:manage:officialRankSystem:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> OfficialRankSystemIds) {
         return toAjax(officialRankSystemService.logicDeleteOfficialRankSystemByOfficialRankSystemIds(OfficialRankSystemIds));
     }
 
+
     /**
      * 职级分解维度下拉框
      */
-//    @RequiresPermissions("system:manage:officialRankSystem:add")
-    @Log(title = "职级体系表详情")
+    @RequiresPermissions(value = {"system:manage:officialRankSystem:info", "system:manage:officialRankSystem:edit"}, logical = Logical.OR)
     @GetMapping("/decomposeDrop/{rankDecomposeDimension}")
     public AjaxResult decomposeDrop(@PathVariable Integer rankDecomposeDimension) {
         return AjaxResult.success(officialRankSystemService.decomposeDrop(rankDecomposeDimension));
@@ -112,7 +97,6 @@ public class OfficialRankSystemController extends BaseController {
      * @param officialRankSystemId
      * @return
      */
-    @Log(title = "通过Id查找职级上下限")
     @GetMapping("/selectRankById/{officialRankSystemId}")
     public AjaxResult selectRankById(@PathVariable Long officialRankSystemId) {
         return AjaxResult.success(officialRankSystemService.selectOfficialRankByOfficialRankSystemId(officialRankSystemId));
@@ -124,9 +108,17 @@ public class OfficialRankSystemController extends BaseController {
      * @param officialRankSystemId
      * @return
      */
-    @Log(title = "通过Id查找职级上下限")
     @GetMapping("/selectRankMapById/{officialRankSystemId}")
     public AjaxResult selectRankMapById(@PathVariable Long officialRankSystemId) {
         return AjaxResult.success(officialRankSystemService.selectOfficialRankMapBySystemId(officialRankSystemId));
+    }
+
+    /**
+     * 查询职级体系表列表
+     */
+    @GetMapping("/list")
+    public AjaxResult list(OfficialRankSystemDTO officialRankSystemDTO) {
+        List<OfficialRankSystemDTO> list = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
+        return AjaxResult.success(list);
     }
 }

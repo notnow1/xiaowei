@@ -5,69 +5,83 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
-import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
-* 部门年终奖表
+* 部门年终奖系数表
 * @author TANGMICHI
 * @since 2022-12-06
 */
 @Data
 @Accessors(chain = true)
-public class DeptAnnualBonusDTO {
+public class DeptAnnualBonusFactorDTO {
 
     //查询检验
-    public interface QueryDeptAnnualBonusDTO extends Default{
+    public interface QueryDeptAnnualBonusFactorDTO extends Default{
 
     }
     //新增检验
-    public interface AddDeptAnnualBonusDTO extends Default{
+    public interface AddDeptAnnualBonusFactorDTO extends Default{
 
     }
 
     //删除检验
-    public interface DeleteDeptAnnualBonusDTO extends Default{
+    public interface DeleteDeptAnnualBonusFactorDTO extends Default{
 
     }
     //修改检验
-    public interface UpdateDeptAnnualBonusDTO extends Default{
+    public interface UpdateDeptAnnualBonusFactorDTO extends Default{
 
     }
     /**
     * ID
     */
+    private  Long deptAnnualBonusFactorId;
+    /**
+    * 部门年终奖ID
+    */
     private  Long deptAnnualBonusId;
     /**
-    * 年终奖年度
+    * 部门ID
     */
-    private  Integer annualBonusYear;
+    private  Long departmentId;
     /**
-    * 公司年终奖总包
+    * 权重
     */
-    private  BigDecimal companyAnnualBonus;
+    private  BigDecimal weight;
     /**
-    * 部门年终奖总包
+    * 最近绩效结果
     */
-    private  BigDecimal departmentAnnualBonus;
-
+    private  String lastPerformanceResulted;
     /**
-     * 年初总奖金包预算（不考虑目标完成率）
-     */
-    private BigDecimal beYearAmountBonusBudget;
-    /**
-     * 年底应发总奖金包（根据实际业绩测算)
-     */
-    private BigDecimal beYearAmountBonusBudget2;
-    /**
-     * 部门年终奖经营绩效结果表集合
-     */
-    private List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOs;
-    /**
-    * 状态
+    * 绩效等级ID
     */
-    private  Integer status;
+    private  Long performanceRankId;
+    /**
+    * 绩效等级系数ID
+    */
+    private  Long performanceRankFactorId;
+    /**
+    * 绩效
+    */
+    private  String performanceRank;
+    /**
+    * 组织绩效奖金系数
+    */
+    private  BigDecimal performanceBonusFactor;
+    /**
+    * 组织重要性系数
+    */
+    private  BigDecimal importanceFactor;
+    /**
+    * 奖金占比
+    */
+    private  BigDecimal bonusPercentage;
+    /**
+    * 可分配年终奖
+    */
+    private  BigDecimal distributeBonus;
     /**
     * 删除标记:0未删除;1已删除
     */

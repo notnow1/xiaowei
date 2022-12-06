@@ -9,32 +9,36 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 
 /**
-* 个人年终奖发放对象表
+* 部门年终奖系数表
 * @author TANGMICHI
 * @since 2022-12-06
 */
 @Data
 @Accessors(chain = true)
-public class EmpAnnualBonusObjects extends TenantEntity {
+public class DeptAnnualBonusFactor extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
      /**
      * ID
      */
-     private  Long  empAnnualBonusObjectsId;
+     private  Long  deptAnnualBonusFactorId;
      /**
-     * 个人年终奖ID
+     * 部门年终奖ID
      */
-     private  Long  employeeAnnualBonusId;
+     private  Long  deptAnnualBonusId;
      /**
-     * 员工ID
+     * 部门ID
      */
-     private  Long  employeeId;
+     private  Long  departmentId;
      /**
-     * 选中标记:0否;1是
+     * 权重
      */
-     private  Integer  choiceFlag;
+     private  BigDecimal  weight;
+     /**
+     * 最近绩效结果
+     */
+     private  String  lastPerformanceResulted;
      /**
      * 绩效等级ID
      */
@@ -48,21 +52,21 @@ public class EmpAnnualBonusObjects extends TenantEntity {
      */
      private  String  performanceRank;
      /**
-     * 绩效奖金系数
+     * 组织绩效奖金系数
      */
      private  BigDecimal  performanceBonusFactor;
      /**
-     * 考勤系数
+     * 组织重要性系数
      */
-     private  BigDecimal  attendanceFactor;
+     private  BigDecimal  importanceFactor;
      /**
-     * 建议值
+     * 奖金占比
      */
-     private  BigDecimal  recommendValue;
+     private  BigDecimal  bonusPercentage;
      /**
-     * 评议值
+     * 可分配年终奖
      */
-     private  BigDecimal  commentValue;
+     private  BigDecimal  distributeBonus;
 
 }
 
