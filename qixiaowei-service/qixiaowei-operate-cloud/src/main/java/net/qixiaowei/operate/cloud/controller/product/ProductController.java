@@ -2,6 +2,8 @@ package net.qixiaowei.operate.cloud.controller.product;
 
 import java.util.List;
 
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,17 +17,13 @@ import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 
 
-
-
 /**
-*
-* @author TANGMICHI
-* @since 2022-10-08
-*/
+ * @author TANGMICHI
+ * @since 2022-10-08
+ */
 @RestController
 @RequestMapping("product")
-public class ProductController extends BaseController
-{
+public class ProductController extends BaseController {
 
 
     @Autowired
@@ -35,115 +33,86 @@ public class ProductController extends BaseController
     /**
      * 返回产品层级
      */
-    //@RequiresPermissions("system:manage:department:list")
+    @RequiresPermissions(value = {"operate:cloud:product:list", "operate:cloud:product:pageList"}, logical = Logical.OR)
     @GetMapping("/selectLevel")
-    public AjaxResult selectLevel(){
+    public AjaxResult selectLevel() {
         return AjaxResult.success(productService.selectLevel());
     }
 
     /**
-    * 查询产品表详情
-    */
-    //@RequiresPermissions("operate:cloud:product:info")
+     * 查询产品表详情
+     */
+    @RequiresPermissions("operate:cloud:product:info")
     @GetMapping("/info/{productId}")
-    public AjaxResult info(@PathVariable Long productId){
-    ProductDTO productDTO = productService.selectProductByProductId(productId);
+    public AjaxResult info(@PathVariable Long productId) {
+        ProductDTO productDTO = productService.selectProductByProductId(productId);
         return AjaxResult.success(productDTO);
     }
 
     /**
      * 查询上级产品
      */
-    //@RequiresPermissions("system:manage:department:pageList")
+    @RequiresPermissions(value = {"operate:cloud:product:list", "operate:cloud:product:pageList"}, logical = Logical.OR)
     @GetMapping("/queryparent")
-    public AjaxResult queryparent(){
+    public AjaxResult queryparent() {
         List<ProductDTO> list = productService.queryparent();
         return AjaxResult.success(list);
     }
+
     /**
-    * 分页查询产品表列表
-    */
-    //@RequiresPermissions("operate:cloud:product:pageList")
+     * 分页查询产品表列表
+     */
+    @RequiresPermissions("operate:cloud:product:pageList")
     @GetMapping("/pageList")
-    public TableDataInfo pageList(ProductDTO productDTO){
-    startPage();
-    List<ProductDTO> list = productService.selectProductList(productDTO);
-    return getDataTable(list);
+    public TableDataInfo pageList(ProductDTO productDTO) {
+        startPage();
+        List<ProductDTO> list = productService.selectProductList(productDTO);
+        return getDataTable(list);
     }
 
     /**
-    * 查询产品表列表
-    */
-    //@RequiresPermissions("operate:cloud:product:list")
+     * 查询产品表列表
+     */
+    @RequiresPermissions(value = {"operate:cloud:product:list", "operate:cloud:product:pageList"}, logical = Logical.OR)
     @GetMapping("/list")
-    public AjaxResult list(ProductDTO productDTO){
-    List<ProductDTO> list = productService.selectProductList(productDTO);
-    return AjaxResult.success(list);
+    public AjaxResult list(ProductDTO productDTO) {
+        List<ProductDTO> list = productService.selectProductList(productDTO);
+        return AjaxResult.success(list);
     }
 
-
     /**
-    * 新增产品表
-    */
-    //@RequiresPermissions("operate:cloud:product:add")
-    //@Log(title = "新增产品表", businessType = BusinessType.INSERT)
+     * 新增产品表
+     */
+    @RequiresPermissions("operate:cloud:product:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(ProductDTO.AddProductDTO.class) ProductDTO productDTO) {
-    return AjaxResult.success(productService.insertProduct(productDTO));
+        return AjaxResult.success(productService.insertProduct(productDTO));
     }
 
-
     /**
-    * 修改产品表
-    */
-    //@RequiresPermissions("operate:cloud:product:edit")
-    //@Log(title = "修改产品表", businessType = BusinessType.UPDATE)
+     * 修改产品表
+     */
+    @RequiresPermissions("operate:cloud:product:edit")
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody @Validated(ProductDTO.UpdateProductDTO.class)ProductDTO productDTO)
-    {
-    return toAjax(productService.updateProduct(productDTO));
+    public AjaxResult editSave(@RequestBody @Validated(ProductDTO.UpdateProductDTO.class) ProductDTO productDTO) {
+        return toAjax(productService.updateProduct(productDTO));
     }
 
     /**
-    * 逻辑删除产品表
-    */
-    //@RequiresPermissions("operate:cloud:product:remove")
-    //@Log(title = "删除产品表", businessType = BusinessType.DELETE)
+     * 逻辑删除产品表
+     */
+    @RequiresPermissions("operate:cloud:product:remove")
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody @Validated(ProductDTO.DeleteProductDTO.class)ProductDTO productDTO)
-    {
-    return toAjax(productService.logicDeleteProductByProductId(productDTO));
-    }
-    /**
-    * 批量修改产品表
-    */
-    //@RequiresPermissions("operate:cloud:product:edits")
-    //@Log(title = "批量修改产品表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<ProductDTO> productDtos)
-    {
-    return toAjax(productService.updateProducts(productDtos));
+    public AjaxResult remove(@RequestBody @Validated(ProductDTO.DeleteProductDTO.class) ProductDTO productDTO) {
+        return toAjax(productService.logicDeleteProductByProductId(productDTO));
     }
 
     /**
-    * 批量新增产品表
-    */
-    //@RequiresPermissions("operate:cloud:product:insertProducts")
-    //@Log(title = "批量新增产品表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertProducts")
-    public AjaxResult insertProducts(@RequestBody List<ProductDTO> productDtos)
-    {
-    return toAjax(productService.insertProducts(productDtos));
-    }
-
-    /**
-    * 逻辑批量删除产品表
-    */
-    //@RequiresPermissions("operate:cloud:product:removes")
-    //@Log(title = "批量删除产品表", businessType = BusinessType.DELETE)
+     * 逻辑批量删除产品表
+     */
+    @RequiresPermissions("operate:cloud:product:remove")
     @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<Long>  productIds)
-    {
-    return toAjax(productService.logicDeleteProductByProductIds(productIds));
+    public AjaxResult removes(@RequestBody List<Long> productIds) {
+        return toAjax(productService.logicDeleteProductByProductIds(productIds));
     }
 }

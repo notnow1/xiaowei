@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalItemsMapper">
+    <!--    查询绩效考核项目表-->
+    <select id="selectPerformanceAppraisalItemsByPerformAppraisalItemsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO">
+        SELECT
+        perform_appraisal_items_id,perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time
+        FROM performance_appraisal_items
+        WHERE perform_appraisal_items_id=#{performAppraisalItemsId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询绩效考核项目表-->
+    <select id="selectPerformanceAppraisalItemsByPerformAppraisalItemsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO">
+        SELECT
+        perform_appraisal_items_id,perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time
+        FROM performance_appraisal_items
+        WHERE perform_appraisal_items_id in
+        <foreach item="item"
+                 collection="performAppraisalItemsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询绩效考核项目表列表-->
+    <select id="selectPerformanceAppraisalItemsList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO">
+        SELECT
+        perform_appraisal_items_id,perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time
+        FROM performance_appraisal_items
+        WHERE delete_flag=0
+        <if test="performanceAppraisalItems.performAppraisalItemsId != null">
+            and perform_appraisal_items_id=#{performanceAppraisalItems.performAppraisalItemsId}
+        </if>
+        <if test="performanceAppraisalItems.performAppraisalObjectsId != null">
+            and perform_appraisal_objects_id=#{performanceAppraisalItems.performAppraisalObjectsId}
+        </if>
+        <if test="performanceAppraisalItems.indicatorId != null">
+            and indicator_id=#{performanceAppraisalItems.indicatorId}
+        </if>
+        <if test="performanceAppraisalItems.indicatorName != null and performanceAppraisalItems.indicatorName != ''">
+            and indicator_name=#{performanceAppraisalItems.indicatorName}
+        </if>
+        <if test="performanceAppraisalItems.indicatorValueType != null">
+            and indicator_value_type=#{performanceAppraisalItems.indicatorValueType}
+        </if>
+        <if test="performanceAppraisalItems.examineDirection != null">
+            and examine_direction=#{performanceAppraisalItems.examineDirection}
+        </if>
+        <if test="performanceAppraisalItems.challengeValue != null">
+            and challenge_value=#{performanceAppraisalItems.challengeValue}
+        </if>
+        <if test="performanceAppraisalItems.targetValue != null">
+            and target_value=#{performanceAppraisalItems.targetValue}
+        </if>
+        <if test="performanceAppraisalItems.guaranteedValue != null">
+            and guaranteed_value=#{performanceAppraisalItems.guaranteedValue}
+        </if>
+        <if test="performanceAppraisalItems.actualValue != null">
+            and actual_value=#{performanceAppraisalItems.actualValue}
+        </if>
+        <if test="performanceAppraisalItems.weight != null">
+            and weight=#{performanceAppraisalItems.weight}
+        </if>
+        <if test="performanceAppraisalItems.deleteFlag != null">
+            and delete_flag=#{performanceAppraisalItems.deleteFlag}
+        </if>
+        <if test="performanceAppraisalItems.createBy != null">
+            and create_by=#{performanceAppraisalItems.createBy}
+        </if>
+        <if test="performanceAppraisalItems.createTime != null">
+            and create_time=#{performanceAppraisalItems.createTime}
+        </if>
+        <if test="performanceAppraisalItems.updateBy != null">
+            and update_by=#{performanceAppraisalItems.updateBy}
+        </if>
+        <if test="performanceAppraisalItems.updateTime != null">
+            and update_time=#{performanceAppraisalItems.updateTime}
+        </if>
+    </select>
+    <!--根据对象ID查找指标列表-->
+    <select id="selectPerformanceAppraisalItemsByPerformAppraisalObjectId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO">
+        SELECT
+        perform_appraisal_items_id,perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time
+        FROM performance_appraisal_items
+        WHERE perform_appraisal_objects_id = #{performAppraisalObjectsId}
+    </select>
+    <!--新增绩效考核项目表-->
+    <insert id="insertPerformanceAppraisalItems" useGeneratedKeys="true" keyProperty="performAppraisalItemsId">
+        INSERT INTO performance_appraisal_items
+        (perform_appraisal_items_id,perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{performanceAppraisalItems.performAppraisalObjectsId},#{performanceAppraisalItems.indicatorId},#{performanceAppraisalItems.indicatorName},#{performanceAppraisalItems.indicatorValueType},#{performanceAppraisalItems.examineDirection},#{performanceAppraisalItems.challengeValue},#{performanceAppraisalItems.targetValue},#{performanceAppraisalItems.guaranteedValue},#{performanceAppraisalItems.actualValue},#{performanceAppraisalItems.weight},#{performanceAppraisalItems.deleteFlag},#{performanceAppraisalItems.createBy},#{performanceAppraisalItems.createTime},#{performanceAppraisalItems.updateBy},#{performanceAppraisalItems.updateTime})
+    </insert>
+    <!--修改绩效考核项目表-->
+    <update id="updatePerformanceAppraisalItems">
+        UPDATE performance_appraisal_items
+        SET
+        <if test="performanceAppraisalItems.performAppraisalObjectsId != null">
+            perform_appraisal_objects_id=#{performanceAppraisalItems.performAppraisalObjectsId},
+        </if>
+        <if test="performanceAppraisalItems.indicatorId != null">
+            indicator_id=#{performanceAppraisalItems.indicatorId},
+        </if>
+        <if test="performanceAppraisalItems.indicatorName != null and performanceAppraisalItems.indicatorName != ''">
+            indicator_name=#{performanceAppraisalItems.indicatorName},
+        </if>
+        <if test="performanceAppraisalItems.indicatorValueType != null">
+            indicator_value_type=#{performanceAppraisalItems.indicatorValueType},
+        </if>
+        <if test="performanceAppraisalItems.examineDirection != null">
+            examine_direction=#{performanceAppraisalItems.examineDirection},
+        </if>
+        <if test="performanceAppraisalItems.challengeValue != null">
+            challenge_value=#{performanceAppraisalItems.challengeValue},
+        </if>
+        <if test="performanceAppraisalItems.targetValue != null">
+            target_value=#{performanceAppraisalItems.targetValue},
+        </if>
+        <if test="performanceAppraisalItems.guaranteedValue != null">
+            guaranteed_value=#{performanceAppraisalItems.guaranteedValue},
+        </if>
+        <if test="performanceAppraisalItems.actualValue != null">
+            actual_value=#{performanceAppraisalItems.actualValue},
+        </if>
+        <if test="performanceAppraisalItems.weight != null">
+            weight=#{performanceAppraisalItems.weight},
+        </if>
+        <if test="performanceAppraisalItems.deleteFlag != null">
+            delete_flag=#{performanceAppraisalItems.deleteFlag},
+        </if>
+        <if test="performanceAppraisalItems.createBy != null">
+            create_by=#{performanceAppraisalItems.createBy},
+        </if>
+        <if test="performanceAppraisalItems.createTime != null">
+            create_time=#{performanceAppraisalItems.createTime},
+        </if>
+        <if test="performanceAppraisalItems.updateBy != null">
+            update_by=#{performanceAppraisalItems.updateBy},
+        </if>
+        <if test="performanceAppraisalItems.updateTime != null">
+            update_time=#{performanceAppraisalItems.updateTime}
+        </if>
+        WHERE
+        perform_appraisal_items_id=#{performanceAppraisalItems.performAppraisalItemsId}
+    </update>
+    <!--逻辑删除绩效考核项目表-->
+    <update id="logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsId">
+        UPDATE performance_appraisal_items
+        SET delete_flag= 1,
+        update_by=#{performanceAppraisalItems.updateBy},
+        update_time=#{performanceAppraisalItems.updateTime}
+        WHERE
+        perform_appraisal_items_id=#{performanceAppraisalItems.performAppraisalItemsId}
+    </update>
+    <!--逻辑批量删除绩效考核项目表-->
+    <update id="logicDeletePerformanceAppraisalItemsByPerformAppraisalItemsIds">
+        UPDATE performance_appraisal_items
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        perform_appraisal_items_id IN
+        <foreach item="item"
+                 collection="performAppraisalItemsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增绩效考核项目表-->
+    <insert id="batchPerformanceAppraisalItems">
+        INSERT INTO performance_appraisal_items
+        (perform_appraisal_items_id,perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="performanceAppraisalItemss"
+                 separator=",">
+            (#{item.performAppraisalObjectsId},#{item.indicatorId},#{item.indicatorName},#{item.indicatorValueType},#{item.examineDirection},#{item.challengeValue},#{item.targetValue},#{item.guaranteedValue},#{item.actualValue},#{item.weight},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除绩效考核项目表-->
+    <delete id="deletePerformanceAppraisalItemsByPerformAppraisalItemsId">
+        DELETE FROM performance_appraisal_items
+        WHERE perform_appraisal_items_id=#{performanceAppraisalItems}
+
+    </delete>
+    <!--物理批量删除绩效考核项目表-->
+    <delete id="deletePerformanceAppraisalItemsByPerformAppraisalItemsIds">
+        DELETE FROM performance_appraisal_items
+        WHERE perform_appraisal_items_id IN
+        <foreach item="item"
+                 collection="performAppraisalItemsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改绩效考核项目表-->
+    <update id="updatePerformanceAppraisalItemss">
+        update performance_appraisal_items
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="perform_appraisal_objects_id=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.performAppraisalObjectsId != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then
+                        #{item.performAppraisalObjectsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_id=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.indicatorId != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.indicatorId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_name=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.indicatorName != null and item.indicatorName != ''">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.indicatorName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="indicator_value_type=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.indicatorValueType != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.indicatorValueType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="examine_direction=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.examineDirection != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.examineDirection}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="challenge_value=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.challengeValue != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.challengeValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="target_value=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.targetValue != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.targetValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="guaranteed_value=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.guaranteedValue != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.guaranteedValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="actual_value=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.actualValue != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.actualValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="weight=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.weight != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.weight}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="performanceAppraisalItemsList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when perform_appraisal_items_id=#{item.performAppraisalItemsId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="performanceAppraisalItemsList" separator="or" item="item" index="index">
+            perform_appraisal_items_id=#{item.performAppraisalItemsId}
+        </foreach>
+    </update>
+</mapper>
+
+
