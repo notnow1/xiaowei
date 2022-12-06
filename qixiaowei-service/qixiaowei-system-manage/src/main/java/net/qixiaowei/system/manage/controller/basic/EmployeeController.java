@@ -12,6 +12,8 @@ import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
@@ -43,37 +45,68 @@ public class EmployeeController extends BaseController {
     @Autowired
     private IEmployeeService employeeService;
 
+
     /**
-     * 根据部门id查询员工表列表
+     * 分页查询员工表列表
      */
-    //@RequiresPermissions("system:manage:employee:list")
-    @GetMapping("/queryEmployeeByDept/{employeeDepartmentId}")
-    public AjaxResult queryEmployeeByDept(@PathVariable Long employeeDepartmentId) {
-        List<EmployeeDTO> list = employeeService.queryEmployeeByDept(employeeDepartmentId);
-        return AjaxResult.success(list);
+    @RequiresPermissions("system:manage:employee:pageList")
+    @GetMapping("/pageList")
+    public TableDataInfo pageList(EmployeeDTO employeeDTO) {
+        startPage();
+        List<EmployeeDTO> list = employeeService.selectEmployeeList(employeeDTO);
+        return getDataTable(list);
     }
 
     /**
-     * 新增人力预算上年期末数集合预制数据
+     * 新增员工表
      */
-    //@RequiresPermissions("system:manage:employee:pageList")
-    @PostMapping("/amountLastYear")
-    public AjaxResult selecTamountLastYearList(@RequestBody EmployeeDTO employeeDTO) {
-        return AjaxResult.success(employeeService.selecTamountLastYearList(employeeDTO));
+    @RequiresPermissions("system:manage:employee:add")
+    @PostMapping("/add")
+    public AjaxResult addSave(@RequestBody @Validated(EmployeeDTO.AddEmployeeDTO.class) EmployeeDTO employeeDTO) {
+        return AjaxResult.success(employeeService.insertEmployee(employeeDTO));
     }
+
     /**
-     * 分页查询岗位薪酬报表
+     * 修改员工表
      */
-    //@RequiresPermissions("system:manage:employee:pageList")
-    @GetMapping("/pagePostSalaryReportList")
-    public TableDataInfo pagePostSalaryReportList(EmployeeDTO employeeDTO) {
-        startPage();
-        List<EmployeeDTO> list = employeeService.pagePostSalaryReportList(employeeDTO);
-        return getDataTable(list);
+    @RequiresPermissions("system:manage:employee:edit")
+    @PostMapping("/edit")
+    public AjaxResult editSave(@RequestBody @Validated(EmployeeDTO.UpdateEmployeeDTO.class) EmployeeDTO employeeDTO) {
+        return toAjax(employeeService.updateEmployee(employeeDTO));
     }
+
+    /**
+     * 查询员工单条信息
+     */
+    @RequiresPermissions(value = {"system:manage:employee:info", "system:manage:employee:edit"}, logical = Logical.OR)
+    @GetMapping("/info/{employeeId}")
+    public AjaxResult info(@PathVariable Long employeeId) {
+        EmployeeDTO employeeDTO = employeeService.selectEmployeeByEmployeeId(employeeId);
+        return AjaxResult.success(employeeDTO);
+    }
+
+    /**
+     * 逻辑删除员工表
+     */
+    @RequiresPermissions("system:manage:employee:remove")
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody @Validated(EmployeeDTO.DeleteEmployeeDTO.class) EmployeeDTO employeeDTO) {
+        return toAjax(employeeService.logicDeleteEmployeeByEmployeeId(employeeDTO));
+    }
+
+    /**
+     * 逻辑批量删除员工表
+     */
+    @RequiresPermissions("system:manage:employee:remove")
+    @PostMapping("/removes")
+    public AjaxResult removes(@RequestBody List<Long> employeeIds) {
+        return toAjax(employeeService.logicDeleteEmployeeByEmployeeIds(employeeIds));
+    }
+
     /**
      * 导入人员
      */
+    @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) {
         String filename = file.getOriginalFilename();
@@ -98,8 +131,9 @@ public class EmployeeController extends BaseController {
      * 导出人员
      */
     @SneakyThrows
+    @RequiresPermissions("system:manage:employee:export")
     @GetMapping("export")
-    public void exportEmployee(@RequestParam Map<String, Object> employee,EmployeeDTO employeeDTO, HttpServletResponse response) {
+    public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
         List<List<String>> head = EmployeeImportListener.head(selectMap);
@@ -122,6 +156,7 @@ public class EmployeeController extends BaseController {
      * 导出模板
      */
     @SneakyThrows
+    @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
     public void exportUser(HttpServletResponse response) {
         //示例数据
@@ -143,95 +178,43 @@ public class EmployeeController extends BaseController {
                 // 自适应列宽
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).doWrite(EmployeeImportListener.dataList(employeeExcelList));
     }
+
+
     /**
-     * 分页查询员工表列表
+     * 根据部门id查询员工表列表
      */
-    //@RequiresPermissions("system:manage:employee:pageList")
-    @GetMapping("/pageList")
-    public TableDataInfo pageList(EmployeeDTO employeeDTO) {
+    @GetMapping("/queryEmployeeByDept/{employeeDepartmentId}")
+    public AjaxResult queryEmployeeByDept(@PathVariable Long employeeDepartmentId) {
+        List<EmployeeDTO> list = employeeService.queryEmployeeByDept(employeeDepartmentId);
+        return AjaxResult.success(list);
+    }
+
+    /**
+     * 新增人力预算上年期末数集合预制数据
+     */
+    @PostMapping("/amountLastYear")
+    public AjaxResult selecTamountLastYearList(@RequestBody EmployeeDTO employeeDTO) {
+        return AjaxResult.success(employeeService.selecTamountLastYearList(employeeDTO));
+    }
+
+    /**
+     * 分页查询岗位薪酬报表
+     */
+    @GetMapping("/pagePostSalaryReportList")
+    public TableDataInfo pagePostSalaryReportList(EmployeeDTO employeeDTO) {
         startPage();
-        List<EmployeeDTO> list = employeeService.selectEmployeeList(employeeDTO);
+        List<EmployeeDTO> list = employeeService.pagePostSalaryReportList(employeeDTO);
         return getDataTable(list);
     }
 
     /**
      * 查询员工表列表(下拉框)
      */
-    //@RequiresPermissions("system:manage:employee:list")
     @GetMapping("/list")
     public AjaxResult list(EmployeeDTO employeeDTO) {
         List<EmployeeDTO> list = employeeService.selectDropEmployeeList(employeeDTO);
         return AjaxResult.success(list);
     }
 
-    /**
-     * 查询员工单条信息
-     */
-    //@RequiresPermissions("system:manage:employee:list")
-    @GetMapping("/info/{employeeId}")
-    public AjaxResult info(@PathVariable Long employeeId) {
-        EmployeeDTO employeeDTO = employeeService.selectEmployeeByEmployeeId(employeeId);
-        return AjaxResult.success(employeeDTO);
-    }
 
-    /**
-     * 新增员工表
-     */
-    //@RequiresPermissions("system:manage:employee:add")
-    //@Log(title = "新增员工表", businessType = BusinessType.INSERT)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody @Validated(EmployeeDTO.AddEmployeeDTO.class) EmployeeDTO employeeDTO) {
-        return AjaxResult.success(employeeService.insertEmployee(employeeDTO));
-    }
-
-
-    /**
-     * 修改员工表
-     */
-    //@RequiresPermissions("system:manage:employee:edit")
-    //@Log(title = "修改员工表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody @Validated(EmployeeDTO.UpdateEmployeeDTO.class) EmployeeDTO employeeDTO) {
-        return toAjax(employeeService.updateEmployee(employeeDTO));
-    }
-
-    /**
-     * 逻辑删除员工表
-     */
-    //@RequiresPermissions("system:manage:employee:remove")
-    //@Log(title = "删除员工表", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody @Validated(EmployeeDTO.DeleteEmployeeDTO.class) EmployeeDTO employeeDTO) {
-        return toAjax(employeeService.logicDeleteEmployeeByEmployeeId(employeeDTO));
-    }
-
-    /**
-     * 批量修改员工表
-     */
-    //@RequiresPermissions("system:manage:employee:edits")
-    //@Log(title = "批量修改员工表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody @Validated(EmployeeDTO.DeleteEmployeeDTO.class) List<EmployeeDTO> employeeDtos) {
-        return toAjax(employeeService.updateEmployees(employeeDtos));
-    }
-
-    /**
-     * 批量新增员工表
-     */
-    //@RequiresPermissions("system:manage:employee:insertEmployees")
-    //@Log(title = "批量新增员工表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertEmployees")
-    public AjaxResult insertEmployees(@RequestBody List<EmployeeDTO> employeeDtos) {
-        return toAjax(employeeService.insertEmployees(employeeDtos));
-    }
-
-    /**
-     * 逻辑批量删除员工表
-     */
-    //@RequiresPermissions("system:manage:employee:removes")
-    //@Log(title = "批量删除员工表", businessType = BusinessType.DELETE)
-    @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<Long> employeeIds) {
-        return toAjax(employeeService.logicDeleteEmployeeByEmployeeIds(employeeIds));
-    }
 }

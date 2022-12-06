@@ -4,8 +4,8 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.service.basic.IIndicatorCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,11 @@ public class IndicatorCategoryController extends BaseController {
     @Autowired
     private IIndicatorCategoryService indicatorCategoryService;
 
+
     /**
      * 分页查询指标分类表列表
      */
-//    @RequiresPermissions("system:manage:indicatorCategory:pageList")
+    @RequiresPermissions("system:manage:indicatorCategory:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(IndicatorCategoryDTO indicatorCategoryDTO) {
         startPage();
@@ -38,32 +39,18 @@ public class IndicatorCategoryController extends BaseController {
     }
 
     /**
-     * 查询指标分类表列表
-     */
-//    @RequiresPermissions("system:manage:indicatorCategory:list")
-    @GetMapping("/list")
-    public AjaxResult list(IndicatorCategoryDTO indicatorCategoryDTO) {
-        List<IndicatorCategoryDTO> list = indicatorCategoryService.selectIndicatorCategoryList(indicatorCategoryDTO);
-        return AjaxResult.success(list);
-    }
-
-
-    /**
      * 新增指标分类表
      */
-//    @RequiresPermissions("system:manage:indicatorCategory:add")
-    @Log(title = "新增指标分类表", businessType = BusinessType.INSERT)
+    @RequiresPermissions("system:manage:indicatorCategory:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndicatorCategoryDTO indicatorCategoryDTO) {
         return AjaxResult.success(indicatorCategoryService.insertIndicatorCategory(indicatorCategoryDTO));
     }
 
-
     /**
      * 修改指标分类表
      */
-//    @RequiresPermissions("system:manage:indicatorCategory:edit")
-    @Log(title = "修改指标分类表", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("system:manage:indicatorCategory:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody IndicatorCategoryDTO indicatorCategoryDTO) {
         return toAjax(indicatorCategoryService.updateIndicatorCategory(indicatorCategoryDTO));
@@ -72,7 +59,7 @@ public class IndicatorCategoryController extends BaseController {
     /**
      * 指标类型详情
      */
-//    @RequiresPermissions("operate:cloud:performanceRank:edit")
+    @RequiresPermissions(value = {"operate:cloud:performanceRank:info", "operate:cloud:performanceRank:edit"}, logical = Logical.OR)
     @GetMapping("/info/{indicatorCategoryId}")
     public AjaxResult info(@PathVariable Long indicatorCategoryId) {
         return AjaxResult.success(indicatorCategoryService.detailIndicatorCategory(indicatorCategoryId));
@@ -81,8 +68,7 @@ public class IndicatorCategoryController extends BaseController {
     /**
      * 逻辑删除指标分类表
      */
-//    @RequiresPermissions("system:manage:indicatorCategory:remove")
-    @Log(title = "删除指标分类表", businessType = BusinessType.DELETE)
+    @RequiresPermissions("system:manage:indicatorCategory:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody IndicatorCategoryDTO indicatorCategoryDTO) {
         Long indicatorCategoryId = indicatorCategoryDTO.getIndicatorCategoryId();
@@ -93,32 +79,23 @@ public class IndicatorCategoryController extends BaseController {
     }
 
     /**
-     * 批量修改指标分类表
-     */
-//    @RequiresPermissions("system:manage:indicatorCategory:edits")
-    @Log(title = "批量修改指标分类表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<IndicatorCategoryDTO> indicatorCategoryDtos) {
-        return toAjax(indicatorCategoryService.updateIndicatorCategorys(indicatorCategoryDtos));
-    }
-
-    /**
-     * 批量新增指标分类表
-     */
-//    @RequiresPermissions("system:manage:indicatorCategory:insertIndicatorCategorys")
-    @Log(title = "批量新增指标分类表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertIndicatorCategorys")
-    public AjaxResult insertIndicatorCategorys(@RequestBody List<IndicatorCategoryDTO> indicatorCategoryDtos) {
-        return toAjax(indicatorCategoryService.insertIndicatorCategorys(indicatorCategoryDtos));
-    }
-
-    /**
      * 逻辑批量删除指标分类表
      */
-//    @RequiresPermissions("system:manage:indicatorCategory:removes")
-    @Log(title = "批量删除指标分类表", businessType = BusinessType.DELETE)
+    @RequiresPermissions("system:manage:indicatorCategory:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> indicatorCategoryIds) {
         return toAjax(indicatorCategoryService.logicDeleteIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryIds));
     }
+
+
+    /**
+     * 查询指标分类表列表
+     */
+    @GetMapping("/list")
+    public AjaxResult list(IndicatorCategoryDTO indicatorCategoryDTO) {
+        List<IndicatorCategoryDTO> list = indicatorCategoryService.selectIndicatorCategoryList(indicatorCategoryDTO);
+        return AjaxResult.success(list);
+    }
+
+
 }
