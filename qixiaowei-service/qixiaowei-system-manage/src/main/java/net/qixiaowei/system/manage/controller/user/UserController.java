@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.controller.user;
 import java.util.List;
 import java.util.Set;
 
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -45,23 +44,21 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 查询用户表列表
-     */
-    @RequiresPermissions("system:manage:user:list")
-    @GetMapping("/list")
-    public AjaxResult list(UserDTO userDTO) {
-        List<UserDTO> list = userService.selectUserList(userDTO);
-        return AjaxResult.success(list);
-    }
-
-    /**
      * 新增用户表
      */
     @RequiresPermissions("system:manage:user:add")
-//    @Log(title = "新增用户表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@Validated(UserDTO.AddUserDTO.class) @RequestBody UserDTO userDTO) {
         return AjaxResult.success(userService.insertUser(userDTO));
+    }
+
+    /**
+     * 修改用户表
+     */
+    @RequiresPermissions("system:manage:user:edit")
+    @PostMapping("/edit")
+    public AjaxResult editSave(@Validated(UserDTO.UpdateUserDTO.class) @RequestBody UserDTO userDTO) {
+        return toAjax(userService.updateUser(userDTO));
     }
 
     /**
@@ -69,9 +66,56 @@ public class UserController extends BaseController {
      *
      * @return 用户信息
      */
+    @RequiresPermissions(value = {"system:manage:user:info", "system:manage:user:edit"}, logical = Logical.OR)
     @GetMapping("/info/{userId}")
     public AjaxResult info(@PathVariable Long userId) {
         return AjaxResult.success(userService.selectUserByUserId(userId));
+    }
+
+    /**
+     * 逻辑删除用户表
+     */
+    @RequiresPermissions("system:manage:user:remove")
+    @PostMapping("/remove")
+    public AjaxResult remove(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
+        return toAjax(userService.logicDeleteUserByUserId(userDTO));
+    }
+
+    /**
+     * 逻辑批量删除用户表
+     */
+    @RequiresPermissions("system:manage:user:remove")
+    @PostMapping("/removes")
+    public AjaxResult removes(@RequestBody Set<Long> userIds) {
+        return toAjax(userService.logicDeleteUserByUserIds(userIds));
+    }
+
+    /**
+     * 重置密码
+     */
+    @RequiresPermissions("system:manage:user:resetPwd")
+    @PostMapping("/resetPwd")
+    public AjaxResult resetPwd(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
+        return toAjax(userService.resetPwd(userDTO));
+    }
+
+    /**
+     * 用户授权角色
+     */
+    @RequiresPermissions("system:manage:user:authRoles")
+    @PostMapping("/authRoles")
+    public AjaxResult authRoles(@Validated @RequestBody AuthRolesDTO authRolesDTO) {
+        userService.authRoles(authRolesDTO);
+        return success();
+    }
+
+    /**
+     * 查询未分配用户员工列表
+     */
+    @RequiresPermissions(value = {"system:manage:user:add", "system:manage:user:edit"}, logical = Logical.OR)
+    @GetMapping("/unallocatedEmployees")
+    public AjaxResult unallocatedEmployees() {
+        return AjaxResult.success(userService.unallocatedEmployees());
     }
 
     /**
@@ -85,33 +129,12 @@ public class UserController extends BaseController {
     }
 
     /**
-     * 修改用户表
+     * 查询用户表列表
      */
-    @RequiresPermissions("system:manage:user:edit")
-//    @Log(title = "修改用户表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edit")
-    public AjaxResult editSave(@Validated(UserDTO.UpdateUserDTO.class) @RequestBody UserDTO userDTO) {
-        return toAjax(userService.updateUser(userDTO));
-    }
-
-    /**
-     * 逻辑删除用户表
-     */
-    @RequiresPermissions("system:manage:user:remove")
-//    @Log(title = "删除用户表", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
-        return toAjax(userService.logicDeleteUserByUserId(userDTO));
-    }
-
-    /**
-     * 逻辑批量删除用户表
-     */
-    @RequiresPermissions("system:manage:user:removes")
-//    @Log(title = "批量删除用户表", businessType = BusinessType.DELETE)
-    @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody Set<Long> userIds) {
-        return toAjax(userService.logicDeleteUserByUserIds(userIds));
+    @GetMapping("/list")
+    public AjaxResult list(UserDTO userDTO) {
+        List<UserDTO> list = userService.selectUserList(userDTO);
+        return AjaxResult.success(list);
     }
 
     /**
@@ -122,36 +145,6 @@ public class UserController extends BaseController {
     @GetMapping("/getInfo")
     public AjaxResult getInfo() {
         return AjaxResult.success(userService.getInfo());
-    }
-
-    /**
-     * 重置密码
-     */
-    @RequiresPermissions("system:manage:user:resetPwd")
-//    @Log(title = "重置密码", businessType = BusinessType.UPDATE)
-    @PostMapping("/resetPwd")
-    public AjaxResult resetPwd(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {
-        return toAjax(userService.resetPwd(userDTO));
-    }
-
-    /**
-     * 用户授权角色
-     */
-    @RequiresPermissions("system:manage:user:authRoles")
-//    @Log(title = "用户授权角色", businessType = BusinessType.GRANT)
-    @PostMapping("/authRoles")
-    public AjaxResult authRoles(@Validated @RequestBody AuthRolesDTO authRolesDTO) {
-        userService.authRoles(authRolesDTO);
-        return success();
-    }
-
-    /**
-     * 查询未分配用户员工列表
-     */
-    @RequiresPermissions("system:manage:user:pageList")
-    @GetMapping("/unallocatedEmployees")
-    public AjaxResult unallocatedEmployees() {
-        return AjaxResult.success(userService.unallocatedEmployees());
     }
 
 }
