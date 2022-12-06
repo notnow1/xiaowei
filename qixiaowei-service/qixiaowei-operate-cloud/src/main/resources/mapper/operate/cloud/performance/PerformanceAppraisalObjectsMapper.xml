@@ -273,7 +273,7 @@
         </foreach>
     </update>
     <!--批量新增绩效考核对象表-->
-    <insert id="batchPerformanceAppraisalObjects" useGeneratedKeys=“true”>
+    <insert id="batchPerformanceAppraisalObjects" useGeneratedKeys="true">
         INSERT INTO performance_appraisal_objects
         (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,appraisal_principal_name,evaluation_score,appraisal_result_id,appraisal_result,appraisal_object_status,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
