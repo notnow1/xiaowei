@@ -30,6 +30,6 @@ public interface RemoteSettingService {
      * @param source
      * @return
      */
-    @GetMapping("/targetSetting/remote/queryIndicatorSetting")
-    R<List<TargetSettingDTO>> queryIndicatorSetting(List<Long> indicatorIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping("/targetSetting/remote/queryIndicatorSetting")
+    R<List<TargetSettingDTO>> queryIndicatorSetting(@RequestBody List<Long> indicatorIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

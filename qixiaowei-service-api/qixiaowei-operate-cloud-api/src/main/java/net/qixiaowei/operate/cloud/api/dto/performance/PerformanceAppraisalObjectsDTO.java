@@ -1,12 +1,13 @@
 package net.qixiaowei.operate.cloud.api.dto.performance;
 
-import java.math.BigDecimal;
+import java.awt.*;
 import java.util.Date;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import javax.validation.groups.Default;
@@ -17,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * 绩效考核对象表
  *
  * @author Graves
- * @since 2022-11-29
+ * @since 2022-12-05
  */
 @Data
 @Accessors(chain = true)
@@ -67,28 +68,42 @@ public class PerformanceAppraisalObjectsDTO {
      * 考核对象名称
      */
     private String appraisalObjectName;
+
     /**
-     * 岗位
+     * 部门ID
      */
-    private String postName;
+    private  Long departmentId;
     /**
-     * 个人职级名称
+     * 部门名称
      */
-    private String appraisalRankName;
+    private  String departmentName;
     /**
-     * 员工职级
+     * 岗位ID
      */
-    private Integer employeeRank;
+    private  Long postId;
     /**
-     * 考核人员部门
+     * 岗位名称
      */
-    private String employeeDepartmentName;
+    private  String postName;
+    /**
+     * 职级体系ID
+     */
+    private  Long officialRankSystemId;
+    /**
+     * 职级
+     */
+    private  Integer officialRank;
+    /**
+     * 职级名称
+     */
+    private  String officialRankName;
+
     /**
      * 考核负责人ID
      */
     private Long appraisalPrincipalId;
     /**
-     * 考核负责人
+     * 考核负责人姓名
      */
     private String appraisalPrincipalName;
     /**
@@ -96,9 +111,13 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private BigDecimal evaluationScore;
     /**
-     * 考核结果(绩效等级ID)
+     * 考核结果(绩效等级系数ID)
      */
     private Long appraisalResultId;
+    /**
+     * 考核结果
+     */
+    private String appraisalResult;
     /**
      * 绩效等级ID
      */
@@ -108,12 +127,7 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private String performanceRankName;
     /**
-     * 是否可以下载附件
-     */
-    private Integer isAttachment;
-
-    /**
-     * 考核对象状态:1制定目标;2评议;3排名;4归档
+     * 考核对象状态:1待制定目标;2已制定目标-草稿;3待评议;4已评议-草稿;5待排名
      */
     private Integer appraisalObjectStatus;
     /**

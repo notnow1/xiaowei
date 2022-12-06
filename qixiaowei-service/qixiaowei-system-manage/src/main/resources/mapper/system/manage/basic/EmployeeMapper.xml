@@ -103,6 +103,7 @@
         n.nation_name,
         p.post_name as employee_post_name,
         p.post_code,
+        p.official_rank_system_id,
         d.department_name as employee_department_name,
         d.department_code,
         case when ors.rank_prefix_code is null then e.employee_rank

@@ -3,6 +3,9 @@ package net.qixiaowei.operate.cloud.api.domain.performance;
 
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import lombok.Data;
+
+import java.math.BigDecimal;
+
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
@@ -12,7 +15,7 @@ import java.util.Date;
  * 绩效考核表
  *
  * @author Graves
- * @since 2022-11-29
+ * @since 2022-12-05
  */
 @Data
 @Accessors(chain = true)
@@ -28,6 +31,10 @@ public class PerformanceAppraisal extends TenantEntity {
      * 绩效等级ID
      */
     private Long performanceRankId;
+    /**
+     * 绩效等级名称
+     */
+    private String performanceRankName;
     /**
      * 考核年度
      */
@@ -76,7 +83,6 @@ public class PerformanceAppraisal extends TenantEntity {
      * 考核状态:1制定目标;2评议;3排名;4归档
      */
     private Integer appraisalStatus;
-
 
 }
 

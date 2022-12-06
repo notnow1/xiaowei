@@ -149,7 +149,7 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
 
     @Override
     public int deletePerformanceAppraisalObjectsByPerformAppraisalObjectsIds(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDtos) {
             stringList.add(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
         }
@@ -163,7 +163,7 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
      */
 
     public int insertPerformanceAppraisalObjectss(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDtos) {
-        List<PerformanceAppraisalObjects> performanceAppraisalObjectsList = new ArrayList();
+        List<PerformanceAppraisalObjects> performanceAppraisalObjectsList = new ArrayList<>();
 
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDtos) {
             PerformanceAppraisalObjects performanceAppraisalObjects = new PerformanceAppraisalObjects();
@@ -185,7 +185,7 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
      */
 
     public int updatePerformanceAppraisalObjectss(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDtos) {
-        List<PerformanceAppraisalObjects> performanceAppraisalObjectsList = new ArrayList();
+        List<PerformanceAppraisalObjects> performanceAppraisalObjectsList = new ArrayList<>();
 
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDtos) {
             PerformanceAppraisalObjects performanceAppraisalObjects = new PerformanceAppraisalObjects();

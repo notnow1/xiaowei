@@ -44,8 +44,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Autowired
     private IndicatorCategoryMapper indicatorCategoryMapper;
 
-    @Autowired
-    private RemoteTargetSetting targetSettingService;
+//    @Autowired
+//    private RemoteTargetSetting targetSettingService;
 
     /**
      * 查询指标表
@@ -289,12 +289,13 @@ public class IndicatorServiceImpl implements IIndicatorService {
      * @return boolean
      */
     private boolean isQuote(List<Long> indicatorIds) {
-        R<List<TargetSettingDTO>> listR = targetSettingService.queryIndicatorSetting(indicatorIds, SecurityConstants.INNER);
-        if (listR.getCode() != 200) {
-            throw new ServiceException("远程调用失败");
-        }
-        List<TargetSettingDTO> targetSettingDTOS = listR.getData();
-        return StringUtils.isNotEmpty(targetSettingDTOS);
+//        R<List<TargetSettingDTO>> listR = targetSettingService.queryIndicatorSetting(indicatorIds, SecurityConstants.INNER);
+//        if (listR.getCode() != 200) {
+//            throw new ServiceException("远程调用失败");
+//        }
+//        List<TargetSettingDTO> targetSettingDTOS = listR.getData();
+//        return StringUtils.isNotEmpty(targetSettingDTOS);
+        return false;
     }
 
     /**

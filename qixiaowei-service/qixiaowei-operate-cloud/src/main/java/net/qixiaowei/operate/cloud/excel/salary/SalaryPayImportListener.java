@@ -121,10 +121,6 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
         for (SalaryPayDTO salaryPayDTO : salaryPayDTOS) {
             salaryPayIds.add(salaryPayDTO.getSalaryPayId());
         }
-        List<SalaryPayDetailsDTO> salaryPayDetailsDTOS = salaryPayDetailsService.selectSalaryPayDetailsBySalaryPayIds(salaryPayIds);
-
-
-
         return null;
     }
 }

@@ -6,14 +6,13 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.groups.Default;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -22,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * 绩效考核表
  *
  * @author Graves
- * @since 2022-11-29
+ * @since 2022-12-05
  */
 @Data
 @Accessors(chain = true)

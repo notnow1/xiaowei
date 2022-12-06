@@ -6,8 +6,8 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
         perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id,
-        evaluation_score, appraisal_result_id, appraisal_object_status, sort, delete_flag, create_by, create_time,
-        update_by, update_time
+        appraisal_principal_name, evaluation_score, appraisal_result_id, appraisal_result, appraisal_object_status,
+        sort, delete_flag, create_by, create_time, update_by, update_time
         FROM performance_appraisal_objects
         WHERE perform_appraisal_objects_id=#{performAppraisalObjectsId}
         and delete_flag=0
@@ -18,8 +18,8 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
         perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id,
-        evaluation_score, appraisal_result_id, appraisal_object_status, sort, delete_flag, create_by, create_time,
-        update_by, update_time
+        appraisal_principal_name, evaluation_score, appraisal_result_id, appraisal_result, appraisal_object_status,
+        sort, delete_flag, create_by, create_time, update_by, update_time
         FROM performance_appraisal_objects
         WHERE perform_appraisal_objects_id in
         <foreach item="item"
@@ -35,8 +35,8 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
         perform_appraisal_objects_id, performance_appraisal_id, appraisal_object_id, appraisal_principal_id,
-        evaluation_score, appraisal_result_id, appraisal_object_status, sort, delete_flag, create_by, create_time,
-        update_by, update_time
+        appraisal_principal_name, evaluation_score, appraisal_result_id, appraisal_result, appraisal_object_status,
+        sort, delete_flag, create_by, create_time, update_by, update_time
         FROM performance_appraisal_objects
         WHERE delete_flag=0
         <if test="performanceAppraisalObjects.performAppraisalObjectsId != null">
@@ -51,11 +51,17 @@
         <if test="performanceAppraisalObjects.appraisalPrincipalId != null">
             and appraisal_principal_id=#{performanceAppraisalObjects.appraisalPrincipalId}
         </if>
+        <if test="performanceAppraisalObjects.appraisalPrincipalName != null and performanceAppraisalObjects.appraisalPrincipalName != ''">
+            and appraisal_principal_name=#{performanceAppraisalObjects.appraisalPrincipalName}
+        </if>
         <if test="performanceAppraisalObjects.evaluationScore != null">
             and evaluation_score=#{performanceAppraisalObjects.evaluationScore}
         </if>
         <if test="performanceAppraisalObjects.appraisalResultId != null">
             and appraisal_result_id=#{performanceAppraisalObjects.appraisalResultId}
+        </if>
+        <if test="performanceAppraisalObjects.appraisalResult != null and performanceAppraisalObjects.appraisalResult != ''">
+            and appraisal_result=#{performanceAppraisalObjects.appraisalResult}
         </if>
         <if test="performanceAppraisalObjects.appraisalObjectStatus != null">
             and appraisal_object_status=#{performanceAppraisalObjects.appraisalObjectStatus}
@@ -82,35 +88,66 @@
     <select id="selectPerformanceAppraisalObjectsByPerformAppraisalId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
-        pao.perform_appraisal_objects_id, pao.performance_appraisal_id, pao.appraisal_object_id,
+        pao.perform_appraisal_objects_id,
+        pao.performance_appraisal_id,
+        pao.appraisal_object_id,
         pao.appraisal_principal_id,
-        ifnull((pao.evaluation_score),0.00) as evaluation_score, pao.appraisal_result_id, pao.sort,
+        ifnull(evaluation_score,0.00) as pao.evaluation_score,
+        pao.appraisal_result_id,
+        pao.sort,
         pao.appraisal_object_status,
+        pao.appraisal_principal_name
         pao.delete_flag,
-        pao.create_by, pao.create_time, pao.update_by, pao.update_time,
-        prf.performance_rank_id, prf.performance_rank_name
+        pao.create_by,
+        pao.create_time,
+        pao.update_by,
+        pao.update_time,
+        pas.appraisal_object_name,
+        pas.appraisal_object_code,
+        pas.department_id,
+        pas.department_name,
+        pas.post_id,
+        pas.post_name,
+        pas.official_rank_system_id,
+        pas.official_rank,
+        pas.official_rank_name
         FROM performance_appraisal_objects pao
-            LEFT JOIN performance_rank_factor prf
-                ON prf.performance_rank_factor_id = pao.appraisal_result_id
-                    and prf.delete_flag = 0
+        LEFT JOIN perform_appraisal_object_snap pas
+        ON pao.perform_appraisal_objects_id = pas.perform_appraisal_objects_id
+        AND pas.delete_flag=0
         WHERE pao.delete_flag=0
         AND pao.performance_appraisal_id = #{performanceAppraisalId}
         ORDER BY pao.evaluation_score,pao.sort
     </select>
     <select id="selectPerformanceAppraisalObjectsByIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
-        SELECT
-        pao.perform_appraisal_objects_id, pao.performance_appraisal_id, pao.appraisal_object_id,
+        pao.perform_appraisal_objects_id,
+        pao.performance_appraisal_id,
+        pao.appraisal_object_id,
         pao.appraisal_principal_id,
-        ifnull((pao.evaluation_score),0.00) as evaluation_score, pao.appraisal_result_id, pao.sort,
+        ifnull(evaluation_score,0.00) as pao.evaluation_score,
+        pao.appraisal_result_id,
+        pao.sort,
         pao.appraisal_object_status,
+        pao.appraisal_principal_name
         pao.delete_flag,
-        pao.create_by, pao.create_time, pao.update_by, pao.update_time,
-        prf.performance_rank_id, prf.performance_rank_name
+        pao.create_by,
+        pao.create_time,
+        pao.update_by,
+        pao.update_time,
+        pas.appraisal_object_name,
+        pas.appraisal_object_code,
+        pas.department_id,
+        pas.department_name,
+        pas.post_id,
+        pas.post_name,
+        pas.official_rank_system_id,
+        pas.official_rank,
+        pas.official_rank_name
         FROM performance_appraisal_objects pao
-            LEFT JOIN performance_rank_factor prf
-                ON prf.performance_rank_factor_id = pao.appraisal_result_id
-                    and prf.delete_flag = 0
+        LEFT JOIN perform_appraisal_object_snap pas
+        ON pao.perform_appraisal_objects_id = pas.perform_appraisal_objects_id
+        AND pas.delete_flag=0
         WHERE pao.delete_flag=0
         AND pao.performance_appraisal_id = #{performanceAppraisalId}
         AND pao.appraisal_object_id IN
@@ -121,32 +158,47 @@
     </select>
     <select id="selectPerformanceAppraisalObjectsByPerformAppraisalIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
-        SELECT
-        pao.perform_appraisal_objects_id, pao.performance_appraisal_id, pao.appraisal_object_id,
+        pao.perform_appraisal_objects_id,
+        pao.performance_appraisal_id,
+        pao.appraisal_object_id,
         pao.appraisal_principal_id,
-        ifnull((pao.evaluation_score),0.00) as evaluation_score, pao.appraisal_result_id, pao.self_defined_columns_flag,
+        ifnull(evaluation_score,0.00) as pao.evaluation_score,
+        pao.appraisal_result_id,
+        pao.sort,
         pao.appraisal_object_status,
+        pao.appraisal_principal_name
         pao.delete_flag,
-        pao.create_by, pao.create_time, pao.update_by, pao.update_time,
-        prf.performance_rank_id, prf.performance_rank_name
+        pao.create_by,
+        pao.create_time,
+        pao.update_by,
+        pao.update_time,
+        pas.appraisal_object_name,
+        pas.appraisal_object_code,
+        pas.department_id,
+        pas.department_name,
+        pas.post_id,
+        pas.post_name,
+        pas.official_rank_system_id,
+        pas.official_rank,
+        pas.official_rank_name
         FROM performance_appraisal_objects pao
-            LEFT JOIN performance_rank_factor prf
-                ON prf.performance_rank_factor_id = pao.appraisal_result_id
-                    AND prf.delete_flag = 0
+        LEFT JOIN perform_appraisal_object_snap pas
+        ON pao.perform_appraisal_objects_id = pas.perform_appraisal_objects_id
+        AND pas.delete_flag=0
         WHERE pao.delete_flag=0
-            AND pao.performance_appraisal_id
-                IN
-                    <foreach collection="performanceAppraisalId" separator="," open="(" close=")" index="index" item="item">
-                        #{items}
-                    </foreach>
+        AND pao.performance_appraisal_id
+        IN
+        <foreach collection="performanceAppraisalId" separator="," open="(" close=")" index="index" item="item">
+            #{items}
+        </foreach>
         ORDER BY pao.evaluation_score,pao.sort
     </select>
     <!--新增绩效考核对象表-->
     <insert id="insertPerformanceAppraisalObjects" useGeneratedKeys="true" keyProperty="performAppraisalObjectsId">
         INSERT INTO performance_appraisal_objects
-        (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,evaluation_score,appraisal_result_id,appraisal_object_status,sort,delete_flag,create_by,create_time,update_by,update_time)
+        (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,appraisal_principal_name,evaluation_score,appraisal_result_id,appraisal_result,appraisal_object_status,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{performanceAppraisalObjects.performanceAppraisalId},#{performanceAppraisalObjects.appraisalObjectId},#{performanceAppraisalObjects.appraisalPrincipalId},#{performanceAppraisalObjects.evaluationScore},#{performanceAppraisalObjects.appraisalResultId},#{performanceAppraisalObjects.appraisalObjectStatus},#{performanceAppraisalObjects.sort},#{performanceAppraisalObjects.deleteFlag},#{performanceAppraisalObjects.createBy},#{performanceAppraisalObjects.createTime},#{performanceAppraisalObjects.updateBy},#{performanceAppraisalObjects.updateTime})
+        (#{performanceAppraisalObjects.performanceAppraisalId},#{performanceAppraisalObjects.appraisalObjectId},#{performanceAppraisalObjects.appraisalPrincipalId},#{performanceAppraisalObjects.appraisalPrincipalName},#{performanceAppraisalObjects.evaluationScore},#{performanceAppraisalObjects.appraisalResultId},#{performanceAppraisalObjects.appraisalResult},#{performanceAppraisalObjects.appraisalObjectStatus},#{performanceAppraisalObjects.sort},#{performanceAppraisalObjects.deleteFlag},#{performanceAppraisalObjects.createBy},#{performanceAppraisalObjects.createTime},#{performanceAppraisalObjects.updateBy},#{performanceAppraisalObjects.updateTime})
     </insert>
     <!--修改绩效考核对象表-->
     <update id="updatePerformanceAppraisalObjects">
@@ -161,11 +213,17 @@
         <if test="performanceAppraisalObjects.appraisalPrincipalId != null">
             appraisal_principal_id=#{performanceAppraisalObjects.appraisalPrincipalId},
         </if>
+        <if test="performanceAppraisalObjects.appraisalPrincipalName != null and performanceAppraisalObjects.appraisalPrincipalName != ''">
+            appraisal_principal_name=#{performanceAppraisalObjects.appraisalPrincipalName},
+        </if>
         <if test="performanceAppraisalObjects.evaluationScore != null">
             evaluation_score=#{performanceAppraisalObjects.evaluationScore},
         </if>
         <if test="performanceAppraisalObjects.appraisalResultId != null">
             appraisal_result_id=#{performanceAppraisalObjects.appraisalResultId},
+        </if>
+        <if test="performanceAppraisalObjects.appraisalResult != null and performanceAppraisalObjects.appraisalResult != ''">
+            appraisal_result=#{performanceAppraisalObjects.appraisalResult},
         </if>
         <if test="performanceAppraisalObjects.appraisalObjectStatus != null">
             appraisal_object_status=#{performanceAppraisalObjects.appraisalObjectStatus},
@@ -215,14 +273,14 @@
         </foreach>
     </update>
     <!--批量新增绩效考核对象表-->
-    <insert id="batchPerformanceAppraisalObjects">
+    <insert id="batchPerformanceAppraisalObjects" useGeneratedKeys=“true”>
         INSERT INTO performance_appraisal_objects
-        (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,evaluation_score,appraisal_result_id,appraisal_object_status,sort,delete_flag,create_by,create_time,update_by,update_time)
+        (performance_appraisal_id,appraisal_object_id,appraisal_principal_id,appraisal_principal_name,evaluation_score,appraisal_result_id,appraisal_result,appraisal_object_status,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="performanceAppraisalObjectss"
                  separator=",">
-            (#{item.performanceAppraisalId},#{item.appraisalObjectId},#{item.appraisalPrincipalId},#{item.evaluationScore},#{item.appraisalResultId},#{item.appraisalObjectStatus},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.performanceAppraisalId},#{item.appraisalObjectId},#{item.appraisalPrincipalId},#{item.appraisalPrincipalName},#{item.evaluationScore},#{item.appraisalResultId},#{item.appraisalResult},#{item.appraisalObjectStatus},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -270,6 +328,14 @@
                     </if>
                 </foreach>
             </trim>
+            <trim prefix="appraisal_principal_name=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.appraisalPrincipalName != null and item.appraisalPrincipalName != ''">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                        #{item.appraisalPrincipalName}
+                    </if>
+                </foreach>
+            </trim>
             <trim prefix="evaluation_score=case" suffix="end,">
                 <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
                     <if test="item.evaluationScore != null">
@@ -282,6 +348,13 @@
                     <if test="item.appraisalResultId != null">
                         when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
                         #{item.appraisalResultId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_result=case" suffix="end,">
+                <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
+                    <if test="item.appraisalResult != null and item.appraisalResult != ''">
+                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.appraisalResult}
                     </if>
                 </foreach>
             </trim>

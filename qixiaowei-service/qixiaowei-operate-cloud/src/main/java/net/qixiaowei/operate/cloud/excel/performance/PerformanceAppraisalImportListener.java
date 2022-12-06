@@ -463,8 +463,8 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());
             data.add(performanceAppraisalObjectsDTO.getPostName());
-            data.add(performanceAppraisalObjectsDTO.getEmployeeDepartmentName());
-            data.add(performanceAppraisalObjectsDTO.getAppraisalRankName());
+            data.add(performanceAppraisalObjectsDTO.getDepartmentName());
+            data.add(performanceAppraisalObjectsDTO.getOfficialRankName());
             list.add(data);
         }
         return list;
