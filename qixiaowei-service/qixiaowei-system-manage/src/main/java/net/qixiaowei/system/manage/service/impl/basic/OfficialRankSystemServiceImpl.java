@@ -296,8 +296,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isNotNull(officialRankByName)) {
             throw new ServiceException("职级体系名称重复");
         }
-        if (rankPrefixCode.length() > 5) {
-            throw new ServiceException("职级体系级别前缀长度不能大于5");
+        if (StringUtils.isNotNull(rankPrefixCode)) {
+            if (rankPrefixCode.length() > 5) {
+                throw new ServiceException("职级体系级别前缀长度不能大于5");
+            }
         }
 //        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
 //            throw new ServiceException("职级体系级别前缀重复");
@@ -354,8 +356,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 throw new ServiceException("职级体系名称重复");
             }
         }
-        if (rankPrefixCode.length() > 5) {
-            throw new ServiceException("职级体系级别前缀长度不能大于5");
+        if (StringUtils.isNotNull(rankPrefixCode)) {
+            if (rankPrefixCode.length() > 5) {
+                throw new ServiceException("职级体系级别前缀长度不能大于5");
+            }
         }
 //        if (StringUtils.isNotNull(officialRankByPrefixCode)) {
 //            if (!officialRankByPrefixCode.getOfficialRankSystemId().equals(officialRankSystemId))
@@ -375,9 +379,6 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         }
         OfficialRankSystem officialRankSystem = new OfficialRankSystem();
         BeanUtils.copyProperties(officialRankSystemDTO, officialRankSystem);
-        if (rankPrefixCode.length() == 0) {
-            officialRankSystem.setRankPrefixCode(null);
-        }
         officialRankSystem.setUpdateTime(DateUtils.getNowDate());
         officialRankSystem.setUpdateBy(SecurityUtils.getUserId());
         officialRankSystemMapper.updateOfficialRankSystem(officialRankSystem);
@@ -553,7 +554,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         officialRankSystemIds.add(officialRankSystemId);
         List<PostDTO> postDTOS = postMapper.selectPostByOfficialRankSystemIds(officialRankSystemIds);
         if (StringUtils.isNotEmpty(postDTOS)) {
-            throw new ServiceException("当前职级体系正在被引用");
+//            throw new ServiceException("当前职级体系正在被引用");
         }
         int i = officialRankDecomposeService.logicDeleteOfficialRankDecomposeByOfficialRankSystemId(officialRankSystemId);
         if (i == 0) {

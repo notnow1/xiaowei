@@ -156,8 +156,8 @@
     <update id="logicDeleteOfficialRankSystemByOfficialRankSystemId">
         UPDATE official_rank_system
         SET delete_flag= 1,
-        update_by=#{officialRankSystem.updateBy},
-        update_time=#{officialRankSystem.updateTime}
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
         official_rank_system_id=#{officialRankSystem.officialRankSystemId}
     </update>

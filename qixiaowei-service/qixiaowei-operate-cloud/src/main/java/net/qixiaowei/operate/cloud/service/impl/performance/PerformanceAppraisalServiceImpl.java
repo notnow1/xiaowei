@@ -105,7 +105,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         setFieldName(appraisal);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
-        Integer appraisalObject = appraisal.getAppraisalObject();
         HashMap<String, BigDecimal> performanceRankMap = new HashMap<>();
         Integer sum = 0;
         int appraisalRank = 1;//名次
