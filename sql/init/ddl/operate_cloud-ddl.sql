@@ -864,6 +864,7 @@ CREATE TABLE dept_annual_bonus_operate(
 
 CREATE TABLE dept_annual_bonus_factor(
     dept_annual_bonus_factor_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    dept_annual_bonus_id BIGINT UNSIGNED NOT NULL   COMMENT '部门年终奖ID' ,
     department_id BIGINT UNSIGNED NOT NULL   COMMENT '部门ID' ,
     weight DECIMAL(5,2)    COMMENT '权重' ,
     last_performance_resulted VARCHAR(128)    COMMENT '最近绩效结果' ,
