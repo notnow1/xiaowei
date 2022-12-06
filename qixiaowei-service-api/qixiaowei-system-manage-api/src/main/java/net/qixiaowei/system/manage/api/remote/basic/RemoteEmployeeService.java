@@ -101,5 +101,5 @@ public interface RemoteEmployeeService {
      * @return
      */
     @GetMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByDepts")
-    R<List<EmployeeDTO>>selectEmployeeByDepts(Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<List<EmployeeDTO>>selectEmployeeByDepts(@RequestParam("departmentId")Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

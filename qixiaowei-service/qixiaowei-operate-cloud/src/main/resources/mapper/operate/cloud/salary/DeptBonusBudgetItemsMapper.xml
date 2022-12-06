@@ -5,10 +5,10 @@
     <select id="selectDeptBonusBudgetItemsByDeptBonusBudgetItemsId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetItemsDTO">
         SELECT
-        dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
+            dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_items
         WHERE  dept_bonus_budget_items_id=#{deptBonusBudgetItemsId}
-        and delete_flag=0
+          and delete_flag=0
     </select>
 
     <!--    批量查询部门奖金预算项目表-->
@@ -18,11 +18,11 @@
         dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_items
         WHERE  dept_bonus_budget_items_id in
-            <foreach item="item"
-                     collection="deptBonusBudgetItemsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        <foreach item="item"
+                 collection="deptBonusBudgetItemsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
@@ -32,41 +32,41 @@
         dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_items
         WHERE delete_flag=0
-                <if test="deptBonusBudgetItems.deptBonusBudgetItemsId != null">
-                    and dept_bonus_budget_items_id=#{deptBonusBudgetItems.deptBonusBudgetItemsId}
-                </if>
-                <if test="deptBonusBudgetItems.deptBonusBudgetId != null">
-                    and dept_bonus_budget_id=#{deptBonusBudgetItems.deptBonusBudgetId}
-                </if>
-                <if test="deptBonusBudgetItems.deptBonusBudgetDetailsId != null">
-                    and dept_bonus_budget_details_id=#{deptBonusBudgetItems.deptBonusBudgetDetailsId}
-                </if>
-                <if test="deptBonusBudgetItems.salaryItemId != null">
-                    and salary_item_id=#{deptBonusBudgetItems.salaryItemId}
-                </if>
-                <if test="deptBonusBudgetItems.bonusPercentage != null">
-                    and bonus_percentage=#{deptBonusBudgetItems.bonusPercentage}
-                </if>
-                <if test="deptBonusBudgetItems.sort != null">
-                    and sort=#{deptBonusBudgetItems.sort}
-                </if>
-                <if test="deptBonusBudgetItems.deleteFlag != null">
-                    and delete_flag=#{deptBonusBudgetItems.deleteFlag}
-                </if>
-                <if test="deptBonusBudgetItems.createBy != null">
-                    and create_by=#{deptBonusBudgetItems.createBy}
-                </if>
-                <if test="deptBonusBudgetItems.createTime != null">
-                    and create_time=#{deptBonusBudgetItems.createTime}
-                </if>
-                <if test="deptBonusBudgetItems.updateBy != null">
-                    and update_by=#{deptBonusBudgetItems.updateBy}
-                </if>
-                <if test="deptBonusBudgetItems.updateTime != null">
-                    and update_time=#{deptBonusBudgetItems.updateTime}
-                </if>
+        <if test="deptBonusBudgetItems.deptBonusBudgetItemsId != null">
+            and dept_bonus_budget_items_id=#{deptBonusBudgetItems.deptBonusBudgetItemsId}
+        </if>
+        <if test="deptBonusBudgetItems.deptBonusBudgetId != null">
+            and dept_bonus_budget_id=#{deptBonusBudgetItems.deptBonusBudgetId}
+        </if>
+        <if test="deptBonusBudgetItems.deptBonusBudgetDetailsId != null">
+            and dept_bonus_budget_details_id=#{deptBonusBudgetItems.deptBonusBudgetDetailsId}
+        </if>
+        <if test="deptBonusBudgetItems.salaryItemId != null">
+            and salary_item_id=#{deptBonusBudgetItems.salaryItemId}
+        </if>
+        <if test="deptBonusBudgetItems.bonusPercentage != null">
+            and bonus_percentage=#{deptBonusBudgetItems.bonusPercentage}
+        </if>
+        <if test="deptBonusBudgetItems.sort != null">
+            and sort=#{deptBonusBudgetItems.sort}
+        </if>
+        <if test="deptBonusBudgetItems.deleteFlag != null">
+            and delete_flag=#{deptBonusBudgetItems.deleteFlag}
+        </if>
+        <if test="deptBonusBudgetItems.createBy != null">
+            and create_by=#{deptBonusBudgetItems.createBy}
+        </if>
+        <if test="deptBonusBudgetItems.createTime != null">
+            and create_time=#{deptBonusBudgetItems.createTime}
+        </if>
+        <if test="deptBonusBudgetItems.updateBy != null">
+            and update_by=#{deptBonusBudgetItems.updateBy}
+        </if>
+        <if test="deptBonusBudgetItems.updateTime != null">
+            and update_time=#{deptBonusBudgetItems.updateTime}
+        </if>
     </select>
-<!--    根据部门奖金预算明细表id集合批量查询部门奖金预算项目表-->
+    <!--    根据部门奖金预算明细表id集合批量查询部门奖金预算项目表-->
     <select id="selectDeptBonusBudgetItemsByDeptBonusBudgetDetailsIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetItemsDTO">
         SELECT
@@ -94,49 +94,50 @@
             #{item}
         </foreach>
         and dbbi.delete_flag=0
+        order by dbbi.sort
     </select>
     <!--新增部门奖金预算项目表-->
     <insert id="insertDeptBonusBudgetItems" useGeneratedKeys="true" keyProperty="deptBonusBudgetItemsId">
         INSERT INTO dept_bonus_budget_items (dept_bonus_budget_id,dept_bonus_budget_details_id,salary_item_id,bonus_percentage,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{deptBonusBudgetItems.deptBonusBudgetId},#{deptBonusBudgetItems.deptBonusBudgetDetailsId},#{deptBonusBudgetItems.salaryItemId},#{deptBonusBudgetItems.bonusPercentage},#{deptBonusBudgetItems.sort},#{deptBonusBudgetItems.deleteFlag},#{deptBonusBudgetItems.createBy},#{deptBonusBudgetItems.createTime},#{deptBonusBudgetItems.updateBy},#{deptBonusBudgetItems.updateTime})
+            (#{deptBonusBudgetItems.deptBonusBudgetId},#{deptBonusBudgetItems.deptBonusBudgetDetailsId},#{deptBonusBudgetItems.salaryItemId},#{deptBonusBudgetItems.bonusPercentage},#{deptBonusBudgetItems.sort},#{deptBonusBudgetItems.deleteFlag},#{deptBonusBudgetItems.createBy},#{deptBonusBudgetItems.createTime},#{deptBonusBudgetItems.updateBy},#{deptBonusBudgetItems.updateTime})
     </insert>
     <!--修改部门奖金预算项目表-->
     <update id="updateDeptBonusBudgetItems">
         UPDATE dept_bonus_budget_items
         SET
-                    <if test="deptBonusBudgetItems.deptBonusBudgetId != null">
-                        dept_bonus_budget_id=#{deptBonusBudgetItems.deptBonusBudgetId},
-                    </if>
-                    <if test="deptBonusBudgetItems.deptBonusBudgetDetailsId != null">
-                        dept_bonus_budget_details_id=#{deptBonusBudgetItems.deptBonusBudgetDetailsId},
-                    </if>
-                    <if test="deptBonusBudgetItems.salaryItemId != null">
-                        salary_item_id=#{deptBonusBudgetItems.salaryItemId},
-                    </if>
-                    <if test="deptBonusBudgetItems.bonusPercentage != null">
-                        bonus_percentage=#{deptBonusBudgetItems.bonusPercentage},
-                    </if>
-                    <if test="deptBonusBudgetItems.sort != null">
-                        sort=#{deptBonusBudgetItems.sort},
-                    </if>
-                    <if test="deptBonusBudgetItems.deleteFlag != null">
-                        delete_flag=#{deptBonusBudgetItems.deleteFlag},
-                    </if>
-                    <if test="deptBonusBudgetItems.createBy != null">
-                        create_by=#{deptBonusBudgetItems.createBy},
-                    </if>
-                    <if test="deptBonusBudgetItems.createTime != null">
-                        create_time=#{deptBonusBudgetItems.createTime},
-                    </if>
-                    <if test="deptBonusBudgetItems.updateBy != null">
-                        update_by=#{deptBonusBudgetItems.updateBy},
-                    </if>
-                    <if test="deptBonusBudgetItems.updateTime != null">
-                        update_time=#{deptBonusBudgetItems.updateTime}
-                    </if>
+        <if test="deptBonusBudgetItems.deptBonusBudgetId != null">
+            dept_bonus_budget_id=#{deptBonusBudgetItems.deptBonusBudgetId},
+        </if>
+        <if test="deptBonusBudgetItems.deptBonusBudgetDetailsId != null">
+            dept_bonus_budget_details_id=#{deptBonusBudgetItems.deptBonusBudgetDetailsId},
+        </if>
+        <if test="deptBonusBudgetItems.salaryItemId != null">
+            salary_item_id=#{deptBonusBudgetItems.salaryItemId},
+        </if>
+        <if test="deptBonusBudgetItems.bonusPercentage != null">
+            bonus_percentage=#{deptBonusBudgetItems.bonusPercentage},
+        </if>
+        <if test="deptBonusBudgetItems.sort != null">
+            sort=#{deptBonusBudgetItems.sort},
+        </if>
+        <if test="deptBonusBudgetItems.deleteFlag != null">
+            delete_flag=#{deptBonusBudgetItems.deleteFlag},
+        </if>
+        <if test="deptBonusBudgetItems.createBy != null">
+            create_by=#{deptBonusBudgetItems.createBy},
+        </if>
+        <if test="deptBonusBudgetItems.createTime != null">
+            create_time=#{deptBonusBudgetItems.createTime},
+        </if>
+        <if test="deptBonusBudgetItems.updateBy != null">
+            update_by=#{deptBonusBudgetItems.updateBy},
+        </if>
+        <if test="deptBonusBudgetItems.updateTime != null">
+            update_time=#{deptBonusBudgetItems.updateTime}
+        </if>
         WHERE
-                 dept_bonus_budget_items_id=#{deptBonusBudgetItems.deptBonusBudgetItemsId}
+        dept_bonus_budget_items_id=#{deptBonusBudgetItems.deptBonusBudgetItemsId}
     </update>
     <!--逻辑删除部门奖金预算项目表-->
     <update id="logicDeleteDeptBonusBudgetItemsByDeptBonusBudgetItemsId">
@@ -151,15 +152,15 @@
     <update id="logicDeleteDeptBonusBudgetItemsByDeptBonusBudgetItemsIds">
         UPDATE dept_bonus_budget_items
         SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         dept_bonus_budget_items_id IN
-            <foreach item="item"
-                     collection="deptBonusBudgetItemsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        dept_bonus_budget_items_id IN
+        <foreach item="item"
+                 collection="deptBonusBudgetItemsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增部门奖金预算项目表-->
     <insert id="batchDeptBonusBudgetItems">
@@ -182,90 +183,90 @@
     <delete id="deleteDeptBonusBudgetItemsByDeptBonusBudgetItemsIds">
         DELETE FROM dept_bonus_budget_items
         WHERE  dept_bonus_budget_items_id IN
-            <foreach item="item"
-                     collection="deptBonusBudgetItemsIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        <foreach item="item"
+                 collection="deptBonusBudgetItemsIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改部门奖金预算项目表-->
     <update id="updateDeptBonusBudgetItemss">
         update dept_bonus_budget_items
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="dept_bonus_budget_id=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.deptBonusBudgetId != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.deptBonusBudgetId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="dept_bonus_budget_details_id=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.deptBonusBudgetDetailsId != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.deptBonusBudgetDetailsId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="salary_item_id=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.salaryItemId != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.salaryItemId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="bonus_percentage=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.bonusPercentage != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.bonusPercentage}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="sort=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.sort != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.sort}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="dept_bonus_budget_id=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.deptBonusBudgetId != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.deptBonusBudgetId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="dept_bonus_budget_details_id=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.deptBonusBudgetDetailsId != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.deptBonusBudgetDetailsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="salary_item_id=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.salaryItemId != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.salaryItemId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="bonus_percentage=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.bonusPercentage != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.bonusPercentage}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="deptBonusBudgetItemsList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="deptBonusBudgetItemsList" separator="or" item="item" index="index">
-                    dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId}
+            dept_bonus_budget_items_id=#{item.deptBonusBudgetItemsId}
         </foreach>
     </update>
 </mapper>

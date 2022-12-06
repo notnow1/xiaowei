@@ -136,7 +136,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @Override
     @InnerAuth
     @GetMapping("/selectEmployeeByDepts")
-    public R<List<EmployeeDTO>> selectEmployeeByDepts(Long departmentId, String source) {
+    public R<List<EmployeeDTO>> selectEmployeeByDepts(@RequestParam("departmentId")Long departmentId, String source) {
         return R.ok(employeeService.selectEmployeeByDepts(departmentId));
     }
 }

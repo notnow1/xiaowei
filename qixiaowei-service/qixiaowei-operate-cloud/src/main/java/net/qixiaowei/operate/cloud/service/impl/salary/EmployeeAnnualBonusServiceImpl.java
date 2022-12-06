@@ -404,9 +404,9 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         //所有员工的奖金金额合计
         BigDecimal allBonusAmountSum = new BigDecimal("0");
         //员工奖金基数=员工倒推12个月的薪酬合计（若期间出现断层，则继续往前倒推，直至取满12个月，若实在无法取满12个月，则可以取几个月就取几个月）
-        Map<Long,BigDecimal> paymentBonusSumMap = new HashMap<>();
+        Map<Long, BigDecimal> paymentBonusSumMap = new HashMap<>();
         //员工上年奖金额=倒推12个月的工资条数据中的总奖金包（若期间出现断层，则继续往前倒推，直至取满12个月，若实在无法取满12个月，则可以取几个月就取几个月）
-        Map<Long,BigDecimal> bonusAmountSumMap = new HashMap<>();
+        Map<Long, BigDecimal> bonusAmountSumMap = new HashMap<>();
         //个人年终奖发放快照信息及发放对象表集合
         List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList = new ArrayList<>();
         //远程查看部门下人员信息
@@ -462,6 +462,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
     /**
      * 封装计算参考值
+     *
      * @param distributeBonusAmount
      * @param allPaymentBonusSum
      * @param allBonusAmountSum
@@ -480,24 +481,24 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             //参考值二 公式=一级部门可分配年终奖*奖金占比。
             BigDecimal referenceValueTwo = new BigDecimal("0");
             //薪酬合计
-            BigDecimal paymentBonusSum  = paymentBonusSumMap.get(empAnnualBonusSnapshotDTO.getEmployeeId());
+            BigDecimal paymentBonusSum = paymentBonusSumMap.get(empAnnualBonusSnapshotDTO.getEmployeeId());
             //奖金合计
-            BigDecimal bonusAmountSum  = bonusAmountSumMap.get(empAnnualBonusSnapshotDTO.getEmployeeId());
+            BigDecimal bonusAmountSum = bonusAmountSumMap.get(empAnnualBonusSnapshotDTO.getEmployeeId());
             if (null != paymentBonusSum && paymentBonusSum.compareTo(new BigDecimal("0")) != 0 &&
-                   allPaymentBonusSum.compareTo(new BigDecimal("0")) != 0){
-                bonusPercentageOne = paymentBonusSum.divide(allPaymentBonusSum,4,BigDecimal.ROUND_HALF_DOWN);
+                    allPaymentBonusSum.compareTo(new BigDecimal("0")) != 0) {
+                bonusPercentageOne = paymentBonusSum.divide(allPaymentBonusSum, 4, BigDecimal.ROUND_HALF_DOWN);
             }
             if (null != distributeBonusAmount && distributeBonusAmount.compareTo(new BigDecimal("0")) != 0 &&
-                    bonusPercentageOne.compareTo(new BigDecimal("0")) != 0){
+                    bonusPercentageOne.compareTo(new BigDecimal("0")) != 0) {
                 referenceValueOne = distributeBonusAmount.multiply(bonusPercentageOne);
             }
             if (null != bonusAmountSum && bonusAmountSum.compareTo(new BigDecimal("0")) != 0 &&
-                    allBonusAmountSum.compareTo(new BigDecimal("0")) != 0){
-                bonusPercentageTwo =  allBonusAmountSum.divide(bonusAmountSum,4,BigDecimal.ROUND_HALF_DOWN);
+                    allBonusAmountSum.compareTo(new BigDecimal("0")) != 0) {
+                bonusPercentageTwo = allBonusAmountSum.divide(bonusAmountSum, 4, BigDecimal.ROUND_HALF_DOWN);
             }
             if (null != distributeBonusAmount && distributeBonusAmount.compareTo(new BigDecimal("0")) != 0 &&
-                    bonusPercentageTwo.compareTo(new BigDecimal("0")) != 0){
-                referenceValueTwo =   distributeBonusAmount.multiply(bonusPercentageTwo);
+                    bonusPercentageTwo.compareTo(new BigDecimal("0")) != 0) {
+                referenceValueTwo = distributeBonusAmount.multiply(bonusPercentageTwo);
             }
             empAnnualBonusSnapshotDTO.setBonusBeforeOne(bonusPercentageOne);
             empAnnualBonusSnapshotDTO.setReferenceValueOne(referenceValueOne);
@@ -508,13 +509,14 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
     /**
      * 封装绩效
+     *
      * @param empAnnualBonusSnapshotDTOList
      */
     private void packperformance(List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList) {
         for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
             //绩效
             List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByEmployeeId(empAnnualBonusSnapshotDTO.getEmployeeId());
-            if (StringUtils.isNotEmpty(performanceRankFactorDTOS)){
+            if (StringUtils.isNotEmpty(performanceRankFactorDTOS)) {
                 PerformanceRankFactorDTO performanceRankFactorDTO = performanceRankFactorDTOS.get(1);
                 //绩效名称
                 empAnnualBonusSnapshotDTO.setPerformanceRank(performanceRankFactorDTO.getPerformanceRankName());
@@ -534,6 +536,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
     /**
      * 封装计算参考值一 二数据
+     *
      * @param employeeAnnualBonusDTO
      * @param allPaymentBonusSum
      * @param allBonusAmountSum
@@ -547,26 +550,32 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             BigDecimal performanceBonusFactor = empAnnualBonusSnapshotDTO.getPerformanceBonusFactor();
             //考勤系数
             BigDecimal attendanceFactor = empAnnualBonusSnapshotDTO.getAttendanceFactor();
+            //薪酬合计
+            BigDecimal paymentBonusSum = new BigDecimal("0");
+            //倒退12个月奖金金额合计
+            BigDecimal bonusAmountSum = new BigDecimal("0");
             //参考值一 参考值二
             SalaryPayDTO salaryPayDTO = salaryPayMapper.selectSalaryPaySumAndBonusSum(empAnnualBonusSnapshotDTO.getEmployeeId(), employeeAnnualBonusDTO.getAnnualBonusYear());
-            //薪酬合计
-            BigDecimal paymentBonusSum = salaryPayDTO.getPaymentBonusSum();
-            //倒退12个月奖金金额合计
-            BigDecimal bonusAmountSum = salaryPayDTO.getBonusAmountSum();
-            if (null != performanceBonusFactor && performanceBonusFactor.compareTo(new BigDecimal("0")) >0){
-                paymentBonusSum=paymentBonusSum.multiply(performanceBonusFactor);
+            if (StringUtils.isNotNull(salaryPayDTO)) {
+
+                paymentBonusSum = salaryPayDTO.getPaymentBonusSum();
+                bonusAmountSum = salaryPayDTO.getBonusAmountSum();
             }
-            if (null != attendanceFactor && attendanceFactor.compareTo(new BigDecimal("0")) >0){
-                paymentBonusSum=paymentBonusSum.multiply(attendanceFactor);
+
+            if (null != performanceBonusFactor && performanceBonusFactor.compareTo(new BigDecimal("0")) > 0) {
+                paymentBonusSum = paymentBonusSum.multiply(performanceBonusFactor);
+            }
+            if (null != attendanceFactor && attendanceFactor.compareTo(new BigDecimal("0")) > 0) {
+                paymentBonusSum = paymentBonusSum.multiply(attendanceFactor);
             }
             //薪酬合计
-            paymentBonusSumMap.put(empAnnualBonusSnapshotDTO.getEmployeeId(),paymentBonusSum);
+            paymentBonusSumMap.put(empAnnualBonusSnapshotDTO.getEmployeeId(), paymentBonusSum);
             //倒退12个月奖金金额合计
-            bonusAmountSumMap.put(empAnnualBonusSnapshotDTO.getEmployeeId(),bonusAmountSum);
-            if (null != paymentBonusSum){
+            bonusAmountSumMap.put(empAnnualBonusSnapshotDTO.getEmployeeId(), bonusAmountSum);
+            if (null != paymentBonusSum) {
                 allPaymentBonusSum = allPaymentBonusSum.add(paymentBonusSum);
             }
-            if (null != bonusAmountSum){
+            if (null != bonusAmountSum) {
                 allBonusAmountSum = allBonusAmountSum.add(bonusAmountSum);
             }
         }
@@ -653,6 +662,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
     /**
      * 实时查询个人年终奖表详情
+     *
      * @param employeeAnnualBonusDTO
      * @return
      */
@@ -663,15 +673,15 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         //所有员工的奖金金额合计
         BigDecimal allBonusAmountSum = new BigDecimal("0");
         //员工奖金基数=员工倒推12个月的薪酬合计（若期间出现断层，则继续往前倒推，直至取满12个月，若实在无法取满12个月，则可以取几个月就取几个月）
-        Map<Long,BigDecimal> paymentBonusSumMap = new HashMap<>();
+        Map<Long, BigDecimal> paymentBonusSumMap = new HashMap<>();
         //员工上年奖金额=倒推12个月的工资条数据中的总奖金包（若期间出现断层，则继续往前倒推，直至取满12个月，若实在无法取满12个月，则可以取几个月就取几个月）
-        Map<Long,BigDecimal> bonusAmountSumMap = new HashMap<>();
+        Map<Long, BigDecimal> bonusAmountSumMap = new HashMap<>();
 
         //分配年终奖金额
         BigDecimal distributeBonusAmount = employeeAnnualBonusDTO.getDistributeBonusAmount();
         //个人年终奖发放快照信息及发放对象表集合
         List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOs();
-        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)){
+        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
             //参考值一 二数据计算必须数据
             packPerformanceRank(employeeAnnualBonusDTO, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOs);
             //封装计算参考值
