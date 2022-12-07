@@ -49,7 +49,7 @@
     </select>
     <!--新增${table.comment!}-->
     <insert id="insert${entity}" useGeneratedKeys="true" keyProperty="<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>">
-        INSERT INTO ${table.name} (<#list table.fields as field><#if field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>)
+        INSERT INTO ${table.name} (<#list table.fields as field><#if  !field.keyFlag && field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>)
         VALUES
         (<#list table.fields as field><#if !field.keyFlag && field_has_next && "${field.propertyName}"!="updateTime">#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace},<#elseif "${field.propertyName}"=="updateTime">#${leftBrace}${entity?uncap_first}.${field.propertyName}${rightBrace}</#if></#list>)
     </insert>
@@ -129,7 +129,7 @@
     </update>
     <!--批量新增${table.comment!}-->
     <insert id="batch${entity}">
-        INSERT INTO ${table.name} (<#list table.fields as field><#if field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>)
+        INSERT INTO ${table.name} (<#list table.fields as field><#if !field.keyFlag && field_has_next && "${field.propertyName}"!="tenantId" && "${field.propertyName}"!="updateTime">${field.name},<#elseif "${field.propertyName}"!="tenantId">${field.name}</#if></#list>)
         VALUES
         <foreach item="item" index="index"
                  collection="${entity?uncap_first}s"
