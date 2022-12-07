@@ -1902,7 +1902,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         // 更新绩效考核任务
         PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
         appraisalDTO.setPerformanceAppraisalId(performanceAppraisalId);
-        if(performanceAppraisalObjectsDTOByObjectId.getIsSubmit() == 1){
+        if (performanceAppraisalObjectsDTO.getIsSubmit() == 1) {
             if (performanceAppraisalObjectsDTOList.size() == 1) {
                 appraisalDTO.setAppraisalStatus(2);
                 updatePerformanceAppraisal(appraisalDTO);
@@ -1934,9 +1934,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
         performanceAppraisalObjects.setAppraisalPrincipalId(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
         performanceAppraisalObjects.setAppraisalPrincipalName(performanceAppraisalObjectsDTO.getAppraisalPrincipalName());
-        if (performanceAppraisalObjectsDTOByObjectId.getIsSubmit() == 0) {
+        if (performanceAppraisalObjectsDTO.getIsSubmit() == 0) {
             performanceAppraisalObjects.setAppraisalObjectStatus(2);
-        } else if (performanceAppraisalObjectsDTOByObjectId.getIsSubmit() == 1) {
+        } else if (performanceAppraisalObjectsDTO.getIsSubmit() == 1) {
             performanceAppraisalObjects.setAppraisalObjectStatus(3);
         }
         performanceAppraisalObjectsService.updatePerformanceAppraisalObjects(performanceAppraisalObjects);
@@ -1946,6 +1946,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             return performanceAppraisalObjectsDTO;
         }
         List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsBefore = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performAppraisalObjectsId);
+        for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsAfter) {
+            performanceAppraisalItemsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
+        }
         operateItemValue(performanceAppraisalItemsBefore, performanceAppraisalItemsAfter);
         return performanceAppraisalObjectsDTO;
     }
