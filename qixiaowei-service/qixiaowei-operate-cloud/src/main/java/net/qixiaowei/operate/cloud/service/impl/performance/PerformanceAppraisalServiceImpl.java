@@ -20,8 +20,10 @@ import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalMapper
 import net.qixiaowei.operate.cloud.service.performance.*;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +71,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
 
     @Autowired
     private IPerformanceAppraisalItemsService performanceAppraisalItemsService;
+
+    @Autowired
+    private RemoteIndicatorService indicatorService;
 
     /**
      * 查询绩效考核表详情
@@ -778,8 +783,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                         performanceAppraisalObjectsDTO.setAppraisalObjectStatus(0);
                     }
                     Long examinationLeaderId = departmentDTO.getExaminationLeaderId();
-                    if (StringUtils.isNull(examinationLeaderId)){
-
+                    if (StringUtils.isNotNull(examinationLeaderId)) {
+                        EmployeeDTO employeeById = getEmployeeById(examinationLeaderId);
+                        performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeById.getEmployeeName());
                     }
                     break;
                 }
@@ -789,6 +795,24 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             }
         }
         return performanceAppraisalObjectsDTOS;
+    }
+
+    /**
+     * 根据ID获取人员信息
+     *
+     * @param examinationLeaderId 人员ID
+     * @return EmployeeDTO
+     */
+    private EmployeeDTO getEmployeeById(Long examinationLeaderId) {
+        R<EmployeeDTO> employeeDTOR = employeeService.selectByEmployeeId(examinationLeaderId, SecurityConstants.INNER);
+        EmployeeDTO employeeDTO = employeeDTOR.getData();
+        if (employeeDTOR.getCode() != 200) {
+            throw new ServiceException(employeeDTOR.getMsg());
+        }
+        if (StringUtils.isNull(employeeDTO)) {
+            throw new ServiceException("当前的考核负责人已不存在");
+        }
+        return employeeDTO;
     }
 
     /**
@@ -1946,11 +1970,39 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             return performanceAppraisalObjectsDTO;
         }
         List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsBefore = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performAppraisalObjectsId);
+        List<Long> indicatorIds = new ArrayList<>();
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsAfter) {
             performanceAppraisalItemsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
+            indicatorIds.add(performanceAppraisalItemsDTO.getIndicatorId());
+        }
+        List<IndicatorDTO> indicatorDTOS = getIndicator(indicatorIds);
+        for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsAfter) {
+            for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+                if (indicatorDTO.getIndicatorId().equals(performanceAppraisalItemsDTO.getIndicatorId())) {
+                    performanceAppraisalItemsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+                    break;
+                }
+            }
         }
         operateItemValue(performanceAppraisalItemsBefore, performanceAppraisalItemsAfter);
         return performanceAppraisalObjectsDTO;
+    }
+
+    /**
+     * 获取指标
+     *
+     * @param indicatorIds 指标ID集合
+     */
+    private List<IndicatorDTO> getIndicator(List<Long> indicatorIds) {
+        R<List<IndicatorDTO>> indicatorR = indicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+        List<IndicatorDTO> indicatorDTOS = indicatorR.getData();
+        if (indicatorR.getCode() != 200) {
+            throw new ServiceException(indicatorR.getMsg());
+        }
+        if (StringUtils.isEmpty(indicatorDTOS)) {
+            throw new ServiceException("该指标已不存在 请检查指标配置");
+        }
+        return indicatorDTOS;
     }
 
     /**
