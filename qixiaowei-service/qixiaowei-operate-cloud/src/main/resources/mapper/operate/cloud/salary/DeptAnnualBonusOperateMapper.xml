@@ -68,7 +68,7 @@
     </select>
     <!--新增部门年终奖经营绩效结果表-->
     <insert id="insertDeptAnnualBonusOperate" useGeneratedKeys="true" keyProperty="deptAnnualBonusOperateId">
-        INSERT INTO dept_annual_bonus_operate (dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_annual_bonus_operate (dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{deptAnnualBonusOperate.deptAnnualBonusId},#{deptAnnualBonusOperate.indicatorId},#{deptAnnualBonusOperate.indicatorName},#{deptAnnualBonusOperate.targetValue},#{deptAnnualBonusOperate.actualValue},#{deptAnnualBonusOperate.deleteFlag},#{deptAnnualBonusOperate.createBy},#{deptAnnualBonusOperate.createTime},#{deptAnnualBonusOperate.updateBy},#{deptAnnualBonusOperate.updateTime})
     </insert>
@@ -134,7 +134,7 @@
     </update>
     <!--批量新增部门年终奖经营绩效结果表-->
     <insert id="batchDeptAnnualBonusOperate">
-        INSERT INTO dept_annual_bonus_operate (dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_annual_bonus_operate (dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="deptAnnualBonusOperates"

@@ -65,7 +65,7 @@
     </select>
     <!--新增部门年终奖表-->
     <insert id="insertDeptAnnualBonus" useGeneratedKeys="true" keyProperty="deptAnnualBonusId">
-        INSERT INTO dept_annual_bonus (dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_annual_bonus (annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{deptAnnualBonus.annualBonusYear},#{deptAnnualBonus.companyAnnualBonus},#{deptAnnualBonus.departmentAnnualBonus},#{deptAnnualBonus.status},#{deptAnnualBonus.deleteFlag},#{deptAnnualBonus.createBy},#{deptAnnualBonus.createTime},#{deptAnnualBonus.updateBy},#{deptAnnualBonus.updateTime})
     </insert>
@@ -128,7 +128,7 @@
     </update>
     <!--批量新增部门年终奖表-->
     <insert id="batchDeptAnnualBonus">
-        INSERT INTO dept_annual_bonus (dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_annual_bonus (annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="deptAnnualBonuss"

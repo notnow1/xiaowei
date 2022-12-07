@@ -66,5 +66,10 @@ public interface RemoteDepartmentService {
     @GetMapping(API_PREFIX_DEPARTMEN + "/getAll")
     R<List<DepartmentDTO>> getAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
-
+    /**
+     * 查看所有一级部门
+     * @param inner
+     */
+    @GetMapping(API_PREFIX_DEPARTMEN + "/selectParentDepartment")
+    R<List<DepartmentDTO>> selectParentDepartment(@RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
 }

@@ -73,4 +73,14 @@ public class RemoteDepartment implements RemoteDepartmentService {
     public R<List<DepartmentDTO>> getAll(String source) {
         return R.ok(departmentService.getAll());
     }
+
+    /**
+     * 查看所有一级部门
+     * @param inner
+     * @return
+     */
+    @Override
+    public R<List<DepartmentDTO>> selectParentDepartment(String inner) {
+        return R.ok(departmentService.selectParentDepartment());
+    }
 }

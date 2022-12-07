@@ -8,15 +8,15 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.DeptAnnualBonus;
-import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.*;
 import net.qixiaowei.operate.cloud.mapper.salary.BonusBudgetMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.BonusBudgetParametersMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.DeptAnnualBonusMapper;
+import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.salary.IDeptAnnualBonusService;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +43,10 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
     private BonusBudgetParametersMapper bonusBudgetParametersMapper;
     @Autowired
     private RemoteIndicatorService remoteIndicatorService;
+    @Autowired
+    private SalaryPayMapper salaryPayMapper;
+    @Autowired
+    private RemoteDepartmentService remoteDepartmentService;
 
     /**
     * 查询部门年终奖表
@@ -136,6 +140,8 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
      */
     @Override
     public DeptAnnualBonusDTO addPrefabricate(int annualBonusYear) {
+        //1+∑各驱动因素的奖金系数
+        BigDecimal allActualPerformanceBonusFactorSum = new BigDecimal("0");
         //部门年终奖表
         DeptAnnualBonusDTO deptAnnualBonusDTO = new DeptAnnualBonusDTO();
         //奖金预算表
@@ -146,24 +152,67 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudgetParametersMapper.selectBonusBudgetParametersByAnnualBonusYear(annualBonusYear);
         if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
             //封装部门年终奖经营绩效结果集合
-            packDeptAnnualBonusOperates(deptAnnualBonusOperateDTOList, bonusBudgetParametersDTOS);
+            packDeptAnnualBonusOperates(deptAnnualBonusOperateDTOList, bonusBudgetParametersDTOS,deptAnnualBonusDTO,allActualPerformanceBonusFactorSum);
 
             //根据总奖金id查询奖金预算参数表
             List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS1 = bonusBudgetParametersMapper.selectBonusBudgetParametersByBonusBudgetId(bonusBudgetParametersDTOS.get(0).getBonusBudgetId());
             //封装奖金预算参考值1
             BonusBudgetServiceImpl.packBounLadderNum(bonusBudgetDTO,bonusBudgetParametersDTOS1);
         }
-        //总奖金包预算总奖金包预算1
-//        deptAnnualBonusDTO.setAmountBonusBudgetReferenceValueOne(bonusBudgetDTO.getAmountBonusBudgetReferenceValueOne());
+        //2 可发经营奖总包
+        packDeptAnnualBonus(allActualPerformanceBonusFactorSum, deptAnnualBonusDTO, bonusBudgetDTO);
+        //远程调用查看所有一级部门
+        R<List<DepartmentDTO>> listR = remoteDepartmentService.selectParentDepartment(SecurityConstants.INNER);
+        List<DepartmentDTO> data = listR.getData();
+        if (StringUtils.isNotEmpty(data)){
+
+        }
+//        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(annualBonusYear);
         return null;
+    }
+
+    /**
+     * 封装部门年终奖表实体类数据
+     * @param allActualPerformanceBonusFactorSum
+     * @param deptAnnualBonusDTO
+     * @param bonusBudgetDTO
+     */
+    private void packDeptAnnualBonus(BigDecimal allActualPerformanceBonusFactorSum, DeptAnnualBonusDTO deptAnnualBonusDTO, BonusBudgetDTO bonusBudgetDTO) {
+        //总奖金包预算
+        BigDecimal amountBonusBudgetReferenceValueOne = bonusBudgetDTO.getAmountBonusBudgetReferenceValueOne();
+
+        //年初总奖金包预算（不考虑目标完成率） 旧：总奖金包预算
+        BigDecimal beYearAmountBonusBudget = new BigDecimal("0");
+        //年底应发总奖金包（根据实际业绩测算) 旧：总奖金包实际
+        BigDecimal endYearSalaryAmountBonus = new BigDecimal("0");
+        //最终可发总奖金包 旧：公司年终奖总包
+        BigDecimal companyAnnualBonus = new BigDecimal("0");
+
+        //赋值
+        if (null != amountBonusBudgetReferenceValueOne){
+            beYearAmountBonusBudget=amountBonusBudgetReferenceValueOne;
+            endYearSalaryAmountBonus= beYearAmountBonusBudget.multiply(new BigDecimal("1").add(allActualPerformanceBonusFactorSum));
+        }
+        //年初总奖金包预算（不考虑目标完成率) 旧：总奖金包预算 从总奖金包预算生成取总奖金包预算参考值1
+        deptAnnualBonusDTO.setBeYearAmountBonusBudget(beYearAmountBonusBudget);
+        //年底应发总奖金包（根据实际业绩测算) 总奖金包预算×（1+∑各驱动因素的奖金系数）
+        deptAnnualBonusDTO.setEndYearSalaryAmountBonus(endYearSalaryAmountBonus);
+        //最终可发总奖金包 旧：公司年终奖总包 默认等于总奖金包实际
+        deptAnnualBonusDTO.setCompanyAnnualBonus(endYearSalaryAmountBonus);
+        //战略奖实发
+        deptAnnualBonusDTO.setStrategyDeveAward(endYearSalaryAmountBonus);
     }
 
     /**
      * 封装部门年终奖经营绩效结果集合
      * @param deptAnnualBonusOperateDTOList
      * @param bonusBudgetParametersDTOS
+     * @param deptAnnualBonusDTO
+     * @param allActualPerformanceBonusFactorSum
      */
-    private void packDeptAnnualBonusOperates(List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList, List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS) {
+    private void packDeptAnnualBonusOperates(List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList, List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS, DeptAnnualBonusDTO deptAnnualBonusDTO, BigDecimal allActualPerformanceBonusFactorSum) {
+        //年初可发总奖金包预算
+        deptAnnualBonusDTO.setBeYearDeveAmountBonus(bonusBudgetParametersDTOS.get(0).getAmountBonusBudget());
         //指标id集合
         List<Long> collect = bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
         if (StringUtils.isNotEmpty(collect)){
@@ -203,13 +252,22 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
                     targetExcessPerComp.compareTo(new BigDecimal("0"))>0){
                 actualPerformanceBonusFactor= bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100")));
             }
-
             //目标超额完成率（%） 公式=（实际值÷目标值）-1
             deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
             //奖金系数（实际）公式=权重×目标超额完成率
             deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
             deptAnnualBonusOperateDTOList.add(deptAnnualBonusOperateDTO);
         }
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)){
+            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOList) {
+                //奖金系数（实际）
+                BigDecimal actualPerformanceBonusFactor = deptAnnualBonusOperateDTO.getActualPerformanceBonusFactor();
+                if (null != actualPerformanceBonusFactor && actualPerformanceBonusFactor.compareTo(new BigDecimal("0")) != 0){
+                    allActualPerformanceBonusFactorSum=allActualPerformanceBonusFactorSum.add(actualPerformanceBonusFactor);
+                }
+            }
+        }
+
     }
 
     /**

@@ -44,22 +44,34 @@ public class DeptAnnualBonusDTO {
     */
     private  Integer annualBonusYear;
     /**
-    * 公司年终奖总包
+    * 最终可发总奖金包 旧：公司年终奖总包
     */
     private  BigDecimal companyAnnualBonus;
     /**
-    * 部门年终奖总包
+    * 可发经营奖总包 旧：部门年终奖总包
     */
     private  BigDecimal departmentAnnualBonus;
 
     /**
-     * 年初总奖金包预算（不考虑目标完成率）
+     * 年初总奖金包预算（不考虑目标完成率） 旧：总奖金包预算
      */
     private BigDecimal beYearAmountBonusBudget;
     /**
-     * 年底应发总奖金包（根据实际业绩测算)
+     * 年底应发总奖金包（根据实际业绩测算) 旧：总奖金包实际
      */
-    private BigDecimal beYearAmountBonusBudget2;
+    private BigDecimal endYearSalaryAmountBonus;
+
+    /**
+     * 年初可发总奖金包预算
+     */
+    private BigDecimal beYearDeveAmountBonus;
+    /**
+     * 战略奖实发
+     */
+    private BigDecimal strategyDeveAward;
+
+
+
     /**
      * 部门年终奖经营绩效结果表集合
      */

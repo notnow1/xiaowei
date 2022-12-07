@@ -1003,7 +1003,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         //人力预算详情表集合
                         List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetIds(employeeBudgetIds);
                         //人力预算详情id
-                        List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
+                        List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).filter(t -> t != 0).collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(collect)) {
                             //人力预算调整表
                             List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);

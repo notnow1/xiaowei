@@ -121,7 +121,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     }
 
     /**
-     *
+     *封装人力预算计算年末总计等值
      * @param employeeBudgetDetailsDTOS
      * @param employeeBudgetAdjustsDTOS
      */

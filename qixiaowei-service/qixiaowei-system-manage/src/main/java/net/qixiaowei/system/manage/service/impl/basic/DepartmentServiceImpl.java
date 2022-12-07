@@ -479,7 +479,10 @@ public class DepartmentServiceImpl implements IDepartmentService {
         return departmentMapper.getAll();
     }
 
-
+    @Override
+    public List<DepartmentDTO> selectParentDepartment() {
+        return null;
+    }
 
 
     @Transactional
