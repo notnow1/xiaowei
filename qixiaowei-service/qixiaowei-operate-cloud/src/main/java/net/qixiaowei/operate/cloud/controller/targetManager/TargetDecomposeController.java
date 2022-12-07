@@ -1,12 +1,10 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,6 +45,7 @@ public class TargetDecomposeController extends BaseController {
 
 
     //==============================销售订单目标分解==================================//
+
     /**
      * 分页查询目标分解(销售订单)表列表
      */
@@ -72,7 +71,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:order:edit")
     @PostMapping("/order/edit")
-    public AjaxResult orderEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult orderEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateOrderTargetDecompose(targetDecomposeDTO));
     }
 
@@ -91,7 +90,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:order:remove")
     @PostMapping("/order/remove")
-    public AjaxResult orderRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult orderRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.logicDeleteOrderTargetDecomposeByTargetDecomposeId(targetDecomposeDTO));
     }
 
@@ -99,18 +98,30 @@ public class TargetDecomposeController extends BaseController {
      * 逻辑批量删除目标分解(销售订单)表
      */
     @RequiresPermissions("operate:cloud:targetDecompose:order:remove")
-
     @PostMapping("/order/removes")
     public AjaxResult orderRemoves(@RequestBody List<Long> targetDecomposeIds) {
         return toAjax(targetDecomposeService.logicDeleteOrderTargetDecomposeByTargetDecomposeIds(targetDecomposeIds));
     }
 
-
-
-
+    /**
+     * 目标分解(销售订单)导出列表Excel
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetDecompose:order:export")
+    @GetMapping("/order/export")
+    public void exportOrderTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
+        List<TargetDecomposeExcel> targetDecomposeExcelList = targetDecomposeService.exportOrderTargetDecompose(targetDecomposeDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售订单目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售订单目标分解详情").doWrite(targetDecomposeExcelList);
+    }
 
 
     //==============================销售收入目标分解==================================//
+
     /**
      * 分页查询目标分解(销售收入)表列表
      */
@@ -127,7 +138,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:income:add")
     @PostMapping("/income/add")
-    public AjaxResult incomeAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult incomeAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.insertIncomeTargetDecompose(targetDecomposeDTO));
     }
 
@@ -136,7 +147,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:income:edit")
     @PostMapping("/income/edit")
-    public AjaxResult incomeEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult incomeEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateIncomeTargetDecompose(targetDecomposeDTO));
     }
 
@@ -155,7 +166,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:income:remove")
     @PostMapping("/income/remove")
-    public AjaxResult incomeRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult incomeRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.logicDeleteIncomeTargetDecomposeByTargetDecomposeId(targetDecomposeDTO));
     }
 
@@ -169,12 +180,25 @@ public class TargetDecomposeController extends BaseController {
         return toAjax(targetDecomposeService.logicDeleteIncomeTargetDecomposeByTargetDecomposeIds(targetDecomposeIds));
     }
 
-
-
-
+    /**
+     * 目标分解(销售收入)导出列表Excel
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetDecompose:income:export")
+    @GetMapping("/income/export")
+    public void exportIncomeTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
+        List<TargetDecomposeExcel> targetDecomposeExcelList = targetDecomposeService.exportIncomeTargetDecompose(targetDecomposeDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售收入目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售收入目标分解详情").doWrite(targetDecomposeExcelList);
+    }
 
 
     //==============================销售回款目标分解==================================//
+
     /**
      * 分页查询目标分解(销售回款)表列表
      */
@@ -191,7 +215,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:returned:add")
     @PostMapping("/returned/add")
-    public AjaxResult returnedAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult returnedAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.insertReturnedTargetDecompose(targetDecomposeDTO));
     }
 
@@ -200,7 +224,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:returned:edit")
     @PostMapping("/returned/edit")
-    public AjaxResult returnedEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult returnedEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateReturnedTargetDecompose(targetDecomposeDTO));
     }
 
@@ -219,7 +243,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:returned:remove")
     @PostMapping("/returned/remove")
-    public AjaxResult returnedRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult returnedRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.logicDeleteReturnedTargetDecomposeByTargetDecomposeId(targetDecomposeDTO));
     }
 
@@ -233,9 +257,24 @@ public class TargetDecomposeController extends BaseController {
         return toAjax(targetDecomposeService.logicDeleteReturnedTargetDecomposeByTargetDecomposeIds(targetDecomposeIds));
     }
 
-
+    /**
+     * 目标分解(销售回款)导出列表Excel
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetDecompose:returned:export")
+    @GetMapping("/returned/export")
+    public void exportReturnedTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
+        List<TargetDecomposeExcel> targetDecomposeExcelList = targetDecomposeService.exportReturnedTargetDecompose(targetDecomposeDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售回款目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售回款目标分解详情").doWrite(targetDecomposeExcelList);
+    }
 
     //==============================自定义目标分解==================================//
+
     /**
      * 分页查询目标分解(自定义)表列表
      */
@@ -252,7 +291,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:custom:add")
     @PostMapping("/custom/add")
-    public AjaxResult customAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult customAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.insertCustomTargetDecompose(targetDecomposeDTO));
     }
 
@@ -261,7 +300,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:custom:edit")
     @PostMapping("/custom/edit")
-    public AjaxResult customEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult customEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateCustomTargetDecompose(targetDecomposeDTO));
     }
 
@@ -280,7 +319,7 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetDecompose:custom:remove")
     @PostMapping("/custom/remove")
-    public AjaxResult customRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult customRemove(@RequestBody @Validated(TargetDecomposeDTO.DeleteTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.logicDeleteCustomTargetDecomposeByTargetDecomposeId(targetDecomposeDTO));
     }
 
@@ -293,8 +332,86 @@ public class TargetDecomposeController extends BaseController {
         return toAjax(targetDecomposeService.logicDeleteCustomTargetDecomposeByTargetDecomposeIds(targetDecomposeIds));
     }
 
+    /**
+     * 目标分解(自定义)导出列表Excel
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetDecompose:custom:export")
+    @GetMapping("/custom/export")
+    public void exportCustomTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
+        //自定义表头
+        List<List<String>> head = TargetDecomposeImportListener.head();
+        List<TargetDecomposeExcel> targetDecomposeExcelList = targetDecomposeService.exportCustomTargetDecompose(targetDecomposeDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("自定义目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream())
+                .head(head)// 设置表头
+                .sheet("自定义目标分解详情")// 设置 sheet 的名字
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(TargetDecomposeImportListener.dataList(targetDecomposeExcelList));// 写入数据
+    }
+
+    //==============================经营结果分析报表==================================//
+
+    /**
+     * 查询经营结果分析报表列表
+     */
+    @RequiresPermissions("operate:cloud:targetSetting:analyse")
+    @GetMapping("/result/list")
+    public AjaxResult resultList(TargetDecomposeDTO targetDecomposeDTO) {
+        List<TargetDecomposeDTO> list = targetDecomposeService.resultList(targetDecomposeDTO);
+        return AjaxResult.success(list);
+    }
+
+
+    //==============================滚动预测管理==================================//
+
+    /**
+     * 查询滚动预测表详情
+     */
+    @RequiresPermissions(value = {"operate:cloud:targetDecompose:roll:info", "operate:cloud:targetDecompose:roll:edit"}, logical = Logical.OR)
+    @GetMapping("/roll/info/{targetDecomposeId}")
+    public AjaxResult rollInfo(@PathVariable Long targetDecomposeId) {
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        return AjaxResult.success(targetDecomposeDTO);
+    }
+
+    /**
+     * 分页查询滚动预测表列表
+     */
+    @RequiresPermissions("operate:cloud:targetDecompose:roll:pageList")
+    @GetMapping("/roll/pageList")
+    public TableDataInfo rollPageList(TargetDecomposeDTO targetDecomposeDTO) {
+        startPage();
+        List<TargetDecomposeDTO> list = targetDecomposeService.rollPageList(targetDecomposeDTO);
+        return getDataTable(list);
+    }
+
+    /**
+     * 修改滚动预测详情
+     */
+    @RequiresPermissions("operate:cloud:targetDecompose:roll:edit")
+    @PostMapping("/roll/edit")
+    public AjaxResult rollEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
+        return toAjax(targetDecomposeService.updateRollTargetDecompose(targetDecomposeDTO));
+    }
+
+    /**
+     * 移交预测负责人
+     */
+    @RequiresPermissions("operate:cloud:targetDecompose:roll:turnOver")
+    @PostMapping("/turnOver/edit")
+    public AjaxResult turnOverPrincipalEmployee(@RequestBody @Validated(TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
+        return toAjax(targetDecomposeService.turnOverPrincipalEmployee(targetDecomposeDTO));
+    }
+
 
     //==============================其他==================================//
+
     /**
      * 查询目标分解预制数据年份
      */
@@ -320,59 +437,8 @@ public class TargetDecomposeController extends BaseController {
     //@RequiresPermissions("operate:cloud:targetDecompose:edit")
     //@Log(title = "修改目标分解(销售订单)表", businessType = BusinessType.UPDATE)
     @PostMapping("/result/edit")
-    public AjaxResult resultEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
+    public AjaxResult resultEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateResultTargetDecompose(targetDecomposeDTO));
-    }
-
-    /**
-     * 查询经营结果分析报表列表
-     */
-    //@RequiresPermissions("operate:cloud:targetDecompose:list")
-    @GetMapping("/result/list")
-    public AjaxResult resultList(TargetDecomposeDTO targetDecomposeDTO) {
-        List<TargetDecomposeDTO> list = targetDecomposeService.resultList(targetDecomposeDTO);
-        return AjaxResult.success(list);
-    }
-
-    /**
-     * 修改滚动预测详情
-     */
-    //@RequiresPermissions("operate:cloud:targetDecompose:edit")
-    //@Log(title = "修改目标分解(销售订单)表", businessType = BusinessType.UPDATE)
-    @PostMapping("/roll/edit")
-    public AjaxResult rollEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
-        return toAjax(targetDecomposeService.updateRollTargetDecompose(targetDecomposeDTO));
-    }
-
-    /**
-     * 查询滚动预测表详情
-     */
-    //@RequiresPermissions("operate:cloud:targetDecompose:info")
-    @GetMapping("/roll/info/{targetDecomposeId}")
-    public AjaxResult rollInfo(@PathVariable Long targetDecomposeId) {
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId);
-        return AjaxResult.success(targetDecomposeDTO);
-    }
-
-    /**
-     * 分页查询滚动预测表列表
-     */
-    //@RequiresPermissions("operate:cloud:targetDecompose:pageList")
-    @GetMapping("/roll/pageList")
-    public TableDataInfo rollPageList(TargetDecomposeDTO targetDecomposeDTO) {
-        startPage();
-        List<TargetDecomposeDTO> list = targetDecomposeService.rollPageList(targetDecomposeDTO);
-        return getDataTable(list);
-    }
-
-    /**
-     * 移交预测负责人
-     */
-    //@RequiresPermissions("operate:cloud:targetDecompose:edit")
-    //@Log(title = "移交预测负责人", businessType = BusinessType.UPDATE)
-    @PostMapping("/turnOver/edit")
-    public AjaxResult turnOverPrincipalEmployee(@RequestBody @Validated(TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class)TargetDecomposeDTO targetDecomposeDTO) {
-        return toAjax(targetDecomposeService.turnOverPrincipalEmployee(targetDecomposeDTO));
     }
 
     /**
@@ -440,7 +506,7 @@ public class TargetDecomposeController extends BaseController {
      * 解析Excel
      */
     @PostMapping("/excelParseObject")
-    public AjaxResult excelParseObject(TargetDecomposeDTO targetDecomposeDTO,MultipartFile file) {
+    public AjaxResult excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -448,76 +514,8 @@ public class TargetDecomposeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        return AjaxResult.success(targetDecomposeService.excelParseObject(targetDecomposeDTO,file));
+        return AjaxResult.success(targetDecomposeService.excelParseObject(targetDecomposeDTO, file));
     }
-
-    /**
-     * 目标分解(销售订单)导出列表Excel
-     */
-    @SneakyThrows
-    @GetMapping("/order/export")
-    public void exportOrderTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
-        List<TargetDecomposeExcel> targetDecomposeExcelList = targetDecomposeService.exportOrderTargetDecompose(targetDecomposeDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("销售订单目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售订单目标分解详情").doWrite(targetDecomposeExcelList);
-    }
-
-    /**
-     * 目标分解(销售收入)导出列表Excel
-     */
-    @SneakyThrows
-    @GetMapping("/income/export")
-    public void exportIncomeTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
-        List<TargetDecomposeExcel> targetDecomposeExcelList = targetDecomposeService.exportIncomeTargetDecompose(targetDecomposeDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("销售收入目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售收入目标分解详情").doWrite(targetDecomposeExcelList);
-    }
-
-    /**
-     * 目标分解(销售回款)导出列表Excel
-     */
-    @SneakyThrows
-    @GetMapping("/returned/export")
-    public void exportReturnedTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
-        List<TargetDecomposeExcel> targetDecomposeExcelList = targetDecomposeService.exportReturnedTargetDecompose(targetDecomposeDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("销售回款目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetDecomposeExcel.class).sheet("销售回款目标分解详情").doWrite(targetDecomposeExcelList);
-    }
-
-    /**
-     * 目标分解(自定义)导出列表Excel
-     */
-    @SneakyThrows
-    @GetMapping("/custom/export")
-    public void exportCustomTargetDecompose(@RequestParam Map<String, Object> targetDecompose, TargetDecomposeDTO targetDecomposeDTO, HttpServletResponse response) {
-        //自定义表头
-        List<List<String>> head = TargetDecomposeImportListener.head();
-        List<TargetDecomposeExcel> targetDecomposeExcelList = targetDecomposeService.exportCustomTargetDecompose(targetDecomposeDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("自定义目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream())
-                .head(head)// 设置表头
-                .sheet("自定义目标分解详情")// 设置 sheet 的名字
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .doWrite(TargetDecomposeImportListener.dataList(targetDecomposeExcelList));// 写入数据
-    }
-
 
 
 }

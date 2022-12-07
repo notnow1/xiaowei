@@ -10,8 +10,8 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
@@ -52,19 +52,9 @@ public class TargetOutcomeController extends BaseController {
 
 
     /**
-     * 查询目标结果表详情
-     */
-    //@RequiresPermissions("operate:cloud:targetOutcome:info")
-    @GetMapping("/info/{targetOutcomeId}")
-    public AjaxResult info(@PathVariable Long targetOutcomeId) {
-        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
-        return AjaxResult.success(targetOutcomeDTO);
-    }
-
-    /**
      * 分页查询目标结果表列表
      */
-    //@RequiresPermissions("operate:cloud:targetOutcome:pageList")
+    @RequiresPermissions("operate:cloud:targetOutcome:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(TargetOutcomeDTO targetOutcomeDTO) {
         startPage();
@@ -73,28 +63,28 @@ public class TargetOutcomeController extends BaseController {
     }
 
     /**
-     * 查询目标结果表列表
-     */
-    //@RequiresPermissions("operate:cloud:targetOutcome:list")
-    @GetMapping("/list")
-    public AjaxResult list(TargetOutcomeDTO targetOutcomeDTO) {
-        List<TargetOutcomeDTO> list = targetOutcomeService.selectTargetOutcomeList(targetOutcomeDTO);
-        return AjaxResult.success(list);
-    }
-
-    /**
      * 修改目标结果表
      */
-    //@RequiresPermissions("operate:cloud:targetOutcome:edit")
-    @Log(title = "修改目标结果表", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("operate:cloud:targetOutcome:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody TargetOutcomeDTO targetOutcomeDTO) {
         return toAjax(targetOutcomeService.updateTargetOutcome(targetOutcomeDTO));
     }
 
     /**
+     * 查询目标结果表详情
+     */
+    @RequiresPermissions(value = {"operate:cloud:targetOutcome:info", "operate:cloud:targetOutcome:edit"}, logical = Logical.OR)
+    @GetMapping("/info/{targetOutcomeId}")
+    public AjaxResult info(@PathVariable Long targetOutcomeId) {
+        TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetOutcomeId(targetOutcomeId);
+        return AjaxResult.success(targetOutcomeDTO);
+    }
+
+    /**
      * 解析目标结果表
      */
+    @RequiresPermissions("operate:cloud:targetOutcome:edit")
     @PostMapping("excelParseObject")
     public AjaxResult importTargetOutcome(Long targetOutSettingId, MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
@@ -111,30 +101,10 @@ public class TargetOutcomeController extends BaseController {
     }
 
     /**
-     * 导出目标结果表
-     */
-    @SneakyThrows
-    @GetMapping("export")
-    public void exportTargetOutcome(@RequestParam Map<String, Object> targetOutcome, TargetOutcomeDTO targetOutcomeDTO, HttpServletResponse response) {
-        List<List<String>> head = TargetOutcomeImportListener.head();
-        List<TargetOutcomeExcel> targetOutcomeExcelList = targetOutcomeService.exportTargetOutcome(targetOutcomeDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("关键经营结果导出" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream())
-                .head(head)
-                .sheet("关键经营结果")// 设置 sheet 的名字
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .doWrite(TargetOutcomeImportListener.dataList(targetOutcomeExcelList));
-    }
-
-    /**
      * 导出目标结果模板
      */
     @SneakyThrows
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @RequiresPermissions("operate:cloud:targetOutcome:edit")
     @GetMapping("/export-template")
     public void exportTemplate(@RequestParam Integer targetYear, HttpServletResponse response) {
         try {
@@ -158,4 +128,37 @@ public class TargetOutcomeController extends BaseController {
             throw new ServiceException("导出失败");
         }
     }
+
+    /**
+     * 导出目标结果表
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetOutcome:export")
+    @GetMapping("export")
+    public void exportTargetOutcome(@RequestParam Map<String, Object> targetOutcome, TargetOutcomeDTO targetOutcomeDTO, HttpServletResponse response) {
+        List<List<String>> head = TargetOutcomeImportListener.head();
+        List<TargetOutcomeExcel> targetOutcomeExcelList = targetOutcomeService.exportTargetOutcome(targetOutcomeDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("关键经营结果导出" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream())
+                .head(head)
+                .sheet("关键经营结果")// 设置 sheet 的名字
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(TargetOutcomeImportListener.dataList(targetOutcomeExcelList));
+    }
+
+
+    /**
+     * 查询目标结果表列表
+     */
+    @GetMapping("/list")
+    public AjaxResult list(TargetOutcomeDTO targetOutcomeDTO) {
+        List<TargetOutcomeDTO> list = targetOutcomeService.selectTargetOutcomeList(targetOutcomeDTO);
+        return AjaxResult.success(list);
+    }
+
+
 }
