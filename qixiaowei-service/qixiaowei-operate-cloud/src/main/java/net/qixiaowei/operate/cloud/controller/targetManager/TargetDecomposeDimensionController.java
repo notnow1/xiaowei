@@ -3,8 +3,6 @@ package net.qixiaowei.operate.cloud.controller.targetManager;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDimensionDTO;
@@ -70,6 +68,15 @@ public class TargetDecomposeDimensionController extends BaseController {
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> targetDecomposeDimensionIds) {
         return toAjax(targetDecomposeDimensionService.logicDeleteTargetDecomposeDimensionByTargetDecomposeDimensionIds(targetDecomposeDimensionIds));
+    }
+
+    /**
+     * 批量修改目标分解维度配置
+     */
+    @RequiresPermissions("operate:cloud:targetDecomposeDimension:edits")
+    @PostMapping("/sort")
+    public AjaxResult sort(@RequestBody List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
+        return toAjax(targetDecomposeDimensionService.updateTargetDecomposeDimensions(targetDecomposeDimensionDtos));
     }
 
 
