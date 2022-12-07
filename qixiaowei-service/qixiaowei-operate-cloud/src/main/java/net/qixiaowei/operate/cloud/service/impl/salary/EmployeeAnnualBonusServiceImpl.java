@@ -29,6 +29,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -191,6 +192,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      * @return 结果
      */
     @Override
+    @Transactional
     public EmployeeAnnualBonusDTO insertEmployeeAnnualBonus(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         //发起评议流程标记:0否;1是
         Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
@@ -619,6 +621,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      * @return
      */
     @Override
+    @Transactional
     public EmployeeAnnualBonusDTO submitSave(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         //主表id
         Long employeeAnnualBonusId = employeeAnnualBonusDTO.getEmployeeAnnualBonusId();
@@ -800,9 +803,9 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 BeanUtils.copyProperties(empAnnualBonusSnapshotDTO, empAnnualBonusSnapshot);
                 BeanUtils.copyProperties(empAnnualBonusSnapshotDTO, empAnnualBonusObjects);
                 //个人年终奖ID
-                empAnnualBonusObjects.setEmployeeAnnualBonusId(empAnnualBonusObjects.getEmployeeAnnualBonusId());
+                empAnnualBonusObjects.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
                 //个人年终奖ID
-                empAnnualBonusSnapshot.setEmployeeAnnualBonusId(empAnnualBonusObjects.getEmployeeAnnualBonusId());
+                empAnnualBonusSnapshot.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
                 empAnnualBonusObjectsList.add(empAnnualBonusObjects);
                 empAnnualBonusSnapshotList.add(empAnnualBonusSnapshot);
             }
