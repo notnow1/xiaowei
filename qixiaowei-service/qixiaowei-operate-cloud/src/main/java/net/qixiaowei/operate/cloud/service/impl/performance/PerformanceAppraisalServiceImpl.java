@@ -1898,19 +1898,21 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         // 更新绩效考核任务
         PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
         appraisalDTO.setPerformanceAppraisalId(performanceAppraisalId);
-        if (performanceAppraisalObjectsDTOList.size() == 1) {
-            appraisalDTO.setAppraisalStatus(2);
-            updatePerformanceAppraisal(appraisalDTO);
-        } else if (performanceAppraisalObjectsDTOList.size() > 1) {
-            int submitSum = 1;
-            for (PerformanceAppraisalObjectsDTO appraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-                if (appraisalObjectsDTO.getAppraisalObjectStatus() > 1) {
-                    submitSum += 1;
-                }
-            }
-            if (submitSum == performanceAppraisalObjectsDTOList.size()) {
+        if(performanceAppraisalObjectsDTOByObjectId.getIsSubmit() == 1){
+            if (performanceAppraisalObjectsDTOList.size() == 1) {
                 appraisalDTO.setAppraisalStatus(2);
                 updatePerformanceAppraisal(appraisalDTO);
+            } else if (performanceAppraisalObjectsDTOList.size() > 1) {
+                int submitSum = 1;
+                for (PerformanceAppraisalObjectsDTO appraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                    if (appraisalObjectsDTO.getAppraisalObjectStatus() > 2) {
+                        submitSum += 1;
+                    }
+                }
+                if (submitSum == performanceAppraisalObjectsDTOList.size()) {
+                    appraisalDTO.setAppraisalStatus(2);
+                    updatePerformanceAppraisal(appraisalDTO);
+                }
             }
         }
         // 更新绩效考核对象

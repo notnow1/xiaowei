@@ -194,7 +194,7 @@ public class PerformanceAppraisalController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
     @Log(title = "编辑组织绩效考核制定表", businessType = BusinessType.INSERT)
-    @PostMapping("/editOrgDevelop")
+    @PostMapping("/edit/orgDevelop")
     public AjaxResult editOrgDevelop(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         return AjaxResult.success(performanceAppraisalService.updateOrgDevelopPerformanceAppraisal(performanceAppraisalObjectsDTO));
     }
