@@ -12,7 +12,8 @@ import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
-import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetSettingService;
@@ -43,39 +44,142 @@ public class TargetSettingController extends BaseController {
     @Autowired
     private ITargetSettingService targetSettingService;
 
+    //==============================销售订单==============================//
+
     /**
-     * 查询经营分析报表列表
+     * 查询销售订单目标制定列表
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/analyse/list")
-    public AjaxResult analyseList(TargetSettingDTO targetSettingDTO) {
-        List<TargetSettingDTO> list = targetSettingService.analyseList(targetSettingDTO);
-        return AjaxResult.success(list);
+    @RequiresPermissions(value = {"operate:cloud:targetSetting:order:info", "operate:cloud:targetSetting:order:save"}, logical = Logical.OR)
+    @GetMapping("/info/order")
+    public AjaxResult listOrder(TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.selectOrderTargetSettingList(targetSettingDTO));
     }
 
     /**
-     * 查询目标制定详情
+     * 保存销售订单目标制定
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:info")
-    @GetMapping("/info/{targetSettingId}")
-    public AjaxResult info(@PathVariable Long targetSettingId) {
-        TargetSettingDTO targetSettingDTO = targetSettingService.selectTargetSettingByTargetSettingId(targetSettingId);
-        return AjaxResult.success(targetSettingDTO);
+    @RequiresPermissions("operate:cloud:targetSetting:order:save")
+    @PostMapping("/save/order")
+    public AjaxResult saveOrder(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.saveOrderTargetSetting(targetSettingDTO));
     }
 
     /**
-     * 查询目标制定列表
+     * 导出销售订单目标制定
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/list")
-    public AjaxResult list(TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.selectTargetSettingList(targetSettingDTO));
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetSetting:order:export")
+    @GetMapping("/export/order")
+    public void exportOrder(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        List<TargetSettingOrderExcel> targetSettingExcelList = targetSettingService.exportOrderTargetSetting(targetSettingDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售订单目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetSettingOrderExcel.class).sheet("销售订单目标制定")
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .doWrite(targetSettingExcelList);
     }
+
+    /**
+     * 查询销售订单目标制定-历史年度数据
+     */
+    @RequiresPermissions(value = {"operate:cloud:targetSetting:order:info", "operate:cloud:targetSetting:order:save"}, logical = Logical.OR)
+    @GetMapping("/info/orderDrop")
+    public AjaxResult listOrderDrop(TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.selectOrderDropTargetSettingList(targetSettingDTO));
+    }
+
+
+    //==============================销售收入==============================//
+
+    /**
+     * 查询销售收入目标制定列表
+     */
+    @RequiresPermissions(value = {"operate:cloud:targetSetting:income:info", "operate:cloud:targetSetting:income:save"}, logical = Logical.OR)
+    @GetMapping("/info/income")
+    public AjaxResult listIncome(@RequestParam Integer targetYear) {
+        return AjaxResult.success(targetSettingService.selectIncomeTargetSettingList(targetYear));
+    }
+
+    /**
+     * 新增目标制定
+     */
+    @RequiresPermissions("operate:cloud:targetSetting:income:save")
+    @Log(title = "保存销售收入目标制定", businessType = BusinessType.UPDATE)
+    @PostMapping("/save/income")
+    public AjaxResult saveIncome(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.saveIncomeTargetSetting(targetSettingDTO));
+    }
+
+    /**
+     * 导出销售收入目标制定
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetSetting:income:export")
+    @GetMapping("/export/income")
+    public void exportIncome(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        List<TargetSettingIncomeExcel> targetSettingExcelList = targetSettingService.exportIncomeTargetSetting(targetSettingDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售收入目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), TargetSettingIncomeExcel.class)
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .sheet("销售收入目标制定").doWrite(targetSettingExcelList);
+    }
+
+    //==============================回款==============================//
+
+    /**
+     * 查询销售收入目标制定列表
+     */
+    @RequiresPermissions(value = {"operate:cloud:targetSetting:recovery:info", "operate:cloud:targetSetting:recovery:save"}, logical = Logical.OR)
+    @GetMapping("/info/recovery")
+    public AjaxResult listRecovery(TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.selectRecoveryTargetSettingList(targetSettingDTO));
+    }
+
+    /**
+     * 新增目标制定
+     */
+    @RequiresPermissions("operate:cloud:targetSetting:recovery:save")
+    @PostMapping("/save/recovery")
+    public AjaxResult saveRecoveries(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
+        return AjaxResult.success(targetSettingService.saveRecoveryTargetSetting(targetSettingDTO));
+    }
+
+    /**
+     * 导出销售回款目标制定
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetSetting:recovery:export")
+    @GetMapping("/export/recovery")
+    public void exportRecovery(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        List<List<String>> headRecovery = TargetSettingImportListener.headRecovery();
+        List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcels = targetSettingService.exportRecoveryTargetSetting(targetSettingDTO);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("销售回款目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream())
+                .head(headRecovery)
+                .sheet("销售回款目标制定")// 设置 sheet 的名字
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())// 自适应列宽
+                .doWrite(TargetSettingImportListener.dataList(targetSettingRecoveriesExcels));
+    }
+
+    //==============================经营目标==============================//
 
     /**
      * 分页查询目标制定列表
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:pageList")
+    @RequiresPermissions(value = {"operate:cloud:targetSetting:info", "operate:cloud:targetSetting:edit"}, logical = Logical.OR)
     @GetMapping("/treeList")
     public AjaxResult treeList(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectTargetSettingTreeList(targetSettingDTO));
@@ -84,46 +188,57 @@ public class TargetSettingController extends BaseController {
     /**
      * 修改目标制定
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:edit")
-//    @Log(title = "修改目标制定", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("operate:cloud:targetSetting:edit")
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<TargetSettingDTO> targetSettingDTOS) {
         return AjaxResult.success(targetSettingService.saveTargetSettings(targetSettingDTOS));
     }
 
     /**
-     * 逻辑删除目标制定
+     * 添加指标时-获取指标列表
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:remove")
-//    @Log(title = "删除目标制定", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody TargetSettingDTO targetSettingDTO) {
-        return toAjax(targetSettingService.logicDeleteTargetSettingByTargetSettingId(targetSettingDTO));
-    }
-
-    /**
-     * 获取指标列表
-     */
-//    @RequiresPermissions("operate:cloud:targetSetting:remove")
+    @RequiresPermissions(value = {"operate:cloud:targetSetting:info", "operate:cloud:targetSetting:edit"}, logical = Logical.OR)
     @GetMapping("/indicator")
     public AjaxResult indicator(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectIndicatorList(targetSettingDTO));
     }
 
     /**
-     * 获取指标列表
+     * 添加指标时-获取指标树列表
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:remove")
+    @RequiresPermissions(value = {"operate:cloud:targetSetting:info", "operate:cloud:targetSetting:edit"}, logical = Logical.OR)
     @GetMapping("/indicatorTree")
     public AjaxResult indicatorTree(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectIndicatorTree(targetSettingDTO));
     }
 
     /**
+     * 导出目标制定模板
+     */
+    @SneakyThrows
+    @RequiresPermissions("operate:cloud:targetSetting:edit")
+    @GetMapping("/export-template")
+    public void exportTemplate(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
+        try {
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding(CharsetKit.UTF_8);
+            String fileName = URLEncoder.encode("经营云-关键经营目标制定导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                    , CharsetKit.UTF_8);
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
+            WriteSheet sheet = EasyExcel.writerSheet(0, "关键经营目标制定").head(TargetSettingExcel.class).build();
+            excelWriter.write(new ArrayList<>(), sheet);
+            excelWriter.finish();
+        } catch (IOException e) {
+            throw new ServiceException("导出失败");
+        }
+    }
+
+    /**
      * 解析目标制定
      */
+    @RequiresPermissions("operate:cloud:targetSetting:edit")
     @PostMapping("/excelParseObject")
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
     public AjaxResult importEmployee(MultipartFile file, Integer targetYear) {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
@@ -146,7 +261,7 @@ public class TargetSettingController extends BaseController {
      * 导出目标制定
      */
     @SneakyThrows
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @RequiresPermissions("operate:cloud:targetSetting:export")
     @GetMapping("/export")
     public void export(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
         List<List<TargetSettingExcel>> targetSettingExcelList = targetSettingService.exportTargetSetting(targetSettingDTO);
@@ -169,148 +284,28 @@ public class TargetSettingController extends BaseController {
         }
     }
 
-    /**
-     * 导出目标制定模板
-     */
-    @SneakyThrows
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/export-template")
-    public void exportTemplate(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
-        try {
-            response.setContentType("application/vnd.ms-excel");
-            response.setCharacterEncoding(CharsetKit.UTF_8);
-            String fileName = URLEncoder.encode("经营云-关键经营目标制定导入" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                    , CharsetKit.UTF_8);
-            response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-            ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).build();
-            WriteSheet sheet = EasyExcel.writerSheet(0, "关键经营目标制定").head(TargetSettingExcel.class).build();
-            excelWriter.write(new ArrayList<>(), sheet);
-            excelWriter.finish();
-        } catch (IOException e) {
-            throw new ServiceException("导出失败");
-        }
-    }
+    //==============================经营结果分析报表==================================//
 
     /**
-     * 查询销售订单目标制定列表
+     * 查询经营分析报表列表
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/info/order")
-    public AjaxResult listOrder(TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.selectOrderTargetSettingList(targetSettingDTO));
+    @RequiresPermissions("operate:cloud:targetSetting:analyse")
+    @GetMapping("/analyse/list")
+    public AjaxResult analyseList(TargetSettingDTO targetSettingDTO) {
+        List<TargetSettingDTO> list = targetSettingService.analyseList(targetSettingDTO);
+        return AjaxResult.success(list);
     }
 
-    /**
-     * 查询销售收入目标制定列表
-     */
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/info/income")
-    public AjaxResult listIncome(@RequestParam Integer targetYear) {
-        return AjaxResult.success(targetSettingService.selectIncomeTargetSettingList(targetYear));
-    }
+    //==============================其他==============================//
 
     /**
-     * 查询销售收入目标制定列表
+     * 逻辑删除目标制定
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/info/recovery")
-    public AjaxResult listRecovery(TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.selectRecoveryTargetSettingList(targetSettingDTO));
-    }
-
-    /**
-     * 查询销售订单目标制定-不带主表玩
-     */
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
-    @GetMapping("/info/orderDrop")
-    public AjaxResult listOrderDrop(TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.selectOrderDropTargetSettingList(targetSettingDTO));
-    }
-
-    /**
-     * 保存销售订单目标制定
-     */
-//    @RequiresPermissions("operate:cloud:targetSetting:add")
-    @Log(title = "保存销售订单目标制定", businessType = BusinessType.UPDATE)
-    @PostMapping("/save/order")
-    public AjaxResult saveOrder(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.saveOrderTargetSetting(targetSettingDTO));
-    }
-
-    /**
-     * 新增目标制定
-     */
-//    @RequiresPermissions("operate:cloud:targetSetting:add")
-    @Log(title = "保存销售收入目标制定", businessType = BusinessType.UPDATE)
-    @PostMapping("/save/income")
-    public AjaxResult saveIncome(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.saveIncomeTargetSetting(targetSettingDTO));
-    }
-
-    /**
-     * 新增目标制定
-     */
-//    @RequiresPermissions("operate:cloud:targetSetting:add")
-    @Log(title = "保存销售回款目标制定", businessType = BusinessType.UPDATE)
-    @PostMapping("/save/recovery")
-    public AjaxResult saveRecoveries(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
-        return AjaxResult.success(targetSettingService.saveRecoveryTargetSetting(targetSettingDTO));
+    @RequiresPermissions("operate:cloud:targetSetting:remove")
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody TargetSettingDTO targetSettingDTO) {
+        return toAjax(targetSettingService.logicDeleteTargetSettingByTargetSettingId(targetSettingDTO));
     }
 
 
-    /**
-     * 导出销售订单目标制定
-     */
-    @SneakyThrows
-    @GetMapping("/export/order")
-    public void exportOrder(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
-        List<TargetSettingOrderExcel> targetSettingExcelList = targetSettingService.exportOrderTargetSetting(targetSettingDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("销售订单目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetSettingOrderExcel.class).sheet("销售订单目标制定")
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .doWrite(targetSettingExcelList);
-    }
-
-    /**
-     * 导出销售收入目标制定
-     */
-    @SneakyThrows
-    @GetMapping("/export/income")
-    public void exportIncome(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
-        List<TargetSettingIncomeExcel> targetSettingExcelList = targetSettingService.exportIncomeTargetSetting(targetSettingDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("销售收入目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), TargetSettingIncomeExcel.class)
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .sheet("销售收入目标制定").doWrite(targetSettingExcelList);
-    }
-
-    /**
-     * 导出销售回款目标制定
-     */
-    @SneakyThrows
-    @GetMapping("/export/recovery")
-    public void exportRecovery(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
-        List<List<String>> headRecovery = TargetSettingImportListener.headRecovery();
-        List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcels = targetSettingService.exportRecoveryTargetSetting(targetSettingDTO);
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("销售回款目标制定" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
-                , CharsetKit.UTF_8);
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream())
-                .head(headRecovery)
-                .sheet("销售回款目标制定")// 设置 sheet 的名字
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())// 自适应列宽
-                .doWrite(TargetSettingImportListener.dataList(targetSettingRecoveriesExcels));
-    }
 }

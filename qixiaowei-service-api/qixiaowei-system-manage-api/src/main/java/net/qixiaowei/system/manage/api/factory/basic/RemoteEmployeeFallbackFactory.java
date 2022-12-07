@@ -68,6 +68,11 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             public R<List<EmployeeDTO>> selectEmployeeByDepts(Long departmentId, String source) {
                 return R.fail("通过部门id查询所有员工信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<EmployeeDTO>> selectParentDepartmentIdAndOfficialRankSystem(List<Long> departmentIdAll, String source) {
+                return R.fail("通过部门id集合查询一级部门及其下级部门所有员工信息失败:" + throwable.getMessage());
+            }
         };
     }
 }

@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
@@ -37,7 +38,7 @@ public class SalaryItemController extends BaseController {
     /**
      * 分页查询工资项列表
      */
-//    @RequiresPermissions("operate:cloud:salaryItem:pageList")
+    @RequiresPermissions("operate:cloud:salaryItem:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(SalaryItemDTO salaryItemDTO) {
         startPage();
@@ -46,42 +47,38 @@ public class SalaryItemController extends BaseController {
     }
 
     /**
-     * 查询工资项列表
-     */
-//    @RequiresPermissions("operate:cloud:salaryItem:list")
-    @GetMapping("/list")
-    public AjaxResult list(SalaryItemDTO salaryItemDTO) {
-        List<SalaryItemDTO> list = salaryItemService.selectSalaryItemList(salaryItemDTO);
-        return AjaxResult.success(list);
-    }
-
-
-    /**
      * 新增工资项
      */
-//    @RequiresPermissions("operate:cloud:salaryItem:add")
-    @Log(title = "新增工资项", businessType = BusinessType.INSERT)
+    @RequiresPermissions("operate:cloud:salaryItem:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody SalaryItemDTO salaryItemDTO) {
         return toAjax(salaryItemService.insertSalaryItem(salaryItemDTO));
     }
 
-
     /**
      * 修改工资项
      */
-//    @RequiresPermissions("operate:cloud:salaryItem:edit")
-    @Log(title = "修改工资项", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("operate:cloud:salaryItem:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody SalaryItemDTO salaryItemDTO) {
         return toAjax(salaryItemService.updateSalaryItem(salaryItemDTO));
     }
 
     /**
+     * 工资项详情
+     */
+    @RequiresPermissions("operate:cloud:salaryItem:info")
+    @Log(title = "工资项详情")
+    @GetMapping("/info/{salaryItemId}")
+    public AjaxResult info(@PathVariable Long salaryItemId) {
+        SalaryItemDTO salaryItemDTO = salaryItemService.detailSalaryItemBySalaryId(salaryItemId);
+        return AjaxResult.success(salaryItemDTO);
+    }
+
+    /**
      * 逻辑删除工资项
      */
-//    @RequiresPermissions("operate:cloud:salaryItem:remove")
-    @Log(title = "删除工资项", businessType = BusinessType.DELETE)
+    @RequiresPermissions("operate:cloud:salaryItem:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody SalaryItemDTO salaryItemDTO) {
         Long salaryItemId = salaryItemDTO.getSalaryItemId();
@@ -92,31 +89,9 @@ public class SalaryItemController extends BaseController {
     }
 
     /**
-     * 工资项详情
-     */
-//    @RequiresPermissions("operate:cloud:salaryItem:remove")
-    @Log(title = "工资项详情")
-    @GetMapping("/info/{salaryItemId}")
-    public AjaxResult info(@PathVariable Long salaryItemId) {
-        SalaryItemDTO salaryItemDTO = salaryItemService.detailSalaryItemBySalaryId(salaryItemId);
-        return AjaxResult.success(salaryItemDTO);
-    }
-
-    /**
-     * 批量修改工资项
-     */
-//    @RequiresPermissions("operate:cloud:salaryItem:edits")
-    @Log(title = "批量修改工资项", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<SalaryItemDTO> salaryItemDtos) {
-        return toAjax(salaryItemService.updateSalaryItems(salaryItemDtos));
-    }
-
-    /**
      * 逻辑批量删除工资项
      */
-//    @RequiresPermissions("operate:cloud:salaryItem:removes")
-    @Log(title = "批量删除工资项", businessType = BusinessType.DELETE)
+    @RequiresPermissions("operate:cloud:salaryItem:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> salaryItemIds) {
         return toAjax(salaryItemService.logicDeleteSalaryItemBySalaryItemIds(salaryItemIds));
@@ -126,6 +101,7 @@ public class SalaryItemController extends BaseController {
      * 导出用户
      */
     @SneakyThrows
+    @RequiresPermissions("operate:cloud:salaryItem:export")
     @PostMapping("/export")
     public void export(@RequestBody SalaryItemDTO salaryItemDTO, HttpServletResponse response) {
         List<SalaryItemExcel> salaryItemExcels = salaryItemService.exportSalaryExcel(salaryItemDTO);
@@ -140,10 +116,20 @@ public class SalaryItemController extends BaseController {
     /**
      * 查找二级为奖金的三级工资条
      */
-//    @RequiresPermissions("operate:cloud:salaryItem:pageList")
     @GetMapping("/bonusList")
     public AjaxResult bonusList(SalaryItemDTO salaryItemDTO) {
         return AjaxResult.success(salaryItemService.selectBonusItemList(salaryItemDTO));
     }
+
+
+    /**
+     * 查询工资项列表
+     */
+    @GetMapping("/list")
+    public AjaxResult list(SalaryItemDTO salaryItemDTO) {
+        List<SalaryItemDTO> list = salaryItemService.selectSalaryItemList(salaryItemDTO);
+        return AjaxResult.success(list);
+    }
+
 
 }

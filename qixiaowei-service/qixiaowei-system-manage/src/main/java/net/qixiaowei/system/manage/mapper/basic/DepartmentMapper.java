@@ -180,8 +180,15 @@ public interface DepartmentMapper{
 
 
     /**
-     * 查询所有部门
+     * 远程查询所有一级部门
      * @return
      */
     List<DepartmentDTO> getAll();
+
+    /**
+     * 远程查询一级部门及子级部门
+     * @param departmentId
+     * @return
+     */
+    List<DepartmentDTO> selectParentDepartment(@Param("departmentId")Long departmentId);
 }

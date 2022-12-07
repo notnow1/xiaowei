@@ -96,10 +96,19 @@ public interface RemoteEmployeeService {
 
     /**
      * 查询部门下所有人员
+     *
      * @param departmentId
      * @param source
      * @return
      */
     @GetMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByDepts")
-    R<List<EmployeeDTO>>selectEmployeeByDepts(@RequestParam("departmentId")Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<List<EmployeeDTO>> selectEmployeeByDepts(@RequestParam("departmentId") Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 查询一级部门下所有的人员 返回部门id和职级体系id
+     * @param departmentIdAll
+     * @return
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByParPDRIds")
+    R<List<EmployeeDTO>> selectParentDepartmentIdAndOfficialRankSystem(@RequestBody List<Long> departmentIdAll, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

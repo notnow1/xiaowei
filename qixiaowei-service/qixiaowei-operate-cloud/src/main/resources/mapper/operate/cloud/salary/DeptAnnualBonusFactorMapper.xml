@@ -86,7 +86,7 @@
     </select>
     <!--新增部门年终奖系数表-->
     <insert id="insertDeptAnnualBonusFactor" useGeneratedKeys="true" keyProperty="deptAnnualBonusFactorId">
-        INSERT INTO dept_annual_bonus_factor (dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_annual_bonus_factor (dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{deptAnnualBonusFactor.deptAnnualBonusId},#{deptAnnualBonusFactor.departmentId},#{deptAnnualBonusFactor.weight},#{deptAnnualBonusFactor.lastPerformanceResulted},#{deptAnnualBonusFactor.performanceRankId},#{deptAnnualBonusFactor.performanceRankFactorId},#{deptAnnualBonusFactor.performanceRank},#{deptAnnualBonusFactor.performanceBonusFactor},#{deptAnnualBonusFactor.importanceFactor},#{deptAnnualBonusFactor.bonusPercentage},#{deptAnnualBonusFactor.distributeBonus},#{deptAnnualBonusFactor.deleteFlag},#{deptAnnualBonusFactor.createBy},#{deptAnnualBonusFactor.createTime},#{deptAnnualBonusFactor.updateBy},#{deptAnnualBonusFactor.updateTime})
     </insert>
@@ -170,7 +170,7 @@
     </update>
     <!--批量新增部门年终奖系数表-->
     <insert id="batchDeptAnnualBonusFactor">
-        INSERT INTO dept_annual_bonus_factor (dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_annual_bonus_factor (dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="deptAnnualBonusFactors"

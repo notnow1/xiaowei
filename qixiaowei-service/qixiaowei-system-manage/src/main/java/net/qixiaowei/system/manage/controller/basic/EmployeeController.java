@@ -180,6 +180,30 @@ public class EmployeeController extends BaseController {
     }
 
 
+    //==============================岗位薪酬报表==================================//
+
+    /**
+     * 分页查询岗位薪酬报表
+     */
+    @RequiresPermissions("system:manage:employee:pagePostSalaryReportList")
+    @GetMapping("/pagePostSalaryReportList")
+    public TableDataInfo pagePostSalaryReportList(EmployeeDTO employeeDTO) {
+        startPage();
+        List<EmployeeDTO> list = employeeService.pagePostSalaryReportList(employeeDTO);
+        return getDataTable(list);
+    }
+
+    //==============================其他==================================//
+
+    /**
+     * 查询员工表列表(下拉框)
+     */
+    @GetMapping("/list")
+    public AjaxResult list(EmployeeDTO employeeDTO) {
+        List<EmployeeDTO> list = employeeService.selectDropEmployeeList(employeeDTO);
+        return AjaxResult.success(list);
+    }
+
     /**
      * 根据部门id查询员工表列表
      */
@@ -195,25 +219,6 @@ public class EmployeeController extends BaseController {
     @PostMapping("/amountLastYear")
     public AjaxResult selecTamountLastYearList(@RequestBody EmployeeDTO employeeDTO) {
         return AjaxResult.success(employeeService.selecTamountLastYearList(employeeDTO));
-    }
-
-    /**
-     * 分页查询岗位薪酬报表
-     */
-    @GetMapping("/pagePostSalaryReportList")
-    public TableDataInfo pagePostSalaryReportList(EmployeeDTO employeeDTO) {
-        startPage();
-        List<EmployeeDTO> list = employeeService.pagePostSalaryReportList(employeeDTO);
-        return getDataTable(list);
-    }
-
-    /**
-     * 查询员工表列表(下拉框)
-     */
-    @GetMapping("/list")
-    public AjaxResult list(EmployeeDTO employeeDTO) {
-        List<EmployeeDTO> list = employeeService.selectDropEmployeeList(employeeDTO);
-        return AjaxResult.success(list);
     }
 
 

@@ -135,8 +135,8 @@
         FROM salary_pay
         WHERE pay_year = #{payYear}
           AND pay_month
-          BETWEEN #{startMonth}
-          AND #{endMonth}
+            BETWEEN #{startMonth}
+            AND #{endMonth}
     </select>
     <!--多个年份的所有-->
     <select id="selectSalaryPayBySomeYear"
@@ -159,8 +159,8 @@
                update_time
         FROM salary_pay
         WHERE pay_year
-          BETWEEN #{startYear}
-          AND #{endYear}
+                  BETWEEN #{startYear}
+                  AND #{endYear}
     </select>
     <!--    根据人员ID集合和年份查找工资发薪信息-->
     <select id="selectSalaryPayByBudggetEmployeeIds"
@@ -181,20 +181,19 @@
     <select id="selectBonusActualNum" resultType="java.math.BigDecimal">
         SELECT SUM(bonus_amount) as bonus_actual_sum
         from salary_pay sp
-        WHERE sp.pay_year = #{budgetYear} and sp.pay_month &lt; #{month}
-          and sp.delete_flag =0
+        WHERE sp.pay_year = #{budgetYear}
+          and sp.pay_month &lt; #{month}
+          and sp.delete_flag = 0
         ORDER by pay_year desc, pay_month desc LIMIT 12
     </select>
-<!--    返回上年总工资包实际数：从月度工资数据管理取值（总计值）-->
+    <!--    返回上年总工资包实际数：从月度工资数据管理取值（总计值）-->
     <select id="selectSalaryPayAmoutNum" resultType="java.math.BigDecimal">
-        SELECT
-            IFNULL(SUM(pay_amount),0)  as  pay_amount
-        FROM
-            salary_pay
+        SELECT IFNULL(SUM(pay_amount), 0) as pay_amount
+        FROM salary_pay
         WHERE pay_year = #{budgetYear}
-          and   delete_flag =0
+          and delete_flag = 0
     </select>
-<!--    根据人员ID集合和年份查找工资发薪信息-->
+    <!--    根据人员ID集合和年份查找工资发薪信息-->
     <select id="selectSalaryPayByEmployeeIdsAndPayYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
@@ -208,20 +207,35 @@
         </foreach>
         AND pay_year=#{payYear}
     </select>
-<!--    根据人员ID和年份查找工资发薪信息-->
+    <!--    根据人员ID和年份查找工资发薪信息-->
     <select id="selectSalaryPayByEmployeeIdAndPayYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
-        SELECT
-        salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
-        withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
+        SELECT salary_pay_id,
+               employee_id,
+               pay_year,
+               pay_month,
+               salary_amount,
+               allowance_amount,
+               welfare_amount,
+               bonus_amount,
+               withhold_remit_tax,
+               other_deductions,
+               pay_amount,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM salary_pay
-        WHERE delete_flag=0
-        AND employee_id =#{employeeId}
-        AND pay_year=#{payYear}
+        WHERE delete_flag = 0
+          AND employee_id = #{employeeId}
+          AND pay_year = #{payYear}
     </select>
-<!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）-->
+    <!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）-->
     <select id="selectDeptBonusBudgetPay" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus,
+               sum(sp.salary_amount + sp.allowance_amount + sp.welfare_amount) as salaryPackageBonus,
+               sum(bonus_amount) as amountBonus,
                sp.salary_pay_id,
                sp.employee_id,
                sp.pay_year,
@@ -240,9 +254,10 @@
                sp.update_time
         FROM salary_pay sp
         where sp.pay_year &lt;= #{payYear}
-          and sp.pay_month &lt; DATE_FORMAT(NOW(),'%m')
+          and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
           and sp.employee_id = #{employeeId}
           and sp.delete_flag = 0
+          and sum(sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount) > salary_pay
         ORDER BY sp.pay_year DESC, sp.pay_month DESC limit 12
     </select>
     <!--根据年份 月份 员工ID查询发薪表-->
@@ -270,49 +285,50 @@
           AND pay_year = #{year}
           AND pay_month = #{month}
     </select>
-<!--    个人年终奖最近三年的薪酬情况-->
-    <select id="selectSalaryPayCondition" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+    <!--    个人年终奖最近三年的薪酬情况-->
+    <select id="selectSalaryPayCondition"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
         SELECT sp.employee_id,
-               sp.pay_year,
-               sp.pay_month,
-               IFNULL(sp1.bonusBeforeTwo,0),
-               IFNULL(sp2.bonusBeforeOne,0) ,
-               IFNULL(sp3.emolumentBeforeOne,0),
-               IFNULL(sp4.employeeBasicWage,0)
+        sp.pay_year,
+        sp.pay_month,
+        IFNULL(sp1.bonusBeforeTwo,0),
+        IFNULL(sp2.bonusBeforeOne,0) ,
+        IFNULL(sp3.emolumentBeforeOne,0),
+        IFNULL(sp4.employeeBasicWage,0)
         FROM salary_pay sp
-                 left join (SELECT employee_id,
-                                   case when pay_year = #{payYear} - 2 then sum(bonus_amount) end as bonusBeforeTwo
-                            FROM salary_pay
-                            WHERE pay_year = #{payYear}
-                              and delete_flag = 0
-                            group by employee_id
-                            order by pay_year desc, pay_month desc) sp1
-                           on sp1.employee_id = sp.employee_id
-                 left join (SELECT employee_id,
-                                   case when pay_year = #{payYear} - 1 then sum(bonus_amount) end as bonusBeforeOne
-                            FROM salary_pay
-                            WHERE pay_year = #{payYear}
-                              and delete_flag = 0
-                            group by employee_id
-                            order by pay_year desc, pay_month desc) sp2
-                           on sp2.employee_id = sp.employee_id
-                 left join (SELECT employee_id,
-                                   case when pay_year = #{payYear} - 1 then sum(pay_amount) end as emolumentBeforeOne
-                            FROM salary_pay
-                            WHERE pay_year = #{payYear}
-                              and delete_flag = 0
-                            group by employee_id
-                            order by pay_year desc, pay_month desc) sp3
-                           on sp3.employee_id = sp.employee_id
+        left join (SELECT employee_id,
+        case when pay_year = #{payYear} - 2 then sum(bonus_amount) end as bonusBeforeTwo
+        FROM salary_pay
+        WHERE pay_year = #{payYear}
+        and delete_flag = 0
+        group by employee_id
+        order by pay_year desc, pay_month desc) sp1
+        on sp1.employee_id = sp.employee_id
+        left join (SELECT employee_id,
+        case when pay_year = #{payYear} - 1 then sum(bonus_amount) end as bonusBeforeOne
+        FROM salary_pay
+        WHERE pay_year = #{payYear}
+        and delete_flag = 0
+        group by employee_id
+        order by pay_year desc, pay_month desc) sp2
+        on sp2.employee_id = sp.employee_id
+        left join (SELECT employee_id,
+        case when pay_year = #{payYear} - 1 then sum(pay_amount) end as emolumentBeforeOne
+        FROM salary_pay
+        WHERE pay_year = #{payYear}
+        and delete_flag = 0
+        group by employee_id
+        order by pay_year desc, pay_month desc) sp3
+        on sp3.employee_id = sp.employee_id
 
-                 left join (SELECT employee_id,
-                                   salary_amount as employeeBasicWage
-                            FROM salary_pay
-                            WHERE pay_year = #{payYear}
-                              and delete_flag = 0
-                            group by employee_id
-                            order by pay_year desc, pay_month desc) sp4
-                           on sp4.employee_id = sp.employee_id
+        left join (SELECT employee_id,
+        salary_amount as employeeBasicWage
+        FROM salary_pay
+        WHERE pay_year = #{payYear}
+        and delete_flag = 0
+        group by employee_id
+        order by pay_year desc, pay_month desc) sp4
+        on sp4.employee_id = sp.employee_id
         WHERE sp.employee_id in
         <foreach item="item"
                  collection="employeeIds"
@@ -323,14 +339,14 @@
         AND sp.pay_year=#{payYear}
         GROUP BY sp.employee_id
     </select>
-<!--    员工倒推12个月的薪酬合计和奖金合计-->
+    <!--    员工倒推12个月的薪酬合计和奖金合计-->
     <select id="selectSalaryPaySumAndBonusSum"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
-        SELECT sum (pay_amount) as paymentBonusSum,
-               sum (bonus_amount) as bonusAmountSum
+        SELECT sum(pay_amount)   as paymentBonusSum,
+               sum(bonus_amount) as bonusAmountSum
         FROM salary_pay sp
         where sp.pay_year &lt;= #{payYear}
-          and sp.pay_month &lt; DATE_FORMAT(NOW(),'%m')
+          and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
           and sp.employee_id = #{employeeId}
           and sp.delete_flag = 0
         ORDER BY sp.pay_year DESC, sp.pay_month DESC limit 12

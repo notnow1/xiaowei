@@ -117,6 +117,7 @@
     <select id="selectBonusBudgetParametersByAnnualBonusYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
         SELECT bb.bonus_budget_id,
+               IFNULL(bb.amount_bonus_budget,0),
                ts.target_value,
                tod.actual_total,
                bbp.bonus_budget_parameters_id,

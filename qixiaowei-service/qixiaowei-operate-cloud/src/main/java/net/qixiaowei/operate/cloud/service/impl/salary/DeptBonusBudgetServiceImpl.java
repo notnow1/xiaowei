@@ -184,18 +184,18 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             }
             deptBonusBudgetDetailsDTO.setDeptBonusSum(deptBonusSum);
         }
-        //部门id 职级平均人数
-        Map<Long, Map<String, BigDecimal>> mapEmployeeAve = new HashMap<>();
-        //部门id 职级平均薪酬
-        Map<Long, Map<String, BigDecimal>> mapPaymentAve = new HashMap<>();
+        //一级部门id 下所有部门id职级平均人数
+        Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapEmployeeAveParent = new HashMap<>();
+        //一级部门id 下所有部门id职级平均薪酬
+        Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapPaymentAveParent = new HashMap<>();
         //根据 部门分组 一级部门带包数
         Map<Long, BigDecimal> topDeptPaymentMap = new HashMap<>();
         //封装每个部门 相同职级的 平均人数
-        this.getEmployeeBudgetDTOS(deptBonusBudgetDTO.getBudgetYear(), mapEmployeeAve);
+        this.getEmployeeBudgetDTOS(deptBonusBudgetDTO.getBudgetYear(), mapEmployeeAveParent);
         //封装每个部门 相同职级的 平均薪酬
-        this.packDeptOffPaymentAve(deptBonusBudgetDTO.getBudgetYear(), mapPaymentAve);
+        this.packDeptOffPaymentAve(deptBonusBudgetDTO.getBudgetYear(),mapPaymentAveParent);
         //封装一级带包数
-        this.packTopDeptPayMent(mapEmployeeAve, mapPaymentAve, topDeptPaymentMap);
+        this.packTopDeptPayMent(mapEmployeeAveParent, mapPaymentAveParent, topDeptPaymentMap);
         //封装各一级部门组织重要性系数
         Map<Long, BigDecimal> deptImportFactorMap = new HashMap<>();
         if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOS)){
@@ -560,18 +560,19 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS = new ArrayList<>();
         //部门奖金预算项目表集合
         List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDTOS = new ArrayList<>();
-        //部门id 职级平均人数
-        Map<Long, Map<String, BigDecimal>> mapEmployeeAve = new HashMap<>();
-        //部门id 职级平均薪酬
-        Map<Long, Map<String, BigDecimal>> mapPaymentAve = new HashMap<>();
+
+        //一级部门id 下所有部门id职级平均人数
+        Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapEmployeeAveParent = new HashMap<>();
+        //一级部门id 下所有部门id职级平均薪酬
+        Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapPaymentAveParent = new HashMap<>();
         //根据 部门分组 一级部门带包数
         Map<Long, BigDecimal> topDeptPaymentMap = new HashMap<>();
         //封装每个部门 相同职级的 平均人数
-        this.getEmployeeBudgetDTOS(budgetYear, mapEmployeeAve);
+        this.getEmployeeBudgetDTOS(budgetYear, mapEmployeeAveParent);
         //封装每个部门 相同职级的 平均薪酬
-        this.packDeptOffPaymentAve(budgetYear, mapPaymentAve);
+        this.packDeptOffPaymentAve(budgetYear, mapPaymentAveParent);
         //封装一级带包数
-        this.packTopDeptPayMent(mapEmployeeAve, mapPaymentAve, topDeptPaymentMap);
+        this.packTopDeptPayMent(mapEmployeeAveParent, mapPaymentAveParent, topDeptPaymentMap);
         //封装各一级部门组织重要性系数
         Map<Long, BigDecimal> deptImportFactorMap = this.packDeptImportFactor(departmentAll);
         //封装∑（各一级部门带包数×各一级部门组织重要性系数）
@@ -716,7 +717,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         }
                         if (null != nowTopDeptPay && nowTopDeptPay.compareTo(new BigDecimal("0")) != 0 &&
                                 null != topDeptPaySum && topDeptPaySum.compareTo(new BigDecimal("0")) != 0) {
-                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("0"));
+                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
                             deptBonusBudgetDetailsDTO.setDeptBonusPercentageReference(multiply);
                         }
                     }
@@ -818,30 +819,47 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
 
     /**
      * 封装一级带包数
-     *
-     * @param mapEmployeeAve
-     * @param mapPaymentAve
+     * @param mapEmployeeAveParent
+     * @param mapPaymentAveParent
      * @param topDeptPaymentMap
      */
-    private void packTopDeptPayMent(Map<Long, Map<String, BigDecimal>> mapEmployeeAve, Map<Long, Map<String, BigDecimal>> mapPaymentAve, Map<Long, BigDecimal> topDeptPaymentMap) {
-        if (StringUtils.isNotEmpty(mapEmployeeAve) && StringUtils.isNotEmpty(mapPaymentAve)) {
-            for (Long aLong : mapEmployeeAve.keySet()) {
-                for (Long aLong1 : mapPaymentAve.keySet()) {
-                    //相同部门
+    private void packTopDeptPayMent(Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapEmployeeAveParent, Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapPaymentAveParent, Map<Long, BigDecimal> topDeptPaymentMap) {
+
+
+        if (StringUtils.isNotEmpty(mapEmployeeAveParent) && StringUtils.isNotEmpty(mapPaymentAveParent)) {
+            for (Long aLong : mapEmployeeAveParent.keySet()) {
+                for (Long aLong1 : mapPaymentAveParent.keySet()) {
+                    //相同一级部门
                     if (aLong == aLong1) {
-                        Map<String, BigDecimal> employeeAveBigDecimalMap = mapEmployeeAve.get(aLong);
-                        Map<String, BigDecimal> paymentAveBigDecimalMap = mapPaymentAve.get(aLong1);
-                        for (String s : employeeAveBigDecimalMap.keySet()) {
-                            for (String s1 : paymentAveBigDecimalMap.keySet()) {
-                                //相同职级
-                                if (StringUtils.equals(s, s1)) {
-                                    //职级的平均人数
-                                    BigDecimal bigDecimal = employeeAveBigDecimalMap.get(s);
-                                    // //职级的平均薪资
-                                    BigDecimal bigDecimal1 = paymentAveBigDecimalMap.get(s1);
-                                    if (null != bigDecimal && bigDecimal.compareTo(new BigDecimal("0")) > 0 &&
-                                            null != bigDecimal1 && bigDecimal1.compareTo(new BigDecimal("0")) > 0) {
-                                        topDeptPaymentMap.put(aLong, bigDecimal.multiply(bigDecimal1));
+                        //一级部门所有数据
+                        List<Map<Long, Map<String, BigDecimal>>> mapList = mapEmployeeAveParent.get(aLong);
+                        List<Map<Long, Map<String, BigDecimal>>> mapList1 = mapPaymentAveParent.get(aLong1);
+                        //嵌套循环
+                        for (Map<Long, Map<String, BigDecimal>> longMapMap : mapList) {
+                            for (Long aLong2 : longMapMap.keySet()) {
+                                for (Map<Long, Map<String, BigDecimal>> mapMap : mapList1) {
+                                    for (Long aLong3 : mapMap.keySet()) {
+                                        //相同部门
+                                        if (aLong2==aLong3){
+                                            //职级
+                                            Map<String, BigDecimal> employeeAveBigDecimalMap = longMapMap.get(aLong2);
+                                            Map<String, BigDecimal> paymentAveBigDecimalMap = mapMap.get(aLong3);
+                                            for (String s : employeeAveBigDecimalMap.keySet()) {
+                                                for (String s1 : paymentAveBigDecimalMap.keySet()) {
+                                                    //相同职级
+                                                    if (StringUtils.equals(s, s1)) {
+                                                        //职级的平均人数
+                                                        BigDecimal bigDecimal = employeeAveBigDecimalMap.get(s);
+                                                        //职级的平均薪资
+                                                        BigDecimal bigDecimal1 = paymentAveBigDecimalMap.get(s1);
+                                                        if (null != bigDecimal && bigDecimal.compareTo(new BigDecimal("0")) > 0 &&
+                                                                null != bigDecimal1 && bigDecimal1.compareTo(new BigDecimal("0")) > 0) {
+                                                            topDeptPaymentMap.put(aLong, bigDecimal.multiply(bigDecimal1));
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -849,6 +867,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                     }
                 }
             }
+
         }
     }
 
@@ -856,202 +875,277 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * 封装某职级的平均薪酬
      *
      * @param budgetYear
-     * @param mapPaymentAve
+     * @param mapPaymentAveParent
      */
-    private void packDeptOffPaymentAve(int budgetYear, Map<Long, Map<String, BigDecimal>> mapPaymentAve) {
-        //封装远程调用部门id集合
-        List<Long> departmentIdAll = getDepartmentIdAll();
-        //远程调用部门查询 相同部门 相同职级的人数
-        R<List<EmployeeDTO>> listR = remoteEmployeeService.selectDepartmentAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
-        List<EmployeeDTO> data = listR.getData();
-        if (StringUtils.isNotEmpty(data)) {
+    private void packDeptOffPaymentAve(int budgetYear, Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapPaymentAveParent) {
+        //一级部门下所有部门的平均薪酬集合
+        List<Map<Long, Map<String, BigDecimal>>> mapList = new ArrayList<>();
+        Map<Long, Map<String, BigDecimal>> mapPaymentAve = new HashMap<>();
+        //封装远程调用一级部门id集合
+        List<Long> departmentIdParentAll = getDepartmentIdAll();
+        for (Long aLong : departmentIdParentAll) {
+            //远程调用查询一级部门下所有部门
+            R<List<DepartmentDTO>> listR = remoteDepartmentService.selectSublevelDepartment(aLong, SecurityConstants.INNER);
+            List<DepartmentDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)){
+                List<Long> departmentIdAll = data.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(departmentIdAll)){
+                    //远程调用部门查询 相同部门 相同职级的人数
+                    R<List<EmployeeDTO>> departmentAndOfficialRankSystem = remoteEmployeeService.selectDepartmentAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
+                    List<EmployeeDTO> listRData = departmentAndOfficialRankSystem.getData();
+                    if (StringUtils.isNotEmpty(listRData)) {
 
-            //员工部门id集合
-            List<Long> employeeDepartmentIdS = data.stream().map(EmployeeDTO::getEmployeeDepartmentId).collect(Collectors.toList());
+                        //员工部门id集合
+                        List<Long> employeeDepartmentIdS = listRData.stream().map(EmployeeDTO::getEmployeeDepartmentId).collect(Collectors.toList());
 
-            //查询工资表数据 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）。
-            if (StringUtils.isNotEmpty(employeeDepartmentIdS)) {
+                        //查询工资表数据 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）。
+                        if (StringUtils.isNotEmpty(employeeDepartmentIdS)) {
 
-                //根据部门id查询人力预算信息
-                List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectEmployeeBudgetByOfficialRankSystemIds(employeeDepartmentIdS, budgetYear);
-                if (StringUtils.isNotEmpty(employeeBudgetDTOList)) {
+                            //根据部门id查询人力预算信息
+                            List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectEmployeeBudgetByOfficialRankSystemIds(employeeDepartmentIdS, budgetYear);
+                            if (StringUtils.isNotEmpty(employeeBudgetDTOList)) {
 
-                    //根据部门id分组
-                    Map<Long, List<EmployeeBudgetDTO>> departmentMap = employeeBudgetDTOList.parallelStream().collect(Collectors.groupingBy(EmployeeBudgetDTO::getDepartmentId));
-                    if (StringUtils.isNotEmpty(departmentMap)) {
-                        //每个部门的职级体系平均人数
-                        for (Long aLong : departmentMap.keySet()) {
-                            List<EmployeeBudgetDTO> employeeBudgetDTOList1 = departmentMap.get(aLong);
-                            if (StringUtils.isNotEmpty(employeeBudgetDTOList1)) {
-                                //人力预算表id集合
-                                List<Long> employeeBudgetIds = employeeBudgetDTOList1.stream().map(EmployeeBudgetDTO::getEmployeeBudgetId).collect(Collectors.toList());
-                                //人力预算详情表集合
-                                List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetIds(employeeBudgetIds);
-                                //赋值职级名称
-                                packRankName(employeeBudgetDetailsDTOS);
+                                //根据部门id分组
+                                Map<Long, List<EmployeeBudgetDTO>> departmentMap = employeeBudgetDTOList.parallelStream().collect(Collectors.groupingBy(EmployeeBudgetDTO::getDepartmentId));
+                                if (StringUtils.isNotEmpty(departmentMap)) {
+                                    //每个部门的职级体系平均人数
+                                    for (Long key : departmentMap.keySet()) {
+                                        List<EmployeeBudgetDTO> employeeBudgetDTOList1 = departmentMap.get(key);
+                                        if (StringUtils.isNotEmpty(employeeBudgetDTOList1)) {
+                                            //人力预算表id集合
+                                            List<Long> employeeBudgetIds = employeeBudgetDTOList1.stream().map(EmployeeBudgetDTO::getEmployeeBudgetId).collect(Collectors.toList());
+                                            //人力预算详情表集合
+                                            List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetIds(employeeBudgetIds);
+                                            //赋值职级名称
+                                            packRankName(employeeBudgetDetailsDTOS);
 
-                                for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
-                                    for (EmployeeDTO datum : data) {
-                                        Map<String, BigDecimal> map = new HashMap<>();
-                                        // 已有的人员职级   做了人力预算调控 从工资发薪表取数
-                                        if (employeeBudgetDetailsDTO.getOfficialRankName() == datum.getEmployeeRankName() && employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId()) {
-                                            //总薪酬包
-                                            BigDecimal payAmountSum = new BigDecimal("0");
-                                            List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(datum.getEmployeeId(), budgetYear);
-                                            if (StringUtils.isNotEmpty(salaryPayDTOS)) {
-                                                //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
-                                                BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                                                //公式=某职级的总薪酬包（包含总工资包和总奖金包）÷某职级的人数。
-                                                payAmountSum = reduce.divide(new BigDecimal(String.valueOf(salaryPayDTOS.size())), 4, BigDecimal.ROUND_HALF_DOWN);
+                                            for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                                                for (EmployeeDTO datum : listRData) {
+                                                    Map<String, BigDecimal> map = new HashMap<>();
+                                                    // 已有的人员职级   做了人力预算调控 从工资发薪表取数
+                                                    if (employeeBudgetDetailsDTO.getOfficialRankName() == datum.getEmployeeRankName() && employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId()) {
+                                                        //总薪酬包
+                                                        BigDecimal payAmountSum = new BigDecimal("0");
+                                                        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(datum.getEmployeeId(), budgetYear);
+                                                        if (StringUtils.isNotEmpty(salaryPayDTOS)) {
+                                                            //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
+                                                            BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                                            //公式=某职级的总薪酬包（包含总工资包和总奖金包）÷某职级的人数。
+                                                            payAmountSum = reduce.divide(new BigDecimal(String.valueOf(salaryPayDTOS.size())), 4, BigDecimal.ROUND_HALF_DOWN);
+                                                        }
+                                                        map.put(datum.getEmployeeRankName(), payAmountSum);
+                                                        mapPaymentAve.put(key, map);
+                                                        mapList.add(mapPaymentAve);
+                                                    } // 职级确认薪酬取中位值
+                                                    else {
+                                                        //根据职级体系id查询职级确认薪酬
+                                                        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(employeeBudgetDetailsDTO.getOfficialRankSystemId());
+                                                        //远程调用查询职级
+                                                        R<OfficialRankSystemDTO> officialRankSystemDTOR = remoteOfficialRankSystemService.selectById(employeeBudgetDetailsDTO.getOfficialRankSystemId(), SecurityConstants.INNER);
+                                                        OfficialRankSystemDTO data1 = officialRankSystemDTOR.getData();
+                                                        if (StringUtils.isNull(data1)) {
+                                                            throw new ServiceException("职级不存在 请联系管理员！");
+                                                        }
+                                                        if (StringUtils.isNotEmpty(officialRankEmolumentDTOList)) {
+                                                            for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDTOList) {
+                                                                map.put(data1.getRankPrefixCode() + data1.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
+                                                                mapPaymentAve.put(key, map);
+                                                                mapList.add(mapPaymentAve);
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
                                             }
-                                            map.put(datum.getEmployeeRankName(), payAmountSum);
-                                            mapPaymentAve.put(aLong, map);
-                                        } // 职级确认薪酬取中位值
-                                        else {
-                                            //根据职级体系id查询职级确认薪酬
-                                            List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemId(employeeBudgetDetailsDTO.getOfficialRankSystemId());
+
+
+                                        }
+                                    }
+                                }
+                                //已做人力预算的部门
+                                List<Long> collect = employeeBudgetDTOList.stream().map(EmployeeBudgetDTO::getDepartmentId).collect(Collectors.toList());
+                                if (StringUtils.isNotEmpty(collect)) {
+                                    //求除未做人力预算的集合
+                                    departmentIdAll.removeAll(collect);
+
+                                    R<List<EmployeeDTO>> listR1 = remoteEmployeeService.selectDepartmentAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
+                                    List<EmployeeDTO> data1 = listR1.getData();
+                                    if (StringUtils.isNotEmpty(data1)) {
+                                        //根据部门id分组
+                                        Map<Long, List<EmployeeDTO>> employeeDepartmentMap = data1.parallelStream().collect(Collectors.groupingBy(EmployeeDTO::getEmployeeDepartmentId));
+                                        for (Long key : employeeDepartmentMap.keySet()) {
+                                            List<EmployeeDTO> employeeDTOList = employeeDepartmentMap.get(key);
+                                            //职级体系id集合
+                                            List<Long> collect1 = employeeDTOList.stream().map(EmployeeDTO::getOfficialRankSystemId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
                                             //远程调用查询职级
-                                            R<OfficialRankSystemDTO> officialRankSystemDTOR = remoteOfficialRankSystemService.selectById(employeeBudgetDetailsDTO.getOfficialRankSystemId(), SecurityConstants.INNER);
-                                            OfficialRankSystemDTO data1 = officialRankSystemDTOR.getData();
-                                            if (StringUtils.isNull(data1)) {
-                                                throw new ServiceException("职级不存在 请联系管理员！");
-                                            }
-                                            if (StringUtils.isNotEmpty(officialRankEmolumentDTOList)) {
-                                                for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDTOList) {
-                                                    map.put(data1.getRankPrefixCode() + data1.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
-                                                    mapPaymentAve.put(aLong, map);
+                                            R<List<OfficialRankSystemDTO>> listR2 = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
+                                            //根据职级体系id查询职级确认薪酬
+                                            List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemIds(collect1);
+                                            List<OfficialRankSystemDTO> data2 = listR2.getData();
+                                            if (StringUtils.isNotEmpty(data2) && StringUtils.isNotEmpty(officialRankEmolumentDTOList)) {
+                                                for (OfficialRankSystemDTO officialRankSystemDTO : data2) {
+                                                    Map<String, BigDecimal> map = new HashMap<>();
+                                                    for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDTOList) {
+                                                        if (officialRankSystemDTO.getOfficialRankSystemId() == officialRankEmolumentDTO.getOfficialRankSystemId()) {
+                                                            //起始级别
+                                                            Integer rankStart = officialRankSystemDTO.getRankStart();
+                                                            //终止级别
+                                                            Integer rankEnd = officialRankSystemDTO.getRankEnd();
+                                                            for (Integer i = rankStart; i <= rankEnd; i++) {
+                                                                map.put(officialRankSystemDTO.getRankPrefixCode() + officialRankSystemDTO.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
+                                                                mapPaymentAve.put(key, map);
+                                                                mapList.add(mapPaymentAve);
+                                                            }
+
+                                                        }
+                                                    }
                                                 }
                                             }
-
                                         }
+
                                     }
-                                }
 
-
-                            }
-                        }
-                    }
-                    //已做人力预算的部门
-                    List<Long> collect = employeeBudgetDTOList.stream().map(EmployeeBudgetDTO::getDepartmentId).collect(Collectors.toList());
-                    if (StringUtils.isNotEmpty(collect)) {
-                        //求除未做人力预算的集合
-                        departmentIdAll.removeAll(collect);
-
-                        R<List<EmployeeDTO>> listR1 = remoteEmployeeService.selectDepartmentAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
-                        List<EmployeeDTO> data1 = listR1.getData();
-                        if (StringUtils.isNotEmpty(data1)) {
-                            //根据部门id分组
-                            Map<Long, List<EmployeeDTO>> employeeDepartmentMap = data1.parallelStream().collect(Collectors.groupingBy(EmployeeDTO::getEmployeeDepartmentId));
-                            for (Long aLong : employeeDepartmentMap.keySet()) {
-                                List<EmployeeDTO> employeeDTOList = employeeDepartmentMap.get(aLong);
-                                //职级体系id集合
-                                List<Long> collect1 = employeeDTOList.stream().map(EmployeeDTO::getOfficialRankSystemId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
-                                //远程调用查询职级
-                                R<List<OfficialRankSystemDTO>> listR2 = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
-                                //根据职级体系id查询职级确认薪酬
-                                List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = officialRankEmolumentMapper.selectOfficialRankEmolumentBySystemIds(collect1);
-                                List<OfficialRankSystemDTO> data2 = listR2.getData();
-                                if (StringUtils.isNotEmpty(data2) && StringUtils.isNotEmpty(officialRankEmolumentDTOList)) {
-                                    for (OfficialRankSystemDTO officialRankSystemDTO : data2) {
-                                        Map<String, BigDecimal> map = new HashMap<>();
-                                        for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDTOList) {
-                                            if (officialRankSystemDTO.getOfficialRankSystemId() == officialRankEmolumentDTO.getOfficialRankSystemId()) {
-                                                //起始级别
-                                                Integer rankStart = officialRankSystemDTO.getRankStart();
-                                                //终止级别
-                                                Integer rankEnd = officialRankSystemDTO.getRankEnd();
-                                                for (Integer i = rankStart; i <= rankEnd; i++) {
-                                                    map.put(officialRankSystemDTO.getRankPrefixCode() + officialRankSystemDTO.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
-                                                    mapPaymentAve.put(aLong, map);
-                                                }
-
-                                            }
-                                        }
-                                    }
                                 }
                             }
-
                         }
-
                     }
                 }
             }
+            mapPaymentAveParent.put(aLong,mapList);
         }
+
     }
 
     /**
      * 封装每个部门 相同职级的 平均人数
      *
      * @param budgetYear
-     * @param mapEmployeeAve
+     * @param mapEmployeeAveParent
      */
-    private void getEmployeeBudgetDTOS(int budgetYear, Map<Long, Map<String, BigDecimal>> mapEmployeeAve) {
-        //封装远程调用部门id集合
-        List<Long> departmentIdAll = getDepartmentIdAll();
-        //根据部门id查询人力预算信息
-        List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectEmployeeBudgetByOfficialRankSystemIds(departmentIdAll, budgetYear);
-        if (StringUtils.isNotEmpty(employeeBudgetDTOList)) {
-            //根据部门id分组
-            Map<Long, List<EmployeeBudgetDTO>> departmentMap = employeeBudgetDTOList.parallelStream().collect(Collectors.groupingBy(EmployeeBudgetDTO::getDepartmentId));
-            if (StringUtils.isNotEmpty(departmentMap)) {
-                //每个部门的职级体系平均人数
-                for (Long aLong : departmentMap.keySet()) {
-                    List<EmployeeBudgetDTO> employeeBudgetDTOList1 = departmentMap.get(aLong);
-                    if (StringUtils.isNotEmpty(employeeBudgetDTOList1)) {
-                        //人力预算表id集合
-                        List<Long> employeeBudgetIds = employeeBudgetDTOList1.stream().map(EmployeeBudgetDTO::getEmployeeBudgetId).collect(Collectors.toList());
-                        //人力预算详情表集合
-                        List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetIds(employeeBudgetIds);
-                        //人力预算详情id
-                        List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(collect)) {
-                            //人力预算调整表
-                            List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);
-                            //公共方法
-                            EmployeeBudgetServiceImpl.packEmployeeBudgetDetailsNum(employeeBudgetDetailsDTOS, employeeBudgetAdjustsDTOS);
-                        }
-                        //赋值职级名称
-                        packRankName(employeeBudgetDetailsDTOS);
-                        for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
-                            Map<String, BigDecimal> map = new HashMap<>();
-                            map.put(employeeBudgetDetailsDTO.getOfficialRankName(), employeeBudgetDetailsDTO.getAnnualAverageNum());
-                            //相同部门的 职级体系平均人数
-                            mapEmployeeAve.put(aLong, map);
-                        }
-                    }
-                }
-            }
-            //已做人力预算的部门
-            List<Long> collect = employeeBudgetDTOList.stream().map(EmployeeBudgetDTO::getDepartmentId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(collect)) {
-                //求除未做人力预算的集合
-                departmentIdAll.removeAll(collect);
-                //远程调用部门查询 相同部门 相同职级的人数
-                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectDepartmentAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
-                List<EmployeeDTO> data1 = listR.getData();
-                if (StringUtils.isNotEmpty(data1)) {
-                    //根据部门id分组
-                    Map<Long, List<EmployeeDTO>> collect1 = data1.parallelStream().collect(Collectors.groupingBy(EmployeeDTO::getEmployeeDepartmentId));
-                    if (StringUtils.isNotEmpty(collect1)) {
-                        for (Long aLong : collect1.keySet()) {
-                            List<EmployeeDTO> employeeDTOList = collect1.get(aLong);
-                            if (StringUtils.isNotEmpty(employeeDTOList)) {
-                                for (EmployeeDTO employeeDTO : employeeDTOList) {
-                                    Map<String, BigDecimal> map = new HashMap<>();
-                                    //职级 人数
-                                    map.put(employeeDTO.getEmployeeRankName(), employeeDTO.getAnnualAverageNum());
-                                    mapEmployeeAve.put(aLong, map);
+    private void getEmployeeBudgetDTOS(int budgetYear, Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapEmployeeAveParent) {
+        //一级部门及子级部门 相同职级的 平均人数
+        List<Map<Long, Map<String, BigDecimal>>> mapList = new ArrayList<>();
+        //部门id 相同职级的 平均人数
+        Map<Long, Map<String, BigDecimal>> mapEmployeeAve = new HashMap<>();
+        //封装远程调用一级部门id集合
+        List<Long> departmentIdParentAll = getDepartmentIdAll();
+        for (Long aLong : departmentIdParentAll) {
+            //远程调用查询一级部门下所有部门
+            R<List<DepartmentDTO>> listR = remoteDepartmentService.selectSublevelDepartment(aLong, SecurityConstants.INNER);
+            List<DepartmentDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)){
+                List<Long> departmentIdAll = data.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(departmentIdAll)){
+                    //远程人员查询一级部门下所有的人员 返回部门id和职级体系id
+                    R<List<EmployeeDTO>> listR1 = remoteEmployeeService.selectParentDepartmentIdAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
+                    List<EmployeeDTO> data2 = listR1.getData();
+
+                    //根据部门id查询人力预算信息
+                    List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectEmployeeBudgetByOfficialRankSystemIds(departmentIdAll, budgetYear);
+                    if (StringUtils.isNotEmpty(employeeBudgetDTOList)) {
+                        List<EmployeeDTO> data3 = new ArrayList<>();
+                        if (StringUtils.isNotEmpty(data2)){
+                            for (EmployeeBudgetDTO employeeBudgetDTO : employeeBudgetDTOList) {
+                                for (EmployeeDTO employeeDTO : data2) {
+                                    if (employeeBudgetDTO.getDepartmentId() == employeeDTO.getEmployeeDepartmentId() && employeeBudgetDTO.getOfficialRankSystemId() == employeeDTO.getOfficialRankSystemId()){
+                                        data3.add(employeeDTO);
+                                    }
                                 }
                             }
+                            if (StringUtils.isNotEmpty(data3)){
+                                data2.removeAll(data3);
+                            }
+                            //根据部门id和职级多个条件分组
+                            Map<Long, Map<String, List<EmployeeDTO>>> collect = data2.parallelStream()
+                                    .collect(Collectors.groupingBy(EmployeeDTO::getEmployeeDepartmentId, Collectors.groupingBy(EmployeeDTO::getEmployeeRankName)));
+                            if (StringUtils.isNotEmpty(collect)){
+                                for (Long key : collect.keySet()) {
+                                    Map<String, List<EmployeeDTO>> stringListMap = collect.get(key);
+                                    for (String s : stringListMap.keySet()) {
+                                        Map<String, BigDecimal> map = new HashMap<>();
+                                        if (StringUtils.isNotEmpty(stringListMap.get(s))){
+                                            //职级 人数
+                                            map.put(s, new BigDecimal(String.valueOf(stringListMap.get(s).size())));
+                                        }else {
+                                            //职级 人数
+                                            map.put(s, new BigDecimal("0"));
+                                        }
+                                        mapEmployeeAve.put(key, map);
+                                        mapList.add(mapEmployeeAve);
+                                    }
 
+                                }
+
+                            }
+                        }
+                        //根据部门id分组
+                        Map<Long, List<EmployeeBudgetDTO>> departmentMap = employeeBudgetDTOList.parallelStream().collect(Collectors.groupingBy(EmployeeBudgetDTO::getDepartmentId));
+                        if (StringUtils.isNotEmpty(departmentMap)) {
+                            //每个部门的职级体系平均人数
+                            for (Long key : departmentMap.keySet()) {
+                                List<EmployeeBudgetDTO> employeeBudgetDTOList1 = departmentMap.get(key);
+                                if (StringUtils.isNotEmpty(employeeBudgetDTOList1)) {
+                                    //人力预算表id集合
+                                    List<Long> employeeBudgetIds = employeeBudgetDTOList1.stream().map(EmployeeBudgetDTO::getEmployeeBudgetId).collect(Collectors.toList());
+                                    //人力预算详情表集合
+                                    List<EmployeeBudgetDetailsDTO> employeeBudgetDetailsDTOS = employeeBudgetDetailsMapper.selectEmployeeBudgetDetailsByEmployeeBudgetIds(employeeBudgetIds);
+                                    //人力预算详情id
+                                    List<Long> collect = employeeBudgetDetailsDTOS.stream().map(EmployeeBudgetDetailsDTO::getEmployeeBudgetDetailsId).collect(Collectors.toList());
+                                    if (StringUtils.isNotEmpty(collect)) {
+                                        //人力预算调整表
+                                        List<EmployeeBudgetAdjustsDTO> employeeBudgetAdjustsDTOS = employeeBudgetAdjustsMapper.selectEmployeeBudgetAdjustsByEmployeeBudgetDetailsIds(collect);
+                                        //公共方法
+                                        EmployeeBudgetServiceImpl.packEmployeeBudgetDetailsNum(employeeBudgetDetailsDTOS, employeeBudgetAdjustsDTOS);
+                                    }
+                                    //赋值职级名称
+                                    packRankName(employeeBudgetDetailsDTOS);
+                                    for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
+                                        Map<String, BigDecimal> map = new HashMap<>();
+                                        map.put(employeeBudgetDetailsDTO.getOfficialRankName(), employeeBudgetDetailsDTO.getAnnualAverageNum());
+                                        //相同部门的 职级体系平均人数
+                                        mapEmployeeAve.put(key, map);
+                                        mapList.add(mapEmployeeAve);
+                                    }
+                                }
+                            }
+                        }
+                        //已做人力预算的部门
+                        List<Long> collect = employeeBudgetDTOList.stream().map(EmployeeBudgetDTO::getDepartmentId).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)) {
+                            //求除未做人力预算的集合
+                            departmentIdAll.removeAll(collect);
+                            //远程调用部门查询 相同部门 相同职级的人数
+                            R<List<EmployeeDTO>> departmentAndOfficialRankSystem = remoteEmployeeService.selectDepartmentAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
+                            List<EmployeeDTO> data1 = departmentAndOfficialRankSystem.getData();
+                            if (StringUtils.isNotEmpty(data1)) {
+                                //根据部门id分组
+                                Map<Long, List<EmployeeDTO>> collect1 = data1.parallelStream().collect(Collectors.groupingBy(EmployeeDTO::getEmployeeDepartmentId));
+                                if (StringUtils.isNotEmpty(collect1)) {
+                                    for (Long key : collect1.keySet()) {
+                                        List<EmployeeDTO> employeeDTOList = collect1.get(key);
+                                        if (StringUtils.isNotEmpty(employeeDTOList)) {
+                                            for (EmployeeDTO employeeDTO : employeeDTOList) {
+                                                Map<String, BigDecimal> map = new HashMap<>();
+                                                //职级 人数
+                                                map.put(employeeDTO.getEmployeeRankName(), employeeDTO.getAnnualAverageNum());
+                                                mapEmployeeAve.put(key, map);
+                                                mapList.add(mapEmployeeAve);
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                            }
                         }
 
                     }
-
                 }
             }
-
+            mapEmployeeAveParent.put(aLong,mapList);
         }
+
     }
 
     /**
@@ -1081,7 +1175,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
     }
 
     /**
-     * 封装远程调用部门id集合
+     * 封装远程调用一级部门id集合
      *
      * @return
      */
@@ -1093,8 +1187,8 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             throw new ServiceException("无部门数据 请联系管理员！");
         }
         //部门id集合
-        List<Long> departmentIdAll = data.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList());
-        return departmentIdAll;
+        List<Long> departmentIdParentAll = data.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList());
+        return departmentIdParentAll;
     }
 
     /**

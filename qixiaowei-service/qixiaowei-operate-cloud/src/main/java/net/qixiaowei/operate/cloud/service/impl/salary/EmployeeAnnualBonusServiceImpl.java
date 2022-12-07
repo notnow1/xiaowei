@@ -629,6 +629,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         Integer status = employeeAnnualBonusDTO.getStatus();
         //发起评议流程标记:0否;1是
         Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
+        //评议环节:1管理团队评议;2主管初评+管理团队评议
+        Integer commentStep = employeeAnnualBonusDTO.getCommentStep();
         //个人年终奖发放快照信息及发放对象表集合
         List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOs();
         //个人年终奖发放对象集合
@@ -643,53 +645,93 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             //评议日期
             employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
             employeeAnnualBonus.setStatus(Constants.THREE);
-        }
-        if (null == employeeAnnualBonusId) {
-            //直接提交 新增数据
-            packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
+            if (null == employeeAnnualBonusId) {
+                //直接提交 新增数据
+                packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
 
-        } else {
-            if (status == 0) {
+            }else {
                 //保存提交 修改数据
                 packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
-                //todo 发送通知
-            } else if (status == 1) {
-                if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
-                    List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
+            }
+        }else {
+            if (commentStep == 2){
+                if (null == employeeAnnualBonusId) {
+                    //直接提交 新增数据
+                    packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
 
-                    List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
-                    if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
-                        //去除自己
-                        List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
-                        for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
-                            if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
-                                employeeAnnualBonus.setStatus(1);
+                } else {
+                    if (status == 0) {
+                        //保存提交 修改数据
+                        packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+                        //todo 发送通知
+                    } else if (status == 1) {
+                        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
+                            List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
+
+                            List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
+                            if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
+                                //去除自己
+                                List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
+                                for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
+                                    if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
+                                        employeeAnnualBonus.setStatus(1);
+                                    }
+                                }
+                            }
+                            //保存提交 修改数据
+                            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+                            //所有主管已初评
+                            if (employeeAnnualBonus.getStatus() == 2) {
+                                //todo 发送通知
                             }
                         }
-                    }
-                    //保存提交 修改数据
-                    packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
-                    //所有主管已初评
-                    if (employeeAnnualBonus.getStatus() == 2) {
-                        //todo 发送通知
+                    } else if (status == 2) {
+                        List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
+                        if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
+                            for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOS) {
+                                if (null == empAnnualBonusObjectsDTO.getCommentValue()) {
+                                    employeeAnnualBonus.setStatus(2);
+                                }
+                            }
+                            //保存提交 修改数据
+                            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+                        }
+
                     }
                 }
-            } else if (status == 2) {
-                List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
-                if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
-                    for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOS) {
-                        if (null == empAnnualBonusObjectsDTO.getCommentValue()) {
-                            employeeAnnualBonus.setStatus(2);
+            }else if (commentStep == 1){
+                if (null == employeeAnnualBonusId) {
+                    //直接提交 新增数据
+                    packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
+
+                }else {
+                    if (status == 0) {
+                        //保存提交 修改数据
+                        packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+                        //todo 发送通知
+                    } else if (status == 1) {
+                        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
+                            List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
+
+                            List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
+                            if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
+                                //去除自己
+                                List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
+                                for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
+                                    if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
+                                        employeeAnnualBonus.setStatus(1);
+                                    }
+                                }
+                            }
+                            //保存提交 修改数据
+                            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
                         }
                     }
-                    //保存提交 修改数据
-                    packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
                 }
-
             }
 
-
         }
+
         employeeAnnualBonusDTO.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
         return employeeAnnualBonusDTO;
     }
@@ -806,6 +848,17 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 empAnnualBonusObjects.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
                 //个人年终奖ID
                 empAnnualBonusSnapshot.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
+                empAnnualBonusObjects.setCreateBy(SecurityUtils.getUserId());
+                empAnnualBonusObjects.setCreateTime(DateUtils.getNowDate());
+                empAnnualBonusObjects.setUpdateTime(DateUtils.getNowDate());
+                empAnnualBonusObjects.setUpdateBy(SecurityUtils.getUserId());
+                empAnnualBonusObjects.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+
+                empAnnualBonusSnapshot.setCreateBy(SecurityUtils.getUserId());
+                empAnnualBonusSnapshot.setCreateTime(DateUtils.getNowDate());
+                empAnnualBonusSnapshot.setUpdateTime(DateUtils.getNowDate());
+                empAnnualBonusSnapshot.setUpdateBy(SecurityUtils.getUserId());
+                empAnnualBonusSnapshot.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                 empAnnualBonusObjectsList.add(empAnnualBonusObjects);
                 empAnnualBonusSnapshotList.add(empAnnualBonusSnapshot);
             }

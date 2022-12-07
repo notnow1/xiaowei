@@ -479,7 +479,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
         return departmentMapper.getAll();
     }
 
-
+    /**
+     * 远程查询一级部门及子级部门
+     * @param departmentId
+     * @return
+     */
+    @Override
+    public List<DepartmentDTO> selectParentDepartment(Long departmentId) {
+        return departmentMapper.selectParentDepartment(departmentId);
+    }
 
 
     @Transactional

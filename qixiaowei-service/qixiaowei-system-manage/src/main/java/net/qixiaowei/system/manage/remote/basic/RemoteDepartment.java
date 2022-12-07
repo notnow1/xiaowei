@@ -63,7 +63,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
     }
 
     /**
-     * 查询所有部门
+     * 查看所有一级部门
      * @param source
      * @return
      */
@@ -72,5 +72,17 @@ public class RemoteDepartment implements RemoteDepartmentService {
     @GetMapping("/getAll")
     public R<List<DepartmentDTO>> getAll(String source) {
         return R.ok(departmentService.getAll());
+    }
+
+    /**
+     * 查看所有一级部门
+     * @param inner
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/selectSublevelDepartment")
+    public R<List<DepartmentDTO>> selectSublevelDepartment(@RequestParam("departmentId") Long departmentId,String inner) {
+        return R.ok(departmentService.selectParentDepartment(departmentId));
     }
 }

@@ -15,6 +15,8 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
@@ -52,21 +54,12 @@ public class SalaryPayController extends BaseController {
     @Autowired
     private ISalaryPayDetailsService salaryPayDetailsService;
 
-
-    /**
-     * 查询工资发薪表详情
-     */
-    //@RequiresPermissions("operate:cloud:salaryPay:info")
-    @GetMapping("/info/{salaryPayId}")
-    public AjaxResult info(@PathVariable Long salaryPayId) {
-        SalaryPayDTO salaryPayDTO = salaryPayService.selectSalaryPayBySalaryPayId(salaryPayId);
-        return AjaxResult.success(salaryPayDTO);
-    }
+    //==============================月度工资数据管理==================================//
 
     /**
      * 分页查询工资发薪表列表
      */
-    //@RequiresPermissions("operate:cloud:salaryPay:pageList")
+    @RequiresPermissions("operate:cloud:salaryPay:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(SalaryPayDTO salaryPayDTO) {
         startPage();
@@ -75,90 +68,46 @@ public class SalaryPayController extends BaseController {
     }
 
     /**
-     * 查询工资发薪表列表
-     */
-    //@RequiresPermissions("operate:cloud:salaryPay:list")
-    @GetMapping("/list")
-    public AjaxResult list(SalaryPayDTO salaryPayDTO) {
-        List<SalaryPayDTO> list = salaryPayService.selectSalaryPayList(salaryPayDTO);
-        return AjaxResult.success(list);
-    }
-
-    /**
-     * 查询薪酬架构报表列表
-     */
-    //@RequiresPermissions("operate:cloud:salaryPay:list")
-    @GetMapping("/structure")
-    public AjaxResult structure(SalaryStructureDTO salaryStructureDTO) {
-        return AjaxResult.success(salaryPayService.selectSalaryPayStructure(salaryStructureDTO));
-    }
-
-    /**
-     * 查询薪酬架构报表列表
-     */
-    //@RequiresPermissions("operate:cloud:salaryPay:list")
-    @GetMapping("/pageList/structure")
-    public AjaxResult listStructure(SalaryStructureDTO salaryStructureDTO) {
-        return AjaxResult.success(salaryPayService.selectSalaryPayStructureList(salaryStructureDTO));
-    }
-
-
-    /**
      * 新增工资发薪表
      */
-    //@RequiresPermissions("operate:cloud:salaryPay:add")
-    @Log(title = "新增工资发薪表", businessType = BusinessType.INSERT)
+    @RequiresPermissions("operate:cloud:salaryPay:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody SalaryPayDTO salaryPayDTO) {
         return AjaxResult.success(salaryPayService.insertSalaryPay(salaryPayDTO));
     }
 
-
     /**
      * 修改工资发薪表
      */
-    //@RequiresPermissions("operate:cloud:salaryPay:edit")
-    @Log(title = "修改工资发薪表", businessType = BusinessType.UPDATE)
+    @RequiresPermissions("operate:cloud:salaryPay:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody SalaryPayDTO salaryPayDTO) {
         return toAjax(salaryPayService.updateSalaryPay(salaryPayDTO));
     }
 
     /**
+     * 查询工资发薪表详情
+     */
+    @RequiresPermissions(value = {"operate:cloud:salaryPay:info", "operate:cloud:salaryPay:edit"}, logical = Logical.OR)
+    @GetMapping("/info/{salaryPayId}")
+    public AjaxResult info(@PathVariable Long salaryPayId) {
+        SalaryPayDTO salaryPayDTO = salaryPayService.selectSalaryPayBySalaryPayId(salaryPayId);
+        return AjaxResult.success(salaryPayDTO);
+    }
+
+    /**
      * 逻辑删除工资发薪表
      */
-    //@RequiresPermissions("operate:cloud:salaryPay:remove")
-    @Log(title = "删除工资发薪表", businessType = BusinessType.DELETE)
+    @RequiresPermissions("operate:cloud:salaryPay:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody SalaryPayDTO salaryPayDTO) {
         return toAjax(salaryPayService.logicDeleteSalaryPayBySalaryPayId(salaryPayDTO));
     }
 
     /**
-     * 批量修改工资发薪表
-     */
-    //@RequiresPermissions("operate:cloud:salaryPay:edits")
-    @Log(title = "批量修改工资发薪表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<SalaryPayDTO> salaryPayDtos) {
-        return toAjax(salaryPayService.updateSalaryPays(salaryPayDtos));
-    }
-
-    /**
-     * 批量新增工资发薪表
-     */
-    //@RequiresPermissions("operate:cloud:salaryPay:insertSalaryPays")
-    @Log(title = "批量新增工资发薪表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertSalaryPays")
-    public AjaxResult insertSalaryPays(@RequestBody List<SalaryPayDTO> salaryPayDtos) {
-        return toAjax(salaryPayService.insertSalaryPays(salaryPayDtos));
-    }
-
-    /**
      * 逻辑批量删除工资发薪表
      */
-    //@RequiresPermissions("operate:cloud:salaryPay:removes")
-    @Log(title = "批量删除工资发薪表", businessType = BusinessType.DELETE)
+    @RequiresPermissions("operate:cloud:salaryPay:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> salaryPayIds) {
         return toAjax(salaryPayService.logicDeleteSalaryPayBySalaryPayIds(salaryPayIds));
@@ -167,6 +116,7 @@ public class SalaryPayController extends BaseController {
     /**
      * 导入工资发薪表
      */
+    @RequiresPermissions("operate:cloud:salaryPay:import")
     @PostMapping("import")
     public AjaxResult importSalaryPay(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
@@ -191,6 +141,7 @@ public class SalaryPayController extends BaseController {
      * 导出工资发薪表
      */
     @SneakyThrows
+    @RequiresPermissions("operate:cloud:salaryPay:export")
     @PostMapping("export")
     public void exportSalaryPay(@RequestBody SalaryPayDTO salaryPayDTO, HttpServletResponse response) {
         List<SalaryPayDTO> salaryPayDTOS = salaryPayService.selectSalaryPayBySalaryPay(salaryPayDTO.getIsSelect(), salaryPayDTO.getSalaryPayIds());
@@ -210,7 +161,7 @@ public class SalaryPayController extends BaseController {
      * 导出工资发薪模板
      */
     @SneakyThrows
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @RequiresPermissions("operate:cloud:salaryPay:import")
     @GetMapping("/export-template")
     public void exportTemplate(@RequestParam Map<String, Object> salaryPay, SalaryPayExcel salaryPayExcel, HttpServletResponse response) {
         try {
@@ -228,6 +179,38 @@ public class SalaryPayController extends BaseController {
         } catch (IOException e) {
             throw new ServiceException("导出失败");
         }
+    }
+
+
+    //==============================薪酬架构报表==================================//
+
+    /**
+     * 查询薪酬架构报表列表
+     */
+    @RequiresPermissions("operate:cloud:salaryPay:structure")
+    @GetMapping("/structure")
+    public AjaxResult structure(SalaryStructureDTO salaryStructureDTO) {
+        return AjaxResult.success(salaryPayService.selectSalaryPayStructure(salaryStructureDTO));
+    }
+
+    /**
+     * 查询薪酬架构报表列表
+     */
+    @RequiresPermissions("operate:cloud:salaryPay:structure")
+    @GetMapping("/pageList/structure")
+    public AjaxResult listStructure(SalaryStructureDTO salaryStructureDTO) {
+        return AjaxResult.success(salaryPayService.selectSalaryPayStructureList(salaryStructureDTO));
+    }
+
+    //==============================其他==================================//
+
+    /**
+     * 查询工资发薪表列表
+     */
+    @GetMapping("/list")
+    public AjaxResult list(SalaryPayDTO salaryPayDTO) {
+        List<SalaryPayDTO> list = salaryPayService.selectSalaryPayList(salaryPayDTO);
+        return AjaxResult.success(list);
     }
 
 }
