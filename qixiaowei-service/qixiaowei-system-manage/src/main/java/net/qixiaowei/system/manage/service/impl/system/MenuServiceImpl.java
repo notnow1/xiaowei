@@ -85,10 +85,12 @@ public class MenuServiceImpl implements IMenuService {
         treeNodeConfig.setIdKey("menuId");
         treeNodeConfig.setNameKey("label");
         treeNodeConfig.setParentIdKey("parentMenuId");
+        treeNodeConfig.setWeightKey("sort");
         return TreeUtil.build(menus, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
             tree.setId(treeNode.getMenuId());
             tree.setParentId(treeNode.getParentMenuId());
             tree.setName(treeNode.getMenuName());
+            tree.setWeight(treeNode.getSort());
             tree.putExtra("productPackageId", treeNode.getProductPackageId());
             tree.putExtra("productPackageName", treeNode.getProductPackageName());
         });
