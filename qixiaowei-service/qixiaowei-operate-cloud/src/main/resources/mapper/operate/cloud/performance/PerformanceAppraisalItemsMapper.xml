@@ -175,7 +175,7 @@
     <!--批量新增绩效考核项目表-->
     <insert id="batchPerformanceAppraisalItems">
         INSERT INTO performance_appraisal_items
-        (perform_appraisal_items_id,perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time)
+        (perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="performanceAppraisalItemss"
