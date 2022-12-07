@@ -227,7 +227,7 @@ public interface EmployeeMapper {
     List<EmployeeDTO> selectDepartmentAndOfficialRankSystem(@Param("departmentIds") List<Long> departmentIds);
 
     /**
-     * 查询部门下所有人员
+     * 远程 查询部门下所有人员
      * @param departmentId
      * @return
      */
@@ -246,4 +246,11 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectDropEmployeeList(Employee employee);
+
+    /**
+     * 远程 查询一级部门下所有的人员 返回部门id和职级体系id
+     * @param departmentIdAll
+     * @return
+     */
+    List<EmployeeDTO> selectParentDepartmentIdAndOfficialRankSystem(@Param("departmentIdAll") List<Long> departmentIdAll);
 }

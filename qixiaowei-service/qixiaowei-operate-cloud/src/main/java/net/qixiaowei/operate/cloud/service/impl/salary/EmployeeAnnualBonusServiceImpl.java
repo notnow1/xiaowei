@@ -728,7 +728,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                         }
                     }
                 }
-                }
+            }
 
         }
 
@@ -848,6 +848,17 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 empAnnualBonusObjects.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
                 //个人年终奖ID
                 empAnnualBonusSnapshot.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
+                empAnnualBonusObjects.setCreateBy(SecurityUtils.getUserId());
+                empAnnualBonusObjects.setCreateTime(DateUtils.getNowDate());
+                empAnnualBonusObjects.setUpdateTime(DateUtils.getNowDate());
+                empAnnualBonusObjects.setUpdateBy(SecurityUtils.getUserId());
+                empAnnualBonusObjects.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+
+                empAnnualBonusSnapshot.setCreateBy(SecurityUtils.getUserId());
+                empAnnualBonusSnapshot.setCreateTime(DateUtils.getNowDate());
+                empAnnualBonusSnapshot.setUpdateTime(DateUtils.getNowDate());
+                empAnnualBonusSnapshot.setUpdateBy(SecurityUtils.getUserId());
+                empAnnualBonusSnapshot.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                 empAnnualBonusObjectsList.add(empAnnualBonusObjects);
                 empAnnualBonusSnapshotList.add(empAnnualBonusSnapshot);
             }

@@ -182,5 +182,5 @@ public interface IDepartmentService {
      *
      * @return
      */
-    List<DepartmentDTO> selectParentDepartment();
+    List<DepartmentDTO> selectParentDepartment(Long departmentId);
 }

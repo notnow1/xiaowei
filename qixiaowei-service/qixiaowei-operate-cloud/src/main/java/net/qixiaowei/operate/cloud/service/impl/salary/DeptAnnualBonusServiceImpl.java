@@ -162,7 +162,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
         //2 可发经营奖总包
         packDeptAnnualBonus(allActualPerformanceBonusFactorSum, deptAnnualBonusDTO, bonusBudgetDTO);
         //远程调用查看所有一级部门
-        R<List<DepartmentDTO>> listR = remoteDepartmentService.selectParentDepartment(SecurityConstants.INNER);
+        R<List<DepartmentDTO>> listR = remoteDepartmentService.getAll(SecurityConstants.INNER);
         List<DepartmentDTO> data = listR.getData();
         if (StringUtils.isNotEmpty(data)){
 

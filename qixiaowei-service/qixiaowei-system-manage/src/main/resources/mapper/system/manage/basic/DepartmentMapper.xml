@@ -504,7 +504,7 @@
         WHERE delete_flag = 0
         group by level
     </select>
-<!--    查询所有部门-->
+<!--    查询所有一级部门-->
     <select id="getAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT department_id,
                parent_department_id,
@@ -527,6 +527,81 @@
         FROM department
         where delete_flag =0
         and status =1
+        and parent_department_id = 0
+    </select>
+<!--    远程查询一级部门及子级部门-->
+    <select id="selectParentDepartment" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+        SELECT
+        department_id,
+        parent_department_id,
+        ancestors,
+        department_code,
+        department_name,
+        level,
+        department_leader_id,
+        department_leader_post_id,
+        examination_leader_id,
+        department_importance_factor,
+        department_description,
+        sort,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM (
+        SELECT
+        department_id,
+        parent_department_id,
+        ancestors,
+        department_code,
+        department_name,
+        level,
+        department_leader_id,
+        department_leader_post_id,
+        examination_leader_id,
+        department_importance_factor,
+        department_description,
+        sort,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        department
+        WHERE
+        delete_flag=0
+        <if test="departmentId != null">
+            and department_id=#{departmentId}
+        </if>
+        union
+        SELECT department_id,
+        parent_department_id,
+        ancestors,
+        department_code,
+        department_name,
+        level,
+        department_leader_id,
+        department_leader_post_id,
+        examination_leader_id,
+        department_importance_factor,
+        department_description,
+        sort,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM department
+        <if test="departmentId != null">
+            WHERE find_in_set(#{departmentId}, ancestors)
+        </if>
+        and delete_flag = 0
+        ) AS ancestors
     </select>
 
     <!--新增部门表-->
