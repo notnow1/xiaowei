@@ -777,6 +777,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     } else {
                         performanceAppraisalObjectsDTO.setAppraisalObjectStatus(0);
                     }
+                    Long examinationLeaderId = departmentDTO.getExaminationLeaderId();
+                    if (StringUtils.isNull(examinationLeaderId)){
+
+                    }
                     break;
                 }
             }
