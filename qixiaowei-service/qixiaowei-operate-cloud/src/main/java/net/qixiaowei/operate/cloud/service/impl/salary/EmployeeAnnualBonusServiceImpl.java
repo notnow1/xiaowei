@@ -275,6 +275,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     public int updateEmployeeAnnualBonus(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         //发起评议流程标记:0否;1是
         Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
+        //状态:0草稿;1待初评;2待评议;3已评议
+        Integer status = employeeAnnualBonusDTO.getStatus();
         EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusDTO.getEmployeeAnnualBonusId());
         if (StringUtils.isNull(employeeAnnualBonusDTO1)) {
             throw new ServiceException("数据不存在！ 请联系管理员");
@@ -292,7 +294,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
             employeeAnnualBonus.setUpdateTime(DateUtils.getNowDate());
             employeeAnnualBonus.setUpdateBy(SecurityUtils.getUserId());
-            if (commentFlag == 1) {
+            if (commentFlag == 0 || status==2 || status==3) {
                 //评议日期评议日期
                 employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
             }
@@ -341,6 +343,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteEmployeeAnnualBonusByEmployeeAnnualBonusIds(List<Long> employeeAnnualBonusIds) {
         int i = 0;
         List<EmployeeAnnualBonusDTO> employeeAnnualBonusDTOS = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeAnnualBonusIds(employeeAnnualBonusIds);
@@ -648,7 +651,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             if (null == employeeAnnualBonusId) {
                 //直接提交 新增数据
                 packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
-
+                //todo 发送通知
             }else {
                 //保存提交 修改数据
                 packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
@@ -660,11 +663,11 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
 
                 } else {
-                    if (status == 0) {
+                    if (status == 1) {
                         //保存提交 修改数据
                         packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
                         //todo 发送通知
-                    } else if (status == 1) {
+                    } else if (status == 2) {
                         if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
                             List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
 
@@ -685,7 +688,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                                 //todo 发送通知
                             }
                         }
-                    } else if (status == 2) {
+                    } else if (status == 3) {
                         List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
                         if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
                             for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOS) {
@@ -693,6 +696,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                                     employeeAnnualBonus.setStatus(2);
                                 }
                             }
+                          employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
+
                             //保存提交 修改数据
                             packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
                         }
@@ -705,11 +710,11 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
 
                 }else {
-                    if (status == 0) {
+                    if (status == 2) {
                         //保存提交 修改数据
                         packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
                         //todo 发送通知
-                    } else if (status == 1) {
+                    } else if (status == 3) {
                         if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
                             List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
 
@@ -723,6 +728,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                                     }
                                 }
                             }
+                           employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
                             //保存提交 修改数据
                             packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
                         }
@@ -880,10 +886,6 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             } catch (Exception e) {
                 throw new ServiceException("批量新增个人年终奖发放快照信息失败");
             }
-        }
-        if (commentFlag == 1) {
-            // todo 发送通知
-
         }
     }
 

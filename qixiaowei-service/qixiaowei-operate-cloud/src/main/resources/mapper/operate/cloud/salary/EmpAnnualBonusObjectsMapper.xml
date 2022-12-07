@@ -89,6 +89,7 @@
         FROM emp_annual_bonus_objects
         WHERE  employee_annual_bonus_id=#{employeeAnnualBonusId}
           and delete_flag=0
+        and choice_flag=1
     </select>
     <!--    根据个人年终奖主表id集合批量查询个人年终奖发放对象表-->
     <select id="selectEmpAnnualBonusObjectsByEmployeeAnnualBonusIds"
@@ -98,7 +99,7 @@
         FROM emp_annual_bonus_objects
         WHERE  emp_annual_bonus_objects_id in
         <foreach item="item"
-                 collection="empAnnualBonusObjectsIds"
+                 collection="employeeAnnualBonusIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
@@ -143,7 +144,6 @@
         WHERE eabo .delete_flag =0
           and eabo.employee_annual_bonus_id =#{employeeAnnualBonusId}
     </select>
-
     <!--新增个人年终奖发放对象表-->
     <insert id="insertEmpAnnualBonusObjects" useGeneratedKeys="true" keyProperty="empAnnualBonusObjectsId">
         INSERT INTO emp_annual_bonus_objects (employee_annual_bonus_id,employee_id,choice_flag,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,attendance_factor,recommend_value,comment_value,delete_flag,create_by,create_time,update_by,update_time)

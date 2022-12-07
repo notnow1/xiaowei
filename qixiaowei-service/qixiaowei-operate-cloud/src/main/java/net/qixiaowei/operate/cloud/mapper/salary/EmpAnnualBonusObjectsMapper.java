@@ -29,6 +29,7 @@ public interface EmpAnnualBonusObjectsMapper{
      * @return 个人年终奖发放对象表
      */
     List<EmpAnnualBonusObjectsDTO> selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(@Param("employeeAnnualBonusId")Long employeeAnnualBonusId);
+
     /**
      * 根据个人年终奖主表id集合批量查询个人年终奖发放对象表
      *

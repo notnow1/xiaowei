@@ -139,7 +139,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
      * @return
      */
     @Override
-    public DeptAnnualBonusDTO addPrefabricate(int annualBonusYear) {
+    public DeptAnnualBonusDTO   addPrefabricate(int annualBonusYear) {
         //1+∑各驱动因素的奖金系数
         BigDecimal allActualPerformanceBonusFactorSum = new BigDecimal("0");
         //部门年终奖表
