@@ -21,7 +21,7 @@
         SELECT
         m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
         FROM menu m
-        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id AND pp.delete_flag = 0
         WHERE  m.menu_id=#{menuId}
         and m.delete_flag=0
     </select>
@@ -31,7 +31,7 @@
         SELECT
         m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
         FROM menu m
-        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id AND pp.delete_flag = 0
         WHERE m.delete_flag=0
                 <if test="menu.menuId != null">
                     and m.menu_id=#{menu.menuId}
@@ -88,8 +88,8 @@
         SELECT distinct
         m.menu_id, m.parent_menu_id, m.menu_type, m.menu_name, m.product_package_id, m.sort, m.path, m.component, m.query, m.external_link_flag, m.cache_flag, m.visible_flag, m.permission_code, m.icon, m.status, m.delete_flag, m.create_by, m.create_time, m.update_by, m.update_time,pp.product_package_name
         FROM menu m
-        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
-        WHERE  m.delete_flag = 0  AND ( pp.product_package_id is null OR pp.delete_flag = 0)  AND m.status = 1 AND m.menu_type IN (1,2)
+        LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id AND pp.delete_flag = 0
+        WHERE  m.delete_flag = 0  AND m.status = 1 AND m.menu_type IN (1,2)
         ORDER BY m.parent_menu_id, m.sort
     </select>
 
@@ -99,7 +99,7 @@
         FROM menu m
         LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag = 0
         LEFT JOIN user_role ur on rm.role_id = ur.role_id AND ur.delete_flag = 0
-        LEFT JOIN role ro on ur.role_id = ro.role_id
+        LEFT JOIN role ro on ur.role_id = ro.role_id AND ro.delete_flag = 0
         LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
         WHERE  m.delete_flag = 0  AND ( pp.product_package_id is null OR pp.delete_flag = 0)  AND m.status = 1 AND m.menu_type IN (1,2) AND ro.status = 1 AND ur.user_id = #{userId}
         ORDER BY m.parent_menu_id, m.sort
@@ -119,7 +119,7 @@
         FROM menu m
         LEFT JOIN role_menu rm on m.menu_id = rm.menu_id AND rm.delete_flag = 0
         LEFT JOIN user_role ur on rm.role_id = ur.role_id AND ur.delete_flag = 0
-        LEFT JOIN role ro on ur.role_id = ro.role_id
+        LEFT JOIN role ro on ur.role_id = ro.role_id AND ro.delete_flag = 0
         LEFT JOIN product_package pp on pp.product_package_id = m.product_package_id
         WHERE  m.delete_flag = 0 AND ur.user_id = #{params.userId}
         <if test="menuName != null and menuName != ''">

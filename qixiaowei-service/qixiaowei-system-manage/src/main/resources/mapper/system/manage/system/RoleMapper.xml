@@ -24,8 +24,8 @@
         SELECT distinct
         r.role_id, r.role_code, r.role_name, r.data_scope, r.product_package, r.sort, r.remark, r.status, r.delete_flag, r.create_by, r.create_time, r.update_by, r.update_time
         FROM role r
-        LEFT JOIN user_role ur on ur.role_id = r.role_id
-        LEFT JOIN user u on u.user_id = ur.user_id
+        LEFT JOIN user_role ur on ur.role_id = r.role_id AND ur.delete_flag = 0
+        LEFT JOIN user u on u.user_id = ur.user_id AND u.delete_flag = 0
         WHERE r.delete_flag=0 and ur.user_id = #{userId}
     </select>
 
