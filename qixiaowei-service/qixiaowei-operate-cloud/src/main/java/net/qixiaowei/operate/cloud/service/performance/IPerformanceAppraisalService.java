@@ -269,7 +269,7 @@ public interface IPerformanceAppraisalService {
      * 查询绩效考核表列表-组织-制定
      *
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
-     * @return
+     * @return List
      */
     List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 
@@ -277,7 +277,7 @@ public interface IPerformanceAppraisalService {
      * 查询绩效考核表列表-组织-制定-详情
      *
      * @param performAppraisalObjectsId 绩效考核对象ID
-     * @return
+     * @return DTO
      */
     PerformanceAppraisalObjectsDTO selectOrgAppraisalDevelopById(Long performAppraisalObjectsId);
 
@@ -285,7 +285,31 @@ public interface IPerformanceAppraisalService {
      * 保存/提交绩效考核-制定-组织
      *
      * @param performanceAppraisalObjectsDTO 绩效考核DTO
-     * @return
+     * @return DTO
      */
     PerformanceAppraisalObjectsDTO updateOrgDevelopPerformanceAppraisal(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+
+    /**
+     * 查询绩效考核表列表-组织-评议
+     *
+     * @param performanceAppraisalObjectsDTO 绩效考核DTO
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+
+    /**
+     * 查询组织绩效考核表详情-评议
+     *
+     * @param performAppraisalObjectsId 绩效考核对象ID
+     * @return 绩效考核表
+     */
+    PerformanceAppraisalObjectsDTO selectOrgAppraisalReviewById(Long performAppraisalObjectsId);
+
+    /**
+     * 编辑组织绩效考核评议表
+     *
+     * @param performanceAppraisalObjectsDTO 考核对象
+     * @return 考核对象DTO
+     */
+    PerformanceAppraisalObjectsDTO updateOrgReviewPerformanceAppraisal(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 }
