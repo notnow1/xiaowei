@@ -268,7 +268,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //被除数 不能为0和空
                     if (null != decomposeTarget && decomposeTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(),BigDecimal.ROUND_DOWN).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(decomposeTarget,4,BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
                     }
                 }
                 targetDecomposeDetailsDTO.setForecastYear(forecastYear);
@@ -674,6 +674,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                String forecastCycle = this.packForecastCycle(decomposeDTO);
+                decomposeDTO.setForecastCycle(forecastCycle);
                 this.packDecompositionDimension(decomposeDTO);
             }
         }

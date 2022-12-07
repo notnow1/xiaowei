@@ -15,8 +15,10 @@ import net.qixiaowei.operate.cloud.mapper.salary.DeptAnnualBonusMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.salary.IDeptAnnualBonusService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,8 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
     private SalaryPayMapper salaryPayMapper;
     @Autowired
     private RemoteDepartmentService remoteDepartmentService;
+    @Autowired
+    private RemoteEmployeeService remoteEmployeeService;
 
     /**
     * 查询部门年终奖表
@@ -144,6 +148,8 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
         BigDecimal allActualPerformanceBonusFactorSum = new BigDecimal("0");
         //部门年终奖表
         DeptAnnualBonusDTO deptAnnualBonusDTO = new DeptAnnualBonusDTO();
+        //部门年终奖系数表集合
+        List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs = new ArrayList<>();
         //奖金预算表
         BonusBudgetDTO bonusBudgetDTO = new BonusBudgetDTO();
         //部门年终奖经营绩效结果表集合
@@ -165,10 +171,39 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService{
         R<List<DepartmentDTO>> listR = remoteDepartmentService.getAll(SecurityConstants.INNER);
         List<DepartmentDTO> data = listR.getData();
         if (StringUtils.isNotEmpty(data)){
+            for (DepartmentDTO datum : data) {
+                DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO = new DeptAnnualBonusFactorDTO();
+                deptAnnualBonusFactorDTO.setDepartmentId(datum.getDepartmentId());
+                deptAnnualBonusFactorDTO.setDepartmentName(datum.getDepartmentName());
+                deptAnnualBonusFactorDTOs.add(deptAnnualBonusFactorDTO);
+            }
+            for (DepartmentDTO datum : data) {
+                //远程调用查询一级部门下所有部门
+                R<List<DepartmentDTO>> sublevelDepartment = remoteDepartmentService.selectSublevelDepartment(datum.getDepartmentId(), SecurityConstants.INNER);
+                List<DepartmentDTO> sublevelDepartmentData = sublevelDepartment.getData();
+                if (StringUtils.isNotEmpty(sublevelDepartmentData)){
+                    List<Long> departmentIdAll = sublevelDepartmentData.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(departmentIdAll)){
+                        //远程查询一级部门及子级部门下 所有人员
+                        R<List<EmployeeDTO>> listR1 = remoteEmployeeService.selectParentDepartmentIdAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
+                        List<EmployeeDTO> data1 = listR1.getData();
+                        if (StringUtils.isNotEmpty(data1)){
+                            for (EmployeeDTO employeeDTO : data1) {
+                                //部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
+                                List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(),annualBonusYear);
+                            }
 
+                        }
+                    }
+                }
+            }
         }
-//        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(annualBonusYear);
-        return null;
+
+
+
+
+
+        return deptAnnualBonusDTO;
     }
 
     /**

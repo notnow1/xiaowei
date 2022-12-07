@@ -9,14 +9,12 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.salary.DeptAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmpAnnualBonusObjects;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmpAnnualBonusSnapshot;
 import net.qixiaowei.operate.cloud.api.domain.salary.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.*;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalMapper;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalObjectsMapper;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceRankFactorMapper;
@@ -401,9 +399,18 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      */
     @Override
     public List<EmpAnnualBonusSnapshotDTO> addPrefabricate(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
-        //部门年终奖
-        employeeAnnualBonusDTO.setDistributeBonusAmount(new BigDecimal("1000"));
-        BigDecimal distributeBonusAmount = employeeAnnualBonusDTO.getDistributeBonusAmount();
+        BigDecimal distributeBonusAmount = new BigDecimal("0");
+
+        DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();
+        deptAnnualBonus.setAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
+        deptAnnualBonus.setDepartmentId(employeeAnnualBonusDTO.getDepartmentId());
+        DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusMapper.selectDeptAnnualBonusByAnnualBonusYear(deptAnnualBonus);
+        if (StringUtils.isNotNull(deptAnnualBonusDTO)){
+            distributeBonusAmount=deptAnnualBonusDTO.getDepartmentAnnualBonus();
+            //部门年终奖
+            employeeAnnualBonusDTO.setDistributeBonusAmount(distributeBonusAmount);
+        }
+
 
         //所有员工的薪酬奖金合计
         BigDecimal allPaymentBonusSum = new BigDecimal("0");

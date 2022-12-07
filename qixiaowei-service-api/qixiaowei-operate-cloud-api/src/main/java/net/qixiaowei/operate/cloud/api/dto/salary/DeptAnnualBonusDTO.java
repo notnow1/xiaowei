@@ -77,6 +77,10 @@ public class DeptAnnualBonusDTO {
      */
     private List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOs;
     /**
+     * 部门年终奖系数表集合
+     */
+    private List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs;
+    /**
     * 状态
     */
     private  Integer status;

@@ -47,6 +47,10 @@ public class DeptAnnualBonusFactorDTO {
     */
     private  Long departmentId;
     /**
+     * 部门ID
+     */
+    private  String departmentName;
+    /**
     * 权重
     */
     private  BigDecimal weight;
