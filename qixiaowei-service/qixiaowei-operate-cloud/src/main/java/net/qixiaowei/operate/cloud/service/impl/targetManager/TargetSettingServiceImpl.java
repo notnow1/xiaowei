@@ -1724,9 +1724,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             recoveryDTO.setAddRate(BigDecimal.ZERO);
             recoveryDTO.setImproveDays(0);
             if (StringUtils.isNotNull(targetIncomeDetailsDTO)) {//上年销售收入如果不为空
-                BigDecimal baselineValue = actualTotal.divide(targetIncomeDetailsDTO.getActualTotal(), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(360));
-                recoveryDTO.setBalanceReceivables(targetIncomeDetailsDTO.getActualTotal());
-                recoveryDTO.setBaselineValue(baselineValue.intValue());
+                if (targetIncomeDetailsDTO.getActualTotal().compareTo(BigDecimal.ZERO) != 0) {
+                    BigDecimal baselineValue = actualTotal.multiply(new BigDecimal(360)).divide(targetIncomeDetailsDTO.getActualTotal(), 2, RoundingMode.HALF_UP);
+                    recoveryDTO.setBalanceReceivables(targetIncomeDetailsDTO.getActualTotal());
+                    recoveryDTO.setBaselineValue(baselineValue.intValue());
+                }
             }
             List<Map<String, Object>> recoveryList = setRecoveryList(targetOutcomeDetailsDTO, BigDecimal.ZERO, recoveryDTO);
             targetSettingByIndicator.setTargetSettingRecoveryList(recoveryList);
