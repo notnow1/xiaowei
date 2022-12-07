@@ -226,7 +226,7 @@
             </foreach>
     </update>
     <!--批量新增个人年终奖发放对象表-->
-    <insert id="batchEmpAnnualBonusObjects">
+    <insert id="batchEmpAnnualBonusObjects" useGeneratedKeys="true" keyProperty="empAnnualBonusObjectsId">
         INSERT INTO emp_annual_bonus_objects (employee_annual_bonus_id,employee_id,choice_flag,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,attendance_factor,recommend_value,comment_value,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
