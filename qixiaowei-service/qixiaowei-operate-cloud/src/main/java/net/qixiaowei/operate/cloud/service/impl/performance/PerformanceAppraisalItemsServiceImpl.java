@@ -1,22 +1,20 @@
 package net.qixiaowei.operate.cloud.service.impl.performance;
 
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalItems;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO;
+import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalItemsExcel;
+import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalItemsMapper;
+import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalItemsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalItems;
-import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalItemsExcel;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO;
-import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalItemsMapper;
-import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalItemsService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import net.qixiaowei.integration.common.exception.ServiceException;
+import java.util.List;
 
 
 /**
@@ -188,8 +186,6 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDtoS) {
             PerformanceAppraisalItems performanceAppraisalItems = new PerformanceAppraisalItems();
             BeanUtils.copyProperties(performanceAppraisalItemsDTO, performanceAppraisalItems);
-            performanceAppraisalItems.setCreateBy(SecurityUtils.getUserId());
-            performanceAppraisalItems.setCreateTime(DateUtils.getNowDate());
             performanceAppraisalItems.setUpdateTime(DateUtils.getNowDate());
             performanceAppraisalItems.setUpdateBy(SecurityUtils.getUserId());
             performanceAppraisalItemsList.add(performanceAppraisalItems);
