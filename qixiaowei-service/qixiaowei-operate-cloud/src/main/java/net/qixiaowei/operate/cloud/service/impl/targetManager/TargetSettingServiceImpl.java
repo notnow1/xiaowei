@@ -570,11 +570,11 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     /**
      * 新增操作
      *
-     * @param targetYear
-     * @param noEdit
-     * @param targetSettingDTOAfter
-     * @param targetSettingDTOBefore
-     * @param indicator
+     * @param targetYear             目标年度
+     * @param noEdit                 不能编辑
+     * @param targetSettingDTOAfter  后来
+     * @param targetSettingDTOBefore 之前
+     * @param indicator              指标
      * @return
      */
     private List<TargetSettingDTO> addOperate(Integer targetYear, List<Long> noEdit, List<TargetSettingDTO> targetSettingDTOAfter, List<TargetSettingDTO> targetSettingDTOBefore, List<IndicatorDTO> indicator) {
@@ -771,7 +771,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
                 //同比
                 BigDecimal onBasis = settingDTO.getOnBasis();
-                if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
+                boolean isActualZero = actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0;
+                if (isActualZero) {
                     if (targetValue != null && targetValue.compareTo(new BigDecimal("0")) != 0) {
                         targetPercentageComplete = actualTotal.divide(targetValue, BigDecimal.ROUND_CEILING).multiply(new BigDecimal("100"));
                     }
@@ -779,7 +780,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 settingDTO.setTargetPercentageComplete(targetPercentageComplete);
                 //同比 公式=（目标年度年度实际/上年年度实际）-1
                 if (lastActualTotal != null && lastActualTotal.compareTo(new BigDecimal("0")) != 0) {
-                    if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
+                    if (isActualZero) {
                         onBasis = actualTotal.divide(lastActualTotal, BigDecimal.ROUND_CEILING).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
                     }
                 }

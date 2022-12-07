@@ -2026,8 +2026,53 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isEmpty(performanceAppraisalItemsDTOS)) {
             return performanceAppraisalObjectsDTO;
         }
+        for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDTOS) {
+            Integer examineDirection = performanceAppraisalItemsDTO.getExamineDirection();
+            countScore(performanceAppraisalItemsDTO, examineDirection);
+        }
         performanceAppraisalObjectsDTO.setPerformanceAppraisalItemsDTOS(performanceAppraisalItemsDTOS);
         return performanceAppraisalObjectsDTO;
+    }
+
+    /**
+     * 计算分数
+     *
+     * @param performanceAppraisalItemsDTO 评议dto
+     * @param examineDirection             分数
+     *                                     1) 若指标的考核方向为正向，则为实际值/目标值*权重*100，实际值/目标值大于1.2时，按照1.2取值。
+     *                                     2) 若指标的考核方向为负向，则为目标值/实际值*权重*100，实际值为0时分数为0。
+     */
+    private static void countScore(PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO, Integer examineDirection) {
+        if (StringUtils.isNotNull(examineDirection)) {
+            if (examineDirection == 1) {// 正向
+                BigDecimal targetValue = performanceAppraisalItemsDTO.getTargetValue();
+                if (StringUtils.isNull(targetValue) || targetValue.compareTo(BigDecimal.ZERO) == 0) {
+                    performanceAppraisalItemsDTO.setEvaluationScore(BigDecimal.ZERO);
+                } else {
+                    BigDecimal actualValue = performanceAppraisalItemsDTO.getActualValue();
+                    if (StringUtils.isNull(actualValue)) actualValue = BigDecimal.ZERO;
+                    BigDecimal weight = performanceAppraisalItemsDTO.getWeight();
+                    if (StringUtils.isNull(weight)) weight = BigDecimal.ZERO;
+                    BigDecimal evaluationScore = actualValue.multiply(weight).multiply(new BigDecimal(100)).divide(targetValue, 2, RoundingMode.HALF_UP);
+                    BigDecimal proportion = actualValue.divide(targetValue, 2, RoundingMode.HALF_UP);
+                    if (proportion.compareTo(BigDecimal.valueOf(1.2)) > 0)
+                        evaluationScore = evaluationScore.multiply(BigDecimal.valueOf(1.2));
+                    performanceAppraisalItemsDTO.setEvaluationScore(evaluationScore);
+                }
+            } else {
+                BigDecimal actualValue = performanceAppraisalItemsDTO.getActualValue();
+                if (StringUtils.isNull(actualValue) || actualValue.compareTo(BigDecimal.ZERO) == 0) {
+                    performanceAppraisalItemsDTO.setEvaluationScore(BigDecimal.ZERO);
+                } else {
+                    BigDecimal targetValue = performanceAppraisalItemsDTO.getTargetValue();
+                    if (StringUtils.isNull(targetValue)) targetValue = BigDecimal.ZERO;
+                    BigDecimal weight = performanceAppraisalItemsDTO.getWeight();
+                    if (StringUtils.isNull(weight)) weight = BigDecimal.ZERO;
+                    BigDecimal evaluationScore = targetValue.multiply(weight).multiply(new BigDecimal(100)).divide(actualValue, 2, RoundingMode.HALF_UP);
+                    performanceAppraisalItemsDTO.setEvaluationScore(evaluationScore);
+                }
+            }
+        }
     }
 
     /**
@@ -2085,6 +2130,15 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             }
         }
         // 更新绩效考核对象
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsAfter = performanceAppraisalObjectsDTO.getPerformanceAppraisalItemsDTOS();
+        BigDecimal evaluationScore = BigDecimal.ZERO;
+        if (StringUtils.isNotEmpty(performanceAppraisalItemsAfter)) {
+            for (PerformanceAppraisalItemsDTO appraisalItemsDTO : performanceAppraisalItemsAfter) {
+                if (StringUtils.isNotNull(appraisalItemsDTO.getEvaluationScore()) && !appraisalItemsDTO.getEvaluationScore().equals(BigDecimal.ZERO)) {
+                    evaluationScore = evaluationScore.add(appraisalItemsDTO.getEvaluationScore());
+                }
+            }
+        }
         Long appraisalPrincipalId = performanceAppraisalObjectsDTO.getAppraisalPrincipalId();
         if (StringUtils.isNull(appraisalPrincipalId)) {
             List<EmployeeDTO> employeeDTOS = getEmployeeData();
@@ -2096,6 +2150,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             }
         }
         PerformanceAppraisalObjectsDTO performanceAppraisalObjects = new PerformanceAppraisalObjectsDTO();
+        performanceAppraisalObjects.setEvaluationScore(evaluationScore);
         performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
         performanceAppraisalObjects.setAppraisalPrincipalId(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
         performanceAppraisalObjects.setAppraisalPrincipalName(performanceAppraisalObjectsDTO.getAppraisalPrincipalName());
@@ -2108,7 +2163,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalObjectsService.updatePerformanceAppraisalObjects(performanceAppraisalObjects);
         // 更新评议指标信息
-        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsAfter = performanceAppraisalObjectsDTO.getPerformanceAppraisalItemsDTOS();
         if (StringUtils.isEmpty(performanceAppraisalItemsAfter)) {
             return performanceAppraisalObjectsDTO;
         }

@@ -99,6 +99,17 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
+     * 查询绩效考核表列表-组织-制定
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/orgRank/pageList")
+    public TableDataInfo listOrgRank(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+        startPage();
+        List<PerformanceAppraisalObjectsDTO> list = performanceAppraisalService.selectOrgAppraisalReviewList(performanceAppraisalObjectsDTO);
+        return getDataTable(list);
+    }
+
+    /**
      * 查询绩效考核表列表-组织-归档
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
@@ -160,8 +171,8 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询组织绩效结果排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @PostMapping("/list/orgRank")
-    public AjaxResult listOrgRank(@RequestBody Map<String, List<Long>> map) {
+    @PostMapping("/orgProportion")
+    public AjaxResult orgProportion(@RequestBody Map<String, List<Long>> map) {
         List<Long> appraisalObjectsIds = map.get("appraisalObjectsIds");
         Long performanceAppraisalId = map.get("performanceAppraisalId").get(0);
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankByDTO(appraisalObjectsIds, performanceAppraisalId));
@@ -171,8 +182,8 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询个人绩效结果排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @PostMapping("/list/perRank")
-    public AjaxResult listPerRank(@RequestBody Map<String, List<String>> map) {
+    @PostMapping("/perProportion")
+    public AjaxResult perProportion(@RequestBody Map<String, List<String>> map) {
         return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(map));
     }
 

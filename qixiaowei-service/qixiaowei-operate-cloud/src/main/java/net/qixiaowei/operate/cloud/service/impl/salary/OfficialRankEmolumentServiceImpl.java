@@ -425,6 +425,9 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             throw new ServiceException("当前职级不存在 请联系管理员");
         }
         Integer rankDecomposeDimension = officialRankSystemDTO.getRankDecomposeDimension();
+        if (StringUtils.isNull(rankDecomposeDimension)) {
+            return null;
+        }
         R<List<OfficialRankDecomposeDTO>> officialDecomposeR = officialRankSystemService.selectOfficialDecomposeBySystemId(officialRankSystemId, rankDecomposeDimension, SecurityConstants.INNER);
         List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialDecomposeR.getData();
         if (officialDecomposeR.getCode() != 200) {
@@ -433,14 +436,19 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         // 获取当前的内容
         List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(officialRankSystemId, officialRank);
         if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {
-            throw new ServiceException("请先录入数据");
+            for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+                officialRankDecomposeDTO.setSalaryCap(BigDecimal.ZERO);
+                officialRankDecomposeDTO.setSalaryFloor(BigDecimal.ZERO);
+                officialRankDecomposeDTO.setSalaryMedian(BigDecimal.ZERO);
+                officialRankDecomposeDTO.setSalaryWide(BigDecimal.ZERO);
+            }
+            return officialRankDecomposeDTOS;
         }
         OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentDTOS.get(0);
         BigDecimal salaryCap = emolumentDTO.getSalaryCap();
         BigDecimal salaryFloor = emolumentDTO.getSalaryFloor();
         BigDecimal salaryMedian = emolumentDTO.getSalaryMedian();
         BigDecimal salaryWide = emolumentDTO.getSalaryCap().subtract(emolumentDTO.getSalaryFloor());
-
         // 宽幅
         BigDecimal wide = emolumentDTO.getSalaryCap().subtract(emolumentDTO.getSalaryFloor());
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {

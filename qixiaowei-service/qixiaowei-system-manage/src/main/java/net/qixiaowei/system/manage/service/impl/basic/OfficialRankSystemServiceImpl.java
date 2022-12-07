@@ -529,6 +529,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         List<OfficialRankSystemDTO> officialRankSystemDTOS = new ArrayList<>();
         officialRankSystemDTOS.add(officialRankSystemDTO);
         writeOfficialRank(officialRankSystemDTOS);
+        if (StringUtils.isNull(rankDecomposeDimension)) {
+            return officialRankSystemDTO;
+        }
         List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = officialRankDecomposeService.selectOfficialRankDecomposeAndNameByOfficialRankSystemId(officialRankSystemId, rankDecomposeDimension);
         officialRankSystemDTO.setOfficialRankDecomposeDTOS(officialRankDecomposeDTOS);
         return officialRankSystemDTO;

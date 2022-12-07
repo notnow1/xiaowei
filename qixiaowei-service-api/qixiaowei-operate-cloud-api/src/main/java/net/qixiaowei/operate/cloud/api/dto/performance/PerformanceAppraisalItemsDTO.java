@@ -75,6 +75,10 @@ public class PerformanceAppraisalItemsDTO {
     */
     private  BigDecimal actualValue;
     /**
+     * 评议分数
+     */
+    private BigDecimal evaluationScore;
+    /**
     * 权重百分比(%)
     */
     private  BigDecimal weight;
@@ -87,7 +91,7 @@ public class PerformanceAppraisalItemsDTO {
     */
     private  Long createBy;
     /**
-    * 创建时间
+    * 创建时间s
     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  createTime;

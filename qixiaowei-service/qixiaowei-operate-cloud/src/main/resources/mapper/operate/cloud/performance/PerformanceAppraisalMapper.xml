@@ -33,7 +33,7 @@
     </select>
 
     <!--    查询绩效考核表列表-->
-    <select id="selectPerformanceAppraisalList"
+        <select id="selectPerformanceAppraisalList"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">
         SELECT
         performance_appraisal_id, performance_rank_id, performance_rank_name, appraisal_year, appraisal_name,
