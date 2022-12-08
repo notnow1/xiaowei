@@ -260,9 +260,9 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
     /**
      * 查询组织绩效归档结果排名
      *
-     * @param appraisalObjectsIds
-     * @param performanceAppraisalId
-     * @return
+     * @param appraisalObjectsIds    对象ID集合
+     * @param performanceAppraisalId 任务ID
+     * @return List
      */
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectPerformanceAppraisalObjectsByIds(List<Long> appraisalObjectsIds, Long performanceAppraisalId) {

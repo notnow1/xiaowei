@@ -18,6 +18,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
 
     /**
      * 查询根据code集合查询部门数据
+     *
      * @param departmentCodes
      * @param source
      * @return
@@ -31,6 +32,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
 
     /**
      * 通过id查找部门信息
+     *
      * @param departmentId
      * @param source
      * @return
@@ -44,6 +46,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
 
     /**
      * 通过id集合查找部门信息
+     *
      * @param departmentIds
      * @param source
      * @return
@@ -64,6 +67,7 @@ public class RemoteDepartment implements RemoteDepartmentService {
 
     /**
      * 查看所有一级部门
+     *
      * @param source
      * @return
      */
@@ -76,18 +80,20 @@ public class RemoteDepartment implements RemoteDepartmentService {
 
     /**
      * 远程查询一级部门及子级部门
+     *
      * @param source
      * @return
      */
     @Override
     @InnerAuth
     @GetMapping("/selectSublevelDepartment")
-    public R<List<DepartmentDTO>> selectSublevelDepartment(@RequestParam("departmentId") Long departmentId,String source) {
+    public R<List<DepartmentDTO>> selectSublevelDepartment(@RequestParam("departmentId") Long departmentId, String source) {
         return R.ok(departmentService.selectParentDepartment(departmentId));
     }
 
     /**
      * 远程查询所有部门
+     *
      * @param source
      * @return
      */
@@ -96,5 +102,16 @@ public class RemoteDepartment implements RemoteDepartmentService {
     @GetMapping("/getAll")
     public R<List<DepartmentDTO>> getAll(String source) {
         return R.ok(departmentService.getAll());
+    }
+
+    /**
+     * 根据等级查询部门
+     *
+     * @param inner
+     * @return
+     */
+    @Override
+    public R<List<DepartmentDTO>> selectDepartmentByLevel(@RequestParam("level") Integer level, String inner) {
+        return R.ok(departmentService.selectDepartmentByLevel(level));
     }
 }

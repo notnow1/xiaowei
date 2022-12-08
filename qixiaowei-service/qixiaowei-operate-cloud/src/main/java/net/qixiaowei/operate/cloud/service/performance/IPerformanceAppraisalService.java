@@ -72,9 +72,10 @@ public interface IPerformanceAppraisalService {
      * 查询组织绩效结果排名
      *
      * @param appraisalObjectsIds 绩效考核对象ID集合
+     * @param queryType           选择内容
      * @return List
      */
-    PerformanceAppraisalDTO selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId);
+    PerformanceAppraisalDTO selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId, Integer queryType);
 
     /**
      * @param appraisalObjectsIds 绩效考核对象ID集合
@@ -274,6 +275,14 @@ public interface IPerformanceAppraisalService {
     List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 
     /**
+     * 查询绩效考核表列表-组织-制定
+     *
+     * @param performanceAppraisalObjectsDTO 绩效考核DTO
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> selectPerAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+
+    /**
      * 查询绩效考核表列表-组织-制定-详情
      *
      * @param performAppraisalObjectsId 绩效考核对象ID
@@ -344,4 +353,5 @@ public interface IPerformanceAppraisalService {
      * @return
      */
     int withdraw(Long performAppraisalObjectsId);
+
 }

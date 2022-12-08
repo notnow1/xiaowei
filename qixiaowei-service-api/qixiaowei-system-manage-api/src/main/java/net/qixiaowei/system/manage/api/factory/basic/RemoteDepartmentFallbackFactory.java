@@ -50,13 +50,18 @@ public class RemoteDepartmentFallbackFactory implements FallbackFactory<RemoteDe
             }
 
             @Override
-            public R<List<DepartmentDTO>> selectSublevelDepartment(Long departmentId,String inner) {
+            public R<List<DepartmentDTO>> selectSublevelDepartment(Long departmentId, String inner) {
                 return R.fail("查看一级部门及其子级部门失败:" + throwable.getMessage());
             }
 
             @Override
             public R<List<DepartmentDTO>> getAll(String source) {
                 return R.fail("查看所有部门失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<DepartmentDTO>> selectDepartmentByLevel(Integer level, String inner) {
+                return R.fail("根据等级查看所有部门失败:" + throwable.getMessage());
             }
         };
     }
