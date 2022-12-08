@@ -595,7 +595,13 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         Set<String> employeeCodes = new HashSet<>();
         Map<String, String> employeeMap = new HashMap<>();
         List<String> dateList = new ArrayList<>();
+        List<String> salaryList = new ArrayList<>();
         for (Map<Integer, String> map : list) {
+            String salary = map.get(0) + map.get(2);
+            if (salaryList.contains(salary)) {
+                throw new ServiceException("员工编码(" + map.get(0) + ")存在重复工资项 请检查");
+            }
+            salaryList.add(salary);
             if (StringUtils.isNull(map.get(0))) {
                 throw new ServiceException("员工编码为空 请输入员工编码");
             }
@@ -710,6 +716,14 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                         salaryPayDetailsDTOBefore.stream().map(SalaryPayDetailsDTO::getSalaryItemId)
                                 .collect(Collectors.toList()).contains(salaryPayDetailsDTO.getSalaryItemId())
                 ).collect(Collectors.toList());
+        for (SalaryPayDetailsDTO salaryPayDetailsDTO : updateSalaryPayDetail) {
+            for (SalaryPayDetailsDTO payDetailsDTO : salaryPayDetailsDTOBefore) {
+                if (salaryPayDetailsDTO.getSalaryItemId().equals(payDetailsDTO.getSalaryItemId())) {
+                    salaryPayDetailsDTO.setSalaryPayDetailsId(payDetailsDTO.getSalaryPayDetailsId());
+                    break;
+                }
+            }
+        }
         // 差集 Before中After的补集
         List<SalaryPayDetailsDTO> delSalaryPayDetail =
                 salaryPayDetailsDTOBefore.stream().filter(salaryPayDetailsDTO ->
