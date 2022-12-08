@@ -112,5 +112,5 @@ public interface PerformAppraisalObjectSnapMapper {
      * @param performanceObjectIds 通过对象ID集合查询快照
      * @return
      */
-    List<PerformAppraisalObjectSnapDTO> selectPerformAppraisalObjectSnapByAppraisalObjectsIds(List<Long> performanceObjectIds);
+    List<PerformAppraisalObjectSnapDTO> selectPerformAppraisalObjectSnapByAppraisalObjectsIds(@Param("performanceObjectIds") List<Long> performanceObjectIds);
 }
