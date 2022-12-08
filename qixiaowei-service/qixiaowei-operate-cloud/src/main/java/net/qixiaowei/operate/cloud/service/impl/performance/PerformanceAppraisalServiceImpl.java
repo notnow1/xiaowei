@@ -2204,7 +2204,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         //更新 对象表状态
         PerformanceAppraisalObjectsDTO performanceAppraisalObjects = new PerformanceAppraisalObjectsDTO();
         performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
-        performanceAppraisalObjects.setEvaluationScore(null);
         performanceAppraisalObjects.setAppraisalObjectStatus(2);
         performanceAppraisalObjectsService.withdrawPerformanceAppraisalObjects(performanceAppraisalObjects);
         // 更新评议指标信息

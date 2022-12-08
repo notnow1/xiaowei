@@ -252,7 +252,7 @@ public class PerformanceAppraisalController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
     @Log(title = "撤回组织绩效考核评议", businessType = BusinessType.INSERT)
-    @PostMapping("/withdraw/{performanceAppraisalId}")
+    @GetMapping("/withdraw/{performAppraisalObjectsId}")
     public AjaxResult withdraw(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success(performanceAppraisalService.withdraw(performAppraisalObjectsId));
     }

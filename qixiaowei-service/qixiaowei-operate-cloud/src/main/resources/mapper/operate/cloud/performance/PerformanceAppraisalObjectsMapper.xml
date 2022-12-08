@@ -513,10 +513,10 @@
     </update>
     <update id="withdrawPerformanceAppraisalObjects">
         UPDATE performance_appraisal_objects
-        SET evaluation_score = #{evaluationScore}
+        SET evaluation_score = null
         AND appraisal_object_status = #{performanceAppraisalObjects.appraisalObjectStatus}
         WHERE
-        perform_appraisal_items_id = #{performanceAppraisalObjects.performAppraisalObjectsId}
+        perform_appraisal_objects_id = #{performanceAppraisalObjects.performAppraisalObjectsId}
     </update>
 </mapper>
 
