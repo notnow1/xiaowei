@@ -109,8 +109,8 @@
     <select id="selectAnalyseList"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
-        actual_august,
-        last_actual_august,
+        actualTotal,
+        lastActualTotal,
         target_setting_id,
         target_setting_type,
         indicator_id,
@@ -127,8 +127,8 @@
         update_by,
         update_time from (
         SELECT
-        sum(tod.actual_august)  as actual_august,
-        sum(tod2.actual_august)  as last_actual_august,
+        sum(tod.actual_total)  as actualTotal,
+        sum(tod2.actual_total)  as lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -162,8 +162,8 @@
         </if>
         union
         SELECT
-        sum(tod.actual_august) as actual_august,
-        sum(tod2.actual_august) as last_actual_august,
+        sum(tod.actual_total)  as actualTotal,
+        sum(tod2.actual_total)  as lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -197,8 +197,8 @@
         </if>
         union
         SELECT
-        sum(tod.actual_august) as actual_august,
-        sum(tod2.actual_august) as last_actual_august,
+        sum(tod.actual_total)  as actualTotal,
+        sum(tod2.actual_total)  as lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -232,8 +232,8 @@
         </if>
         union
         SELECT
-        sum(tod.actual_august) as actual_august,
-        sum(tod2.actual_august) as last_actual_august,
+        sum(tod.actual_total)  as actualTotal,
+        sum(tod2.actual_total)  as lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -267,8 +267,8 @@
         </if>
         union
         SELECT
-        sum(tod.actual_august) as actual_august,
-        sum(tod2.actual_august) as last_actual_august,
+        sum(tod.actual_total)  as actualTotal,
+        sum(tod2.actual_total)  as lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -63,6 +64,10 @@ public class DeptAnnualBonusFactorDTO {
     */
     private  Long performanceRankId;
     /**
+     *绩效名称集合
+     */
+    private List<String> performanceRanks;
+    /**
     * 绩效等级系数ID
     */
     private  Long performanceRankFactorId;
@@ -79,9 +84,18 @@ public class DeptAnnualBonusFactorDTO {
     */
     private  BigDecimal importanceFactor;
     /**
-    * 奖金占比
+     * 奖金综合系数
+     */
+    private  BigDecimal syntheticalBonusFactor;
+    /**
+    * 奖金包占比终值（%)
     */
     private  BigDecimal bonusPercentage;
+
+    /**
+     * 部门奖金包占比参考值
+     */
+    private BigDecimal deptBonusPercentageReference;
     /**
     * 可分配年终奖
     */

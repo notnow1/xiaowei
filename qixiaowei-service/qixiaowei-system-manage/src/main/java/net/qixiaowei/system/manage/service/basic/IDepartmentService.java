@@ -176,11 +176,17 @@ public interface IDepartmentService {
      * 查询所有部门
      * @return
      */
-    List<DepartmentDTO> getAll();
+    List<DepartmentDTO> getParentAll();
 
     /**
      *
      * @return
      */
     List<DepartmentDTO> selectParentDepartment(Long departmentId);
+
+    /**
+     * 远程查询所有部门
+     * @return
+     */
+    List<DepartmentDTO> getAll();
 }

@@ -1181,7 +1181,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     private List<Long> getDepartmentIdAll() {
         //远程查询所有部门
-        R<List<DepartmentDTO>> allDepartment = remoteDepartmentService.getAll(SecurityConstants.INNER);
+        R<List<DepartmentDTO>> allDepartment = remoteDepartmentService.getParentAll(SecurityConstants.INNER);
         List<DepartmentDTO> data = allDepartment.getData();
         if (StringUtils.isEmpty(data)) {
             throw new ServiceException("无部门数据 请联系管理员！");
@@ -1198,7 +1198,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     private List<DepartmentDTO> getDepartmentAll() {
         //远程查询所有部门
-        R<List<DepartmentDTO>> allDepartment = remoteDepartmentService.getAll(SecurityConstants.INNER);
+        R<List<DepartmentDTO>> allDepartment = remoteDepartmentService.getParentAll(SecurityConstants.INNER);
         List<DepartmentDTO> data = allDepartment.getData();
         if (StringUtils.isEmpty(data)) {
             throw new ServiceException("无部门数据 请联系管理员！");

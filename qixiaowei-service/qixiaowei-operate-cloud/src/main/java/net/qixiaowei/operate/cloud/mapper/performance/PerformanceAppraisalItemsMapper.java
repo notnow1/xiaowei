@@ -113,4 +113,12 @@ public interface PerformanceAppraisalItemsMapper {
      * @return
      */
     List<PerformanceAppraisalItemsDTO> selectPerformanceAppraisalItemsByPerformAppraisalObjectId(@Param("performAppraisalObjectsId") Long performAppraisalObjectsId);
+
+    /**
+     * 评议撤回
+     * @param appraisalItemsDTO 评议指标DTO
+     * @return int
+     */
+    int withdrawPerformanceAppraisalItems(@Param("appraisalItemsDTO") PerformanceAppraisalItemsDTO appraisalItemsDTO);
+
 }

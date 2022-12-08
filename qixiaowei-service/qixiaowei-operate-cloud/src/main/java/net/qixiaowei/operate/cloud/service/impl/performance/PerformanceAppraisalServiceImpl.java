@@ -2156,6 +2156,58 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
+     * 评议撤回
+     *
+     * @param performAppraisalObjectsId 考核对象ID
+     * @return int
+     */
+    @Override
+    public int withdraw(Long performAppraisalObjectsId) {
+        if (StringUtils.isNull(performAppraisalObjectsId)) {
+            throw new ServiceException("绩效考核对象ID不能为空");
+        }
+        PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTOByObjectId = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalObjectsId(performAppraisalObjectsId);
+        if (StringUtils.isNull(performanceAppraisalObjectsDTOByObjectId)) {
+            throw new ServiceException("当前绩效考核对象已不存在");
+        }
+        Long performanceAppraisalId = performanceAppraisalObjectsDTOByObjectId.getPerformanceAppraisalId();
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+        // 更新绩效考核任务
+        PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
+        appraisalDTO.setPerformanceAppraisalId(performanceAppraisalId);
+        if (performanceAppraisalObjectsDTOList.size() == 1) {
+            appraisalDTO.setAppraisalStatus(1);
+            updatePerformanceAppraisal(appraisalDTO);
+        } else if (performanceAppraisalObjectsDTOList.size() > 2) {
+            int submitSum = 1;
+            for (PerformanceAppraisalObjectsDTO appraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                if (appraisalObjectsDTO.getAppraisalObjectStatus() < 3) {
+                    submitSum += 1;
+                }
+            }
+            if (submitSum == performanceAppraisalObjectsDTOList.size()) {
+                appraisalDTO.setAppraisalStatus(1);
+                updatePerformanceAppraisal(appraisalDTO);
+            }
+        }
+        //更新 对象表状态
+        PerformanceAppraisalObjectsDTO performanceAppraisalObjects = new PerformanceAppraisalObjectsDTO();
+        performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
+        performanceAppraisalObjects.setEvaluationScore(null);
+        performanceAppraisalObjects.setAppraisalObjectStatus(2);
+        performanceAppraisalObjectsService.withdrawPerformanceAppraisalObjects(performanceAppraisalObjects);
+        // 更新评议指标信息
+        PerformanceAppraisalItemsDTO appraisalItemsDTO = new PerformanceAppraisalItemsDTO();
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performAppraisalObjectsId);
+        if (StringUtils.isEmpty(performanceAppraisalItemsDTOS)) {
+            return 1;
+        }
+        PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO = performanceAppraisalItemsDTOS.get(0);
+        appraisalItemsDTO.setPerformAppraisalItemsId(performanceAppraisalItemsDTO.getPerformAppraisalItemsId());
+        return performanceAppraisalItemsService.withdrawPerformanceAppraisalItems(appraisalItemsDTO);
+    }
+
+    /**
      * 查询绩效考核表列表-组织-排名
      *
      * @param performanceAppraisalDTO 考核对象
@@ -2234,6 +2286,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public PerformanceAppraisalDTO updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO) {
+        Integer isSubmit = performanceAppraisalDTO.getIsSubmit();
+        if (StringUtils.isNull(isSubmit)) {
+            throw new ServiceException("请添加是否提交");
+        }
         Long performanceRankId = performanceAppraisalDTO.getPerformanceRankId();
         if (StringUtils.isNull(performanceRankId)) {
             throw new ServiceException("考核任务ID不可以为空");
@@ -2248,53 +2304,15 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 throw new ServiceException("绩效考核对象ID为空");
             }
         }
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
-
+            PerformanceAppraisalObjectsDTO objectsDTO = new PerformanceAppraisalObjectsDTO();
+            objectsDTO.setAppraisalResultId(performanceAppraisalObjectsDTO.getAppraisalResultId());
+            objectsDTO.setAppraisalResult(performanceAppraisalObjectsDTO.getAppraisalResult());
+            performanceAppraisalObjectsDTOList.add(objectsDTO);
         }
+        performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
         return null;
-    }
-
-    /**
-     * 评议撤回
-     *
-     * @param performAppraisalObjectsId 考核对象ID
-     * @return int
-     */
-    @Override
-    public int withdraw(Long performAppraisalObjectsId) {
-        if (StringUtils.isNull(performAppraisalObjectsId)) {
-            throw new ServiceException("绩效考核对象ID不能为空");
-        }
-        PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTOByObjectId = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalObjectsId(performAppraisalObjectsId);
-        if (StringUtils.isNull(performanceAppraisalObjectsDTOByObjectId)) {
-            throw new ServiceException("当前绩效考核对象已不存在");
-        }
-        Long performanceAppraisalId = performanceAppraisalObjectsDTOByObjectId.getPerformanceAppraisalId();
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
-        // 更新绩效考核任务
-        PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
-        appraisalDTO.setPerformanceAppraisalId(performanceAppraisalId);
-        if (performanceAppraisalObjectsDTOList.size() == 1) {
-            appraisalDTO.setAppraisalStatus(1);
-            updatePerformanceAppraisal(appraisalDTO);
-        } else if (performanceAppraisalObjectsDTOList.size() > 2) {
-            int submitSum = 1;
-            for (PerformanceAppraisalObjectsDTO appraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-                if (appraisalObjectsDTO.getAppraisalObjectStatus() < 3) {
-                    submitSum += 1;
-                }
-            }
-            if (submitSum == performanceAppraisalObjectsDTOList.size()) {
-                appraisalDTO.setAppraisalStatus(1);
-                updatePerformanceAppraisal(appraisalDTO);
-            }
-        }
-        //更新 对象表状态
-        PerformanceAppraisalObjectsDTO performanceAppraisalObjects = new PerformanceAppraisalObjectsDTO();
-        performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
-        performanceAppraisalObjects.setEvaluationScore(null);
-        performanceAppraisalObjects.setAppraisalObjectStatus(2);
-        return 0;
     }
 
     /**
@@ -2390,19 +2408,17 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         // 考核阶段
         switch (appraisalObjectsDTO.getAppraisalObjectStatus()) {
             case 1:
-                appraisalObjectsDTO.setAppraisalObjectStatusName("待制定目标");
+                appraisalObjectsDTO.setAppraisalObjectStatusName("未制定");
                 break;
             case 2:
-                appraisalObjectsDTO.setAppraisalObjectStatusName("已制定目标-草稿");
+            case 4:
+                appraisalObjectsDTO.setAppraisalObjectStatusName("草稿");
                 break;
             case 3:
-                appraisalObjectsDTO.setAppraisalObjectStatusName("待评议");
-                break;
-            case 4:
-                appraisalObjectsDTO.setAppraisalObjectStatusName("已评议-草稿");
+                appraisalObjectsDTO.setAppraisalObjectStatusName("未评议");
                 break;
             case 5:
-                appraisalObjectsDTO.setAppraisalObjectStatusName("待排名");
+                appraisalObjectsDTO.setAppraisalObjectStatusName("未排名");
                 break;
         }
     }

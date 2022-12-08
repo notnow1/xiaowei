@@ -69,20 +69,32 @@ public class RemoteDepartment implements RemoteDepartmentService {
      */
     @Override
     @InnerAuth
-    @GetMapping("/getAll")
-    public R<List<DepartmentDTO>> getAll(String source) {
-        return R.ok(departmentService.getAll());
+    @GetMapping("/getParentAll")
+    public R<List<DepartmentDTO>> getParentAll(String source) {
+        return R.ok(departmentService.getParentAll());
     }
 
     /**
-     * 查看所有一级部门
-     * @param inner
+     * 远程查询一级部门及子级部门
+     * @param source
      * @return
      */
     @Override
     @InnerAuth
     @GetMapping("/selectSublevelDepartment")
-    public R<List<DepartmentDTO>> selectSublevelDepartment(@RequestParam("departmentId") Long departmentId,String inner) {
+    public R<List<DepartmentDTO>> selectSublevelDepartment(@RequestParam("departmentId") Long departmentId,String source) {
         return R.ok(departmentService.selectParentDepartment(departmentId));
+    }
+
+    /**
+     * 远程查询所有部门
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/getAll")
+    public R<List<DepartmentDTO>> getAll(String source) {
+        return R.ok(departmentService.getAll());
     }
 }

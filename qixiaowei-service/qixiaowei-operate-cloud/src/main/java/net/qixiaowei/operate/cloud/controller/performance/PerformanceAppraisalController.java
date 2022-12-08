@@ -261,7 +261,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 编辑组织绩效考核排名表
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
-    @Log(title = "编辑组织绩效考核制定表", businessType = BusinessType.INSERT)
+    @Log(title = "编辑组织绩效考核排名表", businessType = BusinessType.INSERT)
     @PostMapping("/orgRanking/edit")
     public AjaxResult editOrgRanking(@RequestBody @Validated(PerformanceAppraisalDTO.UpdatePerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
         return AjaxResult.success(performanceAppraisalService.updateOrgRankingPerformanceAppraisal(performanceAppraisalDTO));

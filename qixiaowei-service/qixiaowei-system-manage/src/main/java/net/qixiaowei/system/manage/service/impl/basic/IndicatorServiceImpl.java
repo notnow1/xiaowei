@@ -408,7 +408,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
         for (IndicatorDTO dto : indicatorDTOS) {
             if (dto.getIndicatorValueType() == 2) {
-                dto.setIndicatorName(dto.getIndicatorName() + "%");
+                dto.setIndicatorName(dto.getIndicatorName() + "(%)");
             }
         }
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();

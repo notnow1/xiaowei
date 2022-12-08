@@ -63,13 +63,22 @@ public interface RemoteDepartmentService {
      * @param source
      * @return
      */
-    @GetMapping(API_PREFIX_DEPARTMEN + "/getAll")
-    R<List<DepartmentDTO>> getAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @GetMapping(API_PREFIX_DEPARTMEN + "/getParentAll")
+    R<List<DepartmentDTO>> getParentAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
-     * 查看所有一级部门
+     * 远程查询一级部门及子级部门
      * @param inner
      */
     @GetMapping(API_PREFIX_DEPARTMEN + "/selectSublevelDepartment")
     R<List<DepartmentDTO>> selectSublevelDepartment(@RequestParam("departmentId") Long departmentId,@RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
+
+    /**
+     * 远程查询所有部门
+     *
+     * @param source
+     * @return
+     */
+    @GetMapping(API_PREFIX_DEPARTMEN + "/getAll")
+    R<List<DepartmentDTO>> getAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }
