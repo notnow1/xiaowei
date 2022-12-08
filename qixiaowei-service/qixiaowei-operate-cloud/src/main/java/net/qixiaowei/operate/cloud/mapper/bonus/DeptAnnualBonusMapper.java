@@ -23,7 +23,7 @@ public interface DeptAnnualBonusMapper{
     DeptAnnualBonusDTO selectDeptAnnualBonusByDeptAnnualBonusId(@Param("deptAnnualBonusId")Long deptAnnualBonusId);
 
     /**
-     * 根据年份和一级部门年终奖
+     * 根据年份和一级部门查询部门年终奖
      *
      * @param deptAnnualBonus 部门年终奖
      * @return 部门年终奖表

@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
-* 部门可发年终奖
+* 部门可发工资项目年终奖
 * @author TANGMICHI
 * @since 2022-12-08
 */

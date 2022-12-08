@@ -98,6 +98,26 @@
         AND  scope =1
         AND delete_flag=0
     </select>
+<!--    查询战略奖的工资项id-->
+    <select id="selectSalaryItemByAward" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
+        SELECT
+            salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+            create_time, update_by, update_time
+        FROM salary_item
+        WHERE third_level_item='战略奖'
+          and delete_flag=0
+    </select>
+<!--    所有二级工资项目为奖金且级别为部门级的三级工资项目-->
+    <select id="selectSalaryItemByBonus" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
+        SELECT
+            salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+            create_time, update_by, update_time
+        FROM salary_item
+        WHERE first_level_item=2
+          and  second_level_item=4
+          and scope =1
+          and delete_flag=0
+    </select>
     <!--新增工资项-->
     <insert id="insertSalaryItem" useGeneratedKeys="true" keyProperty="salaryItemId">
         INSERT INTO salary_item

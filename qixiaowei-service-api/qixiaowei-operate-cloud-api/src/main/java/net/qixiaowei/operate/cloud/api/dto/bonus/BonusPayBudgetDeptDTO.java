@@ -51,6 +51,10 @@ public class BonusPayBudgetDeptDTO {
     */
     private  BigDecimal bonusPercentage;
     /**
+     * 奖项总金额
+     */
+    private  BigDecimal awardTotalAmount;
+    /**
     * 删除标记:0未删除;1已删除
     */
     private  Integer deleteFlag;

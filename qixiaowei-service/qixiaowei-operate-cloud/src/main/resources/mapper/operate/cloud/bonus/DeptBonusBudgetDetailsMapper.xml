@@ -149,6 +149,27 @@
                 #{item}
             </foreach>
     </update>
+
+    <!--    根据年份和部门id查询部门预算数据-->
+    <select id="selectDeptBonusBudgetBybudgetYearAnnua"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDetailsDTO">
+        SELECT
+        dbbd.department_id ,
+        dbbd.dept_bonus_percentage ,
+        dbb.strategy_award_percentage
+        from dept_bonus_budget_details dbbd
+        left join dept_bonus_budget dbb
+        on dbb.dept_bonus_budget_id = dbbd .dept_bonus_budget_id
+        and dbb.delete_flag =0
+        WHERE dbbd.delete_flag =0
+        and dbbd.department_id IN
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and dbb.budget_year =#{annualBonusYear}
+    </select>
     <!--批量新增部门奖金预算明细表-->
     <insert id="batchDeptBonusBudgetDetails" useGeneratedKeys="true" keyProperty="deptBonusBudgetDetailsId">
         INSERT INTO dept_bonus_budget_details (dept_bonus_budget_id,department_id,dept_bonus_percentage,department_importance_factor,delete_flag,create_by,create_time,update_by,update_time)

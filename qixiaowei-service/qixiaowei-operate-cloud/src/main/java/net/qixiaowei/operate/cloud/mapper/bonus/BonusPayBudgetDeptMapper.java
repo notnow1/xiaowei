@@ -29,7 +29,6 @@ public interface BonusPayBudgetDeptMapper{
     * @return 奖金发放预算部门表
     */
     List<BonusPayBudgetDeptDTO> selectBonusPayBudgetDeptByBonusPayBudgetDeptIds(@Param("bonusPayBudgetDeptIds") List<Long> bonusPayBudgetDeptIds);
-
     /**
     * 查询奖金发放预算部门表列表
     *
@@ -101,4 +100,11 @@ public interface BonusPayBudgetDeptMapper{
     * @return 结果
     */
     int batchBonusPayBudgetDept(@Param("bonusPayBudgetDepts")List<BonusPayBudgetDept> BonusPayBudgetDepts);
+
+    /**
+     * 对应一级部门以及其下属部门作为预算部门的奖金发放申请单据中的奖项总金额和奖金比例
+     * @return
+     */
+    List<BonusPayBudgetDeptDTO> selectBonusPayBudgetDeptByBonusAnnual(@Param("departmentIds") List<Long> departmentIds);
+
 }
