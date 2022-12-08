@@ -496,7 +496,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         // 获取当前年
-        return calendar.get(Calendar.YEAR);
+        return calendar.get(Calendar.MONTH) + 1;
     }
 
 

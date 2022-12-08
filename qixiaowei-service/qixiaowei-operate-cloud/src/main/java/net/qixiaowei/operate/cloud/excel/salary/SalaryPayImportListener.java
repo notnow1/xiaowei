@@ -9,7 +9,6 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
@@ -94,7 +93,12 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
         List<String> head1 = new ArrayList<String>();
         head1.add("发薪年月");
         head1.add("格式：YYYY/MM");
+        // 第一列
+        List<String> head2 = new ArrayList<String>();
+        head2.add("员工姓名");
+        head2.add("文本字段，填充员工姓名");
         list.add(head0);
+        list.add(head2);
         list.add(head1);
         for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
             list.add(new ArrayList<String>() {{

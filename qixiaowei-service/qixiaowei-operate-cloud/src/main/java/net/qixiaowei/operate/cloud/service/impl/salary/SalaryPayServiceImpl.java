@@ -592,42 +592,56 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         if (StringUtils.isEmpty(list)) {
             throw new ServiceException("当前excel数据为空 请填充数据");
         }
-        List<String> employeeCodes = new ArrayList<>();
+        Set<String> employeeCodes = new HashSet<>();
+        Map<String, String> employeeMap = new HashMap<>();
         List<String> dateList = new ArrayList<>();
         for (Map<Integer, String> map : list) {
             if (StringUtils.isNull(map.get(0))) {
-                continue;
+                throw new ServiceException("员工编码为空 请输入员工编码");
             }
             employeeCodes.add(map.get(0));// 员工编码
             if (StringUtils.isNull(map.get(1))) {
+                throw new ServiceException("员工姓名为空 请输入员工姓名");
+            }
+            employeeMap.put(map.get(0), map.get(1));
+            if (StringUtils.isNull(map.get(2))) {
                 throw new ServiceException("请输入 " + map.get(0) + " 员工工号发薪年月");
             }
-            dateList.add(map.get(1));// 发薪年月
+            dateList.add(map.get(2));// 发薪年月
             map.remove(0);
             map.remove(1);
+            map.remove(2);
         }
-        List<Integer> monthList = parseMonthCh(dateList);
-        List<Integer> yearList = parseYearCh(dateList);
+        List<Integer> monthList = new ArrayList<>();
+        List<Integer> yearList = new ArrayList<>();
+        for (String date : dateList) {
+            monthList.add(DateUtils.getMonth("yyyy/MM", date));
+            yearList.add(DateUtils.getYear("yyyy/MM", date));
+        }
         if (StringUtils.isEmpty(employeeCodes)) {
             throw new ServiceException("当前员工编码未存在 请检查员工配置");
         }
-        R<List<EmployeeDTO>> employeeR = employeeService.selectByCodes(employeeCodes, SecurityConstants.INNER);
+        R<List<EmployeeDTO>> employeeR = employeeService.selectByCodes(new ArrayList<String>(employeeCodes), SecurityConstants.INNER);
         List<EmployeeDTO> employeeDTOS = employeeR.getData();
         if (employeeR.getCode() != 200) {
             throw new ServiceException("远程调用失败 请联系管理员");
         }
-        if (employeeDTOS.size() != employeeCodes.size()) {
-            throw new ServiceException("员工编码有误 请核对");
+        if (employeeCodes.size() != employeeDTOS.size()) {
+            throw new ServiceException("员工编码有误 请检查");
         }
+        employeeMap.forEach((employeeCode, employeeName) -> {
+            for (EmployeeDTO employeeDTO : employeeDTOS) {
+                if (employeeDTO.getEmployeeCode().equals(employeeCode) && !employeeDTO.getEmployeeName().equals(employeeName)) {
+                    throw new ServiceException("员工编码与员工姓名不匹配");
+                }
+            }
+        });
         List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
         if (StringUtils.isEmpty(salaryItemDTOS)) {
             throw new ServiceException("当前工资项未进行任何配置，请联系管理员");
         }
         for (int j = 0; j < list.size(); j++) {
             Map<Integer, String> map = list.get(j);
-            if (head.size() - 2 != map.size()) {
-                throw new ServiceException("请检查excel表的格式是否正确");
-            }
             SalaryPay salaryPay = new SalaryPay();
             BigDecimal salaryAmount = BigDecimal.ZERO;//工资金额
             BigDecimal allowanceAmount = BigDecimal.ZERO;//津贴金额
@@ -635,9 +649,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             BigDecimal bonusAmount = BigDecimal.ZERO;//奖金金额
             BigDecimal withholdRemitTax = BigDecimal.ZERO;//代扣代缴金额
             BigDecimal otherDeductions = BigDecimal.ZERO;//其他扣款金额
-            BigDecimal payAmount;//发薪金额
             List<SalaryPayDetailsDTO> salaryPayDetailsDTOAfter = new ArrayList<>();
-            for (int i = 2; i < map.size() + 2; i++) {
+            for (int i = 3; i < head.size(); i++) {
                 SalaryPayDetailsDTO salaryPayDetailsDTO = new SalaryPayDetailsDTO();
                 for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
                     if (head.get(i).equals(salaryItemDTO.getThirdLevelItem())) {
@@ -677,7 +690,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             }
             // 赋值
             List<SalaryPayDetailsDTO> salaryPayDetailsDTOBefore = getSalaryPayDetailsDTOBeforeList
-                    (employeeCodes, monthList, yearList, employeeDTOS, j, salaryPay, salaryAmount, allowanceAmount,
+                    (new ArrayList<>(employeeCodes), monthList, yearList, employeeDTOS, j, salaryPay, salaryAmount, allowanceAmount,
                             welfareAmount, bonusAmount, withholdRemitTax, otherDeductions, salaryPayDetailsDTOAfter);
             operateSalaryPayDetail(salaryPayDetailsDTOAfter, salaryPayDetailsDTOBefore);
 
