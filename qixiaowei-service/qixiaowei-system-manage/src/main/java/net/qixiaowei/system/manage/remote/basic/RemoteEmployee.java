@@ -148,7 +148,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
      */
     @Override
     @InnerAuth
-    @PostMapping("/selectEmployeeByDepts")
+    @PostMapping("/selectEmployeeByParPDRIds")
     public R<List<EmployeeDTO>> selectParentDepartmentIdAndOfficialRankSystem(@RequestBody  List<Long> departmentIdAll, String source) {
         return R.ok(employeeService.selectParentDepartmentIdAndOfficialRankSystem(departmentIdAll));
     }

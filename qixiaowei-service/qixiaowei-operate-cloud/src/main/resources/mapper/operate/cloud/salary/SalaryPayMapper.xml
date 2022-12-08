@@ -234,8 +234,8 @@
     <!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）-->
     <select id="selectDeptBonusBudgetPay" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus,
-               sp.salary_amount + sp.allowance_amount + sp.welfare_amount as salaryPackageBonus,
-               bonus_amount as amountBonus,
+               sp.salary_amount + sp.allowance_amount + sp.welfare_amount                   as salaryPackageBonus,
+               bonus_amount                                                                 as amountBonus,
                sp.salary_pay_id,
                sp.employee_id,
                sp.pay_year,
@@ -257,7 +257,15 @@
           and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
           and sp.employee_id = #{employeeId}
           and sp.delete_flag = 0
-          and sum(sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount) > salary_pay
+          and (SELECT sum(sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus)
+               FROM salary_pay sp
+               where sp.pay_year &lt;= #{payYear}
+                 and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
+                 and sp.employee_id = #{employeeId}
+                 and sp.delete_flag = 0
+               ORDER BY sp.pay_year DESC, sp.pay_month DESC
+            limit 12)
+            > sp.pay_amount
         ORDER BY sp.pay_year DESC, sp.pay_month DESC limit 12
     </select>
     <!--根据年份 月份 员工ID查询发薪表-->

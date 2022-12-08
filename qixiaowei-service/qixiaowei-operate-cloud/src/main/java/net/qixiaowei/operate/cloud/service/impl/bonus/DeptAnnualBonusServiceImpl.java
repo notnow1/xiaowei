@@ -440,8 +440,8 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear);
                 if (StringUtils.isNotEmpty(salaryPayDTOS)) {
                     //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
-                    BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                    deptPaymentBonusSum = deptPaymentBonusSum.add(reduce);
+                    BigDecimal paymentBonus = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                    deptPaymentBonusSum = deptPaymentBonusSum.add(paymentBonus);
                 }
             }
 
