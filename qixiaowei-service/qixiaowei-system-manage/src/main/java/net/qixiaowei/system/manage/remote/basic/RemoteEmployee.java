@@ -152,4 +152,16 @@ public class RemoteEmployee implements RemoteEmployeeService {
     public R<List<EmployeeDTO>> selectParentDepartmentIdAndOfficialRankSystem(@RequestBody  List<Long> departmentIdAll, String source) {
         return R.ok(employeeService.selectParentDepartmentIdAndOfficialRankSystem(departmentIdAll));
     }
+
+    /**
+     * 查询在职所有人员
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/getAll")
+    public R<List<EmployeeDTO>> getAll(String source) {
+        return R.ok(employeeService.getAll());
+    }
 }

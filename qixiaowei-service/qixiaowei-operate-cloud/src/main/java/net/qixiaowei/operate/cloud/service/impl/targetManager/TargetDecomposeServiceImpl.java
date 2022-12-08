@@ -20,6 +20,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.*;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
@@ -247,17 +248,28 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 BigDecimal forecastYear = new BigDecimal("0");
                 //累计实际值
                 BigDecimal actualTotal = new BigDecimal("0");
-                //分解目标值
-                BigDecimal decomposeTarget = targetDecomposeDetailsDTO.getDecomposeTarget();
                 //目标完成率
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
+                //分解目标（汇总目标值）
+                BigDecimal amountTarget = targetDecomposeDetailsDTO.getAmountTarget();
+
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();
                 decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                 for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
-                    if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
-                        //预测值
-                        forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                  int nowForecastYear = packForecastYearType(targetDecomposeDTO);
+                    Integer cycleNumber = decomposeDetailCyclesDTO.getCycleNumber();
+                    if (cycleNumber < nowForecastYear){
+                        if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
+                            //预测值
+                            forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                        }
+                    }else {
+                        if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
+                            //预测值
+                            forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                        }
                     }
+
                     if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
                         //实际值
                         actualTotal = actualTotal.add(decomposeDetailCyclesDTO.getCycleActual());
@@ -266,12 +278,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                 if (null != actualTotal && actualTotal.compareTo(BigDecimal.ZERO) != 0) {
                     //被除数 不能为0和空
-                    if (null != decomposeTarget && decomposeTarget.compareTo(BigDecimal.ZERO) != 0) {
+                    if (null != amountTarget && amountTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(decomposeTarget,4,BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(amountTarget,4,BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
                     }
                 }
                 targetDecomposeDetailsDTO.setForecastYear(forecastYear);
+                targetDecomposeDetailsDTO.setAmountTarget(amountTarget);
                 targetDecomposeDetailsDTO.setActualTotal(actualTotal);
                 targetDecomposeDetailsDTO.setTargetPercentageComplete(targetPercentageComplete);
                 //目标分解周欺数据集合
@@ -281,6 +294,37 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         } else {
             return targetDecomposeDTO;
         }
+    }
+
+    /**
+     * 封装根据时间类型当前时间顺序
+     * @param targetDecomposeDTO
+     * @return
+     */
+    private int packForecastYearType(TargetDecomposeDTO targetDecomposeDTO) {
+        int i = 0;
+        if (StringUtils.isNotNull(targetDecomposeDTO)) {
+            Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+            if (timeDimension == 2) {
+                if (DateUtils.getMonth() <= 6) {
+                    return 1;
+                } else {
+                    return 2;
+                }
+            } else if (timeDimension == 3) {
+                return DateUtils.getQuarter();
+            } else if (timeDimension == 4) {
+                return DateUtils.getMonth();
+            } else if (timeDimension == 5) {
+                return DateUtils.getDayOfWeek();
+            } else {
+                throw new ServiceException("不正确的时间维度 请配置正确的数据！");
+            }
+
+        } else {
+            throw new ServiceException("时间维度为空 请配置正确的数据");
+        }
+
     }
 
     /**
@@ -655,7 +699,25 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             targetDecompose.setIndicatorIds(collect);
         }
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectRollPageList(targetDecompose);
+
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                //累计实际值
+                BigDecimal actualTotal = new BigDecimal("0");
+                List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(decomposeDTO.getTargetDecomposeId());
+                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)){
+                    List<Long> collect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(collect)){
+                        List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsIds(collect);
+                        if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList)){
+                            //求和
+                            actualTotal=  actualTotal.add(decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleActual).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
+                        }
+                    }
+                }
+                //累计实际值
+                decomposeDTO.setActualTotal(actualTotal);
+            }
             List<Long> indicatorIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).collect(Collectors.toList());
 
             //远程获取指标名称

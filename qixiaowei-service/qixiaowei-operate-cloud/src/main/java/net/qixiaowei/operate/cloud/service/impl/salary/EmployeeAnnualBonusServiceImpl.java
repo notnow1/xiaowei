@@ -560,6 +560,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 empAnnualBonusSnapshotDTO.setPerformanceRank(performanceRankFactorDTO.getPerformanceRankName());
                 //绩效等级ID
                 empAnnualBonusSnapshotDTO.setPerformanceRankId(performanceRankId);
+                //绩效等级下拉框集合
                 if (null != performanceRankId){
                     List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
                     if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)){

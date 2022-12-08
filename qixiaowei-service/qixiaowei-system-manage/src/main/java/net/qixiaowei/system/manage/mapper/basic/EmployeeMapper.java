@@ -253,4 +253,10 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectParentDepartmentIdAndOfficialRankSystem(@Param("departmentIdAll") List<Long> departmentIdAll);
+
+    /**
+     * 远程查询在职所有人员
+     * @return
+     */
+    List<EmployeeDTO> getAll();
 }

@@ -644,6 +644,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return employeeMapper.selectParentDepartmentIdAndOfficialRankSystem(departmentIdAll);
     }
 
+    /**
+     * 远程查询在职所有人员
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> getAll() {
+        return employeeMapper.getAll();
+    }
+
 
     /**
      * 逻辑删除员工表信息
