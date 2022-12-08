@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.mapper.bonus;
 
+import java.math.BigDecimal;
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayApplication;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
@@ -101,4 +102,11 @@ public interface BonusPayApplicationMapper{
     * @return 结果
     */
     int batchBonusPayApplication(@Param("bonusPayApplications")List<BonusPayApplication> BonusPayApplications);
+
+    /**
+     * 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
+     * @param annualBonusYear
+     * @return
+     */
+    BigDecimal selectBonusPayApplicationAddDeptAnnual(@Param("annualBonusYear")int annualBonusYear,@Param("salaryItemId") Long salaryItemId);
 }

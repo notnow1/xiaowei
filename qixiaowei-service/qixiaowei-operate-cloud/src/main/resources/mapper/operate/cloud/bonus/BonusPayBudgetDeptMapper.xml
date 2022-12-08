@@ -60,6 +60,25 @@
                             and update_time=#{bonusPayBudgetDept.updateTime}
                         </if>
     </select>
+<!--    对应一级部门以及其下属部门作为预算部门的奖金发放申请单据中的奖项总金额和奖金比例-->
+    <select id="selectBonusPayBudgetDeptByBonusAnnual"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO">
+        SELECT
+        DISTINCT
+        baa.award_total_amount,
+        dpbd.bonus_percentage
+        from bonus_pay_budget_dept dpbd
+        left join bonus_pay_application baa
+        on dpbd.bonus_pay_application_id = baa.bonus_pay_application_id
+        and baa.delete_flag =0
+        WHERE dpbd.department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and dpbd.delete_flag =0
+    </select>
     <!--新增奖金发放预算部门表-->
     <insert id="insertBonusPayBudgetDept" useGeneratedKeys="true" keyProperty="bonusPayBudgetDeptId">
         INSERT INTO bonus_pay_budget_dept (bonus_pay_budget_dept_idbonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)

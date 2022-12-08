@@ -22,7 +22,6 @@ public interface BonusBudgetMapper{
      * @return 奖金预算表
      */
     BonusBudgetDTO selectBonusBudgetByBudgetYear(@Param("budgetYear")int budgetYear);
-
     /**
     * 查询奖金预算表
     *
@@ -124,4 +123,6 @@ public interface BonusBudgetMapper{
      * @return
      */
     List<DeptAnnualBonusOperateDTO> selectDeptAnnualBonusOperate(@Param("annualBonusYear")int annualBonusYear);
+
+
 }

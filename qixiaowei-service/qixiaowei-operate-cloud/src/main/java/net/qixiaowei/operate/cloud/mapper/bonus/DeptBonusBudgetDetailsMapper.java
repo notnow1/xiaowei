@@ -116,4 +116,12 @@ public interface DeptBonusBudgetDetailsMapper{
     * @return 结果
     */
     int batchDeptBonusBudgetDetails(@Param("deptBonusBudgetDetailss")List<DeptBonusBudgetDetails> DeptBonusBudgetDetailss);
+
+    /**
+     * 根据年份和部门id查询部门预算数据
+     * @param annualBonusYear
+     * @param departmentIds
+     * @return
+     */
+    List<DeptBonusBudgetDetailsDTO> selectDeptBonusBudgetBybudgetYearAnnua(@Param("annualBonusYear") int annualBonusYear, @Param("departmentIds")List<Long> departmentIds);
 }

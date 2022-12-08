@@ -78,6 +78,14 @@
                             and update_time=#{bonusPayApplication.updateTime}
                         </if>
     </select>
+<!--    取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计-->
+    <select id="selectBonusPayApplicationAddDeptAnnual" resultType="java.math.BigDecimal">
+        SELECT ifnull(sum(award_total_amount),0) as award_total_amount
+        FROM bonus_pay_application
+        where award_year=#{annualBonusYear}
+        and salary_item_id=#{salaryItemId}
+        and delete_flag=0
+    </select>
     <!--新增奖金发放申请表-->
     <insert id="insertBonusPayApplication" useGeneratedKeys="true" keyProperty="bonusPayApplicationId">
         INSERT INTO bonus_pay_application (bonus_pay_application_idsalary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time)

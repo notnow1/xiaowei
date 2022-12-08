@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.mapper.bonus;
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.salary.DeptBonusBudget;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDetailsDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -116,4 +117,5 @@ public interface DeptBonusBudgetMapper{
      * @param deptBonusBudget
      */
     DeptBonusBudgetDTO queryDeptBonusBudgetYear(@Param("deptBonusBudget") DeptBonusBudget deptBonusBudget);
+
 }

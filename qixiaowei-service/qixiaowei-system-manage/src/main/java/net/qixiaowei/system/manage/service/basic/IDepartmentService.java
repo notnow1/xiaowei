@@ -189,4 +189,11 @@ public interface IDepartmentService {
      * @return
      */
     List<DepartmentDTO> getAll();
+
+    /**
+     * 根据等级查找部门
+     * @param level
+     * @return
+     */
+    List<DepartmentDTO> selectDepartmentByLevel(Integer level);
 }

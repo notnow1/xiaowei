@@ -67,6 +67,11 @@ public class DeptBonusBudgetDetailsDTO {
     private BigDecimal deptBonusPercentage;
 
     /**
+     * 战略奖比例
+     */
+    private BigDecimal strategyAwardPercentage;
+
+    /**
      * 部门奖金占比参考值
      */
     private BigDecimal deptBonusPercentageReference;

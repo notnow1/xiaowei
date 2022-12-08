@@ -128,4 +128,15 @@ public interface SalaryItemMapper {
      */
     List<SalaryItemDTO> selectSalaryItemBySalaryItemIds(@Param("salaryItemIds") List<Long> salaryItemIds);
 
+    /**
+     * 查询战略奖的工资项id
+     * @return
+     */
+    SalaryItemDTO selectSalaryItemByAward();
+
+    /**
+     * 所有二级工资项目为奖金且级别为部门级的三级工资项目
+     * @return
+     */
+    List<SalaryItemDTO> selectSalaryItemByBonus();
 }
