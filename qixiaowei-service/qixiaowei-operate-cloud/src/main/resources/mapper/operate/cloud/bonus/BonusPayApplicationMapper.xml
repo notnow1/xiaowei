@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper">
+    <!--    查询奖金发放申请表-->
+    <select id="selectBonusPayApplicationByBonusPayApplicationId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
+        SELECT
+        bonus_pay_application_id,salary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_application
+        WHERE  bonus_pay_application_id=#{bonusPayApplicationId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询奖金发放申请表-->
+    <select id="selectBonusPayApplicationByBonusPayApplicationIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
+        SELECT
+        bonus_pay_application_id,salary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_application
+        WHERE  bonus_pay_application_id in
+            <foreach item="item"
+                     collection="bonusPayApplicationIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询奖金发放申请表列表-->
+    <select id="selectBonusPayApplicationList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
+        SELECT
+        bonus_pay_application_id,salary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_application
+        WHERE delete_flag=0
+                        <if test="bonusPayApplication.bonusPayApplicationId != null">
+                            and bonus_pay_application_id=#{bonusPayApplication.bonusPayApplicationId}
+                        </if>
+                        <if test="bonusPayApplication.salaryItemId != null">
+                            and salary_item_id=#{bonusPayApplication.salaryItemId}
+                        </if>
+                        <if test="bonusPayApplication.awardCode != null and bonusPayApplication.awardCode != ''">
+                            and award_code=#{bonusPayApplication.awardCode}
+                        </if>
+                        <if test="bonusPayApplication.awardName != null and bonusPayApplication.awardName != ''">
+                            and award_name=#{bonusPayApplication.awardName}
+                        </if>
+                        <if test="bonusPayApplication.awardYear != null">
+                            and award_year=#{bonusPayApplication.awardYear}
+                        </if>
+                        <if test="bonusPayApplication.awardMonth != null">
+                            and award_month=#{bonusPayApplication.awardMonth}
+                        </if>
+                        <if test="bonusPayApplication.applyDepartmentId != null">
+                            and apply_department_id=#{bonusPayApplication.applyDepartmentId}
+                        </if>
+                        <if test="bonusPayApplication.awardTotalAmount != null">
+                            and award_total_amount=#{bonusPayApplication.awardTotalAmount}
+                        </if>
+                        <if test="bonusPayApplication.bonusPayObject != null">
+                            and bonus_pay_object=#{bonusPayApplication.bonusPayObject}
+                        </if>
+                        <if test="bonusPayApplication.awardDescription != null and bonusPayApplication.awardDescription != ''">
+                            and award_description=#{bonusPayApplication.awardDescription}
+                        </if>
+                        <if test="bonusPayApplication.deleteFlag != null">
+                            and delete_flag=#{bonusPayApplication.deleteFlag}
+                        </if>
+                        <if test="bonusPayApplication.createBy != null">
+                            and create_by=#{bonusPayApplication.createBy}
+                        </if>
+                        <if test="bonusPayApplication.createTime != null">
+                            and create_time=#{bonusPayApplication.createTime}
+                        </if>
+                        <if test="bonusPayApplication.updateBy != null">
+                            and update_by=#{bonusPayApplication.updateBy}
+                        </if>
+                        <if test="bonusPayApplication.updateTime != null">
+                            and update_time=#{bonusPayApplication.updateTime}
+                        </if>
+    </select>
+    <!--新增奖金发放申请表-->
+    <insert id="insertBonusPayApplication" useGeneratedKeys="true" keyProperty="bonusPayApplicationId">
+        INSERT INTO bonus_pay_application (bonus_pay_application_idsalary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{bonusPayApplication.salaryItemId},#{bonusPayApplication.awardCode},#{bonusPayApplication.awardName},#{bonusPayApplication.awardYear},#{bonusPayApplication.awardMonth},#{bonusPayApplication.applyDepartmentId},#{bonusPayApplication.awardTotalAmount},#{bonusPayApplication.bonusPayObject},#{bonusPayApplication.awardDescription},#{bonusPayApplication.deleteFlag},#{bonusPayApplication.createBy},#{bonusPayApplication.createTime},#{bonusPayApplication.updateBy},#{bonusPayApplication.updateTime})
+    </insert>
+    <!--修改奖金发放申请表-->
+    <update id="updateBonusPayApplication">
+        UPDATE bonus_pay_application
+        SET
+                    <if test="bonusPayApplication.salaryItemId != null">
+                        salary_item_id=#{bonusPayApplication.salaryItemId},
+                    </if>
+                    <if test="bonusPayApplication.awardCode != null and bonusPayApplication.awardCode != ''">
+                        award_code=#{bonusPayApplication.awardCode},
+                    </if>
+                    <if test="bonusPayApplication.awardName != null and bonusPayApplication.awardName != ''">
+                        award_name=#{bonusPayApplication.awardName},
+                    </if>
+                    <if test="bonusPayApplication.awardYear != null">
+                        award_year=#{bonusPayApplication.awardYear},
+                    </if>
+                    <if test="bonusPayApplication.awardMonth != null">
+                        award_month=#{bonusPayApplication.awardMonth},
+                    </if>
+                    <if test="bonusPayApplication.applyDepartmentId != null">
+                        apply_department_id=#{bonusPayApplication.applyDepartmentId},
+                    </if>
+                    <if test="bonusPayApplication.awardTotalAmount != null">
+                        award_total_amount=#{bonusPayApplication.awardTotalAmount},
+                    </if>
+                    <if test="bonusPayApplication.bonusPayObject != null">
+                        bonus_pay_object=#{bonusPayApplication.bonusPayObject},
+                    </if>
+                    <if test="bonusPayApplication.awardDescription != null and bonusPayApplication.awardDescription != ''">
+                        award_description=#{bonusPayApplication.awardDescription},
+                    </if>
+                    <if test="bonusPayApplication.deleteFlag != null">
+                        delete_flag=#{bonusPayApplication.deleteFlag},
+                    </if>
+                    <if test="bonusPayApplication.createBy != null">
+                        create_by=#{bonusPayApplication.createBy},
+                    </if>
+                    <if test="bonusPayApplication.createTime != null">
+                        create_time=#{bonusPayApplication.createTime},
+                    </if>
+                    <if test="bonusPayApplication.updateBy != null">
+                        update_by=#{bonusPayApplication.updateBy},
+                    </if>
+                    <if test="bonusPayApplication.updateTime != null">
+                        update_time=#{bonusPayApplication.updateTime}
+                    </if>
+        WHERE
+                 bonus_pay_application_id=#{bonusPayApplication.bonusPayApplicationId}
+    </update>
+    <!--逻辑删除奖金发放申请表-->
+    <update id="logicDeleteBonusPayApplicationByBonusPayApplicationId">
+        UPDATE bonus_pay_application
+        SET     delete_flag= 1,
+                update_by=#{bonusPayApplication.updateBy},
+                update_time=#{bonusPayApplication.updateTime}
+        WHERE
+                bonus_pay_application_id=#{bonusPayApplication.bonusPayApplicationId}
+    </update>
+    <!--逻辑批量删除奖金发放申请表-->
+    <update id="logicDeleteBonusPayApplicationByBonusPayApplicationIds">
+        UPDATE bonus_pay_application
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         bonus_pay_application_id IN
+            <foreach item="item"
+                     collection="bonusPayApplicationIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增奖金发放申请表-->
+    <insert id="batchBonusPayApplication">
+        INSERT INTO bonus_pay_application (bonus_pay_application_idsalary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="bonusPayApplications"
+                 separator=",">
+            (#{item.salaryItemId},#{item.awardCode},#{item.awardName},#{item.awardYear},#{item.awardMonth},#{item.applyDepartmentId},#{item.awardTotalAmount},#{item.bonusPayObject},#{item.awardDescription},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除奖金发放申请表-->
+    <delete id="deleteBonusPayApplicationByBonusPayApplicationId">
+        DELETE FROM bonus_pay_application
+        WHERE  bonus_pay_application_id=#{bonusPayApplication}
+
+    </delete>
+    <!--物理批量删除奖金发放申请表-->
+    <delete id="deleteBonusPayApplicationByBonusPayApplicationIds">
+        DELETE FROM bonus_pay_application
+        WHERE  bonus_pay_application_id IN
+            <foreach item="item"
+                     collection="bonusPayApplicationIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改奖金发放申请表-->
+    <update id="updateBonusPayApplications">
+        update bonus_pay_application
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="salary_item_id=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.salaryItemId != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.salaryItemId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="award_code=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.awardCode != null and item.awardCode != ''">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.awardCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="award_name=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.awardName != null and item.awardName != ''">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.awardName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="award_year=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.awardYear != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.awardYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="award_month=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.awardMonth != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.awardMonth}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="apply_department_id=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.applyDepartmentId != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.applyDepartmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="award_total_amount=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.awardTotalAmount != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.awardTotalAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_pay_object=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.bonusPayObject != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.bonusPayObject}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="award_description=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.awardDescription != null and item.awardDescription != ''">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.awardDescription}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="bonusPayApplicationList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when bonus_pay_application_id=#{item.bonusPayApplicationId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="bonusPayApplicationList" separator="or" item="item" index="index">
+                    bonus_pay_application_id=#{item.bonusPayApplicationId}
+        </foreach>
+    </update>
+</mapper>
+
+

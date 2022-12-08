@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.DeptAnnualBonusFactorMapper">
+    <!--    查询部门年终奖系数表-->
+    <select id="selectDeptAnnualBonusFactorByDeptAnnualBonusFactorId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+        SELECT
+        dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_annual_bonus_factor
+        WHERE  dept_annual_bonus_factor_id=#{deptAnnualBonusFactorId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询部门年终奖系数表-->
+    <select id="selectDeptAnnualBonusFactorByDeptAnnualBonusFactorIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+        SELECT
+        dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_annual_bonus_factor
+        WHERE  dept_annual_bonus_factor_id in
+            <foreach item="item"
+                     collection="deptAnnualBonusFactorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询部门年终奖系数表列表-->
+    <select id="selectDeptAnnualBonusFactorList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+        SELECT
+        dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_annual_bonus_factor
+        WHERE delete_flag=0
+                        <if test="deptAnnualBonusFactor.deptAnnualBonusFactorId != null">
+                            and dept_annual_bonus_factor_id=#{deptAnnualBonusFactor.deptAnnualBonusFactorId}
+                        </if>
+                        <if test="deptAnnualBonusFactor.deptAnnualBonusId != null">
+                            and dept_annual_bonus_id=#{deptAnnualBonusFactor.deptAnnualBonusId}
+                        </if>
+                        <if test="deptAnnualBonusFactor.departmentId != null">
+                            and department_id=#{deptAnnualBonusFactor.departmentId}
+                        </if>
+                        <if test="deptAnnualBonusFactor.weight != null">
+                            and weight=#{deptAnnualBonusFactor.weight}
+                        </if>
+                        <if test="deptAnnualBonusFactor.lastPerformanceResulted != null and deptAnnualBonusFactor.lastPerformanceResulted != ''">
+                            and last_performance_resulted=#{deptAnnualBonusFactor.lastPerformanceResulted}
+                        </if>
+                        <if test="deptAnnualBonusFactor.performanceRankId != null">
+                            and performance_rank_id=#{deptAnnualBonusFactor.performanceRankId}
+                        </if>
+                        <if test="deptAnnualBonusFactor.performanceRankFactorId != null">
+                            and performance_rank_factor_id=#{deptAnnualBonusFactor.performanceRankFactorId}
+                        </if>
+                        <if test="deptAnnualBonusFactor.performanceRank != null and deptAnnualBonusFactor.performanceRank != ''">
+                            and performance_rank=#{deptAnnualBonusFactor.performanceRank}
+                        </if>
+                        <if test="deptAnnualBonusFactor.performanceBonusFactor != null">
+                            and performance_bonus_factor=#{deptAnnualBonusFactor.performanceBonusFactor}
+                        </if>
+                        <if test="deptAnnualBonusFactor.importanceFactor != null">
+                            and importance_factor=#{deptAnnualBonusFactor.importanceFactor}
+                        </if>
+                        <if test="deptAnnualBonusFactor.bonusPercentage != null">
+                            and bonus_percentage=#{deptAnnualBonusFactor.bonusPercentage}
+                        </if>
+                        <if test="deptAnnualBonusFactor.distributeBonus != null">
+                            and distribute_bonus=#{deptAnnualBonusFactor.distributeBonus}
+                        </if>
+                        <if test="deptAnnualBonusFactor.deleteFlag != null">
+                            and delete_flag=#{deptAnnualBonusFactor.deleteFlag}
+                        </if>
+                        <if test="deptAnnualBonusFactor.createBy != null">
+                            and create_by=#{deptAnnualBonusFactor.createBy}
+                        </if>
+                        <if test="deptAnnualBonusFactor.createTime != null">
+                            and create_time=#{deptAnnualBonusFactor.createTime}
+                        </if>
+                        <if test="deptAnnualBonusFactor.updateBy != null">
+                            and update_by=#{deptAnnualBonusFactor.updateBy}
+                        </if>
+                        <if test="deptAnnualBonusFactor.updateTime != null">
+                            and update_time=#{deptAnnualBonusFactor.updateTime}
+                        </if>
+    </select>
+    <!--新增部门年终奖系数表-->
+    <insert id="insertDeptAnnualBonusFactor" useGeneratedKeys="true" keyProperty="deptAnnualBonusFactorId">
+        INSERT INTO dept_annual_bonus_factor (dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{deptAnnualBonusFactor.deptAnnualBonusId},#{deptAnnualBonusFactor.departmentId},#{deptAnnualBonusFactor.weight},#{deptAnnualBonusFactor.lastPerformanceResulted},#{deptAnnualBonusFactor.performanceRankId},#{deptAnnualBonusFactor.performanceRankFactorId},#{deptAnnualBonusFactor.performanceRank},#{deptAnnualBonusFactor.performanceBonusFactor},#{deptAnnualBonusFactor.importanceFactor},#{deptAnnualBonusFactor.bonusPercentage},#{deptAnnualBonusFactor.distributeBonus},#{deptAnnualBonusFactor.deleteFlag},#{deptAnnualBonusFactor.createBy},#{deptAnnualBonusFactor.createTime},#{deptAnnualBonusFactor.updateBy},#{deptAnnualBonusFactor.updateTime})
+    </insert>
+    <!--修改部门年终奖系数表-->
+    <update id="updateDeptAnnualBonusFactor">
+        UPDATE dept_annual_bonus_factor
+        SET
+                    <if test="deptAnnualBonusFactor.deptAnnualBonusId != null">
+                        dept_annual_bonus_id=#{deptAnnualBonusFactor.deptAnnualBonusId},
+                    </if>
+                    <if test="deptAnnualBonusFactor.departmentId != null">
+                        department_id=#{deptAnnualBonusFactor.departmentId},
+                    </if>
+                    <if test="deptAnnualBonusFactor.weight != null">
+                        weight=#{deptAnnualBonusFactor.weight},
+                    </if>
+                    <if test="deptAnnualBonusFactor.lastPerformanceResulted != null and deptAnnualBonusFactor.lastPerformanceResulted != ''">
+                        last_performance_resulted=#{deptAnnualBonusFactor.lastPerformanceResulted},
+                    </if>
+                    <if test="deptAnnualBonusFactor.performanceRankId != null">
+                        performance_rank_id=#{deptAnnualBonusFactor.performanceRankId},
+                    </if>
+                    <if test="deptAnnualBonusFactor.performanceRankFactorId != null">
+                        performance_rank_factor_id=#{deptAnnualBonusFactor.performanceRankFactorId},
+                    </if>
+                    <if test="deptAnnualBonusFactor.performanceRank != null and deptAnnualBonusFactor.performanceRank != ''">
+                        performance_rank=#{deptAnnualBonusFactor.performanceRank},
+                    </if>
+                    <if test="deptAnnualBonusFactor.performanceBonusFactor != null">
+                        performance_bonus_factor=#{deptAnnualBonusFactor.performanceBonusFactor},
+                    </if>
+                    <if test="deptAnnualBonusFactor.importanceFactor != null">
+                        importance_factor=#{deptAnnualBonusFactor.importanceFactor},
+                    </if>
+                    <if test="deptAnnualBonusFactor.bonusPercentage != null">
+                        bonus_percentage=#{deptAnnualBonusFactor.bonusPercentage},
+                    </if>
+                    <if test="deptAnnualBonusFactor.distributeBonus != null">
+                        distribute_bonus=#{deptAnnualBonusFactor.distributeBonus},
+                    </if>
+                    <if test="deptAnnualBonusFactor.deleteFlag != null">
+                        delete_flag=#{deptAnnualBonusFactor.deleteFlag},
+                    </if>
+                    <if test="deptAnnualBonusFactor.createBy != null">
+                        create_by=#{deptAnnualBonusFactor.createBy},
+                    </if>
+                    <if test="deptAnnualBonusFactor.createTime != null">
+                        create_time=#{deptAnnualBonusFactor.createTime},
+                    </if>
+                    <if test="deptAnnualBonusFactor.updateBy != null">
+                        update_by=#{deptAnnualBonusFactor.updateBy},
+                    </if>
+                    <if test="deptAnnualBonusFactor.updateTime != null">
+                        update_time=#{deptAnnualBonusFactor.updateTime}
+                    </if>
+        WHERE
+                 dept_annual_bonus_factor_id=#{deptAnnualBonusFactor.deptAnnualBonusFactorId}
+    </update>
+    <!--逻辑删除部门年终奖系数表-->
+    <update id="logicDeleteDeptAnnualBonusFactorByDeptAnnualBonusFactorId">
+        UPDATE dept_annual_bonus_factor
+        SET     delete_flag= 1,
+                update_by=#{deptAnnualBonusFactor.updateBy},
+                update_time=#{deptAnnualBonusFactor.updateTime}
+        WHERE
+                dept_annual_bonus_factor_id=#{deptAnnualBonusFactor.deptAnnualBonusFactorId}
+    </update>
+    <!--逻辑批量删除部门年终奖系数表-->
+    <update id="logicDeleteDeptAnnualBonusFactorByDeptAnnualBonusFactorIds">
+        UPDATE dept_annual_bonus_factor
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         dept_annual_bonus_factor_id IN
+            <foreach item="item"
+                     collection="deptAnnualBonusFactorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增部门年终奖系数表-->
+    <insert id="batchDeptAnnualBonusFactor">
+        INSERT INTO dept_annual_bonus_factor (dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="deptAnnualBonusFactors"
+                 separator=",">
+            (#{item.deptAnnualBonusId},#{item.departmentId},#{item.weight},#{item.lastPerformanceResulted},#{item.performanceRankId},#{item.performanceRankFactorId},#{item.performanceRank},#{item.performanceBonusFactor},#{item.importanceFactor},#{item.bonusPercentage},#{item.distributeBonus},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除部门年终奖系数表-->
+    <delete id="deleteDeptAnnualBonusFactorByDeptAnnualBonusFactorId">
+        DELETE FROM dept_annual_bonus_factor
+        WHERE  dept_annual_bonus_factor_id=#{deptAnnualBonusFactor}
+
+    </delete>
+    <!--物理批量删除部门年终奖系数表-->
+    <delete id="deleteDeptAnnualBonusFactorByDeptAnnualBonusFactorIds">
+        DELETE FROM dept_annual_bonus_factor
+        WHERE  dept_annual_bonus_factor_id IN
+            <foreach item="item"
+                     collection="deptAnnualBonusFactorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改部门年终奖系数表-->
+    <update id="updateDeptAnnualBonusFactors">
+        update dept_annual_bonus_factor
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="dept_annual_bonus_id=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.deptAnnualBonusId != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.deptAnnualBonusId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="weight=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.weight != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.weight}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="last_performance_resulted=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.lastPerformanceResulted != null and item.lastPerformanceResulted != ''">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.lastPerformanceResulted}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="performance_rank_id=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.performanceRankId != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.performanceRankId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="performance_rank_factor_id=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.performanceRankFactorId != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.performanceRankFactorId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="performance_rank=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.performanceRank != null and item.performanceRank != ''">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.performanceRank}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="performance_bonus_factor=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.performanceBonusFactor != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.performanceBonusFactor}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="importance_factor=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.importanceFactor != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.importanceFactor}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_percentage=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.bonusPercentage != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.bonusPercentage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="distribute_bonus=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.distributeBonus != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.distributeBonus}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="deptAnnualBonusFactorList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="deptAnnualBonusFactorList" separator="or" item="item" index="index">
+                    dept_annual_bonus_factor_id=#{item.deptAnnualBonusFactorId}
+        </foreach>
+    </update>
+</mapper>
+
+

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.BonusPayBudgetDeptMapper">
+    <!--    查询奖金发放预算部门表-->
+    <select id="selectBonusPayBudgetDeptByBonusPayBudgetDeptId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO">
+        SELECT
+        bonus_pay_budget_dept_id,bonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_budget_dept
+        WHERE  bonus_pay_budget_dept_id=#{bonusPayBudgetDeptId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询奖金发放预算部门表-->
+    <select id="selectBonusPayBudgetDeptByBonusPayBudgetDeptIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO">
+        SELECT
+        bonus_pay_budget_dept_id,bonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_budget_dept
+        WHERE  bonus_pay_budget_dept_id in
+            <foreach item="item"
+                     collection="bonusPayBudgetDeptIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询奖金发放预算部门表列表-->
+    <select id="selectBonusPayBudgetDeptList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO">
+        SELECT
+        bonus_pay_budget_dept_id,bonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_budget_dept
+        WHERE delete_flag=0
+                        <if test="bonusPayBudgetDept.bonusPayBudgetDeptId != null">
+                            and bonus_pay_budget_dept_id=#{bonusPayBudgetDept.bonusPayBudgetDeptId}
+                        </if>
+                        <if test="bonusPayBudgetDept.bonusPayApplicationId != null">
+                            and bonus_pay_application_id=#{bonusPayBudgetDept.bonusPayApplicationId}
+                        </if>
+                        <if test="bonusPayBudgetDept.departmentId != null">
+                            and department_id=#{bonusPayBudgetDept.departmentId}
+                        </if>
+                        <if test="bonusPayBudgetDept.bonusPercentage != null">
+                            and bonus_percentage=#{bonusPayBudgetDept.bonusPercentage}
+                        </if>
+                        <if test="bonusPayBudgetDept.deleteFlag != null">
+                            and delete_flag=#{bonusPayBudgetDept.deleteFlag}
+                        </if>
+                        <if test="bonusPayBudgetDept.createBy != null">
+                            and create_by=#{bonusPayBudgetDept.createBy}
+                        </if>
+                        <if test="bonusPayBudgetDept.createTime != null">
+                            and create_time=#{bonusPayBudgetDept.createTime}
+                        </if>
+                        <if test="bonusPayBudgetDept.updateBy != null">
+                            and update_by=#{bonusPayBudgetDept.updateBy}
+                        </if>
+                        <if test="bonusPayBudgetDept.updateTime != null">
+                            and update_time=#{bonusPayBudgetDept.updateTime}
+                        </if>
+    </select>
+    <!--新增奖金发放预算部门表-->
+    <insert id="insertBonusPayBudgetDept" useGeneratedKeys="true" keyProperty="bonusPayBudgetDeptId">
+        INSERT INTO bonus_pay_budget_dept (bonus_pay_budget_dept_idbonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{bonusPayBudgetDept.bonusPayApplicationId},#{bonusPayBudgetDept.departmentId},#{bonusPayBudgetDept.bonusPercentage},#{bonusPayBudgetDept.deleteFlag},#{bonusPayBudgetDept.createBy},#{bonusPayBudgetDept.createTime},#{bonusPayBudgetDept.updateBy},#{bonusPayBudgetDept.updateTime})
+    </insert>
+    <!--修改奖金发放预算部门表-->
+    <update id="updateBonusPayBudgetDept">
+        UPDATE bonus_pay_budget_dept
+        SET
+                    <if test="bonusPayBudgetDept.bonusPayApplicationId != null">
+                        bonus_pay_application_id=#{bonusPayBudgetDept.bonusPayApplicationId},
+                    </if>
+                    <if test="bonusPayBudgetDept.departmentId != null">
+                        department_id=#{bonusPayBudgetDept.departmentId},
+                    </if>
+                    <if test="bonusPayBudgetDept.bonusPercentage != null">
+                        bonus_percentage=#{bonusPayBudgetDept.bonusPercentage},
+                    </if>
+                    <if test="bonusPayBudgetDept.deleteFlag != null">
+                        delete_flag=#{bonusPayBudgetDept.deleteFlag},
+                    </if>
+                    <if test="bonusPayBudgetDept.createBy != null">
+                        create_by=#{bonusPayBudgetDept.createBy},
+                    </if>
+                    <if test="bonusPayBudgetDept.createTime != null">
+                        create_time=#{bonusPayBudgetDept.createTime},
+                    </if>
+                    <if test="bonusPayBudgetDept.updateBy != null">
+                        update_by=#{bonusPayBudgetDept.updateBy},
+                    </if>
+                    <if test="bonusPayBudgetDept.updateTime != null">
+                        update_time=#{bonusPayBudgetDept.updateTime}
+                    </if>
+        WHERE
+                 bonus_pay_budget_dept_id=#{bonusPayBudgetDept.bonusPayBudgetDeptId}
+    </update>
+    <!--逻辑删除奖金发放预算部门表-->
+    <update id="logicDeleteBonusPayBudgetDeptByBonusPayBudgetDeptId">
+        UPDATE bonus_pay_budget_dept
+        SET     delete_flag= 1,
+                update_by=#{bonusPayBudgetDept.updateBy},
+                update_time=#{bonusPayBudgetDept.updateTime}
+        WHERE
+                bonus_pay_budget_dept_id=#{bonusPayBudgetDept.bonusPayBudgetDeptId}
+    </update>
+    <!--逻辑批量删除奖金发放预算部门表-->
+    <update id="logicDeleteBonusPayBudgetDeptByBonusPayBudgetDeptIds">
+        UPDATE bonus_pay_budget_dept
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         bonus_pay_budget_dept_id IN
+            <foreach item="item"
+                     collection="bonusPayBudgetDeptIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增奖金发放预算部门表-->
+    <insert id="batchBonusPayBudgetDept">
+        INSERT INTO bonus_pay_budget_dept (bonus_pay_budget_dept_idbonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="bonusPayBudgetDepts"
+                 separator=",">
+            (#{item.bonusPayApplicationId},#{item.departmentId},#{item.bonusPercentage},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除奖金发放预算部门表-->
+    <delete id="deleteBonusPayBudgetDeptByBonusPayBudgetDeptId">
+        DELETE FROM bonus_pay_budget_dept
+        WHERE  bonus_pay_budget_dept_id=#{bonusPayBudgetDept}
+
+    </delete>
+    <!--物理批量删除奖金发放预算部门表-->
+    <delete id="deleteBonusPayBudgetDeptByBonusPayBudgetDeptIds">
+        DELETE FROM bonus_pay_budget_dept
+        WHERE  bonus_pay_budget_dept_id IN
+            <foreach item="item"
+                     collection="bonusPayBudgetDeptIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改奖金发放预算部门表-->
+    <update id="updateBonusPayBudgetDepts">
+        update bonus_pay_budget_dept
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="bonus_pay_application_id=case" suffix="end,">
+                        <foreach collection="bonusPayBudgetDeptList" item="item" index="index">
+                                <if test="item.bonusPayApplicationId != null">
+                                    when bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId} then #{item.bonusPayApplicationId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="bonusPayBudgetDeptList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_percentage=case" suffix="end,">
+                        <foreach collection="bonusPayBudgetDeptList" item="item" index="index">
+                                <if test="item.bonusPercentage != null">
+                                    when bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId} then #{item.bonusPercentage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="bonusPayBudgetDeptList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="bonusPayBudgetDeptList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="bonusPayBudgetDeptList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="bonusPayBudgetDeptList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="bonusPayBudgetDeptList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="bonusPayBudgetDeptList" separator="or" item="item" index="index">
+                    bonus_pay_budget_dept_id=#{item.bonusPayBudgetDeptId}
+        </foreach>
+    </update>
+</mapper>
+
+

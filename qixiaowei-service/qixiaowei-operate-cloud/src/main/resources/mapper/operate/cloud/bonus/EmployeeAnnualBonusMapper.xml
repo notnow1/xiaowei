@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.EmployeeAnnualBonusMapper">
+    <!--    查询个人年终奖表-->
+    <select id="selectEmployeeAnnualBonusByEmployeeAnnualBonusId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO">
+        SELECT employee_annual_bonus_id,
+               annual_bonus_year,
+               department_id,
+               department_name,
+               apply_department_id,
+               apply_department_name,
+               apply_employee_id,
+               apply_employee_name,
+               distribute_bonus_amount,
+               comment_flag,
+               comment_step,
+               comment_employee_id,
+               comment_employee_name,
+               comment_date,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee_annual_bonus
+        WHERE employee_annual_bonus_id = #{employeeAnnualBonusId}
+          and delete_flag = 0
+    </select>
+
+    <!--    批量查询个人年终奖表-->
+    <select id="selectEmployeeAnnualBonusByEmployeeAnnualBonusIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO">
+        SELECT
+        employee_annual_bonus_id, annual_bonus_year, department_id, department_name, apply_department_id, apply_department_name, apply_employee_id, apply_employee_name, distribute_bonus_amount, comment_flag, comment_step, comment_employee_id, comment_employee_name, comment_date, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_annual_bonus
+        WHERE  employee_annual_bonus_id in
+            <foreach item="item"
+                     collection="employeeAnnualBonusIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询个人年终奖表列表-->
+    <select id="selectEmployeeAnnualBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO">
+        SELECT
+        employee_annual_bonus_id, annual_bonus_year, department_id, department_name, apply_department_id, apply_department_name, apply_employee_id, apply_employee_name, distribute_bonus_amount, comment_flag, comment_step, comment_employee_id, comment_employee_name, comment_date, status, delete_flag, create_by, create_time, update_by, update_time
+        FROM employee_annual_bonus
+        WHERE delete_flag=0
+                <if test="employeeAnnualBonus.employeeAnnualBonusId != null">
+                    and employee_annual_bonus_id=#{employeeAnnualBonus.employeeAnnualBonusId}
+                </if>
+                <if test="employeeAnnualBonus.annualBonusYear != null">
+                    and annual_bonus_year=#{employeeAnnualBonus.annualBonusYear}
+                </if>
+                <if test="employeeAnnualBonus.departmentId != null">
+                    and department_id=#{employeeAnnualBonus.departmentId}
+                </if>
+                <if test="employeeAnnualBonus.departmentName != null and employeeAnnualBonus.departmentName != ''">
+                    and department_name=#{employeeAnnualBonus.departmentName}
+                </if>
+                <if test="employeeAnnualBonus.applyDepartmentId != null">
+                    and apply_department_id=#{employeeAnnualBonus.applyDepartmentId}
+                </if>
+                <if test="employeeAnnualBonus.applyDepartmentName != null and employeeAnnualBonus.applyDepartmentName != ''">
+                    and apply_department_name=#{employeeAnnualBonus.applyDepartmentName}
+                </if>
+                <if test="employeeAnnualBonus.applyEmployeeId != null">
+                    and apply_employee_id=#{employeeAnnualBonus.applyEmployeeId}
+                </if>
+                <if test="employeeAnnualBonus.applyEmployeeName != null and employeeAnnualBonus.applyEmployeeName != ''">
+                    and apply_employee_name=#{employeeAnnualBonus.applyEmployeeName}
+                </if>
+                <if test="employeeAnnualBonus.distributeBonusAmount != null">
+                    and distribute_bonus_amount=#{employeeAnnualBonus.distributeBonusAmount}
+                </if>
+                <if test="employeeAnnualBonus.commentFlag != null">
+                    and comment_flag=#{employeeAnnualBonus.commentFlag}
+                </if>
+                <if test="employeeAnnualBonus.commentStep != null">
+                    and comment_step=#{employeeAnnualBonus.commentStep}
+                </if>
+                <if test="employeeAnnualBonus.commentEmployeeId != null">
+                    and comment_employee_id=#{employeeAnnualBonus.commentEmployeeId}
+                </if>
+                <if test="employeeAnnualBonus.commentEmployeeName != null and employeeAnnualBonus.commentEmployeeName != ''">
+                    and comment_employee_name=#{employeeAnnualBonus.commentEmployeeName}
+                </if>
+                <if test="employeeAnnualBonus.commentDate != null">
+                    and comment_date=#{employeeAnnualBonus.commentDate}
+                </if>
+                <if test="employeeAnnualBonus.status != null">
+                    and status=#{employeeAnnualBonus.status}
+                </if>
+                <if test="employeeAnnualBonus.deleteFlag != null">
+                    and delete_flag=#{employeeAnnualBonus.deleteFlag}
+                </if>
+                <if test="employeeAnnualBonus.createBy != null">
+                    and create_by=#{employeeAnnualBonus.createBy}
+                </if>
+                <if test="employeeAnnualBonus.createTime != null">
+                    and create_time=#{employeeAnnualBonus.createTime}
+                </if>
+                <if test="employeeAnnualBonus.updateBy != null">
+                    and update_by=#{employeeAnnualBonus.updateBy}
+                </if>
+                <if test="employeeAnnualBonus.updateTime != null">
+                    and update_time=#{employeeAnnualBonus.updateTime}
+                </if>
+    </select>
+    <!--新增个人年终奖表-->
+    <insert id="insertEmployeeAnnualBonus" useGeneratedKeys="true" keyProperty="employeeAnnualBonusId">
+        INSERT INTO employee_annual_bonus (annual_bonus_year,department_id,department_name,apply_department_id,apply_department_name,apply_employee_id,apply_employee_name,distribute_bonus_amount,comment_flag,comment_step,comment_employee_id,comment_employee_name,comment_date,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{employeeAnnualBonus.annualBonusYear},#{employeeAnnualBonus.departmentId},#{employeeAnnualBonus.departmentName},#{employeeAnnualBonus.applyDepartmentId},#{employeeAnnualBonus.applyDepartmentName},#{employeeAnnualBonus.applyEmployeeId},#{employeeAnnualBonus.applyEmployeeName},#{employeeAnnualBonus.distributeBonusAmount},#{employeeAnnualBonus.commentFlag},#{employeeAnnualBonus.commentStep},#{employeeAnnualBonus.commentEmployeeId},#{employeeAnnualBonus.commentEmployeeName},#{employeeAnnualBonus.commentDate},#{employeeAnnualBonus.status},#{employeeAnnualBonus.deleteFlag},#{employeeAnnualBonus.createBy},#{employeeAnnualBonus.createTime},#{employeeAnnualBonus.updateBy},#{employeeAnnualBonus.updateTime})
+    </insert>
+    <!--修改个人年终奖表-->
+    <update id="updateEmployeeAnnualBonus">
+        UPDATE employee_annual_bonus
+        SET
+                    <if test="employeeAnnualBonus.annualBonusYear != null">
+                        annual_bonus_year=#{employeeAnnualBonus.annualBonusYear},
+                    </if>
+                    <if test="employeeAnnualBonus.departmentId != null">
+                        department_id=#{employeeAnnualBonus.departmentId},
+                    </if>
+                    <if test="employeeAnnualBonus.departmentName != null and employeeAnnualBonus.departmentName != ''">
+                        department_name=#{employeeAnnualBonus.departmentName},
+                    </if>
+                    <if test="employeeAnnualBonus.applyDepartmentId != null">
+                        apply_department_id=#{employeeAnnualBonus.applyDepartmentId},
+                    </if>
+                    <if test="employeeAnnualBonus.applyDepartmentName != null and employeeAnnualBonus.applyDepartmentName != ''">
+                        apply_department_name=#{employeeAnnualBonus.applyDepartmentName},
+                    </if>
+                    <if test="employeeAnnualBonus.applyEmployeeId != null">
+                        apply_employee_id=#{employeeAnnualBonus.applyEmployeeId},
+                    </if>
+                    <if test="employeeAnnualBonus.applyEmployeeName != null and employeeAnnualBonus.applyEmployeeName != ''">
+                        apply_employee_name=#{employeeAnnualBonus.applyEmployeeName},
+                    </if>
+                    <if test="employeeAnnualBonus.distributeBonusAmount != null">
+                        distribute_bonus_amount=#{employeeAnnualBonus.distributeBonusAmount},
+                    </if>
+                    <if test="employeeAnnualBonus.commentFlag != null">
+                        comment_flag=#{employeeAnnualBonus.commentFlag},
+                    </if>
+                    <if test="employeeAnnualBonus.commentStep != null">
+                        comment_step=#{employeeAnnualBonus.commentStep},
+                    </if>
+                    <if test="employeeAnnualBonus.commentEmployeeId != null">
+                        comment_employee_id=#{employeeAnnualBonus.commentEmployeeId},
+                    </if>
+                    <if test="employeeAnnualBonus.commentEmployeeName != null and employeeAnnualBonus.commentEmployeeName != ''">
+                        comment_employee_name=#{employeeAnnualBonus.commentEmployeeName},
+                    </if>
+                    <if test="employeeAnnualBonus.commentDate != null">
+                        comment_date=#{employeeAnnualBonus.commentDate},
+                    </if>
+                    <if test="employeeAnnualBonus.status != null">
+                        status=#{employeeAnnualBonus.status},
+                    </if>
+                    <if test="employeeAnnualBonus.deleteFlag != null">
+                        delete_flag=#{employeeAnnualBonus.deleteFlag},
+                    </if>
+                    <if test="employeeAnnualBonus.createBy != null">
+                        create_by=#{employeeAnnualBonus.createBy},
+                    </if>
+                    <if test="employeeAnnualBonus.createTime != null">
+                        create_time=#{employeeAnnualBonus.createTime},
+                    </if>
+                    <if test="employeeAnnualBonus.updateBy != null">
+                        update_by=#{employeeAnnualBonus.updateBy},
+                    </if>
+                    <if test="employeeAnnualBonus.updateTime != null">
+                        update_time=#{employeeAnnualBonus.updateTime}
+                    </if>
+        WHERE
+                 employee_annual_bonus_id=#{employeeAnnualBonus.employeeAnnualBonusId}
+    </update>
+    <!--逻辑删除个人年终奖表-->
+    <update id="logicDeleteEmployeeAnnualBonusByEmployeeAnnualBonusId">
+        UPDATE employee_annual_bonus
+        SET     delete_flag= 1,
+                update_by=#{employeeAnnualBonus.updateBy},
+                update_time=#{employeeAnnualBonus.updateTime}
+        WHERE
+                employee_annual_bonus_id=#{employeeAnnualBonus.employeeAnnualBonusId}
+    </update>
+    <!--逻辑批量删除个人年终奖表-->
+    <update id="logicDeleteEmployeeAnnualBonusByEmployeeAnnualBonusIds">
+        UPDATE employee_annual_bonus
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         employee_annual_bonus_id IN
+            <foreach item="item"
+                     collection="employeeAnnualBonusIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增个人年终奖表-->
+    <insert id="batchEmployeeAnnualBonus">
+        INSERT INTO employee_annual_bonus (annual_bonus_year,department_id,department_name,apply_department_id,apply_department_name,apply_employee_id,apply_employee_name,distribute_bonus_amount,comment_flag,comment_step,comment_employee_id,comment_employee_name,comment_date,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="employeeAnnualBonuss"
+                 separator=",">
+            (#{item.annualBonusYear},#{item.departmentId},#{item.departmentName},#{item.applyDepartmentId},#{item.applyDepartmentName},#{item.applyEmployeeId},#{item.applyEmployeeName},#{item.distributeBonusAmount},#{item.commentFlag},#{item.commentStep},#{item.commentEmployeeId},#{item.commentEmployeeName},#{item.commentDate},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除个人年终奖表-->
+    <delete id="deleteEmployeeAnnualBonusByEmployeeAnnualBonusId">
+        DELETE FROM employee_annual_bonus
+        WHERE  employee_annual_bonus_id=#{employeeAnnualBonus}
+
+    </delete>
+    <!--物理批量删除个人年终奖表-->
+    <delete id="deleteEmployeeAnnualBonusByEmployeeAnnualBonusIds">
+        DELETE FROM employee_annual_bonus
+        WHERE  employee_annual_bonus_id IN
+            <foreach item="item"
+                     collection="employeeAnnualBonusIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改个人年终奖表-->
+    <update id="updateEmployeeAnnualBonuss">
+        update employee_annual_bonus
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="annual_bonus_year=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.annualBonusYear != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.annualBonusYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_name=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.departmentName != null and item.departmentName != ''">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.departmentName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="apply_department_id=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.applyDepartmentId != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.applyDepartmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="apply_department_name=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.applyDepartmentName != null and item.applyDepartmentName != ''">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.applyDepartmentName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="apply_employee_id=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.applyEmployeeId != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.applyEmployeeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="apply_employee_name=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.applyEmployeeName != null and item.applyEmployeeName != ''">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.applyEmployeeName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="distribute_bonus_amount=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.distributeBonusAmount != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.distributeBonusAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="comment_flag=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.commentFlag != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.commentFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="comment_step=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.commentStep != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.commentStep}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="comment_employee_id=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.commentEmployeeId != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.commentEmployeeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="comment_employee_name=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.commentEmployeeName != null and item.commentEmployeeName != ''">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.commentEmployeeName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="comment_date=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.commentDate != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.commentDate}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="status=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.status != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.status}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="employeeAnnualBonusList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when employee_annual_bonus_id=#{item.employeeAnnualBonusId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="employeeAnnualBonusList" separator="or" item="item" index="index">
+                    employee_annual_bonus_id=#{item.employeeAnnualBonusId}
+        </foreach>
+    </update>
+</mapper>
+
+

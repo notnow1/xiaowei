@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.DeptBonusBudgetMapper">
+    <!--    查询部门奖金包预算表-->
+    <select id="selectDeptBonusBudgetByDeptBonusBudgetId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+        SELECT db.amount_bonus_budget,
+               dbb.dept_bonus_budget_id,
+               dbb.budget_year,
+               dbb.strategy_award_percentage,
+               dbb.delete_flag,
+               dbb.create_by,
+               dbb.create_time,
+               dbb.update_by,
+               dbb.update_time
+        FROM dept_bonus_budget dbb
+        left join bonus_budget db
+        on db.budget_year = dbb.budget_year
+        and db.delete_flag = 0
+        WHERE dbb.dept_bonus_budget_id = #{deptBonusBudgetId}
+          and dbb.delete_flag = 0
+    </select>
+
+    <!--    批量查询部门奖金包预算表-->
+    <select id="selectDeptBonusBudgetByDeptBonusBudgetIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+        SELECT
+        dept_bonus_budget_id, budget_year, strategy_award_percentage, delete_flag, create_by, create_time, update_by,
+        update_time
+        FROM dept_bonus_budget
+        WHERE dept_bonus_budget_id in
+        <foreach item="item"
+                 collection="deptBonusBudgetIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询部门奖金包预算表列表-->
+    <select id="selectDeptBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+        SELECT
+        IFNULL(bb.amount_bonus_budget * dbb.strategy_award_percentage,0) as strategyAwardAmount,
+        bb.amount_bonus_budget,
+        IFNULL(amount_bonus_budget - IFNULL(bb.amount_bonus_budget * (dbb.strategy_award_percentage/100),0),0) as
+        deptAmountBonus,
+--         dbbd.dept_bonus_percentage,
+        dbb.dept_bonus_budget_id,
+        dbb.budget_year,
+        dbb.strategy_award_percentage,
+        dbb.delete_flag,
+        dbb.create_by,
+        dbb.create_time,
+        dbb.update_by,
+        dbb.update_time
+        FROM
+        dept_bonus_budget dbb
+        left join bonus_budget bb
+        on bb.budget_year = dbb.budget_year
+        and bb.delete_flag =0
+--         left join dept_bonus_budget_details dbbd
+--         on dbb .dept_bonus_budget_id = dbbd.dept_bonus_budget_id
+--         and dbbd.delete_flag =0
+        WHERE
+        dbb.delete_flag = 0
+        <if test="deptBonusBudget.deptBonusBudgetId != null">
+            and dbb.dept_bonus_budget_id=#{deptBonusBudget.deptBonusBudgetId}
+        </if>
+        <if test="deptBonusBudget.budgetYear != null">
+            and dbb.budget_year=#{deptBonusBudget.budgetYear}
+        </if>
+        <if test="deptBonusBudget.strategyAwardPercentage != null">
+            and dbb.strategy_award_percentage=#{deptBonusBudget.strategyAwardPercentage}
+        </if>
+        <if test="deptBonusBudget.deleteFlag != null">
+            and dbb.delete_flag=#{deptBonusBudget.deleteFlag}
+        </if>
+        <if test="deptBonusBudget.createBy != null">
+            and dbb.create_by=#{deptBonusBudget.createBy}
+        </if>
+        <if test="deptBonusBudget.createTime != null">
+            and dbb.create_time=#{deptBonusBudget.createTime}
+        </if>
+        <if test="deptBonusBudget.updateBy != null">
+            and dbb.update_by=#{deptBonusBudget.updateBy}
+        </if>
+        <if test="deptBonusBudget.updateTime != null">
+            and dbb.update_time=#{deptBonusBudget.updateTime}
+        </if>
+    </select>
+    <!--    返回部门奖金预算最大年份-->
+    <select id="queryDeptBonusBudgetYear"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+        SELECT
+        <if test="deptBonusBudget.budgetYear == null">
+        max(budget_year) as budget_year
+        </if>
+        <if test="deptBonusBudget.budgetYear != null">
+            budget_year
+        </if>
+        FROM bonus_budget
+        where delete_flag = 0
+        <if test="deptBonusBudget.budgetYear != null">
+            and budget_year=#{deptBonusBudget.budgetYear}
+        </if>
+    </select>
+<!--    根据年份查询部门奖金包预算表-->
+    <select id="selectDeptBonusBudgetBybudgetYear"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+        SELECT dbb.dept_bonus_budget_id,
+               dbb.budget_year,
+               dbb.strategy_award_percentage,
+               dbb.delete_flag,
+               dbb.create_by,
+               dbb.create_time,
+               dbb.update_by,
+               dbb.update_time
+        FROM dept_bonus_budget dbb
+        WHERE dbb.budget_year = #{budgetYear}
+          and dbb.delete_flag = 0
+    </select>
+
+    <!--新增部门奖金包预算表-->
+    <insert id="insertDeptBonusBudget" useGeneratedKeys="true" keyProperty="deptBonusBudgetId">
+        INSERT INTO dept_bonus_budget (budget_year, strategy_award_percentage, delete_flag, create_by, create_time,
+                                       update_by, update_time)
+        VALUES (#{deptBonusBudget.budgetYear}, #{deptBonusBudget.strategyAwardPercentage},
+                #{deptBonusBudget.deleteFlag}, #{deptBonusBudget.createBy}, #{deptBonusBudget.createTime},
+                #{deptBonusBudget.updateBy}, #{deptBonusBudget.updateTime})
+    </insert>
+    <!--修改部门奖金包预算表-->
+    <update id="updateDeptBonusBudget">
+        UPDATE dept_bonus_budget
+        SET
+        <if test="deptBonusBudget.budgetYear != null">
+            budget_year=#{deptBonusBudget.budgetYear},
+        </if>
+        <if test="deptBonusBudget.strategyAwardPercentage != null">
+            strategy_award_percentage=#{deptBonusBudget.strategyAwardPercentage},
+        </if>
+        <if test="deptBonusBudget.deleteFlag != null">
+            delete_flag=#{deptBonusBudget.deleteFlag},
+        </if>
+        <if test="deptBonusBudget.createBy != null">
+            create_by=#{deptBonusBudget.createBy},
+        </if>
+        <if test="deptBonusBudget.createTime != null">
+            create_time=#{deptBonusBudget.createTime},
+        </if>
+        <if test="deptBonusBudget.updateBy != null">
+            update_by=#{deptBonusBudget.updateBy},
+        </if>
+        <if test="deptBonusBudget.updateTime != null">
+            update_time=#{deptBonusBudget.updateTime}
+        </if>
+        WHERE
+        dept_bonus_budget_id=#{deptBonusBudget.deptBonusBudgetId}
+    </update>
+    <!--逻辑删除部门奖金包预算表-->
+    <update id="logicDeleteDeptBonusBudgetByDeptBonusBudgetId">
+        UPDATE dept_bonus_budget
+        SET delete_flag= 1,
+            update_by=#{deptBonusBudget.updateBy},
+            update_time=#{deptBonusBudget.updateTime}
+        WHERE dept_bonus_budget_id = #{deptBonusBudget.deptBonusBudgetId}
+    </update>
+    <!--逻辑批量删除部门奖金包预算表-->
+    <update id="logicDeleteDeptBonusBudgetByDeptBonusBudgetIds">
+        UPDATE dept_bonus_budget
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        dept_bonus_budget_id IN
+        <foreach item="item"
+                 collection="deptBonusBudgetIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增部门奖金包预算表-->
+    <insert id="batchDeptBonusBudget">
+        INSERT INTO dept_bonus_budget
+        (budget_year,strategy_award_percentage,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="deptBonusBudgets"
+                 separator=",">
+            (#{item.budgetYear},#{item.strategyAwardPercentage},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除部门奖金包预算表-->
+    <delete id="deleteDeptBonusBudgetByDeptBonusBudgetId">
+        DELETE
+        FROM dept_bonus_budget
+        WHERE dept_bonus_budget_id = #{deptBonusBudget}
+
+    </delete>
+    <!--物理批量删除部门奖金包预算表-->
+    <delete id="deleteDeptBonusBudgetByDeptBonusBudgetIds">
+        DELETE FROM dept_bonus_budget
+        WHERE dept_bonus_budget_id IN
+        <foreach item="item"
+                 collection="deptBonusBudgetIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改部门奖金包预算表-->
+    <update id="updateDeptBonusBudgets">
+        update dept_bonus_budget
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="budget_year=case" suffix="end,">
+                <foreach collection="deptBonusBudgetList" item="item" index="index">
+                    <if test="item.budgetYear != null">
+                        when dept_bonus_budget_id=#{item.deptBonusBudgetId} then #{item.budgetYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="strategy_award_percentage=case" suffix="end,">
+                <foreach collection="deptBonusBudgetList" item="item" index="index">
+                    <if test="item.strategyAwardPercentage != null">
+                        when dept_bonus_budget_id=#{item.deptBonusBudgetId} then #{item.strategyAwardPercentage}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="deptBonusBudgetList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when dept_bonus_budget_id=#{item.deptBonusBudgetId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="deptBonusBudgetList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when dept_bonus_budget_id=#{item.deptBonusBudgetId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="deptBonusBudgetList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when dept_bonus_budget_id=#{item.deptBonusBudgetId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="deptBonusBudgetList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when dept_bonus_budget_id=#{item.deptBonusBudgetId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="deptBonusBudgetList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when dept_bonus_budget_id=#{item.deptBonusBudgetId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="deptBonusBudgetList" separator="or" item="item" index="index">
+            dept_bonus_budget_id=#{item.deptBonusBudgetId}
+        </foreach>
+    </update>
+</mapper>
+
+

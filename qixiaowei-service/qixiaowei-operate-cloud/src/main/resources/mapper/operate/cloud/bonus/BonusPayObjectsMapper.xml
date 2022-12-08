@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.BonusPayObjectsMapper">
+    <!--    查询奖金发放对象表-->
+    <select id="selectBonusPayObjectsByBonusPayObjectsId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO">
+        SELECT
+        bonus_pay_objects_id,bonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_objects
+        WHERE  bonus_pay_objects_id=#{bonusPayObjectsId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询奖金发放对象表-->
+    <select id="selectBonusPayObjectsByBonusPayObjectsIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO">
+        SELECT
+        bonus_pay_objects_id,bonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_objects
+        WHERE  bonus_pay_objects_id in
+            <foreach item="item"
+                     collection="bonusPayObjectsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询奖金发放对象表列表-->
+    <select id="selectBonusPayObjectsList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO">
+        SELECT
+        bonus_pay_objects_id,bonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_objects
+        WHERE delete_flag=0
+                        <if test="bonusPayObjects.bonusPayObjectsId != null">
+                            and bonus_pay_objects_id=#{bonusPayObjects.bonusPayObjectsId}
+                        </if>
+                        <if test="bonusPayObjects.bonusPayApplicationId != null">
+                            and bonus_pay_application_id=#{bonusPayObjects.bonusPayApplicationId}
+                        </if>
+                        <if test="bonusPayObjects.bonusPayObject != null">
+                            and bonus_pay_object=#{bonusPayObjects.bonusPayObject}
+                        </if>
+                        <if test="bonusPayObjects.bonusPayObjectId != null">
+                            and bonus_pay_object_id=#{bonusPayObjects.bonusPayObjectId}
+                        </if>
+                        <if test="bonusPayObjects.awardAmount != null">
+                            and award_amount=#{bonusPayObjects.awardAmount}
+                        </if>
+                        <if test="bonusPayObjects.deleteFlag != null">
+                            and delete_flag=#{bonusPayObjects.deleteFlag}
+                        </if>
+                        <if test="bonusPayObjects.createBy != null">
+                            and create_by=#{bonusPayObjects.createBy}
+                        </if>
+                        <if test="bonusPayObjects.createTime != null">
+                            and create_time=#{bonusPayObjects.createTime}
+                        </if>
+                        <if test="bonusPayObjects.updateBy != null">
+                            and update_by=#{bonusPayObjects.updateBy}
+                        </if>
+                        <if test="bonusPayObjects.updateTime != null">
+                            and update_time=#{bonusPayObjects.updateTime}
+                        </if>
+    </select>
+    <!--新增奖金发放对象表-->
+    <insert id="insertBonusPayObjects" useGeneratedKeys="true" keyProperty="bonusPayObjectsId">
+        INSERT INTO bonus_pay_objects (bonus_pay_objects_idbonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{bonusPayObjects.bonusPayApplicationId},#{bonusPayObjects.bonusPayObject},#{bonusPayObjects.bonusPayObjectId},#{bonusPayObjects.awardAmount},#{bonusPayObjects.deleteFlag},#{bonusPayObjects.createBy},#{bonusPayObjects.createTime},#{bonusPayObjects.updateBy},#{bonusPayObjects.updateTime})
+    </insert>
+    <!--修改奖金发放对象表-->
+    <update id="updateBonusPayObjects">
+        UPDATE bonus_pay_objects
+        SET
+                    <if test="bonusPayObjects.bonusPayApplicationId != null">
+                        bonus_pay_application_id=#{bonusPayObjects.bonusPayApplicationId},
+                    </if>
+                    <if test="bonusPayObjects.bonusPayObject != null">
+                        bonus_pay_object=#{bonusPayObjects.bonusPayObject},
+                    </if>
+                    <if test="bonusPayObjects.bonusPayObjectId != null">
+                        bonus_pay_object_id=#{bonusPayObjects.bonusPayObjectId},
+                    </if>
+                    <if test="bonusPayObjects.awardAmount != null">
+                        award_amount=#{bonusPayObjects.awardAmount},
+                    </if>
+                    <if test="bonusPayObjects.deleteFlag != null">
+                        delete_flag=#{bonusPayObjects.deleteFlag},
+                    </if>
+                    <if test="bonusPayObjects.createBy != null">
+                        create_by=#{bonusPayObjects.createBy},
+                    </if>
+                    <if test="bonusPayObjects.createTime != null">
+                        create_time=#{bonusPayObjects.createTime},
+                    </if>
+                    <if test="bonusPayObjects.updateBy != null">
+                        update_by=#{bonusPayObjects.updateBy},
+                    </if>
+                    <if test="bonusPayObjects.updateTime != null">
+                        update_time=#{bonusPayObjects.updateTime}
+                    </if>
+        WHERE
+                 bonus_pay_objects_id=#{bonusPayObjects.bonusPayObjectsId}
+    </update>
+    <!--逻辑删除奖金发放对象表-->
+    <update id="logicDeleteBonusPayObjectsByBonusPayObjectsId">
+        UPDATE bonus_pay_objects
+        SET     delete_flag= 1,
+                update_by=#{bonusPayObjects.updateBy},
+                update_time=#{bonusPayObjects.updateTime}
+        WHERE
+                bonus_pay_objects_id=#{bonusPayObjects.bonusPayObjectsId}
+    </update>
+    <!--逻辑批量删除奖金发放对象表-->
+    <update id="logicDeleteBonusPayObjectsByBonusPayObjectsIds">
+        UPDATE bonus_pay_objects
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         bonus_pay_objects_id IN
+            <foreach item="item"
+                     collection="bonusPayObjectsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增奖金发放对象表-->
+    <insert id="batchBonusPayObjects">
+        INSERT INTO bonus_pay_objects (bonus_pay_objects_idbonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="bonusPayObjectss"
+                 separator=",">
+            (#{item.bonusPayApplicationId},#{item.bonusPayObject},#{item.bonusPayObjectId},#{item.awardAmount},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除奖金发放对象表-->
+    <delete id="deleteBonusPayObjectsByBonusPayObjectsId">
+        DELETE FROM bonus_pay_objects
+        WHERE  bonus_pay_objects_id=#{bonusPayObjects}
+
+    </delete>
+    <!--物理批量删除奖金发放对象表-->
+    <delete id="deleteBonusPayObjectsByBonusPayObjectsIds">
+        DELETE FROM bonus_pay_objects
+        WHERE  bonus_pay_objects_id IN
+            <foreach item="item"
+                     collection="bonusPayObjectsIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改奖金发放对象表-->
+    <update id="updateBonusPayObjectss">
+        update bonus_pay_objects
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="bonus_pay_application_id=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.bonusPayApplicationId != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.bonusPayApplicationId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_pay_object=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.bonusPayObject != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.bonusPayObject}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="bonus_pay_object_id=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.bonusPayObjectId != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.bonusPayObjectId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="award_amount=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.awardAmount != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.awardAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="bonusPayObjectsList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when bonus_pay_objects_id=#{item.bonusPayObjectsId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="bonusPayObjectsList" separator="or" item="item" index="index">
+                    bonus_pay_objects_id=#{item.bonusPayObjectsId}
+        </foreach>
+    </update>
+</mapper>
+
+

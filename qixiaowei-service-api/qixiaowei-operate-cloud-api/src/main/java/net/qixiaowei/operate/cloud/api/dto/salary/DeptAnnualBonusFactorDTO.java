@@ -48,7 +48,7 @@ public class DeptAnnualBonusFactorDTO {
     */
     private  Long departmentId;
     /**
-     * 部门ID
+     * 部门名称
      */
     private  String departmentName;
     /**

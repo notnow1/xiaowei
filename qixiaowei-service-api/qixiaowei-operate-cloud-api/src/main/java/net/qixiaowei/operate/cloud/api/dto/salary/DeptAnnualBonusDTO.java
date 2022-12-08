@@ -80,6 +80,11 @@ public class DeptAnnualBonusDTO {
      * 部门年终奖系数表集合
      */
     private List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs;
+
+    /**
+     *部门可发年终奖集合
+     */
+    private List<DeptAnnualBonusCanGrantDTO> deptAnnualBonusCanGrantDTOs;
     /**
     * 状态
     */
