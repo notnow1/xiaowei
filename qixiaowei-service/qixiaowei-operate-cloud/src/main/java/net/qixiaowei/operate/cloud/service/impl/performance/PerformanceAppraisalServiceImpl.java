@@ -2205,6 +2205,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         PerformanceAppraisalObjectsDTO performanceAppraisalObjects = new PerformanceAppraisalObjectsDTO();
         performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
         performanceAppraisalObjects.setAppraisalObjectStatus(2);
+        performanceAppraisalObjects.setEvaluationScore(null);
         performanceAppraisalObjectsService.withdrawPerformanceAppraisalObjects(performanceAppraisalObjects);
         // 更新评议指标信息
         PerformanceAppraisalItemsDTO appraisalItemsDTO = new PerformanceAppraisalItemsDTO();
@@ -2212,9 +2213,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isEmpty(performanceAppraisalItemsDTOS)) {
             return 1;
         }
-        PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO = performanceAppraisalItemsDTOS.get(0);
-        appraisalItemsDTO.setPerformAppraisalItemsId(performanceAppraisalItemsDTO.getPerformAppraisalItemsId());
-        return performanceAppraisalItemsService.withdrawPerformanceAppraisalItems(appraisalItemsDTO);
+        List<PerformanceAppraisalItemsDTO> itemsDTOList = new ArrayList<>();
+        for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDTOS) {
+            PerformanceAppraisalItemsDTO itemsDTO = new PerformanceAppraisalItemsDTO();
+            itemsDTO.setPerformAppraisalItemsId(performanceAppraisalItemsDTO.getPerformAppraisalItemsId());
+            itemsDTOList.add(itemsDTO);
+        }
+        return performanceAppraisalItemsService.withdrawPerformanceAppraisalItems(itemsDTOList);
     }
 
     /**

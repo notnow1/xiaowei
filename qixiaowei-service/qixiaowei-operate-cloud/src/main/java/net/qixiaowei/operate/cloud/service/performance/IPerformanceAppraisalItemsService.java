@@ -127,8 +127,9 @@ public interface IPerformanceAppraisalItemsService {
 
     /**
      * 评议撤回
-     * @param appraisalItemsDTO 评议指标DTO
+     *
+     * @param itemsDTOList 评议指标DTO
      * @return int
      */
-    int withdrawPerformanceAppraisalItems(PerformanceAppraisalItemsDTO appraisalItemsDTO);
+    int withdrawPerformanceAppraisalItems(List<PerformanceAppraisalItemsDTO> itemsDTOList);
 }

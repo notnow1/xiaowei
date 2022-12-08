@@ -246,12 +246,13 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
 
     /**
      * 评议撤回
-     * @param appraisalItemsDTO 评议指标DTO
+     *
+     * @param itemsDTOList 评议指标DTO
      * @return int
      */
     @Override
-    public int withdrawPerformanceAppraisalItems(PerformanceAppraisalItemsDTO appraisalItemsDTO) {
-        return performanceAppraisalItemsMapper.withdrawPerformanceAppraisalItems(appraisalItemsDTO);
+    public int withdrawPerformanceAppraisalItems(List<PerformanceAppraisalItemsDTO> itemsDTOList) {
+        return performanceAppraisalItemsMapper.withdrawPerformanceAppraisalItems(itemsDTOList);
     }
 }
 

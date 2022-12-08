@@ -116,9 +116,10 @@ public interface PerformanceAppraisalItemsMapper {
 
     /**
      * 评议撤回
-     * @param appraisalItemsDTO 评议指标DTO
+     *
+     * @param itemsDTOList 评议指标DTO
      * @return int
      */
-    int withdrawPerformanceAppraisalItems(@Param("appraisalItemsDTO") PerformanceAppraisalItemsDTO appraisalItemsDTO);
+    int withdrawPerformanceAppraisalItems(@Param("itemsDTOList") List<PerformanceAppraisalItemsDTO> itemsDTOList);
 
 }

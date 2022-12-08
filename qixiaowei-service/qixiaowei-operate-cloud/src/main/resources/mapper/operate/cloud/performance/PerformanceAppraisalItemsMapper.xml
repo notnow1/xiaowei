@@ -321,7 +321,10 @@
         UPDATE performance_appraisal_items
         SET actual_value = null
         WHERE
-        perform_appraisal_items_id = #{appraisalItemsDTO.performAppraisalItemsId}
+        perform_appraisal_items_id IN
+        <foreach collection="itemsDTOList" open="(" close=")" separator="," index="index" item="item">
+            #{appraisalItemsDTO.performAppraisalItemsId}
+        </foreach>
     </update>
 </mapper>
 
