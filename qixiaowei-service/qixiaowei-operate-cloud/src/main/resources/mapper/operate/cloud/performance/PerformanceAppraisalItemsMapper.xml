@@ -323,7 +323,7 @@
         WHERE
         perform_appraisal_items_id IN
         <foreach collection="itemsDTOList" open="(" close=")" separator="," index="index" item="item">
-            #{appraisalItemsDTO.performAppraisalItemsId}
+            #{item.performAppraisalItemsId}
         </foreach>
     </update>
 </mapper>
