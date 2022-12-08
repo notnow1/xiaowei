@@ -33,76 +33,92 @@
     </select>
 
     <!--    查询绩效考核表列表-->
-        <select id="selectPerformanceAppraisalList"
+    <select id="selectPerformanceAppraisalList"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">
         SELECT
-        performance_appraisal_id, performance_rank_id, performance_rank_name, appraisal_year, appraisal_name,
-        cycle_flag, cycle_type, cycle_number, appraisal_start_date, appraisal_end_date, filing_date, appraisal_flow,
-        appraisal_object, self_defined_columns_flag, appraisal_status, delete_flag, create_by, create_time, update_by,
-        update_time
-        FROM performance_appraisal
-        WHERE delete_flag=0
+        pa.performance_appraisal_id,
+        pa.performance_rank_id,
+        pa.performance_rank_name,
+        pa.appraisal_year,
+        pa.appraisal_name,
+        pa.cycle_flag,
+        pa.cycle_type,
+        pa.cycle_number,
+        pa.appraisal_start_date,
+        pa.appraisal_end_date,
+        pa.filing_date,
+        pa.appraisal_flow,
+        pa.appraisal_object,
+        pa.self_defined_columns_flag,
+        pa.appraisal_status,
+        pa.delete_flag,
+        pa.create_by,
+        pa.create_time,
+        pa.update_by,
+        pa.update_time
+        FROM performance_appraisal pa
+        WHERE pa.delete_flag=0
         <if test="performanceAppraisal.performanceAppraisalId != null">
-            and performance_appraisal_id=#{performanceAppraisal.performanceAppraisalId}
+            and pa.performance_appraisal_id=#{performanceAppraisal.performanceAppraisalId}
         </if>
         <if test="performanceAppraisal.performanceRankId != null">
-            and performance_rank_id=#{performanceAppraisal.performanceRankId}
+            and pa.performance_rank_id=#{performanceAppraisal.performanceRankId}
         </if>
         <if test="performanceAppraisal.performanceRankName != null and performanceAppraisal.performanceRankName != ''">
-            and performance_rank_name like concat('%', #{performanceAppraisal.performanceRankName}, '%')
+            and pa.performance_rank_name like concat('%', #{performanceAppraisal.performanceRankName}, '%')
         </if>
         <if test="performanceAppraisal.appraisalYear != null">
-            and appraisal_year=#{performanceAppraisal.appraisalYear}
+            and pa.appraisal_year=#{performanceAppraisal.appraisalYear}
         </if>
         <if test="performanceAppraisal.appraisalName != null and performanceAppraisal.appraisalName != ''">
-            and appraisal_name like concat('%', #{performanceAppraisal.appraisalName}, '%')
+            and pa.appraisal_name like concat('%', #{performanceAppraisal.appraisalName}, '%')
         </if>
         <if test="performanceAppraisal.cycleFlag != null">
-            and cycle_flag=#{performanceAppraisal.cycleFlag}
+            and pa.cycle_flag=#{performanceAppraisal.cycleFlag}
         </if>
         <if test="performanceAppraisal.cycleType != null">
-            and cycle_type=#{performanceAppraisal.cycleType}
+            and pa.cycle_type=#{performanceAppraisal.cycleType}
         </if>
         <if test="performanceAppraisal.cycleNumber != null">
-            and cycle_number=#{performanceAppraisal.cycleNumber}
+            and pa.cycle_number=#{performanceAppraisal.cycleNumber}
         </if>
         <if test="performanceAppraisal.appraisalStartDate != null">
-            and appraisal_start_date=#{performanceAppraisal.appraisalStartDate}
+            and pa.appraisal_start_date=#{performanceAppraisal.appraisalStartDate}
         </if>
         <if test="performanceAppraisal.appraisalEndDate != null">
-            and appraisal_end_date=#{performanceAppraisal.appraisalEndDate}
+            and pa.appraisal_end_date=#{performanceAppraisal.appraisalEndDate}
         </if>
         <if test="performanceAppraisal.filingDate != null">
-            and filing_date=#{performanceAppraisal.filingDate}
+            and pa.filing_date=#{performanceAppraisal.filingDate}
         </if>
         <if test="performanceAppraisal.appraisalFlow != null">
-            and appraisal_flow=#{performanceAppraisal.appraisalFlow}
+            and pa.appraisal_flow=#{performanceAppraisal.appraisalFlow}
         </if>
         <if test="performanceAppraisal.appraisalObject != null">
-            and appraisal_object=#{performanceAppraisal.appraisalObject}
+            and pa.appraisal_object=#{performanceAppraisal.appraisalObject}
         </if>
         <if test="performanceAppraisal.selfDefinedColumnsFlag != null">
-            and self_defined_columns_flag=#{performanceAppraisal.selfDefinedColumnsFlag}
+            and pa.self_defined_columns_flag=#{performanceAppraisal.selfDefinedColumnsFlag}
         </if>
         <if test="performanceAppraisal.appraisalStatus != null">
-            and appraisal_status=#{performanceAppraisal.appraisalStatus}
+            and pa.appraisal_status=#{performanceAppraisal.appraisalStatus}
         </if>
         <if test="performanceAppraisal.deleteFlag != null">
-            and delete_flag=#{performanceAppraisal.deleteFlag}
+            and pa.delete_flag=#{performanceAppraisal.deleteFlag}
         </if>
         <if test="performanceAppraisal.createBy != null">
-            and create_by=#{performanceAppraisal.createBy}
+            and pa.create_by=#{performanceAppraisal.createBy}
         </if>
         <if test="performanceAppraisal.createTime != null">
-            and create_time=#{performanceAppraisal.createTime}
+            and pa.create_time=#{performanceAppraisal.createTime}
         </if>
         <if test="performanceAppraisal.updateBy != null">
-            and update_by=#{performanceAppraisal.updateBy}
+            and pa.update_by=#{performanceAppraisal.updateBy}
         </if>
         <if test="performanceAppraisal.updateTime != null">
-            and update_time=#{performanceAppraisal.updateTime}
+            and pa.update_time=#{performanceAppraisal.updateTime}
         </if>
-        ORDER BY appraisal_year,cycle_number
+        ORDER BY pa.appraisal_year,pa.cycle_number
     </select>
     <select id="selectRankFactorByAppraisalId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO">

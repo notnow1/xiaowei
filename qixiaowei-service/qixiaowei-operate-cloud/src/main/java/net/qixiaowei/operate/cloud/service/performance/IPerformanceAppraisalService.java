@@ -312,4 +312,36 @@ public interface IPerformanceAppraisalService {
      * @return 考核对象DTO
      */
     PerformanceAppraisalObjectsDTO updateOrgReviewPerformanceAppraisal(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
+
+    /**
+     * 查询绩效考核表列表-组织-排名
+     *
+     * @param performanceAppraisalDTO 考核对象
+     * @return List
+     */
+    List<PerformanceAppraisalDTO> selectOrgAppraisalRankingList(PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * 查询绩效考核详情--排名
+     *
+     * @param performanceAppraisalId 考核ID
+     * @return 考核任务DTO
+     */
+    PerformanceAppraisalDTO selectOrgAppraisalRankingById(Long performanceAppraisalId);
+
+    /**
+     * 编辑组织绩效考核排名表
+     *
+     * @param performanceAppraisalDTO 考核对象DTO
+     * @return 考核任务DTO
+     */
+    PerformanceAppraisalDTO updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * 评议撤回
+     *
+     * @param performAppraisalObjectsId 考核对象ID
+     * @return
+     */
+    int withdraw(Long performAppraisalObjectsId);
 }

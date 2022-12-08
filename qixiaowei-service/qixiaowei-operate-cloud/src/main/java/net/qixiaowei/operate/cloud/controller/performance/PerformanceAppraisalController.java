@@ -88,7 +88,7 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询绩效考核表列表-组织-制定
+     * 查询绩效考核表列表-组织-评议
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @GetMapping("/orgReview/pageList")
@@ -99,13 +99,13 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询绩效考核表列表-组织-制定
+     * 查询绩效考核表列表-组织-排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @GetMapping("/orgRank/pageList")
-    public TableDataInfo listOrgRank(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+    @GetMapping("/orgRanking/pageList")
+    public TableDataInfo listOrgRanking(PerformanceAppraisalDTO performanceAppraisalDTO) {
         startPage();
-        List<PerformanceAppraisalObjectsDTO> list = performanceAppraisalService.selectOrgAppraisalReviewList(performanceAppraisalObjectsDTO);
+        List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectOrgAppraisalRankingList(performanceAppraisalDTO);
         return getDataTable(list);
     }
 
@@ -150,7 +150,16 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询绩效考核表列表
+     * 查询绩效考核详情--排名
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/orgRanking/info/{performanceAppraisalId}")
+    public AjaxResult infoOrgRanking(@PathVariable Long performanceAppraisalId) {
+        return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankingById(performanceAppraisalId));
+    }
+
+    /**
+     * 查询绩效考核表详情-归档
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @GetMapping("/info/orgArchive/{performanceAppraisalId}")
@@ -236,6 +245,26 @@ public class PerformanceAppraisalController extends BaseController {
     @PostMapping("/orgReview/edit")
     public AjaxResult editOrgReview(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         return AjaxResult.success(performanceAppraisalService.updateOrgReviewPerformanceAppraisal(performanceAppraisalObjectsDTO));
+    }
+
+    /**
+     * 编辑组织绩效考核评议表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
+    @Log(title = "撤回组织绩效考核评议", businessType = BusinessType.INSERT)
+    @PostMapping("/withdraw/{performanceAppraisalId}")
+    public AjaxResult withdraw(@PathVariable Long performAppraisalObjectsId) {
+        return AjaxResult.success(performanceAppraisalService.withdraw(performAppraisalObjectsId));
+    }
+
+    /**
+     * 编辑组织绩效考核排名表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
+    @Log(title = "编辑组织绩效考核制定表", businessType = BusinessType.INSERT)
+    @PostMapping("/orgRanking/edit")
+    public AjaxResult editOrgRanking(@RequestBody @Validated(PerformanceAppraisalDTO.UpdatePerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
+        return AjaxResult.success(performanceAppraisalService.updateOrgRankingPerformanceAppraisal(performanceAppraisalDTO));
     }
 
     /**
