@@ -2045,9 +2045,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     BigDecimal proportion = actualValue.divide(targetValue, 2, RoundingMode.HALF_UP);
                     BigDecimal evaluationScore;
                     if (proportion.compareTo(BigDecimal.valueOf(1.2)) > 0)
-                        evaluationScore = BigDecimal.valueOf(1.2).multiply(weight).multiply(new BigDecimal(100));
+                        evaluationScore = BigDecimal.valueOf(1.2).multiply(weight);
                     else
-                        evaluationScore = proportion.multiply(weight).multiply(new BigDecimal(100));
+                        evaluationScore = proportion.multiply(weight);
                     performanceAppraisalItemsDTO.setEvaluationScore(evaluationScore);
                 }
             } else {
@@ -2062,9 +2062,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     BigDecimal proportion = targetValue.divide(actualValue, 2, RoundingMode.HALF_UP);
                     BigDecimal evaluationScore;
                     if (proportion.compareTo(BigDecimal.valueOf(1.2)) > 0)
-                        evaluationScore = BigDecimal.valueOf(1.2).multiply(weight).multiply(new BigDecimal(100));
+                        evaluationScore = BigDecimal.valueOf(1.2).multiply(weight);
                     else
-                        evaluationScore = proportion.multiply(weight).multiply(new BigDecimal(100));
+                        evaluationScore = proportion.multiply(weight);
                     performanceAppraisalItemsDTO.setEvaluationScore(evaluationScore);
                 }
             }
