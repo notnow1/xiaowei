@@ -21,6 +21,13 @@ public interface DeptAnnualBonusOperateMapper{
     */
     DeptAnnualBonusOperateDTO selectDeptAnnualBonusOperateByDeptAnnualBonusOperateId(@Param("deptAnnualBonusOperateId")Long deptAnnualBonusOperateId);
 
+    /**
+     * 根据部门年终奖主表主键id查询部门年终奖经营绩效结果表
+     *
+     * @param deptAnnualBonusId 部门年终奖经营绩效结果表主键
+     * @return 部门年终奖经营绩效结果表
+     */
+    List<DeptAnnualBonusOperateDTO> selectDeptAnnualBonusOperateByDeptAnnualBonusId(@Param("deptAnnualBonusId")Long deptAnnualBonusId);
 
     /**
     * 批量查询部门年终奖经营绩效结果表
@@ -29,6 +36,14 @@ public interface DeptAnnualBonusOperateMapper{
     * @return 部门年终奖经营绩效结果表
     */
     List<DeptAnnualBonusOperateDTO> selectDeptAnnualBonusOperateByDeptAnnualBonusOperateIds(@Param("deptAnnualBonusOperateIds") List<Long> deptAnnualBonusOperateIds);
+
+    /**
+     * 根据部门年终奖主表主键id集合批量查询部门年终奖经营绩效结果表
+     *
+     * @param deptAnnualBonusIds 部门年终奖经营绩效结果表主键集合
+     * @return 部门年终奖经营绩效结果表
+     */
+    List<DeptAnnualBonusOperateDTO> selectDeptAnnualBonusOperateByDeptAnnualBonusIds(@Param("deptAnnualBonusIds") List<Long> deptAnnualBonusIds);
 
     /**
     * 查询部门年终奖经营绩效结果表列表

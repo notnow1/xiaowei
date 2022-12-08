@@ -9,6 +9,8 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.DeptAnnualBonus;
+import net.qixiaowei.operate.cloud.api.domain.salary.DeptAnnualBonusFactor;
+import net.qixiaowei.operate.cloud.api.domain.salary.DeptAnnualBonusOperate;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
@@ -41,6 +43,10 @@ import java.util.stream.Collectors;
 public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
     @Autowired
     private DeptAnnualBonusMapper deptAnnualBonusMapper;
+    @Autowired
+    private DeptAnnualBonusFactorMapper deptAnnualBonusFactorMapper;
+    @Autowired
+    private DeptAnnualBonusOperateMapper deptAnnualBonusOperateMapper;
     @Autowired
     private BonusBudgetMapper bonusBudgetMapper;
     @Autowired
@@ -77,7 +83,22 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      */
     @Override
     public DeptAnnualBonusDTO selectDeptAnnualBonusByDeptAnnualBonusId(Long deptAnnualBonusId) {
-        return deptAnnualBonusMapper.selectDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonusId);
+        DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusMapper.selectDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonusId);
+        if (StringUtils.isNull(deptAnnualBonusDTO)){
+            throw new ServiceException("数据不存在 请刷新重新！");
+        }
+        //部门年终奖经营绩效结果表集合
+        List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList = deptAnnualBonusOperateMapper.selectDeptAnnualBonusOperateByDeptAnnualBonusId(deptAnnualBonusId);
+        //部门年终奖系数表集合
+        List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOS = deptAnnualBonusFactorMapper.selectDeptAnnualBonusFactorByDeptAnnualBonusId(deptAnnualBonusId);
+        //部门可发年终奖集合
+        List<DeptAnnualBonusCanGrantDTO> deptAnnualBonusCanGrantDTOs = new ArrayList<>();
+        //4 部门可发年终奖
+        packDeptAnnualBonusCanGrantDTO(deptAnnualBonusDTO.getAnnualBonusYear(), deptAnnualBonusCanGrantDTOs,deptAnnualBonusFactorDTOS,deptAnnualBonusDTO.getDepartmentAnnualBonus());
+        //部门年终奖经营绩效结果表集合
+        deptAnnualBonusDTO.setDeptAnnualBonusOperateDTOs(deptAnnualBonusOperateDTOList);
+        deptAnnualBonusDTO.setDeptAnnualBonusFactorDTOs(deptAnnualBonusFactorDTOS);
+        return deptAnnualBonusDTO;
     }
 
     /**
@@ -101,14 +122,73 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      */
     @Override
     public DeptAnnualBonusDTO insertDeptAnnualBonus(DeptAnnualBonusDTO deptAnnualBonusDTO) {
+        //部门年终奖系数表集合
+        List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs = deptAnnualBonusDTO.getDeptAnnualBonusFactorDTOs();
+        //新增部门年终奖系数表集合
+        List<DeptAnnualBonusFactor> deptAnnualBonusFactorList = new ArrayList<>();
+        //部门年终奖经营绩效结果表集合
+        List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOs = deptAnnualBonusDTO.getDeptAnnualBonusOperateDTOs();
+        //新增部门年终奖经营绩效结果表集合
+        List<DeptAnnualBonusOperate> deptAnnualBonusOperateList = new ArrayList<>();
+
         DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();
         BeanUtils.copyProperties(deptAnnualBonusDTO, deptAnnualBonus);
         deptAnnualBonus.setCreateBy(SecurityUtils.getUserId());
         deptAnnualBonus.setCreateTime(DateUtils.getNowDate());
         deptAnnualBonus.setUpdateTime(DateUtils.getNowDate());
         deptAnnualBonus.setUpdateBy(SecurityUtils.getUserId());
+        deptAnnualBonus.setStatus(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         deptAnnualBonus.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        deptAnnualBonusMapper.insertDeptAnnualBonus(deptAnnualBonus);
+        try {
+            deptAnnualBonusMapper.insertDeptAnnualBonus(deptAnnualBonus);
+        } catch (Exception e) {
+            throw new ServiceException("新增部门年终奖失败");
+        }
+
+        if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOs)){
+            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
+                DeptAnnualBonusFactor deptAnnualBonusFactor = new DeptAnnualBonusFactor();
+                BeanUtils.copyProperties(deptAnnualBonusOperateDTO,deptAnnualBonusFactor);
+                //部门年终奖ID
+                deptAnnualBonusFactor.setDeptAnnualBonusId(deptAnnualBonus.getDeptAnnualBonusId());
+                deptAnnualBonusFactor.setCreateBy(SecurityUtils.getUserId());
+                deptAnnualBonusFactor.setCreateTime(DateUtils.getNowDate());
+                deptAnnualBonusFactor.setUpdateTime(DateUtils.getNowDate());
+                deptAnnualBonusFactor.setUpdateBy(SecurityUtils.getUserId());
+                deptAnnualBonusFactor.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                deptAnnualBonusFactorList.add(deptAnnualBonusFactor);
+            }
+
+        }
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOs)){
+            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
+                DeptAnnualBonusOperate deptAnnualBonusOperate = new DeptAnnualBonusOperate();
+                BeanUtils.copyProperties(deptAnnualBonusOperateDTO,deptAnnualBonusOperate);
+
+                //部门年终奖ID
+                deptAnnualBonusOperate.setDeptAnnualBonusId(deptAnnualBonus.getDeptAnnualBonusId());
+                deptAnnualBonusOperate.setCreateBy(SecurityUtils.getUserId());
+                deptAnnualBonusOperate.setCreateTime(DateUtils.getNowDate());
+                deptAnnualBonusOperate.setUpdateTime(DateUtils.getNowDate());
+                deptAnnualBonusOperate.setUpdateBy(SecurityUtils.getUserId());
+                deptAnnualBonusOperate.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                deptAnnualBonusOperateList.add(deptAnnualBonusOperate);
+            }
+        }
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateList)){
+            try {
+                deptAnnualBonusOperateMapper.batchDeptAnnualBonusOperate(deptAnnualBonusOperateList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增部门年终奖经营绩效结果表失败");
+            }
+        }
+        if (StringUtils.isNotEmpty(deptAnnualBonusFactorList)){
+            try {
+                deptAnnualBonusFactorMapper.batchDeptAnnualBonusFactor(deptAnnualBonusFactorList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增部门年终奖系数表失败");
+            }
+        }
         deptAnnualBonusDTO.setDeptAnnualBonusId(deptAnnualBonus.getDeptAnnualBonusId());
         return deptAnnualBonusDTO;
     }
@@ -121,11 +201,64 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      */
     @Override
     public int updateDeptAnnualBonus(DeptAnnualBonusDTO deptAnnualBonusDTO) {
+        int i = 0;
+        //部门年终奖系数表集合
+        List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs = deptAnnualBonusDTO.getDeptAnnualBonusFactorDTOs();
+        //修改部门年终奖系数表集合
+        List<DeptAnnualBonusFactor> deptAnnualBonusFactorList = new ArrayList<>();
+        //部门年终奖经营绩效结果表集合
+        List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOs = deptAnnualBonusDTO.getDeptAnnualBonusOperateDTOs();
+        //修改部门年终奖经营绩效结果表集合
+        List<DeptAnnualBonusOperate> deptAnnualBonusOperateList = new ArrayList<>();
+
         DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();
         BeanUtils.copyProperties(deptAnnualBonusDTO, deptAnnualBonus);
         deptAnnualBonus.setUpdateTime(DateUtils.getNowDate());
         deptAnnualBonus.setUpdateBy(SecurityUtils.getUserId());
-        return deptAnnualBonusMapper.updateDeptAnnualBonus(deptAnnualBonus);
+        try {
+            i=deptAnnualBonusMapper.updateDeptAnnualBonus(deptAnnualBonus);
+        } catch (Exception e) {
+            throw new ServiceException("新增部门年终奖失败");
+        }
+
+        if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOs)){
+            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
+                DeptAnnualBonusFactor deptAnnualBonusFactor = new DeptAnnualBonusFactor();
+                BeanUtils.copyProperties(deptAnnualBonusOperateDTO,deptAnnualBonusFactor);
+                //部门年终奖ID
+                deptAnnualBonusFactor.setDeptAnnualBonusId(deptAnnualBonus.getDeptAnnualBonusId());
+                deptAnnualBonusFactor.setUpdateTime(DateUtils.getNowDate());
+                deptAnnualBonusFactor.setUpdateBy(SecurityUtils.getUserId());
+                deptAnnualBonusFactorList.add(deptAnnualBonusFactor);
+            }
+
+        }
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOs)){
+            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
+                DeptAnnualBonusOperate deptAnnualBonusOperate = new DeptAnnualBonusOperate();
+                BeanUtils.copyProperties(deptAnnualBonusOperateDTO,deptAnnualBonusOperate);
+                //部门年终奖ID
+                deptAnnualBonusOperate.setDeptAnnualBonusId(deptAnnualBonus.getDeptAnnualBonusId());
+                deptAnnualBonusOperate.setUpdateTime(DateUtils.getNowDate());
+                deptAnnualBonusOperate.setUpdateBy(SecurityUtils.getUserId());
+                deptAnnualBonusOperateList.add(deptAnnualBonusOperate);
+            }
+        }
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateList)){
+            try {
+                deptAnnualBonusOperateMapper.updateDeptAnnualBonusOperates(deptAnnualBonusOperateList);
+            } catch (Exception e) {
+                throw new ServiceException("批量修改部门年终奖经营绩效结果表");
+            }
+        }
+        if (StringUtils.isNotEmpty(deptAnnualBonusFactorList)){
+            try {
+                deptAnnualBonusFactorMapper.updateDeptAnnualBonusFactors(deptAnnualBonusFactorList);
+            } catch (Exception e) {
+                throw new ServiceException("批量修改部门年终奖系数表");
+            }
+        }
+        return i;
     }
 
     /**
@@ -136,7 +269,39 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      */
     @Override
     public int logicDeleteDeptAnnualBonusByDeptAnnualBonusIds(List<Long> deptAnnualBonusIds) {
-        return deptAnnualBonusMapper.logicDeleteDeptAnnualBonusByDeptAnnualBonusIds(deptAnnualBonusIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        int i = 0;
+        List<DeptAnnualBonusDTO> deptAnnualBonusDTOS = deptAnnualBonusMapper.selectDeptAnnualBonusByDeptAnnualBonusIds(deptAnnualBonusIds);
+        if (StringUtils.isEmpty(deptAnnualBonusDTOS)){
+            throw new ServiceException("数据不存在 请刷新重试！");
+        }
+        try {
+            i = deptAnnualBonusMapper.logicDeleteDeptAnnualBonusByDeptAnnualBonusIds(deptAnnualBonusIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("批量删除部门年终奖表失败");
+        }
+        List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOS = deptAnnualBonusFactorMapper.selectDeptAnnualBonusFactorByDeptAnnualBonusIds(deptAnnualBonusIds);
+        if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOS)){
+            List<Long> collect = deptAnnualBonusFactorDTOS.stream().map(DeptAnnualBonusFactorDTO::getDeptAnnualBonusFactorId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                try {
+                    deptAnnualBonusFactorMapper.logicDeleteDeptAnnualBonusFactorByDeptAnnualBonusFactorIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("批量删除部门年终奖系数表失败");
+                }
+            }
+        }
+        List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList = deptAnnualBonusOperateMapper.selectDeptAnnualBonusOperateByDeptAnnualBonusIds(deptAnnualBonusIds);
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)){
+            List<Long> collect = deptAnnualBonusOperateDTOList.stream().map(DeptAnnualBonusOperateDTO::getDeptAnnualBonusOperateId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                try {
+                    deptAnnualBonusOperateMapper.logicDeleteDeptAnnualBonusOperateByDeptAnnualBonusOperateIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("批量删除部门年终奖经营绩效结果表失败");
+                }
+            }
+        }
+        return i;
     }
 
     /**
@@ -689,11 +854,43 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      */
     @Override
     public int logicDeleteDeptAnnualBonusByDeptAnnualBonusId(DeptAnnualBonusDTO deptAnnualBonusDTO) {
+        int i = 0;
+        DeptAnnualBonusDTO deptAnnualBonusDTO1 = deptAnnualBonusMapper.selectDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonusDTO.getDeptAnnualBonusId());
+        if (StringUtils.isNull(deptAnnualBonusDTO1)){
+            throw new ServiceException("数据不存在 请刷新重试！");
+        }
         DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();
         deptAnnualBonus.setDeptAnnualBonusId(deptAnnualBonusDTO.getDeptAnnualBonusId());
         deptAnnualBonus.setUpdateTime(DateUtils.getNowDate());
         deptAnnualBonus.setUpdateBy(SecurityUtils.getUserId());
-        return deptAnnualBonusMapper.logicDeleteDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonus);
+        try {
+            i = deptAnnualBonusMapper.logicDeleteDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonus);
+        } catch (Exception e) {
+            throw new ServiceException("删除部门年终奖失败");
+        }
+        List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOS = deptAnnualBonusFactorMapper.selectDeptAnnualBonusFactorByDeptAnnualBonusId(deptAnnualBonusDTO.getDeptAnnualBonusId());
+        if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOS)){
+            List<Long> collect = deptAnnualBonusFactorDTOS.stream().map(DeptAnnualBonusFactorDTO::getDeptAnnualBonusFactorId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                try {
+                    deptAnnualBonusFactorMapper.logicDeleteDeptAnnualBonusFactorByDeptAnnualBonusFactorIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                   throw new ServiceException("删除部门年终奖系数失败");
+                }
+            }
+        }
+        List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList = deptAnnualBonusOperateMapper.selectDeptAnnualBonusOperateByDeptAnnualBonusId(deptAnnualBonusDTO.getDeptAnnualBonusId());
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)){
+            List<Long> collect = deptAnnualBonusOperateDTOList.stream().map(DeptAnnualBonusOperateDTO::getDeptAnnualBonusOperateId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                try {
+                    deptAnnualBonusOperateMapper.logicDeleteDeptAnnualBonusOperateByDeptAnnualBonusOperateIds(collect,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                } catch (Exception e) {
+                    throw new ServiceException("删除部门年终奖经营绩效结果表失败");
+                }
+            }
+        }
+        return i;
     }
 
     /**
