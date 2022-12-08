@@ -763,7 +763,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         SalaryPayDTO salaryPayDTOByYearAndMonth = salaryPayMapper.selectSalaryPayByYearAndMonth(employeeId, year, month);
         if (StringUtils.isNotNull(salaryPayDTOByYearAndMonth)) {
             salaryPay.setSalaryPayId(salaryPayDTOByYearAndMonth.getSalaryPayId());
-//                salaryPayMapper.updateSalaryPay(salaryPay);
+            salaryPayMapper.updateSalaryPay(salaryPay);
         } else {
             salaryPay.setPayYear(year);
             salaryPay.setPayMonth(month);
