@@ -505,7 +505,7 @@
         group by level
     </select>
 <!--    查询所有一级部门-->
-    <select id="getAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+    <select id="getParentAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT department_id,
                parent_department_id,
                ancestors,
@@ -602,6 +602,10 @@
         </if>
         and delete_flag = 0
         ) AS ancestors
+    </select>
+<!--    远程查询所有部门-->
+    <select id="getAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
+
     </select>
 
     <!--新增部门表-->

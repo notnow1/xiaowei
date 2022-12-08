@@ -140,6 +140,13 @@ public interface PerformanceAppraisalObjectsMapper {
     List<PerformanceRankFactorDTO> selectPerformanceRankFactorByEmployeeId(@Param("employeeId") Long employeeId);
 
     /**
+     * 查询部门的最近三次绩效和奖金系数
+     * @param departmentId 部门id
+     * @return
+     */
+    List<PerformanceRankFactorDTO> selectPerformanceRankFactorByDeptId(@Param("departmentId") Long  departmentId);
+
+    /**
      * 绩效等级id查询绩效等级
      * @param performanceRankId  绩效等级id
      * @return

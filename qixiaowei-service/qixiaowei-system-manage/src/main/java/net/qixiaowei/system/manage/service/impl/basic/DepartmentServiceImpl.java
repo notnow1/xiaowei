@@ -475,8 +475,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return
      */
     @Override
-    public List<DepartmentDTO> getAll() {
-        return departmentMapper.getAll();
+    public List<DepartmentDTO> getParentAll() {
+        return departmentMapper.getParentAll();
     }
 
     /**
@@ -487,6 +487,15 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public List<DepartmentDTO> selectParentDepartment(Long departmentId) {
         return departmentMapper.selectParentDepartment(departmentId);
+    }
+
+    /**
+     * 远程查询所有部门
+     * @return
+     */
+    @Override
+    public List<DepartmentDTO> getAll() {
+        return departmentMapper.getAll();
     }
 
 

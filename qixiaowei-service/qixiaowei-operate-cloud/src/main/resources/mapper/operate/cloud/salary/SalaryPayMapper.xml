@@ -234,8 +234,8 @@
     <!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）-->
     <select id="selectDeptBonusBudgetPay" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus,
-               sum(sp.salary_amount + sp.allowance_amount + sp.welfare_amount) as salaryPackageBonus,
-               sum(bonus_amount) as amountBonus,
+               sp.salary_amount + sp.allowance_amount + sp.welfare_amount as salaryPackageBonus,
+               bonus_amount as amountBonus,
                sp.salary_pay_id,
                sp.employee_id,
                sp.pay_year,

@@ -493,6 +493,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
+        order by instr(#{indicatorCodes},indicator_code)
     </select>
     <!--查找目标制定指标列表-->
     <select id="selectTargetIndicatorList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">

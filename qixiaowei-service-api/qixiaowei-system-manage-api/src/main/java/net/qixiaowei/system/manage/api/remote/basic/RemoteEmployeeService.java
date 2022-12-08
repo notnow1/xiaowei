@@ -111,4 +111,13 @@ public interface RemoteEmployeeService {
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByParPDRIds")
     R<List<EmployeeDTO>> selectParentDepartmentIdAndOfficialRankSystem(@RequestBody List<Long> departmentIdAll, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 查询在职所有人员
+     *
+     * @param source
+     * @return
+     */
+    @GetMapping(API_PREFIX_EMPLOYEE + "/getAll")
+    R<List<EmployeeDTO>> getAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

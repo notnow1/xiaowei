@@ -216,4 +216,10 @@ public interface IEmployeeService{
      * @return
      */
     List<EmployeeDTO> selectParentDepartmentIdAndOfficialRankSystem(List<Long> departmentIdAll);
+
+    /**
+     * 远程查询在职所有人员
+     * @return
+     */
+    List<EmployeeDTO> getAll();
 }

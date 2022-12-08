@@ -2,7 +2,6 @@ package net.qixiaowei.system.manage.mapper.basic;
 
 import java.util.List;
 
-import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO;
@@ -183,7 +182,7 @@ public interface DepartmentMapper{
      * 远程查询所有一级部门
      * @return
      */
-    List<DepartmentDTO> getAll();
+    List<DepartmentDTO> getParentAll();
 
     /**
      * 远程查询一级部门及子级部门
@@ -191,4 +190,10 @@ public interface DepartmentMapper{
      * @return
      */
     List<DepartmentDTO> selectParentDepartment(@Param("departmentId")Long departmentId);
+
+    /**
+     * 远程查询所有部门
+     * @return
+     */
+    List<DepartmentDTO> getAll();
 }
