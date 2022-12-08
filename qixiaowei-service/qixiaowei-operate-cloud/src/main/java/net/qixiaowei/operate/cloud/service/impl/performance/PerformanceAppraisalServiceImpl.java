@@ -2332,6 +2332,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
             PerformanceAppraisalObjectsDTO objectsDTO = new PerformanceAppraisalObjectsDTO();
+            objectsDTO.setPerformAppraisalObjectsId(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId());
             objectsDTO.setAppraisalResultId(performanceAppraisalObjectsDTO.getAppraisalResultId());
             objectsDTO.setAppraisalResult(performanceAppraisalObjectsDTO.getAppraisalResult());
             performanceAppraisalObjectsDTOList.add(objectsDTO);
