@@ -213,11 +213,15 @@ public class IndicatorServiceImpl implements IIndicatorService {
     public int updateIndicator(IndicatorDTO indicatorDTO) {
         String indicatorCode = indicatorDTO.getIndicatorCode();
         Long indicatorId = indicatorDTO.getIndicatorId();
+        Integer indicatorValueType = indicatorDTO.getIndicatorValueType();
         if (StringUtils.isEmpty(indicatorCode)) {
             throw new ServiceException("指标编码不能为空");
         }
         if (IndicatorCode.contains(indicatorCode)) {
             throw new ServiceException("该指标编码为预置编码不可新增");
+        }
+        if (indicatorValueType != 1 && indicatorValueType != 2) {
+            throw new ServiceException("指标值类型输入不正常");
         }
         IndicatorDTO indicatorById = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
         if (StringUtils.isNull(indicatorById)) {
@@ -391,6 +395,42 @@ public class IndicatorServiceImpl implements IIndicatorService {
         IndicatorDTO indicatorDTO = new IndicatorDTO();
         indicatorDTO.setDrivingFactorFlag(1);
         return indicatorMapper.selectIndicatorList(indicatorDTO);
+    }
+
+    /**
+     * 查询绩效的指标表树状图下拉
+     *
+     * @param indicatorDTO
+     * @return
+     */
+    @Override
+    public List<Tree<Long>> performanceTreeList(IndicatorDTO indicatorDTO) {
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
+        for (IndicatorDTO dto : indicatorDTOS) {
+            if (dto.getIndicatorValueType() == 2) {
+                dto.setIndicatorName(dto.getIndicatorName() + "%");
+            }
+        }
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("indicatorId");
+        treeNodeConfig.setNameKey("indicatorName");
+        treeNodeConfig.setParentIdKey("parentIndicatorId");
+        return TreeUtil.build(indicatorDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getIndicatorId());
+            tree.setParentId(treeNode.getParentIndicatorId());
+            tree.setName(treeNode.getIndicatorName());
+            tree.putExtra("level", treeNode.getLevel());
+            tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
+            tree.putExtra("sort", treeNode.getSort());
+            tree.putExtra("indicatorType", treeNode.getIndicatorType());
+            tree.putExtra("indicatorValueType", treeNode.getIndicatorValueType());
+            tree.putExtra("choiceFlag", treeNode.getChoiceFlag());
+            tree.putExtra("examineDirection", treeNode.getExamineDirection());
+            tree.putExtra("drivingFactorFlag", treeNode.getDrivingFactorFlag());
+            tree.putExtra("indicatorCategoryId", treeNode.getIndicatorCategoryId());
+            tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
+            tree.putExtra("isPreset", treeNode.getIsPreset());
+        });
     }
 
     /**

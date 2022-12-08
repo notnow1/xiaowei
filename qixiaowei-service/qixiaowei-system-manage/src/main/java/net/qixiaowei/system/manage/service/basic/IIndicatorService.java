@@ -179,4 +179,12 @@ public interface IIndicatorService {
      * @return
      */
     List<IndicatorDTO> selectIsDriverList();
+
+    /**
+     * 查询绩效的指标表树状图下拉
+     *
+     * @param indicatorDTO
+     * @return
+     */
+    List<Tree<Long>> performanceTreeList(IndicatorDTO indicatorDTO);
 }

@@ -60,6 +60,15 @@ public class IndicatorController extends BaseController {
     }
 
     /**
+     * 查询绩效的指标表树状图下拉
+     */
+    @RequiresPermissions(value = {"system:manage:indicator:pageList", "system:manage:indicator:treeList"}, logical = Logical.OR)
+    @GetMapping("/performanceAppraisal/treeList")
+    public AjaxResult performanceTreeList(IndicatorDTO indicatorDTO) {
+        return AjaxResult.success(indicatorService.performanceTreeList(indicatorDTO));
+    }
+
+    /**
      * 新增指标表
      */
     @RequiresPermissions("system:manage:indicator:add")
