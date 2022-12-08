@@ -15,6 +15,7 @@ import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeInfoDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.mapper.basic.*;
@@ -198,12 +199,19 @@ public class EmployeeServiceImpl implements IEmployeeService {
         } catch (Exception e) {
             throw new ServiceException("修改员工失败");
         }
+        //查询人员主表
+        EmployeeInfoDTO employeeInfoDTO = employeeInfoMapper.selectEmployeeInfoByEmployeeId(employeeDTO.getEmployeeId());
+        if (StringUtils.isNull(employeeInfoDTO)){
+            throw new ServiceException("人员信息不存在！ 请联系管理员");
+        }
         //员工信息表
         EmployeeInfo employeeInfo = new EmployeeInfo();
         BeanUtils.copyProperties(employeeDTO, employeeInfo);
         employeeInfo.setUpdateTime(DateUtils.getNowDate());
         employeeInfo.setUpdateBy(SecurityUtils.getUserId());
-        employeeInfo.setEmployeeId(employee.getEmployeeId());
+        employeeInfo.setEmployeeInfoId(employeeInfoDTO.getEmployeeInfoId());
+
+
         try {
             employeeInfoMapper.updateEmployeeInfo(employeeInfo);
         } catch (Exception e) {
