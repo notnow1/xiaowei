@@ -853,6 +853,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return 结果
      */
     @Override
+    @Transactional
     public int updatePerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO) {
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
@@ -868,6 +869,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeletePerformanceAppraisalByPerformanceAppraisalIds(List<Long> performanceAppraisalIds) {
         if (StringUtils.isEmpty(performanceAppraisalIds)) {
             throw new ServiceException("请选择要删除的考核任务ID");
@@ -905,6 +907,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return 结果
      */
     @Override
+    @Transactional
     public int deletePerformanceAppraisalByPerformanceAppraisalId(Long performanceAppraisalId) {
         return performanceAppraisalMapper.deletePerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
     }
@@ -916,6 +919,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeletePerformanceAppraisalByPerformanceAppraisalId(PerformanceAppraisalDTO
                                                                                performanceAppraisalDTO) {
         Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
@@ -959,6 +963,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
 
     @Override
+    @Transactional
     public int deletePerformanceAppraisalByPerformanceAppraisalId(PerformanceAppraisalDTO performanceAppraisalDTO) {
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
@@ -973,6 +978,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
 
     @Override
+    @Transactional
     public int deletePerformanceAppraisalByPerformanceAppraisalIds
     (List<PerformanceAppraisalDTO> performanceAppraisalDtos) {
         List<Long> stringList = new ArrayList<>();
@@ -987,7 +993,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param performanceAppraisalDtos 绩效考核表对象
      */
-
+    @Transactional
     public int insertPerformanceAppraisals(List<PerformanceAppraisal> performanceAppraisalDtos) {
         return performanceAppraisalMapper.batchPerformanceAppraisal(performanceAppraisalDtos);
     }
@@ -997,7 +1003,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param performanceAppraisalDtos 绩效考核表对象
      */
-
+    @Transactional
     public int updatePerformanceAppraisals(List<PerformanceAppraisalDTO> performanceAppraisalDtos) {
         List<PerformanceAppraisal> performanceAppraisalList = new ArrayList<>();
 
@@ -1020,6 +1026,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param file                    文件
      */
     @Override
+    @Transactional
     public void importSysOrgPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file) {
         try {
             Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
@@ -1109,6 +1116,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param file                    文件
      */
     @Override
+    @Transactional
     public void importSysPerPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO, MultipartFile file) {
         try {
             Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
@@ -1818,6 +1826,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return int
      */
     @Override
+    @Transactional
     public int archive(Long performanceAppraisalId) {
         PerformanceAppraisalDTO performanceAppraisalByPerformanceAppraisalId = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
         LocalDate filingDate = performanceAppraisalByPerformanceAppraisalId.getFilingDate();
@@ -2079,6 +2088,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return 考核对象DTO
      */
     @Override
+    @Transactional
     public PerformanceAppraisalObjectsDTO updateOrgReviewPerformanceAppraisal(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         Long performAppraisalObjectsId = performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId();
         if (StringUtils.isNull(performAppraisalObjectsId)) {
@@ -2286,6 +2296,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return 考核任务DTO
      */
     @Override
+    @Transactional
     public PerformanceAppraisalDTO updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO) {
         Integer isSubmit = performanceAppraisalDTO.getIsSubmit();
         if (StringUtils.isNull(isSubmit)) {
@@ -2306,25 +2317,14 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             }
         }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = new ArrayList<>();
-        PerformanceAppraisalDTO performanceAppraisal = new PerformanceAppraisalDTO();
         // 更新绩效考核任务
-        performanceAppraisal.setPerformanceAppraisalId(performanceAppraisalId);
         if (isSubmit == 1) {
-            if (performanceAppraisalObjectsDTOList.size() == 1) {
-                appraisalDTO.setAppraisalStatus(3);
-                updatePerformanceAppraisal(appraisalDTO);
-            } else if (performanceAppraisalObjectsDTOList.size() > 1) {
-                int submitSum = 1;
-                for (PerformanceAppraisalObjectsDTO appraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-                    if (appraisalObjectsDTO.getAppraisalObjectStatus() > 4) {
-                        submitSum += 1;
-                    }
-                }
-                if (submitSum == performanceAppraisalObjectsDTOList.size()) {
-                    appraisalDTO.setAppraisalStatus(3);
-                    updatePerformanceAppraisal(appraisalDTO);
-                }
-            }
+            PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
+            performanceAppraisal.setPerformanceAppraisalId(performanceAppraisalId);
+            performanceAppraisal.setAppraisalStatus(4);
+            performanceAppraisal.setUpdateBy(SecurityUtils.getUserId());
+            performanceAppraisal.setUpdateTime(DateUtils.getNowDate());
+            performanceAppraisalMapper.updatePerformanceAppraisal(performanceAppraisal);
         }
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
             PerformanceAppraisalObjectsDTO objectsDTO = new PerformanceAppraisalObjectsDTO();
