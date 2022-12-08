@@ -775,6 +775,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     if (StringUtils.isNotNull(examinationLeaderId)) {
                         EmployeeDTO employeeById = getEmployeeById(examinationLeaderId);
                         performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeById.getEmployeeName());
+                        performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeById.getEmployeeId());
                     }
                     break;
                 }
@@ -2290,11 +2291,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isNull(isSubmit)) {
             throw new ServiceException("请添加是否提交");
         }
-        Long performanceRankId = performanceAppraisalDTO.getPerformanceRankId();
-        if (StringUtils.isNull(performanceRankId)) {
+        Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
+        if (StringUtils.isNull(performanceAppraisalId)) {
             throw new ServiceException("考核任务ID不可以为空");
         }
-        PerformanceAppraisalDTO appraisalDTO = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceRankId);
+        PerformanceAppraisalDTO appraisalDTO = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
         if (StringUtils.isNull(appraisalDTO)) {
             throw new ServiceException("绩效考核任务不可以为空");
         }
@@ -2305,6 +2306,26 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             }
         }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = new ArrayList<>();
+        PerformanceAppraisalDTO performanceAppraisal = new PerformanceAppraisalDTO();
+        // 更新绩效考核任务
+        performanceAppraisal.setPerformanceAppraisalId(performanceAppraisalId);
+        if (isSubmit == 1) {
+            if (performanceAppraisalObjectsDTOList.size() == 1) {
+                appraisalDTO.setAppraisalStatus(3);
+                updatePerformanceAppraisal(appraisalDTO);
+            } else if (performanceAppraisalObjectsDTOList.size() > 1) {
+                int submitSum = 1;
+                for (PerformanceAppraisalObjectsDTO appraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+                    if (appraisalObjectsDTO.getAppraisalObjectStatus() > 4) {
+                        submitSum += 1;
+                    }
+                }
+                if (submitSum == performanceAppraisalObjectsDTOList.size()) {
+                    appraisalDTO.setAppraisalStatus(3);
+                    updatePerformanceAppraisal(appraisalDTO);
+                }
+            }
+        }
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
             PerformanceAppraisalObjectsDTO objectsDTO = new PerformanceAppraisalObjectsDTO();
             objectsDTO.setAppraisalResultId(performanceAppraisalObjectsDTO.getAppraisalResultId());
