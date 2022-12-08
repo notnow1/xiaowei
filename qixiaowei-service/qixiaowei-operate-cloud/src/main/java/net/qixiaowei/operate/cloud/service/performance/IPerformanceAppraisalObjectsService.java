@@ -150,4 +150,12 @@ public interface IPerformanceAppraisalObjectsService {
      * @return
      */
     List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * 评议撤回
+     *
+     * @param performanceAppraisalObjects 考核对象DTO
+     * @return int
+     */
+    int withdrawPerformanceAppraisalObjects(PerformanceAppraisalObjectsDTO performanceAppraisalObjects);
 }

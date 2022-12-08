@@ -290,5 +290,16 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
     public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalDTO performanceAppraisalDTO) {
         return performanceAppraisalObjectsMapper.selectOrgAppraisalDevelopList(performanceAppraisalDTO);
     }
+
+    /**
+     * 评议撤回
+     *
+     * @param performanceAppraisalObjects 考核对象DTO
+     * @return int
+     */
+    @Override
+    public int withdrawPerformanceAppraisalObjects(PerformanceAppraisalObjectsDTO performanceAppraisalObjects) {
+        return performanceAppraisalObjectsMapper.withdrawPerformanceAppraisalObjects(performanceAppraisalObjects);
+    }
 }
 

@@ -50,7 +50,7 @@ public class PerformanceAppraisalDTO {
     /**
      * ID
      */
-        private Long performanceAppraisalId;
+    private Long performanceAppraisalId;
     /**
      * 绩效等级ID
      */
@@ -170,6 +170,11 @@ public class PerformanceAppraisalDTO {
      * 考核比例统计
      */
     private List<Map<String, Object>> performanceAppraisalRankDTOS;
+    /**
+     * 是否提交（1  提交，0  保存）
+     */
+    private Integer isSubmit;
+
 
 }
 

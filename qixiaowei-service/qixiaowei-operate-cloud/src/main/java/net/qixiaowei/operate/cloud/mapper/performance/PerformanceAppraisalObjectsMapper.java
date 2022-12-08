@@ -134,6 +134,7 @@ public interface PerformanceAppraisalObjectsMapper {
 
     /**
      * 查询每个员工的最近三次绩效和奖金系数
+     *
      * @param employeeId 员工id
      * @return
      */
@@ -141,14 +142,16 @@ public interface PerformanceAppraisalObjectsMapper {
 
     /**
      * 查询部门的最近三次绩效和奖金系数
+     *
      * @param departmentId 部门id
      * @return
      */
-    List<PerformanceRankFactorDTO> selectPerformanceRankFactorByDeptId(@Param("departmentId") Long  departmentId);
+    List<PerformanceRankFactorDTO> selectPerformanceRankFactorByDeptId(@Param("departmentId") Long departmentId);
 
     /**
      * 绩效等级id查询绩效等级
-     * @param performanceRankId  绩效等级id
+     *
+     * @param performanceRankId 绩效等级id
      * @return
      */
     List<PerformanceRankFactorDTO> selectPerformanceRankFactorByPerformanceRankId(@Param("performanceRankId") Long performanceRankId);
@@ -160,5 +163,13 @@ public interface PerformanceAppraisalObjectsMapper {
      * @param performanceAppraisalDTO 绩效考核DTO
      * @return
      */
-    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalDTO performanceAppraisalDTO);
+    List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(@Param("performanceAppraisalDTO") PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * 评议撤回
+     *
+     * @param performanceAppraisalObjects 考核对象DTO
+     * @return int
+     */
+    int withdrawPerformanceAppraisalObjects(@Param("performanceAppraisalObjects") PerformanceAppraisalObjectsDTO performanceAppraisalObjects);
 }

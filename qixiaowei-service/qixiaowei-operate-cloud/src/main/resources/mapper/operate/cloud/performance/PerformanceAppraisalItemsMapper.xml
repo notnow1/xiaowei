@@ -316,6 +316,13 @@
             perform_appraisal_items_id=#{item.performAppraisalItemsId}
         </foreach>
     </update>
+    <!--评议撤回-->
+    <update id="withdrawPerformanceAppraisalItems">
+        UPDATE performance_appraisal_items
+        SET actual_value = null
+        WHERE
+        perform_appraisal_items_id = #{appraisalItemsDTO.performAppraisalItemsId}
+    </update>
 </mapper>
 
 

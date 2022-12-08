@@ -124,4 +124,11 @@ public interface IPerformanceAppraisalItemsService {
      * @return
      */
     List<PerformanceAppraisalItemsDTO> selectPerformanceAppraisalItemsByPerformAppraisalObjectId(Long performAppraisalObjectsId);
+
+    /**
+     * 评议撤回
+     * @param appraisalItemsDTO 评议指标DTO
+     * @return int
+     */
+    int withdrawPerformanceAppraisalItems(PerformanceAppraisalItemsDTO appraisalItemsDTO);
 }

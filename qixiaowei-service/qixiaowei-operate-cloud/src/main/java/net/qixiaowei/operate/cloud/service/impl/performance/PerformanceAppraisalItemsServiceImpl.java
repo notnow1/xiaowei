@@ -243,5 +243,15 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
     public List<PerformanceAppraisalItemsDTO> selectPerformanceAppraisalItemsByPerformAppraisalObjectId(Long performAppraisalObjectsId) {
         return performanceAppraisalItemsMapper.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performAppraisalObjectsId);
     }
+
+    /**
+     * 评议撤回
+     * @param appraisalItemsDTO 评议指标DTO
+     * @return int
+     */
+    @Override
+    public int withdrawPerformanceAppraisalItems(PerformanceAppraisalItemsDTO appraisalItemsDTO) {
+        return performanceAppraisalItemsMapper.withdrawPerformanceAppraisalItems(appraisalItemsDTO);
+    }
 }
 

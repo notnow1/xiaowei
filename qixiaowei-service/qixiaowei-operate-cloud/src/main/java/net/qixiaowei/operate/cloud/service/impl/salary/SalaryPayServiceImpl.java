@@ -595,6 +595,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         Set<String> employeeCodes = new HashSet<>();
         Map<String, String> employeeMap = new HashMap<>();
         List<String> dateList = new ArrayList<>();
+        List<String> employeeCodeList = new ArrayList<>();
         List<String> salaryList = new ArrayList<>();
         for (Map<Integer, String> map : list) {
             String salary = map.get(0) + map.get(2);
@@ -606,6 +607,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 throw new ServiceException("员工编码为空 请输入员工编码");
             }
             employeeCodes.add(map.get(0));// 员工编码
+            employeeCodeList.add(map.get(0));// 员工编码
             if (StringUtils.isNull(map.get(1))) {
                 throw new ServiceException("员工姓名为空 请输入员工姓名");
             }
@@ -696,7 +698,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             }
             // 赋值
             List<SalaryPayDetailsDTO> salaryPayDetailsDTOBefore = getSalaryPayDetailsDTOBeforeList
-                    (new ArrayList<>(employeeCodes), monthList, yearList, employeeDTOS, j, salaryPay, salaryAmount, allowanceAmount,
+                    (employeeCodeList, monthList, yearList, employeeDTOS, j, salaryPay, salaryAmount, allowanceAmount,
                             welfareAmount, bonusAmount, withholdRemitTax, otherDeductions, salaryPayDetailsDTOAfter);
             operateSalaryPayDetail(salaryPayDetailsDTOAfter, salaryPayDetailsDTOBefore);
 
