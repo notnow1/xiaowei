@@ -185,7 +185,6 @@
         pa.cycle_type,
         pa.cycle_number,
         pa.appraisal_status,
-        pas.appraisal_object_name,
         pao.appraisal_principal_name
         FROM
         performance_appraisal_objects pao
@@ -214,16 +213,20 @@
             and pao.appraisal_principal_name like concat('%', #{performanceAppraisalObjectsDTO.appraisalPrincipalName},
             '%')
         </if>
-        AND pao.appraisal_object_status IN
-        <foreach collection="performanceAppraisalObjectsDTO.appraisalObjectStatusList" item="item" index="index"
-                 separator="," open="(" close=")">
-            #{item}
-        </foreach>
-        AND pao.performance_appraisal_id IN
-        <foreach collection="performanceAppraisalObjectsDTO.performanceAppraisalIds" item="item" index="index"
-                 separator="," open="(" close=")">
-            #{item}
-        </foreach>
+        <if test="performanceAppraisalObjectsDTO.appraisalObjectStatusList != null and performanceAppraisalObjectsDTO.appraisalObjectStatusList.size()>0">
+            AND pao.appraisal_object_status IN
+            <foreach collection="performanceAppraisalObjectsDTO.appraisalObjectStatusList" item="item" index="index"
+                     separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.performanceAppraisalIds != null and performanceAppraisalObjectsDTO.performanceAppraisalIds.size()>0">
+            AND pao.performance_appraisal_id IN
+            <foreach collection="performanceAppraisalObjectsDTO.performanceAppraisalIds" item="item" index="index"
+                     separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         ORDER BY
         pao.evaluation_score,
         pao.sort
@@ -250,6 +253,14 @@
         pa.cycle_number,
         pa.appraisal_status,
         pas.appraisal_object_name,
+        pas.appraisal_object_code,
+        pas.department_id,
+        pas.department_name,
+        pas.post_id,
+        pas.post_name,
+        pas.official_rank_system_id,
+        pas.official_rank,
+        pas.official_rank_name,
         pao.appraisal_principal_name
         FROM
         performance_appraisal_objects pao

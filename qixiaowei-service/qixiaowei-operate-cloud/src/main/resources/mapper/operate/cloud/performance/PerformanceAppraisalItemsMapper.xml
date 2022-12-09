@@ -86,7 +86,22 @@
     <select id="selectPerformanceAppraisalItemsByPerformAppraisalObjectId"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO">
         SELECT
-        perform_appraisal_items_id,perform_appraisal_objects_id,indicator_id,indicator_name,indicator_value_type,examine_direction,challenge_value,target_value,guaranteed_value,actual_value,weight,delete_flag,create_by,create_time,update_by,update_time
+        perform_appraisal_items_id,
+        perform_appraisal_objects_id,
+        indicator_id,
+        indicator_name,
+        indicator_value_type,
+        examine_direction,
+        challenge_value,
+        target_value,
+        guaranteed_value,
+        actual_value,
+        weight,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM performance_appraisal_items
         WHERE perform_appraisal_objects_id = #{performAppraisalObjectsId}
     </select>
