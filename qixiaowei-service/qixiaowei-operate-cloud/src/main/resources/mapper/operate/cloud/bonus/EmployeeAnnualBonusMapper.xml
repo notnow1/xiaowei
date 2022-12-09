@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.EmployeeAnnualBonusMapper">
     <!--    查询个人年终奖表-->
     <select id="selectEmployeeAnnualBonusByEmployeeAnnualBonusId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO">
         SELECT employee_annual_bonus_id,
                annual_bonus_year,
                department_id,
@@ -31,7 +31,7 @@
 
     <!--    批量查询个人年终奖表-->
     <select id="selectEmployeeAnnualBonusByEmployeeAnnualBonusIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO">
         SELECT
         employee_annual_bonus_id, annual_bonus_year, department_id, department_name, apply_department_id, apply_department_name, apply_employee_id, apply_employee_name, distribute_bonus_amount, comment_flag, comment_step, comment_employee_id, comment_employee_name, comment_date, status, delete_flag, create_by, create_time, update_by, update_time
         FROM employee_annual_bonus
@@ -45,7 +45,7 @@
     </select>
 
     <!--    查询个人年终奖表列表-->
-    <select id="selectEmployeeAnnualBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO">
+    <select id="selectEmployeeAnnualBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO">
         SELECT
         employee_annual_bonus_id, annual_bonus_year, department_id, department_name, apply_department_id, apply_department_name, apply_employee_id, apply_employee_name, distribute_bonus_amount, comment_flag, comment_step, comment_employee_id, comment_employee_name, comment_date, status, delete_flag, create_by, create_time, update_by, update_time
         FROM employee_annual_bonus
@@ -113,7 +113,7 @@
     </select>
 <!--    根据个人年终奖表年份查询个人年终奖表-->
     <select id="selectEmployeeAnnualBonusByAnnualBonusYear"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO">
         SELECT employee_annual_bonus_id,
                annual_bonus_year,
                department_id,

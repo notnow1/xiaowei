@@ -295,7 +295,7 @@
     </select>
     <!--    个人年终奖最近三年的薪酬情况-->
     <select id="selectSalaryPayCondition"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO">
         SELECT sp.employee_id,
         sp.pay_year,
         sp.pay_month,

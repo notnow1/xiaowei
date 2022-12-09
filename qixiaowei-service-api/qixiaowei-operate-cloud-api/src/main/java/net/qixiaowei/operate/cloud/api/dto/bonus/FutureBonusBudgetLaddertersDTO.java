@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.api.dto.salary;
+package net.qixiaowei.operate.cloud.api.dto.bonus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

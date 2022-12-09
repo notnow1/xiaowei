@@ -1,6 +1,6 @@
 package net.qixiaowei.operate.cloud.service.bonus;
 
-import net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO;
 
 import java.util.List;
 

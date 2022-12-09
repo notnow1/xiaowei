@@ -1,9 +1,9 @@
-package net.qixiaowei.operate.cloud.api.dto.salary;
+package net.qixiaowei.operate.cloud.api.dto.bonus;
 
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+
 import java.math.BigDecimal;
 import java.util.List;
 import javax.validation.groups.Default;

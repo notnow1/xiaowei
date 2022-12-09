@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.EmpAnnualBonusSnapshotMapper">
     <!--    查询个人年终奖发放快照信息表-->
     <select id="selectEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO">
         SELECT
         emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_snapshot
@@ -13,7 +13,7 @@
 
     <!--    批量查询个人年终奖发放快照信息表-->
     <select id="selectEmpAnnualBonusSnapshotByEmpAnnualBonusSnapshotIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO">
         SELECT
         emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_snapshot
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询个人年终奖发放快照信息表列表-->
-    <select id="selectEmpAnnualBonusSnapshotList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+    <select id="selectEmpAnnualBonusSnapshotList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO">
         SELECT
         emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_snapshot
@@ -104,7 +104,7 @@
     </select>
 <!--    根据个人年终奖主表id查询快照信息表-->
     <select id="selectEmpAnnualBonusSnapshotByEmployeeAnnualBonusId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO">
         SELECT
             emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_snapshot
@@ -113,7 +113,7 @@
     </select>
 <!--    根据个人年终奖主表id集合批量查询个人年终奖发放快照信息表-->
     <select id="selectEmpAnnualBonusSnapshotByEmployeeAnnualBonusIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO">
         SELECT
         emp_annual_bonus_snapshot_id, employee_annual_bonus_id, emp_annual_bonus_objects_id, employee_name, employee_code, department_name, post_name, official_rank_name, seniority, employee_basic_wage, emolument_before_one, bonus_before_one, bonus_before_two, last_performance_resulted, bonus_percentage_one, bonus_percentage_two, reference_value_one, reference_value_two, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_snapshot

@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.DeptAnnualBonusFactorMapper">
     <!--    查询部门年终奖系数表-->
     <select id="selectDeptAnnualBonusFactorByDeptAnnualBonusFactorId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusFactorDTO">
         SELECT
         dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_factor
@@ -13,7 +13,7 @@
 
     <!--    批量查询部门年终奖系数表-->
     <select id="selectDeptAnnualBonusFactorByDeptAnnualBonusFactorIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusFactorDTO">
         SELECT
         dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_factor
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询部门年终奖系数表列表-->
-    <select id="selectDeptAnnualBonusFactorList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+    <select id="selectDeptAnnualBonusFactorList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusFactorDTO">
         SELECT
         dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_factor
@@ -86,7 +86,7 @@
     </select>
 <!--    根据部门年终奖主表主键id查询部门年终奖系数表-->
     <select id="selectDeptAnnualBonusFactorByDeptAnnualBonusId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusFactorDTO">
         SELECT
             dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_factor
@@ -95,7 +95,7 @@
     </select>
 <!--    根据部门年终奖主表主键id集合批量查询部门年终奖系数表-->
     <select id="selectDeptAnnualBonusFactorByDeptAnnualBonusIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusFactorDTO">
         SELECT
         dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_factor

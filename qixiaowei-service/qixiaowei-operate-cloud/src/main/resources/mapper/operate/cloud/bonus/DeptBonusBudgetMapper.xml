@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.DeptBonusBudgetMapper">
     <!--    查询部门奖金包预算表-->
     <select id="selectDeptBonusBudgetByDeptBonusBudgetId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO">
         SELECT db.amount_bonus_budget,
                dbb.dept_bonus_budget_id,
                dbb.budget_year,
@@ -23,7 +23,7 @@
 
     <!--    批量查询部门奖金包预算表-->
     <select id="selectDeptBonusBudgetByDeptBonusBudgetIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO">
         SELECT
         dept_bonus_budget_id, budget_year, strategy_award_percentage, delete_flag, create_by, create_time, update_by,
         update_time
@@ -38,7 +38,7 @@
     </select>
 
     <!--    查询部门奖金包预算表列表-->
-    <select id="selectDeptBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+    <select id="selectDeptBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO">
         SELECT
         IFNULL(bb.amount_bonus_budget * dbb.strategy_award_percentage,0) as strategyAwardAmount,
         bb.amount_bonus_budget,
@@ -90,7 +90,7 @@
     </select>
     <!--    返回部门奖金预算最大年份-->
     <select id="queryDeptBonusBudgetYear"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO">
         SELECT
         <if test="deptBonusBudget.budgetYear == null">
         max(budget_year) as budget_year
@@ -106,7 +106,7 @@
     </select>
 <!--    根据年份查询部门奖金包预算表-->
     <select id="selectDeptBonusBudgetBybudgetYear"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO">
         SELECT dbb.dept_bonus_budget_id,
                dbb.budget_year,
                dbb.strategy_award_percentage,

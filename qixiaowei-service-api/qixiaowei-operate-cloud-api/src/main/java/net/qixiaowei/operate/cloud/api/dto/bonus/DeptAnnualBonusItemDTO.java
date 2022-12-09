@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.api.dto.salary;
+package net.qixiaowei.operate.cloud.api.dto.bonus;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

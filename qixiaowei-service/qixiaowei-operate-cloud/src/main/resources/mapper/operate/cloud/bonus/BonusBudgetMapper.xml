@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.BonusBudgetMapper">
     <!--    查询奖金预算表-->
     <select id="selectBonusBudgetByBonusBudgetId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO">
         SELECT
         bonus_budget_id, budget_year, amount_bonus_budget, bonus_before_one, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget
@@ -13,7 +13,7 @@
 
     <!--    批量查询奖金预算表-->
     <select id="selectBonusBudgetByBonusBudgetIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO">
         SELECT
         bonus_budget_id, budget_year, amount_bonus_budget, bonus_before_one, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询奖金预算表列表-->
-    <select id="selectBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO">
+    <select id="selectBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO">
         SELECT
         bonus_budget_id, budget_year, amount_bonus_budget, bonus_before_one, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget
@@ -71,7 +71,7 @@
     </select>
 <!--    根据年份查询奖金预算表-->
     <select id="selectBonusBudgetByBudgetYear"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO">
         SELECT
             bonus_budget_id, budget_year, amount_bonus_budget, bonus_before_one, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget
@@ -80,7 +80,7 @@
     </select>
 <!--    查询总奖金预算赋值部门年终奖经营绩效结果-->
     <select id="selectDeptAnnualBonusOperate"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusOperateDTO">
         SELECT
             DISTINCT
             bb.amount_bonus_budget ,
