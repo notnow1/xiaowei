@@ -7,6 +7,7 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.validation.annotation.Validated;
 
 import javax.servlet.http.HttpServletResponse;
@@ -47,7 +48,7 @@ public interface IEmployeeService{
      * @param employeeDTO
      * @return
      */
-    List<EmployeeDTO> selectDropEmployeeList(EmployeeDTO employeeDTO);
+    List<EmployeeDTO> selectDropEmployeeList(@Param("employee") EmployeeDTO employeeDTO);
     /**
      * 根据code查询员工表列表
      *
