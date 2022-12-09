@@ -567,7 +567,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             //绩效
             List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByEmployeeId(empAnnualBonusSnapshotDTO.getEmployeeId());
             if (StringUtils.isNotEmpty(performanceRankFactorDTOS)) {
-                PerformanceRankFactorDTO performanceRankFactorDTO = performanceRankFactorDTOS.get(1);
+                PerformanceRankFactorDTO performanceRankFactorDTO = performanceRankFactorDTOS.get(0);
                 Long performanceRankId = performanceRankFactorDTO.getPerformanceRankId();
                 //绩效名称
                 empAnnualBonusSnapshotDTO.setPerformanceRank(performanceRankFactorDTO.getPerformanceRankName());

@@ -718,7 +718,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         //绩效
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByDeptId(datum.getDepartmentId());
         if (StringUtils.isNotEmpty(performanceRankFactorDTOS)) {
-            PerformanceRankFactorDTO performanceRankFactorDTO = performanceRankFactorDTOS.get(1);
+            PerformanceRankFactorDTO performanceRankFactorDTO = performanceRankFactorDTOS.get(0);
             Long performanceRankId = performanceRankFactorDTO.getPerformanceRankId();
             //绩效名称
             deptAnnualBonusFactorDTO.setPerformanceRank(performanceRankFactorDTO.getPerformanceRankName());
