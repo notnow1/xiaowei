@@ -158,9 +158,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isEmpty(indicatorCode)) {
             throw new ServiceException("指标编码不能为空");
         }
-        if (IndicatorCode.contains(indicatorCode)) {
-            throw new ServiceException("该指标编码为预置编码不可新增");
-        }
         IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             throw new ServiceException("指标编码重复");
@@ -216,9 +213,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
         Integer indicatorValueType = indicatorDTO.getIndicatorValueType();
         if (StringUtils.isEmpty(indicatorCode)) {
             throw new ServiceException("指标编码不能为空");
-        }
-        if (IndicatorCode.contains(indicatorCode)) {
-            throw new ServiceException("该指标编码为预置编码不可新增");
         }
         if (indicatorValueType != 1 && indicatorValueType != 2) {
             throw new ServiceException("指标值类型输入不正常");
