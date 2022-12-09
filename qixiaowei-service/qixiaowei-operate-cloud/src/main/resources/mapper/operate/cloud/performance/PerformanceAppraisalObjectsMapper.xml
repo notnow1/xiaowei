@@ -117,7 +117,7 @@
         AND pas.delete_flag=0
         WHERE pao.delete_flag=0
         AND pao.performance_appraisal_id = #{performanceAppraisalId}
-        ORDER BY pao.evaluation_score,pao.sort
+        ORDER BY pao.evaluation_score DESC,pao.sort
     </select>
     <select id="selectPerformanceAppraisalObjectsByIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
@@ -155,7 +155,7 @@
         <foreach collection="appraisalObjectsIds" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        ORDER BY pao.evaluation_score,pao.sort
+        ORDER BY pao.evaluation_score DESC,pao.sort
     </select>
     <select id="selectPerformanceAppraisalObjectsByPerformAppraisalIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
@@ -193,7 +193,7 @@
         <foreach collection="performanceAppraisalId" separator="," open="(" close=")" index="index" item="item">
             #{items}
         </foreach>
-        ORDER BY pao.evaluation_score,pao.sort
+        ORDER BY pao.evaluation_score DESC,pao.sort
     </select>
     <!--    查询每个员工的最近三次绩效和奖金系数-->
     <select id="selectPerformanceRankFactorByEmployeeId"
@@ -251,7 +251,7 @@
         ON pao.perform_appraisal_objects_id = pas.perform_appraisal_objects_id
         AND pas.delete_flag=0
         WHERE pao.delete_flag=0
-        ORDER BY pao.evaluation_score,pao.sort
+        ORDER BY pao.evaluation_score DESC,pao.sort
     </select>
     <!--    绩效等级id查询绩效等级-->
     <select id="selectPerformanceRankFactorByPerformanceRankId"
