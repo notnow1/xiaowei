@@ -27,6 +27,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -121,6 +122,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @return 结果
      */
     @Override
+    @Transactional
     public DeptAnnualBonusDTO insertDeptAnnualBonus(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         DeptAnnualBonusDTO deptAnnualBonusDTO1 = deptAnnualBonusMapper.selectDeptAnnualBonusByAnnualBonusYearAdd(deptAnnualBonusDTO.getAnnualBonusYear());
         if (StringUtils.isNotNull(deptAnnualBonusDTO1)) {
@@ -150,9 +152,9 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         }
 
         if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOs)) {
-            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
+            for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOs) {
                 DeptAnnualBonusFactor deptAnnualBonusFactor = new DeptAnnualBonusFactor();
-                BeanUtils.copyProperties(deptAnnualBonusOperateDTO, deptAnnualBonusFactor);
+                BeanUtils.copyProperties(deptAnnualBonusFactorDTO, deptAnnualBonusFactor);
                 //部门年终奖ID
                 deptAnnualBonusFactor.setDeptAnnualBonusId(deptAnnualBonus.getDeptAnnualBonusId());
                 deptAnnualBonusFactor.setCreateBy(SecurityUtils.getUserId());
@@ -204,6 +206,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateDeptAnnualBonus(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         int i = 0;
         //部门年终奖系数表集合
@@ -272,6 +275,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDeptAnnualBonusByDeptAnnualBonusIds(List<Long> deptAnnualBonusIds) {
         int i = 0;
         List<DeptAnnualBonusDTO> deptAnnualBonusDTOS = deptAnnualBonusMapper.selectDeptAnnualBonusByDeptAnnualBonusIds(deptAnnualBonusIds);
@@ -370,6 +374,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         deptAnnualBonusDTO.setDeptAnnualBonusOperateDTOs(deptAnnualBonusOperateDTOs);
         deptAnnualBonusDTO.setDeptAnnualBonusFactorDTOs(deptAnnualBonusFactorDTOs);
         deptAnnualBonusDTO.setDeptAnnualBonusCanGrantDTOs(deptAnnualBonusCanGrantDTOs);
+        deptAnnualBonusDTO.setAnnualBonusYear(annualBonusYear);
         return deptAnnualBonusDTO;
     }
 
@@ -428,11 +433,11 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             //战略奖比例
                             BigDecimal strategyAwardPercentage = deptBonusBudgetDetailsDTO.getStrategyAwardPercentage();
 
-                            if (amountBonusBudget.compareTo(new BigDecimal("0")) > 0 && strategyAwardPercentage.compareTo(new BigDecimal("0")) > 0) {
-                                deptAmountBonus = amountBonusBudget.subtract(amountBonusBudget.multiply(strategyAwardPercentage));
+                            if (amountBonusBudget.compareTo(new BigDecimal("0")) != 0 && strategyAwardPercentage.compareTo(new BigDecimal("0")) != 0) {
+                                    deptAmountBonus = amountBonusBudget.subtract(amountBonusBudget.multiply(strategyAwardPercentage.divide(new BigDecimal("100"))));
                             }
-                            if (deptAmountBonus.compareTo(new BigDecimal("0")) > 0 && deptBonusPercentage.compareTo(new BigDecimal("0")) > 0) {
-                                beYearCanGrantBonusBudgetAmount = deptAmountBonus.multiply(deptBonusPercentage);
+                            if (deptAmountBonus.compareTo(new BigDecimal("0")) != 0 && deptBonusPercentage.compareTo(new BigDecimal("0")) != 0) {
+                                beYearCanGrantBonusBudgetAmount = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100")));
                             }
                         }
 
@@ -474,7 +479,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                                             BigDecimal awardTotalAmount = bonusPayBudgetDeptDTO.getAwardTotalAmount();
                                             //奖金比例
                                             BigDecimal bonusPercentage = bonusPayBudgetDeptDTO.getBonusPercentage();
-                                            if (awardTotalAmount.compareTo(new BigDecimal("0")) > 0 && bonusPercentage.compareTo(new BigDecimal("0")) > 0) {
+                                            if (awardTotalAmount.compareTo(new BigDecimal("0")) != 0 && bonusPercentage.compareTo(new BigDecimal("0")) != 0) {
                                                 bonusAmount = bonusAmount.add(awardTotalAmount.multiply(bonusPercentage));
                                             }
                                         }
@@ -505,7 +510,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal beYearCanGrantManageAmount = new BigDecimal("0");
                 //可发经营奖总包-奖金占比
                 BigDecimal beYearCanGrantManagePro = deptAnnualBonusCanGrantDTO.getBeYearCanGrantManagePro();
-                if (departmentAnnualBonus.compareTo(new BigDecimal("0")) > 0 && beYearCanGrantManagePro.compareTo(new BigDecimal("0")) > 0) {
+                if (departmentAnnualBonus.compareTo(new BigDecimal("0")) != 0 && beYearCanGrantManagePro.compareTo(new BigDecimal("0")) != 0) {
                     beYearCanGrantManageAmount = departmentAnnualBonus.multiply(beYearCanGrantManagePro.divide(new BigDecimal("100")));
                 }
                 deptAnnualBonusCanGrantDTO.setBeYearCanGrantManageAmount(beYearCanGrantManageAmount);
@@ -517,7 +522,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal beYearCanGrantBonusBudgetAmount = deptAnnualBonusCanGrantDTO.getBeYearCanGrantBonusBudgetAmount();
                 //可发经营奖总包-金额
                 BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTO.getBeYearCanGrantManageAmount();
-                if (beYearCanGrantBonusBudgetAmount.compareTo(new BigDecimal("0")) > 0 && beYearCanGrantManageAmount.compareTo(new BigDecimal("0")) > 0) {
+                if (beYearCanGrantBonusBudgetAmount.compareTo(new BigDecimal("0")) != 0 && beYearCanGrantManageAmount.compareTo(new BigDecimal("0")) != 0) {
                     distributeBonus = beYearCanGrantBonusBudgetAmount.subtract(beYearCanGrantManageAmount);
                 }
                 deptAnnualBonusCanGrantDTO.setDistributeBonus(distributeBonus);
@@ -537,15 +542,15 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      */
     private void packDeptAnnualBonusOperate(List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOs, int annualBonusYear) {
         //查询总奖金预算赋值经营绩效结果
-        deptAnnualBonusOperateDTOs = bonusBudgetMapper.selectDeptAnnualBonusOperate(annualBonusYear);
-        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOs)) {
-            List<Long> collect = deptAnnualBonusOperateDTOs.stream().map(DeptAnnualBonusOperateDTO::getIndicatorId).collect(Collectors.toList());
+        List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList = bonusBudgetMapper.selectDeptAnnualBonusOperate(annualBonusYear);
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)) {
+            List<Long> collect = deptAnnualBonusOperateDTOList.stream().filter(f -> f.getIndicatorId()!=null).map(DeptAnnualBonusOperateDTO::getIndicatorId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect)) {
                 //远程获取指标名称
                 R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
                 List<IndicatorDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
-                    for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
+                    for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOList) {
                         for (IndicatorDTO datum : data) {
                             if (datum.getIndicatorId() == deptAnnualBonusOperateDTO.getIndicatorId()) {
                                 deptAnnualBonusOperateDTO.setIndicatorName(datum.getIndicatorName());
@@ -555,7 +560,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 }
             }
 
-            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
+            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOList) {
                 //目标超额完成率（%） 公式=（实际值÷目标值）-1。
                 BigDecimal targetExcessPerComp = new BigDecimal("0");
                 //奖金系数（实际）公式=权重×目标超额完成率。
@@ -578,6 +583,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
             }
         }
+        deptAnnualBonusOperateDTOs.addAll(deptAnnualBonusOperateDTOList);
     }
 
     /**
@@ -775,7 +781,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
 
         //战略奖实发 公式 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
         deptAnnualBonusDTO.setStrategyDeveAward(strategyDeveAward);
-        if (endYearSalaryAmountBonus.compareTo(new BigDecimal("0")) > 0 && strategyDeveAward.compareTo(new BigDecimal("0")) > 0) {
+        if (null != endYearSalaryAmountBonus && null != strategyDeveAward ) {
             departmentAnnualBonus = endYearSalaryAmountBonus.subtract(strategyDeveAward);
         }
         //可发经营奖总包 旧：部门年终奖总包 公式=公司年终奖总包-战略奖实发。
@@ -859,6 +865,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteDeptAnnualBonusByDeptAnnualBonusId(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         int i = 0;
         DeptAnnualBonusDTO deptAnnualBonusDTO1 = deptAnnualBonusMapper.selectDeptAnnualBonusByDeptAnnualBonusId(deptAnnualBonusDTO.getDeptAnnualBonusId());

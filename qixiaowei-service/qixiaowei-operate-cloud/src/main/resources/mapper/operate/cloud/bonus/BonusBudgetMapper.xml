@@ -104,7 +104,8 @@
                           on to2.target_outcome_id  = toc.target_outcome_id
                               and toc.indicator_id = bbp.indicator_id
                               and toc.delete_flag =0
-                              and bb.budget_year =#{annualBonusYear}
+                              where bb.budget_year =#{annualBonusYear}
+                                and bb.delete_flag=0
     </select>
     <!--新增奖金预算表-->
     <insert id="insertBonusBudget" useGeneratedKeys="true" keyProperty="bonusBudgetId">
