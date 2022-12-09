@@ -94,11 +94,18 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOS = deptAnnualBonusFactorMapper.selectDeptAnnualBonusFactorByDeptAnnualBonusId(deptAnnualBonusId);
         //部门可发年终奖集合
         List<DeptAnnualBonusCanGrantDTO> deptAnnualBonusCanGrantDTOs = new ArrayList<>();
+        //所有的员工的总薪酬包
+        BigDecimal deptPaymentBonusSum = new BigDecimal("0");
+        //组织权重
+        BigDecimal weight = new BigDecimal("0");
+        //3 部门年终奖系数表数据
+        packDeptAnnualBonusFactor(deptAnnualBonusDTO.getAnnualBonusYear(), deptAnnualBonusFactorDTOS, deptPaymentBonusSum, weight);
         //4 部门可发年终奖
         packDeptAnnualBonusCanGrantDTO(deptAnnualBonusDTO.getAnnualBonusYear(), deptAnnualBonusCanGrantDTOs, deptAnnualBonusFactorDTOS, deptAnnualBonusDTO.getDepartmentAnnualBonus());
         //部门年终奖经营绩效结果表集合
         deptAnnualBonusDTO.setDeptAnnualBonusOperateDTOs(deptAnnualBonusOperateDTOList);
         deptAnnualBonusDTO.setDeptAnnualBonusFactorDTOs(deptAnnualBonusFactorDTOS);
+        deptAnnualBonusDTO.setDeptAnnualBonusCanGrantDTOs(deptAnnualBonusCanGrantDTOs);
         return deptAnnualBonusDTO;
     }
 
@@ -153,6 +160,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
 
         if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOs)) {
             for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOs) {
+
                 DeptAnnualBonusFactor deptAnnualBonusFactor = new DeptAnnualBonusFactor();
                 BeanUtils.copyProperties(deptAnnualBonusFactorDTO, deptAnnualBonusFactor);
                 //部门年终奖ID
@@ -701,8 +709,11 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 }
                 //部门奖金包占比参考值
                 deptAnnualBonusFactorDTO.setDeptBonusPercentageReference(deptBonusPercentageReference);
-                //奖金包占比终值（%)
-                deptAnnualBonusFactorDTO.setBonusPercentage(deptBonusPercentageReference);
+                if (null == deptAnnualBonusFactorDTO.getBonusPercentage()){
+                    //奖金包占比终值（%)
+                    deptAnnualBonusFactorDTO.setBonusPercentage(deptBonusPercentageReference);
+                }
+
             }
 
         }
