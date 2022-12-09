@@ -144,7 +144,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
-     * 查询组织绩效任务考核详情
+     * 查询个人绩效任务考核详情
      *
      * @param performanceAppraisalId 绩效考核表
      * @return List
@@ -370,11 +370,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     private static Integer setRankMap(HashMap<String, BigDecimal> performanceRankMap, PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO, Integer sum) {
         sum += 1;
-        if (!performanceRankMap.containsKey(performanceAppraisalObjectsDTO.getPerformanceRankName())) {
-            performanceRankMap.put(performanceAppraisalObjectsDTO.getPerformanceRankName(), BigDecimal.ONE);
+        if (!performanceRankMap.containsKey(performanceAppraisalObjectsDTO.getAppraisalResult())) {
+            performanceRankMap.put(performanceAppraisalObjectsDTO.getAppraisalResult(), BigDecimal.ONE);
         } else {
-            BigDecimal performanceSum = performanceRankMap.get(performanceAppraisalObjectsDTO.getPerformanceRankName()).add(BigDecimal.ONE);
-            performanceRankMap.put(performanceAppraisalObjectsDTO.getPerformanceRankName(), performanceSum);
+            BigDecimal performanceSum = performanceRankMap.get(performanceAppraisalObjectsDTO.getAppraisalResult()).add(BigDecimal.ONE);
+            performanceRankMap.put(performanceAppraisalObjectsDTO.getAppraisalResult(), performanceSum);
         }
         return sum;
     }
@@ -2442,7 +2442,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             if (sum.equals(0)) {
                 return appraisal;
             }
-            BigDecimal proportion = number.divide(new BigDecimal(sum), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+            BigDecimal proportion = number.divide(new BigDecimal(sum), 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
             map.put("performanceRankName", rank);
             map.put("number", number);
             map.put("proportion", proportion);
