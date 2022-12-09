@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.api.domain.salary;
+package net.qixiaowei.operate.cloud.api.domain.bonus;
 
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import lombok.Data;

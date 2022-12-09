@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.DeptBonusBudgetItemsMapper">
     <!--    查询部门奖金预算项目表-->
     <select id="selectDeptBonusBudgetItemsByDeptBonusBudgetItemsId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetItemsDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetItemsDTO">
         SELECT
             dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_items
@@ -13,7 +13,7 @@
 
     <!--    批量查询部门奖金预算项目表-->
     <select id="selectDeptBonusBudgetItemsByDeptBonusBudgetItemsIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetItemsDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetItemsDTO">
         SELECT
         dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_items
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询部门奖金预算项目表列表-->
-    <select id="selectDeptBonusBudgetItemsList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetItemsDTO">
+    <select id="selectDeptBonusBudgetItemsList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetItemsDTO">
         SELECT
         dept_bonus_budget_items_id, dept_bonus_budget_id, dept_bonus_budget_details_id, salary_item_id, bonus_percentage, sort, delete_flag, create_by, create_time, update_by, update_time
         FROM dept_bonus_budget_items
@@ -68,7 +68,7 @@
     </select>
     <!--    根据部门奖金预算明细表id集合批量查询部门奖金预算项目表-->
     <select id="selectDeptBonusBudgetItemsByDeptBonusBudgetDetailsIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptBonusBudgetItemsDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetItemsDTO">
         SELECT
         si.third_level_item as salaryItemName,
         dbbi.dept_bonus_budget_items_id,

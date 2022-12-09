@@ -9,7 +9,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
 
 import net.qixiaowei.operate.cloud.service.bonus.IEmpAnnualBonusSnapshotService;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;

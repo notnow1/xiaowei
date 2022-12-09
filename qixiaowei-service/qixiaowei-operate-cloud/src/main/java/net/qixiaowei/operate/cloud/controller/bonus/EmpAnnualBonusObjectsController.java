@@ -6,7 +6,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO;
 import net.qixiaowei.operate.cloud.service.bonus.IEmpAnnualBonusObjectsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

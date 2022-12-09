@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.DeptAnnualBonusOperateMapper">
     <!--    查询部门年终奖经营绩效结果表-->
     <select id="selectDeptAnnualBonusOperateByDeptAnnualBonusOperateId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusOperateDTO">
         SELECT
         dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_operate
@@ -13,7 +13,7 @@
 
     <!--    批量查询部门年终奖经营绩效结果表-->
     <select id="selectDeptAnnualBonusOperateByDeptAnnualBonusOperateIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusOperateDTO">
         SELECT
         dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_operate
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询部门年终奖经营绩效结果表列表-->
-    <select id="selectDeptAnnualBonusOperateList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO">
+    <select id="selectDeptAnnualBonusOperateList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusOperateDTO">
         SELECT
         dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_operate
@@ -68,7 +68,7 @@
     </select>
 <!--    根据部门年终奖主表主键id查询部门年终奖经营绩效结果表-->
     <select id="selectDeptAnnualBonusOperateByDeptAnnualBonusId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusOperateDTO">
         SELECT
             dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_operate
@@ -77,7 +77,7 @@
     </select>
 <!--    根据部门年终奖主表主键id集合批量查询部门年终奖经营绩效结果表-->
     <select id="selectDeptAnnualBonusOperateByDeptAnnualBonusIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusOperateDTO">
         SELECT
         dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus_operate

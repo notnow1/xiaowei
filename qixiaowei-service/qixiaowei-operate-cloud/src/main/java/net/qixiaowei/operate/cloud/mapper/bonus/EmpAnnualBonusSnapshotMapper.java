@@ -1,8 +1,8 @@
 package net.qixiaowei.operate.cloud.mapper.bonus;
 
 import java.util.List;
-import net.qixiaowei.operate.cloud.api.domain.salary.EmpAnnualBonusSnapshot;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO;
+import net.qixiaowei.operate.cloud.api.domain.bonus.EmpAnnualBonusSnapshot;
+import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 

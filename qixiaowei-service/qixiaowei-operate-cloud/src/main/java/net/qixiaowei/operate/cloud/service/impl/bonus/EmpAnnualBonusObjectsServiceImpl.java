@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.salary.EmpAnnualBonusObjects;
+import net.qixiaowei.operate.cloud.api.domain.bonus.EmpAnnualBonusObjects;
 
-import net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.EmpAnnualBonusObjectsMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IEmpAnnualBonusObjectsService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;

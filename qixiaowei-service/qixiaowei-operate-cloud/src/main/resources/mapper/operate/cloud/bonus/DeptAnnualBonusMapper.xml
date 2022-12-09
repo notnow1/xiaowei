@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.DeptAnnualBonusMapper">
     <!--    查询部门年终奖表-->
     <select id="selectDeptAnnualBonusByDeptAnnualBonusId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO">
         SELECT
         dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus
@@ -13,7 +13,7 @@
 
     <!--    批量查询部门年终奖表-->
     <select id="selectDeptAnnualBonusByDeptAnnualBonusIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO">
         SELECT
         dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询部门年终奖表列表-->
-    <select id="selectDeptAnnualBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO">
+    <select id="selectDeptAnnualBonusList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO">
         SELECT
         dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus
@@ -65,7 +65,7 @@
     </select>
 <!--    根据年份和一级部门年终奖-->
     <select id="selectDeptAnnualBonusByAnnualBonusYear"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO">
         SELECT dab.department_annual_bonus
         from dept_annual_bonus dab
                  left join dept_annual_bonus_factor dabf
@@ -77,7 +77,7 @@
     </select>
 <!--    根据部门年终奖年份查询部门年终奖表-->
     <select id="selectDeptAnnualBonusByAnnualBonusYearAdd"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO">
         SELECT
             dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus

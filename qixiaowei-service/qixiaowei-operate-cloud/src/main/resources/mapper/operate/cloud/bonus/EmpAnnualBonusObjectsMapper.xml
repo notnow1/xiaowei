@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.EmpAnnualBonusObjectsMapper">
     <!--    查询个人年终奖发放对象表-->
     <select id="selectEmpAnnualBonusObjectsByEmpAnnualBonusObjectsId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO">
         SELECT
         emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
@@ -13,7 +13,7 @@
 
     <!--    批量查询个人年终奖发放对象表-->
     <select id="selectEmpAnnualBonusObjectsByEmpAnnualBonusObjectsIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO">
         SELECT
         emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询个人年终奖发放对象表列表-->
-    <select id="selectEmpAnnualBonusObjectsList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
+    <select id="selectEmpAnnualBonusObjectsList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO">
         SELECT
         emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
@@ -83,7 +83,7 @@
     </select>
     <!--    根据个人年终奖主表id查询个人年终奖发放对象表-->
     <select id="selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO">
         SELECT
             emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
@@ -93,7 +93,7 @@
     </select>
     <!--    根据个人年终奖主表id集合批量查询个人年终奖发放对象表-->
     <select id="selectEmpAnnualBonusObjectsByEmployeeAnnualBonusIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusObjectsDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO">
         SELECT
         emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id, performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value, comment_value, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
@@ -107,7 +107,7 @@
     </select>
 <!--    根据个人年终奖id查询子表集合-->
     <select id="selectEmpAnnualBonusObjectsAndSnapshot"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpAnnualBonusSnapshotDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO">
         SELECT
             eabo.emp_annual_bonus_objects_id,
             eabo.employee_id,

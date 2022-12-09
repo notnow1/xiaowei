@@ -1,12 +1,10 @@
-package net.qixiaowei.operate.cloud.api.dto.salary;
+package net.qixiaowei.operate.cloud.api.dto.bonus;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 /**

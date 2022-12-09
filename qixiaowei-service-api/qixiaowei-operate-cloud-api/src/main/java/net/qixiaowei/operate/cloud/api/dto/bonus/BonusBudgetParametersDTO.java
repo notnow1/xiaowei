@@ -1,4 +1,4 @@
-package net.qixiaowei.operate.cloud.api.dto.salary;
+package net.qixiaowei.operate.cloud.api.dto.bonus;
 
 import java.math.BigDecimal;
 import java.util.Date;

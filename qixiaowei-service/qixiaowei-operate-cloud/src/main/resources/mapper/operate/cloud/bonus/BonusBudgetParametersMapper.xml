@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.bonus.BonusBudgetParametersMapper">
     <!--    查询奖金预算参数表-->
     <select id="selectBonusBudgetParametersByBonusBudgetParametersId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
         SELECT
         bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget_parameters
@@ -13,7 +13,7 @@
 
     <!--    批量查询奖金预算参数表-->
     <select id="selectBonusBudgetParametersByBonusBudgetParametersIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
         SELECT
         bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget_parameters
@@ -27,7 +27,7 @@
     </select>
 
     <!--    查询奖金预算参数表列表-->
-    <select id="selectBonusBudgetParametersList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+    <select id="selectBonusBudgetParametersList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
         SELECT
         bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget_parameters
@@ -92,7 +92,7 @@
     </select>
 <!--    根据总奖金id查询奖金预算参数表-->
     <select id="selectBonusBudgetParametersByBonusBudgetId"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
         SELECT
             bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget_parameters
@@ -101,7 +101,7 @@
     </select>
 <!--    根据总奖金id集合查询奖金预算参数表-->
     <select id="selectBonusBudgetParametersByBonusBudgetIds"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
         SELECT
         bonus_budget_parameters_id, bonus_budget_id, indicator_id, bonus_weight, bonus_proportion_standard, bonus_proportion_variation, challenge_value, target_value, guaranteed_value, target_completion_rate, performance_after_one, performance_after_two, bonus_allowance_after_one, bonus_allowance_after_two, delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget_parameters
@@ -115,7 +115,7 @@
     </select>
 <!--    根据年份查询总奖金包-->
     <select id="selectBonusBudgetParametersByAnnualBonusYear"
-            resultType="net.qixiaowei.operate.cloud.api.dto.salary.BonusBudgetParametersDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
         SELECT bb.bonus_budget_id,
                IFNULL(bb.amount_bonus_budget,0),
                ts.target_value,
