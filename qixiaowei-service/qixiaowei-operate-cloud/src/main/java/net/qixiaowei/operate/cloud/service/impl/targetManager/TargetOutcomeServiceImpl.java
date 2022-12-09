@@ -85,9 +85,9 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     /**
      * 赋值--目标制定那边的目标值和比例
      *
-     * @param targetOutcomeDetailsDTOList
-     * @param targetYear
-     * @param indicatorIds
+     * @param targetOutcomeDetailsDTOList 详情列表
+     * @param targetYear                  目标年度
+     * @param indicatorIds                指标ID集合
      */
     private void setTargetSettingValue(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList, Integer targetYear, List<Long> indicatorIds) {
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
@@ -127,8 +127,8 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     /**
      * 给详情赋指标名称
      *
-     * @param targetOutcomeId
-     * @return
+     * @param targetOutcomeId 结果ID
+     * @return List
      */
     private List<TargetOutcomeDetailsDTO> getTargetOutcomeDetailsDTOList(Long targetOutcomeId) {
         List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeDetailsService.selectTargetOutcomeDetailsByOutcomeId(targetOutcomeId);

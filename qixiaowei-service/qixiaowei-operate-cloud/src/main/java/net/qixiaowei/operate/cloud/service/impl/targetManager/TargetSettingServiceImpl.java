@@ -587,15 +587,20 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         if (StringUtils.isNotEmpty(addTargetSetting)) {
             // 如果查不到结果表，就新增
             TargetOutcomeDTO targetOutcomeDTO = targetOutcomeService.selectTargetOutcomeByTargetYear(targetYear);
-            if (StringUtils.isNull(targetOutcomeDTO)) {
-                TargetOutcomeDTO dto = new TargetOutcomeDTO();
-                dto.setTargetYear(targetYear);
-                targetOutcomeDTO = targetOutcomeService.insertTargetOutcome(dto);
-            }
             //通过年份查找ID，然后通过outComeID和指标ID集合批量新增outDetail
             List<Long> indicatorIds = new ArrayList<>();
             for (TargetSettingDTO targetSettingDTO : addTargetSetting) {
                 indicatorIds.add(targetSettingDTO.getIndicatorId());
+            }
+            if (StringUtils.isNull(targetOutcomeDTO)) {
+                TargetOutcomeDTO dto = new TargetOutcomeDTO();
+                dto.setTargetYear(targetYear);
+                targetOutcomeDTO = targetOutcomeService.insertTargetOutcome(dto);
+                for (Long importantIndicatorId : noEdit) {
+                    if (!indicatorIds.contains(importantIndicatorId)) {
+                        indicatorIds.add(importantIndicatorId);
+                    }
+                }
             }
             targetOutcomeDetailsService.addTargetOutcomeDetailsS(indicatorIds, targetOutcomeDTO.getTargetOutcomeId());
         }
