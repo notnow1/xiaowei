@@ -184,7 +184,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询组织绩效考核表详情-评议
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @GetMapping("/orgReview/info/{performAppraisalObjectsId}")
+    @GetMapping("/perReview/info/{performAppraisalObjectsId}")
     public AjaxResult infoOPerReview(@PathVariable Long performAppraisalObjectsId) {
         return AjaxResult.success(performanceAppraisalService.selectPerAppraisalReviewById(performAppraisalObjectsId));
     }
@@ -296,6 +296,16 @@ public class PerformanceAppraisalController extends BaseController {
     @PostMapping("/orgReview/edit")
     public AjaxResult editOrgReview(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         return AjaxResult.success(performanceAppraisalService.updateOrgReviewPerformanceAppraisal(performanceAppraisalObjectsDTO));
+    }
+
+    /**
+     * 编辑组织绩效考核评议表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
+    @Log(title = "编辑组织绩效考核评议表", businessType = BusinessType.INSERT)
+    @PostMapping("/perReview/edit")
+    public AjaxResult editPerReview(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+        return AjaxResult.success(performanceAppraisalService.updatePerReviewPerformanceAppraisal(performanceAppraisalObjectsDTO));
     }
 
     /**
