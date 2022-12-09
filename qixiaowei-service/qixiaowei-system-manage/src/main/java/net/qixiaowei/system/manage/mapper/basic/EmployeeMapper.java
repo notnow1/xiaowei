@@ -228,6 +228,7 @@ public interface EmployeeMapper {
 
     /**
      * 远程 查询部门下所有人员
+     *
      * @param departmentId
      * @return
      */
@@ -235,6 +236,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据部门id查询员工表列表
+     *
      * @param employeeDepartmentId
      * @return
      */
@@ -242,13 +244,15 @@ public interface EmployeeMapper {
 
     /**
      * 查询员工表列表(下拉框)
+     *
      * @param employee
      * @return
      */
-    List<EmployeeDTO> selectDropEmployeeList(Employee employee);
+    List<EmployeeDTO> selectDropEmployeeList(@Param("employee") Employee employee);
 
     /**
      * 远程 查询一级部门下所有的人员 返回部门id和职级体系id
+     *
      * @param departmentIdAll
      * @return
      */
@@ -256,6 +260,7 @@ public interface EmployeeMapper {
 
     /**
      * 远程查询在职所有人员
+     *
      * @return
      */
     List<EmployeeDTO> getAll();
