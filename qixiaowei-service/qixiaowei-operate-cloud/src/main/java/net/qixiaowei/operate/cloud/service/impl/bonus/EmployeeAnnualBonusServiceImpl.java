@@ -194,6 +194,10 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     @Override
     @Transactional
     public EmployeeAnnualBonusDTO insertEmployeeAnnualBonus(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
+        if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
+            throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
+        }
         //发起评议流程标记:0否;1是
         Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
         //个人年终奖发放快照信息及发放对象表集合
@@ -206,6 +210,9 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         EmployeeAnnualBonus employeeAnnualBonus = new EmployeeAnnualBonus();
         try {
             BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
+            if (commentFlag == 0){
+                employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
+            }
             employeeAnnualBonus.setCreateBy(SecurityUtils.getUserId());
             employeeAnnualBonus.setCreateTime(DateUtils.getNowDate());
             employeeAnnualBonus.setUpdateTime(DateUtils.getNowDate());
@@ -659,6 +666,10 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
             employeeAnnualBonus.setStatus(Constants.THREE);
             if (null == employeeAnnualBonusId) {
+                EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
+                if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
+                    throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
+                }
                 //直接提交 新增数据
                 packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
                 //todo 发送通知
@@ -669,6 +680,10 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         }else {
             if (commentStep == 2){
                 if (null == employeeAnnualBonusId) {
+                    EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
+                    if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
+                        throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
+                    }
                     //直接提交 新增数据
                     packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
 
@@ -716,6 +731,10 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 }
             }else if (commentStep == 1){
                 if (null == employeeAnnualBonusId) {
+                    EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
+                    if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
+                        throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
+                    }
                     //直接提交 新增数据
                     packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
 

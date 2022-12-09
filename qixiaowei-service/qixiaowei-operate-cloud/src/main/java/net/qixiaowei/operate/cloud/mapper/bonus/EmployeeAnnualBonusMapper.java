@@ -21,6 +21,13 @@ public interface EmployeeAnnualBonusMapper{
     */
     EmployeeAnnualBonusDTO selectEmployeeAnnualBonusByEmployeeAnnualBonusId(@Param("employeeAnnualBonusId")Long employeeAnnualBonusId);
 
+    /**
+     * 根据个人年终奖表年份查询个人年终奖表
+     *
+     * @param annualBonusYear 个人年终奖表年份
+     * @return 个人年终奖表
+     */
+    EmployeeAnnualBonusDTO selectEmployeeAnnualBonusByAnnualBonusYear(@Param("annualBonusYear")int annualBonusYear);
 
     /**
     * 批量查询个人年终奖表

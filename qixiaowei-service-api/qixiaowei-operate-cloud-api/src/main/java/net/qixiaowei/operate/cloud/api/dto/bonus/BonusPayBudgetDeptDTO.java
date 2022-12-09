@@ -47,6 +47,10 @@ public class BonusPayBudgetDeptDTO {
     */
     private  Long departmentId;
     /**
+     * 奖项类别,工资条ID
+     */
+    private  Long salaryItemId;
+    /**
     * 奖金比例
     */
     private  BigDecimal bonusPercentage;

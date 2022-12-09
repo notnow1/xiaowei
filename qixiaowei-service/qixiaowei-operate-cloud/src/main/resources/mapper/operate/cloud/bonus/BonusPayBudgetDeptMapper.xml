@@ -66,7 +66,9 @@
         SELECT
         DISTINCT
         baa.award_total_amount,
-        dpbd.bonus_percentage
+        dpbd.bonus_percentage,
+        baa.salary_item_id,
+        dpbd.department_id
         from bonus_pay_budget_dept dpbd
         left join bonus_pay_application baa
         on dpbd.bonus_pay_application_id = baa.bonus_pay_application_id

@@ -75,6 +75,15 @@
           and dab.annual_bonus_year=#{deptAnnualBonus.annualBonusYear}
           and dabf.department_id=#{deptAnnualBonus.departmentId}
     </select>
+<!--    根据部门年终奖年份查询部门年终奖表-->
+    <select id="selectDeptAnnualBonusByAnnualBonusYearAdd"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusDTO">
+        SELECT
+            dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_annual_bonus
+        WHERE  annual_bonus_year=#{annualBonusYear}
+          and delete_flag=0
+    </select>
     <!--新增部门年终奖表-->
     <insert id="insertDeptAnnualBonus" useGeneratedKeys="true" keyProperty="deptAnnualBonusId">
         INSERT INTO dept_annual_bonus (annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time)

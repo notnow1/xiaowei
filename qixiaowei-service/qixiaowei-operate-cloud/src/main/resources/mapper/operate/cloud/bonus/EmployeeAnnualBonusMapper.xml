@@ -111,6 +111,33 @@
                     and update_time=#{employeeAnnualBonus.updateTime}
                 </if>
     </select>
+<!--    根据个人年终奖表年份查询个人年终奖表-->
+    <select id="selectEmployeeAnnualBonusByAnnualBonusYear"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmployeeAnnualBonusDTO">
+        SELECT employee_annual_bonus_id,
+               annual_bonus_year,
+               department_id,
+               department_name,
+               apply_department_id,
+               apply_department_name,
+               apply_employee_id,
+               apply_employee_name,
+               distribute_bonus_amount,
+               comment_flag,
+               comment_step,
+               comment_employee_id,
+               comment_employee_name,
+               comment_date,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee_annual_bonus
+        WHERE annual_bonus_year = #{annualBonusYear}
+          and delete_flag = 0
+    </select>
     <!--新增个人年终奖表-->
     <insert id="insertEmployeeAnnualBonus" useGeneratedKeys="true" keyProperty="employeeAnnualBonusId">
         INSERT INTO employee_annual_bonus (annual_bonus_year,department_id,department_name,apply_department_id,apply_department_name,apply_employee_id,apply_employee_name,distribute_bonus_amount,comment_flag,comment_step,comment_employee_id,comment_employee_name,comment_date,status,delete_flag,create_by,create_time,update_by,update_time)
