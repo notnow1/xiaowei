@@ -434,8 +434,8 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             throw new ServiceException("远程调用失败 请联系管理员");
         }
         // 获取当前的内容
-        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOS = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(officialRankSystemId, officialRank);
-        if (StringUtils.isEmpty(officialRankEmolumentDTOS)) {
+        OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(officialRankSystemId, officialRank);
+        if (StringUtils.isNull(officialRankEmolumentDTO)) {
             for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
                 officialRankDecomposeDTO.setSalaryCap(BigDecimal.ZERO);
                 officialRankDecomposeDTO.setSalaryFloor(BigDecimal.ZERO);
@@ -444,13 +444,12 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             }
             return officialRankDecomposeDTOS;
         }
-        OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentDTOS.get(0);
-        BigDecimal salaryCap = emolumentDTO.getSalaryCap();
-        BigDecimal salaryFloor = emolumentDTO.getSalaryFloor();
-        BigDecimal salaryMedian = emolumentDTO.getSalaryMedian();
-        BigDecimal salaryWide = emolumentDTO.getSalaryCap().subtract(emolumentDTO.getSalaryFloor());
+        BigDecimal salaryCap = officialRankEmolumentDTO.getSalaryCap();
+        BigDecimal salaryFloor = officialRankEmolumentDTO.getSalaryFloor();
+        BigDecimal salaryMedian = officialRankEmolumentDTO.getSalaryMedian();
+        BigDecimal salaryWide = officialRankEmolumentDTO.getSalaryCap().subtract(officialRankEmolumentDTO.getSalaryFloor());
         // 宽幅
-        BigDecimal wide = emolumentDTO.getSalaryCap().subtract(emolumentDTO.getSalaryFloor());
+        BigDecimal wide = officialRankEmolumentDTO.getSalaryCap().subtract(officialRankEmolumentDTO.getSalaryFloor());
         for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
             BigDecimal salaryFactor = officialRankDecomposeDTO.getSalaryFactor();
             officialRankDecomposeDTO.setSalaryCap(salaryCap.multiply(salaryFactor));

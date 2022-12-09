@@ -124,6 +124,10 @@ public class SalaryPayDTO {
      */
     private BigDecimal salaryPackageBonus;
     /**
+     * 增人减人工资包合计 (工资+津贴+福利)
+     */
+    private BigDecimal payAmountSum;
+    /**
      * 总奖金包
      */
     private BigDecimal amountBonus;

@@ -729,6 +729,7 @@
     <!--    根据部门 职级 获取人员信息集合-->
     <select id="selectByBudgeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT
+        ors.official_rank_system_id,
         e.employee_id,
         e.employee_code,
         e.employee_name,

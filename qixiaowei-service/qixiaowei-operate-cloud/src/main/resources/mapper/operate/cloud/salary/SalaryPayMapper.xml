@@ -166,6 +166,7 @@
     <select id="selectSalaryPayByBudggetEmployeeIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
+        ifnull(salary_amount+allowance_amount+welfare_amount,0) as payAmountSum,
         salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
         withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
         FROM salary_pay

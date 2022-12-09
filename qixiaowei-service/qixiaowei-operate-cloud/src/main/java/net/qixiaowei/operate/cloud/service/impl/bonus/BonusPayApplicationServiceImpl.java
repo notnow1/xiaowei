@@ -6,8 +6,11 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayApplication;
+import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,16 +64,26 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     */
     @Override
     public BonusPayApplicationDTO insertBonusPayApplication(BonusPayApplicationDTO bonusPayApplicationDTO){
-    BonusPayApplication bonusPayApplication=new BonusPayApplication();
-    BeanUtils.copyProperties(bonusPayApplicationDTO,bonusPayApplication);
-    bonusPayApplication.setCreateBy(SecurityUtils.getUserId());
-    bonusPayApplication.setCreateTime(DateUtils.getNowDate());
-    bonusPayApplication.setUpdateTime(DateUtils.getNowDate());
-    bonusPayApplication.setUpdateBy(SecurityUtils.getUserId());
-    bonusPayApplication.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-    bonusPayApplicationMapper.insertBonusPayApplication(bonusPayApplication);
-    bonusPayApplicationDTO.setBonusPayApplicationId(bonusPayApplication.getBonusPayApplicationId());
-    return bonusPayApplicationDTO;
+        //奖金发放预算部门比例集合
+        List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOs = bonusPayApplicationDTO.getBonusPayBudgetDeptDTOs();
+        //奖金发放对象表集合
+        List<BonusPayObjects> bonusPayObjectsAlls = new ArrayList<>();
+        //获奖员工集合
+        List<BonusPayObjectsDTO> bonusPayObjectsEmployeeDTOs = bonusPayApplicationDTO.getBonusPayObjectsEmployeeDTOs();
+        //获奖员工集合
+        List<BonusPayObjectsDTO> bonusPayObjectsDeptDTOs = bonusPayApplicationDTO.getBonusPayObjectsDeptDTOs();
+
+
+        BonusPayApplication bonusPayApplication = new BonusPayApplication();
+        BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
+        bonusPayApplication.setCreateBy(SecurityUtils.getUserId());
+        bonusPayApplication.setCreateTime(DateUtils.getNowDate());
+        bonusPayApplication.setUpdateTime(DateUtils.getNowDate());
+        bonusPayApplication.setUpdateBy(SecurityUtils.getUserId());
+        bonusPayApplication.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        bonusPayApplicationMapper.insertBonusPayApplication(bonusPayApplication);
+        bonusPayApplicationDTO.setBonusPayApplicationId(bonusPayApplication.getBonusPayApplicationId());
+        return bonusPayApplicationDTO;
     }
 
     /**

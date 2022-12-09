@@ -121,5 +121,5 @@ public interface OfficialRankEmolumentMapper{
      * @param officialRankSystemId 职级ID
      * @return
      */
-    List<OfficialRankEmolumentDTO> selectOfficialRankEmolumentByRank(@Param("officialRankSystemId") Long officialRankSystemId, @Param("rank") Integer rank);
+    OfficialRankEmolumentDTO selectOfficialRankEmolumentByRank(@Param("officialRankSystemId") Long officialRankSystemId, @Param("rank") Integer rank);
 }

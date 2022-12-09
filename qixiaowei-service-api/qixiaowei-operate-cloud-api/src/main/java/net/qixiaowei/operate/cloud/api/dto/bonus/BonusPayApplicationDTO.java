@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -74,6 +75,18 @@ public class BonusPayApplicationDTO {
     * 奖项事迹描述
     */
     private  String awardDescription;
+    /**
+     * 奖金发放预算部门比例集合
+     */
+    private List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOs;
+    /**
+     * 获奖员工集合
+     */
+    private List<BonusPayObjectsDTO> bonusPayObjectsEmployeeDTOs;
+    /**
+     * 获奖员工集合
+     */
+    private List<BonusPayObjectsDTO> bonusPayObjectsDeptDTOs;
     /**
     * 删除标记:0未删除;1已删除
     */

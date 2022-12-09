@@ -92,6 +92,10 @@ public class EmployeeBudgetDetailsDTO {
      */
     private  BigDecimal agePayAmountLastYear;
     /**
+     * 上年平均工资来源 0:工资表 1:职级确认薪酬
+     */
+    private  int agePayAmountLastYearFlag;
+    /**
      * 增人/减人工资包
      */
     private  BigDecimal increaseAndDecreasePay;
