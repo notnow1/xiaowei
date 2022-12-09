@@ -93,7 +93,6 @@ public class PerformanceAppraisalObjectsDTO {
      * 考核对象名称
      */
     private String appraisalObjectName;
-
     /**
      * 部门ID
      */
@@ -159,6 +158,10 @@ public class PerformanceAppraisalObjectsDTO {
      * 考核对象状态列表
      */
     private List<Integer> appraisalObjectStatusList;
+    /**
+     * 考核任务ID集合
+     */
+    private List<Long> performanceAppraisalIds;
     /**
      * 考核对象状态:1待制定目标;2已制定目标-草稿;3待评议;4已评议-草稿;5待排名
      */

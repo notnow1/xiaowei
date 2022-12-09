@@ -137,5 +137,5 @@ public interface PerformanceAppraisalMapper {
      * @param performAppraisalObjectsId 绩效考核ID
      * @return 绩效考核对象
      */
-    PerformanceAppraisalObjectsDTO selectOrgAppraisalObjectByObjectId(Long performAppraisalObjectsId);
+    PerformanceAppraisalObjectsDTO selectOrgAppraisalObjectByObjectId(@Param("performAppraisalObjectsId") Long performAppraisalObjectsId);
 }
