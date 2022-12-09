@@ -969,32 +969,241 @@
     </select>
 <!--    查询员工表列表(下拉框)-->
     <select id="selectDropEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT employee_id,
-               employee_code,
-               employee_name,
-               employee_gender,
-               identity_type,
-               identity_card,
-               employee_birthday,
-               employee_mobile,
-               employee_email,
-               employee_department_id,
-               employee_post_id,
-               employee_rank,
-               employee_basic_wage,
-               employment_date,
-               departure_date,
-               employment_status,
-               status,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time,
-               tenant_id
-        FROM employee
-        where delete_flag=0
-        and employment_status=1
+        select
+        DISTINCT
+        c.country_name as nationality_name,
+        n.nation_name,
+        p.post_name as employee_post_name,
+        p.post_code,
+        p.official_rank_system_id,
+        d.department_name as employee_department_name,
+        d.department_code,
+        case when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end as
+        employee_rank_name,
+        case
+        when ors.rank_prefix_code is null then p.post_rank
+        when ors.rank_prefix_code is not null
+        then concat(ors.rank_prefix_code, p.post_rank) end as
+        post_rank_name,
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        ei.employee_info_id,
+        ei.marital_status,
+        ei.nationality,
+        ei.nation,
+        ei.resident_city,
+        ei.insured_city,
+        ei.permanent_address,
+        ei.contact_address,
+        ei.contact_address_detail,
+        ei.wechat_code,
+        ei.emergency_contact,
+        ei.emergency_mobile
+        from
+        employee e
+        left join employee_info ei
+        on
+        e.employee_id = ei.employee_id
+        left join post p
+        on p.post_id =e.employee_post_id
+        and p.delete_flag =0
+        left join department d
+        on d.department_id = e.employee_department_id
+        and d.delete_flag =0
+        left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
+        and ors.delete_flag = 0
+        left join country c
+        on REVERSE(SUBSTRING_INDEX(REVERSE(ei.nationality),',',1)) = c.country_id
+        and c.delete_flag =0
+        left join nation n
+        on ei.nation = n.nation_id
+        and n.delete_flag =0
+        <if test="employee.residentCityName != null and employee.residentCityName != ''">
+            left join region r
+            on r.district_code=SUBSTRING_INDEX(ei.resident_city,',',-1)
+            and r.delete_flag =0
+        </if>
+        <if test="employee.insuredCityName != null and employee.insuredCityName != ''">
+            left join region r
+            on r.district_code=SUBSTRING_INDEX(ei.insured_city ,',',-1)
+            and r.delete_flag =0
+        </if>
+        <if test="employee.permanentAddressName != null and employee.permanentAddressName != ''">
+            left join region r
+            on r.district_code=SUBSTRING_INDEX(ei.permanent_address ,',',-1)
+            and r.delete_flag =0
+        </if>
+        <if test="employee.contactAddressName != null and employee.contactAddressName != ''">
+            left join region r
+            on r.district_code=SUBSTRING_INDEX(ei.contact_address ,',',-1)
+            and r.delete_flag =0
+        </if>
+
+        where
+        e.delete_flag = 0
+        and e.employment_status=1
+        <if test="employee.employeeIds  != null and employee.employeeIds.size()!=0">
+            and e.employee_id in
+            <foreach item="item"
+                     collection="employee.employeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.residentCityName != null and employee.residentCityName != ''">
+            and concat(r.province_name, r.city_name, r.district_name) like '%${employee.residentCityName}%'
+        </if>
+        <if test="employee.insuredCityName != null and employee.insuredCityName != ''">
+            and concat(r.province_name, r.city_name, r.district_name) like '%${employee.insuredCityName}%'
+        </if>
+        <if test="employee.permanentAddressName != null and employee.permanentAddressName != ''">
+            and concat(r.province_name, r.city_name, r.district_name) like '%${employee.permanentAddressName}%'
+        </if>
+        <if test="employee.contactAddressName != null and employee.contactAddressName != ''">
+            and concat(r.province_name, r.city_name, r.district_name) like '%${employee.contactAddressName}%'
+        </if>
+        <if test="employee.nationalityName != null and employee.nationalityName != ''">
+            and c.country_name like '%${employee.nationalityName}%'
+        </if>
+        <if test="employee.nationName != null and employee.nationName != ''">
+            and n.nation_name like '%${employee.nationName}%'
+        </if>
+        <if test="employee.employeeDepartmentName != null and employee.employeeDepartmentName != ''">
+            and d.department_name like '%${employee.employeeDepartmentName}%'
+        </if>
+        <if test="employee.employeePostName != null and employee.employeePostName != ''">
+            and p.post_name like '%${employee.employeePostName}%'
+        </if>
+        <if test="employee.postRankName != null and employee.postRankName != ''">
+            and case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank) end
+            like '%${employee.postRankName}%'
+        </if>
+        <if test="employee.employeeRankName != null and employee.employeeRankName != ''">
+            and case when ors.rank_prefix_code is null then e.employee_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
+            like '%${employee.employeeRankName}%'
+        </if>
+        <if test="employee.employeeId != null">
+            and e.employee_id like '%${employee.employeeId}%'
+        </if>
+        <if test="employee.employeeCode != null and employee.employeeCode != ''">
+            and e.employee_code like '%${employee.employeeCode}%'
+        </if>
+        <if test="employee.employeeName != null and employee.employeeName != ''">
+            and e.employee_name like '%${employee.employeeName}%'
+        </if>
+        <if test="employee.employeeGender != null">
+            and e.employee_gender like '%${employee.employeeGender}%'
+        </if>
+        <if test="employee.identityType != null">
+            and e.identity_type like '%${employee.identityType}%'
+        </if>
+        <if test="employee.identityCard != null and employee.identityCard != ''">
+            and e.identity_card like '%${employee.identityCard}%'
+        </if>
+
+        <if test="employee.params.employeeBirthdayStart != null">
+            AND date_format(e.employee_birthday,'%y%m%d') &gt;=
+            date_format(#{employee.params.employeeBirthdayStart},'%y%m%d')
+        </if>
+        <if test="employee.params.employeeBirthdayEnd != null">
+            AND date_format(e.employee_birthday,'%y%m%d') &lt;=
+            date_format(#{employee.params.employeeBirthdayEnd},'%y%m%d')
+        </if>
+        <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
+            and e.employee_mobile like '%${employee.employeeMobile}%'
+        </if>
+        <if test="employee.employeeEmail != null and employee.employeeEmail != ''">
+            and e.employee_email like '%${employee.employeeEmail}%'
+        </if>
+        <if test="employee.employeeDepartmentId != null">
+            and e.employee_department_id =#{employee.employeeDepartmentId}
+        </if>
+        <if test="employee.employeePostId != null">
+            and e.employee_post_id like '%${employee.employeePostId}%'
+        </if>
+        <if test="employee.employeeRank != null">
+            and e.employee_rank like '%${employee.employeeRank}%'
+        </if>
+        <if test="employee.employeeBasicWage != null">
+            and e.employee_basic_wage like '%${employee.employeeBasicWage}%'
+        </if>
+        <if test="employee.params.employmentDateStart != null">
+            AND date_format(e.employment_date,'%y%m%d') &gt;=
+            date_format(#{employee.params.employmentDateStart},'%y%m%d')
+        </if>
+        <if test="employee.params.employmentDateEnd != null">
+            AND date_format(e.employment_date,'%y%m%d') &lt;= date_format(#{employee.params.employmentDateEnd},'%y%m%d')
+        </if>
+        <if test="employee.params.departureDateStart != null">
+            AND date_format(e.departure_date,'%y%m%d') &gt;= date_format(#{employee.params.departureDateStart},'%y%m%d')
+        </if>
+        <if test="employee.params.departureDateEnd != null">
+            AND date_format(e.departure_date,'%y%m%d') &lt;= date_format(#{employee.params.departureDateEnd},'%y%m%d')
+        </if>
+        <if test="employee.employmentStatus != null">
+            and e.employment_status like '%${employee.employmentStatus}%'
+        </if>
+        <if test="employee.status != null">
+            and e.status =#{employee.status}
+        </if>
+        <if test="employee.employeeId != null">
+            and ei.employee_info_id=#{employee.employeeId}
+        </if>
+        <if test="employee.employeeId != null">
+            and ei.employee_id=#{employee.employeeId}
+        </if>
+        <if test="employee.maritalStatus != null">
+            and ei.marital_status=#{employee.maritalStatus}
+        </if>
+        <if test="employee.nationality != null and employee.nationality != ''">
+            and ei.nationality=#{employee.nationality}
+        </if>
+        <if test="employee.nation != null and employee.nation != ''">
+            and ei.nation=#{employee.nation}
+        </if>
+        <if test="employee.residentCity != null and employee.residentCity != ''">
+            and ei.resident_city=#{employee.residentCity}
+        </if>
+        <if test="employee.insuredCity != null and employee.insuredCity != ''">
+            and ei.insured_city=#{employee.insuredCity}
+        </if>
+        <if test="employee.permanentAddress != null and employee.permanentAddress != ''">
+            and ei.permanent_address=#{employee.permanentAddress}
+        </if>
+        <if test="employee.contactAddress != null and employee.contactAddress != ''">
+            and ei.contact_address=#{employee.contactAddress}
+        </if>
+        <if test="employee.contactAddressDetail != null and employee.contactAddressDetail != ''">
+            and ei.contact_address_detail=#{employee.contactAddressDetail}
+        </if>
+        <if test="employee.wechatCode != null and employee.wechatCode != ''">
+            and ei.wechat_code=#{employee.wechatCode}
+        </if>
+        <if test="employee.emergencyContact != null and employee.emergencyContact != ''">
+            and ei.emergency_contact=#{employee.emergencyContact}
+        </if>
+        <if test="employee.emergencyMobile != null and employee.emergencyMobile != ''">
+            and ei.emergency_mobile=#{employee.emergencyMobile}
+        </if>
     </select>
 <!--    远程 查询一级部门下所有的人员 返回部门id和职级体系id-->
     <select id="selectParentDepartmentIdAndOfficialRankSystem"
