@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.message.mapper.message.MessageMapper">
+    <!--    查询消息表-->
+    <select id="selectMessageByMessageId"
+            resultType="net.qixiaowei.message.api.dto.message.MessageDTO">
+        SELECT
+        message_id,business_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time
+        FROM message
+        WHERE message_id=#{messageId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询消息表-->
+    <select id="selectMessageByMessageIds"
+            resultType="net.qixiaowei.message.api.dto.message.MessageDTO">
+        SELECT
+        message_id,business_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time
+        FROM message
+        WHERE message_id in
+        <foreach item="item"
+                 collection="messageIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询消息表列表-->
+    <select id="selectMessageList" resultType="net.qixiaowei.message.api.dto.message.MessageDTO">
+        SELECT
+        message_id,business_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time
+        FROM message
+        WHERE delete_flag=0
+        <if test="message.messageId != null">
+            and message_id=#{message.messageId}
+        </if>
+        <if test="message.businessType != null">
+            and business_type=#{message.businessType}
+        </if>
+        <if test="message.businessSubtype != null">
+            and business_subtype=#{message.businessSubtype}
+        </if>
+        <if test="message.businessId != null">
+            and business_id=#{message.businessId}
+        </if>
+        <if test="message.sendUserId != null">
+            and send_user_id=#{message.sendUserId}
+        </if>
+        <if test="message.messageTitle != null and message.messageTitle != ''">
+            and message_title=#{message.messageTitle}
+        </if>
+        <if test="message.messageContent != null and message.messageContent != ''">
+            and message_content=#{message.messageContent}
+        </if>
+        <if test="message.deleteFlag != null">
+            and delete_flag=#{message.deleteFlag}
+        </if>
+        <if test="message.createBy != null">
+            and create_by=#{message.createBy}
+        </if>
+        <if test="message.createTime != null">
+            and create_time=#{message.createTime}
+        </if>
+        <if test="message.updateBy != null">
+            and update_by=#{message.updateBy}
+        </if>
+        <if test="message.updateTime != null">
+            and update_time=#{message.updateTime}
+        </if>
+    </select>
+    <!--新增消息表-->
+    <insert id="insertMessage" useGeneratedKeys="true" keyProperty="messageId">
+        INSERT INTO message
+        (message_idbusiness_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{message.businessType},#{message.businessSubtype},#{message.businessId},#{message.sendUserId},#{message.messageTitle},#{message.messageContent},#{message.deleteFlag},#{message.createBy},#{message.createTime},#{message.updateBy},#{message.updateTime})
+    </insert>
+    <!--修改消息表-->
+    <update id="updateMessage">
+        UPDATE message
+        SET
+        <if test="message.businessType != null">
+            business_type=#{message.businessType},
+        </if>
+        <if test="message.businessSubtype != null">
+            business_subtype=#{message.businessSubtype},
+        </if>
+        <if test="message.businessId != null">
+            business_id=#{message.businessId},
+        </if>
+        <if test="message.sendUserId != null">
+            send_user_id=#{message.sendUserId},
+        </if>
+        <if test="message.messageTitle != null and message.messageTitle != ''">
+            message_title=#{message.messageTitle},
+        </if>
+        <if test="message.messageContent != null and message.messageContent != ''">
+            message_content=#{message.messageContent},
+        </if>
+        <if test="message.deleteFlag != null">
+            delete_flag=#{message.deleteFlag},
+        </if>
+        <if test="message.createBy != null">
+            create_by=#{message.createBy},
+        </if>
+        <if test="message.createTime != null">
+            create_time=#{message.createTime},
+        </if>
+        <if test="message.updateBy != null">
+            update_by=#{message.updateBy},
+        </if>
+        <if test="message.updateTime != null">
+            update_time=#{message.updateTime}
+        </if>
+        WHERE
+        message_id=#{message.messageId}
+    </update>
+    <!--逻辑删除消息表-->
+    <update id="logicDeleteMessageByMessageId">
+        UPDATE message
+        SET delete_flag= 1,
+        update_by=#{message.updateBy},
+        update_time=#{message.updateTime}
+        WHERE
+        message_id=#{message.messageId}
+    </update>
+    <!--逻辑批量删除消息表-->
+    <update id="logicDeleteMessageByMessageIds">
+        UPDATE message
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        message_id IN
+        <foreach item="item"
+                 collection="messageIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增消息表-->
+    <insert id="batchMessage">
+        INSERT INTO message
+        (message_idbusiness_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="messages"
+                 separator=",">
+            (#{item.businessType},#{item.businessSubtype},#{item.businessId},#{item.sendUserId},#{item.messageTitle},#{item.messageContent},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除消息表-->
+    <delete id="deleteMessageByMessageId">
+        DELETE FROM message
+        WHERE message_id=#{message}
+
+    </delete>
+    <!--物理批量删除消息表-->
+    <delete id="deleteMessageByMessageIds">
+        DELETE FROM message
+        WHERE message_id IN
+        <foreach item="item"
+                 collection="messageIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改消息表-->
+    <update id="updateMessages">
+        update message
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="business_type=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.businessType != null">
+                        when message_id=#{item.messageId} then #{item.businessType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_subtype=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.businessSubtype != null">
+                        when message_id=#{item.messageId} then #{item.businessSubtype}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_id=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.businessId != null">
+                        when message_id=#{item.messageId} then #{item.businessId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="send_user_id=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.sendUserId != null">
+                        when message_id=#{item.messageId} then #{item.sendUserId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="message_title=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.messageTitle != null and item.messageTitle != ''">
+                        when message_id=#{item.messageId} then #{item.messageTitle}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="message_content=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.messageContent != null and item.messageContent != ''">
+                        when message_id=#{item.messageId} then #{item.messageContent}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when message_id=#{item.messageId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when message_id=#{item.messageId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when message_id=#{item.messageId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when message_id=#{item.messageId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="messageList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when message_id=#{item.messageId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="messageList" separator="or" item="item" index="index">
+            message_id=#{item.messageId}
+        </foreach>
+    </update>
+</mapper>
+
+

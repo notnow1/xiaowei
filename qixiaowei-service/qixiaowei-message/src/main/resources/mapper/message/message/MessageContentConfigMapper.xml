@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.message.mapper.message.MessageContentConfigMapper">
+    <!--    查询消息内容配置表-->
+    <select id="selectMessageContentConfigByMessageContentConfigId"
+            resultType="net.qixiaowei.message.api.dto.message.MessageContentConfigDTO">
+        SELECT
+        message_content_config_id,message_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time
+        FROM message_content_config
+        WHERE message_content_config_id=#{messageContentConfigId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询消息内容配置表-->
+    <select id="selectMessageContentConfigByMessageContentConfigIds"
+            resultType="net.qixiaowei.message.api.dto.message.MessageContentConfigDTO">
+        SELECT
+        message_content_config_id,message_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time
+        FROM message_content_config
+        WHERE message_content_config_id in
+        <foreach item="item"
+                 collection="messageContentConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询消息内容配置表列表-->
+    <select id="selectMessageContentConfigList"
+            resultType="net.qixiaowei.message.api.dto.message.MessageContentConfigDTO">
+        SELECT
+        message_content_config_id,message_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time
+        FROM message_content_config
+        WHERE delete_flag=0
+        <if test="messageContentConfig.messageContentConfigId != null">
+            and message_content_config_id=#{messageContentConfig.messageContentConfigId}
+        </if>
+        <if test="messageContentConfig.messageType != null">
+            and message_type=#{messageContentConfig.messageType}
+        </if>
+        <if test="messageContentConfig.businessType != null">
+            and business_type=#{messageContentConfig.businessType}
+        </if>
+        <if test="messageContentConfig.businessSubtype != null">
+            and business_subtype=#{messageContentConfig.businessSubtype}
+        </if>
+        <if test="messageContentConfig.receiveRole != null">
+            and receive_role=#{messageContentConfig.receiveRole}
+        </if>
+        <if test="messageContentConfig.messageTemplate != null and messageContentConfig.messageTemplate != ''">
+            and message_template=#{messageContentConfig.messageTemplate}
+        </if>
+        <if test="messageContentConfig.receiveUser != null and messageContentConfig.receiveUser != ''">
+            and receive_user=#{messageContentConfig.receiveUser}
+        </if>
+        <if test="messageContentConfig.deleteFlag != null">
+            and delete_flag=#{messageContentConfig.deleteFlag}
+        </if>
+        <if test="messageContentConfig.createBy != null">
+            and create_by=#{messageContentConfig.createBy}
+        </if>
+        <if test="messageContentConfig.createTime != null">
+            and create_time=#{messageContentConfig.createTime}
+        </if>
+        <if test="messageContentConfig.updateBy != null">
+            and update_by=#{messageContentConfig.updateBy}
+        </if>
+    </select>
+    <!--新增消息内容配置表-->
+    <insert id="insertMessageContentConfig" useGeneratedKeys="true" keyProperty="messageContentConfigId">
+        INSERT INTO message_content_config
+        (message_content_config_idmessage_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{messageContentConfig.messageType},#{messageContentConfig.businessType},#{messageContentConfig.businessSubtype},#{messageContentConfig.receiveRole},#{messageContentConfig.messageTemplate},#{messageContentConfig.receiveUser},#{messageContentConfig.deleteFlag},#{messageContentConfig.createBy},#{messageContentConfig.createTime},#{messageContentConfig.updateBy},#{messageContentConfig.updateTime})
+    </insert>
+    <!--修改消息内容配置表-->
+    <update id="updateMessageContentConfig">
+        UPDATE message_content_config
+        SET
+        <if test="messageContentConfig.messageType != null">
+            message_type=#{messageContentConfig.messageType},
+        </if>
+        <if test="messageContentConfig.businessType != null">
+            business_type=#{messageContentConfig.businessType},
+        </if>
+        <if test="messageContentConfig.businessSubtype != null">
+            business_subtype=#{messageContentConfig.businessSubtype},
+        </if>
+        <if test="messageContentConfig.receiveRole != null">
+            receive_role=#{messageContentConfig.receiveRole},
+        </if>
+        <if test="messageContentConfig.messageTemplate != null and messageContentConfig.messageTemplate != ''">
+            message_template=#{messageContentConfig.messageTemplate},
+        </if>
+        <if test="messageContentConfig.receiveUser != null and messageContentConfig.receiveUser != ''">
+            receive_user=#{messageContentConfig.receiveUser},
+        </if>
+        <if test="messageContentConfig.deleteFlag != null">
+            delete_flag=#{messageContentConfig.deleteFlag},
+        </if>
+        <if test="messageContentConfig.createBy != null">
+            create_by=#{messageContentConfig.createBy},
+        </if>
+        <if test="messageContentConfig.createTime != null">
+            create_time=#{messageContentConfig.createTime},
+        </if>
+        <if test="messageContentConfig.updateBy != null">
+            update_by=#{messageContentConfig.updateBy},
+        </if>
+        <if test="messageContentConfig.updateTime != null">
+            update_time=#{messageContentConfig.updateTime}
+        </if>
+        WHERE
+        message_content_config_id=#{messageContentConfig.messageContentConfigId}
+    </update>
+    <!--逻辑删除消息内容配置表-->
+    <update id="logicDeleteMessageContentConfigByMessageContentConfigId">
+        UPDATE message_content_config
+        SET delete_flag= 1,
+        update_by=#{messageContentConfig.updateBy},
+        update_time=#{messageContentConfig.updateTime}
+        WHERE
+        message_content_config_id=#{messageContentConfig.messageContentConfigId}
+    </update>
+    <!--逻辑批量删除消息内容配置表-->
+    <update id="logicDeleteMessageContentConfigByMessageContentConfigIds">
+        UPDATE message_content_config
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        message_content_config_id IN
+        <foreach item="item"
+                 collection="messageContentConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增消息内容配置表-->
+    <insert id="batchMessageContentConfig">
+        INSERT INTO message_content_config
+        (message_content_config_idmessage_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="messageContentConfigs"
+                 separator=",">
+            (#{item.messageType},#{item.businessType},#{item.businessSubtype},#{item.receiveRole},#{item.messageTemplate},#{item.receiveUser},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除消息内容配置表-->
+    <delete id="deleteMessageContentConfigByMessageContentConfigId">
+        DELETE FROM message_content_config
+        WHERE message_content_config_id=#{messageContentConfig}
+
+    </delete>
+    <!--物理批量删除消息内容配置表-->
+    <delete id="deleteMessageContentConfigByMessageContentConfigIds">
+        DELETE FROM message_content_config
+        WHERE message_content_config_id IN
+        <foreach item="item"
+                 collection="messageContentConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改消息内容配置表-->
+    <update id="updateMessageContentConfigs">
+        update message_content_config
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="message_type=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.messageType != null">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.messageType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_type=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.businessType != null">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.businessType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_subtype=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.businessSubtype != null">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.businessSubtype}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="receive_role=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.receiveRole != null">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.receiveRole}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="message_template=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.messageTemplate != null and item.messageTemplate != ''">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.messageTemplate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="receive_user=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.receiveUser != null and item.receiveUser != ''">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.receiveUser}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="messageContentConfigList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when message_content_config_id=#{item.messageContentConfigId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="messageContentConfigList" separator="or" item="item" index="index">
+            message_content_config_id=#{item.messageContentConfigId}
+        </foreach>
+    </update>
+</mapper>
+
+

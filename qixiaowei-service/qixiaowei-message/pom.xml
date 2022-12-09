@@ -66,6 +66,11 @@
             <artifactId>qixiaowei-integration-log</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-message-api</artifactId>
+        </dependency>
+
     </dependencies>
 
 

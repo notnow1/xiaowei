@@ -22,13 +22,13 @@ public class TenantConfig {
     /**
      * 租户的主域名
      */
-    @Value("${tenant.mainDomain:'qixiaowei.net'}")
+    @Value("${tenant.mainDomain:qixiaowei.net}")
     private String mainDomain;
 
     /**
      * 已经存在的子域名
      */
-    @Value("${tenant.existedDomains:['file']}")
+    @Value("${tenant.existedDomains:file}")
     private Set<String> existedDomains;
 
 

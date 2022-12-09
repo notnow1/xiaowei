@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.message.mapper.message.MessageReceiveMapper">
+    <!--    查询消息接收表-->
+    <select id="selectMessageReceiveByMessageReceiveId"
+            resultType="net.qixiaowei.message.api.dto.message.MessageReceiveDTO">
+        SELECT
+        mr.message_receive_id,mr.read_time,mr.status,mr.create_time,m.message_title,m.message_content
+        FROM message_receive mr
+        LEFT JOIN message m on m.message_id=mr.message_id and m.delete_flag=0
+        WHERE mr.message_receive_id=#{messageReceiveId}
+        and mr.delete_flag=0
+    </select>
+
+    <!--    批量查询消息接收表-->
+    <select id="selectMessageReceiveByMessageReceiveIds"
+            resultType="net.qixiaowei.message.api.dto.message.MessageReceiveDTO">
+        SELECT
+        message_receive_id,message_id,user_id,read_time,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM message_receive
+        WHERE message_receive_id in
+        <foreach item="item"
+                 collection="messageReceiveIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询消息接收表列表-->
+    <select id="selectMessageReceiveList" resultType="net.qixiaowei.message.api.dto.message.MessageReceiveDTO">
+        SELECT
+        mr.message_receive_id,mr.read_time,mr.status,mr.create_time,m.message_title
+        FROM message_receive mr
+        LEFT JOIN message m on m.message_id=mr.message_id and m.delete_flag=0
+        WHERE mr.delete_flag=0
+        <if test="messageReceive.userId != null">
+            and mr.user_id=#{messageReceive.userId}
+        </if>
+        <if test="messageReceive.status != null">
+            and mr.status=#{messageReceive.status}
+        </if>
+        <if test="messageReceive.params.messageTitle != null and messageReceive.params.messageTitle != ''">
+            and m.message_title LIKE concat('%', #{messageReceive.params.messageTitle}, '%')
+        </if>
+        <if test="messageReceive.createTime != null">
+            and mr.create_time=#{messageReceive.createTime}
+        </if>
+        <if test="messageReceive.params.createTimeStart != null and messageReceive.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(mr.create_time,'%y%m%d') &gt;= date_format(#{mr.params.createTimeStart},'%y%m%d')
+        </if>
+        <if test="messageReceive.params.createTimeStart != null and messageReceive.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(mr.create_time,'%y%m%d') &gt;= date_format(#{mr.params.createTimeStart},'%y%m%d')
+        </if>
+        <if test="messageReceive.params.createTimeEnd != null and messageReceive.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(mr.create_time,'%y%m%d') &lt;= date_format(#{mr.params.createTimeEnd},'%y%m%d')
+        </if>
+        ORDER BY mr.update_time DESC
+    </select>
+
+    <!--    查询用户未读消息接收表列表-->
+    <select id="selectUserUnReadMessageReceiveList"
+            resultType="net.qixiaowei.message.api.dto.message.MessageReceiveDTO">
+        SELECT
+        mr.message_receive_id,mr.read_time,mr.status,mr.create_time
+        FROM message_receive mr
+        WHERE mr.delete_flag=0
+        and mr.user_id=#{userId}
+        and mr.status = 0
+    </select>
+
+    <!--新增消息接收表-->
+    <insert id="insertMessageReceive" useGeneratedKeys="true" keyProperty="messageReceiveId">
+        INSERT INTO message_receive
+        (message_receive_idmessage_id,user_id,read_time,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{messageReceive.messageId},#{messageReceive.userId},#{messageReceive.readTime},#{messageReceive.status},#{messageReceive.deleteFlag},#{messageReceive.createBy},#{messageReceive.createTime},#{messageReceive.updateBy},#{messageReceive.updateTime})
+    </insert>
+    <!--修改消息接收表-->
+    <update id="updateMessageReceive">
+        UPDATE message_receive
+        SET
+        <if test="messageReceive.messageId != null">
+            message_id=#{messageReceive.messageId},
+        </if>
+        <if test="messageReceive.userId != null">
+            user_id=#{messageReceive.userId},
+        </if>
+        <if test="messageReceive.readTime != null">
+            read_time=#{messageReceive.readTime},
+        </if>
+        <if test="messageReceive.status != null">
+            status=#{messageReceive.status},
+        </if>
+        <if test="messageReceive.deleteFlag != null">
+            delete_flag=#{messageReceive.deleteFlag},
+        </if>
+        <if test="messageReceive.createBy != null">
+            create_by=#{messageReceive.createBy},
+        </if>
+        <if test="messageReceive.createTime != null">
+            create_time=#{messageReceive.createTime},
+        </if>
+        <if test="messageReceive.updateBy != null">
+            update_by=#{messageReceive.updateBy},
+        </if>
+        <if test="messageReceive.updateTime != null">
+            update_time=#{messageReceive.updateTime}
+        </if>
+        WHERE
+        message_receive_id=#{messageReceive.messageReceiveId}
+    </update>
+    <!--逻辑删除消息接收表-->
+    <update id="logicDeleteMessageReceiveByMessageReceiveId">
+        UPDATE message_receive
+        SET delete_flag= 1,
+        update_by=#{messageReceive.updateBy},
+        update_time=#{messageReceive.updateTime}
+        WHERE
+        message_receive_id=#{messageReceive.messageReceiveId}
+    </update>
+    <!--逻辑批量删除消息接收表-->
+    <update id="logicDeleteMessageReceiveByMessageReceiveIds">
+        UPDATE message_receive
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        message_receive_id IN
+        <foreach item="item"
+                 collection="messageReceiveIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增消息接收表-->
+    <insert id="batchMessageReceive">
+        INSERT INTO message_receive
+        (message_receive_idmessage_id,user_id,read_time,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="messageReceives"
+                 separator=",">
+            (#{item.messageId},#{item.userId},#{item.readTime},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除消息接收表-->
+    <delete id="deleteMessageReceiveByMessageReceiveId">
+        DELETE FROM message_receive
+        WHERE message_receive_id=#{messageReceive}
+
+    </delete>
+    <!--物理批量删除消息接收表-->
+    <delete id="deleteMessageReceiveByMessageReceiveIds">
+        DELETE FROM message_receive
+        WHERE message_receive_id IN
+        <foreach item="item"
+                 collection="messageReceiveIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改消息接收表-->
+    <update id="updateMessageReceives">
+        update message_receive
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="message_id=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.messageId != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.messageId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="user_id=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.userId != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.userId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="read_time=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.readTime != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.readTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.status != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="messageReceiveList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when message_receive_id=#{item.messageReceiveId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="messageReceiveList" separator="or" item="item" index="index">
+            message_receive_id=#{item.messageReceiveId}
+        </foreach>
+    </update>
+</mapper>
+
+

@@ -271,6 +271,13 @@
                 <version>${qixiaowei.version}</version>
             </dependency>
 
+            <!-- 消息接口 -->
+            <dependency>
+                <groupId>net.qixiaowei</groupId>
+                <artifactId>qixiaowei-message-api</artifactId>
+                <version>${qixiaowei.version}</version>
+            </dependency>
+
             <!-- 经营云接口 -->
             <dependency>
                 <groupId>net.qixiaowei</groupId>

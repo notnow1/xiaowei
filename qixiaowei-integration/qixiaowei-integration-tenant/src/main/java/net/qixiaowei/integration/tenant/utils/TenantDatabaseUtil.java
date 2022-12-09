@@ -28,6 +28,7 @@ public class TenantDatabaseUtil {
         ignoreTables.add("country");
         ignoreTables.add("region");
         ignoreTables.add("industry_default");
+        ignoreTables.add("message_content_config");
     }
 
     /**
