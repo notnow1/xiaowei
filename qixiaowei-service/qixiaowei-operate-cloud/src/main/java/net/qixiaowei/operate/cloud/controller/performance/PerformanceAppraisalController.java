@@ -237,58 +237,6 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询组织绩效结果排名
-     */
-    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @PostMapping("/orgProportion")
-    public AjaxResult orgProportion(@RequestBody PerformanceAppraisalDTO performanceAppraisalDTO) {
-        List<Long> appraisalObjectsIds = performanceAppraisalDTO.getAppraisalObjectsIds();
-        Integer queryType = performanceAppraisalDTO.getQueryType();
-        Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
-        return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankByDTO(appraisalObjectsIds, performanceAppraisalId, queryType));
-    }
-
-    /**
-     * 查询个人绩效结果排名
-     */
-    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @PostMapping("/perProportion")
-    public AjaxResult perProportion(@RequestBody Map<String, List<Object>> performanceAppraisalDTO) {
-        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(performanceAppraisalDTO));
-    }
-
-    /**
-     * 根据绩效考核ID查找比例
-     *
-     * @param performanceAppraisalId 绩效考核id
-     * @return AjaxResult
-     */
-    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @GetMapping("/list/performancePercentage/{performanceAppraisalId}")
-    public AjaxResult listPercentage(@PathVariable Long performanceAppraisalId) {
-        return AjaxResult.success(performanceAppraisalService.selectPerformancePercentageByPerformanceAppraisalId(performanceAppraisalId));
-    }
-
-    /**
-     * 归档
-     */
-    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @GetMapping("/archive/{performanceAppraisalId}")
-    public AjaxResult archive(@PathVariable Long performanceAppraisalId) {
-        return toAjax(performanceAppraisalService.archive(performanceAppraisalId));
-    }
-
-    /**
-     * 新增绩效考核表
-     */
-    //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
-    @Log(title = "新增绩效考核表", businessType = BusinessType.UPDATE)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody @Validated(PerformanceAppraisalDTO.AddPerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
-        return AjaxResult.success(performanceAppraisalService.insertPerformanceAppraisal(performanceAppraisalDTO));
-    }
-
-    /**
      * 编辑组织绩效考核制定表
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
@@ -329,16 +277,6 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 编辑组织绩效考核评议表
-     */
-    //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
-    @Log(title = "撤回组织绩效考核评议", businessType = BusinessType.INSERT)
-    @GetMapping("/withdraw/{performAppraisalObjectsId}")
-    public AjaxResult withdraw(@PathVariable Long performAppraisalObjectsId) {
-        return AjaxResult.success(performanceAppraisalService.withdraw(performAppraisalObjectsId));
-    }
-
-    /**
      * 编辑绩效考核-组织-排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
@@ -356,6 +294,68 @@ public class PerformanceAppraisalController extends BaseController {
     @PostMapping("/perRanking/edit")
     public AjaxResult editPerRanking(@RequestBody @Validated(PerformanceAppraisalDTO.UpdatePerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
         return toAjax(performanceAppraisalService.updatePerRankingPerformanceAppraisal(performanceAppraisalDTO));
+    }
+
+    /**
+     * 根据绩效考核ID查找比例
+     *
+     * @param performanceAppraisalId 绩效考核id
+     * @return AjaxResult
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/list/performancePercentage/{performanceAppraisalId}")
+    public AjaxResult listPercentage(@PathVariable Long performanceAppraisalId) {
+        return AjaxResult.success(performanceAppraisalService.selectPerformancePercentageByPerformanceAppraisalId(performanceAppraisalId));
+    }
+
+    /**
+     * 新增绩效考核表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
+    @Log(title = "新增绩效考核表", businessType = BusinessType.UPDATE)
+    @PostMapping("/add")
+    public AjaxResult addSave(@RequestBody @Validated(PerformanceAppraisalDTO.AddPerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
+        return AjaxResult.success(performanceAppraisalService.insertPerformanceAppraisal(performanceAppraisalDTO));
+    }
+
+    /**
+     * 归档
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/archive/{performanceAppraisalId}")
+    public AjaxResult archive(@PathVariable Long performanceAppraisalId) {
+        return toAjax(performanceAppraisalService.archive(performanceAppraisalId));
+    }
+
+    /**
+     * 编辑组织绩效考核评议表
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
+    @Log(title = "撤回组织绩效考核评议", businessType = BusinessType.INSERT)
+    @GetMapping("/withdraw/{performAppraisalObjectsId}")
+    public AjaxResult withdraw(@PathVariable Long performAppraisalObjectsId) {
+        return AjaxResult.success(performanceAppraisalService.withdraw(performAppraisalObjectsId));
+    }
+
+    /**
+     * 查询组织绩效结果排名
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @PostMapping("/orgProportion")
+    public AjaxResult orgProportion(@RequestBody PerformanceAppraisalDTO performanceAppraisalDTO) {
+        List<Long> appraisalObjectsIds = performanceAppraisalDTO.getAppraisalObjectsIds();
+        Integer queryType = performanceAppraisalDTO.getQueryType();
+        Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
+        return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankByDTO(appraisalObjectsIds, performanceAppraisalId, queryType));
+    }
+
+    /**
+     * 查询个人绩效结果排名
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @PostMapping("/perProportion")
+    public AjaxResult perProportion(@RequestBody Map<String, List<Object>> performanceAppraisalDTO) {
+        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(performanceAppraisalDTO));
     }
 
     /**
