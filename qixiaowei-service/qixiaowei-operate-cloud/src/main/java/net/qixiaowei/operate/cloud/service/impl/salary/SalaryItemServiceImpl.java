@@ -124,8 +124,10 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         if (StringUtils.isNotNull(salaryItemByThirdLevelItem)) {
             throw new ServiceException("三级项目名称不能重复");
         }
+        Integer maxSort = salaryItemMapper.selectMaxSort();
         SalaryItem salaryItem = new SalaryItem();
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
+        salaryItem.setSort(maxSort + 1);
         salaryItem.setCreateBy(SecurityUtils.getUserId());
         salaryItem.setCreateTime(DateUtils.getNowDate());
         salaryItem.setUpdateTime(DateUtils.getNowDate());

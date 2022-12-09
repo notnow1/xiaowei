@@ -87,36 +87,39 @@
         </foreach>
         AND delete_flag = 0
     </select>
-<!--    从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目-->
+    <!--    从工资条配置中取值，取所有部门级且二级工资项目属于奖金的工资项目-->
     <select id="selectSalaryAddPrefabricate"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag,
-               create_by, create_time, update_by, update_time
+        create_by, create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item =2
         AND second_level_item IN (1,2,3,4)
-        AND  scope =1
+        AND scope =1
         AND delete_flag=0
     </select>
-<!--    查询战略奖的工资项id-->
+    <!--    查询战略奖的工资项id-->
     <select id="selectSalaryItemByAward" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-            salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
-            create_time, update_by, update_time
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM salary_item
         WHERE third_level_item='战略奖'
-          and delete_flag=0
+        and delete_flag=0
     </select>
-<!--    所有二级工资项目为奖金且级别为部门级的三级工资项目-->
+    <!--    所有二级工资项目为奖金且级别为部门级的三级工资项目-->
     <select id="selectSalaryItemByBonus" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO">
         SELECT
-            salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
-            create_time, update_by, update_time
+        salary_item_id, first_level_item, second_level_item, third_level_item, scope, sort, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM salary_item
         WHERE first_level_item=2
-          and  second_level_item=4
-          and scope =1
-          and delete_flag=0
+        and second_level_item=4
+        and scope =1
+        and delete_flag=0
+    </select>
+    <select id="selectMaxSort" resultType="java.lang.Integer">
+        SELECT MAX(sort) FROM salary_item
     </select>
     <!--新增工资项-->
     <insert id="insertSalaryItem" useGeneratedKeys="true" keyProperty="salaryItemId">

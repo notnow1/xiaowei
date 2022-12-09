@@ -29,7 +29,7 @@ public interface IPerformanceAppraisalService {
     PerformanceAppraisalDTO selectPerformanceAppraisalByPerformanceAppraisalId(Long performanceAppraisalId);
 
     /**
-     * 查询组织绩效任务考核详情
+     * 查询绩效考核详情-归档-个人
      *
      * @param performanceAppraisalDTO 绩效考核表
      * @return
@@ -78,11 +78,10 @@ public interface IPerformanceAppraisalService {
     PerformanceAppraisalDTO selectOrgAppraisalRankByDTO(List<Long> appraisalObjectsIds, Long performanceAppraisalId, Integer queryType);
 
     /**
-     * @param appraisalObjectsIds 绩效考核对象ID集合
+     * @param performanceAppraisalDTO 绩效考核对象ID集合
      * @return List
      */
-    PerformanceAppraisalDTO selectPerAppraisalRankByDTO(Map<String, List<String>> appraisalObjectsIds);
-
+    PerformanceAppraisalDTO selectPerAppraisalRankByDTO(Map<String, List<Object>> performanceAppraisalDTO);
 
     /**
      * 新增绩效考核表

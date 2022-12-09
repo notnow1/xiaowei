@@ -190,7 +190,7 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询绩效考核表详情-归档
+     * 查询绩效考核表详情-组织-归档
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @GetMapping("/info/orgArchive/{performanceAppraisalId}")
@@ -199,7 +199,7 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询绩效考核表列表
+     * 查询绩效考核详情-归档-个人
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @GetMapping("/info/perArchive/{performanceAppraisalId}")
@@ -224,8 +224,8 @@ public class PerformanceAppraisalController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @PostMapping("/perProportion")
-    public AjaxResult perProportion(@RequestBody Map<String, List<String>> map) {
-        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(map));
+    public AjaxResult perProportion(@RequestBody Map<String, List<Object>> performanceAppraisalDTO) {
+        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(performanceAppraisalDTO));
     }
 
     /**
