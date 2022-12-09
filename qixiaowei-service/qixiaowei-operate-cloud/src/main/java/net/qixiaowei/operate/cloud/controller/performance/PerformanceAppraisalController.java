@@ -181,6 +181,15 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
+     * 查询组织绩效考核表详情-评议
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/orgReview/info/{performAppraisalObjectsId}")
+    public AjaxResult infoOPerReview(@PathVariable Long performAppraisalObjectsId) {
+        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalReviewById(performAppraisalObjectsId));
+    }
+
+    /**
      * 查询绩效考核详情--排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")

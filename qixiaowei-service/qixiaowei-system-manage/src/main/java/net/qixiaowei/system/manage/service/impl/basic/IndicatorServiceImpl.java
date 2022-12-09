@@ -320,12 +320,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
             throw new ServiceException("该指标已经不存在");
         }
         if (IndicatorCode.contains(dto.getIndicatorCode())) {
-            Integer isPreset = IndicatorCode.selectIsPreset(dto.getIndicatorCode());
-            if (isPreset == 1 || isPreset == 2) {
-                dto.setIsPreset(1);
-            } else {
-                dto.setIsPreset(0);
-            }
+            dto.setIsPreset(1);
+        } else {
+            dto.setIsPreset(0);
         }
         return dto;
     }

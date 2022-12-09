@@ -125,8 +125,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         // 添加考核比例统计
         PerformanceAppraisalDTO appraisalDTO = countObjectFactorRank(performanceAppraisalId, appraisal, performanceRankMap, sum);
         if (appraisalDTO != null) return appraisalDTO;
-
-
         List<Map<String, Object>> performanceAppraisalRankList = new ArrayList<>();
         performanceRankMap.remove(null);
         if (StringUtils.isEmpty(performanceRankMap)) {
@@ -2218,13 +2216,35 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
-     * 查询组织绩效考核表详情-评议
+     * 查询组织绩效考核表详情-评议-组织
      *
      * @param performAppraisalObjectsId 绩效考核对象ID
      * @return 绩效考核DTO
      */
     @Override
     public PerformanceAppraisalObjectsDTO selectOrgAppraisalReviewById(Long performAppraisalObjectsId) {
+        PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = performanceAppraisalMapper.selectOrgAppraisalObjectByObjectId(performAppraisalObjectsId);
+        setObjectFieldName(performanceAppraisalObjectsDTO);
+        List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performAppraisalObjectsId);
+        if (StringUtils.isEmpty(performanceAppraisalItemsDTOS)) {
+            return performanceAppraisalObjectsDTO;
+        }
+        for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDTOS) {
+            Integer examineDirection = performanceAppraisalItemsDTO.getExamineDirection();
+            countScore(performanceAppraisalItemsDTO, examineDirection);
+        }
+        performanceAppraisalObjectsDTO.setPerformanceAppraisalItemsDTOS(performanceAppraisalItemsDTOS);
+        return performanceAppraisalObjectsDTO;
+    }
+
+    /**
+     * 查询组织绩效考核表详情-评议-个人
+     *
+     * @param performAppraisalObjectsId 绩效考核对象ID
+     * @return 绩效考核表
+     */
+    @Override
+    public PerformanceAppraisalObjectsDTO selectPerAppraisalReviewById(Long performAppraisalObjectsId) {
         PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = performanceAppraisalMapper.selectOrgAppraisalObjectByObjectId(performAppraisalObjectsId);
         setObjectFieldName(performanceAppraisalObjectsDTO);
         List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDTOS = performanceAppraisalItemsService.selectPerformanceAppraisalItemsByPerformAppraisalObjectId(performAppraisalObjectsId);

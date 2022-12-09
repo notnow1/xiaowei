@@ -330,12 +330,20 @@ public interface IPerformanceAppraisalService {
     List<PerformanceAppraisalObjectsDTO> selectPerAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO);
 
     /**
-     * 查询组织绩效考核表详情-评议
+     * 查询组织绩效考核表详情-评议-组织
      *
      * @param performAppraisalObjectsId 绩效考核对象ID
      * @return 绩效考核表
      */
     PerformanceAppraisalObjectsDTO selectOrgAppraisalReviewById(Long performAppraisalObjectsId);
+
+    /**
+     * 查询组织绩效考核表详情-评议-个人
+     *
+     * @param performAppraisalObjectsId 绩效考核对象ID
+     * @return 绩效考核表
+     */
+    PerformanceAppraisalObjectsDTO selectPerAppraisalReviewById(Long performAppraisalObjectsId);
 
     /**
      * 编辑组织绩效考核评议表
@@ -376,4 +384,5 @@ public interface IPerformanceAppraisalService {
      * @return
      */
     int withdraw(Long performAppraisalObjectsId);
+
 }
