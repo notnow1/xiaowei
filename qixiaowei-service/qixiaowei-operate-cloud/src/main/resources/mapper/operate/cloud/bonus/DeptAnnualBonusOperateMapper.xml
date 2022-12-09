@@ -66,6 +66,29 @@
                             and update_time=#{deptAnnualBonusOperate.updateTime}
                         </if>
     </select>
+<!--    根据部门年终奖主表主键id查询部门年终奖经营绩效结果表-->
+    <select id="selectDeptAnnualBonusOperateByDeptAnnualBonusId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO">
+        SELECT
+            dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_annual_bonus_operate
+        WHERE  dept_annual_bonus_id=#{deptAnnualBonusId}
+          and delete_flag=0
+    </select>
+<!--    根据部门年终奖主表主键id集合批量查询部门年终奖经营绩效结果表-->
+    <select id="selectDeptAnnualBonusOperateByDeptAnnualBonusIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusOperateDTO">
+        SELECT
+        dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_annual_bonus_operate
+        WHERE  dept_annual_bonus_id in
+        <foreach item="item"
+                 collection="deptAnnualBonusIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增部门年终奖经营绩效结果表-->
     <insert id="insertDeptAnnualBonusOperate" useGeneratedKeys="true" keyProperty="deptAnnualBonusOperateId">
         INSERT INTO dept_annual_bonus_operate (dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time)

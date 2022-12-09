@@ -21,6 +21,13 @@ public interface DeptAnnualBonusFactorMapper{
     */
     DeptAnnualBonusFactorDTO selectDeptAnnualBonusFactorByDeptAnnualBonusFactorId(@Param("deptAnnualBonusFactorId")Long deptAnnualBonusFactorId);
 
+    /**
+     * 根据部门年终奖主表主键id查询部门年终奖系数表
+     *
+     * @param deptAnnualBonusId 部门年终奖系数表主键
+     * @return 部门年终奖系数表
+     */
+    List<DeptAnnualBonusFactorDTO> selectDeptAnnualBonusFactorByDeptAnnualBonusId(@Param("deptAnnualBonusId")Long deptAnnualBonusId);
 
     /**
     * 批量查询部门年终奖系数表
@@ -29,6 +36,14 @@ public interface DeptAnnualBonusFactorMapper{
     * @return 部门年终奖系数表
     */
     List<DeptAnnualBonusFactorDTO> selectDeptAnnualBonusFactorByDeptAnnualBonusFactorIds(@Param("deptAnnualBonusFactorIds") List<Long> deptAnnualBonusFactorIds);
+
+    /**
+     * 根据部门年终奖主表主键id集合批量查询部门年终奖系数表
+     *
+     * @param deptAnnualBonusIds 部门年终奖系数表主键集合
+     * @return 部门年终奖系数表
+     */
+    List<DeptAnnualBonusFactorDTO> selectDeptAnnualBonusFactorByDeptAnnualBonusIds(@Param("deptAnnualBonusIds") List<Long> deptAnnualBonusIds);
 
     /**
     * 查询部门年终奖系数表列表

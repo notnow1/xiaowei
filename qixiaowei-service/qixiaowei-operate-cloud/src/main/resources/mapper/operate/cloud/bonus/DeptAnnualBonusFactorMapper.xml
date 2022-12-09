@@ -84,6 +84,29 @@
                             and update_time=#{deptAnnualBonusFactor.updateTime}
                         </if>
     </select>
+<!--    根据部门年终奖主表主键id查询部门年终奖系数表-->
+    <select id="selectDeptAnnualBonusFactorByDeptAnnualBonusId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+        SELECT
+            dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_annual_bonus_factor
+        WHERE  dept_annual_bonus_id=#{deptAnnualBonusId}
+          and delete_flag=0
+    </select>
+<!--    根据部门年终奖主表主键id集合批量查询部门年终奖系数表-->
+    <select id="selectDeptAnnualBonusFactorByDeptAnnualBonusIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptAnnualBonusFactorDTO">
+        SELECT
+        dept_annual_bonus_factor_id,dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_annual_bonus_factor
+        WHERE  dept_annual_bonus_id in
+        <foreach item="item"
+                 collection="deptAnnualBonusIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增部门年终奖系数表-->
     <insert id="insertDeptAnnualBonusFactor" useGeneratedKeys="true" keyProperty="deptAnnualBonusFactorId">
         INSERT INTO dept_annual_bonus_factor (dept_annual_bonus_id,department_id,weight,last_performance_resulted,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,importance_factor,bonus_percentage,distribute_bonus,delete_flag,create_by,create_time,update_by,update_time)
