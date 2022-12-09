@@ -1492,18 +1492,25 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                         else if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() &&
                                 employeeBudgetDetailsDTO.getOfficialRank() != datum.getEmployeeRank()){
                             OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(datum.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
-                            employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian());
-                            employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
+                            if (StringUtils.isNotNull(officialRankEmolumentDTO)){
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian());
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
+                            }
+
                         }
                     }
                     if (StringUtils.isNotEmpty(employeeIds)) {
+                        //发薪金额总计
+                        BigDecimal payAmountSum = new BigDecimal("0");
                         //人员数量
                         int size = employeeIds.size();
-                        //根据人员id集合查询工资发薪表数据 计算该部门该职级体系下 根据职级等级分组的上年平均工资
-                        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayByBudggetEmployeeIds(employeeIds, employeeBudgetDTO.getBudgetYear());
+                        for (Long employeeId : employeeIds) {
+                            //根据人员id集合查询工资发薪表数据 计算该部门该职级体系下 根据职级等级分组的上年平均工资
+                            List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayByBudggetEmployeeId(employeeId, employeeBudgetDTO.getBudgetYear());
+                            BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmountSum).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                            payAmountSum=payAmountSum.add(reduce);
+                        }
 
-                        //发薪金额总计
-                        BigDecimal payAmountSum = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmountSum).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                         if (payAmountSum.compareTo(new BigDecimal("0")) != 0 && size > 0) {
                             BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),4,BigDecimal.ROUND_HALF_DOWN);
                             //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
@@ -1516,11 +1523,10 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                         BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
                         if (null != agePayAmountLastYear && null != averageAdjust && agePayAmountLastYear.compareTo(new BigDecimal("0")) != 0 && averageAdjust.compareTo(new BigDecimal("0")) != 0) {
                             //增人/减人工资包  公式=平均规划新增人数×上年平均工资。可为负数（代表部门人数减少）
-                             increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust);
+                            increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust);
                         }
-                        employeeBudgetDetailsDTO.setIncreaseAndDecreasePay(increaseAndDecreasePay);
                     }
-
+                    employeeBudgetDetailsDTO.setIncreaseAndDecreasePay(increaseAndDecreasePay);
                 }
             }
         }
