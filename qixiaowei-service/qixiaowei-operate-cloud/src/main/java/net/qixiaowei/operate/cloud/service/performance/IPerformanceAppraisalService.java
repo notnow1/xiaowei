@@ -370,7 +370,15 @@ public interface IPerformanceAppraisalService {
     List<PerformanceAppraisalDTO> selectOrgAppraisalRankingList(PerformanceAppraisalDTO performanceAppraisalDTO);
 
     /**
-     * 查询绩效考核详情--排名
+     * 查询绩效考核表列表-个人-排名
+     *
+     * @param performanceAppraisalDTO 考核对象
+     * @return List
+     */
+    List<PerformanceAppraisalDTO> selectPerAppraisalRankingList(PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * 查询绩效考核详情-组织-排名
      *
      * @param performanceAppraisalId 考核ID
      * @return 考核任务DTO
@@ -378,12 +386,28 @@ public interface IPerformanceAppraisalService {
     PerformanceAppraisalDTO selectOrgAppraisalRankingById(Long performanceAppraisalId);
 
     /**
-     * 编辑组织绩效考核排名表
+     * 查询绩效考核详情-个人-排名
+     *
+     * @param performanceAppraisalId 考核ID
+     * @return 考核任务DTO
+     */
+    PerformanceAppraisalDTO selectPerAppraisalRankingById(Long performanceAppraisalId);
+
+    /**
+     * 编辑绩效考核-组织-排名
      *
      * @param performanceAppraisalDTO 考核对象DTO
      * @return 考核任务DTO
      */
     int updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO);
+
+    /**
+     * 编辑绩效考核-个人-排名
+     *
+     * @param performanceAppraisalDTO 考核对象DTO
+     * @return 考核任务DTO
+     */
+    int updatePerRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO);
 
     /**
      * 评议撤回

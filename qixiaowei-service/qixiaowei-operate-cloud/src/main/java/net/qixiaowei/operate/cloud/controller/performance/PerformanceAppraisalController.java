@@ -132,6 +132,17 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
+     * 查询绩效考核表列表-组织-排名
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/perRanking/pageList")
+    public TableDataInfo listPerRanking(PerformanceAppraisalDTO performanceAppraisalDTO) {
+        startPage();
+        List<PerformanceAppraisalDTO> list = performanceAppraisalService.selectPerAppraisalRankingList(performanceAppraisalDTO);
+        return getDataTable(list);
+    }
+
+    /**
      * 查询绩效考核表列表-组织-归档
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
@@ -190,12 +201,21 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 查询绩效考核详情--排名
+     * 查询绩效考核详情-组织-排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @GetMapping("/orgRanking/info/{performanceAppraisalId}")
     public AjaxResult infoOrgRanking(@PathVariable Long performanceAppraisalId) {
         return AjaxResult.success(performanceAppraisalService.selectOrgAppraisalRankingById(performanceAppraisalId));
+    }
+
+    /**
+     * 查询绩效考核详情-人员-排名
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
+    @GetMapping("/perRanking/info/{performanceAppraisalId}")
+    public AjaxResult infoPerRanking(@PathVariable Long performanceAppraisalId) {
+        return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankingById(performanceAppraisalId));
     }
 
     /**
@@ -319,13 +339,23 @@ public class PerformanceAppraisalController extends BaseController {
     }
 
     /**
-     * 编辑组织绩效考核排名表
+     * 编辑绩效考核-组织-排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
     @Log(title = "编辑组织绩效考核排名表", businessType = BusinessType.INSERT)
     @PostMapping("/orgRanking/edit")
     public AjaxResult editOrgRanking(@RequestBody @Validated(PerformanceAppraisalDTO.UpdatePerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
         return toAjax(performanceAppraisalService.updateOrgRankingPerformanceAppraisal(performanceAppraisalDTO));
+    }
+
+    /**
+     * 编辑绩效考核-个人-排名
+     */
+    //@RequiresPermissions("operate:cloud:performanceAppraisal:add")
+    @Log(title = "编辑组织绩效考核排名表", businessType = BusinessType.INSERT)
+    @PostMapping("/perRanking/edit")
+    public AjaxResult editPerRanking(@RequestBody @Validated(PerformanceAppraisalDTO.UpdatePerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
+        return toAjax(performanceAppraisalService.updatePerRankingPerformanceAppraisal(performanceAppraisalDTO));
     }
 
     /**

@@ -2487,7 +2487,31 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
-     * 查询绩效考核详情--排名
+     * 查询绩效考核表列表-组织-排名
+     *
+     * @param performanceAppraisalDTO 考核对象
+     * @return
+     */
+    @Override
+    public List<PerformanceAppraisalDTO> selectPerAppraisalRankingList(PerformanceAppraisalDTO performanceAppraisalDTO) {
+        PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
+        BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
+        performanceAppraisal.setAppraisalObject(2);
+        performanceAppraisal.setAppraisalStatus(3);
+        List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
+        performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
+        for (PerformanceAppraisalDTO appraisalDTO : performanceAppraisalDTOS) {
+            if (StringUtils.isNull(appraisalDTO.getFilingDate())) {
+                appraisalDTO.setIsFiling(0);
+            } else {
+                appraisalDTO.setIsFiling(1);
+            }
+        }
+        return performanceAppraisalDTOS;
+    }
+
+    /**
+     * 查询绩效考核详情-组织-排名
      *
      * @param performanceAppraisalId 考核ID
      * @return 考核任务DTO
@@ -2519,7 +2543,39 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
-     * 编辑组织绩效考核排名表
+     * 查询绩效考核详情-人员-排名
+     *
+     * @param performanceAppraisalId 考核ID
+     * @return
+     */
+    @Override
+    public PerformanceAppraisalDTO selectPerAppraisalRankingById(Long performanceAppraisalId) {
+        PerformanceAppraisalDTO appraisal = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
+        if (StringUtils.isNull(appraisal)) {
+            throw new ServiceException("当前考核任务已不存在");
+        }
+        if (!appraisal.getAppraisalObject().equals(1)) {
+            throw new ServiceException("当前考核对象不是组织的");
+        }
+        setFieldName(appraisal);
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
+        HashMap<String, BigDecimal> performanceRankMap = new HashMap<>();
+        Integer sum = 0;
+        int appraisalRank = 1;//名次
+        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
+            performanceAppraisalObjectsDTO.setRank(appraisalRank);
+            sum = setRankMap(performanceRankMap, performanceAppraisalObjectsDTO, sum);
+            appraisalRank++;
+        }
+        appraisal.setPerformanceAppraisalObjectsDTOS(performanceAppraisalObjectsDTOList);
+        // 添加考核比例统计
+        PerformanceAppraisalDTO appraisalDTO = countObjectFactorRank(performanceAppraisalId, appraisal, performanceRankMap, sum);
+        if (appraisalDTO != null) return appraisalDTO;
+        return appraisal;
+    }
+
+    /**
+     * 编辑绩效考核-组织-排名
      *
      * @param performanceAppraisalDTO 考核对象DTO
      * @return 考核任务DTO
@@ -2528,25 +2584,42 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Transactional
     public int updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO) {
         Integer isSubmit = performanceAppraisalDTO.getIsSubmit();
-        if (StringUtils.isNull(isSubmit)) {
-            throw new ServiceException("请添加是否提交");
-        }
         Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
-        if (StringUtils.isNull(performanceAppraisalId)) {
-            throw new ServiceException("考核任务ID不可以为空");
-        }
-        PerformanceAppraisalDTO appraisalDTO = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
-        if (StringUtils.isNull(appraisalDTO)) {
-            throw new ServiceException("绩效考核任务不可以为空");
-        }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalDTO.getPerformanceAppraisalObjectsDTOS();
-        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
-            if (StringUtils.isNull(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId())) {
-                throw new ServiceException("绩效考核对象ID为空");
-            }
-        }
+        checkRankingUpdate(isSubmit, performanceAppraisalId, performanceAppraisalObjectsDTOS);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = new ArrayList<>();
         // 更新绩效考核任务
+        updateRankOperate(isSubmit, performanceAppraisalId, performanceAppraisalObjectsDTOS, performanceAppraisalObjectsDTOList);
+        return performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+    }
+
+    /**
+     * 编辑绩效考核-个人-排名
+     *
+     * @param performanceAppraisalDTO 考核对象DTO
+     * @return
+     */
+    @Override
+    public int updatePerRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO) {
+        Integer isSubmit = performanceAppraisalDTO.getIsSubmit();
+        Long performanceAppraisalId = performanceAppraisalDTO.getPerformanceAppraisalId();
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalDTO.getPerformanceAppraisalObjectsDTOS();
+        checkRankingUpdate(isSubmit, performanceAppraisalId, performanceAppraisalObjectsDTOS);
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = new ArrayList<>();
+        // 更新绩效考核任务
+        updateRankOperate(isSubmit, performanceAppraisalId, performanceAppraisalObjectsDTOS, performanceAppraisalObjectsDTOList);
+        return performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+    }
+
+    /**
+     * 排名更新操作
+     *
+     * @param isSubmit                           是否提交
+     * @param performanceAppraisalId             考核任务ID
+     * @param performanceAppraisalObjectsDTOS    考核对象List - 前
+     * @param performanceAppraisalObjectsDTOList 考核对象List - 后
+     */
+    private void updateRankOperate(Integer isSubmit, Long performanceAppraisalId, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList) {
         if (isSubmit == 1) {
             PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
             performanceAppraisal.setPerformanceAppraisalId(performanceAppraisalId);
@@ -2564,7 +2637,31 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             objectsDTO.setAppraisalPrincipalName(performanceAppraisalObjectsDTO.getAppraisalPrincipalName());
             performanceAppraisalObjectsDTOList.add(objectsDTO);
         }
-        return performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+    }
+
+    /**
+     * 更新校验
+     *
+     * @param isSubmit                        是否提交
+     * @param performanceAppraisalId          考核ID
+     * @param performanceAppraisalObjectsDTOS 考核对象集合
+     */
+    private void checkRankingUpdate(Integer isSubmit, Long performanceAppraisalId, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS) {
+        if (StringUtils.isNull(isSubmit)) {
+            throw new ServiceException("请添加是否提交");
+        }
+        if (StringUtils.isNull(performanceAppraisalId)) {
+            throw new ServiceException("考核任务ID不可以为空");
+        }
+        PerformanceAppraisalDTO appraisalDTO = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
+        if (StringUtils.isNull(appraisalDTO)) {
+            throw new ServiceException("绩效考核任务不可以为空");
+        }
+        for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
+            if (StringUtils.isNull(performanceAppraisalObjectsDTO.getPerformAppraisalObjectsId())) {
+                throw new ServiceException("绩效考核对象ID为空");
+            }
+        }
     }
 
     /**
