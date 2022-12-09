@@ -94,6 +94,7 @@
         pao.appraisal_principal_id,
         ifnull((evaluation_score), 0.00 ) AS evaluation_score,
         pao.appraisal_result_id,
+        pao.appraisal_result,
         pao.sort,
         pao.appraisal_object_status,
         pao.appraisal_principal_name, pao.delete_flag,
@@ -126,6 +127,7 @@
         pao.appraisal_principal_id,
         ifnull(evaluation_score,0.00) as pao.evaluation_score,
         pao.appraisal_result_id,
+        pao.appraisal_result,
         pao.sort,
         pao.appraisal_object_status,
         pao.appraisal_principal_name
@@ -163,6 +165,7 @@
         pao.appraisal_principal_id,
         ifnull(evaluation_score,0.00) as pao.evaluation_score,
         pao.appraisal_result_id,
+        pao.appraisal_result,
         pao.sort,
         pao.appraisal_object_status,
         pao.appraisal_principal_name
@@ -225,6 +228,7 @@
         pao.appraisal_principal_id,
         ifnull(evaluation_score,0.00) as evaluation_score,
         pao.appraisal_result_id,
+        pao.appraisal_result,
         pao.sort,
         pao.appraisal_object_status,
         pao.appraisal_principal_name
