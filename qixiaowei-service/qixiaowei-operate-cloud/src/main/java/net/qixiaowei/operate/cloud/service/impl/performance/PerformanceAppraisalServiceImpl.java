@@ -2342,7 +2342,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
-     * 编辑个人绩效考核评议表 -评议
+     * 编辑个人绩效考核表 -评议
      *
      * @param performanceAppraisalObjectsDTO 考核对象
      * @return
