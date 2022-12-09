@@ -14,6 +14,7 @@ import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonusOperate;
 import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.*;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalObjectsMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
@@ -90,8 +91,27 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         }
         //部门年终奖经营绩效结果表集合
         List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList = deptAnnualBonusOperateMapper.selectDeptAnnualBonusOperateByDeptAnnualBonusId(deptAnnualBonusId);
+
+
         //部门年终奖系数表集合
         List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOS = deptAnnualBonusFactorMapper.selectDeptAnnualBonusFactorByDeptAnnualBonusId(deptAnnualBonusId);
+        if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOS)){
+            //远程调用部门赋值名称
+            List<Long> collect = deptAnnualBonusFactorDTOS.stream().map(DeptAnnualBonusFactorDTO::getDepartmentId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
+                List<DepartmentDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOS) {
+                        for (DepartmentDTO datum : data) {
+                            if (datum.getDepartmentId() == deptAnnualBonusFactorDTO.getDepartmentId()){
+                                deptAnnualBonusFactorDTO.setDepartmentName(datum.getDepartmentName());
+                            }
+                        }
+                    }
+                }
+            }
+        }
         //部门可发年终奖集合
         List<DeptAnnualBonusCanGrantDTO> deptAnnualBonusCanGrantDTOs = new ArrayList<>();
         //所有的员工的总薪酬包
@@ -100,6 +120,9 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         BigDecimal weight = new BigDecimal("0");
         //3 部门年终奖系数表数据
         packDeptAnnualBonusFactor(deptAnnualBonusDTO.getAnnualBonusYear(), deptAnnualBonusFactorDTOS, deptPaymentBonusSum, weight);
+
+
+
         //4 部门可发年终奖
         packDeptAnnualBonusCanGrantDTO(deptAnnualBonusDTO.getAnnualBonusYear(), deptAnnualBonusCanGrantDTOs, deptAnnualBonusFactorDTOS, deptAnnualBonusDTO.getDepartmentAnnualBonus());
         //部门年终奖经营绩效结果表集合
@@ -511,7 +534,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             for (int i = 0; i < deptAnnualBonusCanGrantDTOs.size(); i++) {
                 if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOs)) {
                     //奖金包占比终值（%)
-                    deptAnnualBonusCanGrantDTOs.get(i).setBeYearCanGrantManagePro(deptAnnualBonusFactorDTOs.get(1).getBonusPercentage());
+                    deptAnnualBonusCanGrantDTOs.get(i).setBeYearCanGrantManagePro(deptAnnualBonusFactorDTOs.get(i).getBonusPercentage());
                 }
             }
             for (DeptAnnualBonusCanGrantDTO deptAnnualBonusCanGrantDTO : deptAnnualBonusCanGrantDTOs) {
@@ -526,14 +549,21 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             for (DeptAnnualBonusCanGrantDTO deptAnnualBonusCanGrantDTO : deptAnnualBonusCanGrantDTOs) {
                 //可分配年终奖
                 BigDecimal distributeBonus = new BigDecimal("0");
-                //年初奖金预算-金额
-                BigDecimal beYearCanGrantBonusBudgetAmount = deptAnnualBonusCanGrantDTO.getBeYearCanGrantBonusBudgetAmount();
+
+                //已发放年终奖
+                BigDecimal bonusAmountSum = new BigDecimal("0");
+                List<DeptAnnualBonusItemDTO> deptAnnualBonusItemDTOS = deptAnnualBonusCanGrantDTO.getDeptAnnualBonusItemDTOS();
+                if (StringUtils.isNotEmpty(deptAnnualBonusItemDTOS)){
+                    bonusAmountSum=  bonusAmountSum.add(deptAnnualBonusItemDTOS.stream().map(DeptAnnualBonusItemDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
+                }
                 //可发经营奖总包-金额
                 BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTO.getBeYearCanGrantManageAmount();
-                if (beYearCanGrantBonusBudgetAmount.compareTo(new BigDecimal("0")) != 0 && beYearCanGrantManageAmount.compareTo(new BigDecimal("0")) != 0) {
-                    distributeBonus = beYearCanGrantBonusBudgetAmount.subtract(beYearCanGrantManageAmount);
+                if (null != beYearCanGrantManageAmount) {
+                    distributeBonus = beYearCanGrantManageAmount.subtract(bonusAmountSum);
                 }
-                deptAnnualBonusCanGrantDTO.setDistributeBonus(distributeBonus);
+                if (null == deptAnnualBonusCanGrantDTO.getDistributeBonus()){
+                    deptAnnualBonusCanGrantDTO.setDistributeBonus(distributeBonus);
+                }
                 deptAnnualBonusCanGrantDTO.setDistributeBonusReference(distributeBonus);
             }
 
@@ -632,54 +662,57 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             }
 
         }
-        //远程调用查看所有一级部门
-        R<List<DepartmentDTO>> listR = remoteDepartmentService.getParentAll(SecurityConstants.INNER);
-        List<DepartmentDTO> data = listR.getData();
-        if (StringUtils.isNotEmpty(data)) {
-            for (DepartmentDTO datum : data) {
-                DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO = new DeptAnnualBonusFactorDTO();
-                deptAnnualBonusFactorDTO.setDepartmentId(datum.getDepartmentId());
-                deptAnnualBonusFactorDTO.setDepartmentName(datum.getDepartmentName());
-                deptAnnualBonusFactorDTO.setImportanceFactor(datum.getDepartmentImportanceFactor());
+        if (StringUtils.isEmpty(deptAnnualBonusFactorDTOs)){
+            //远程调用查看所有一级部门
+            R<List<DepartmentDTO>> listR = remoteDepartmentService.getParentAll(SecurityConstants.INNER);
+            List<DepartmentDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)) {
+                for (DepartmentDTO datum : data) {
+                    DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO = new DeptAnnualBonusFactorDTO();
+                    deptAnnualBonusFactorDTO.setDepartmentId(datum.getDepartmentId());
+                    deptAnnualBonusFactorDTO.setDepartmentName(datum.getDepartmentName());
+                    deptAnnualBonusFactorDTO.setImportanceFactor(datum.getDepartmentImportanceFactor());
 
-                //远程查询一级部门及子级部门
-                R<List<DepartmentDTO>> sublevelDepartment = remoteDepartmentService.selectSublevelDepartment(datum.getDepartmentId(), SecurityConstants.INNER);
-                List<DepartmentDTO> sublevelDepartmentData = sublevelDepartment.getData();
-                if (StringUtils.isNotEmpty(sublevelDepartmentData)) {
-                    //一级部门及子级下所有的员工的总薪酬包
-                    BigDecimal deptPaymentBonus = new BigDecimal("0");
-                    List<Long> departmentIdAll = sublevelDepartmentData.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-                    if (StringUtils.isNotEmpty(departmentIdAll)) {
-                        //远程查询一级部门及子级部门下 所有人员
-                        R<List<EmployeeDTO>> listR1 = remoteEmployeeService.selectParentDepartmentIdAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
-                        List<EmployeeDTO> data1 = listR1.getData();
-                        if (StringUtils.isNotEmpty(data1)) {
-                            for (EmployeeDTO employeeDTO : data1) {
-                                //部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
-                                List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear);
-                                if (StringUtils.isNotEmpty(salaryPayDTOS)) {
-                                    //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
-                                    BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                                    deptPaymentBonus = deptPaymentBonus.add(reduce);
+                    //远程查询一级部门及子级部门
+                    R<List<DepartmentDTO>> sublevelDepartment = remoteDepartmentService.selectSublevelDepartment(datum.getDepartmentId(), SecurityConstants.INNER);
+                    List<DepartmentDTO> sublevelDepartmentData = sublevelDepartment.getData();
+                    if (StringUtils.isNotEmpty(sublevelDepartmentData)) {
+                        //一级部门及子级下所有的员工的总薪酬包
+                        BigDecimal deptPaymentBonus = new BigDecimal("0");
+                        List<Long> departmentIdAll = sublevelDepartmentData.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(departmentIdAll)) {
+                            //远程查询一级部门及子级部门下 所有人员
+                            R<List<EmployeeDTO>> listR1 = remoteEmployeeService.selectParentDepartmentIdAndOfficialRankSystem(departmentIdAll, SecurityConstants.INNER);
+                            List<EmployeeDTO> data1 = listR1.getData();
+                            if (StringUtils.isNotEmpty(data1)) {
+                                for (EmployeeDTO employeeDTO : data1) {
+                                    //部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
+                                    List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear);
+                                    if (StringUtils.isNotEmpty(salaryPayDTOS)) {
+                                        //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
+                                        BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                        deptPaymentBonus = deptPaymentBonus.add(reduce);
+                                    }
                                 }
+
                             }
-
                         }
-                    }
-                    if (deptPaymentBonus.compareTo(new BigDecimal("0")) > 0 && deptPaymentBonusSum.compareTo(new BigDecimal("0")) > 0) {
-                        weight = deptPaymentBonus.divide(deptPaymentBonusSum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
-                    }
+                        if (deptPaymentBonus.compareTo(new BigDecimal("0")) > 0 && deptPaymentBonusSum.compareTo(new BigDecimal("0")) > 0) {
+                            weight = deptPaymentBonus.divide(deptPaymentBonusSum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
+                        }
 
+                    }
+                    //权重
+                    deptAnnualBonusFactorDTO.setWeight(weight);
+
+                    //封装组织绩效
+                    this.packDeptPerformanceRank(datum, deptAnnualBonusFactorDTO);
+
+                    deptAnnualBonusFactorDTOs.add(deptAnnualBonusFactorDTO);
                 }
-                //权重
-                deptAnnualBonusFactorDTO.setWeight(weight);
-
-                //封装组织绩效
-                this.packDeptPerformanceRank(datum, deptAnnualBonusFactorDTO);
-
-                deptAnnualBonusFactorDTOs.add(deptAnnualBonusFactorDTO);
             }
         }
+
         if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOs)) {
             for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOs) {
                 //奖金综合系数    公式=组织权重×组织绩效奖金系数×组织重要性系数

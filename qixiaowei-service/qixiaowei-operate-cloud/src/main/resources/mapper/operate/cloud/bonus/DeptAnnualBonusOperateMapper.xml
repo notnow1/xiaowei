@@ -69,11 +69,31 @@
 <!--    根据部门年终奖主表主键id查询部门年终奖经营绩效结果表-->
     <select id="selectDeptAnnualBonusOperateByDeptAnnualBonusId"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusOperateDTO">
-        SELECT
-            dept_annual_bonus_operate_id,dept_annual_bonus_id,indicator_id,indicator_name,target_value,actual_value,delete_flag,create_by,create_time,update_by,update_time
-        FROM dept_annual_bonus_operate
-        WHERE  dept_annual_bonus_id=#{deptAnnualBonusId}
-          and delete_flag=0
+        SELECT dabo.dept_annual_bonus_operate_id,
+               dabo.dept_annual_bonus_id,
+               dbp.bonus_weight,
+               dabo.indicator_id,
+               dabo.indicator_name,
+               dabo.target_value,
+               dabo.actual_value,
+               dabo.delete_flag,
+               dabo.create_by,
+               dabo.create_time,
+               dabo.update_by,
+               dabo.update_time
+        FROM dept_annual_bonus_operate dabo
+                 left join  dept_annual_bonus dab
+                            on dab.dept_annual_bonus_id  = dabo.dept_annual_bonus_id
+                                and dab.delete_flag =0
+                 left join bonus_budget bb
+                           on bb.budget_year  = dab.annual_bonus_year
+                               and bb.delete_flag =0
+                 left join bonus_budget_parameters dbp
+                           on dbp.bonus_budget_id = bb.bonus_budget_id
+                               and dbp.indicator_id = dabo.indicator_id
+                               and dbp.delete_flag =0
+        WHERE dabo.dept_annual_bonus_id = #{deptAnnualBonusId}
+              and dabo.delete_flag = 0
     </select>
 <!--    根据部门年终奖主表主键id集合批量查询部门年终奖经营绩效结果表-->
     <select id="selectDeptAnnualBonusOperateByDeptAnnualBonusIds"
