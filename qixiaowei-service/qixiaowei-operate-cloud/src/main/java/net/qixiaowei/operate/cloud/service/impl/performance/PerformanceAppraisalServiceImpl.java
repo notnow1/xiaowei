@@ -2460,7 +2460,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     @Transactional
-    public PerformanceAppraisalDTO updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO) {
+    public int updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO) {
         Integer isSubmit = performanceAppraisalDTO.getIsSubmit();
         if (StringUtils.isNull(isSubmit)) {
             throw new ServiceException("请添加是否提交");
@@ -2498,8 +2498,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             objectsDTO.setAppraisalPrincipalName(performanceAppraisalObjectsDTO.getAppraisalPrincipalName());
             performanceAppraisalObjectsDTOList.add(objectsDTO);
         }
-        performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
-        return null;
+        return performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
     }
 
     /**

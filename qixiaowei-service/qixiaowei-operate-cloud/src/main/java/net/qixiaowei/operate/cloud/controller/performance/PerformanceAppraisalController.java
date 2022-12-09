@@ -306,7 +306,7 @@ public class PerformanceAppraisalController extends BaseController {
     @Log(title = "编辑组织绩效考核排名表", businessType = BusinessType.INSERT)
     @PostMapping("/orgRanking/edit")
     public AjaxResult editOrgRanking(@RequestBody @Validated(PerformanceAppraisalDTO.UpdatePerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
-        return AjaxResult.success(performanceAppraisalService.updateOrgRankingPerformanceAppraisal(performanceAppraisalDTO));
+        return toAjax(performanceAppraisalService.updateOrgRankingPerformanceAppraisal(performanceAppraisalDTO));
     }
 
     /**

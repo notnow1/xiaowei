@@ -368,7 +368,7 @@ public interface IPerformanceAppraisalService {
      * @param performanceAppraisalDTO 考核对象DTO
      * @return 考核任务DTO
      */
-    PerformanceAppraisalDTO updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO);
+    int updateOrgRankingPerformanceAppraisal(PerformanceAppraisalDTO performanceAppraisalDTO);
 
     /**
      * 评议撤回
