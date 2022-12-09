@@ -142,6 +142,7 @@
         WHERE
         pf.delete_flag = 0
         AND pa.performance_appraisal_id = #{appraisalId}
+        ORDER BY pf.sort ASC
     </select>
     <select id="selectPerformanceAppraisalListByName"
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">

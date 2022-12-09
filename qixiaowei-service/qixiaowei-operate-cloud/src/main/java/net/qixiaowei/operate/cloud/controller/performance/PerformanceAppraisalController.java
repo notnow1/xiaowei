@@ -211,7 +211,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 查询组织绩效结果排名
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
-    @PostMapping("/orgRank/list")
+    @PostMapping("/orgProportion")
     public AjaxResult orgProportion(@RequestBody PerformanceAppraisalDTO performanceAppraisalDTO) {
         List<Long> appraisalObjectsIds = performanceAppraisalDTO.getAppraisalObjectsIds();
         Integer queryType = performanceAppraisalDTO.getQueryType();
