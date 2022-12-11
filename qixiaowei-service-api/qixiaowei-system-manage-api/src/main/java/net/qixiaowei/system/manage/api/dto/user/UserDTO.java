@@ -64,6 +64,10 @@ public class UserDTO {
      */
     private String employeeName;
     /**
+     * 员工工号
+     */
+    private String employeeCode;
+    /**
      * 用户帐号
      */
     @Xss(message = "用户账号不能包含脚本字符")

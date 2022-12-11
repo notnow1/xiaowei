@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.message.mapper.backlog.BacklogMapper">
+    <!--    查询待办事项表-->
+    <select id="selectBacklogByBacklogId"
+            resultType="net.qixiaowei.message.api.dto.backlog.BacklogDTO">
+        SELECT
+        backlog_id,business_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM backlog
+        WHERE backlog_id=#{backlogId}
+        and delete_flag=0
+    </select>
+
+    <select id="countBacklog"
+            resultType="java.lang.Integer">
+        SELECT count(1) FROM backlog WHERE user_id = #{userId} AND status = 0 AND delete_flag = 0
+    </select>
+
+
+    <select id="selectUserBacklog"
+            resultType="net.qixiaowei.message.api.dto.backlog.BacklogDTO">
+        SELECT
+        backlog_id,business_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM backlog
+        WHERE business_type=#{businessType}
+        AND business_subtype=#{businessSubtype}
+        AND business_id=#{businessId}
+        AND user_id=#{userId}
+        AND delete_flag=0
+        ORDER BY backlog_initiation_time DESC
+        LIMIT 1
+    </select>
+
+    <!--    批量查询待办事项表-->
+    <select id="selectBacklogByBacklogIds"
+            resultType="net.qixiaowei.message.api.dto.backlog.BacklogDTO">
+        SELECT
+        backlog_id,business_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM backlog
+        WHERE backlog_id in
+        <foreach item="item"
+                 collection="backlogIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询待办事项表列表-->
+    <select id="selectBacklogList" resultType="net.qixiaowei.message.api.dto.backlog.BacklogDTO">
+        SELECT
+        backlog_id,
+        business_type,
+        business_subtype,
+        business_id,user_id,
+        backlog_name,
+        backlog_initiator,
+        backlog_initiator_name,
+        backlog_initiation_time,
+        backlog_process_time,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM backlog
+        WHERE delete_flag=0
+        <if test="backlog.backlogName != null and backlog.backlogName != ''">
+            and backlog_name LIKE concat('%', #{backlog.backlogName}, '%')
+        </if>
+        <if test="backlog.backlogInitiatorName != null and backlog.backlogInitiatorName != ''">
+            and backlog_initiator_name LIKE concat('%', #{backlog.backlogInitiatorName}, '%')
+        </if>
+        <if test="backlog.backlogInitiationTime != null">
+            and date_format(backlog_initiation_time,'%y%m%d') = date_format(#{backlog.backlogInitiationTime},'%y%m%d')
+        </if>
+        <if test="backlog.params.backlogInitiationTimeStart != null and backlog.params.backlogInitiationTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(backlog_initiation_time,'%y%m%d') &gt;=
+            date_format(#{params.backlogInitiationTimeStart},'%y%m%d')
+        </if>
+        <if test="backlog.params.backlogInitiationTimeEnd != null and backlog.params.backlogInitiationTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(backlog_initiation_time,'%y%m%d') &lt;=
+            date_format(#{params.backlogInitiationTimeEnd},'%y%m%d')
+        </if>
+        <if test="backlog.backlogProcessTime != null">
+            and date_format(backlog_process_time,'%y%m%d') = date_format(#{backlog.backlogProcessTime},'%y%m%d')
+        </if>
+        <if test="backlog.params.backlogProcessTimeStart != null and backlog.params.backlogProcessTimeStart != ''"><!-- 开始时间检索 -->
+            AND date_format(backlog_process_time,'%y%m%d') &gt;=
+            date_format(#{params.backlogProcessTimeStart},'%y%m%d')
+        </if>
+        <if test="backlog.params.backlogProcessTimeEnd != null and backlog.params.backlogProcessTimeEnd != ''"><!-- 结束时间检索 -->
+            AND date_format(backlog_process_time,'%y%m%d') &lt;=
+            date_format(#{params.backlogProcessTimeEnd},'%y%m%d')
+        </if>
+        <if test="backlog.status != null">
+            and status=#{backlog.status}
+        </if>
+        ORDER BY update_time DESC
+    </select>
+    <!--新增待办事项表-->
+    <insert id="insertBacklog" useGeneratedKeys="true" keyProperty="backlogId">
+        INSERT INTO backlog
+        (backlog_idbusiness_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{backlog.businessType},#{backlog.businessSubtype},#{backlog.businessId},#{backlog.userId},#{backlog.backlogName},#{backlog.backlogInitiator},#{backlog.backlogInitiatorName},#{backlog.backlogInitiationTime},#{backlog.backlogProcessTime},#{backlog.status},#{backlog.deleteFlag},#{backlog.createBy},#{backlog.createTime},#{backlog.updateBy},#{backlog.updateTime})
+    </insert>
+    <!--修改待办事项表-->
+    <update id="updateBacklog">
+        UPDATE backlog
+        SET
+        <if test="backlog.businessType != null">
+            business_type=#{backlog.businessType},
+        </if>
+        <if test="backlog.businessSubtype != null">
+            business_subtype=#{backlog.businessSubtype},
+        </if>
+        <if test="backlog.businessId != null">
+            business_id=#{backlog.businessId},
+        </if>
+        <if test="backlog.userId != null">
+            user_id=#{backlog.userId},
+        </if>
+        <if test="backlog.backlogName != null and backlog.backlogName != ''">
+            backlog_name=#{backlog.backlogName},
+        </if>
+        <if test="backlog.backlogInitiator != null">
+            backlog_initiator=#{backlog.backlogInitiator},
+        </if>
+        <if test="backlog.backlogInitiatorName != null and backlog.backlogInitiatorName != ''">
+            backlog_initiator_name=#{backlog.backlogInitiatorName},
+        </if>
+        <if test="backlog.backlogInitiationTime != null">
+            backlog_initiation_time=#{backlog.backlogInitiationTime},
+        </if>
+        <if test="backlog.backlogProcessTime != null">
+            backlog_process_time=#{backlog.backlogProcessTime},
+        </if>
+        <if test="backlog.status != null">
+            status=#{backlog.status},
+        </if>
+        <if test="backlog.deleteFlag != null">
+            delete_flag=#{backlog.deleteFlag},
+        </if>
+        <if test="backlog.createBy != null">
+            create_by=#{backlog.createBy},
+        </if>
+        <if test="backlog.createTime != null">
+            create_time=#{backlog.createTime},
+        </if>
+        <if test="backlog.updateBy != null">
+            update_by=#{backlog.updateBy},
+        </if>
+        <if test="backlog.updateTime != null">
+            update_time=#{backlog.updateTime}
+        </if>
+        WHERE
+        backlog_id=#{backlog.backlogId}
+    </update>
+    <!--逻辑删除待办事项表-->
+    <update id="logicDeleteBacklogByBacklogId">
+        UPDATE backlog
+        SET delete_flag= 1,
+        update_by=#{backlog.updateBy},
+        update_time=#{backlog.updateTime}
+        WHERE
+        backlog_id=#{backlog.backlogId}
+    </update>
+    <!--逻辑批量删除待办事项表-->
+    <update id="logicDeleteBacklogByBacklogIds">
+        UPDATE backlog
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        backlog_id IN
+        <foreach item="item"
+                 collection="backlogIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增待办事项表-->
+    <insert id="batchBacklog">
+        INSERT INTO backlog
+        (backlog_idbusiness_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="backlogs"
+                 separator=",">
+            (#{item.businessType},#{item.businessSubtype},#{item.businessId},#{item.userId},#{item.backlogName},#{item.backlogInitiator},#{item.backlogInitiatorName},#{item.backlogInitiationTime},#{item.backlogProcessTime},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除待办事项表-->
+    <delete id="deleteBacklogByBacklogId">
+        DELETE FROM backlog
+        WHERE backlog_id=#{backlog}
+
+    </delete>
+    <!--物理批量删除待办事项表-->
+    <delete id="deleteBacklogByBacklogIds">
+        DELETE FROM backlog
+        WHERE backlog_id IN
+        <foreach item="item"
+                 collection="backlogIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改待办事项表-->
+    <update id="updateBacklogs">
+        update backlog
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="business_type=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.businessType != null">
+                        when backlog_id=#{item.backlogId} then #{item.businessType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_subtype=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.businessSubtype != null">
+                        when backlog_id=#{item.backlogId} then #{item.businessSubtype}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_id=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.businessId != null">
+                        when backlog_id=#{item.backlogId} then #{item.businessId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="user_id=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.userId != null">
+                        when backlog_id=#{item.backlogId} then #{item.userId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="backlog_name=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.backlogName != null and item.backlogName != ''">
+                        when backlog_id=#{item.backlogId} then #{item.backlogName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="backlog_initiator=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.backlogInitiator != null">
+                        when backlog_id=#{item.backlogId} then #{item.backlogInitiator}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="backlog_initiator_name=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.backlogInitiatorName != null and item.backlogInitiatorName != ''">
+                        when backlog_id=#{item.backlogId} then #{item.backlogInitiatorName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="backlog_initiation_time=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.backlogInitiationTime != null">
+                        when backlog_id=#{item.backlogId} then #{item.backlogInitiationTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="backlog_process_time=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.backlogProcessTime != null">
+                        when backlog_id=#{item.backlogId} then #{item.backlogProcessTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.status != null">
+                        when backlog_id=#{item.backlogId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when backlog_id=#{item.backlogId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when backlog_id=#{item.backlogId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when backlog_id=#{item.backlogId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when backlog_id=#{item.backlogId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="backlogList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when backlog_id=#{item.backlogId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="backlogList" separator="or" item="item" index="index">
+            backlog_id=#{item.backlogId}
+        </foreach>
+    </update>
+</mapper>
+
+

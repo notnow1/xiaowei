@@ -1,1 +1,2 @@
 net.qixiaowei.message.api.factory.message.RemoteMessageFallbackFactory
+net.qixiaowei.message.api.factory.backlog.RemoteBacklogFallbackFactory

@@ -83,6 +83,11 @@
             <artifactId>qixiaowei-operate-cloud-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-message-api</artifactId>
+        </dependency>
+
     </dependencies>
 
 

@@ -98,15 +98,15 @@
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-system-manage-api</artifactId>
         </dependency>
+
         <dependency>
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-operate-cloud-api</artifactId>
         </dependency>
+
         <dependency>
             <groupId>net.qixiaowei</groupId>
-            <artifactId>qixiaowei-operate-cloud</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
+            <artifactId>qixiaowei-message-api</artifactId>
         </dependency>
 
     </dependencies>

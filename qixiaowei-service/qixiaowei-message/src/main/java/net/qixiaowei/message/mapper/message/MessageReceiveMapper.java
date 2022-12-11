@@ -21,6 +21,13 @@ public interface MessageReceiveMapper{
     */
     MessageReceiveDTO selectMessageReceiveByMessageReceiveId(@Param("messageReceiveId")Long messageReceiveId);
 
+    /**
+     * 统计未读消息
+     *
+     * @param userId 用户ID
+     * @return 未读消息数量
+     */
+    Integer countUnreadMessage(@Param("userId")Long userId);
 
     /**
     * 批量查询消息接收表

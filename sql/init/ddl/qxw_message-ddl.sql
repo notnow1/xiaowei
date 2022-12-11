@@ -55,3 +55,26 @@ CREATE TABLE message_content_config(
 )  COMMENT = '消息内容配置表';
 
 
+CREATE TABLE backlog(
+    backlog_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    business_type SMALLINT UNSIGNED NOT NULL   COMMENT '业务类型' ,
+    business_subtype SMALLINT UNSIGNED NOT NULL   COMMENT '业务子类型' ,
+    business_id BIGINT UNSIGNED NOT NULL   COMMENT '业务ID' ,
+    user_id BIGINT UNSIGNED NOT NULL   COMMENT '用户ID' ,
+    backlog_name VARCHAR(64)    COMMENT '待办名称' ,
+    backlog_initiator BIGINT UNSIGNED NOT NULL   COMMENT '待办事项发起者' ,
+    backlog_initiator_name VARCHAR(256)    COMMENT '待办事项发起者名称' ,
+    backlog_initiation_time DATETIME NOT NULL   COMMENT '待办事项发起时间' ,
+    backlog_process_time DATETIME    COMMENT '待办事项处理时间' ,
+    status TINYINT UNSIGNED NOT NULL   COMMENT '状态:0待办;1已办' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (backlog_id)
+)  COMMENT = '待办事项表';
+
+
+

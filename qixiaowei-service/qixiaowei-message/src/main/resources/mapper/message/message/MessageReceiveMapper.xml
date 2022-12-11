@@ -12,6 +12,12 @@
         and mr.delete_flag=0
     </select>
 
+    <select id="countUnreadMessage"
+            resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM message_receive mr
+        WHERE mr.user_id = #{userId} AND mr.status = 0 AND mr.delete_flag = 0
+    </select>
+
     <!--    批量查询消息接收表-->
     <select id="selectMessageReceiveByMessageReceiveIds"
             resultType="net.qixiaowei.message.api.dto.message.MessageReceiveDTO">
@@ -44,10 +50,7 @@
             and m.message_title LIKE concat('%', #{messageReceive.params.messageTitle}, '%')
         </if>
         <if test="messageReceive.createTime != null">
-            and mr.create_time=#{messageReceive.createTime}
-        </if>
-        <if test="messageReceive.params.createTimeStart != null and messageReceive.params.createTimeStart != ''"><!-- 开始时间检索 -->
-            AND date_format(mr.create_time,'%y%m%d') &gt;= date_format(#{mr.params.createTimeStart},'%y%m%d')
+            and date_format(mr.create_time,'%y%m%d') = date_format(#{mr.createTime},'%y%m%d')
         </if>
         <if test="messageReceive.params.createTimeStart != null and messageReceive.params.createTimeStart != ''"><!-- 开始时间检索 -->
             AND date_format(mr.create_time,'%y%m%d') &gt;= date_format(#{mr.params.createTimeStart},'%y%m%d')

@@ -12,15 +12,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import java.util.List;
+
 
 /**
- * 服务
+ * 消息服务
  */
 @FeignClient(contextId = "remoteMessageService", value = ServiceNameConstants.MESSAGE_SERVICE, fallbackFactory = RemoteMessageFallbackFactory.class)
 public interface RemoteMessageService {
 
     String API_PREFIX_MESSAGE = "/message";
 
-    @PostMapping("/sendMessage")
-    R<Boolean> sendMessage(@Validated @RequestBody MessageSendDTO messageSendDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    /**
+     * 发送单个消息
+     *
+     * @param messageSendDTO 消息
+     * @param source     请求来源
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_MESSAGE + "/sendMessage")
+    R<?> sendMessage(@Validated @RequestBody MessageSendDTO messageSendDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 批量发送消息
+     *
+     * @param messageSendDTOS 消息列表
+     * @param source     请求来源
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_MESSAGE + "/sendMessages")
+    R<?> sendMessages(@Validated @RequestBody List<MessageSendDTO> messageSendDTOS, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

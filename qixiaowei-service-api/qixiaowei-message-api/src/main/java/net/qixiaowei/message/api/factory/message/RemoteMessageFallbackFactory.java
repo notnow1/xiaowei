@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 /**
  * 消息服务降级处理
@@ -21,8 +23,13 @@ public class RemoteMessageFallbackFactory implements FallbackFactory<RemoteMessa
         log.error("消息服务调用失败:{}", throwable.getMessage());
         return new RemoteMessageService() {
             @Override
-            public R<Boolean> sendMessage(MessageSendDTO messageSendDTO, String source) {
+            public R<?> sendMessage(MessageSendDTO messageSendDTO, String source) {
                 return R.fail("发送消息失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<?> sendMessages(List<MessageSendDTO> messageSendDTOS, String source) {
+                return R.fail("批量发送消息失败:" + throwable.getMessage());
             }
         };
     }
