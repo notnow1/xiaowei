@@ -55,17 +55,6 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     }
 
     /**
-     * 分页查询部门调薪计划表列表
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:pageList")
-    @GetMapping("/pageList")
-    public TableDataInfo pageList(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
-        startPage();
-        List<DeptSalaryAdjustPlanDTO> list = deptSalaryAdjustPlanService.selectDeptSalaryAdjustPlanList(deptSalaryAdjustPlanDTO);
-        return getDataTable(list);
-    }
-
-    /**
      * 查询部门调薪计划表列表
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:list")

@@ -1,77 +1,81 @@
 package net.qixiaowei.operate.cloud.api.dto.salary;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
-import java.math.BigDecimal;
+
 import javax.validation.groups.Default;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
-* 部门调薪计划表
-* @author Graves
-* @since 2022-12-11
-*/
+ * 部门调薪计划表
+ *
+ * @author Graves
+ * @since 2022-12-11
+ */
 @Data
 @Accessors(chain = true)
 public class DeptSalaryAdjustPlanDTO {
 
     //查询检验
-    public interface QueryDeptSalaryAdjustPlanDTO extends Default{
+    public interface QueryDeptSalaryAdjustPlanDTO extends Default {
 
     }
+
     //新增检验
-    public interface AddDeptSalaryAdjustPlanDTO extends Default{
+    public interface AddDeptSalaryAdjustPlanDTO extends Default {
 
     }
 
     //删除检验
-    public interface DeleteDeptSalaryAdjustPlanDTO extends Default{
+    public interface DeleteDeptSalaryAdjustPlanDTO extends Default {
 
     }
+
     //修改检验
-    public interface UpdateDeptSalaryAdjustPlanDTO extends Default{
+    public interface UpdateDeptSalaryAdjustPlanDTO extends Default {
 
     }
+
     /**
-    * ID
-    */
-    private  Long deptSalaryAdjustPlanId;
+     * ID
+     */
+    private Long deptSalaryAdjustPlanId;
     /**
-    * 预算年度
-    */
-    private  Integer planYear;
+     * 预算年度
+     */
+    private Integer planYear;
     /**
-    * 调薪总数
-    */
-    private  BigDecimal salaryAdjustTotal;
+     * 调薪总数
+     */
+    private BigDecimal salaryAdjustTotal;
     /**
-    * 删除标记:0未删除;1已删除
-    */
-    private  Integer deleteFlag;
+     * 删除标记:0未删除;1已删除
+     */
+    private Integer deleteFlag;
     /**
-    * 创建人
-    */
-    private  Long createBy;
+     * 创建人
+     */
+    private Long createBy;
     /**
-    * 创建时间
-    */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  createTime;
+     * 创建时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
     /**
-    * 更新人
-    */
-    private  Long updateBy;
+     * 更新人
+     */
+    private Long updateBy;
     /**
-    * 更新时间
-    */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  updateTime;
+     * 更新时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
     /**
-    * 租户ID
-    */
-    private  Long tenantId;
+     * 租户ID
+     */
+    private Long tenantId;
 
 }
 
