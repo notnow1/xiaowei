@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.DeptSalaryAdjustItemMapper">
+    <!--    查询部门调薪项表-->
+    <select id="selectDeptSalaryAdjustItemByDeptSalaryAdjustItemId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO">
+        SELECT
+        dept_salary_adjust_item_id,dept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_salary_adjust_item
+        WHERE  dept_salary_adjust_item_id=#{deptSalaryAdjustItemId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询部门调薪项表-->
+    <select id="selectDeptSalaryAdjustItemByDeptSalaryAdjustItemIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO">
+        SELECT
+        dept_salary_adjust_item_id,dept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_salary_adjust_item
+        WHERE  dept_salary_adjust_item_id in
+            <foreach item="item"
+                     collection="deptSalaryAdjustItemIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询部门调薪项表列表-->
+    <select id="selectDeptSalaryAdjustItemList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO">
+        SELECT
+        dept_salary_adjust_item_id,dept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_salary_adjust_item
+        WHERE delete_flag=0
+                        <if test="deptSalaryAdjustItem.deptSalaryAdjustItemId != null">
+                            and dept_salary_adjust_item_id=#{deptSalaryAdjustItem.deptSalaryAdjustItemId}
+                        </if>
+                        <if test="deptSalaryAdjustItem.deptSalaryAdjustPlanId != null">
+                            and dept_salary_adjust_plan_id=#{deptSalaryAdjustItem.deptSalaryAdjustPlanId}
+                        </if>
+                        <if test="deptSalaryAdjustItem.departmentId != null">
+                            and department_id=#{deptSalaryAdjustItem.departmentId}
+                        </if>
+                        <if test="deptSalaryAdjustItem.coveragePercentage != null">
+                            and coverage_percentage=#{deptSalaryAdjustItem.coveragePercentage}
+                        </if>
+                        <if test="deptSalaryAdjustItem.adjustmentPercentage != null">
+                            and adjustment_percentage=#{deptSalaryAdjustItem.adjustmentPercentage}
+                        </if>
+                        <if test="deptSalaryAdjustItem.adjustmentTime != null">
+                            and adjustment_time=#{deptSalaryAdjustItem.adjustmentTime}
+                        </if>
+                        <if test="deptSalaryAdjustItem.deleteFlag != null">
+                            and delete_flag=#{deptSalaryAdjustItem.deleteFlag}
+                        </if>
+                        <if test="deptSalaryAdjustItem.createBy != null">
+                            and create_by=#{deptSalaryAdjustItem.createBy}
+                        </if>
+                        <if test="deptSalaryAdjustItem.createTime != null">
+                            and create_time=#{deptSalaryAdjustItem.createTime}
+                        </if>
+                        <if test="deptSalaryAdjustItem.updateBy != null">
+                            and update_by=#{deptSalaryAdjustItem.updateBy}
+                        </if>
+                        <if test="deptSalaryAdjustItem.updateTime != null">
+                            and update_time=#{deptSalaryAdjustItem.updateTime}
+                        </if>
+    </select>
+    <!--新增部门调薪项表-->
+    <insert id="insertDeptSalaryAdjustItem" useGeneratedKeys="true" keyProperty="deptSalaryAdjustItemId">
+        INSERT INTO dept_salary_adjust_item (dept_salary_adjust_item_iddept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{deptSalaryAdjustItem.deptSalaryAdjustPlanId},#{deptSalaryAdjustItem.departmentId},#{deptSalaryAdjustItem.coveragePercentage},#{deptSalaryAdjustItem.adjustmentPercentage},#{deptSalaryAdjustItem.adjustmentTime},#{deptSalaryAdjustItem.deleteFlag},#{deptSalaryAdjustItem.createBy},#{deptSalaryAdjustItem.createTime},#{deptSalaryAdjustItem.updateBy},#{deptSalaryAdjustItem.updateTime})
+    </insert>
+    <!--修改部门调薪项表-->
+    <update id="updateDeptSalaryAdjustItem">
+        UPDATE dept_salary_adjust_item
+        SET
+                    <if test="deptSalaryAdjustItem.deptSalaryAdjustPlanId != null">
+                        dept_salary_adjust_plan_id=#{deptSalaryAdjustItem.deptSalaryAdjustPlanId},
+                    </if>
+                    <if test="deptSalaryAdjustItem.departmentId != null">
+                        department_id=#{deptSalaryAdjustItem.departmentId},
+                    </if>
+                    <if test="deptSalaryAdjustItem.coveragePercentage != null">
+                        coverage_percentage=#{deptSalaryAdjustItem.coveragePercentage},
+                    </if>
+                    <if test="deptSalaryAdjustItem.adjustmentPercentage != null">
+                        adjustment_percentage=#{deptSalaryAdjustItem.adjustmentPercentage},
+                    </if>
+                    <if test="deptSalaryAdjustItem.adjustmentTime != null">
+                        adjustment_time=#{deptSalaryAdjustItem.adjustmentTime},
+                    </if>
+                    <if test="deptSalaryAdjustItem.deleteFlag != null">
+                        delete_flag=#{deptSalaryAdjustItem.deleteFlag},
+                    </if>
+                    <if test="deptSalaryAdjustItem.createBy != null">
+                        create_by=#{deptSalaryAdjustItem.createBy},
+                    </if>
+                    <if test="deptSalaryAdjustItem.createTime != null">
+                        create_time=#{deptSalaryAdjustItem.createTime},
+                    </if>
+                    <if test="deptSalaryAdjustItem.updateBy != null">
+                        update_by=#{deptSalaryAdjustItem.updateBy},
+                    </if>
+                    <if test="deptSalaryAdjustItem.updateTime != null">
+                        update_time=#{deptSalaryAdjustItem.updateTime}
+                    </if>
+        WHERE
+                 dept_salary_adjust_item_id=#{deptSalaryAdjustItem.deptSalaryAdjustItemId}
+    </update>
+    <!--逻辑删除部门调薪项表-->
+    <update id="logicDeleteDeptSalaryAdjustItemByDeptSalaryAdjustItemId">
+        UPDATE dept_salary_adjust_item
+        SET     delete_flag= 1,
+                update_by=#{deptSalaryAdjustItem.updateBy},
+                update_time=#{deptSalaryAdjustItem.updateTime}
+        WHERE
+                dept_salary_adjust_item_id=#{deptSalaryAdjustItem.deptSalaryAdjustItemId}
+    </update>
+    <!--逻辑批量删除部门调薪项表-->
+    <update id="logicDeleteDeptSalaryAdjustItemByDeptSalaryAdjustItemIds">
+        UPDATE dept_salary_adjust_item
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         dept_salary_adjust_item_id IN
+            <foreach item="item"
+                     collection="deptSalaryAdjustItemIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增部门调薪项表-->
+    <insert id="batchDeptSalaryAdjustItem">
+        INSERT INTO dept_salary_adjust_item (dept_salary_adjust_item_iddept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="deptSalaryAdjustItems"
+                 separator=",">
+            (#{item.deptSalaryAdjustPlanId},#{item.departmentId},#{item.coveragePercentage},#{item.adjustmentPercentage},#{item.adjustmentTime},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除部门调薪项表-->
+    <delete id="deleteDeptSalaryAdjustItemByDeptSalaryAdjustItemId">
+        DELETE FROM dept_salary_adjust_item
+        WHERE  dept_salary_adjust_item_id=#{deptSalaryAdjustItem}
+
+    </delete>
+    <!--物理批量删除部门调薪项表-->
+    <delete id="deleteDeptSalaryAdjustItemByDeptSalaryAdjustItemIds">
+        DELETE FROM dept_salary_adjust_item
+        WHERE  dept_salary_adjust_item_id IN
+            <foreach item="item"
+                     collection="deptSalaryAdjustItemIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改部门调薪项表-->
+    <update id="updateDeptSalaryAdjustItems">
+        update dept_salary_adjust_item
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="dept_salary_adjust_plan_id=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.deptSalaryAdjustPlanId != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.deptSalaryAdjustPlanId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="department_id=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.departmentId != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.departmentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="coverage_percentage=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.coveragePercentage != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.coveragePercentage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="adjustment_percentage=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.adjustmentPercentage != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.adjustmentPercentage}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="adjustment_time=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.adjustmentTime != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.adjustmentTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="deptSalaryAdjustItemList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="deptSalaryAdjustItemList" separator="or" item="item" index="index">
+                    dept_salary_adjust_item_id=#{item.deptSalaryAdjustItemId}
+        </foreach>
+    </update>
+</mapper>
+
+
