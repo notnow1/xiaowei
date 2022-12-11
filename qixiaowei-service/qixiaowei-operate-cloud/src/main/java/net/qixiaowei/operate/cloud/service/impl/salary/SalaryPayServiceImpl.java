@@ -959,10 +959,16 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      */
     @Override
     public List<SalaryPayDTO> selectSalaryPayBySalaryPay(Integer isSelect, List<Long> salaryPayIds) {
+        if (StringUtils.isNull(isSelect)) {
+            throw new ServiceException("请选择请选择导出数据范围");
+        }
         List<SalaryPayDTO> salaryPayDTOS;
         if (isSelect == 1) {
             salaryPayDTOS = salaryPayMapper.selectSalaryPayList(new SalaryPay());
         } else {
+            if (StringUtils.isEmpty(salaryPayIds)) {
+                throw new ServiceException("请选择要导出的月度工资");
+            }
             for (Long salaryPayId : salaryPayIds) {
                 if (StringUtils.isNull(salaryPayId)) {
                     throw new ServiceException("工资发薪id存在空值");
@@ -971,7 +977,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             salaryPayDTOS = salaryPayMapper.selectSalaryPayBySalaryPayIds(salaryPayIds);
         }
         if (StringUtils.isEmpty(salaryPayDTOS)) {
-            throw new ServiceException("当前查询的工资发薪列表为空");
+            throw new ServiceException("当前需要导出的工资发薪列表已不存在");
         }
         List<Long> employeeIds = new ArrayList<>();
         for (SalaryPayDTO salaryPayDTO : salaryPayDTOS) {
@@ -988,13 +994,13 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         }
         List<Long> salaryPayIdList = new ArrayList<>();
         for (SalaryPayDTO salaryPayDTO : salaryPayDTOS) {
+            salaryPayIdList.add(salaryPayDTO.getSalaryPayId());
             for (EmployeeDTO employeeDTO : employeeDTOS) {
                 if (salaryPayDTO.getEmployeeId().equals(employeeDTO.getEmployeeId())) {
                     salaryPayDTO.setEmployeeName(employeeDTO.getEmployeeName());
                     salaryPayDTO.setEmployeeCode(employeeDTO.getEmployeeCode());
                     salaryPayDTO.setEmployeeDepartmentName(employeeDTO.getEmployeeDepartmentName());
                     salaryPayDTO.setEmployeePostName(employeeDTO.getEmployeePostName());
-                    salaryPayDTO.setEmployeeName(employeeDTO.getEmployeeName());
                     break;
                 }
             }
@@ -1003,14 +1009,44 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         for (SalaryPayDTO salaryPayDTO : salaryPayDTOS) {
             List<SalaryPayDetailsDTO> salaryPayDetailsDTOS = new ArrayList<>();
             for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
-                if (salaryPayDTO.getSalaryPayId().equals(salaryPayDetailsDTO.getSalaryPayDetailsId())) {
+                if (salaryPayDTO.getSalaryPayId().equals(salaryPayDetailsDTO.getSalaryPayId())) {
+                    salarySetName(salaryPayDetailsDTO);
                     salaryPayDetailsDTOS.add(salaryPayDetailsDTO);
-                    break;
                 }
             }
             salaryPayDTO.setSalaryPayDetailsDTOList(salaryPayDetailsDTOS);
         }
         return salaryPayDTOS;
+    }
+
+    /**
+     * 为一级工资二级工资附名称
+     *
+     * @param salaryPayDetailsDTO 发薪详情表
+     */
+    @Override
+    public void salarySetName(SalaryPayDetailsDTO salaryPayDetailsDTO) {
+        Integer secondLevelItem = salaryPayDetailsDTO.getSecondLevelItem();
+        switch (secondLevelItem) {
+            case 1:
+                salaryPayDetailsDTO.setSecondLevelItemValue("工资");
+                break;
+            case 2:
+                salaryPayDetailsDTO.setSecondLevelItemValue("津贴");
+                break;
+            case 3:
+                salaryPayDetailsDTO.setSecondLevelItemValue("福利");
+                break;
+            case 4:
+                salaryPayDetailsDTO.setSecondLevelItemValue("奖金");
+                break;
+            case 5:
+                salaryPayDetailsDTO.setSecondLevelItemValue("代扣代缴");
+                break;
+            case 6:
+                salaryPayDetailsDTO.setSecondLevelItemValue("其他扣款");
+                break;
+        }
     }
 
     /**

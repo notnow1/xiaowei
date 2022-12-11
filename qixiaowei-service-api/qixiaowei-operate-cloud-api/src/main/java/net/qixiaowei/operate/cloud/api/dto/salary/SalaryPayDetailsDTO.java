@@ -59,9 +59,33 @@ public class SalaryPayDetailsDTO {
      */
     private Integer sort;
     /**
+     * 一级项目:1总工资包;2总奖金包;3总扣减项
+     */
+    private Integer firstLevelItem;
+    /**
+     * 一级项目:1总工资包;2总奖金包;3总扣减项
+     */
+    private String firstLevelItemValue;
+    /**
+     * 二级项目:1工资;2津贴;3福利;4奖金;5代扣代缴;6其他扣款
+     */
+    private Integer secondLevelItem;
+    /**
+     * 二级项目:1工资;2津贴;3福利;4奖金;5代扣代缴;6其他扣款
+     */
+    private String secondLevelItemValue;
+    /**
+     * 三级项目
+     */
+    private String thirdLevelItem;
+    /**
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
+    /**
+     * 是否满足条件（1-不为空且不为0，否则为0）
+     */
+    private Integer isCondition;
     /**
      * 创建人
      */

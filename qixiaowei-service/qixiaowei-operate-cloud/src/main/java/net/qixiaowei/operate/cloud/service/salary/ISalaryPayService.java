@@ -1,7 +1,9 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayExcel;
 
@@ -145,4 +147,11 @@ public interface ISalaryPayService {
      * @return List
      */
     List<SalaryPayDTO> selectSalaryPayBySalaryPay(Integer isSelect, List<Long> salaryPayIds);
+
+    /**
+     * 为一级工资二级工资附名称
+     *
+     * @param salaryPayDetailsDTO 发薪详情表
+     */
+    void salarySetName(SalaryPayDetailsDTO salaryPayDetailsDTO);
 }

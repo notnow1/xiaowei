@@ -72,39 +72,50 @@
     <select id="selectSalaryPayDetailsBySalaryPayId"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
         SELECT salary_pay_details_id,
-               salary_pay_id,
-               salary_item_id,
-               amount,
-               sort,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        salary_pay_id,
+        salary_item_id,
+        amount,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM salary_pay_details
         WHERE delete_flag = 0
-          AND salary_pay_id = #{salaryPayId}
+        AND salary_pay_id = #{salaryPayId}
         ORDER BY sort ASC
     </select>
     <select id="selectSalaryPayDetailsBySalaryPayIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
         SELECT
-        salary_pay_details_id, salary_pay_id, salary_item_id, amount, sort, delete_flag, create_by, create_time,
-        update_by, update_time
-        FROM salary_pay_details
-        WHERE delete_flag=0
+        spd.salary_pay_details_id,
+        spd.salary_pay_id,
+        spd.salary_item_id,
+        spd.amount,
+        spd.sort,
+        si.first_level_item,
+        si.second_level_item,
+        si.third_level_item
+        FROM
+        salary_pay_details spd
+        LEFT JOIN salary_item si ON si.salary_item_id = spd.salary_item_id
+        AND si.delete_flag = 0
+        WHERE
+        spd.delete_flag = 0
+        AND spd.salary_pay_id IN
         <foreach collection="salaryPayIds" separator="," open="(" close=")" item="item" index="index">
             #{item}
         </foreach>
-        ORDER BY sort ASC
+        ORDER BY spd.sort ASC
     </select>
     <!--新增工资发薪明细表-->
     <insert id="insertSalaryPayDetails" useGeneratedKeys="true" keyProperty="salaryPayDetailsId">
         INSERT INTO salary_pay_details
         (salary_pay_id, salary_item_id, amount, sort, delete_flag, create_by, create_time, update_by, update_time)
         VALUES (#{salaryPayDetails.salaryPayId}, #{salaryPayDetails.salaryItemId}, #{salaryPayDetails.amount},
-                #{salaryPayDetails.sort}, #{salaryPayDetails.deleteFlag}, #{salaryPayDetails.createBy},
-                #{salaryPayDetails.createTime}, #{salaryPayDetails.updateBy}, #{salaryPayDetails.updateTime})
+        #{salaryPayDetails.sort}, #{salaryPayDetails.deleteFlag}, #{salaryPayDetails.createBy},
+        #{salaryPayDetails.createTime}, #{salaryPayDetails.updateBy}, #{salaryPayDetails.updateTime})
     </insert>
     <!--修改工资发薪明细表-->
     <update id="updateSalaryPayDetails">

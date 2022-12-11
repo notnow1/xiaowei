@@ -9,12 +9,14 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,14 +120,65 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
      * @return List
      */
     public static List<List<Object>> dataList(List<SalaryPayDTO> salaryPayDTOS, ISalaryPayDetailsService salaryPayDetailsService, ISalaryItemService salaryItemService) {
+        List<List<Object>> list = new ArrayList<>();
         if (StringUtils.isEmpty(salaryPayDTOS)) {
             throw new ServiceException("工资发薪列表为空");
         }
-        List<Long> salaryPayIds = new ArrayList<>();
         for (SalaryPayDTO salaryPayDTO : salaryPayDTOS) {
-            salaryPayIds.add(salaryPayDTO.getSalaryPayId());
+            List<SalaryPayDetailsDTO> salaryPayDetailsDTOList = salaryPayDTO.getSalaryPayDetailsDTOList();
+            for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
+                if (StringUtils.isNotNull(salaryPayDetailsDTO.getAmount()) && salaryPayDetailsDTO.getAmount().compareTo(BigDecimal.ZERO) != 0) {
+                    salaryPayDetailsDTO.setIsCondition(1);
+                } else {
+                    salaryPayDetailsDTO.setIsCondition(0);
+                }
+            }
         }
-        return null;
+        for (SalaryPayDTO salaryPayDTO : salaryPayDTOS) {
+            List<SalaryPayDetailsDTO> salaryPayDetailsDTOList = salaryPayDTO.getSalaryPayDetailsDTOList();
+            List<Object> data0 = new ArrayList<Object>();
+            list.add(data0);
+            List<Object> data1 = new ArrayList<Object>();
+            //二级表头
+            data1.add("工号");
+            data1.add("姓名");
+            data1.add("部门");
+            data1.add("年度");
+            data1.add("月份");
+            for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
+                if (salaryPayDetailsDTO.getIsCondition() == 1) {
+                    data1.add(salaryPayDetailsDTO.getSecondLevelItemValue());
+                }
+            }
+            list.add(data1);
+            //三级表头
+            List<Object> data2 = new ArrayList<Object>();
+            data2.add("工号");
+            data2.add("姓名");
+            data2.add("部门");
+            data2.add("年度");
+            data2.add("月份");
+            for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
+                if (salaryPayDetailsDTO.getIsCondition() == 1) {
+                    data2.add(salaryPayDetailsDTO.getThirdLevelItem());
+                }
+            }
+            list.add(data2);
+            //数据内容
+            List<Object> data3 = new ArrayList<Object>();
+            data3.add(salaryPayDTO.getEmployeeCode());
+            data3.add(salaryPayDTO.getEmployeeName());
+            data3.add(salaryPayDTO.getEmployeeDepartmentName());
+            data3.add(salaryPayDTO.getPayYear());
+            data3.add(salaryPayDTO.getPayMonth());
+            for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOList) {
+                if (salaryPayDetailsDTO.getIsCondition() == 1) {
+                    data3.add(salaryPayDetailsDTO.getAmount());
+                }
+            }
+            list.add(data3);
+        }
+        return list;
     }
 }
 
