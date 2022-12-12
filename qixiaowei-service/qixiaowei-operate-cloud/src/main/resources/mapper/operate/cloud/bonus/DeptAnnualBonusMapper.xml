@@ -32,6 +32,9 @@
         dept_annual_bonus_id,annual_bonus_year,company_annual_bonus,department_annual_bonus,status,delete_flag,create_by,create_time,update_by,update_time
         FROM dept_annual_bonus
         WHERE delete_flag=0
+        <if test="deptAnnualBonus.createTimeYear != null">
+            and date_format(create_time ,'%Y') like '%${deptAnnualBonus.createTimeYear}%'
+        </if>
                         <if test="deptAnnualBonus.deptAnnualBonusId != null">
                             and dept_annual_bonus_id=#{deptAnnualBonus.deptAnnualBonusId}
                         </if>

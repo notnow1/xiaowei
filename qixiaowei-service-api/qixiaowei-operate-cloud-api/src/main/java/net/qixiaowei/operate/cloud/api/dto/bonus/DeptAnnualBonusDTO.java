@@ -100,8 +100,14 @@ public class DeptAnnualBonusDTO {
     /**
     * 创建时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private  Date  createTime;
+
+    /**
+     * 评议年度
+     */
+    private  String  createTimeYear;
+
     /**
     * 更新人
     */

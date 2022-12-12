@@ -147,4 +147,10 @@ public interface SalaryItemMapper {
      * @return Integer
      */
     Integer selectMaxSort();
+
+    /**
+     * 查找二级为奖金的三级工资条
+     * @return
+     */
+    List<SalaryItemDTO> applyBonusList();
 }

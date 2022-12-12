@@ -903,7 +903,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                                 employeeBudgetDetailsDTO.getOfficialRank() != datum.getEmployeeRank()){
                             OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(datum.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                             if (StringUtils.isNotNull(officialRankEmolumentDTO)){
-                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian());
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(2,BigDecimal.ROUND_FLOOR));
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
                             }
 
@@ -933,7 +933,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                         BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
                         if (null != agePayAmountLastYear && null != averageAdjust && agePayAmountLastYear.compareTo(new BigDecimal("0")) != 0 && averageAdjust.compareTo(new BigDecimal("0")) != 0) {
                             //增人/减人工资包  公式=平均规划新增人数×上年平均工资。可为负数（代表部门人数减少）
-                            increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust);
+                            increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust).setScale(2,BigDecimal.ROUND_FLOOR);
                         }
                     }
                     employeeBudgetDetailsDTO.setIncreaseAndDecreasePay(increaseAndDecreasePay);

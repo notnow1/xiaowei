@@ -121,6 +121,13 @@ public class SalaryItemController extends BaseController {
         return AjaxResult.success(salaryItemService.selectBonusItemList(salaryItemDTO));
     }
 
+    /**
+     * 查找二级为奖金的三级工资条
+     */
+    @GetMapping("/applyBonus")
+    public AjaxResult applyBonusList() {
+        return AjaxResult.success(salaryItemService.applyBonusList());
+    }
 
     /**
      * 查询工资项列表
