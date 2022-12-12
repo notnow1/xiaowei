@@ -258,15 +258,34 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
                   int nowForecastYear = packForecastYearType(targetDecomposeDTO);
                     Integer cycleNumber = decomposeDetailCyclesDTO.getCycleNumber();
-                    if (cycleNumber < nowForecastYear){
-                        if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
-                            //预测值
-                            forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
-                        }
-                    }else {
+                    //传入年份
+                    Integer targetYear = targetDecomposeDTO.getTargetYear();
+                    //当前年份
+                    int year = DateUtils.getYear();
+
+                    //判断年份
+                    if (targetYear>year){
                         if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
                             //预测值
                             forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                        }
+                    }else if (targetYear<year){
+                        if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
+                            //预测值
+                            forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleActual());
+                        }
+                    }else {
+                        //实际值
+                        if (cycleNumber < nowForecastYear){
+                            if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
+                                //预测值
+                                forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleActual());
+                            }
+                        }else {
+                            if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
+                                //预测值
+                                forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
+                            }
                         }
                     }
 
