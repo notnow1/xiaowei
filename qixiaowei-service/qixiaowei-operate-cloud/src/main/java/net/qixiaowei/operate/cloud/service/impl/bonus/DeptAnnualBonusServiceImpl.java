@@ -542,29 +542,31 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 }
                 deptAnnualBonusCanGrantDTO.setBeYearCanGrantManageAmount(beYearCanGrantManageAmount);
             }
-            for (DeptAnnualBonusCanGrantDTO deptAnnualBonusCanGrantDTO : deptAnnualBonusCanGrantDTOs) {
+            for (int i = 0; i < deptAnnualBonusCanGrantDTOs.size(); i++) {
                 //可分配年终奖
                 BigDecimal distributeBonus = new BigDecimal("0");
 
                 //已发放年终奖
                 BigDecimal bonusAmountSum = new BigDecimal("0");
-                List<DeptAnnualBonusItemDTO> deptAnnualBonusItemDTOS = deptAnnualBonusCanGrantDTO.getDeptAnnualBonusItemDTOS();
+                List<DeptAnnualBonusItemDTO> deptAnnualBonusItemDTOS = deptAnnualBonusCanGrantDTOs.get(i).getDeptAnnualBonusItemDTOS();
                 if (StringUtils.isNotEmpty(deptAnnualBonusItemDTOS)){
                     bonusAmountSum=  bonusAmountSum.add(deptAnnualBonusItemDTOS.stream().map(DeptAnnualBonusItemDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
                 }
                 //可发经营奖总包-金额
-                BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTO.getBeYearCanGrantManageAmount();
+                BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTOs.get(i).getBeYearCanGrantManageAmount();
                 if (null != beYearCanGrantManageAmount) {
                     distributeBonus = beYearCanGrantManageAmount.subtract(bonusAmountSum);
                 }
-                if (null == deptAnnualBonusCanGrantDTO.getDistributeBonus()){
-                    deptAnnualBonusCanGrantDTO.setDistributeBonus(distributeBonus);
+                if (null == deptAnnualBonusFactorDTOs.get(i).getDistributeBonus()){
+                    deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonus(distributeBonus);
+                }else {
+                    deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonus(deptAnnualBonusFactorDTOs.get(i).getDistributeBonus());
                 }
-                deptAnnualBonusCanGrantDTO.setDistributeBonusReference(distributeBonus);
+                deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonusReference(distributeBonus);
             }
 
-
         }
+
 
     }
 
