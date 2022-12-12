@@ -4,11 +4,28 @@
     <!--    查询奖金发放申请表-->
     <select id="selectBonusPayApplicationByBonusPayApplicationId"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
-        SELECT
-        bonus_pay_application_id,salary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time
-        FROM bonus_pay_application
-        WHERE  bonus_pay_application_id=#{bonusPayApplicationId}
-        and delete_flag=0
+        SELECT bpa.bonus_pay_application_id,
+               bpa.salary_item_id,
+               si.third_level_item ,
+               bpa.award_code,
+               bpa.award_name,
+               bpa.award_year,
+               bpa.award_month,
+               bpa.apply_department_id,
+               bpa.award_total_amount,
+               bpa.bonus_pay_object,
+               bpa.award_description,
+               bpa.delete_flag,
+               bpa.create_by,
+               bpa.create_time,
+               bpa.update_by,
+               bpa.update_time
+        FROM bonus_pay_application bpa
+                 left join salary_item si
+                           on si.salary_item_id  = bpa.salary_item_id
+                               and si.delete_flag =0
+        WHERE bpa.bonus_pay_application_id = #{bonusPayApplicationId}
+          and bpa.delete_flag = 0
     </select>
 
     <!--    批量查询奖金发放申请表-->
@@ -29,53 +46,79 @@
     <!--    查询奖金发放申请表列表-->
     <select id="selectBonusPayApplicationList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
         SELECT
-        bonus_pay_application_id,salary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time
-        FROM bonus_pay_application
-        WHERE delete_flag=0
+        bpa.bonus_pay_application_id,
+        bpa.salary_item_id,
+        si.third_level_item ,
+        bpa.award_code,
+        bpa.award_name,
+        bpa.award_year,
+        bpa.award_month,
+        bpa.apply_department_id,
+        bpa.award_total_amount,
+        bpa.bonus_pay_object,
+        bpa.award_description,
+        bpa.delete_flag,
+        bpa.create_by,
+        bpa.create_time,
+        bpa.update_by,
+        bpa.update_time
+        FROM
+        bonus_pay_application bpa
+        WHERE  bpa.delete_flag=0
+        left join salary_item si
+        on si.salary_item_id = bpa.salary_item_id
+        and si.delete_flag =0
+        <if test="bonusPayApplication.awardYearMonth != null and bonusPayApplication.awardYearMonth != ''">
+            and CONCAT(award_year,"/",award_month) = #{bonusPayApplication.awardYearMonth}
+        </if>
+        <if test="bonusPayApplication.thirdLevelItem != null and bonusPayApplication.thirdLevelItem != ''">
+            and  si.third_level_item like '%${bonusPayApplication.thirdLevelItem}%'
+        </if>
+
                         <if test="bonusPayApplication.bonusPayApplicationId != null">
-                            and bonus_pay_application_id=#{bonusPayApplication.bonusPayApplicationId}
+                            and  bpa.bonus_pay_application_id=#{bonusPayApplication.bonusPayApplicationId}
                         </if>
                         <if test="bonusPayApplication.salaryItemId != null">
-                            and salary_item_id=#{bonusPayApplication.salaryItemId}
+                            and  bpa.salary_item_id=#{bonusPayApplication.salaryItemId}
                         </if>
                         <if test="bonusPayApplication.awardCode != null and bonusPayApplication.awardCode != ''">
-                            and award_code=#{bonusPayApplication.awardCode}
+                            and  bpa.award_code=#{bonusPayApplication.awardCode}
                         </if>
                         <if test="bonusPayApplication.awardName != null and bonusPayApplication.awardName != ''">
-                            and award_name=#{bonusPayApplication.awardName}
+                            and  bpa.award_name=#{bonusPayApplication.awardName}
                         </if>
                         <if test="bonusPayApplication.awardYear != null">
-                            and award_year=#{bonusPayApplication.awardYear}
+                            and  bpa.award_year=#{bonusPayApplication.awardYear}
                         </if>
                         <if test="bonusPayApplication.awardMonth != null">
-                            and award_month=#{bonusPayApplication.awardMonth}
+                            and  bpa.award_month=#{bonusPayApplication.awardMonth}
                         </if>
                         <if test="bonusPayApplication.applyDepartmentId != null">
-                            and apply_department_id=#{bonusPayApplication.applyDepartmentId}
+                            and  bpa.apply_department_id=#{bonusPayApplication.applyDepartmentId}
                         </if>
                         <if test="bonusPayApplication.awardTotalAmount != null">
-                            and award_total_amount=#{bonusPayApplication.awardTotalAmount}
+                            and  bpa.award_total_amount=#{bonusPayApplication.awardTotalAmount}
                         </if>
                         <if test="bonusPayApplication.bonusPayObject != null">
-                            and bonus_pay_object=#{bonusPayApplication.bonusPayObject}
+                            and  bpa.bonus_pay_object=#{bonusPayApplication.bonusPayObject}
                         </if>
                         <if test="bonusPayApplication.awardDescription != null and bonusPayApplication.awardDescription != ''">
-                            and award_description=#{bonusPayApplication.awardDescription}
+                            and  bpa.award_description=#{bonusPayApplication.awardDescription}
                         </if>
                         <if test="bonusPayApplication.deleteFlag != null">
-                            and delete_flag=#{bonusPayApplication.deleteFlag}
+                            and  bpa.delete_flag=#{bonusPayApplication.deleteFlag}
                         </if>
                         <if test="bonusPayApplication.createBy != null">
-                            and create_by=#{bonusPayApplication.createBy}
+                            and  bpa.create_by=#{bonusPayApplication.createBy}
                         </if>
                         <if test="bonusPayApplication.createTime != null">
-                            and create_time=#{bonusPayApplication.createTime}
+                            and  bpa.create_time=#{bonusPayApplication.createTime}
                         </if>
                         <if test="bonusPayApplication.updateBy != null">
-                            and update_by=#{bonusPayApplication.updateBy}
+                            and  bpa.update_by=#{bonusPayApplication.updateBy}
                         </if>
                         <if test="bonusPayApplication.updateTime != null">
-                            and update_time=#{bonusPayApplication.updateTime}
+                            and  bpa.update_time=#{bonusPayApplication.updateTime}
                         </if>
     </select>
 <!--    取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计-->

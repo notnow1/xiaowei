@@ -263,8 +263,6 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
                 DeptAnnualBonusFactor deptAnnualBonusFactor = new DeptAnnualBonusFactor();
                 BeanUtils.copyProperties(deptAnnualBonusOperateDTO, deptAnnualBonusFactor);
-                //部门年终奖ID
-                deptAnnualBonusFactor.setDeptAnnualBonusId(deptAnnualBonus.getDeptAnnualBonusId());
                 deptAnnualBonusFactor.setUpdateTime(DateUtils.getNowDate());
                 deptAnnualBonusFactor.setUpdateBy(SecurityUtils.getUserId());
                 deptAnnualBonusFactorList.add(deptAnnualBonusFactor);
@@ -275,8 +273,6 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
                 DeptAnnualBonusOperate deptAnnualBonusOperate = new DeptAnnualBonusOperate();
                 BeanUtils.copyProperties(deptAnnualBonusOperateDTO, deptAnnualBonusOperate);
-                //部门年终奖ID
-                deptAnnualBonusOperate.setDeptAnnualBonusId(deptAnnualBonus.getDeptAnnualBonusId());
                 deptAnnualBonusOperate.setUpdateTime(DateUtils.getNowDate());
                 deptAnnualBonusOperate.setUpdateBy(SecurityUtils.getUserId());
                 deptAnnualBonusOperateList.add(deptAnnualBonusOperate);

@@ -43,21 +43,26 @@ public class BonusPayBudgetDeptDTO {
     */
     private  Long bonusPayApplicationId;
     /**
-    * 部门ID
-    */
-    private  Long departmentId;
-    /**
-     * 奖项类别,工资条ID
+     *  奖项类别,工资条ID
      */
     private  Long salaryItemId;
-    /**
-    * 奖金比例
-    */
-    private  BigDecimal bonusPercentage;
+
     /**
      * 奖项总金额
      */
     private  BigDecimal awardTotalAmount;
+    /**
+    * 部门ID
+    */
+    private  Long departmentId;
+    /**
+     * 部门名称
+     */
+    private  String departmentName;
+    /**
+    * 奖金比例
+    */
+    private  BigDecimal bonusPercentage;
     /**
     * 删除标记:0未删除;1已删除
     */

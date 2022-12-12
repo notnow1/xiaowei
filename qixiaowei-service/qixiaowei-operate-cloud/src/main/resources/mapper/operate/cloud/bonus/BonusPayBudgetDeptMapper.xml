@@ -81,6 +81,36 @@
         </foreach>
         and dpbd.delete_flag =0
     </select>
+<!--    根据奖金发放主表主键查询奖金发放预算部门表-->
+    <select id="selectBonusPayBudgetDeptByBonusPayApplicationId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO">
+        SELECT dpbd.bonus_pay_budget_dept_id,
+               dpbd.bonus_pay_application_id,
+               dpbd.department_id,
+               dpbd.bonus_percentage,
+               dpbd.delete_flag,
+               dpbd.create_by,
+               dpbd.create_time,
+               dpbd.update_by,
+               dpbd.update_time
+        FROM bonus_pay_budget_dept dpbd
+        WHERE dpbd.bonus_pay_application_id = #{bonusPayApplicationId}
+          and dpbd.delete_flag = 0
+    </select>
+<!--    批量查询奖金发放预算部门表-->
+    <select id="selectBonusPayBudgetDeptByBonusPayApplicationIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO">
+        SELECT
+        bonus_pay_budget_dept_id,bonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time
+        FROM bonus_pay_budget_dept
+        WHERE  bonus_pay_application_id in
+        <foreach item="item"
+                 collection="bonusPayApplicationIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增奖金发放预算部门表-->
     <insert id="insertBonusPayBudgetDept" useGeneratedKeys="true" keyProperty="bonusPayBudgetDeptId">
         INSERT INTO bonus_pay_budget_dept (bonus_pay_budget_dept_idbonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)

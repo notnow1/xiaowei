@@ -51,6 +51,10 @@ public class BonusPayObjectsDTO {
     */
     private  Long bonusPayObjectId;
     /**
+     * 奖金发放对象名称
+     */
+    private  String bonusPayObjectName;
+    /**
     * 奖项金额
     */
     private  BigDecimal awardAmount;

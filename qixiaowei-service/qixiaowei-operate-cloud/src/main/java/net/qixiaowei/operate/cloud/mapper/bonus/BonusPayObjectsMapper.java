@@ -21,7 +21,36 @@ public interface BonusPayObjectsMapper{
     */
     BonusPayObjectsDTO selectBonusPayObjectsByBonusPayObjectsId(@Param("bonusPayObjectsId")Long bonusPayObjectsId);
 
+    /**
+     * 根据奖金发放主表主键查询奖金发放对象员工部门表
+     *
+     * @param bonusPayApplicationId 奖金发放主表主键
+     * @return 奖金发放对象表
+     */
+    List<BonusPayObjectsDTO> selectBonusPayObjectsByBonusPayApplicationId(@Param("bonusPayApplicationId")Long bonusPayApplicationId);
 
+    /**
+     * 根据奖金发放主表主键集合查询奖金发放对象员工部门表
+     *
+     * @param bonusPayApplicationIds 奖金发放主表主键集合
+     * @return 奖金发放对象表
+     */
+    List<BonusPayObjectsDTO> selectBonusPayObjectsByBonusPayApplicationIds(@Param("bonusPayApplicationIds")List<Long> bonusPayApplicationIds);
+    /**
+     * 根据奖金发放主表主键查询奖金发放对象员工表
+     *
+     * @param bonusPayApplicationId 奖金发放主表主键
+     * @return 奖金发放对象表
+     */
+    List<BonusPayObjectsDTO> selectBonusPayEmployeeObjectsByBonusPayApplicationId(@Param("bonusPayApplicationId")Long bonusPayApplicationId);
+
+    /**
+     * 根据奖金发放主表主键查询奖金发放对象部门表
+     *
+     * @param bonusPayApplicationId 奖金发放主表主键
+     * @return 奖金发放对象表
+     */
+    List<BonusPayObjectsDTO> selectBonusPayDeptObjectsByBonusPayApplicationId(@Param("bonusPayApplicationId")Long bonusPayApplicationId);
     /**
     * 批量查询奖金发放对象表
     *

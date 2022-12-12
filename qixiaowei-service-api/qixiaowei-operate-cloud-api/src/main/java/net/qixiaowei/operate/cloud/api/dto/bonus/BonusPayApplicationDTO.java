@@ -44,6 +44,10 @@ public class BonusPayApplicationDTO {
     */
     private  Long salaryItemId;
     /**
+     * 三级项目(奖项类别名称)
+     */
+    private String thirdLevelItem;
+    /**
     * 奖项编码
     */
     private  String awardCode;
@@ -59,10 +63,37 @@ public class BonusPayApplicationDTO {
     * 获奖时间-月
     */
     private  Integer awardMonth;
+
+    /**
+     * 获奖时间-年月
+     */
+    private  String awardYearMonth;
     /**
     * 申请部门ID
     */
     private  Long applyDepartmentId;
+    /**
+     * 申请部门名称
+     */
+    private  String applyDepartmentName;
+
+    /**
+     * 预算部门ID
+     */
+    private Long budgetDepartmentId;
+    /**
+     * 预算部门名称
+     */
+    private String budgetDepartmentName;
+    /**
+     * 预算部门ID集合
+     */
+    private String budgetDepartmentIds;
+
+    /**
+     * 预算部门名称集合
+     */
+    private String budgetDepartmentNames;
     /**
     * 奖项总金额
     */
@@ -84,7 +115,7 @@ public class BonusPayApplicationDTO {
      */
     private List<BonusPayObjectsDTO> bonusPayObjectsEmployeeDTOs;
     /**
-     * 获奖员工集合
+     * 获奖部门集合
      */
     private List<BonusPayObjectsDTO> bonusPayObjectsDeptDTOs;
     /**
@@ -95,6 +126,11 @@ public class BonusPayApplicationDTO {
     * 创建人
     */
     private  Long createBy;
+
+    /**
+     * 创建人名称
+     */
+    private  String createName;
     /**
     * 创建时间
     */

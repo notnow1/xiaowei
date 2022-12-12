@@ -21,6 +21,13 @@ public interface BonusPayBudgetDeptMapper{
     */
     BonusPayBudgetDeptDTO selectBonusPayBudgetDeptByBonusPayBudgetDeptId(@Param("bonusPayBudgetDeptId")Long bonusPayBudgetDeptId);
 
+    /**
+     * 根据奖金发放主表主键查询奖金发放预算部门表
+     *
+     * @param bonusPayApplicationId 奖金发放主表主键
+     * @return 奖金发放预算部门表
+     */
+    List<BonusPayBudgetDeptDTO> selectBonusPayBudgetDeptByBonusPayApplicationId(@Param("bonusPayApplicationId")Long bonusPayApplicationId);
 
     /**
     * 批量查询奖金发放预算部门表
@@ -29,6 +36,14 @@ public interface BonusPayBudgetDeptMapper{
     * @return 奖金发放预算部门表
     */
     List<BonusPayBudgetDeptDTO> selectBonusPayBudgetDeptByBonusPayBudgetDeptIds(@Param("bonusPayBudgetDeptIds") List<Long> bonusPayBudgetDeptIds);
+
+    /**
+     * 批量查询奖金发放预算部门表
+     *
+     * @param bonusPayApplicationIds 奖金发放预算部门表主键集合
+     * @return 奖金发放预算部门表
+     */
+    List<BonusPayBudgetDeptDTO> selectBonusPayBudgetDeptByBonusPayApplicationIds(@Param("bonusPayApplicationIds") List<Long> bonusPayApplicationIds);
     /**
     * 查询奖金发放预算部门表列表
     *
