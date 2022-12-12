@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.system.manage.api.domain.system.Role;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
@@ -67,7 +68,7 @@ public class TenantLogic {
         User user = new User();
         user.setTenantId(tenantId);
         user.setUserAccount(tenant.getAdminAccount());
-        user.setPassword(tenant.getAdminPassword());
+        user.setPassword(SecurityUtils.encryptPassword(tenant.getAdminPassword()));
         user.setStatus(BusinessConstants.NORMAL);
         user.setUserName(RoleCode.TENANT_ADMIN.getInfo());
         userMapper.initTenantUser(user);
