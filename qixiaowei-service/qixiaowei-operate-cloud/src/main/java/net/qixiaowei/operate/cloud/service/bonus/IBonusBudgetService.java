@@ -28,6 +28,18 @@ public interface IBonusBudgetService{
     List<BonusBudgetDTO> selectBonusBudgetList(BonusBudgetDTO bonusBudgetDTO);
 
     /**
+     * 总奖金包预算生成
+     * @param bonusBudgetDTO
+     */
+    void packPaymentBonusBudget(int budgetYear, BonusBudgetDTO bonusBudgetDTO);
+
+    /**
+     * 总奖金包预算生成
+     * @param bonusBudgetDTOS
+     */
+    void packPaymentBonusBudgetList(List<BonusBudgetDTO> bonusBudgetDTOS);
+
+    /**
     * 新增奖金预算表
     *
     * @param bonusBudgetDTO 奖金预算表

@@ -188,7 +188,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
             indicator.setAncestors(parentAncestors);
             indicator.setLevel(parentLevel);
         }
-        indicator.setSort(0);
+        Integer maxSort = indicatorMapper.selectSortByIndicatorId(parentIndicatorId);
+        indicator.setSort(maxSort);
         indicator.setCreateBy(SecurityUtils.getUserId());
         indicator.setCreateTime(DateUtils.getNowDate());
         indicator.setUpdateTime(DateUtils.getNowDate());

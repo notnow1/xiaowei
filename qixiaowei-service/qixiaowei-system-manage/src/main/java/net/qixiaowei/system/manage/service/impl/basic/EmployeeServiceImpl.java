@@ -653,6 +653,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
         return employeeMapper.getAll();
     }
 
+    /**
+     * 根据部门ID 集合查询人员
+     * @param departmentIds 人员ID集合
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> selectEmployeeByDepartmentIds(List<Long> departmentIds) {
+        return employeeMapper.selectEmployeeByDepartmentIds(departmentIds);
+    }
+
 
     /**
      * 逻辑删除员工表信息

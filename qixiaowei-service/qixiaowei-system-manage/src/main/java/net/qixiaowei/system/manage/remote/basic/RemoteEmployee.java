@@ -103,6 +103,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
 
     /**
      * 相同部门下 相同职级的 在职人数
+     *
      * @param departmentIds
      * @param source
      * @return
@@ -110,12 +111,13 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @Override
     @InnerAuth
     @PostMapping("/departmentAndOfficialRankSystem")
-    public R<List<EmployeeDTO>> selectDepartmentAndOfficialRankSystem(@RequestBody  List<Long> departmentIds, String source) {
+    public R<List<EmployeeDTO>> selectDepartmentAndOfficialRankSystem(@RequestBody List<Long> departmentIds, String source) {
         return R.ok(employeeService.selectDepartmentAndOfficialRankSystem(departmentIds));
     }
 
     /**
      * 通过部门，岗位，职级集合查询员工表
+     *
      * @param idMaps id集合
      * @param source
      * @return
@@ -128,7 +130,8 @@ public class RemoteEmployee implements RemoteEmployeeService {
     }
 
     /**
-     *查询部门下所有人员
+     * 查询部门下所有人员
+     *
      * @param departmentId
      * @param source
      * @return
@@ -136,12 +139,13 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @Override
     @InnerAuth
     @GetMapping("/selectEmployeeByDepts")
-    public R<List<EmployeeDTO>> selectEmployeeByDepts(@RequestParam("departmentId")Long departmentId, String source) {
+    public R<List<EmployeeDTO>> selectEmployeeByDepts(@RequestParam("departmentId") Long departmentId, String source) {
         return R.ok(employeeService.selectEmployeeByDepts(departmentId));
     }
 
     /**
      * 查询一级部门下所有的人员 返回部门id和职级体系id
+     *
      * @param departmentIdAll
      * @param source
      * @return
@@ -149,12 +153,13 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @Override
     @InnerAuth
     @PostMapping("/selectEmployeeByParPDRIds")
-    public R<List<EmployeeDTO>> selectParentDepartmentIdAndOfficialRankSystem(@RequestBody  List<Long> departmentIdAll, String source) {
+    public R<List<EmployeeDTO>> selectParentDepartmentIdAndOfficialRankSystem(@RequestBody List<Long> departmentIdAll, String source) {
         return R.ok(employeeService.selectParentDepartmentIdAndOfficialRankSystem(departmentIdAll));
     }
 
     /**
      * 查询在职所有人员
+     *
      * @param source
      * @return
      */
@@ -163,5 +168,16 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @GetMapping("/getAll")
     public R<List<EmployeeDTO>> getAll(String source) {
         return R.ok(employeeService.getAll());
+    }
+
+    /**
+     * 根据部门ID 集合查询人员
+     *
+     * @param departmentIds ID 集合
+     * @return
+     */
+    @Override
+    public R<List<EmployeeDTO>> selectEmployeeByDepartmentIds(@RequestBody List<Long> departmentIds, String source) {
+        return R.ok(employeeService.selectEmployeeByDepartmentIds(departmentIds));
     }
 }

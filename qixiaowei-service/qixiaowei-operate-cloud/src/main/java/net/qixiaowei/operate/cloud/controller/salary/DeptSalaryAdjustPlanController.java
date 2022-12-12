@@ -55,6 +55,15 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     }
 
     /**
+     * 查询部门调薪计划表详情
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
+    @GetMapping("/getLastSalary/{departmentId}")
+    public AjaxResult getLastSalary(@PathVariable Long departmentId) {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getLastSalary(departmentId));
+    }
+
+    /**
      * 查询部门调薪计划表列表
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:list")
@@ -64,18 +73,6 @@ public class DeptSalaryAdjustPlanController extends BaseController {
         return AjaxResult.success(list);
     }
 
-
-    /**
-     * 新增部门调薪计划表
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:add")
-    @Log(title = "新增部门调薪计划表", businessType = BusinessType.INSERT)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
-        return AjaxResult.success(deptSalaryAdjustPlanService.insertDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
-    }
-
-
     /**
      * 修改部门调薪计划表
      */
@@ -83,7 +80,7 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     @Log(title = "修改部门调薪计划表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
-        return toAjax(deptSalaryAdjustPlanService.updateDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
+        return AjaxResult.success(deptSalaryAdjustPlanService.editDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
     }
 
     /**
@@ -94,26 +91,6 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
         return toAjax(deptSalaryAdjustPlanService.logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(deptSalaryAdjustPlanDTO));
-    }
-
-    /**
-     * 批量修改部门调薪计划表
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:edits")
-    @Log(title = "批量修改部门调薪计划表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<DeptSalaryAdjustPlanDTO> deptSalaryAdjustPlanDtos) {
-        return toAjax(deptSalaryAdjustPlanService.updateDeptSalaryAdjustPlans(deptSalaryAdjustPlanDtos));
-    }
-
-    /**
-     * 批量新增部门调薪计划表
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:insertDeptSalaryAdjustPlans")
-    @Log(title = "批量新增部门调薪计划表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertDeptSalaryAdjustPlans")
-    public AjaxResult insertDeptSalaryAdjustPlans(@RequestBody List<DeptSalaryAdjustPlanDTO> deptSalaryAdjustPlanDtos) {
-        return toAjax(deptSalaryAdjustPlanService.insertDeptSalaryAdjustPlans(deptSalaryAdjustPlanDtos));
     }
 
     /**

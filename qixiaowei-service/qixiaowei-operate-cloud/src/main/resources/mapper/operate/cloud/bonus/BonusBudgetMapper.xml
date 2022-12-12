@@ -107,6 +107,35 @@
                               where bb.budget_year =#{annualBonusYear}
                                 and bb.delete_flag=0
     </select>
+    <select id="selectBonusBudgetListByBudgetYears"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO">
+        SELECT
+        bonus_budget_id, budget_year, amount_bonus_budget, bonus_before_one, delete_flag, create_by, create_time, update_by, update_time
+        FROM bonus_budget
+        WHERE  budget_year in
+        <foreach item="item"
+                 collection="budgetYears"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+    <select id="selectBonusBudgetListByBudgetYear"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO">
+        SELECT
+        bonus_budget_id,
+        budget_year,
+        amount_bonus_budget,
+        bonus_before_one,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM bonus_budget
+        WHERE  budget_year = #{planYear}
+        and delete_flag=0
+    </select>
     <!--新增奖金预算表-->
     <insert id="insertBonusBudget" useGeneratedKeys="true" keyProperty="bonusBudgetId">
         INSERT INTO bonus_budget (budget_year,amount_bonus_budget,bonus_before_one,delete_flag,create_by,create_time,update_by,update_time)

@@ -1305,6 +1305,41 @@
         where delete_flag=0
         and employment_status=1
     </select>
+    <!--根据部门ID 集合查询人员-->
+    <select id="selectEmployeeByDepartmentIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        e.create_by,
+        e.create_time,
+        e.update_by,
+        e.update_time,
+        e.tenant_id
+        FROM employee e
+        WHERE e.delete_flag=0
+        AND employment_status=1
+        AND e.employee_department_id
+        IN
+        <foreach collection="departmentIds" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
         INSERT INTO employee (employee_code, employee_name, employee_gender, identity_type, identity_card,

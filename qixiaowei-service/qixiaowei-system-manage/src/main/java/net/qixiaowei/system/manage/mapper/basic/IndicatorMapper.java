@@ -48,6 +48,14 @@ public interface IndicatorMapper {
     List<Long> selectSon(@Param("indicatorId") Long indicatorId);
 
     /**
+     * 根据父级id查找子级的最大排序值
+     *
+     * @param parentIndicatorId
+     * @return
+     */
+    Integer selectSortByIndicatorId(@Param("indicatorId") Long parentIndicatorId);
+
+    /**
      * 根据父级id批量查找子级
      *
      * @param indicatorIds
@@ -188,4 +196,5 @@ public interface IndicatorMapper {
      * @return
      */
     List<IndicatorDTO> selectIndicatorByNames(@Param("indicatorNames") List<String> indicatorNames);
+
 }
