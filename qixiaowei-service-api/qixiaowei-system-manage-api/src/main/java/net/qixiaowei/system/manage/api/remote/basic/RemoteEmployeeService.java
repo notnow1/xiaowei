@@ -106,6 +106,7 @@ public interface RemoteEmployeeService {
 
     /**
      * 查询一级部门下所有的人员 返回部门id和职级体系id
+     *
      * @param departmentIdAll
      * @return
      */
@@ -120,4 +121,14 @@ public interface RemoteEmployeeService {
      */
     @GetMapping(API_PREFIX_EMPLOYEE + "/getAll")
     R<List<EmployeeDTO>> getAll(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据部门ID 集合查询人员
+     *
+     * @param departmentIds ID 集合
+     * @return
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByDepartmentIds")
+    R<List<EmployeeDTO>> selectEmployeeByDepartmentIds(@RequestBody List<Long> departmentIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
 }

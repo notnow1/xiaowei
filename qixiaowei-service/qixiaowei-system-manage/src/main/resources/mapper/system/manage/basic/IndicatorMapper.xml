@@ -144,6 +144,14 @@
         WHERE
         FIND_IN_SET(#{industryId},ancestors)
     </select>
+    <!--根据父级id查找子级的最大排序值-->
+    <select id="selectSortByIndicatorId" resultType="java.lang.Integer">
+        SELECT
+        IFNULL(max(sort),0)
+        FROM indicator
+        WHERE
+        FIND_IN_SET(#{industryId},ancestors)
+    </select>
     <!-- 根据父级list批量查找子级-->
     <select id="selectSons" resultType="java.lang.Long">
         SELECT

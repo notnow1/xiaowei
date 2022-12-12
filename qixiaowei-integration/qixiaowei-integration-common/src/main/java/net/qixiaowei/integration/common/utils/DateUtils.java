@@ -499,5 +499,18 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return calendar.get(Calendar.MONTH) + 1;
     }
 
-
+    /**
+     * 获取LocalTime时间类型的月份
+     *
+     * @param localTime 时间
+     * @return
+     */
+    public static int getMonth(LocalDate localTime) {
+        Calendar calendar = Calendar.getInstance();
+        LocalDateTime localDateTime = LocalDateTime.of(localTime, LocalTime.of(0, 0, 0));
+        ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
+        calendar.setTime(Date.from(zdt.toInstant()));
+        // 获取当前年
+        return calendar.get(Calendar.MONTH) + 1;
+    }
 }

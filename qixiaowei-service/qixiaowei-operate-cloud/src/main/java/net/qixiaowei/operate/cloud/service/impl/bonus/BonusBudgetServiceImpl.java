@@ -588,7 +588,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      * @param budgetYear
      * @param bonusBudgetDTO
      */
-    private void packPaymentBonusBudget(int budgetYear, BonusBudgetDTO bonusBudgetDTO) {
+    public void packPaymentBonusBudget(int budgetYear, BonusBudgetDTO bonusBudgetDTO) {
         EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.selectEmolumentPlanByPlanYear(budgetYear);
         if (StringUtils.isNotNull(emolumentPlanDTO)) {
             //总薪酬包预算
@@ -646,7 +646,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      *
      * @param bonusBudgetDTOS
      */
-    private void packPaymentBonusBudgetList(List<BonusBudgetDTO> bonusBudgetDTOS) {
+    public void packPaymentBonusBudgetList(List<BonusBudgetDTO> bonusBudgetDTOS) {
 
         if (StringUtils.isNotEmpty(bonusBudgetDTOS)) {
             List<Integer> collect = bonusBudgetDTOS.stream().map(BonusBudgetDTO::getBudgetYear).collect(Collectors.toList());

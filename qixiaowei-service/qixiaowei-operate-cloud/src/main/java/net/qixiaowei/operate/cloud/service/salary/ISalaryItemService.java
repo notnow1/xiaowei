@@ -47,6 +47,13 @@ public interface ISalaryItemService {
     int insertSalaryItem(SalaryItemDTO salaryItemDTO);
 
     /**
+     * 初始化工资项
+     *
+     * @return 结果
+     */
+    int initSalaryItem();
+
+    /**
      * 修改工资项
      *
      * @param salaryItemDTO 工资项

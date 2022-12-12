@@ -1,7 +1,10 @@
 package net.qixiaowei.operate.cloud.api.domain.salary;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
@@ -11,6 +14,9 @@ import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 * @since 2022-10-05
 */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Accessors(chain = true)
 public class SalaryItem extends TenantEntity {
 

@@ -66,6 +66,39 @@
                             and update_time=#{deptSalaryAdjustItem.updateTime}
                         </if>
     </select>
+    <!--通过计划ID查找调薪项-->
+    <select id="selectDeptSalaryAdjustItemBySalaryAdjustPlanId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO">
+        SELECT
+        dsa.dept_salary_adjust_item_id,
+        dsa.dept_salary_adjust_plan_id,
+        dsa.department_id,
+        dsa.coverage_percentage,
+        dsa.adjustment_percentage,
+        dsa.adjustment_time,
+        dsa.delete_flag,
+        dsa.create_by,
+        dsa.create_time,
+        dsa.update_by,
+        dsa.update_time
+        FROM dept_salary_adjust_item dsa
+        WHERE dsa.delete_flag=0
+        AND dsa.dept_salary_adjust_plan_id = #{deptSalaryAdjustPlanId}
+        ORDER BY dsa.create_by ASC
+    </select>
+    <!--通过计划ID集合查找调薪项-->
+    <select id="selectDeptSalaryAdjustItemBySalaryAdjustPlanIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO">
+        SELECT
+        dept_salary_adjust_item_id,dept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time
+        FROM dept_salary_adjust_item
+        WHERE delete_flag=0
+        AND dept_salary_adjust_plan_id
+        IN
+        <foreach collection="deptSalaryAdjustPlanIds" separator="," open="(" close=")" item="item" index="index">
+            #{item}
+        </foreach>
+    </select>
     <!--新增部门调薪项表-->
     <insert id="insertDeptSalaryAdjustItem" useGeneratedKeys="true" keyProperty="deptSalaryAdjustItemId">
         INSERT INTO dept_salary_adjust_item (dept_salary_adjust_item_iddept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time)

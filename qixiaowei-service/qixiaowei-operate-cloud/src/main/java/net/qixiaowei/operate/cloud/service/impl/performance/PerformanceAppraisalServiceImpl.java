@@ -272,7 +272,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 appraisalObjectsIds.add(employeeDTO.getEmployeeId());
             }
         }
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS =
+                performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByIds(appraisalObjectsIds, performanceAppraisalId);
         if (StringUtils.isEmpty(performanceAppraisalObjectsDTOS)) {
             return appraisal;
         }
@@ -2108,7 +2109,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         PerformanceAppraisalObjectsDTO performanceAppraisalObjects = new PerformanceAppraisalObjectsDTO();
         performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
-        Long appraisalPrincipalId1 = performanceAppraisalObjectsDTO.getAppraisalPrincipalId();
         performanceAppraisalObjects.setAppraisalPrincipalId(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
         performanceAppraisalObjects.setAppraisalPrincipalName(performanceAppraisalObjectsDTO.getAppraisalPrincipalName());
         if (performanceAppraisalObjectsDTO.getIsSubmit() == 0) {

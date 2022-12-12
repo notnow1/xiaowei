@@ -358,7 +358,25 @@
           and sp.delete_flag = 0
         ORDER BY sp.pay_year DESC, sp.pay_month DESC limit 12
     </select>
-
+    <!--当前月份倒推12个月的工资总计-->
+    <select id="selectSalaryAmountNum" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(spd.amount),0)
+        as bonus_actual_sum
+        from salary_pay_details spd
+            LEFT JOIN salary_pay sp
+                ON spd.salary_pay_id = sp.salary_pay_id
+            LEFT JOIN salary_item si
+                ON si.salary_item_id = spd.salary_item_id
+        WHERE sp.pay_year &lt;= #{budgetYear}
+        and sp.pay_month &lt; #{month}
+        and sp.delete_flag = 0
+        and sp.employee_id in
+        <foreach collection="employeeIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and
+        ORDER by pay_year desc, pay_month desc LIMIT 12
+    </select>
     <!--新增工资发薪表-->
     <insert id="insertSalaryPay" useGeneratedKeys="true" keyProperty="salaryPayId">
         INSERT INTO salary_pay

@@ -16,10 +16,11 @@ import javax.validation.Valid;
 
 /**
  * EmployeeService接口
+ *
  * @author TANGMICHI
  * @since 2022-09-30
  */
-public interface IEmployeeService{
+public interface IEmployeeService {
     /**
      * 查询员工表
      *
@@ -27,6 +28,7 @@ public interface IEmployeeService{
      * @return 员工表
      */
     EmployeeDTO selectEmployeeByEmployeeId(Long employeeId);
+
     /**
      * 根据id集合查询员工表
      *
@@ -45,10 +47,12 @@ public interface IEmployeeService{
 
     /**
      * 查询员工表列表(下拉框)
+     *
      * @param employeeDTO
      * @return
      */
     List<EmployeeDTO> selectDropEmployeeList(@Param("employee") EmployeeDTO employeeDTO);
+
     /**
      * 根据code查询员工表列表
      *
@@ -64,6 +68,7 @@ public interface IEmployeeService{
      * @return 员工表集合
      */
     List<EmployeeDTO> selectEmployeeByPDRIds(Map<String, List<String>> idMaps);
+
     /**
      * 查询员工单条信息
      *
@@ -110,7 +115,7 @@ public interface IEmployeeService{
      * @param employeeIds 需要删除的员工表集合
      * @return 结果
      */
-    int logicDeleteEmployeeByEmployeeIds(List<Long>  employeeIds);
+    int logicDeleteEmployeeByEmployeeIds(List<Long> employeeIds);
 
     /**
      * 逻辑删除员工表信息
@@ -119,6 +124,7 @@ public interface IEmployeeService{
      * @return 结果
      */
     int logicDeleteEmployeeByEmployeeId(EmployeeDTO employeeDTO);
+
     /**
      * 逻辑批量删除员工表
      *
@@ -146,12 +152,14 @@ public interface IEmployeeService{
 
     /**
      * 导入Excel
+     *
      * @param list
      */
     void importEmployee(List<EmployeeExcel> list);
 
     /**
      * 导出Excel
+     *
      * @param employeeDTO
      * @return
      */
@@ -164,6 +172,7 @@ public interface IEmployeeService{
 
     /**
      * 分页查询岗位薪酬报表
+     *
      * @param employeeDTO
      * @return
      */
@@ -171,6 +180,7 @@ public interface IEmployeeService{
 
     /**
      * 新增人力预算上年期末数集合
+     *
      * @param employeeDTO
      * @return
      */
@@ -178,6 +188,7 @@ public interface IEmployeeService{
 
     /**
      * 根据部门 职级 获取人员信息集合
+     *
      * @param list
      * @return
      */
@@ -185,6 +196,7 @@ public interface IEmployeeService{
 
     /**
      * 根据Code集合根据Code集合
+     *
      * @param assessmentList
      * @return
      */
@@ -192,6 +204,7 @@ public interface IEmployeeService{
 
     /**
      * 相同部门下 相同职级的 在职人数
+     *
      * @param departmentIds
      * @return
      */
@@ -199,6 +212,7 @@ public interface IEmployeeService{
 
     /**
      * 查询部门下所有人员
+     *
      * @param departmentId
      * @return
      */
@@ -206,6 +220,7 @@ public interface IEmployeeService{
 
     /**
      * 根据部门id查询员工表列表
+     *
      * @param employeeDepartmentId
      * @return
      */
@@ -213,6 +228,7 @@ public interface IEmployeeService{
 
     /**
      * 查询一级部门下所有的人员 返回部门id和职级体系id
+     *
      * @param departmentIdAll
      * @return
      */
@@ -220,7 +236,16 @@ public interface IEmployeeService{
 
     /**
      * 远程查询在职所有人员
+     *
      * @return
      */
     List<EmployeeDTO> getAll();
+
+    /**
+     * 根据部门ID 集合查询人员
+     *
+     * @param departmentIds 人员ID集合
+     * @return
+     */
+    List<EmployeeDTO> selectEmployeeByDepartmentIds(List<Long> departmentIds);
 }

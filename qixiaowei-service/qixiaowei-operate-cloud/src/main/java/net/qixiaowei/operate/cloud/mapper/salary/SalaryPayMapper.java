@@ -160,24 +160,36 @@ public interface SalaryPayMapper {
 
     /**
      * 当前月份倒推12个月的“奖金”部分合计
+     *
      * @param budgetYear
      * @param month
      * @return
      */
-    BigDecimal selectBonusActualNum(@Param("budgetYear") int budgetYear, @Param("month")int month);
+    BigDecimal selectBonusActualNum(@Param("budgetYear") int budgetYear, @Param("month") int month);
+
+    /**
+     * 当前月份倒推12个月的工资总计
+     *
+     * @param budgetYear  年份
+     * @param month       月份
+     * @param employeeIds 员工Id集合
+     * @return BigDecimal
+     */
+    BigDecimal selectSalaryAmountNum(@Param("budgetYear") int budgetYear, @Param("month") int month, @Param("employeeIds") List<Long> employeeIds);
 
     /**
      * 返回上年总工资包实际数：从月度工资数据管理取值（总计值）
-     * @return
+     *
      * @param budgetYear
+     * @return
      */
     BigDecimal selectSalaryPayAmoutNum(@Param("budgetYear") int budgetYear);
 
     /**
      * 部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
      *
-     * @param employeeId
-     * @param payYear
+     * @param employeeId 员工ID
+     * @param payYear    发薪年份
      * @return
      */
     List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear);
@@ -194,6 +206,7 @@ public interface SalaryPayMapper {
 
     /**
      * 个人年终奖最近三年的薪酬情况
+     *
      * @param employeeIds
      * @param payYear
      * @return
@@ -202,6 +215,7 @@ public interface SalaryPayMapper {
 
     /**
      * 员工倒推12个月的薪酬合计和奖金合计
+     *
      * @param employeeId
      * @param payYear
      * @return

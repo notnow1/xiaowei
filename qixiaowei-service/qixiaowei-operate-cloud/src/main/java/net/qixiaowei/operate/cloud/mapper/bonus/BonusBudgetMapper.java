@@ -48,6 +48,22 @@ public interface BonusBudgetMapper{
     List<BonusBudgetDTO> selectBonusBudgetList(@Param("bonusBudget")BonusBudget bonusBudget);
 
     /**
+     * 根据预算年份查询奖金预算表列表
+     *
+     * @param budgetYears 奖金预算年份
+     * @return 奖金预算表集合
+     */
+    List<BonusBudgetDTO> selectBonusBudgetListByBudgetYears(@Param("budgetYear")List<Integer> budgetYears);
+
+    /**
+     * 根据预算年份查询奖金预算表列表
+     *
+     * @param planYear 奖金预算年份
+     * @return 奖金预算表集合
+     */
+    BonusBudgetDTO selectBonusBudgetListByBudgetYear(@Param("planYear")Integer planYear);
+
+    /**
     * 新增奖金预算表
     *
     * @param bonusBudget 奖金预算表

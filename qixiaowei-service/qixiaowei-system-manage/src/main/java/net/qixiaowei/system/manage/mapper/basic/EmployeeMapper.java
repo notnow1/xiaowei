@@ -264,4 +264,12 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> getAll();
+
+    /**
+     * 根据部门ID 集合查询人员
+     *
+     * @param departmentIds 部门ID集合
+     * @return
+     */
+    List<EmployeeDTO> selectEmployeeByDepartmentIds(List<Long> departmentIds);
 }

@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
+import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.enums.salary.ThirdLevelSalaryCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -12,14 +13,12 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
+import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -30,6 +29,17 @@ import java.util.Map;
  */
 @Service
 public class SalaryItemServiceImpl implements ISalaryItemService {
+
+
+    private static final List<SalaryItem> INIT_SALARY_ITEM = new ArrayList<>(4);
+
+    static {
+        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(1).secondLevelItem(1).thirdLevelItem("基本工资").scope(1).sort(1).build());
+        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("战略奖").scope(2).sort(2).build());
+        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("项目奖").scope(1).sort(3).build());
+        INIT_SALARY_ITEM.add(SalaryItem.builder().firstLevelItem(2).secondLevelItem(4).thirdLevelItem("绩效奖金").scope(1).sort(4).build());
+    }
+
     @Autowired
     private SalaryItemMapper salaryItemMapper;
 
@@ -134,6 +144,25 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         salaryItem.setUpdateBy(SecurityUtils.getUserId());
         salaryItem.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         return salaryItemMapper.insertSalaryItem(salaryItem);
+    }
+
+    /**
+     * 初始化工资项
+     *
+     * @return 结果
+     */
+    @Override
+    public int initSalaryItem() {
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        for (SalaryItem salaryItem : INIT_SALARY_ITEM) {
+            salaryItem.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            salaryItem.setCreateBy(userId);
+            salaryItem.setUpdateBy(userId);
+            salaryItem.setCreateTime(nowDate);
+            salaryItem.setUpdateTime(nowDate);
+        }
+        return salaryItemMapper.batchSalaryItem(INIT_SALARY_ITEM);
     }
 
     /**
@@ -297,6 +326,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
 
     /**
      * 查找二级为奖金的三级工资条
+     *
      * @return
      */
     @Override

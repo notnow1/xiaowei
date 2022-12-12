@@ -1,6 +1,9 @@
 package net.qixiaowei.system.manage.api.domain.basic;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
@@ -12,6 +15,9 @@ import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
  * @since 2022-09-28
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Accessors(chain = true)
 public class Indicator extends TenantEntity {
 

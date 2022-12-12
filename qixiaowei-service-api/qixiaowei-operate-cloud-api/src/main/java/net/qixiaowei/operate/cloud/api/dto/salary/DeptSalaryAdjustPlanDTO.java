@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 部门调薪计划表
@@ -51,6 +52,10 @@ public class DeptSalaryAdjustPlanDTO {
      */
     private BigDecimal salaryAdjustTotal;
     /**
+     * 涨薪包预算
+     */
+    private BigDecimal raiseSalaryBonusBudget;
+    /**
      * 删除标记:0未删除;1已删除
      */
     private Integer deleteFlag;
@@ -76,6 +81,10 @@ public class DeptSalaryAdjustPlanDTO {
      * 租户ID
      */
     private Long tenantId;
+    /**
+     * 部门调薪项集合
+     */
+    private List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOS;
 
 }
 

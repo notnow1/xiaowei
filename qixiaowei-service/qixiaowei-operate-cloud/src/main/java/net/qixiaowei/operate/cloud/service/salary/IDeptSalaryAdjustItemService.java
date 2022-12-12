@@ -101,4 +101,20 @@ public interface IDeptSalaryAdjustItemService {
      */
     int deleteDeptSalaryAdjustItemByDeptSalaryAdjustItemId(Long deptSalaryAdjustItemId);
 
+    /**
+     * 通过计划ID查找调薪项
+     *
+     * @param deptSalaryAdjustPlanId 计划ID
+     * @return List
+     */
+    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemByPlanId(Long deptSalaryAdjustPlanId);
+
+    /**
+     * 通过计划ID集合查找调薪项
+     *
+     * @param deptSalaryAdjustPlanIds 计划ID集合
+     * @return List
+     */
+    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemByPlanIds(Long deptSalaryAdjustPlanIds);
+
 }
