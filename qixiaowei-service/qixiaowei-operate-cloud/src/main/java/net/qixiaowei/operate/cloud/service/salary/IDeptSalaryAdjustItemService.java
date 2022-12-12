@@ -115,6 +115,6 @@ public interface IDeptSalaryAdjustItemService {
      * @param deptSalaryAdjustPlanIds 计划ID集合
      * @return List
      */
-    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemByPlanIds(Long deptSalaryAdjustPlanIds);
+    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemByPlanIds(List<Long> deptSalaryAdjustPlanIds);
 
 }

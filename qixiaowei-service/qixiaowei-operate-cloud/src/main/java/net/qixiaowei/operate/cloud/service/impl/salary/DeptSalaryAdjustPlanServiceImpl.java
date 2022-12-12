@@ -103,7 +103,6 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             }
             // 上年工资包
             BigDecimal lastSalary = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
-            deptSalaryAdjustItemDTO.setLastSalary(lastSalary);
             // addSalary 新增工资包公式    =   上年工资包×覆盖比例×调幅×（12-调薪月份）÷12。
             BigDecimal adjustmentPercentage = deptSalaryAdjustItemDTO.getAdjustmentPercentage();//调幅
             BigDecimal coveragePercentage = deptSalaryAdjustItemDTO.getCoveragePercentage();// 覆盖比例
@@ -121,6 +120,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             } else {
                 addSalary = BigDecimal.ZERO;
             }
+            deptSalaryAdjustItemDTO.setLastSalary(lastSalary);
             deptSalaryAdjustItemDTO.setAddSalary(addSalary);
         }
         deptSalaryAdjustPlanDTO.setDeptSalaryAdjustItemDTOS(deptSalaryAdjustItemDTOS);
@@ -141,6 +141,24 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         }
         if (StringUtils.isNotEmpty(employeeDTOS)) {
             throw new ServiceException("部门调薪项中的部门已没有没有人员信息 请检查");
+        }
+        return employeeDTOS;
+    }
+
+    /**
+     * 根据部门ID集合查找人员信息
+     *
+     * @param departmentId 部门ID集合
+     * @return List
+     */
+    private List<EmployeeDTO> getEmployeeByDepartmentId(Long departmentId) {
+        R<List<EmployeeDTO>> listR = employeeService.selectEmployeeByDepts(departmentId, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("根据部门ID查询人员失败");
+        }
+        if (StringUtils.isNotEmpty(employeeDTOS)) {
+            throw new ServiceException("当前部门已没有没有人员信息 请检查");
         }
         return employeeDTOS;
     }
@@ -267,9 +285,11 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      * @return String
      */
     @Override
-    public String getLastSalary(Long departmentId) {
-
-        return null;
+    public BigDecimal getLastSalary(Long departmentId) {
+        List<EmployeeDTO> employeeByDepartmentId = getEmployeeByDepartmentId(departmentId);
+        List<Long> employeeIds = employeeByDepartmentId.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+        // 上年工资包
+        return salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
     }
 
     /**
@@ -340,7 +360,20 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      */
     @Override
     public int logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(List<Long> deptSalaryAdjustPlanIds) {
-        return deptSalaryAdjustPlanMapper.logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(deptSalaryAdjustPlanIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        if (StringUtils.isEmpty(deptSalaryAdjustPlanIds)) {
+            throw new ServiceException("请传输需要删除的ID");
+        }
+        List<DeptSalaryAdjustPlanDTO> deptSalaryAdjustPlanDTOS = deptSalaryAdjustPlanMapper.selectDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(deptSalaryAdjustPlanIds);
+        if (deptSalaryAdjustPlanDTOS.size() != deptSalaryAdjustPlanIds.size()) {
+            throw new ServiceException("当前的调薪计划丢失");
+        }
+        deptSalaryAdjustPlanMapper.logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(deptSalaryAdjustPlanIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOS = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanIds(deptSalaryAdjustPlanIds);
+        if (StringUtils.isEmpty(deptSalaryAdjustItemDTOS)) {
+            return 1;
+        }
+        List<Long> deptSalaryAdjustItemIds = deptSalaryAdjustItemDTOS.stream().map(DeptSalaryAdjustItemDTO::getDeptSalaryAdjustItemId).collect(Collectors.toList());
+        return deptSalaryAdjustItemService.logicDeleteDeptSalaryAdjustItemByDeptSalaryAdjustItemIds(deptSalaryAdjustItemIds);
     }
 
     /**
@@ -362,11 +395,25 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      */
     @Override
     public int logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
+        Long deptSalaryAdjustPlanId = deptSalaryAdjustPlanDTO.getDeptSalaryAdjustPlanId();
+        if (StringUtils.isNull(deptSalaryAdjustPlanId)) {
+            throw new ServiceException("请传输需要删除的ID");
+        }
+        DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanById = deptSalaryAdjustPlanMapper.selectDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
+        if (StringUtils.isNull(deptSalaryAdjustPlanById)) {
+            throw new ServiceException("当前的调薪计划信息已不存在");
+        }
         DeptSalaryAdjustPlan deptSalaryAdjustPlan = new DeptSalaryAdjustPlan();
-        deptSalaryAdjustPlan.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanDTO.getDeptSalaryAdjustPlanId());
+        deptSalaryAdjustPlan.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
         deptSalaryAdjustPlan.setUpdateTime(DateUtils.getNowDate());
         deptSalaryAdjustPlan.setUpdateBy(SecurityUtils.getUserId());
-        return deptSalaryAdjustPlanMapper.logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(deptSalaryAdjustPlan);
+        deptSalaryAdjustPlanMapper.logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(deptSalaryAdjustPlan);
+        List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOS = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
+        if (StringUtils.isEmpty(deptSalaryAdjustItemDTOS)) {
+            return 1;
+        }
+        List<Long> deptSalaryAdjustItemIds = deptSalaryAdjustItemDTOS.stream().map(DeptSalaryAdjustItemDTO::getDeptSalaryAdjustItemId).collect(Collectors.toList());
+        return deptSalaryAdjustItemService.logicDeleteDeptSalaryAdjustItemByDeptSalaryAdjustItemIds(deptSalaryAdjustItemIds);
     }
 
     /**

@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO;
@@ -131,5 +132,5 @@ public interface IDeptSalaryAdjustPlanService {
      * @param departmentId 部门ID
      * @return String
      */
-    String getLastSalary(Long departmentId);
+    BigDecimal getLastSalary(Long departmentId);
 }

@@ -365,16 +365,19 @@
         from salary_pay_details spd
             LEFT JOIN salary_pay sp
                 ON spd.salary_pay_id = sp.salary_pay_id
+                AND sp.delete_flag = 0
             LEFT JOIN salary_item si
                 ON si.salary_item_id = spd.salary_item_id
-        WHERE sp.pay_year &lt;= #{budgetYear}
+                AND si.delete_flag = 0
+        WHERE
+        spd.delete_flag = 0
+        and sp.pay_year &lt;= #{budgetYear}
         and sp.pay_month &lt; #{month}
-        and sp.delete_flag = 0
         and sp.employee_id in
         <foreach collection="employeeIds" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>
-        and
+        and si.third_level_item = '基本工资'
         ORDER by pay_year desc, pay_month desc LIMIT 12
     </select>
     <!--新增工资发薪表-->

@@ -125,7 +125,7 @@ public class DeptSalaryAdjustItemServiceImpl implements IDeptSalaryAdjustItemSer
      * @return
      */
     @Override
-    public List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemByPlanIds(Long deptSalaryAdjustPlanIds) {
+    public List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemByPlanIds(List<Long> deptSalaryAdjustPlanIds) {
         return deptSalaryAdjustItemMapper.selectDeptSalaryAdjustItemBySalaryAdjustPlanIds(deptSalaryAdjustPlanIds);
     }
 

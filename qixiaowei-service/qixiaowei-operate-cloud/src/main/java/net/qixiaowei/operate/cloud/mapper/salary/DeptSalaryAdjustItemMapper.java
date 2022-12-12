@@ -120,5 +120,5 @@ public interface DeptSalaryAdjustItemMapper {
      * @param deptSalaryAdjustPlanIds 计划ID集合
      * @return
      */
-    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemBySalaryAdjustPlanIds(Long deptSalaryAdjustPlanIds);
+    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemBySalaryAdjustPlanIds(List<Long> deptSalaryAdjustPlanIds);
 }
