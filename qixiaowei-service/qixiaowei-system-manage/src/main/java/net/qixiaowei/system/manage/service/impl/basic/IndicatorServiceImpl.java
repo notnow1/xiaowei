@@ -221,9 +221,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isNull(indicatorById)) {
             throw new ServiceException("该行业不存在");
         }
-        if (IndicatorCode.contains(indicatorById.getIndicatorCode())) {
-            throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
-        }
+//        if (IndicatorCode.contains(indicatorById.getIndicatorCode())) {
+//            throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
+//        }
         IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             if (!indicatorByCode.getIndicatorId().equals(indicatorId)) {
@@ -250,11 +250,11 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isEmpty(indicatorByIds)) {
             throw new ServiceException("指标不存在");
         }
-        for (IndicatorDTO indicatorById : indicatorByIds) {
-            if (IndicatorCode.contains(indicatorById.getIndicatorCode())) {
-                throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
-            }
-        }
+//        for (IndicatorDTO indicatorById : indicatorByIds) {
+//            if (IndicatorCode.contains(indicatorById.getIndicatorCode())) {
+//                throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
+//            }
+//        }
         addSons(indicatorIds);
         // todo 引用校验
         if (isQuote(indicatorIds)) {
