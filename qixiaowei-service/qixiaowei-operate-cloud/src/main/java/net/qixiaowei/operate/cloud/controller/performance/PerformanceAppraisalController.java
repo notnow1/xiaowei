@@ -354,7 +354,7 @@ public class PerformanceAppraisalController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:performanceAppraisal:list")
     @PostMapping("/perProportion")
-    public AjaxResult perProportion(@RequestBody Map<String, List<Object>> performanceAppraisalDTO) {
+    public AjaxResult perProportion(@RequestBody Map<String, List<Long>> performanceAppraisalDTO) {
         return AjaxResult.success(performanceAppraisalService.selectPerAppraisalRankByDTO(performanceAppraisalDTO));
     }
 

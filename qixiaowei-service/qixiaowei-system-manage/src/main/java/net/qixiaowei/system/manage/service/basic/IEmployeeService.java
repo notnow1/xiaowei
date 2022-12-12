@@ -5,13 +5,8 @@ import java.util.Map;
 
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
-import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.validation.annotation.Validated;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 
 /**
@@ -67,7 +62,7 @@ public interface IEmployeeService {
      * @param idMaps id集合表
      * @return 员工表集合
      */
-    List<EmployeeDTO> selectEmployeeByPDRIds(Map<String, List<String>> idMaps);
+    List<EmployeeDTO> selectEmployeeByPDRIds(Map<String,List<String>> idMaps);
 
     /**
      * 查询员工单条信息

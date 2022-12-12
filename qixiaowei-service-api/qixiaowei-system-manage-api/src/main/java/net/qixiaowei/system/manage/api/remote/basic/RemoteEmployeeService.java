@@ -3,7 +3,6 @@ package net.qixiaowei.system.manage.api.remote.basic;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteEmployeeFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -92,7 +91,7 @@ public interface RemoteEmployeeService {
      * @return
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByPDRIds")
-    R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String, List<String>> idMaps, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String,List<String>> idMaps, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 查询部门下所有人员

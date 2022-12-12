@@ -2,7 +2,6 @@ package net.qixiaowei.system.manage.remote.basic;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
@@ -125,7 +124,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @Override
     @InnerAuth
     @PostMapping("/selectEmployeeByPDRIds")
-    public R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String, List<String>> idMaps, String source) {
+    public R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String,List<String>> idMaps, String source) {
         return R.ok(employeeService.selectEmployeeByPDRIds(idMaps));
     }
 

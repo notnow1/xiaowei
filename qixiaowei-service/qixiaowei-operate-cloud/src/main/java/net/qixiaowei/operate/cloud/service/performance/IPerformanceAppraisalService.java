@@ -81,7 +81,7 @@ public interface IPerformanceAppraisalService {
      * @param performanceAppraisalDTO 绩效考核对象ID集合
      * @return List
      */
-    PerformanceAppraisalDTO selectPerAppraisalRankByDTO(Map<String, List<Object>> performanceAppraisalDTO);
+    PerformanceAppraisalDTO selectPerAppraisalRankByDTO(Map<String, List<Long>> performanceAppraisalDTO);
 
     /**
      * 新增绩效考核表

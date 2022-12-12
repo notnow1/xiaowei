@@ -248,15 +248,19 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return List
      */
     @Override
-    public PerformanceAppraisalDTO selectPerAppraisalRankByDTO(Map<String, List<Object>> performanceAppraisalDTO) {
-        Long performanceAppraisalId = (Long) performanceAppraisalDTO.get("performanceAppraisalId").get(0);
-        List<Object> departmentIds = performanceAppraisalDTO.get("departmentIds");
-        List<Object> postIds = performanceAppraisalDTO.get("postIds");
-        List<Object> rankNames = performanceAppraisalDTO.get("rankNames");
-        Map<String, List<String>> idMaps = new HashMap<>();
-        if (StringUtils.isNull(performanceAppraisalId)) {
+    public PerformanceAppraisalDTO selectPerAppraisalRankByDTO(Map<String, List<Long>> performanceAppraisalDTO) {
+        if (StringUtils.isNull(performanceAppraisalDTO.get("performanceAppraisalId"))) {
             throw new ServiceException("请输入绩效考核ID");
         }
+        Long performanceAppraisalId = performanceAppraisalDTO.get("performanceAppraisalId").get(0);
+        List<Long> departmentIds = performanceAppraisalDTO.get("departmentIds");
+        List<String> departments = departmentIds.stream().map(Object::toString).collect(Collectors.toList());
+        List<Long> postIds = performanceAppraisalDTO.get("postIds");
+        List<String> posts = postIds.stream().map(Object::toString).collect(Collectors.toList());
+        List<Long> rankNames = performanceAppraisalDTO.get("rankNames");
+        Map<String, List<String>> idMaps = new HashMap<>();
+        idMaps.put("departmentIds", departments);
+        idMaps.put("postIds", posts);
         PerformanceAppraisalDTO appraisal = performanceAppraisalMapper.selectPerformanceAppraisalByPerformanceAppraisalId(performanceAppraisalId);
         if (StringUtils.isNull(appraisal)) {
             throw new ServiceException("当前绩效考核已不存在");

@@ -21,7 +21,6 @@ import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.mapper.basic.*;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,7 +110,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @param idMaps id集合表
      * @return 员工表集合
      */
-    public List<EmployeeDTO> selectEmployeeByPDRIds(Map<String, List<String>> idMaps) {
+    public List<EmployeeDTO> selectEmployeeByPDRIds(Map<String,List<String>> idMaps) {
         List<String> departmentIds = idMaps.get("departmentIds");
         List<Long> departments = departmentIds.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         List<String> postIds = idMaps.get("postIds");
