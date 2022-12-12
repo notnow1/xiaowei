@@ -130,6 +130,7 @@ public class RoleServiceImpl implements IRoleService {
      * @param roleDTO 角色表
      * @return 结果
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateRole(RoleDTO roleDTO) {
         Long roleId = roleDTO.getRoleId();

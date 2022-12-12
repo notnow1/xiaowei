@@ -1,13 +1,13 @@
 package net.qixiaowei.integration.common.utils.excel;
 
+import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.write.handler.WriteHandler;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
-import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -155,4 +155,5 @@ public class ExcelUtils {
                 new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
         return horizontalCellStyleStrategy;
     }
+
 }

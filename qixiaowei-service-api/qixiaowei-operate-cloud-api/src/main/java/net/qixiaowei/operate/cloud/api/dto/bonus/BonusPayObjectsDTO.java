@@ -47,6 +47,15 @@ public class BonusPayObjectsDTO {
     */
     private  Integer bonusPayObject;
     /**
+     * 部门负责人名称
+     */
+    private  String departmentLeaderName;
+    /**
+     * 员工部门名称
+     */
+    private String employeeDepartmentName;
+
+    /**
     * 奖金发放对象ID
     */
     private  Long bonusPayObjectId;

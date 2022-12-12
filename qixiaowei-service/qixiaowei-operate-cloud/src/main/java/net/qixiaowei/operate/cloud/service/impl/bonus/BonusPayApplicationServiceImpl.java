@@ -101,6 +101,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                             if (bonusPayObjectsDTO.getBonusPayObjectId() == datum.getDepartmentId()) {
                                 //部门名称
                                 bonusPayObjectsDTO.setBonusPayObjectName(datum.getDepartmentName());
+                                //部门负责人名称
+                                bonusPayObjectsDTO.setDepartmentLeaderName(datum.getDepartmentLeaderName());
                             }
                         }
                     }
@@ -128,6 +130,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                             if (bonusPayObjectsDTO.getBonusPayObjectId() == datum.getEmployeeId()) {
                                 //员工名称
                                 bonusPayObjectsDTO.setBonusPayObjectName(datum.getEmployeeName());
+                                //员工部门名称
+                                bonusPayObjectsDTO.setEmployeeDepartmentName(datum.getEmployeeDepartmentName());
                             }
                         }
                     }
@@ -147,31 +151,21 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             DepartmentDTO data = departmentDTOR.getData();
             if (StringUtils.isNotNull(data)) {
                 if (bonusPayApplicationDTO.getApplyDepartmentId() == data.getDepartmentId()) {
-                    //赋值部门名称
+                    //赋值申请部门名称
                     bonusPayApplicationDTO.setApplyDepartmentName(data.getDepartmentName());
                 }
             }
-                //远程部门赋值
-                R<DepartmentDTO> departmentDTOR1 = remoteDepartmentService.selectdepartmentId(bonusPayApplicationDTO.getBudgetDepartmentId(), SecurityConstants.INNER);
-                DepartmentDTO data1 = departmentDTOR1.getData();
-                if (StringUtils.isNotNull(data1)) {
-                            if (bonusPayApplicationDTO.getBudgetDepartmentId() == data1.getDepartmentId()) {
-                                //预算部门名称
-                                bonusPayApplicationDTO.setBudgetDepartmentName(data1.getDepartmentName());
-                            }
-                }
-
-            String budgetDepartmentIds = bonusPayApplicationDTO.getBudgetDepartmentIds();
-            List<String> budgetDepartmentIdList = Arrays.asList(budgetDepartmentIds.split(","));
-
-            List<Long> collect2 = budgetDepartmentIdList.stream().filter(Objects::nonNull).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-
-            if (StringUtils.isNotEmpty(budgetDepartmentIdList)) {
-                //远程部门赋值
-                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect2, SecurityConstants.INNER);
-                List<DepartmentDTO> data2 = listR.getData();
-                if (StringUtils.isNotEmpty(data2)) {
-                    bonusPayApplicationDTO.setBudgetDepartmentNames(data2.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString());
+            List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS = bonusPayBudgetDeptMapper.selectBonusPayBudgetDeptByBonusPayApplicationId(bonusPayApplicationDTO.getBonusPayApplicationId());
+            if (StringUtils.isNotEmpty(bonusPayBudgetDeptDTOS)){
+                List<Long> collect = bonusPayBudgetDeptDTOS.stream().map(BonusPayBudgetDeptDTO::getDepartmentId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(collect)) {
+                    //远程预算部门名称赋值
+                    R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
+                    List<DepartmentDTO> data2 = listR.getData();
+                    if (StringUtils.isNotEmpty(data2)) {
+                        bonusPayApplicationDTO.setBudgetDepartmentNames(data2.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString());
+                        bonusPayApplicationDTO.setBudgetDepartmentIds(collect.toString());
+                    }
                 }
             }
 
@@ -226,27 +220,9 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS = bonusPayBudgetDeptMapper.selectBonusPayBudgetDeptByBonusPayApplicationId(payApplicationDTO.getBonusPayApplicationId());
                 if (StringUtils.isNotEmpty(bonusPayBudgetDeptDTOS)) {
                     payApplicationDTO.setBudgetDepartmentIds(bonusPayBudgetDeptDTOS.stream().map(BonusPayBudgetDeptDTO::getDepartmentId).collect(Collectors.toList()).toString());
-                    payApplicationDTO.setBudgetDepartmentId(bonusPayBudgetDeptDTOS.get(0).getDepartmentId());
                 }
             }
 
-            //预算部门ID集合
-            List<Long> collect1 = bonusPayApplicationDTOS.stream().map(BonusPayApplicationDTO::getBudgetDepartmentId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(collect1)) {
-                //远程部门赋值
-                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect1, SecurityConstants.INNER);
-                List<DepartmentDTO> data = listR.getData();
-                if (StringUtils.isNotEmpty(data)) {
-                    for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
-                        for (DepartmentDTO datum : data) {
-                            if (payApplicationDTO.getBudgetDepartmentId() == datum.getDepartmentId()) {
-                                //预算部门名称
-                                payApplicationDTO.setBudgetDepartmentName(datum.getDepartmentName());
-                            }
-                        }
-                    }
-                }
-            }
             //预算id集合
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                 String budgetDepartmentIds = payApplicationDTO.getBudgetDepartmentIds();
@@ -281,10 +257,10 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             //远程人员名称赋值
             R<List<UserDTO>> usersByUserIds = remoteUserService.getUsersByUserIds(collect3, SecurityConstants.INNER);
             List<UserDTO> data1 = usersByUserIds.getData();
-            if (StringUtils.isNotEmpty(data1)){
+            if (StringUtils.isNotEmpty(data1)) {
                 for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                     for (UserDTO userDTO : data1) {
-                        if (payApplicationDTO.getCreateBy() == userDTO.getUserId()){
+                        if (payApplicationDTO.getCreateBy() == userDTO.getUserId()) {
                             //创建人名称
                             payApplicationDTO.setCreateName(userDTO.getEmployeeName());
                         }

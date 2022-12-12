@@ -275,27 +275,31 @@
     <!--    查询上级组织-->
     <select id="queryparent" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         select
-            department_id,
-            parent_department_id,
-            ancestors,
-            department_code,
-            department_name,
-            level,
-            department_leader_id,
-            department_leader_post_id,
-            examination_leader_id,
-            department_importance_factor,
-            department_description,
-            sort,
-            status,
-            delete_flag,
-            create_by,
-            create_time,
-            update_by,
-            update_time
-        from department
-        where delete_flag = 0
-        and status=1
+            e.employee_name as departmentLeaderName,
+            d.department_id,
+            d.parent_department_id,
+            d.ancestors,
+            d.department_code,
+            d.department_name,
+            d.level,
+            d.department_leader_id,
+            d.department_leader_post_id,
+            d.examination_leader_id,
+            d.department_importance_factor,
+            d.department_description,
+            d.sort,
+            d.status,
+            d.delete_flag,
+            d.create_by,
+            d.create_time,
+            d.update_by,
+            d.update_time
+        from department d
+        left join employee e
+        on e.employee_department_id = d.department_id
+        and e.delete_flag = 0
+        where d.delete_flag = 0
+        and d.status=1
     </select>
     <!--    查询code编码是否已经存在-->
     <select id="selectDepartmentCode" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">

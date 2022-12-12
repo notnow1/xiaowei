@@ -45,7 +45,9 @@
                e.employment_date,
                e.departure_date,
                e.employment_status,
-               e.status
+               e.status,
+               u.user_id,
+               u.user_name
         FROM employee e
                  left join employee_info ei on e.employee_id = ei.employee_id
                  left join post p
@@ -62,6 +64,7 @@
                  left join nation n
                            on ei.nation = n.nation_id
                                and n.delete_flag = 0
+        LEFT JOIN user u ON u.employee_id = e.employee_id AND u.delete_flag = 0
         WHERE e.employee_id = #{employeeId}
           and e.delete_flag = 0
     </select>
