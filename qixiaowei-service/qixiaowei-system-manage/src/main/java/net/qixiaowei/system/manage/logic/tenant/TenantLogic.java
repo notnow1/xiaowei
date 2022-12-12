@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
@@ -11,6 +13,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.integration.tenant.utils.TenantUtils;
+import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryType;
@@ -32,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @description 租户相关逻辑处理
@@ -107,9 +111,13 @@ public class TenantLogic {
     @Autowired
     private IndicatorMapper indicatorMapper;
 
+    @Autowired
+    private RemoteSalaryItemService remoteSalaryItemService;
+
 
     @IgnoreTenant
-    public void initTenantData(Tenant tenant) {
+    public Boolean initTenantData(Tenant tenant) {
+        AtomicReference<Boolean> initSuccess = new AtomicReference<>(true);
         //1、初始化用户---user
         //2、初始化用户角色+用户关联角色---role、user_role
         //3、角色赋权---role_menu
@@ -117,18 +125,31 @@ public class TenantLogic {
         Long tenantId = tenant.getTenantId();
         TenantUtils.execute(tenantId, () -> {
             //4、配置，如启用行业配置---config
-            this.initConfig(tenantId);
+            boolean initConfig = this.initConfig();
             //5、初始化产品类别---dictionary_type、dictionary_data
-            this.initDictionary(tenantId);
+            boolean initDictionary = this.initDictionary();
             //6、初始化预置指标---indicator
-            this.initIndicator(tenantId);
-            //7、初始化工资条---salary_item todo 增加远程接口
+            boolean initIndicator = this.initIndicator();
+            //7、初始化工资条---salary_item
+            boolean initSalaryItem = true;
+            R<Boolean> booleanR = remoteSalaryItemService.initSalaryItem(SecurityConstants.INNER);
+            if (R.SUCCESS != booleanR.getCode()) {
+                initSalaryItem = false;
+            } else {
+                Boolean data = booleanR.getData();
+                if (!data) {
+                    initSalaryItem = false;
+                }
+            }
+            initSuccess.set(initConfig && initDictionary && initIndicator && initSalaryItem);
             //continue...
         });
+        return initSuccess.get();
     }
 
 
-    public void initUserInfo(Tenant tenant) {
+    public boolean initUserInfo(Tenant tenant) {
+        boolean initSuccess = false;
         Long tenantId = tenant.getTenantId();
         //新增用户
         User user = new User();
@@ -165,9 +186,10 @@ public class TenantLogic {
         userRole.setUserId(user.getUserId());
         userRole.setRoleId(role.getRoleId());
         userRoleMapper.initTenantUserRole(userRole);
+        return initSuccess;
     }
 
-    public void initConfig(Long tenantId) {
+    public boolean initConfig() {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         //初始化基础的配置
@@ -182,7 +204,7 @@ public class TenantLogic {
         basicConfig.setUpdateBy(userId);
         basicConfig.setCreateTime(nowDate);
         basicConfig.setUpdateTime(nowDate);
-        configMapper.insertConfig(basicConfig);
+        boolean basicConfigSuccess = configMapper.insertConfig(basicConfig) > 0;
         Long configId = basicConfig.getConfigId();
         //初始化行业启用的配置
         Config config = new Config();
@@ -197,11 +219,12 @@ public class TenantLogic {
         config.setUpdateBy(userId);
         config.setCreateTime(nowDate);
         config.setUpdateTime(nowDate);
-        configMapper.insertConfig(config);
+        boolean configSuccess = configMapper.insertConfig(config) > 0;
+        return basicConfigSuccess && configSuccess;
     }
 
 
-    public void initDictionary(Long tenantId) {
+    public boolean initDictionary() {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         //初始化字典类型
@@ -218,7 +241,7 @@ public class TenantLogic {
         dictionaryType.setUpdateBy(userId);
         dictionaryType.setCreateTime(nowDate);
         dictionaryType.setUpdateTime(nowDate);
-        dictionaryTypeMapper.insertDictionaryType(dictionaryType);
+        boolean dictionaryTypeSuccess = dictionaryTypeMapper.insertDictionaryType(dictionaryType) > 0;
         Long dictionaryTypeId = dictionaryType.getDictionaryTypeId();
         //初始化字典数据
         List<DictionaryData> dictionaryData = new ArrayList<>(6);
@@ -245,11 +268,12 @@ public class TenantLogic {
             dictionaryData1.setSort(sort);
             dictionaryData.add(dictionaryData1);
         }
-        dictionaryDataMapper.batchDictionaryData(dictionaryData);
+        boolean DictionaryDataSuccess = dictionaryDataMapper.batchDictionaryData(dictionaryData) > 0;
+        return dictionaryTypeSuccess && DictionaryDataSuccess;
     }
 
 
-    public void initIndicator(Long tenantId) {
+    public boolean initIndicator() {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         //先初始化销售成本
@@ -259,7 +283,7 @@ public class TenantLogic {
         indicator.setUpdateBy(userId);
         indicator.setCreateTime(nowDate);
         indicator.setUpdateTime(nowDate);
-        indicatorMapper.insertIndicator(indicator);
+        boolean indicatorSuccess = indicatorMapper.insertIndicator(indicator) > 0;
         Long indicatorId = indicator.getIndicatorId();
         List<Indicator> indicators = new ArrayList<>(26);
         for (Map.Entry<Integer, Indicator> entry : INIT_INDICATOR.entrySet()) {
@@ -281,7 +305,7 @@ public class TenantLogic {
             indicators.add(value);
         }
         //初始化指标
-        indicatorMapper.batchIndicator(indicators);
-
+        boolean indicatorsSuccess = indicatorMapper.batchIndicator(indicators) > 0;
+        return indicatorSuccess && indicatorsSuccess;
     }
 }
