@@ -260,9 +260,9 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         }
 
         if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOs)) {
-            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOs) {
+            for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOs) {
                 DeptAnnualBonusFactor deptAnnualBonusFactor = new DeptAnnualBonusFactor();
-                BeanUtils.copyProperties(deptAnnualBonusOperateDTO, deptAnnualBonusFactor);
+                BeanUtils.copyProperties(deptAnnualBonusFactorDTO, deptAnnualBonusFactor);
                 deptAnnualBonusFactor.setUpdateTime(DateUtils.getNowDate());
                 deptAnnualBonusFactor.setUpdateBy(SecurityUtils.getUserId());
                 deptAnnualBonusFactorList.add(deptAnnualBonusFactor);
