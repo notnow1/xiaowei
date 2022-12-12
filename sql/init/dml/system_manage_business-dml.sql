@@ -65,7 +65,7 @@ INSERT INTO `indicator` (`indicator_id`, `parent_indicator_id`, `ancestors`, `in
 -- ----------------------------
 -- init of dictionary_type
 -- ----------------------------
-INSERT INTO dictionary_type (dictionary_type_id, dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 'PRODUCT_CATEGORY', '产品类别', '设置管理', '经营云配置', '产品配置', '', 0, 0, 0, sysdate(), 1, sysdate());
+INSERT INTO dictionary_type (dictionary_type_id, dictionary_type, dictionary_name, menu_zeroth_name, menu_first_name, menu_second_name, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 'PRODUCT_CATEGORY', '产品类别', '设置管理', '经营云配置', '产品配置', '', 1, 0, 0, sysdate(), 0, sysdate());
 
 
 -- ----------------------------
