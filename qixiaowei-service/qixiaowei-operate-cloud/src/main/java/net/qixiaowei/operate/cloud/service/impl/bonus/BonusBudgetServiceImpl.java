@@ -504,7 +504,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             FutureBonusBudgetLaddertersDTO futureBonusBudgetLaddertersDTO = new FutureBonusBudgetLaddertersDTO();
             if (i == 0) {
                 futureBonusBudgetLaddertersDTO.setBudgetYear(budgetYear - 1);
-                futureBonusBudgetLaddertersDTO.setAmountBonusBudget(amountBonusBudget);
+                futureBonusBudgetLaddertersDTO.setAmountBonusBudget(amountBonusBudget.divide(new BigDecimal("10000")));
                 futureBonusBudgetLaddertersDTO.setBonusCompositeRate(new BigDecimal("0"));
             } else if (i == 1) {
                 futureBonusBudgetLaddertersDTO.setBudgetYear(budgetYear);
@@ -575,7 +575,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     if (null != amountBonusBudget2 && amountBonusBudget2.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusCompositeRate && bonusCompositeRate.compareTo(new BigDecimal("0")) != 0){
                         multiply = amountBonusBudget2.multiply(new BigDecimal("1").add(bonusCompositeRate.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)));
-                        futureBonusBudgetLaddertersDTOS.get(i).setAmountBonusBudget(multiply);
+                        futureBonusBudgetLaddertersDTOS.get(i).setAmountBonusBudget(multiply.divide(new BigDecimal("10000")));
                     }
                 }
             }
@@ -620,18 +620,18 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             if (null != salarySum && salarySum.compareTo(new BigDecimal("0")) != 0 &&
                     null != increaseAndDecreasePaySum && increaseAndDecreasePaySum.compareTo(new BigDecimal("0")) != 0) {
                 //总工资包预算
-                basicWageBonusBudget = salarySum.add(increaseAndDecreasePaySum);
+                basicWageBonusBudget = salarySum.add(increaseAndDecreasePaySum).divide(new BigDecimal("10000"));
+                //总工资包预算
+                bonusBudgetDTO.setBasicWageBonusBudget(basicWageBonusBudget);
             }
 
-
-            if (null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) != 0 &&
-                    null != basicWageBonusBudget && basicWageBonusBudget.compareTo(new BigDecimal("0")) != 0) {
-                elasticityBonusBudget = emolumentPackage.subtract(basicWageBonusBudget);
+            if (null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) != 0) {
+                elasticityBonusBudget = emolumentPackage.subtract(basicWageBonusBudget).setScale(2,BigDecimal.ROUND_CEILING);
                 //弹性薪酬包  公式=总薪酬包预算-总工资包预算
                 bonusBudgetDTO.setElasticityBonusBudget(elasticityBonusBudget);
             }
 
-            if (null != elasticityBonusBudget && elasticityBonusBudget.compareTo(new BigDecimal("0")) != 0 &&
+            if (elasticityBonusBudget.compareTo(new BigDecimal("0")) != 0 &&
                     null != amountBonusBudget && amountBonusBudget.compareTo(new BigDecimal("0")) != 0) {
                 raiseSalaryBonusBudget = elasticityBonusBudget.subtract(amountBonusBudget);
                 //涨薪包预算 公式=弹性薪酬包预算-总奖金包预算。
@@ -1500,7 +1500,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                                 employeeBudgetDetailsDTO.getOfficialRank() != datum.getEmployeeRank()){
                             OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(datum.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                             if (StringUtils.isNotNull(officialRankEmolumentDTO)){
-                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(2,BigDecimal.ROUND_FLOOR));
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(2,BigDecimal.ROUND_CEILING));
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
                             }
 
@@ -1534,7 +1534,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
                     if (null != agePayAmountLastYear && null != averageAdjust && agePayAmountLastYear.compareTo(new BigDecimal("0")) != 0 && averageAdjust.compareTo(new BigDecimal("0")) != 0) {
                         //增人/减人工资包  公式=平均规划新增人数×上年平均工资。可为负数（代表部门人数减少）
-                        increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust).setScale(2,BigDecimal.ROUND_FLOOR);
+                        increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust).setScale(2,BigDecimal.ROUND_CEILING);
                     }
                     employeeBudgetDetailsDTO.setIncreaseAndDecreasePay(increaseAndDecreasePay);
                 }
