@@ -979,10 +979,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         if (StringUtils.isEmpty(salaryPayDTOS)) {
             throw new ServiceException("当前需要导出的工资发薪列表已不存在");
         }
-        List<Long> employeeIds = new ArrayList<>();
-        for (SalaryPayDTO salaryPayDTO : salaryPayDTOS) {
-            employeeIds.add(salaryPayDTO.getEmployeeId());
-        }
+        List<Long> employeeIds = salaryPayDTOS.stream().map(SalaryPayDTO::getEmployeeId).collect(Collectors.toList());
         // 为员工赋值
         R<List<EmployeeDTO>> employeeDTOR = employeeService.selectByEmployeeIds(employeeIds, SecurityConstants.INNER);
         List<EmployeeDTO> employeeDTOS = employeeDTOR.getData();

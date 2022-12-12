@@ -52,6 +52,10 @@ public class DeptSalaryAdjustItemDTO {
      */
     private Long departmentId;
     /**
+     * 部门名称
+     */
+    private String departmentName;
+    /**
      * 覆盖比例
      */
     private BigDecimal coveragePercentage;
@@ -63,6 +67,14 @@ public class DeptSalaryAdjustItemDTO {
      * 调整时间
      */
     private LocalDate adjustmentTime;
+    /**
+     * 上年工资包
+     */
+    private BigDecimal lastSalary;
+    /**
+     * 新增工资包
+     */
+    private BigDecimal addSalary;
     /**
      * 删除标记:0未删除;1已删除
      */

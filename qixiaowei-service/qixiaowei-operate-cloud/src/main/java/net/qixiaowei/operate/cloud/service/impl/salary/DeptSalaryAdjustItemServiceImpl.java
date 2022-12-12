@@ -108,6 +108,28 @@ public class DeptSalaryAdjustItemServiceImpl implements IDeptSalaryAdjustItemSer
     }
 
     /**
+     * 通过计划ID查找调薪项
+     *
+     * @param deptSalaryAdjustPlanId 计划ID
+     * @return
+     */
+    @Override
+    public List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemByPlanId(Long deptSalaryAdjustPlanId) {
+        return deptSalaryAdjustItemMapper.selectDeptSalaryAdjustItemBySalaryAdjustPlanId(deptSalaryAdjustPlanId);
+    }
+
+    /**
+     * 通过计划ID集合查找调薪项
+     *
+     * @param deptSalaryAdjustPlanIds 计划ID集合
+     * @return
+     */
+    @Override
+    public List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemByPlanIds(Long deptSalaryAdjustPlanIds) {
+        return deptSalaryAdjustItemMapper.selectDeptSalaryAdjustItemBySalaryAdjustPlanIds(deptSalaryAdjustPlanIds);
+    }
+
+    /**
      * 逻辑删除部门调薪项表信息
      *
      * @param deptSalaryAdjustItemDTO 部门调薪项表
