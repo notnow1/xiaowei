@@ -84,6 +84,16 @@ public class PostServiceImpl implements IPostService {
     @Transactional
     @Override
     public PostDTO insertPost(PostDTO postDTO) {
+        //先查询 重复无法添加
+        PostDTO postDTO1 = postMapper.selectPostCode(postDTO.getPostCode());
+        if (null == postDTO1) {
+            throw new ServiceException("岗位编码已存在！");
+        }
+        //先查询 重复无法添加
+        PostDTO postDTO2 = postMapper.selectPostName(postDTO.getPostName());
+        if (null == postDTO2) {
+            throw new ServiceException("岗位名称已存在！");
+        }
         //岗位表
         Post post = new Post();
         BeanUtils.copyProperties(postDTO, post);
@@ -114,16 +124,7 @@ public class PostServiceImpl implements IPostService {
                 throw new ServiceException("组织信息不存在 无法新增！");
             }
         }
-        //先查询 重复无法添加
-        PostDTO postDTO1 = postMapper.selectPostCode(post.getPostCode());
-        if (null == postDTO1) {
-            throw new ServiceException("岗位编码已存在！");
-        }
-        //先查询 重复无法添加
-        PostDTO postDTO2 = postMapper.selectPostName(post.getPostName());
-        if (null == postDTO2) {
-            throw new ServiceException("岗位名称已存在！");
-        }
+
         for (DepartmentDTO departmentDTO : collect1) {
             //组织中间表
             DepartmentPost departmentPost = new DepartmentPost();

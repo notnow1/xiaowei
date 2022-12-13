@@ -152,7 +152,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      * @return 结果
      */
     @Override
-    public int initSalaryItem() {
+    public Boolean initSalaryItem() {
+        boolean initSuccess = false;
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         for (SalaryItem salaryItem : INIT_SALARY_ITEM) {
@@ -162,7 +163,11 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
             salaryItem.setCreateTime(nowDate);
             salaryItem.setUpdateTime(nowDate);
         }
-        return salaryItemMapper.batchSalaryItem(INIT_SALARY_ITEM);
+        int i = salaryItemMapper.batchSalaryItem(INIT_SALARY_ITEM);
+        if (i == 4) {
+            initSuccess = true;
+        }
+        return initSuccess;
     }
 
     /**
