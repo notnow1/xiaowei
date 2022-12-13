@@ -725,7 +725,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         }
                         if (null != nowTopDeptPay && nowTopDeptPay.compareTo(new BigDecimal("0")) != 0 &&
                                 null != topDeptPaySum && topDeptPaySum.compareTo(new BigDecimal("0")) != 0) {
-                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
+                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 10, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_CEILING);
                             deptBonusBudgetDetailsDTO.setDeptBonusPercentageReference(multiply);
                         }
                     }
