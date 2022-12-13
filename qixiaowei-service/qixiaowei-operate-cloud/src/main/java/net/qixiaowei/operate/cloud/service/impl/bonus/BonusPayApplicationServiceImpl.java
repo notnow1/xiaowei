@@ -76,6 +76,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         List<BonusPayObjectsDTO> bonusPayDeptObjectsDTOS = bonusPayObjectsMapper.selectBonusPayDeptObjectsByBonusPayApplicationId(bonusPayApplicationId);
         //封装获奖部门名称
         this.packbonusPayDeptObjectsName(bonusPayDeptObjectsDTOS);
+        bonusPayApplicationDTO.setAwardYearMonth(bonusPayApplicationDTO.getAwardYear().toString()+"/0"+bonusPayApplicationDTO.getAwardMonth());
         bonusPayApplicationDTO.setBonusPayBudgetDeptDTOs(bonusPayBudgetDeptDTOS);
         bonusPayApplicationDTO.setBonusPayObjectsEmployeeDTOs(bonusPayEmployeeObjectsDTOS);
         bonusPayApplicationDTO.setBonusPayObjectsDeptDTOs(bonusPayDeptObjectsDTOS);
@@ -101,6 +102,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                             if (bonusPayObjectsDTO.getBonusPayObjectId() == datum.getDepartmentId()) {
                                 //部门名称
                                 bonusPayObjectsDTO.setBonusPayObjectName(datum.getDepartmentName());
+                                //编码
+                                bonusPayObjectsDTO.setDepartmentCode(datum.getDepartmentCode());
                                 //部门负责人名称
                                 bonusPayObjectsDTO.setDepartmentLeaderName(datum.getDepartmentLeaderName());
                             }
@@ -130,6 +133,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                             if (bonusPayObjectsDTO.getBonusPayObjectId() == datum.getEmployeeId()) {
                                 //员工名称
                                 bonusPayObjectsDTO.setBonusPayObjectName(datum.getEmployeeName());
+                                //工号
+                                bonusPayObjectsDTO.setEmployeeCode(datum.getEmployeeCode());
                                 //员工部门名称
                                 bonusPayObjectsDTO.setEmployeeDepartmentName(datum.getEmployeeDepartmentName());
                             }

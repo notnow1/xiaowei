@@ -64,10 +64,10 @@
         bpa.update_time
         FROM
         bonus_pay_application bpa
-        WHERE  bpa.delete_flag=0
         left join salary_item si
         on si.salary_item_id = bpa.salary_item_id
         and si.delete_flag =0
+        WHERE  bpa.delete_flag=0
         <if test="bonusPayApplication.awardYearMonth != null and bonusPayApplication.awardYearMonth != ''">
             and CONCAT(award_year,"/",award_month) = #{bonusPayApplication.awardYearMonth}
         </if>

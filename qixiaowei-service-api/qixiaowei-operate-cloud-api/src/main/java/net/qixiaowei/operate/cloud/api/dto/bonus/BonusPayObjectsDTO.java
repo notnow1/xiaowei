@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.constraints.NotBlank;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -63,6 +64,14 @@ public class BonusPayObjectsDTO {
      * 奖金发放对象名称
      */
     private  String bonusPayObjectName;
+    /**
+     * 部门编码
+     */
+    private  String departmentCode;
+    /**
+     * 工号
+     */
+    private String employeeCode;
     /**
     * 奖项金额
     */

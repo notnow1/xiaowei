@@ -31,6 +31,10 @@ public class BonusPayApplication extends TenantEntity {
      */
     private Long salaryItemId;
     /**
+     * 三级项目(奖项类别名称)
+     */
+    private String thirdLevelItem;
+    /**
      * 奖项编码
      */
     private String awardCode;
