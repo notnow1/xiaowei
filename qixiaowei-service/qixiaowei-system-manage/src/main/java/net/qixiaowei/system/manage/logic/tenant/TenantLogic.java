@@ -13,6 +13,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.integration.tenant.utils.TenantUtils;
+import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
@@ -46,18 +47,20 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class TenantLogic {
 
-    private static final Map<Integer, String> DICTIONARY_LABEL = new HashMap<>();
+
+    private static final List<DictionaryData> INIT_DICTIONARY_DATA = new ArrayList<>(6);
 
     private static final Map<Integer, Indicator> INIT_INDICATOR = new HashMap<>();
 
     static {
-        DICTIONARY_LABEL.put(1, "通用件");
-        DICTIONARY_LABEL.put(2, "标准件");
-        DICTIONARY_LABEL.put(3, "自制件");
-        DICTIONARY_LABEL.put(4, "外购件");
-        DICTIONARY_LABEL.put(5, "外协件");
-        DICTIONARY_LABEL.put(6, "原材料");
-
+        //初始化枚举值
+        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("通用件").dictionaryValue("1").defaultFlag(1).sort(1).status(BusinessConstants.NORMAL).build());
+        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("标准件").dictionaryValue("2").defaultFlag(0).sort(2).status(BusinessConstants.NORMAL).build());
+        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("自制件").dictionaryValue("3").defaultFlag(0).sort(3).status(BusinessConstants.NORMAL).build());
+        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("外购件").dictionaryValue("4").defaultFlag(0).sort(4).status(BusinessConstants.NORMAL).build());
+        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("外协件").dictionaryValue("5").defaultFlag(0).sort(5).status(BusinessConstants.NORMAL).build());
+        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("原材料").dictionaryValue("6").defaultFlag(0).sort(6).status(BusinessConstants.NORMAL).build());
+        //初始化指标
         INIT_INDICATOR.put(1, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW001").indicatorName("订单（不含税）").sort(1).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
         INIT_INDICATOR.put(2, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW002").indicatorName("销售收入").sort(2).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
         INIT_INDICATOR.put(3, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW003").indicatorName("销售成本").sort(3).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(0).drivingFactorFlag(0).build());
@@ -118,12 +121,12 @@ public class TenantLogic {
     @IgnoreTenant
     public Boolean initTenantData(Tenant tenant) {
         AtomicReference<Boolean> initSuccess = new AtomicReference<>(true);
-        //1、初始化用户---user
-        //2、初始化用户角色+用户关联角色---role、user_role
-        //3、角色赋权---role_menu
-        this.initUserInfo(tenant);
         Long tenantId = tenant.getTenantId();
         TenantUtils.execute(tenantId, () -> {
+            //1、初始化用户---user
+            //2、初始化用户角色+用户关联角色---role、user_role
+            //3、角色赋权---role_menu
+            boolean initUserInfo = this.initUserInfo(tenant);
             //4、配置，如启用行业配置---config
             boolean initConfig = this.initConfig();
             //5、初始化产品类别---dictionary_type、dictionary_data
@@ -141,32 +144,46 @@ public class TenantLogic {
                     initSalaryItem = false;
                 }
             }
-            initSuccess.set(initConfig && initDictionary && initIndicator && initSalaryItem);
+            initSuccess.set(initUserInfo && initConfig && initDictionary && initIndicator && initSalaryItem);
             //continue...
         });
         return initSuccess.get();
     }
 
-
+    /**
+     * @description: 初始化租户用户相关信息
+     * @Author: hzk
+     * @date: 2022/12/13 10:46
+     * @param: [tenant]
+     * @return: boolean
+     **/
     public boolean initUserInfo(Tenant tenant) {
-        boolean initSuccess = false;
-        Long tenantId = tenant.getTenantId();
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
         //新增用户
         User user = new User();
-        user.setTenantId(tenantId);
         user.setUserAccount(tenant.getAdminAccount());
         user.setPassword(SecurityUtils.encryptPassword(tenant.getAdminPassword()));
         user.setStatus(BusinessConstants.NORMAL);
         user.setUserName(RoleCode.TENANT_ADMIN.getInfo());
-        userMapper.initTenantUser(user);
+        user.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        user.setCreateBy(userId);
+        user.setUpdateBy(userId);
+        user.setCreateTime(nowDate);
+        user.setUpdateTime(nowDate);
+        boolean userSuccess = userMapper.insertUser(user) > 0;
+        //新增租户角色
         Role role = new Role();
-        role.setTenantId(tenantId);
         role.setDataScope(RoleDataScope.ALL.getCode());
         role.setRoleCode(RoleCode.TENANT_ADMIN.getCode());
         role.setRoleName(RoleCode.TENANT_ADMIN.getInfo());
         role.setStatus(BusinessConstants.NORMAL);
-        //新增租户角色
-        roleMapper.initTenantRole(role);
+        role.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        role.setCreateBy(userId);
+        role.setUpdateBy(userId);
+        role.setCreateTime(nowDate);
+        role.setUpdateTime(nowDate);
+        boolean roleSuccess = roleMapper.insertRole(role) > 0;
         //角色赋权 todo
         Long roleId = role.getRoleId();
         List<RoleMenu> list = new ArrayList<>();
@@ -180,15 +197,26 @@ public class TenantLogic {
         if (list.size() > 0) {
             roleMenuMapper.batchInitTenantRoleMenu(list);
         }
-        //用户角色关联
+        //新增用户角色关联
         UserRole userRole = new UserRole();
-        userRole.setTenantId(tenantId);
         userRole.setUserId(user.getUserId());
-        userRole.setRoleId(role.getRoleId());
-        userRoleMapper.initTenantUserRole(userRole);
-        return initSuccess;
+        userRole.setRoleId(roleId);
+        userRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        userRole.setCreateBy(userId);
+        userRole.setUpdateBy(userId);
+        userRole.setCreateTime(nowDate);
+        userRole.setUpdateTime(nowDate);
+        boolean userRoleSuccess = userRoleMapper.insertUserRole(userRole) > 0;
+        return userSuccess && roleSuccess && userRoleSuccess;
     }
 
+    /**
+     * @description: 初始化配置
+     * @Author: hzk
+     * @date: 2022/12/13 10:47
+     * @param: []
+     * @return: boolean
+     **/
     public boolean initConfig() {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
@@ -223,7 +251,13 @@ public class TenantLogic {
         return basicConfigSuccess && configSuccess;
     }
 
-
+    /**
+     * @description: 初始化枚举类
+     * @Author: hzk
+     * @date: 2022/12/13 10:47
+     * @param: []
+     * @return: boolean
+     **/
     public boolean initDictionary() {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
@@ -245,34 +279,27 @@ public class TenantLogic {
         Long dictionaryTypeId = dictionaryType.getDictionaryTypeId();
         //初始化字典数据
         List<DictionaryData> dictionaryData = new ArrayList<>(6);
-        Integer sort = 1;
-        DictionaryData dictionaryData1 = new DictionaryData();
-        dictionaryData1.setDictionaryTypeId(dictionaryTypeId);
-        dictionaryData1.setDictionaryLabel(DICTIONARY_LABEL.get(sort));
-        dictionaryData1.setDictionaryValue(sort.toString());
-        dictionaryData1.setDefaultFlag(1);
-        dictionaryData1.setSort(sort);
-        dictionaryData1.setRemark("");
-        dictionaryData1.setStatus(BusinessConstants.NORMAL);
-        dictionaryData1.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        dictionaryData1.setCreateBy(userId);
-        dictionaryData1.setUpdateBy(userId);
-        dictionaryData1.setCreateTime(nowDate);
-        dictionaryData1.setUpdateTime(nowDate);
-        dictionaryData.add(dictionaryData1);
-        sort++;
-        for (; sort < 7; sort++) {
-            dictionaryData1.setDictionaryLabel(DICTIONARY_LABEL.get(sort));
-            dictionaryData1.setDictionaryValue(sort.toString());
-            dictionaryData1.setDefaultFlag(0);
-            dictionaryData1.setSort(sort);
-            dictionaryData.add(dictionaryData1);
+        for (DictionaryData initDictionaryData : INIT_DICTIONARY_DATA) {
+            initDictionaryData.setDictionaryTypeId(dictionaryTypeId);
+            initDictionaryData.setRemark("");
+            initDictionaryData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            initDictionaryData.setCreateBy(userId);
+            initDictionaryData.setUpdateBy(userId);
+            initDictionaryData.setCreateTime(nowDate);
+            initDictionaryData.setUpdateTime(nowDate);
+            dictionaryData.add(initDictionaryData);
         }
         boolean DictionaryDataSuccess = dictionaryDataMapper.batchDictionaryData(dictionaryData) > 0;
         return dictionaryTypeSuccess && DictionaryDataSuccess;
     }
 
-
+    /**
+     * @description: 初始化指标
+     * @Author: hzk
+     * @date: 2022/12/13 10:47
+     * @param: []
+     * @return: boolean
+     **/
     public boolean initIndicator() {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
