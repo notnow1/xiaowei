@@ -234,14 +234,17 @@ public class BacklogServiceImpl implements IBacklogService {
 
     public int insertBacklogs(List<BacklogDTO> backlogDtos) {
         List<Backlog> backlogList = new ArrayList();
-
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
         for (BacklogDTO backlogDTO : backlogDtos) {
             Backlog backlog = new Backlog();
             BeanUtils.copyProperties(backlogDTO, backlog);
-            backlog.setCreateBy(SecurityUtils.getUserId());
-            backlog.setCreateTime(DateUtils.getNowDate());
-            backlog.setUpdateTime(DateUtils.getNowDate());
-            backlog.setUpdateBy(SecurityUtils.getUserId());
+            backlog.setCreateBy(userId);
+            backlog.setCreateTime(nowDate);
+            backlog.setUpdateTime(nowDate);
+            backlog.setUpdateBy(userId);
+            backlog.setBacklogInitiationTime(nowDate);
+            backlog.setStatus(BusinessConstants.DISABLE);
             backlog.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             backlogList.add(backlog);
         }

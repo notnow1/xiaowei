@@ -3,6 +3,7 @@ package net.qixiaowei.integration.security.feign;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.utils.ServletUtils;
@@ -15,6 +16,7 @@ import feign.RequestTemplate;
  * feign 请求拦截器
  */
 @Component
+@Order
 public class FeignRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {
@@ -38,10 +40,10 @@ public class FeignRequestInterceptor implements RequestInterceptor {
             if (StringUtils.isNotEmpty(authentication)) {
                 requestTemplate.header(SecurityConstants.AUTHORIZATION_HEADER, authentication);
             }
-            String tenantId = headers.get(SecurityConstants.DETAILS_TENANT_ID);
-            if (StringUtils.isNotEmpty(tenantId)) {
-                requestTemplate.header(SecurityConstants.DETAILS_TENANT_ID, tenantId);
-            }
+//            String tenantId = headers.get(SecurityConstants.DETAILS_TENANT_ID);
+//            if (StringUtils.isNotEmpty(tenantId)) {
+//                requestTemplate.header(SecurityConstants.DETAILS_TENANT_ID, tenantId);
+//            }
             String employeeId = headers.get(SecurityConstants.DETAILS_EMPLOYEE_ID);
             if (StringUtils.isNotEmpty(employeeId)) {
                 requestTemplate.header(SecurityConstants.DETAILS_EMPLOYEE_ID, employeeId);

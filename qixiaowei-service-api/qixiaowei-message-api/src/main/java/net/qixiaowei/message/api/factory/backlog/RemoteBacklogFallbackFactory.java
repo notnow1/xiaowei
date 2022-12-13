@@ -2,6 +2,7 @@ package net.qixiaowei.message.api.factory.backlog;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.message.api.dto.backlog.BacklogDTO;
+import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +24,12 @@ public class RemoteBacklogFallbackFactory implements FallbackFactory<RemoteBackl
         log.error("待办事项服务调用失败:{}", throwable.getMessage());
         return new RemoteBacklogService() {
             @Override
-            public R<?> add(BacklogDTO backlogDTO, String source) {
+            public R<?> add(BacklogSendDTO backlogSendDTO, String source) {
                 return R.fail("新增待办事项失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<?> insertBacklogs(List<BacklogDTO> backlogDTOS, String source) {
+            public R<?> insertBacklogs(List<BacklogSendDTO> backlogSendDTOS, String source) {
                 return R.fail("批量新增待办事项失败:" + throwable.getMessage());
             }
 

@@ -72,7 +72,7 @@
     <!--新增消息表-->
     <insert id="insertMessage" useGeneratedKeys="true" keyProperty="messageId">
         INSERT INTO message
-        (message_idbusiness_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time)
+        (business_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{message.businessType},#{message.businessSubtype},#{message.businessId},#{message.sendUserId},#{message.messageTitle},#{message.messageContent},#{message.deleteFlag},#{message.createBy},#{message.createTime},#{message.updateBy},#{message.updateTime})
     </insert>
@@ -142,7 +142,7 @@
     <!--批量新增消息表-->
     <insert id="batchMessage">
         INSERT INTO message
-        (message_idbusiness_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time)
+        (business_type,business_subtype,business_id,send_user_id,message_title,message_content,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="messages"

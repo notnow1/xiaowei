@@ -7,8 +7,9 @@ package net.qixiaowei.integration.common.enums.message;
  **/
 public enum BusinessSubtype {
 
-    TENANT_DOMAIN_APPROVAL_PASS(1001, BusinessType.TENANT, "域名申请通过"),
-    TENANT_DOMAIN_APPROVAL_REFUSE(1002, BusinessType.TENANT, "域名申请不通过"),
+    TENANT_DOMAIN_APPROVAL(1001, BusinessType.TENANT, "域名申请"),
+    TENANT_DOMAIN_APPROVAL_PASS(1002, BusinessType.TENANT, "域名申请通过"),
+    TENANT_DOMAIN_APPROVAL_REFUSE(1003, BusinessType.TENANT, "域名申请不通过"),
 
     ROLLING_PREDICTION_ORDER(2001, BusinessType.TARGET, "销售订单滚动预测"),
     ROLLING_PREDICTION_INCOME(2002, BusinessType.TARGET, "销售收入滚动预测"),

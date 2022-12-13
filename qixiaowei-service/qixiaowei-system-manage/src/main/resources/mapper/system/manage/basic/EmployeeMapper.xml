@@ -509,7 +509,9 @@
         ee.employee_basic_wage,
         ee.employment_date, ee.departure_date, ee.employment_status, ee.status, ee.delete_flag, ee.create_by,
         ee.create_time, ee.update_by,
-        ee.update_time
+        ee.update_time,
+        u.user_id,
+        u.user_name
         FROM employee ee
         left join post p
         on p.post_id =ee.employee_post_id
@@ -520,6 +522,7 @@
         left join official_rank_system ors
         on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
+        LEFT JOIN user u ON u.employee_id = ee.employee_id AND u.delete_flag = 0
         WHERE ee.delete_flag=0
         AND ee.employee_id in
         <foreach item="item"

@@ -75,7 +75,7 @@
     <!--新增消息接收表-->
     <insert id="insertMessageReceive" useGeneratedKeys="true" keyProperty="messageReceiveId">
         INSERT INTO message_receive
-        (message_receive_idmessage_id,user_id,read_time,status,delete_flag,create_by,create_time,update_by,update_time)
+        (message_id,user_id,read_time,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{messageReceive.messageId},#{messageReceive.userId},#{messageReceive.readTime},#{messageReceive.status},#{messageReceive.deleteFlag},#{messageReceive.createBy},#{messageReceive.createTime},#{messageReceive.updateBy},#{messageReceive.updateTime})
     </insert>
@@ -139,7 +139,7 @@
     <!--批量新增消息接收表-->
     <insert id="batchMessageReceive">
         INSERT INTO message_receive
-        (message_receive_idmessage_id,user_id,read_time,status,delete_flag,create_by,create_time,update_by,update_time)
+        (message_id,user_id,read_time,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="messageReceives"

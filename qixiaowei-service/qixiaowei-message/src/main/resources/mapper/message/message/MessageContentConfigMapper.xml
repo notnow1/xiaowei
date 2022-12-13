@@ -70,7 +70,7 @@
     <!--新增消息内容配置表-->
     <insert id="insertMessageContentConfig" useGeneratedKeys="true" keyProperty="messageContentConfigId">
         INSERT INTO message_content_config
-        (message_content_config_idmessage_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time)
+        (message_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{messageContentConfig.messageType},#{messageContentConfig.businessType},#{messageContentConfig.businessSubtype},#{messageContentConfig.receiveRole},#{messageContentConfig.messageTemplate},#{messageContentConfig.receiveUser},#{messageContentConfig.deleteFlag},#{messageContentConfig.createBy},#{messageContentConfig.createTime},#{messageContentConfig.updateBy},#{messageContentConfig.updateTime})
     </insert>
@@ -140,7 +140,7 @@
     <!--批量新增消息内容配置表-->
     <insert id="batchMessageContentConfig">
         INSERT INTO message_content_config
-        (message_content_config_idmessage_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time)
+        (message_type,business_type,business_subtype,receive_role,message_template,receive_user,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="messageContentConfigs"

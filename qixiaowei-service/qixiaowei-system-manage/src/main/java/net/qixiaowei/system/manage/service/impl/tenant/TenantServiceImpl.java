@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -438,61 +439,6 @@ public class TenantServiceImpl implements ITenantService {
     }
 
     /**
-     * 修改单个租户
-     *
-     * @param tenantDTO
-     * @return
-     */
-    @Override
-    public int updateMyTenantDTO(TenantDTO tenantDTO) {
-        String domain = tenantDTO.getDomain();
-        if (tenantConfig.getExistedDomains().contains(domain)) {
-            throw new ServiceException("修改企业信息失败:域名[" + domain + "]已经被占用!");
-        }
-        //租户表
-        Tenant tenant = new Tenant();
-        //
-        TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
-        BeanUtils.copyProperties(tenantDTO, tenant);
-
-        //租户登录背景图片URL
-        tenant.setLoginBackground(fileConfig.getPathOfRemoveDomain(tenant.getLoginBackground()));
-        //租户logo图片URL
-        tenant.setTenantLogo(fileConfig.getPathOfRemoveDomain(tenant.getTenantLogo()));
-        //查询租户数据
-        TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
-        if (StringUtils.isNull(tenantDTO1)) {
-            throw new ServiceException("租户信息不存在");
-        }
-        //对比域名是否修改 修改需要保存到域名申请表中
-        if (!StringUtils.equals(tenantDTO1.getDomain(), tenant.getDomain())) {
-            //租户id
-            tenantDomainApproval.setTenantId(tenant.getTenantId());
-            //申请域名
-            tenantDomainApproval.setApprovalDomain(tenant.getDomain());
-            //申请人用户id
-            tenantDomainApproval.setApprovalUserId(SecurityUtils.getUserId());
-            //申请人账号
-            tenantDomainApproval.setApplicantUserAccount(SecurityUtils.getUserAccount());
-            //提交时间
-            tenantDomainApproval.setSubmissionTime(DateUtils.getNowDate());
-            //申请状态
-            tenantDomainApproval.setApprovalStatus(0);
-            //删除标记
-            tenantDomainApproval.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            tenantDomainApproval.setCreateBy(SecurityUtils.getUserId());
-            tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId());
-            tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
-            tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
-            tenantDomainApprovalMapper.insertTenantDomainApproval(tenantDomainApproval);
-            // todo 开启工作流
-        }
-        tenant.setUpdateBy(SecurityUtils.getUserId());
-        tenant.setUpdateTime(DateUtils.getNowDate());
-        return tenantMapper.updateTenant(tenant);
-    }
-
-    /**
      * 修改企业信息
      *
      * @return
@@ -506,7 +452,8 @@ public class TenantServiceImpl implements ITenantService {
         //租户表
         Tenant tenant = new Tenant();
         //
-        TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
         BeanUtils.copyProperties(tenantDTO, tenant);
         tenant.setTenantId(SecurityUtils.getTenantId());
         //租户登录背景图片URL
@@ -519,13 +466,14 @@ public class TenantServiceImpl implements ITenantService {
             throw new ServiceException("租户信息不存在");
         }
         //对比域名是否修改 修改需要保存到域名申请表中
-        if (!StringUtils.equals(tenantDTO1.getDomain(), tenant.getDomain())) {
+        if (!StringUtils.equals(tenantDTO1.getDomain(), domain)) {
+            TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
             //租户id
             tenantDomainApproval.setTenantId(tenant.getTenantId());
             //申请域名
-            tenantDomainApproval.setApprovalDomain(tenant.getDomain());
+            tenantDomainApproval.setApprovalDomain(domain);
             //申请人用户id
-            tenantDomainApproval.setApprovalUserId(SecurityUtils.getUserId());
+            tenantDomainApproval.setApprovalUserId(userId);
             //申请人账号
             tenantDomainApproval.setApplicantUserAccount(SecurityUtils.getUserAccount());
             //提交时间
@@ -534,15 +482,17 @@ public class TenantServiceImpl implements ITenantService {
             tenantDomainApproval.setApprovalStatus(0);
             //删除标记
             tenantDomainApproval.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            tenantDomainApproval.setCreateBy(SecurityUtils.getUserId());
-            tenantDomainApproval.setUpdateBy(SecurityUtils.getUserId());
-            tenantDomainApproval.setCreateTime(DateUtils.getNowDate());
-            tenantDomainApproval.setUpdateTime(DateUtils.getNowDate());
+            tenantDomainApproval.setCreateBy(userId);
+            tenantDomainApproval.setUpdateBy(userId);
+            tenantDomainApproval.setCreateTime(nowDate);
+            tenantDomainApproval.setUpdateTime(nowDate);
             tenantDomainApprovalMapper.insertTenantDomainApproval(tenantDomainApproval);
             // todo 开启工作流
+            tenantLogic.sendBacklog(tenantDomainApproval.getTenantDomainApprovalId(), tenantDTO1);
+
         }
-        tenant.setUpdateBy(SecurityUtils.getUserId());
-        tenant.setUpdateTime(DateUtils.getNowDate());
+        tenant.setUpdateBy(userId);
+        tenant.setUpdateTime(nowDate);
         return tenantMapper.updateTenant(tenant);
     }
 

@@ -66,6 +66,9 @@
         update_time
         FROM backlog
         WHERE delete_flag=0
+        <if test="backlog.userId != null">
+            and user_id = #{backlog.userId}
+        </if>
         <if test="backlog.backlogName != null and backlog.backlogName != ''">
             and backlog_name LIKE concat('%', #{backlog.backlogName}, '%')
         </if>
@@ -102,7 +105,7 @@
     <!--新增待办事项表-->
     <insert id="insertBacklog" useGeneratedKeys="true" keyProperty="backlogId">
         INSERT INTO backlog
-        (backlog_idbusiness_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time)
+        (business_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{backlog.businessType},#{backlog.businessSubtype},#{backlog.businessId},#{backlog.userId},#{backlog.backlogName},#{backlog.backlogInitiator},#{backlog.backlogInitiatorName},#{backlog.backlogInitiationTime},#{backlog.backlogProcessTime},#{backlog.status},#{backlog.deleteFlag},#{backlog.createBy},#{backlog.createTime},#{backlog.updateBy},#{backlog.updateTime})
     </insert>
@@ -184,7 +187,7 @@
     <!--批量新增待办事项表-->
     <insert id="batchBacklog">
         INSERT INTO backlog
-        (backlog_idbusiness_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time)
+        (business_type,business_subtype,business_id,user_id,backlog_name,backlog_initiator,backlog_initiator_name,backlog_initiation_time,backlog_process_time,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="backlogs"

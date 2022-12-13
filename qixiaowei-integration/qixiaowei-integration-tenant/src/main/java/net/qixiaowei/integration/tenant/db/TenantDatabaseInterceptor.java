@@ -5,7 +5,6 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.integration.tenant.context.TenantContextHolder;
 import net.qixiaowei.integration.tenant.domain.SqlCondition;
 import net.qixiaowei.integration.tenant.utils.SqlConditionHelper;
 import net.qixiaowei.integration.tenant.utils.SqlFieldHelper;

@@ -1,19 +1,25 @@
 package net.qixiaowei.system.manage.logic.tenant;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
 import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.integration.tenant.utils.TenantUtils;
-import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
+import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
+import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
@@ -24,6 +30,9 @@ import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.user.User;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.mapper.basic.ConfigMapper;
 import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
 import net.qixiaowei.system.manage.mapper.basic.DictionaryTypeMapper;
@@ -31,6 +40,7 @@ import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
+import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -116,6 +126,15 @@ public class TenantLogic {
 
     @Autowired
     private RemoteSalaryItemService remoteSalaryItemService;
+
+    @Autowired
+    private RemoteBacklogService remoteBacklogService;
+
+    @Autowired
+    private TenantMapper tenantMapper;
+
+    @Autowired
+    private RemoteEmployeeService remoteEmployeeService;
 
 
     @IgnoreTenant
@@ -289,8 +308,8 @@ public class TenantLogic {
             initDictionaryData.setUpdateTime(nowDate);
             dictionaryData.add(initDictionaryData);
         }
-        boolean DictionaryDataSuccess = dictionaryDataMapper.batchDictionaryData(dictionaryData) > 0;
-        return dictionaryTypeSuccess && DictionaryDataSuccess;
+        boolean dictionaryDataSuccess = dictionaryDataMapper.batchDictionaryData(dictionaryData) > 0;
+        return dictionaryTypeSuccess && dictionaryDataSuccess;
     }
 
     /**
@@ -335,4 +354,47 @@ public class TenantLogic {
         boolean indicatorsSuccess = indicatorMapper.batchIndicator(indicators) > 0;
         return indicatorSuccess && indicatorsSuccess;
     }
+
+    /**
+     * @description: 发送待办给客服
+     * @Author: hzk
+     * @date: 2022/12/13 21:56
+     * @param: [tenantDomainApprovalId, tenantDTO]
+     * @return: void
+     **/
+    @IgnoreTenant
+    public void sendBacklog(Long tenantDomainApprovalId, TenantDTO tenantDTO) {
+        TenantUtils.execute(0L, () -> {
+            String supportStaff = tenantDTO.getSupportStaff();
+            if (StringUtils.isNotEmpty(supportStaff)) {
+                long[] supportStaffs = StrUtil.splitToLong(supportStaff, StrUtil.COMMA);
+                List<Long> supportStaffIds = Convert.toList(Long.class, supportStaffs);
+                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(supportStaffIds, SecurityConstants.INNER);
+                if (R.SUCCESS != listR.getCode()) {
+                    throw new ServiceException("查找客服失败");
+                }
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)) {
+                    List<BacklogSendDTO> backlogSendDTOS = new ArrayList<>();
+                    for (EmployeeDTO employeeDTO : data) {
+                        Long userId = employeeDTO.getUserId();
+                        BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
+                        backlogSendDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
+                        backlogSendDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
+                        backlogSendDTO.setBusinessId(tenantDomainApprovalId);
+                        backlogSendDTO.setUserId(userId);
+                        backlogSendDTO.setBacklogName("二级域名申请");
+                        backlogSendDTO.setBacklogInitiator(tenantDTO.getTenantId());
+                        backlogSendDTO.setBacklogInitiatorName(tenantDTO.getTenantName());
+                        backlogSendDTOS.add(backlogSendDTO);
+                    }
+                    R<?> insertBacklogs = remoteBacklogService.insertBacklogs(backlogSendDTOS, SecurityConstants.INNER);
+                    if (R.SUCCESS != insertBacklogs.getCode()) {
+                        throw new ServiceException("申请域名通知失败");
+                    }
+                }
+            }
+        });
+    }
+
 }
