@@ -886,6 +886,10 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @param mapPaymentAveParent
      */
     private void packDeptOffPaymentAve(int budgetYear, Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapPaymentAveParent) {
+        int year = DateUtils.getYear();
+        if (budgetYear<year){
+            year=budgetYear;
+        }
         //一级部门下所有部门的平均薪酬集合
         List<Map<Long, Map<String, BigDecimal>>> mapList = new ArrayList<>();
         Map<Long, Map<String, BigDecimal>> mapPaymentAve = new HashMap<>();
@@ -904,7 +908,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                     if (StringUtils.isNotEmpty(listRData)) {
 
                         //员工部门id集合
-                        List<Long> employeeDepartmentIdS = listRData.stream().map(EmployeeDTO::getEmployeeDepartmentId).collect(Collectors.toList());
+                        List<Long> employeeDepartmentIdS = listRData.stream().map(EmployeeDTO::getEmployeeDepartmentId).distinct().collect(Collectors.toList());
 
                         //查询工资表数据 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）。
                         if (StringUtils.isNotEmpty(employeeDepartmentIdS)) {
@@ -934,7 +938,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                                     if (employeeBudgetDetailsDTO.getOfficialRankName() == datum.getEmployeeRankName() && employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId()) {
                                                         //总薪酬包
                                                         BigDecimal payAmountSum = new BigDecimal("0");
-                                                        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(datum.getEmployeeId(), budgetYear);
+                                                        List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(datum.getEmployeeId(), year);
                                                         if (StringUtils.isNotEmpty(salaryPayDTOS)) {
                                                             //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
                                                             BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -1031,6 +1035,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @param mapEmployeeAveParent
      */
     private void getEmployeeBudgetDTOS(int budgetYear, Map<Long, List<Map<Long, Map<String, BigDecimal>>>> mapEmployeeAveParent) {
+
         //一级部门及子级部门 相同职级的 平均人数
         List<Map<Long, Map<String, BigDecimal>>> mapList = new ArrayList<>();
         //部门id 相同职级的 平均人数
