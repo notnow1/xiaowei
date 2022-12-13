@@ -1152,7 +1152,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             List<Long> collect = bonusBudgetParametersDTOS.stream().map(BonusBudgetParametersDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
             TargetOutcome targetOutcome = new TargetOutcome();
             //目标年度
-            targetOutcome.setTargetYear(year);
+            targetOutcome.setTargetYear(budgetYear);
             //指标id集合
             if (StringUtils.isNotEmpty(collect)) {
                 targetOutcome.setIndicatorIds(collect);

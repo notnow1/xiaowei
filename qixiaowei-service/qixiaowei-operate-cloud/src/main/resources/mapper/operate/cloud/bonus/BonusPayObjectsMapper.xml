@@ -108,7 +108,7 @@
     </select>
     <!--新增奖金发放对象表-->
     <insert id="insertBonusPayObjects" useGeneratedKeys="true" keyProperty="bonusPayObjectsId">
-        INSERT INTO bonus_pay_objects (bonus_pay_objects_idbonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO bonus_pay_objects (bonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{bonusPayObjects.bonusPayApplicationId},#{bonusPayObjects.bonusPayObject},#{bonusPayObjects.bonusPayObjectId},#{bonusPayObjects.awardAmount},#{bonusPayObjects.deleteFlag},#{bonusPayObjects.createBy},#{bonusPayObjects.createTime},#{bonusPayObjects.updateBy},#{bonusPayObjects.updateTime})
     </insert>
@@ -171,7 +171,7 @@
     </update>
     <!--批量新增奖金发放对象表-->
     <insert id="batchBonusPayObjects">
-        INSERT INTO bonus_pay_objects (bonus_pay_objects_idbonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO bonus_pay_objects (bonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="bonusPayObjectss"
