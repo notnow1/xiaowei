@@ -110,9 +110,17 @@ public interface PerformanceAppraisalItemsMapper {
      * 根据对象ID查找指标列表
      *
      * @param performAppraisalObjectsId 对象ID
-     * @return
+     * @return List
      */
     List<PerformanceAppraisalItemsDTO> selectPerformanceAppraisalItemsByPerformAppraisalObjectId(@Param("performAppraisalObjectsId") Long performAppraisalObjectsId);
+
+    /**
+     * 根据对象ID集合查找指标列表
+     *
+     * @param performanceAppraisalObjectsIds 对象ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalItemsDTO> selectPerformanceAppraisalItemsByPerformAppraisalObjectIds(@Param("performanceAppraisalObjectsIds") List<Long> performanceAppraisalObjectsIds);
 
     /**
      * 评议撤回
@@ -121,5 +129,4 @@ public interface PerformanceAppraisalItemsMapper {
      * @return int
      */
     int withdrawPerformanceAppraisalItems(@Param("itemsDTOList") List<PerformanceAppraisalItemsDTO> itemsDTOList);
-
 }

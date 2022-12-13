@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.salary;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.DeptSalaryAdjustPlanExcel;
@@ -73,7 +74,7 @@ public interface IDeptSalaryAdjustPlanService {
     /**
      * 逻辑删除部门调薪计划表信息
      *
-     * @param deptSalaryAdjustPlanDTO
+     * @param deptSalaryAdjustPlanDTO 调薪计划dto
      * @return 结果
      */
     int logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
@@ -81,15 +82,15 @@ public interface IDeptSalaryAdjustPlanService {
     /**
      * 批量删除部门调薪计划表
      *
-     * @param DeptSalaryAdjustPlanDtos
+     * @param DeptSalaryAdjustPlanDtoS 调薪计划dto列表
      * @return 结果
      */
-    int deleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(List<DeptSalaryAdjustPlanDTO> DeptSalaryAdjustPlanDtos);
+    int deleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(List<DeptSalaryAdjustPlanDTO> DeptSalaryAdjustPlanDtoS);
 
     /**
      * 逻辑删除部门调薪计划表信息
      *
-     * @param deptSalaryAdjustPlanDTO
+     * @param deptSalaryAdjustPlanDTO 调薪计划dto
      * @return 结果
      */
     int deleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
@@ -106,15 +107,15 @@ public interface IDeptSalaryAdjustPlanService {
     /**
      * 导入Excel
      *
-     * @param list
+     * @param list list
      */
     void importDeptSalaryAdjustPlan(List<DeptSalaryAdjustPlanExcel> list);
 
     /**
      * 导出Excel
      *
-     * @param deptSalaryAdjustPlanDTO
-     * @return
+     * @param deptSalaryAdjustPlanDTO 调薪
+     * @return List
      */
     List<DeptSalaryAdjustPlanExcel> exportDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
 
@@ -122,7 +123,7 @@ public interface IDeptSalaryAdjustPlanService {
      * 编辑部门调薪
      *
      * @param deptSalaryAdjustPlanDTO 调薪计划
-     * @return
+     * @return DeptSalaryAdjustPlanDTO
      */
     DeptSalaryAdjustPlanDTO editDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
 
@@ -130,7 +131,8 @@ public interface IDeptSalaryAdjustPlanService {
      * 获取上年发薪包
      *
      * @param departmentId 部门ID
+     * @param planYear     预算年份
      * @return String
      */
-    BigDecimal getLastSalary(Long departmentId);
+    Map<String, BigDecimal> getLastSalary(Long departmentId, Integer planYear);
 }

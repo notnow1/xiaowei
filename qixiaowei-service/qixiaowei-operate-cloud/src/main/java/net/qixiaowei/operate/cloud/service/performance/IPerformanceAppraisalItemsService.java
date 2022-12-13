@@ -132,4 +132,12 @@ public interface IPerformanceAppraisalItemsService {
      * @return int
      */
     int withdrawPerformanceAppraisalItems(List<PerformanceAppraisalItemsDTO> itemsDTOList);
+
+    /**
+     * 查询匹配的对象指标列表
+     *
+     * @param performanceAppraisalObjectsIds 对象ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalItemsDTO> selectPerformanceAppraisalItemsByPerformAppraisalObjectIds(List<Long> performanceAppraisalObjectsIds);
 }

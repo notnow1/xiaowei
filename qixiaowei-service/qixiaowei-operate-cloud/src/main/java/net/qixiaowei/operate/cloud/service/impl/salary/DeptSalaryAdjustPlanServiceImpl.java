@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.impl.salary;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -12,25 +13,30 @@ import net.qixiaowei.operate.cloud.api.domain.salary.DeptSalaryAdjustPlan;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.salary.DeptSalaryAdjustPlanExcel;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusBudgetMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.DeptSalaryAdjustPlanMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusBudgetService;
 import net.qixiaowei.operate.cloud.service.salary.IDeptSalaryAdjustItemService;
 import net.qixiaowei.operate.cloud.service.salary.IDeptSalaryAdjustPlanService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -62,6 +68,15 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
 
     @Autowired
     private SalaryPayMapper salaryPayMapper;
+
+    @Autowired
+    private TargetSettingMapper targetSettingMapper;
+
+    @Autowired
+    private TargetOutcomeMapper targetOutcomeMapper;
+
+    @Autowired
+    private RemoteIndicatorService indicatorService;
 
     /**
      * 查询部门调薪计划表-详情
@@ -156,9 +171,6 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         List<EmployeeDTO> employeeDTOS = listR.getData();
         if (listR.getCode() != 200) {
             throw new ServiceException("根据部门ID查询人员失败");
-        }
-        if (StringUtils.isEmpty(employeeDTOS)) {
-            throw new ServiceException("当前部门已没有没有人员信息 请检查");
         }
         return employeeDTOS;
     }
@@ -282,14 +294,66 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      * 获取上年发薪包
      *
      * @param departmentId 部门ID
-     * @return String
+     * @param planYear     预算年份
+     * @return adjustmentPercentage 调幅
+     * 公式=（预算年度的销售收入目标值/上年实际销售收入-1）×0.5。
+     * 预算年度的销售收入目标值：销售收入目标制定中的目标值。
+     * 上年实际销售收入：关键经营结果中的销售收入的年度实际值。
+     * 若取不到数，则调幅为0。
      */
     @Override
-    public BigDecimal getLastSalary(Long departmentId) {
+    public Map<String, BigDecimal> getLastSalary(Long departmentId, Integer planYear) {
+        Map<String, BigDecimal> map = new HashMap<>();
         List<EmployeeDTO> employeeByDepartmentId = getEmployeeByDepartmentId(departmentId);
-        List<Long> employeeIds = employeeByDepartmentId.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-        // 上年工资包
-        return salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
+        if (StringUtils.isEmpty(employeeByDepartmentId)) {
+            map.put("lastSalary", BigDecimal.ZERO);
+        } else {
+            List<Long> employeeIds = employeeByDepartmentId.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+            // 上年工资包
+            if (StringUtils.isNull(planYear)) {
+                planYear = DateUtils.getYear();
+            }
+            BigDecimal lastSalary = salaryPayMapper.selectSalaryAmountNum(planYear, DateUtils.getMonth(), employeeIds);
+            map.put("lastSalary", lastSalary);
+        }
+        TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
+        targetSettingDTO.setTargetSettingType(2);
+        List<Integer> planYears = new ArrayList<>();
+        planYears.add(planYear);
+        IndicatorDTO indicatorDTO = getIndicatorDTO();
+        if (StringUtils.isNull(indicatorDTO)) {
+            map.put("adjustmentPercentage", BigDecimal.ZERO);
+            return map;
+        }
+        TargetOutcomeDetailsDTO targetOutcomeDetailsDTO = targetOutcomeMapper.selectTargetOutcomeValue(planYear - 1, indicatorDTO.getIndicatorId());
+        List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetSettingByYears(targetSettingDTO, planYears);
+        if (StringUtils.isEmpty(targetSettingDTOList) || StringUtils.isNull(targetOutcomeDetailsDTO)) {
+            map.put("adjustmentPercentage", BigDecimal.ZERO);
+            return map;
+        }
+        BigDecimal targetValue = Optional.ofNullable(targetSettingDTOList.get(0).getTargetValue()).orElse(BigDecimal.ZERO);
+        BigDecimal actualTotal = Optional.ofNullable(targetOutcomeDetailsDTO.getActualTotal()).orElse(BigDecimal.ZERO);
+        if (targetValue.compareTo(BigDecimal.ZERO) == 0 || actualTotal.compareTo(BigDecimal.ZERO) == 0) {
+            map.put("adjustmentPercentage", BigDecimal.ZERO);
+            return map;
+        }
+        BigDecimal adjustmentPercentage = (targetValue.divide(actualTotal, 2, RoundingMode.HALF_UP).subtract(BigDecimal.ONE)).multiply(new BigDecimal("0.5"));
+        map.put("adjustmentPercentage", adjustmentPercentage);
+        return map;
+    }
+
+    /**
+     * 获取指标数据
+     *
+     * @return IndicatorDTO
+     */
+    private IndicatorDTO getIndicatorDTO() {
+        R<IndicatorDTO> indicatorDTOR = indicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode(), SecurityConstants.INNER);
+        IndicatorDTO indicatorDTO = indicatorDTOR.getData();
+        if (indicatorDTOR.getCode() != 200) {
+            throw new ServiceException("获取指标信息失败");
+        }
+        return indicatorDTO;
     }
 
     /**
@@ -433,14 +497,14 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
     /**
      * 物理批量删除部门调薪计划表
      *
-     * @param deptSalaryAdjustPlanDtos 需要删除的部门调薪计划表主键
+     * @param DeptSalaryAdjustPlanDtoS 需要删除的部门调薪计划表主键
      * @return 结果
      */
 
     @Override
-    public int deleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(List<DeptSalaryAdjustPlanDTO> deptSalaryAdjustPlanDtos) {
+    public int deleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(List<DeptSalaryAdjustPlanDTO> DeptSalaryAdjustPlanDtoS) {
         List<Long> stringList = new ArrayList<>();
-        for (DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO : deptSalaryAdjustPlanDtos) {
+        for (DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO : DeptSalaryAdjustPlanDtoS) {
             stringList.add(deptSalaryAdjustPlanDTO.getDeptSalaryAdjustPlanId());
         }
         return deptSalaryAdjustPlanMapper.deleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(stringList);

@@ -125,8 +125,18 @@ public interface TargetOutcomeMapper {
 
     /**
      * 根据年份和指标id查询当年数据和前一年数据
-     * @param targetOutcome
-     * @return
+     *
+     * @param targetOutcome 结果
+     * @return List
      */
-    List<TargetOutcomeDetailsDTO> selectDrivingFactor(@Param("targetOutcome")TargetOutcome targetOutcome);
+    List<TargetOutcomeDetailsDTO> selectDrivingFactor(@Param("targetOutcome") TargetOutcome targetOutcome);
+
+    /**
+     * 关键经营结果中的销售收入的年度实际值
+     *
+     * @param targetYear  目标年度
+     * @param indicatorId 指标ID
+     * @return TargetOutcomeDetailsDTO
+     */
+    TargetOutcomeDetailsDTO selectTargetOutcomeValue(@Param("targetYear") Integer targetYear, @Param("indicatorId") Long indicatorId);
 }

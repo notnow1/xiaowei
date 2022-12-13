@@ -104,6 +104,35 @@
         update_time
         FROM performance_appraisal_items
         WHERE perform_appraisal_objects_id = #{performAppraisalObjectsId}
+        AND delete_flag = 0
+    </select>
+    <!--根据对象ID集合查找指标列表-->
+    <select id="selectPerformanceAppraisalItemsByPerformAppraisalObjectIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO">
+        SELECT
+        perform_appraisal_items_id,
+        perform_appraisal_objects_id,
+        indicator_id,
+        indicator_name,
+        indicator_value_type,
+        examine_direction,
+        challenge_value,
+        target_value,
+        guaranteed_value,
+        actual_value,
+        weight,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM performance_appraisal_items
+        WHERE perform_appraisal_objects_id
+        IN
+        <foreach collection="performanceAppraisalObjectsIds" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        AND delete_flag = 0
     </select>
     <!--新增绩效考核项目表-->
     <insert id="insertPerformanceAppraisalItems" useGeneratedKeys="true" keyProperty="performAppraisalItemsId">

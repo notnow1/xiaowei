@@ -119,6 +119,17 @@ public class PerformanceAppraisalColumnsServiceImpl implements IPerformanceAppra
     }
 
     /**
+     * 根据考核ID集合查询自定义表
+     *
+     * @param performanceAppraisalIds 绩效考核ID集合
+     * @return List
+     */
+    @Override
+    public List<PerformanceAppraisalColumnsDTO> selectAppraisalColumnsByAppraisalIds(List<Long> performanceAppraisalIds) {
+        return performanceAppraisalColumnsMapper.selectAppraisalColumnsByAppraisalIds(performanceAppraisalIds);
+    }
+
+    /**
      * 逻辑删除绩效考核自定义列表信息
      *
      * @param performanceAppraisalColumnsDTO 绩效考核自定义列表

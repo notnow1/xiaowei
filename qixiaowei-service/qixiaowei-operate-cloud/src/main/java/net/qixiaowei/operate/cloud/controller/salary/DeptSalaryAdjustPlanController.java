@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -57,19 +58,20 @@ public class DeptSalaryAdjustPlanController extends BaseController {
      * 查询部门调薪计划表详情
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
-    @GetMapping("/getLastSalary/{departmentId}")
-    public AjaxResult getLastSalary(@PathVariable Long departmentId) {
-        return AjaxResult.success(deptSalaryAdjustPlanService.getLastSalary(departmentId));
+    @GetMapping("/getLastSalary")
+    public AjaxResult getLastSalary(@RequestParam("departmentId") Long departmentId, @RequestParam("planYear") Integer planYear) {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getLastSalary(departmentId, planYear));
     }
 
     /**
      * 查询部门调薪计划表列表
      */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:list")
-    @GetMapping("/list")
-    public AjaxResult list(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:pageList")
+    @GetMapping("/pageList")
+    public TableDataInfo list(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
+        startPage();
         List<DeptSalaryAdjustPlanDTO> list = deptSalaryAdjustPlanService.selectDeptSalaryAdjustPlanList(deptSalaryAdjustPlanDTO);
-        return AjaxResult.success(list);
+        return getDataTable(list);
     }
 
     /**

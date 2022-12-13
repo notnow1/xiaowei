@@ -105,7 +105,14 @@ public interface IPerformanceAppraisalColumnsService {
      * 根据考核ID查询自定义表
      *
      * @param performanceAppraisalId 绩效考核ID
-     * @return
+     * @return List
      */
     List<PerformanceAppraisalColumnsDTO> selectAppraisalColumnsByAppraisalId(Long performanceAppraisalId);
+
+    /**
+     * 根据考核ID集合查询自定义表
+     * @param performanceAppraisalIds 绩效考核ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalColumnsDTO> selectAppraisalColumnsByAppraisalIds(List<Long> performanceAppraisalIds);
 }

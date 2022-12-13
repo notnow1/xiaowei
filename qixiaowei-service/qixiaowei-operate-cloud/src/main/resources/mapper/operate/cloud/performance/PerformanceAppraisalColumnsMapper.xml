@@ -75,6 +75,23 @@
                     AND pa.delete_flag=0
         WHERE pc.delete_flag=0 AND pc.performance_appraisal_id = #{performanceAppraisalId}
     </select>
+    <!--根据考核ID集合查询自定义表-->
+    <select id="selectAppraisalColumnsByAppraisalIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO">
+        SELECT
+        pc.perform_appraisal_columns_id, pc.performance_appraisal_id, pc.column_name, pc.column_value,
+        pc.sort, pc.delete_flag, pc.create_by, pc.create_time, pc.update_by, pc.update_time
+        FROM performance_appraisal_columns pc
+        LEFT JOIN performance_appraisal pa
+        ON pc.performance_appraisal_id = pa.performance_appraisal_id
+        AND pa.delete_flag=0
+        WHERE pc.delete_flag=0
+        AND pc.performance_appraisal_id
+        IN
+        <foreach collection="performanceAppraisalIds" open="(" close=")" separator="," item="item" index="index">
+            #{item}
+        </foreach>
+    </select>
     <!--新增绩效考核自定义列表-->
     <insert id="insertPerformanceAppraisalColumns" useGeneratedKeys="true" keyProperty="performAppraisalColumnsId">
         INSERT INTO performance_appraisal_columns (performance_appraisal_id,column_name,column_value,sort,delete_flag,create_by,create_time,update_by,update_time)

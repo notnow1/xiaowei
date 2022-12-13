@@ -111,4 +111,12 @@ public interface PerformanceAppraisalColumnsMapper {
      * @return List
      */
     List<PerformanceAppraisalColumnsDTO> selectAppraisalColumnsByAppraisalId(@Param("performanceAppraisalId") Long performanceAppraisalId);
+
+    /**
+     * 根据考核ID集合查询自定义表
+     *
+     * @param performanceAppraisalIds 绩效考核ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalColumnsDTO> selectAppraisalColumnsByAppraisalIds(@Param("performanceAppraisalIds") List<Long> performanceAppraisalIds);
 }
