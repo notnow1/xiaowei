@@ -275,6 +275,7 @@
     <!--    查询上级组织-->
     <select id="queryparent" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         select
+            distinct
             e.employee_name as departmentLeaderName,
             d.department_id,
             d.parent_department_id,
@@ -296,7 +297,7 @@
             d.update_time
         from department d
         left join employee e
-        on e.employee_department_id = d.department_id
+        on e.employee_id = d.department_leader_id
         and e.delete_flag = 0
         where d.delete_flag = 0
         and d.status=1
