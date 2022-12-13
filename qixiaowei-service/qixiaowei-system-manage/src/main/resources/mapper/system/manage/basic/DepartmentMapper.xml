@@ -364,7 +364,10 @@
         e.employee_email,
         e.employee_department_id,
         e.employee_post_id,
+        p.post_name as employee_post_name,
         e.employee_rank,
+        case when ors.rank_prefix_code is null then  e.employee_rank
+        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,e.employee_rank) end as employee_rank_name,
         e.employee_basic_wage,
         e.employment_date,
         e.departure_date,
@@ -382,6 +385,12 @@
         on
         dept.department_id = e.employee_department_id
         and e.delete_flag = 0
+        left join post p
+        on p.post_id = e.employee_post_id
+        and p.delete_flag = 0
+        left join official_rank_system ors
+        on ors.official_rank_system_id  = p.official_rank_system_id
+        and ors.delete_flag =0
         where
         dept.delete_flag = 0
         <if test="departmentId != null">

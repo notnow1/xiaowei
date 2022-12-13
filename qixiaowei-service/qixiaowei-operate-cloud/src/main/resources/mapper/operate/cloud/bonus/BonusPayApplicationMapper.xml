@@ -64,10 +64,10 @@
         bpa.update_time
         FROM
         bonus_pay_application bpa
-        WHERE  bpa.delete_flag=0
         left join salary_item si
         on si.salary_item_id = bpa.salary_item_id
         and si.delete_flag =0
+        WHERE  bpa.delete_flag=0
         <if test="bonusPayApplication.awardYearMonth != null and bonusPayApplication.awardYearMonth != ''">
             and CONCAT(award_year,"/",award_month) = #{bonusPayApplication.awardYearMonth}
         </if>
@@ -131,7 +131,7 @@
     </select>
     <!--新增奖金发放申请表-->
     <insert id="insertBonusPayApplication" useGeneratedKeys="true" keyProperty="bonusPayApplicationId">
-        INSERT INTO bonus_pay_application (bonus_pay_application_idsalary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO bonus_pay_application (salary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{bonusPayApplication.salaryItemId},#{bonusPayApplication.awardCode},#{bonusPayApplication.awardName},#{bonusPayApplication.awardYear},#{bonusPayApplication.awardMonth},#{bonusPayApplication.applyDepartmentId},#{bonusPayApplication.awardTotalAmount},#{bonusPayApplication.bonusPayObject},#{bonusPayApplication.awardDescription},#{bonusPayApplication.deleteFlag},#{bonusPayApplication.createBy},#{bonusPayApplication.createTime},#{bonusPayApplication.updateBy},#{bonusPayApplication.updateTime})
     </insert>
@@ -209,7 +209,7 @@
     </update>
     <!--批量新增奖金发放申请表-->
     <insert id="batchBonusPayApplication">
-        INSERT INTO bonus_pay_application (bonus_pay_application_idsalary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO bonus_pay_application (salary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="bonusPayApplications"

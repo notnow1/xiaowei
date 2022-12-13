@@ -40,11 +40,10 @@
     <!--    查询部门奖金包预算表列表-->
     <select id="selectDeptBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO">
         SELECT
-        IFNULL(bb.amount_bonus_budget * dbb.strategy_award_percentage,0) as strategyAwardAmount,
+        round(IFNULL(bb.amount_bonus_budget * (dbb.strategy_award_percentage/100),0),2)as strategyAwardAmount,
         bb.amount_bonus_budget,
         IFNULL(amount_bonus_budget - IFNULL(bb.amount_bonus_budget * (dbb.strategy_award_percentage/100),0),0) as
         deptAmountBonus,
---         dbbd.dept_bonus_percentage,
         dbb.dept_bonus_budget_id,
         dbb.budget_year,
         dbb.strategy_award_percentage,
