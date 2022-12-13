@@ -121,4 +121,13 @@ public class OfficialRankSystemController extends BaseController {
         List<OfficialRankSystemDTO> list = officialRankSystemService.selectOfficialRankSystemList(officialRankSystemDTO);
         return AjaxResult.success(list);
     }
+
+    /**
+     * 查询岗位职级一览表
+     */
+    @GetMapping("/rankView/list")
+    public AjaxResult rankViewList(OfficialRankSystemDTO officialRankSystemDTO) {
+        return AjaxResult.success(officialRankSystemService.selectRankViewList(officialRankSystemDTO));
+    }
+
 }

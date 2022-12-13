@@ -105,6 +105,14 @@
         </foreach>
         and delete_flag=0
     </select>
+    <!--获取当前职级体系第一行数据的ID-->
+    <select id="selectFirstOfficialRankSystem" resultType="java.lang.Long">
+        SELECT official_rank_system_id
+        FROM official_rank_system
+        WHERE delete_flag=0
+        ORDER BY create_time ASC
+        limit 1
+    </select>
     <!--新增职级体系表-->
     <insert id="insertOfficialRankSystem" useGeneratedKeys="true" keyProperty="officialRankSystemId">
         INSERT INTO official_rank_system

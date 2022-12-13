@@ -154,29 +154,6 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         officialRankEmolumentDTO.setOfficialRankSystemName(officialRankSystemDTO.getOfficialRankSystemName());
         officialRankEmolumentDTO.setOfficialRankEmolumentDTOList(officialRankEmolumentDTOList);
         return officialRankEmolumentDTO;
-//        for (int i = 0; i < officialRankEmolumentDTOS.size(); i++) {
-//            OfficialRankEmolumentDTO rankEmolumentDTO = officialRankEmolumentDTOS.get(i);
-//            rankEmolumentDTO.setOfficialRank(rankEmolumentDTO.getOfficialRank());
-//            rankEmolumentDTO.setOfficialRankName(rankPrefixCode + rankEmolumentDTO.getOfficialRank());
-//            // 宽幅
-//            BigDecimal wide = rankEmolumentDTO.getSalaryCap().subtract(rankEmolumentDTO.getSalaryFloor());
-//            rankEmolumentDTO.setSalaryWide(wide);
-//            // 递增率
-//            if (i == officialRankEmolumentDTOS.size() - 1) {
-//                rankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
-//            } else {
-//                BigDecimal nextSalaryMedian = officialRankEmolumentDTOS.get(i + 1).getSalaryMedian();
-//                if (nextSalaryMedian.compareTo(BigDecimal.ZERO) != 0) {
-//                    BigDecimal increaseRate = (rankEmolumentDTO.getSalaryMedian().subtract(nextSalaryMedian)).divide(nextSalaryMedian, 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-//                    rankEmolumentDTO.setIncreaseRate(increaseRate);
-//                } else {
-//                    rankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
-//                }
-//            }
-//            // 岗位
-//            List<Map<String, Object>> postList = getPostList(postDTOS, rankEmolumentDTO.getOfficialRank());
-//            rankEmolumentDTO.setPostList(postList);
-//        }
     }
 
     /**

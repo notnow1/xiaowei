@@ -461,10 +461,10 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             BigDecimal strategyAwardPercentage = deptBonusBudgetDetailsDTO.getStrategyAwardPercentage();
 
                             if (amountBonusBudget.compareTo(new BigDecimal("0")) != 0 && strategyAwardPercentage.compareTo(new BigDecimal("0")) != 0) {
-                                    deptAmountBonus = amountBonusBudget.subtract(amountBonusBudget.multiply(strategyAwardPercentage.divide(new BigDecimal("100"))));
+                                    deptAmountBonus = amountBonusBudget.subtract(amountBonusBudget.multiply(strategyAwardPercentage.divide(new BigDecimal("100")))).setScale(2,BigDecimal.ROUND_CEILING);
                             }
                             if (deptAmountBonus.compareTo(new BigDecimal("0")) != 0 && deptBonusPercentage.compareTo(new BigDecimal("0")) != 0) {
-                                beYearCanGrantBonusBudgetAmount = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100")));
+                                beYearCanGrantBonusBudgetAmount = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_CEILING);
                             }
                         }
 
@@ -538,7 +538,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 //可发经营奖总包-奖金占比
                 BigDecimal beYearCanGrantManagePro = deptAnnualBonusCanGrantDTO.getBeYearCanGrantManagePro();
                 if (departmentAnnualBonus.compareTo(new BigDecimal("0")) != 0 && beYearCanGrantManagePro.compareTo(new BigDecimal("0")) != 0) {
-                    beYearCanGrantManageAmount = departmentAnnualBonus.multiply(beYearCanGrantManagePro.divide(new BigDecimal("100")));
+                    beYearCanGrantManageAmount = departmentAnnualBonus.multiply(beYearCanGrantManagePro.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_CEILING);
                 }
                 deptAnnualBonusCanGrantDTO.setBeYearCanGrantManageAmount(beYearCanGrantManageAmount);
             }
@@ -609,11 +609,11 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
                         null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
-                    targetExcessPerComp = actualValue.divide(targetValue, 4, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
+                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_CEILING);
                 }
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
                         targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
-                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100")));
+                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_CEILING);
                 }
                 deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
                 deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
@@ -696,7 +696,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             }
                         }
                         if (deptPaymentBonus.compareTo(new BigDecimal("0")) > 0 && deptPaymentBonusSum.compareTo(new BigDecimal("0")) > 0) {
-                            weight = deptPaymentBonus.divide(deptPaymentBonusSum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
+                            weight = deptPaymentBonus.divide(deptPaymentBonusSum, 10, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_CEILING);
                         }
 
                     }
@@ -736,7 +736,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal deptBonusPercentageReference = new BigDecimal("0");
                 if (syntheticalBonusFactorSum.compareTo(new BigDecimal("0")) > 0 &&
                         null != syntheticalBonusFactor && syntheticalBonusFactor.compareTo(new BigDecimal("0")) > 0) {
-                    deptBonusPercentageReference = syntheticalBonusFactor.divide(syntheticalBonusFactorSum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
+                    deptBonusPercentageReference = syntheticalBonusFactor.divide(syntheticalBonusFactorSum, 10, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_CEILING);
                 }
                 //部门奖金包占比参考值
                 deptAnnualBonusFactorDTO.setDeptBonusPercentageReference(deptBonusPercentageReference);
@@ -876,11 +876,11 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             BeanUtils.copyProperties(bonusBudgetParametersDTO, deptAnnualBonusOperateDTO);
             if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
                     null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
-                targetExcessPerComp = actualValue.divide(targetValue, 4, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100"));
+                targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_CEILING);
             }
             if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
                     targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
-                actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100")));
+                actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_CEILING);
             }
             //目标超额完成率（%） 公式=（实际值÷目标值）-1
             deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
