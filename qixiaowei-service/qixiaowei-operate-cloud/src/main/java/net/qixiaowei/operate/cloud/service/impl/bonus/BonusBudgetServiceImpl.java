@@ -849,17 +849,17 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     bonusProportionDifference = bonusProportionDifference.add(multiply);
                 }
             }
-            //最低值 公式=保底值×0.8
-            if (null != bonusGuaranteedValue && bonusGuaranteedValue.compareTo(new BigDecimal("0")) != 0) {
-                bonusMinValue = bonusGuaranteedValue.multiply(new BigDecimal("0.5"));
+            //最低值 公式=目标值×0.5
+            if ( bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusMinValue = bonusTargetValue.multiply(new BigDecimal("0.5"));
             }
-            //飞跃值 公式=挑战值×1.2
-            if (null != bonusChallengeValue && bonusChallengeValue.compareTo(new BigDecimal("0")) != 0) {
-                bonusLeapValue = bonusChallengeValue.multiply(new BigDecimal("1.5"));
+            //飞跃值 公式=目标值×1.5
+            if (bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusLeapValue = bonusTargetValue.multiply(new BigDecimal("1.5"));
             }
-            //梦想值 公式=挑战值×1.5
-            if (null != bonusChallengeValue && bonusChallengeValue.compareTo(new BigDecimal("0")) != 0) {
-                bonusDreamValue = bonusChallengeValue.multiply(new BigDecimal("2.0"));
+            //梦想值 公式=目标值×2.0
+            if (bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusDreamValue = bonusTargetValue.multiply(new BigDecimal("2.0"));
             }
             if (null != amountBonusBudgetReferenceValueOne && amountBonusBudgetReferenceValueOne.compareTo(new BigDecimal("0")) != 0 &&
                     null != bonusTargetValue && bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
@@ -979,17 +979,17 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     bonusProportionDifference = bonusProportionDifference.add(multiply);
                 }
             }
-            //最低值 公式=保底值×0.8
-            if (null != bonusGuaranteedValue && bonusGuaranteedValue.compareTo(new BigDecimal("0")) != 0) {
-                bonusMinValue = bonusGuaranteedValue.multiply(new BigDecimal("0.8"));
+            //最低值 公式=目标值×0.5
+            if ( bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusMinValue = bonusTargetValue.multiply(new BigDecimal("0.5"));
             }
-            //飞跃值 公式=挑战值×1.2
-            if (null != bonusChallengeValue && bonusChallengeValue.compareTo(new BigDecimal("0")) != 0) {
-                bonusLeapValue = bonusChallengeValue.multiply(new BigDecimal("1.2"));
+            //飞跃值 公式=目标值×1.5
+            if (bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusLeapValue = bonusTargetValue.multiply(new BigDecimal("1.5"));
             }
-            //梦想值 公式=挑战值×1.5
-            if (null != bonusChallengeValue && bonusChallengeValue.compareTo(new BigDecimal("0")) != 0) {
-                bonusDreamValue = bonusChallengeValue.multiply(new BigDecimal("1.5"));
+            //梦想值 公式=目标值×2.0
+            if ( bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
+                bonusDreamValue = bonusTargetValue.multiply(new BigDecimal("2.0"));
             }
             //总奖金包预算总奖金包预算1
             bonusBudgetDTO.setAmountBonusBudgetReferenceValueOne(amountBonusBudgetReferenceValueOne);
