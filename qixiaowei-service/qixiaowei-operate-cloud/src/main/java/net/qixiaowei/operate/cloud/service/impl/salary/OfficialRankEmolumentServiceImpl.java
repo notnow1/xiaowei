@@ -265,13 +265,16 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         // 处理脏数据-新增
         List<OfficialRankEmolumentDTO> addRankEmolumentDTOList = new ArrayList<>();
         for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
-            if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())){
+            if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())) {
+                officialRankEmolumentDTOList.remove(emolumentDTO);
                 emolumentDTO.setOfficialRankSystemId(officialRankSystemId);
                 addRankEmolumentDTOList.add(emolumentDTO);
             }
         }
+        if (StringUtils.isNotEmpty(addRankEmolumentDTOList)) {
+            insertOfficialRankEmoluments(addRankEmolumentDTOList);
+        }
         // 更新
-        insertOfficialRankEmoluments(addRankEmolumentDTOList);
         List<OfficialRankEmolumentDTO> officialRankEmolumentList = new ArrayList<>();
         for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOList) {
             OfficialRankEmolumentDTO emolumentDTO = new OfficialRankEmolumentDTO();
@@ -281,7 +284,10 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             emolumentDTO.setSalaryMedian(rankEmolumentDTO.getSalaryMedian());
             officialRankEmolumentList.add(emolumentDTO);
         }
-        return updateOfficialRankEmoluments(officialRankEmolumentList);//批量更新
+        if (StringUtils.isNotEmpty(officialRankEmolumentList)) {
+            updateOfficialRankEmoluments(officialRankEmolumentList);//批量更新
+        }
+        return 1;
     }
 
     /**
