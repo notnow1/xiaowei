@@ -106,6 +106,7 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.setId(treeNode.getIndustryId());
             tree.setParentId(treeNode.getParentIndustryId());
             tree.setName(treeNode.getIndustryName());
+            tree.putExtra("parentIndustryName", treeNode.getParentIndustryName());
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
@@ -140,6 +141,10 @@ public class IndustryServiceImpl implements IIndustryService {
             if (BusinessConstants.DISABLE.equals(status)) {
                 throw new ServiceException("上级行业失效，不允许新增子节点");
             }
+        }
+        IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
+        if (StringUtils.isNotNull(industryByCode)) {
+            throw new ServiceException("新增行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
         }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
@@ -385,11 +390,11 @@ public class IndustryServiceImpl implements IIndustryService {
     /**
      * 获取启用行业类型
      *
-     * @return
+     * @return 行业
      */
     @Override
     public IndustryDTO getEnableType(IndustryDTO industryDTO) {
-        // todo 0-默认,1-自定义
+        // todo 1-默认,2-自定义
         Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
         if (StringUtils.isNull(enableType)) {
             throw new ServiceException("系统配置数据异常");
@@ -405,7 +410,7 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public int updateEnableType(Integer configValue) {
-        if (StringUtils.isEmpty(configValue.toString())) {
+        if (StringUtils.isNull(configValue)) {
             throw new ServiceException("configValue传值为空,无法进行操作");
         }
         ConfigDTO configById = configService.selectConfigByConfigCode(ConfigCode.INDUSTRY_ENABLE.getCode());
@@ -421,8 +426,8 @@ public class IndustryServiceImpl implements IIndustryService {
     /**
      * 行业配置详情
      *
-     * @param industryId
-     * @return
+     * @param industryId 行业ID
+     * @return 行业DTO
      */
     @Override
     public IndustryDTO detailIndustry(Long industryId) {
@@ -444,7 +449,7 @@ public class IndustryServiceImpl implements IIndustryService {
     /**
      * 获取行业的层级列表
      *
-     * @return
+     * @return List
      */
     @Override
     public List<Integer> getLevel() {

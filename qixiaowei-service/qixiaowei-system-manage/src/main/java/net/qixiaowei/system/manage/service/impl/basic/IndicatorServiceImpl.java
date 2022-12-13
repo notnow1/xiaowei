@@ -119,6 +119,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.setId(treeNode.getIndicatorId());
             tree.setParentId(treeNode.getParentIndicatorId());
             tree.setName(treeNode.getIndicatorName());
+            tree.setWeight(treeNode.getSort());
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
             tree.putExtra("sort", treeNode.getSort());

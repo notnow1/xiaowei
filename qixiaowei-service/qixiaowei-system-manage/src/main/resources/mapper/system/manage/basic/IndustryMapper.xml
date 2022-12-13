@@ -15,39 +15,50 @@
     <!--    查询行业列表-->
     <select id="selectIndustryList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
         SELECT
-        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
-        create_time, update_by, update_time
-        FROM industry
-        WHERE delete_flag=0
+        i1.industry_id,
+        i1.parent_industry_id,
+        i1.ancestors,
+        i1.industry_code,
+        i1.industry_name,
+        i1.level,
+        i1.status,
+        i1.delete_flag,
+        i1.create_by,
+        i1.create_time,
+        i1.update_by,
+        i1.update_time,
+        (select i2.industry_name from industry i2 where i1.parent_industry_id = i2.industry_id and i2.delete_flag=0) as parent_industry_name
+        FROM industry i1
+        WHERE i1.delete_flag=0
         <if test="industry.industryId != null and industry.industryId != ''">
-            and industry_id=#{industry.industryId}
+            and i1.industry_id=#{industry.industryId}
         </if>
         <if test="industry.parentIndustryId != null">
-            and parent_industry_id=#{industry.parentIndustryId}
+            and i1.parent_industry_id=#{industry.parentIndustryId}
         </if>
         <if test="industry.ancestors != null and industry.ancestors != ''">
-            and ancestors=#{industry.ancestors}
+            and i1.ancestors=#{industry.ancestors}
         </if>
         <if test="industry.industryCode != null and industry.industryCode != ''">
-            and industry_code like concat('%', #{industry.industryCode}, '%')
+            and i1.industry_code like concat('%', #{industry.industryCode}, '%')
         </if>
         <if test="industry.industryName != null and industry.industryName != ''">
-            and industry_name like concat('%', #{industry.industryName}, '%')
+            and i1.industry_name like concat('%', #{industry.industryName}, '%')
         </if>
         <if test="industry.level != null and industry.level != ''">
-            and level=#{industry.level}
+            and i1.level=#{industry.level}
         </if>
         <if test="industry.status != null">
-            and status=#{industry.status}
+            and i1.status=#{industry.status}
         </if>
         <if test="industry.deleteFlag != null and industry.deleteFlag != ''">
-            and delete_flag=#{industry.deleteFlag}
+            and i1.delete_flag=#{industry.deleteFlag}
         </if>
         <if test="industry.createBy != null and industry.createBy != ''">
-            and create_by=#{industry.createBy}
+            and i1.create_by=#{industry.createBy}
         </if>
         <if test="industry.updateBy != null and industry.updateBy != ''">
-            and update_by=#{industry.updateBy}
+            and i1.update_by=#{industry.updateBy}
         </if>
     </select>
 

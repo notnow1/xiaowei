@@ -14,39 +14,50 @@
     <!--    查询默认行业列表-->
     <select id="selectIndustryDefaultList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO">
         SELECT
-        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
-        create_time, update_by, update_time
-        FROM industry_default
-        WHERE delete_flag=0
+        i1.industry_id,
+        i1.parent_industry_id,
+        i1.ancestors,
+        i1.industry_code,
+        i1.industry_name,
+        i1.level,
+        i1.status,
+        i1.delete_flag,
+        i1.create_by,
+        i1.create_time,
+        i1.update_by,
+        i1.update_time,
+        (select i2.industry_name from industry_default i2 where i1.parent_industry_id = i2.industry_id and i2.delete_flag=0) as parent_industry_name
+        FROM industry_default i1
+        WHERE i1.delete_flag=0
         <if test="industryDefault.industryId != null and industryDefault.industryId != ''">
-            and industry_id=#{industryDefault.industryId}
+            and i1.industry_id=#{industryDefault.industryId}
         </if>
         <if test="industryDefault.parentIndustryId != null and industryDefault.parentIndustryId != ''">
-            and parent_industry_id=#{industryDefault.parentIndustryId}
+            and i1.parent_industry_id=#{industryDefault.parentIndustryId}
         </if>
         <if test="industryDefault.ancestors != null and industryDefault.ancestors != ''">
-            and ancestors=#{industryDefault.ancestors}
+            and i1.ancestors=#{industryDefault.ancestors}
         </if>
         <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">
-            and industry_code like concat('%', #{industryDefault.industryCode}, '%')
+            and i1.industry_code like concat('%', #{industryDefault.industryCode}, '%')
         </if>
         <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
-            and industry_name like concat('%', #{industryDefault.industryName}, '%')
+            and i1.industry_name like concat('%', #{industryDefault.industryName}, '%')
         </if>
         <if test="industryDefault.level != null">
-            and level=#{industryDefault.level}
+            and i1.level=#{industryDefault.level}
         </if>
         <if test="industryDefault.status != null">
-            and status=#{industryDefault.status}
+            and i1.status=#{industryDefault.status}
         </if>
         <if test="industryDefault.deleteFlag != null">
-            and delete_flag=#{industryDefault.deleteFlag}
+            and i1.delete_flag=#{industryDefault.deleteFlag}
         </if>
         <if test="industryDefault.createBy != null">
-            and create_by=#{industryDefault.createBy}
+            and i1.create_by=#{industryDefault.createBy}
         </if>
         <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">
-            and update_by=#{industryDefault.updateBy}
+            and i1.update_by=#{industryDefault.updateBy}
         </if>
     </select>
     <!--默认行业唯一性校验-->

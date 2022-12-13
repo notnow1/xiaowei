@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.impl.tenant;
 
 import net.qixiaowei.integration.common.config.FileConfig;
+import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -274,7 +275,11 @@ public class TenantServiceImpl implements ITenantService {
         //3、插入租户合同
         tenantContractMapper.batchTenantContract(tenantContractList);
         //4、初始化租户数据
-        tenantLogic.initTenantData(tenant);
+        Boolean initSuccess = tenantLogic.initTenantData(tenant);
+        if (initSuccess) {
+            tenant.setTenantStatus(BusinessConstants.NORMAL);
+            tenantMapper.updateTenant(tenant);
+        }
         //返回数据
         tenantDTO.setTenantId(tenant.getTenantId());
         return tenantDTO;

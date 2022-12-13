@@ -4,6 +4,7 @@ import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -137,7 +138,7 @@ public interface IOfficialRankSystemService {
     /**
      * 通过Id查找职级上下限
      *
-     * @param officialRankSystemId
+     * @param officialRankSystemId 职级体系ID
      * @return
      */
     List<String> selectOfficialRankByOfficialRankSystemId(Long officialRankSystemId);
@@ -145,8 +146,16 @@ public interface IOfficialRankSystemService {
     /**
      * 通过Id查找职级上下限
      *
-     * @param officilRankSystemId
+     * @param officialRankSystemId
      * @return
      */
-    List<Map<String, String>> selectOfficialRankMapBySystemId(Long officilRankSystemId);
+    List<Map<String, String>> selectOfficialRankMapBySystemId(Long officialRankSystemId);
+
+    /**
+     * 查询岗位职级一览表
+     *
+     * @param officialRankSystemDTO 职级体系
+     * @return
+     */
+    List<Map<String, Object>> selectRankViewList(OfficialRankSystemDTO officialRankSystemDTO);
 }

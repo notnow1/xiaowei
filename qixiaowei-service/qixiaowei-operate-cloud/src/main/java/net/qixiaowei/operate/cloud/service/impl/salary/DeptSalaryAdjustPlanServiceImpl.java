@@ -157,7 +157,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         if (listR.getCode() != 200) {
             throw new ServiceException("根据部门ID查询人员失败");
         }
-        if (StringUtils.isNotEmpty(employeeDTOS)) {
+        if (StringUtils.isEmpty(employeeDTOS)) {
             throw new ServiceException("当前部门已没有没有人员信息 请检查");
         }
         return employeeDTOS;

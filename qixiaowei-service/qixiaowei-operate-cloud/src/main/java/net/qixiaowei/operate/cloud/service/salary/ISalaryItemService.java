@@ -51,7 +51,7 @@ public interface ISalaryItemService {
      *
      * @return 结果
      */
-    int initSalaryItem();
+    Boolean initSalaryItem();
 
     /**
      * 修改工资项

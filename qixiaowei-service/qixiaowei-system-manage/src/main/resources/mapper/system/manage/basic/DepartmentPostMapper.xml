@@ -116,6 +116,33 @@
         </foreach>
         and delete_flag=0
     </select>
+    <select id="selectPostDepartmentIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
+        SELECT
+        dp.department_post_id,
+        dp.department_id,
+        dp.post_id,
+        dp.department_sort,
+        dp.post_sort,
+        dp.delete_flag,
+        dp.create_by,
+        dp.create_time,
+        dp.update_by,
+        dp.update_time,
+        p.post_name,
+        p.post_rank
+        FROM department_post dp
+            LEFT JOIN post p
+            ON p.post_id = dp.post_id
+            AND p.delete_flag=0
+        WHERE dp.department_id in
+        <foreach item="item"
+                 collection="departmentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and dp.delete_flag=0
+    </select>
     <!--新增部门岗位关联表-->
     <insert id="insertDepartmentPost" useGeneratedKeys="true" keyProperty="departmentPostId">
         INSERT INTO department_post (department_id, post_id, department_sort, post_sort, delete_flag, create_by,

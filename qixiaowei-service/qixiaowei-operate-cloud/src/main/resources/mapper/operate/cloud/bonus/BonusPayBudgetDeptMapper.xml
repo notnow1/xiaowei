@@ -113,7 +113,7 @@
     </select>
     <!--新增奖金发放预算部门表-->
     <insert id="insertBonusPayBudgetDept" useGeneratedKeys="true" keyProperty="bonusPayBudgetDeptId">
-        INSERT INTO bonus_pay_budget_dept (bonus_pay_budget_dept_idbonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO bonus_pay_budget_dept (bonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{bonusPayBudgetDept.bonusPayApplicationId},#{bonusPayBudgetDept.departmentId},#{bonusPayBudgetDept.bonusPercentage},#{bonusPayBudgetDept.deleteFlag},#{bonusPayBudgetDept.createBy},#{bonusPayBudgetDept.createTime},#{bonusPayBudgetDept.updateBy},#{bonusPayBudgetDept.updateTime})
     </insert>
@@ -173,7 +173,7 @@
     </update>
     <!--批量新增奖金发放预算部门表-->
     <insert id="batchBonusPayBudgetDept">
-        INSERT INTO bonus_pay_budget_dept (bonus_pay_budget_dept_idbonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO bonus_pay_budget_dept (bonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="bonusPayBudgetDepts"

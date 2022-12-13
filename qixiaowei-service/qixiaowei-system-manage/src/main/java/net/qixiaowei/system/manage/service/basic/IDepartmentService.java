@@ -192,7 +192,7 @@ public interface IDepartmentService {
 
     /**
      * 根据等级查找部门
-     * @param level
+     * @param level 等级
      * @return
      */
     List<DepartmentDTO> selectDepartmentByLevel(Integer level);

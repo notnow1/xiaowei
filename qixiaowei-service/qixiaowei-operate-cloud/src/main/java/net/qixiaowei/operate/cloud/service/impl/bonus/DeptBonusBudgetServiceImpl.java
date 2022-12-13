@@ -725,7 +725,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         }
                         if (null != nowTopDeptPay && nowTopDeptPay.compareTo(new BigDecimal("0")) != 0 &&
                                 null != topDeptPaySum && topDeptPaySum.compareTo(new BigDecimal("0")) != 0) {
-                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 4, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
+                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 10, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_CEILING);
                             deptBonusBudgetDetailsDTO.setDeptBonusPercentageReference(multiply);
                         }
                     }
@@ -1063,8 +1063,9 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                             if (StringUtils.isNotEmpty(data3)){
                                 data2.removeAll(data3);
                             }
+                            List<EmployeeDTO> dtoList = data2.stream().filter(f -> StringUtils.isNotBlank(f.getEmployeeRankName())).collect(Collectors.toList());
                             //根据部门id和职级多个条件分组
-                            Map<Long, Map<String, List<EmployeeDTO>>> collect = data2.parallelStream()
+                            Map<Long, Map<String, List<EmployeeDTO>>> collect = dtoList.parallelStream()
                                     .collect(Collectors.groupingBy(EmployeeDTO::getEmployeeDepartmentId, Collectors.groupingBy(EmployeeDTO::getEmployeeRankName)));
                             if (StringUtils.isNotEmpty(collect)){
                                 for (Long key : collect.keySet()) {

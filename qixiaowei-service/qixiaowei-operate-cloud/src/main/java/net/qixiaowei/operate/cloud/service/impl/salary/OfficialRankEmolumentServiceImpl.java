@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -79,11 +80,11 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         if (listR.getCode() != 200) {
             throw new ServiceException("岗位远程调用失败 请联系管理员");
         }
+        Integer rankStart = officialRankSystemDTO.getRankStart();
+        Integer rankEnd = officialRankSystemDTO.getRankEnd();
+        List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
         if (StringUtils.isEmpty(officialRankEmolumentDTOS)) { // 没有值
-            Integer rankStart = officialRankSystemDTO.getRankStart();
-            Integer rankEnd = officialRankSystemDTO.getRankEnd();
-            List<OfficialRankEmolumentDTO> officialRankEmolumentDTOList = new ArrayList<>();
-            for (Integer end = rankEnd; end > rankStart; end--) {
+            for (Integer end = rankEnd; end >= rankStart; end--) {
                 OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
                 List<Map<String, Object>> postList = getPostList(postDTOS, end);
                 officialRankEmolumentDTO.setOfficialRank(end);
@@ -102,33 +103,56 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             officialRankEmolumentDTO.setOfficialRankEmolumentDTOList(officialRankEmolumentDTOList);
             return officialRankEmolumentDTO;
         }
-        for (int i = 0; i < officialRankEmolumentDTOS.size(); i++) {
-            OfficialRankEmolumentDTO rankEmolumentDTO = officialRankEmolumentDTOS.get(i);
-            rankEmolumentDTO.setOfficialRank(rankEmolumentDTO.getOfficialRank());
-            rankEmolumentDTO.setOfficialRankName(rankPrefixCode + rankEmolumentDTO.getOfficialRank());
-            // 宽幅
-            BigDecimal wide = rankEmolumentDTO.getSalaryCap().subtract(rankEmolumentDTO.getSalaryFloor());
-            rankEmolumentDTO.setSalaryWide(wide);
-            // 递增率
-            if (i == officialRankEmolumentDTOS.size() - 1) {
-                rankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
-            } else {
-                BigDecimal nextSalaryMedian = officialRankEmolumentDTOS.get(i + 1).getSalaryMedian();
-                if (nextSalaryMedian.compareTo(BigDecimal.ZERO) != 0) {
-                    BigDecimal increaseRate = (rankEmolumentDTO.getSalaryMedian().subtract(nextSalaryMedian)).divide(nextSalaryMedian, 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
-                    rankEmolumentDTO.setIncreaseRate(increaseRate);
-                } else {
-                    rankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
+        for (Integer end = rankEnd; end >= rankStart; end--) {
+            boolean isNotExist = true;
+            for (int i = 0; i < officialRankEmolumentDTOS.size(); i++) {
+                OfficialRankEmolumentDTO rankEmolumentDTO = officialRankEmolumentDTOS.get(i);
+                if (end.equals(rankEmolumentDTO.getOfficialRank())) {
+                    OfficialRankEmolumentDTO rankEmolument = new OfficialRankEmolumentDTO();
+                    BeanUtils.copyProperties(rankEmolumentDTO, rankEmolument);
+                    rankEmolument.setOfficialRank(rankEmolumentDTO.getOfficialRank());
+                    rankEmolument.setOfficialRankName(rankPrefixCode + rankEmolumentDTO.getOfficialRank());
+                    // 宽幅
+                    BigDecimal wide = rankEmolumentDTO.getSalaryCap().subtract(rankEmolumentDTO.getSalaryFloor());
+                    rankEmolument.setSalaryWide(wide);
+                    // 递增率
+                    if (i == officialRankEmolumentDTOS.size() - 1) {
+                        rankEmolument.setIncreaseRate(BigDecimal.ZERO);
+                    } else {
+                        BigDecimal nextSalaryMedian = officialRankEmolumentDTOS.get(i + 1).getSalaryMedian();
+                        if (nextSalaryMedian.compareTo(BigDecimal.ZERO) != 0) {
+                            BigDecimal increaseRate = (rankEmolumentDTO.getSalaryMedian().subtract(nextSalaryMedian)).divide(nextSalaryMedian, 4, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                            rankEmolument.setIncreaseRate(increaseRate);
+                        } else {
+                            rankEmolument.setIncreaseRate(BigDecimal.ZERO);
+                        }
+                    }
+                    // 岗位
+                    List<Map<String, Object>> postList = getPostList(postDTOS, rankEmolumentDTO.getOfficialRank());
+                    rankEmolument.setPostList(postList);
+                    officialRankEmolumentDTOList.add(rankEmolument);
+                    isNotExist = false;
+                    break;
                 }
             }
-            // 岗位
-            List<Map<String, Object>> postList = getPostList(postDTOS, rankEmolumentDTO.getOfficialRank());
-            rankEmolumentDTO.setPostList(postList);
+            if (isNotExist) {
+                OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
+                List<Map<String, Object>> postList = getPostList(postDTOS, end);
+                officialRankEmolumentDTO.setOfficialRank(end);
+                officialRankEmolumentDTO.setPostList(postList);
+                officialRankEmolumentDTO.setOfficialRankName(rankPrefixCode + end);
+                officialRankEmolumentDTO.setSalaryCap(BigDecimal.ZERO);
+                officialRankEmolumentDTO.setSalaryFloor(BigDecimal.ZERO);
+                officialRankEmolumentDTO.setSalaryMedian(BigDecimal.ZERO);
+                officialRankEmolumentDTO.setSalaryWide(BigDecimal.ZERO);
+                officialRankEmolumentDTO.setIncreaseRate(BigDecimal.ZERO);
+                officialRankEmolumentDTOList.add(officialRankEmolumentDTO);
+            }
         }
         OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
         officialRankEmolumentDTO.setOfficialRankSystemId(officialRankSystemDTO.getOfficialRankSystemId());
         officialRankEmolumentDTO.setOfficialRankSystemName(officialRankSystemDTO.getOfficialRankSystemName());
-        officialRankEmolumentDTO.setOfficialRankEmolumentDTOList(officialRankEmolumentDTOS);
+        officialRankEmolumentDTO.setOfficialRankEmolumentDTOList(officialRankEmolumentDTOList);
         return officialRankEmolumentDTO;
     }
 
@@ -238,7 +262,16 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             }
             return insertOfficialRankEmoluments(officialRankEmolumentDTOList);
         }
+        // 处理脏数据-新增
+        List<OfficialRankEmolumentDTO> addRankEmolumentDTOList = new ArrayList<>();
+        for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
+            if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())){
+                emolumentDTO.setOfficialRankSystemId(officialRankSystemId);
+                addRankEmolumentDTOList.add(emolumentDTO);
+            }
+        }
         // 更新
+        insertOfficialRankEmoluments(addRankEmolumentDTOList);
         List<OfficialRankEmolumentDTO> officialRankEmolumentList = new ArrayList<>();
         for (OfficialRankEmolumentDTO rankEmolumentDTO : officialRankEmolumentDTOList) {
             OfficialRankEmolumentDTO emolumentDTO = new OfficialRankEmolumentDTO();

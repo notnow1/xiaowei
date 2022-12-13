@@ -77,18 +77,11 @@ public class BonusPayApplicationDTO {
      */
     private  String applyDepartmentName;
 
-    /**
-     * 预算部门ID
-     */
-    private Long budgetDepartmentId;
-    /**
-     * 预算部门名称
-     */
-    private String budgetDepartmentName;
+
     /**
      * 预算部门ID集合
      */
-    private String budgetDepartmentIds;
+    private List<Long> budgetDepartmentIds;
 
     /**
      * 预算部门名称集合

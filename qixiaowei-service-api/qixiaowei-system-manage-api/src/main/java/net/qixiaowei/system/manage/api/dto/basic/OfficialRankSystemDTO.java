@@ -115,7 +115,6 @@ public class OfficialRankSystemDTO {
      */
     private Map<String, Object> params;
 
-
     /**
      * 上年期末数
      */
