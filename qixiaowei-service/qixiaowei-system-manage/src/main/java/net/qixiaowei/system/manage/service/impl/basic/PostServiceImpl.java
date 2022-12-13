@@ -86,12 +86,12 @@ public class PostServiceImpl implements IPostService {
     public PostDTO insertPost(PostDTO postDTO) {
         //先查询 重复无法添加
         PostDTO postDTO1 = postMapper.selectPostCode(postDTO.getPostCode());
-        if (null == postDTO1) {
+        if (StringUtils.isNotNull(postDTO1)) {
             throw new ServiceException("岗位编码已存在！");
         }
         //先查询 重复无法添加
         PostDTO postDTO2 = postMapper.selectPostName(postDTO.getPostName());
-        if (null == postDTO2) {
+        if (StringUtils.isNotNull(postDTO2)) {
             throw new ServiceException("岗位名称已存在！");
         }
         //岗位表
@@ -319,6 +319,7 @@ public class PostServiceImpl implements IPostService {
 
     /**
      * 根据部门查询岗位表列表
+     *
      * @param departmentId
      * @return
      */
@@ -449,11 +450,12 @@ public class PostServiceImpl implements IPostService {
 
     /**
      * 根据部门查询岗位表列表
+     *
      * @param officialRankSystemId 职级体系ID
      * @return List
      */
     @Override
-    public List<PostDTO> selectPostListByOfficialRank(@Param("officialRankSystemId") Long officialRankSystemId){
+    public List<PostDTO> selectPostListByOfficialRank(@Param("officialRankSystemId") Long officialRankSystemId) {
         return postMapper.selectPostListByOfficialRank(officialRankSystemId);
     }
 }
