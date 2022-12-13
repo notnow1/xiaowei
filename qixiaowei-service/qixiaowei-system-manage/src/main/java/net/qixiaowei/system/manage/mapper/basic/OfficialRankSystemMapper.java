@@ -134,4 +134,10 @@ public interface OfficialRankSystemMapper {
      * @return
      */
     List<OfficialRankSystemDTO> selectOfficialRankSystemByOfficialRankSystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
+
+    /**
+     * 获取当前职级体系第一行数据的ID
+     * @return Long
+     */
+    Long selectFirstOfficialRankSystem();
 }

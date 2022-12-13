@@ -501,13 +501,13 @@ public class DepartmentServiceImpl implements IDepartmentService {
     /**
      * 根据等级查找部门
      * @param level 等级
-     * @return
+     * @return List
      */
     @Override
     public List<DepartmentDTO> selectDepartmentByLevel(Integer level) {
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setLevel(level);
-        return selectDepartmentList(departmentDTO);
+        return departmentMapper.selectDepartmentList(departmentDTO);
     }
 
 

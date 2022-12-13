@@ -64,7 +64,7 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
      * 查询默认行业分页列表
      *
      * @param industryDefaultDTO 行业
-     * @return
+     * @return List
      */
     @Override
     public List<IndustryDefaultDTO> selectIndustryDefaultPageList(IndustryDefaultDTO industryDefaultDTO) {
@@ -240,8 +240,8 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     /**
      * 默认行业配置详情
      *
-     * @param industryId
-     * @return
+     * @param industryId 行业ID
+     * @return 默认行业
      */
     @Override
     public IndustryDefaultDTO detailIndustryDefault(Long industryId) {
@@ -258,8 +258,8 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     /**
      * 树结构默认行业信息
      *
-     * @param industryDefaultDTO
-     * @return
+     * @param industryDefaultDTO 默认行业
+     * @return List
      */
     @Override
     public List<Tree<Long>> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO) {
@@ -275,6 +275,7 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
             tree.setId(treeNode.getIndustryId());
             tree.setParentId(treeNode.getParentIndustryId());
             tree.setName(treeNode.getIndustryName());
+            tree.putExtra("parentIndustryName", treeNode.getParentIndustryName());
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());

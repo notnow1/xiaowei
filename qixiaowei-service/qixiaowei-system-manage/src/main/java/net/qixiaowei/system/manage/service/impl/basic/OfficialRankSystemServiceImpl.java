@@ -14,11 +14,9 @@ import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
+import net.qixiaowei.system.manage.mapper.basic.DepartmentPostMapper;
 import net.qixiaowei.system.manage.mapper.basic.OfficialRankSystemMapper;
 import net.qixiaowei.system.manage.mapper.basic.PostMapper;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
@@ -29,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -61,6 +56,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
 
     @Autowired
     private IDepartmentService departmentService;
+
+    @Autowired
+    private DepartmentPostMapper departmentPostMapper;
 
     @Autowired
     private IRegionService regionService;
@@ -216,16 +214,16 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     /**
      * 通过Id查找职级上下限
      *
-     * @param officilRankSystemId 职级ID
+     * @param officialRankSystemId 职级ID
      * @return
      */
     @Override
-    public List<Map<String, String>> selectOfficialRankMapBySystemId(Long officilRankSystemId) {
-        if (StringUtils.isNull(officilRankSystemId)) {
+    public List<Map<String, String>> selectOfficialRankMapBySystemId(Long officialRankSystemId) {
+        if (StringUtils.isNull(officialRankSystemId)) {
             throw new ServiceException("职级ID不能为空");
         }
         List<Map<String, String>> list = new ArrayList<>();
-        OfficialRankSystemDTO officialRankSystemDTO = officialRankSystemMapper.selectOfficialRankSystemByOfficialRankSystemId(officilRankSystemId);
+        OfficialRankSystemDTO officialRankSystemDTO = officialRankSystemMapper.selectOfficialRankSystemByOfficialRankSystemId(officialRankSystemId);
         String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
         Integer rankStart = officialRankSystemDTO.getRankStart();
         Integer rankEnd = officialRankSystemDTO.getRankEnd();
@@ -236,6 +234,88 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             list.add(map);
         }
         return list;
+    }
+
+    /**
+     * 查询岗位职级一览表
+     *
+     * @param officialRankSystemDTO 职级体系
+     * @return List
+     */
+    @Override
+    public List<Map<String, Object>> selectRankViewList(OfficialRankSystemDTO officialRankSystemDTO) {
+        // 当前的职级体系
+        Long officialRankSystemId = officialRankSystemDTO.getOfficialRankSystemId();
+        if (StringUtils.isNull(officialRankSystemId)) {
+            officialRankSystemId = officialRankSystemMapper.selectFirstOfficialRankSystem();
+            if (StringUtils.isNull(officialRankSystemId)) {
+                throw new ServiceException("请先配置职级体系");
+            }
+        }
+        Map<Integer, String> rankMap = selectOfficialRankBySystemId(officialRankSystemId);
+        List<Integer> rankList = new ArrayList<>(rankMap.keySet());
+        Collections.sort(rankList);
+        // 查询所有一级部门
+        List<DepartmentDTO> departmentDTOS = departmentService.selectDepartmentByLevel(1);
+        if (StringUtils.isEmpty(departmentDTOS)) {
+            return null;
+        }
+        List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+        List<DepartmentPostDTO> departmentPostDTOS = departmentPostMapper.selectPostDepartmentIds(departmentIds);
+        List<DepartmentPostDTO> departmentPostDTOList = new ArrayList<>();
+        for (DepartmentDTO departmentDTO : departmentDTOS) {
+            for (DepartmentPostDTO postDTO : departmentPostDTOS) {
+                if (departmentDTO.getDepartmentId().equals(postDTO.getDepartmentId())) {
+                    departmentPostDTOList.add(postDTO);
+                }
+            }
+            departmentDTO.setDepartmentPostDTOList(departmentPostDTOList);
+        }
+        List<Map<String, Object>> maps = new ArrayList<>();
+        for (Integer rank : rankList) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("销售体系", rankMap.get(rank));
+            for (DepartmentDTO departmentDTO : departmentDTOS) {
+                List<DepartmentPostDTO> postDTOList = departmentDTO.getDepartmentPostDTOList();
+                List<String> postList = new ArrayList<>();
+                for (DepartmentPostDTO departmentPostDTO : postDTOList) {
+                    if (StringUtils.isNull(departmentPostDTO.getPostRank())) {
+                        continue;
+                    }
+                    if (departmentPostDTO.getPostRank().equals(rank)) {
+                        postList.add(departmentPostDTO.getPostName());
+                    }
+                }
+                map.put(departmentDTO.getDepartmentName(), postList);
+            }
+            maps.add(map);
+        }
+        return maps;
+    }
+
+    /**
+     * 通过Id查找职级上下限
+     *
+     * @param officialRankSystemId 职级ID
+     * @return
+     */
+    public Map<Integer, String> selectOfficialRankBySystemId(Long officialRankSystemId) {
+        if (StringUtils.isNull(officialRankSystemId)) {
+            throw new ServiceException("职级ID不能为空");
+        }
+        List<Map<String, String>> list = new ArrayList<>();
+        OfficialRankSystemDTO officialRankSystemDTO = officialRankSystemMapper.selectOfficialRankSystemByOfficialRankSystemId(officialRankSystemId);
+        if (StringUtils.isNull(officialRankSystemDTO)) {
+            throw new ServiceException("请传入有存在的职级信息");
+        }
+        String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
+        Integer rankStart = officialRankSystemDTO.getRankStart();
+        Integer rankEnd = officialRankSystemDTO.getRankEnd();
+        Map<Integer, String> map = new HashMap<>();
+        for (int i = rankStart; i < rankEnd + 1; i++) {
+            map.put(i, rankPrefixCode + String.valueOf(i));
+        }
+        return map;
     }
 
     /**
