@@ -136,13 +136,13 @@
         <collection property="children" ofType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO"
                     column="indicator_id" select="findIndicatorTreeByPid"/>
     </resultMap>
-    <!-- 根据父级查找子级-->
+    <!--根据父级查找子级-->
     <select id="selectSon" resultType="java.lang.Long">
         SELECT
         indicator_id
         FROM indicator
         WHERE
-        FIND_IN_SET(#{industryId},ancestors)
+        FIND_IN_SET(#{indicatorId},ancestors)
     </select>
     <!--根据父级id查找子级的最大排序值-->
     <select id="selectSortByIndicatorId" resultType="java.lang.Integer">
@@ -150,7 +150,7 @@
         IFNULL(max(sort),0)
         FROM indicator
         WHERE
-        FIND_IN_SET(#{industryId},ancestors)
+        FIND_IN_SET(#{indicatorId},ancestors)
     </select>
     <!-- 根据父级list批量查找子级-->
     <select id="selectSons" resultType="java.lang.Long">
