@@ -141,6 +141,10 @@ public class IndustryServiceImpl implements IIndustryService {
                 throw new ServiceException("上级行业失效，不允许新增子节点");
             }
         }
+        IndustryDTO industryByCode = industryMapper.checkUnique(industryCode);
+        if (StringUtils.isNotNull(industryByCode)) {
+            throw new ServiceException("新增行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
+        }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
         if (StringUtils.isNotNull(parentIndustryId)) {

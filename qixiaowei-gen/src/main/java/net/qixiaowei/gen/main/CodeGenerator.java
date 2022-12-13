@@ -21,15 +21,15 @@ public class CodeGenerator {
     //项目路径
     private static final String module_path = "operate/cloud";
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
-    private static final String extend_Package = "/user" ;
+    private static final String extend_Package = "/salary";
     //表名
-    private static final String tables = "user" ;
+    private static final String tables = "dept_salary_adjust_item";
     //生成文件的作者名
-    private static final String author ="author" ;
+    private static final String author = "Graves";
     //数据库配置
-    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/operate-cloud";
-    private static final String username = "qxwopr";
-    private static final String password = "7fpJR7i2";
+    private static final String url = "jdbc:mysql://localhost:3306/operate-cloud";
+    private static final String username = "root";
+    private static final String password = "199902";
 
 
     //实体类 默认生成 不生成改为false
@@ -41,9 +41,9 @@ public class CodeGenerator {
     //controller类
     private static final boolean default_controller = false;
     //service类
-    private static final boolean default_service = false;
+    private static final boolean default_service = true;
     //service实现类
-    private static final boolean default_serviceImpl = false;
+    private static final boolean default_serviceImpl = true;
     //mapper类
     private static final boolean default_mapper = true;
     //mapperxml类
