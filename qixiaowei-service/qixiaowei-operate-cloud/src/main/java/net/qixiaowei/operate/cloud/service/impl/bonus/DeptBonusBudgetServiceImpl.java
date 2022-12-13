@@ -1063,8 +1063,9 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                             if (StringUtils.isNotEmpty(data3)){
                                 data2.removeAll(data3);
                             }
+                            List<EmployeeDTO> dtoList = data2.stream().filter(f -> StringUtils.isNotBlank(f.getEmployeeRankName())).collect(Collectors.toList());
                             //根据部门id和职级多个条件分组
-                            Map<Long, Map<String, List<EmployeeDTO>>> collect = data2.parallelStream()
+                            Map<Long, Map<String, List<EmployeeDTO>>> collect = dtoList.parallelStream()
                                     .collect(Collectors.groupingBy(EmployeeDTO::getEmployeeDepartmentId, Collectors.groupingBy(EmployeeDTO::getEmployeeRankName)));
                             if (StringUtils.isNotEmpty(collect)){
                                 for (Long key : collect.keySet()) {

@@ -575,7 +575,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     if (null != amountBonusBudget2 && amountBonusBudget2.compareTo(new BigDecimal("0")) != 0 &&
                             null != bonusCompositeRate && bonusCompositeRate.compareTo(new BigDecimal("0")) != 0){
                         multiply = amountBonusBudget2.multiply(new BigDecimal("1").add(bonusCompositeRate.divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING)));
-                        futureBonusBudgetLaddertersDTOS.get(i).setAmountBonusBudget(multiply.divide(new BigDecimal("10000")));
+                        futureBonusBudgetLaddertersDTOS.get(i).setAmountBonusBudget(multiply);
                     }
                 }
             }
@@ -616,17 +616,18 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             EmployeeBudgetDTO employeeBudgetDTO = new EmployeeBudgetDTO();
             employeeBudgetDTO.setBudgetYear(budgetYear);
             BigDecimal increaseAndDecreasePaySum = this.salaryPackageList(employeeBudgetDTO);
-
-            if (null != salarySum && salarySum.compareTo(new BigDecimal("0")) != 0 &&
-                    null != increaseAndDecreasePaySum && increaseAndDecreasePaySum.compareTo(new BigDecimal("0")) != 0) {
-                //总工资包预算
-                basicWageBonusBudget = salarySum.add(increaseAndDecreasePaySum).divide(new BigDecimal("10000"));
-                //总工资包预算
-                bonusBudgetDTO.setBasicWageBonusBudget(basicWageBonusBudget);
+            if (null != increaseAndDecreasePaySum){
+                basicWageBonusBudget=increaseAndDecreasePaySum;
             }
 
+            if (null != salarySum) {
+                //总工资包预算
+                basicWageBonusBudget = salarySum.add(basicWageBonusBudget);
+            }
+            //总工资包预算
+            bonusBudgetDTO.setBasicWageBonusBudget(basicWageBonusBudget.divide(new BigDecimal("10000")));
             if (null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) != 0) {
-                elasticityBonusBudget = emolumentPackage.subtract(basicWageBonusBudget).setScale(2,BigDecimal.ROUND_CEILING);
+                elasticityBonusBudget = emolumentPackage.subtract(basicWageBonusBudget.divide(new BigDecimal("10000"))).setScale(2,BigDecimal.ROUND_CEILING);
                 //弹性薪酬包  公式=总薪酬包预算-总工资包预算
                 bonusBudgetDTO.setElasticityBonusBudget(elasticityBonusBudget);
             }
@@ -680,24 +681,27 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     EmployeeBudgetDTO employeeBudgetDTO = new EmployeeBudgetDTO();
                     employeeBudgetDTO.setBudgetYear(bonusBudgetDTOS.get(i).getBudgetYear());
                     BigDecimal increaseAndDecreasePaySum = this.salaryPackageList(employeeBudgetDTO);
-
-                    if (null != salarySum && salarySum.compareTo(new BigDecimal("0")) != 0 &&
-                            null != increaseAndDecreasePaySum && increaseAndDecreasePaySum.compareTo(new BigDecimal("0")) != 0) {
-                        //总工资包预算
-                        basicWageBonusBudget = salarySum.add(increaseAndDecreasePaySum);
+                    if (increaseAndDecreasePaySum!=null){
+                        basicWageBonusBudget=increaseAndDecreasePaySum;
                     }
 
+                    if (null != salarySum) {
+                        //总工资包预算
+                        basicWageBonusBudget = salarySum.add(basicWageBonusBudget);
+                    }
+                    //总工资包预算
+                    bonusBudgetDTOS.get(i).setBasicWageBonusBudget(basicWageBonusBudget.divide(new BigDecimal("10000")));
 
                     if (null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) != 0 &&
-                            null != basicWageBonusBudget && basicWageBonusBudget.compareTo(new BigDecimal("0")) != 0) {
-                        elasticityBonusBudget = emolumentPackage.subtract(basicWageBonusBudget);
+                            basicWageBonusBudget.compareTo(new BigDecimal("0")) != 0) {
+                        elasticityBonusBudget = emolumentPackage.subtract(basicWageBonusBudget.divide(new BigDecimal("10000")));
                         //弹性薪酬包  公式=总薪酬包预算-总工资包预算
                         bonusBudgetDTOS.get(i).setElasticityBonusBudget(elasticityBonusBudget);
                     }
 
-                    if (null != elasticityBonusBudget && elasticityBonusBudget.compareTo(new BigDecimal("0")) != 0 &&
+                    if (elasticityBonusBudget.compareTo(new BigDecimal("0")) != 0 &&
                             null != amountBonusBudget && amountBonusBudget.compareTo(new BigDecimal("0")) != 0) {
-                        raiseSalaryBonusBudget = elasticityBonusBudget.subtract(amountBonusBudget);
+                        raiseSalaryBonusBudget = elasticityBonusBudget.subtract(amountBonusBudget.divide(new BigDecimal("10000")));
                         //涨薪包预算 公式=弹性薪酬包预算-总奖金包预算。
                         bonusBudgetDTOS.get(i).setRaiseSalaryBonusBudget(raiseSalaryBonusBudget);
                     }
