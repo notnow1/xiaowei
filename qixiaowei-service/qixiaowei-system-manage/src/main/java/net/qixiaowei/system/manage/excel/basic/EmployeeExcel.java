@@ -33,37 +33,6 @@ import java.util.Date;
 @HeadRowHeight(20)
 @ContentRowHeight(18)
 public class EmployeeExcel {
-    public EmployeeExcel() {
-    }
-
-    public EmployeeExcel(String employeeCode, String employeeName, String employmentStatus, String employeeGender, String identityCard, String employeeBirthday, String maritalStatus, String nationalityName, String nationName, String residentCityName, String insuredCityName, String permanentAddressName, String employmentDate, String departureDate, String postCode, String departmentCode, String employeeRankName, String employeeBasicWage, String employeeMobile, String employeeEmail, String wechatCode, String contactAddress, String emergencyContact, String emergencyMobile, String contactAddressDetail) {
-        this.employeeCode = employeeCode;
-        this.employeeName = employeeName;
-        this.employmentStatus = employmentStatus;
-        this.employeeGender = employeeGender;
-        this.identityCard = identityCard;
-        this.employeeBirthday = employeeBirthday;
-        this.maritalStatus = maritalStatus;
-        this.nationalityName = nationalityName;
-        this.nationName = nationName;
-        this.residentCityName = residentCityName;
-        this.insuredCityName = insuredCityName;
-        this.permanentAddressName = permanentAddressName;
-        this.employmentDate = employmentDate;
-        this.departureDate = departureDate;
-        this.postCode = postCode;
-        this.departmentCode = departmentCode;
-        this.employeeRankName = employeeRankName;
-        this.employeeBasicWage = employeeBasicWage;
-        this.employeeMobile = employeeMobile;
-        this.employeeEmail = employeeEmail;
-        this.wechatCode = wechatCode;
-        this.contactAddress = contactAddress;
-        this.emergencyContact = emergencyContact;
-        this.emergencyMobile = emergencyMobile;
-        this.contactAddressDetail = contactAddressDetail;
-    }
-
     /**
      * 工号
      */
@@ -92,23 +61,17 @@ public class EmployeeExcel {
     @ExcelProperty("证件号码")
     private String identityCard;
     /**
-     * 出生日期
-     */
-    @ExcelIgnore
-    @ExcelProperty("出生日期")
-    @DateTimeFormat(value = "yyyy/MM/dd")
-    private String employeeBirthday;
-    /**
      * 婚姻状况:0未婚;1已婚
      */
     @ExcelIgnore
     private  String maritalStatus;
-
     /**
      * 国籍
      */
     @ExcelIgnore
     private  String nationalityName;
+
+
     /**
      * 民族
      */
@@ -136,20 +99,16 @@ public class EmployeeExcel {
     @ExcelIgnore
     private  String employmentDate;
     /**
-     * 离职日期
+     * 部门
      */
     @ExcelIgnore
-    private  String departureDate;
+    private  String departmentName;
     /**
-     * 岗位编码
+     * 岗位
      */
     @ExcelIgnore
-    private  String postCode;
-    /**
-     * 部门编码
-     */
-    @ExcelIgnore
-    private  String departmentCode;
+    private  String postName;
+
     /**
      * 个人职级
      */
@@ -184,6 +143,11 @@ public class EmployeeExcel {
     @ExcelIgnore
     private  String contactAddress;
     /**
+     * 通信地址详情
+     */
+    @ExcelIgnore
+    private  String contactAddressDetail;
+    /**
      * 紧急联系人
      */
     @ExcelIgnore
@@ -193,10 +157,7 @@ public class EmployeeExcel {
      */
     @ExcelIgnore
     private  String emergencyMobile;
-    /**
-     * 通信地址详情
-     */
-    private  String contactAddressDetail;
+
 
 }
 

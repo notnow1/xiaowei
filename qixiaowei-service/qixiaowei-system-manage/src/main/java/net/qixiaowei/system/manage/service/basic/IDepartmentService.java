@@ -29,6 +29,21 @@ public interface IDepartmentService {
      */
     List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO);
 
+
+    /**
+     * 查询部门名称附加父级名称
+     *
+     * @return 部门表集合
+     */
+    List<String> selectDepartmentListName();
+
+    /**
+     * 查询部门名称附加父级名称
+     * @param departmentDTO
+     * @return部门表集合
+     */
+    List<DepartmentDTO> selectDepartmentListName(DepartmentDTO departmentDTO);
+
     /**
      * 返回组织层级
      *

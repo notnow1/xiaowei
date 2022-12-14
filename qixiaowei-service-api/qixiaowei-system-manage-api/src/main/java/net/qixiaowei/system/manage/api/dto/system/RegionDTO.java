@@ -33,6 +33,9 @@ public class RegionDTO {
     public interface UpdateRegionDTO extends Default{
 
     }
+
+
+
     /**
     * ID
     */
@@ -120,5 +123,21 @@ public class RegionDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
 
+    /**
+     * 省市编码
+     */
+    private  String provinceAndCityCode;
+    /**
+     * 省市名称
+     */
+    private  String provinceAndCityName;
+    /**
+     * 省市区编码
+     */
+    private  String provinceAndCityAndDistrictCode;
+    /**
+     * 省市区名称
+     */
+    private  String provinceAndCityAndDistrictName;
 }
 

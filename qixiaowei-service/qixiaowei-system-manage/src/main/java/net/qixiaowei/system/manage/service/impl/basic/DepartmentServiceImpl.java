@@ -86,6 +86,54 @@ public class DepartmentServiceImpl implements IDepartmentService {
     }
 
     /**
+     * 查询部门名称附加父级名称
+     * @return
+     */
+    @Override
+    public List<String> selectDepartmentListName() {
+        List<String> parentDepartmentExcelNames =  new ArrayList<>();
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        //查询数据
+        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
+        this.createTree(departmentDTOList, 0);
+        List<DepartmentDTO> natureGroups = treeToList(departmentDTOList);
+        if (StringUtils.isNotEmpty(natureGroups)){
+            parentDepartmentExcelNames=natureGroups.stream().map(DepartmentDTO::getParentDepartmentExcelName).collect(Collectors.toList());
+        }
+        return parentDepartmentExcelNames;
+    }
+
+    @Override
+    public List<DepartmentDTO> selectDepartmentListName(DepartmentDTO departmentDTO) {
+        //查询数据
+        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
+        this.createTree(departmentDTOList, 0);
+        List<DepartmentDTO> natureGroups = treeToList(departmentDTOList);
+        return natureGroups;
+    }
+
+    /**
+     * 树形结构转list
+     *
+     * @param
+     * @return
+     */
+    private List<DepartmentDTO> treeToList(List<DepartmentDTO> depts) {
+
+        List<DepartmentDTO> resultList = new ArrayList<>();
+        for (DepartmentDTO departmentDTO : depts) {
+            if (departmentDTO.getChildren() != null && departmentDTO.getChildren().size() > 0) {
+                resultList.add(departmentDTO);
+                treeToList(departmentDTO.getChildren());
+            } else {
+                resultList.add(departmentDTO);
+            }
+        }
+        return resultList;
+    }
+
+
+    /**
      * 返回组织层级
      *
      * @return
@@ -105,8 +153,17 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     private List<DepartmentDTO> createTree(List<DepartmentDTO> lists, int pid) {
         List<DepartmentDTO> tree = new ArrayList<>();
+
         for (DepartmentDTO catelog : lists) {
             if (catelog.getParentDepartmentId() == pid) {
+                if (pid==0){
+                    catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
+                } else {
+                    List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(departmentDTOList)){
+                        catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName()+"/"+catelog.getDepartmentName());
+                    }
+                }
                 catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
                 tree.add(catelog);
             }
