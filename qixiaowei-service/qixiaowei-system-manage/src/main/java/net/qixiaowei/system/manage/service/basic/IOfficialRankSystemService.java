@@ -139,15 +139,15 @@ public interface IOfficialRankSystemService {
      * 通过Id查找职级上下限
      *
      * @param officialRankSystemId 职级体系ID
-     * @return
+     * @return List
      */
     List<String> selectOfficialRankByOfficialRankSystemId(Long officialRankSystemId);
 
     /**
      * 通过Id查找职级上下限
      *
-     * @param officialRankSystemId
-     * @return
+     * @param officialRankSystemId 职级体系ID
+     * @return List
      */
     List<Map<String, String>> selectOfficialRankMapBySystemId(Long officialRankSystemId);
 
@@ -157,5 +157,5 @@ public interface IOfficialRankSystemService {
      * @param officialRankSystemDTO 职级体系
      * @return
      */
-    List<Map<String, Object>> selectRankViewList(OfficialRankSystemDTO officialRankSystemDTO);
+    Map<String, Object> selectRankViewList(OfficialRankSystemDTO officialRankSystemDTO);
 }

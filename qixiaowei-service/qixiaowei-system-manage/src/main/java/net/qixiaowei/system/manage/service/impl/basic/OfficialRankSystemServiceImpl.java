@@ -243,7 +243,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      * @return List
      */
     @Override
-    public List<Map<String, Object>> selectRankViewList(OfficialRankSystemDTO officialRankSystemDTO) {
+    public Map<String, Object> selectRankViewList(OfficialRankSystemDTO officialRankSystemDTO) {
         // 当前的职级体系
         Long officialRankSystemId = officialRankSystemDTO.getOfficialRankSystemId();
         if (StringUtils.isNull(officialRankSystemId)) {
@@ -252,7 +252,9 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 throw new ServiceException("请先配置职级体系");
             }
         }
-        Map<Integer, String> rankMap = selectOfficialRankBySystemId(officialRankSystemId);
+        List<String> performanceNames = new ArrayList<>();
+        Map<Integer, String> rankMap = selectOfficialRankBySystemId(officialRankSystemId, performanceNames);
+        String performanceName = performanceNames.get(0);
         List<Integer> rankList = new ArrayList<>(rankMap.keySet());
         Collections.sort(rankList);
         // 查询所有一级部门
@@ -263,7 +265,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
         List<DepartmentPostDTO> departmentPostDTOS = departmentPostMapper.selectPostDepartmentIds(departmentIds);
         List<DepartmentPostDTO> departmentPostDTOList = new ArrayList<>();
+        List<String> departmentNames = new ArrayList<>();
+        departmentNames.add(performanceName);
         for (DepartmentDTO departmentDTO : departmentDTOS) {
+            departmentNames.add(departmentDTO.getDepartmentName());
             for (DepartmentPostDTO postDTO : departmentPostDTOS) {
                 if (departmentDTO.getDepartmentId().equals(postDTO.getDepartmentId())) {
                     departmentPostDTOList.add(postDTO);
@@ -271,10 +276,11 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             }
             departmentDTO.setDepartmentPostDTOList(departmentPostDTOList);
         }
-        List<Map<String, Object>> maps = new ArrayList<>();
+        Map<String, Object> maps = new HashMap<>();
+        List<Map<String, Object>> list = new ArrayList<>();
         for (Integer rank : rankList) {
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("销售体系", rankMap.get(rank));
+            map.put(performanceName, rankMap.get(rank));
             for (DepartmentDTO departmentDTO : departmentDTOS) {
                 List<DepartmentPostDTO> postDTOList = departmentDTO.getDepartmentPostDTOList();
                 List<String> postList = new ArrayList<>();
@@ -288,8 +294,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                 }
                 map.put(departmentDTO.getDepartmentName(), postList);
             }
-            maps.add(map);
+            list.add(map);
         }
+        maps.put("header", departmentNames);
+        maps.put("tableValue", list);
         return maps;
     }
 
@@ -297,9 +305,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      * 通过Id查找职级上下限
      *
      * @param officialRankSystemId 职级ID
-     * @return
+     * @param performanceNames     职级体系名称集合
+     * @return Map
      */
-    public Map<Integer, String> selectOfficialRankBySystemId(Long officialRankSystemId) {
+    public Map<Integer, String> selectOfficialRankBySystemId(Long officialRankSystemId, List<String> performanceNames) {
         if (StringUtils.isNull(officialRankSystemId)) {
             throw new ServiceException("职级ID不能为空");
         }
@@ -308,6 +317,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         if (StringUtils.isNull(officialRankSystemDTO)) {
             throw new ServiceException("请传入有存在的职级信息");
         }
+        performanceNames.add(officialRankSystemDTO.getOfficialRankSystemName());
         String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
         Integer rankStart = officialRankSystemDTO.getRankStart();
         Integer rankEnd = officialRankSystemDTO.getRankEnd();
