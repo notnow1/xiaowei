@@ -101,7 +101,7 @@ public class AjaxResult extends HashMap<String, Object> {
      *
      * @return 成功消息
      */
-    public static <T> AjaxResult successExcel(List<T> successExcel, List<T> errorExcel) {
+    public static <T> AjaxResult successExcel(List<T> successExcel, List<T> errorExcel,String msg) {
         Map<Object, Object> data = new HashMap<>();
         if (StringUtils.isEmpty(successExcel)) {
             data.put(SUCCESS_TOTAL, 0);
@@ -115,7 +115,7 @@ public class AjaxResult extends HashMap<String, Object> {
         }
         data.put(SUCCESS_LIST, successExcel);
         data.put(ERROR_LIST, errorExcel);
-        return AjaxResult.success("操作成功", data);
+        return AjaxResult.success(msg.length()>1?msg:"操作成功", data);
     }
 
     /**

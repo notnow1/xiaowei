@@ -8,23 +8,26 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
-import net.qixiaowei.system.manage.api.domain.basic.Employee;
-import net.qixiaowei.system.manage.api.domain.basic.EmployeeInfo;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.EmployeeInfoDTO;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.domain.basic.*;
+import net.qixiaowei.system.manage.api.dto.basic.*;
+import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.mapper.basic.*;
+import net.qixiaowei.system.manage.mapper.system.RegionMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
+import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +47,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Autowired
     private DepartmentMapper departmentMapper;
     @Autowired
+    private DepartmentPostMapper departmentPostMapper;
+    @Autowired
     private PostMapper postMapper;
     @Autowired
     private UserMapper userMapper;
@@ -51,6 +56,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private RemoteDecomposeService remoteDecomposeService;
     @Autowired
     private OfficialRankSystemMapper officialRankSystemMapper;
+    @Autowired
+    private IDepartmentService departmentService;
+    @Autowired
+    private NationMapper nationMapper;
+    @Autowired
+    private CountryMapper countryMapper;
+    @Autowired
+    private RegionMapper regionMapper;
+
 
     /**
      * 查询员工表
@@ -83,6 +97,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 查询员工表列表(下拉框)
+     *
      * @param employeeDTO
      * @return
      */
@@ -110,7 +125,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @param idMaps id集合表
      * @return 员工表集合
      */
-    public List<EmployeeDTO> selectEmployeeByPDRIds(Map<String,List<String>> idMaps) {
+    public List<EmployeeDTO> selectEmployeeByPDRIds(Map<String, List<String>> idMaps) {
         List<String> departmentIds = idMaps.get("departmentIds");
         List<Long> departments = departmentIds.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         List<String> postIds = idMaps.get("postIds");
@@ -200,7 +215,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         }
         //查询人员主表
         EmployeeInfoDTO employeeInfoDTO = employeeInfoMapper.selectEmployeeInfoByEmployeeId(employeeDTO.getEmployeeId());
-        if (StringUtils.isNull(employeeInfoDTO)){
+        if (StringUtils.isNull(employeeInfoDTO)) {
             throw new ServiceException("人员信息不存在！ 请联系管理员");
         }
         //员工信息表
@@ -321,104 +336,299 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @param list
      */
     @Override
-    public void importEmployee(List<EmployeeExcel> list) {
+    @Transactional
+    public void importEmployee(List<EmployeeExcel> list) throws ParseException {
+        //所有员工
+        Employee employee = new Employee();
+        List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeList(employee);
+        //所有员工code
+        List<String> employeeCodes = new ArrayList<>();
+        if (StringUtils.isNotEmpty(employeeDTOList)) {
+            employeeCodes = employeeDTOList.stream().map(EmployeeDTO::getEmployeeCode).collect(Collectors.toList());
+        }
+        //需要删除的员工code
+        List<String> deleteEmployeeCodes = new ArrayList<>();
+        //所有民族
+        Nation nation = new Nation();
+        List<NationDTO> nationDTOS = nationMapper.selectNationList(nation);
+        //所有国籍
+        Country country = new Country();
+        List<CountryDTO> countryDTOS = countryMapper.selectCountryList(country);
+        //查询所有省市
+        List<RegionDTO> regionProvinceNameAndCityNames = regionMapper.selectRegionByProvinceNameAndCityName();
+        //查询所有省市区
+        List<RegionDTO> regionProvinceNameAndCityNameAndDistrictNames = regionMapper.selectRegionByProvinceNameAndCityNameAndDistrictName();
+        //所有岗位
+        Post post = new Post();
+        List<PostDTO> postDTOS = postMapper.selectPostList(post);
+        //查询部门名称附加父级名称
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(departmentDTO);
+        //部门岗位关联表
+        DepartmentPost departmentPost = new DepartmentPost();
+        List<DepartmentPostDTO> departmentPostDTOList = departmentPostMapper.selectDepartmentPostList(departmentPost);
+        Map<Long, List<DepartmentPostDTO>> departmentPostMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(departmentPostDTOList)){
+            //根据部门id分组
+           departmentPostMap = departmentPostDTOList.parallelStream().collect(Collectors.groupingBy(DepartmentPostDTO::getDepartmentId));
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        //新增list
+        List<Employee> successExcelList = new ArrayList<>();
+        //失败List
+        List<EmployeeExcel> errorExcelList = new ArrayList<>();
         if (StringUtils.isNotEmpty(list)) {
-            //code集合
-            List<String> collect1 = this.selectEmployeeCodes(list);
-            //身份证集合
-            List<String> collect2 = this.selectEmployeeIdCard(list);
-            //插入数据库数据
-            List<Employee> employeeList = new ArrayList<>();
+            List<EmployeeInfo> employeeInfoList = new ArrayList<>();
+            //工号集合检验唯一性
+            List<String> employeeExcelCodes = list.stream().map(EmployeeExcel::getEmployeeCode).collect(Collectors.toList());
+            //身份证集合检验唯一性
+            List<String> excelIdentityCards = list.stream().map(EmployeeExcel::getIdentityCard).collect(Collectors.toList());
             //返回报错信息
             StringBuffer employeeErreo = new StringBuffer();
             for (EmployeeExcel employeeExcel : list) {
-                StringBuffer stringBuffer = this.validEmployee(employeeExcel);
+                //新增所有员工
+                Employee employee2 = new Employee();
+                //员工详细详细
+                EmployeeInfo employeeInfo = new EmployeeInfo();
+                StringBuffer stringBuffer = new StringBuffer();
+                 stringBuffer = this.validEmployee(employeeExcel, employeeExcelCodes, excelIdentityCards,postDTOS,departmentPostMap,departmentDTOList);
                 if (stringBuffer.length() > 1) {
+                    errorExcelList.add(employeeExcel);
                     employeeErreo.append(stringBuffer);
+                    continue;
                 }
-                Employee employee = new Employee();
-                BeanUtils.copyProperties(employeeExcel, employee);
-                if (collect1.contains(employee.getEmployeeCode())) {
-                    employeeErreo.append("工号" + employee.getEmployeeCode() + "已存在" + "\r\n");
+                //工号
+                String employeeCode = employeeExcel.getEmployeeCode();
+                //用工关系状态
+                String employmentStatus = employeeExcel.getEmploymentStatus();
+                //性别
+                String employeeGender = employeeExcel.getEmployeeGender();
+                //婚姻状况:0未婚;1已婚
+                String maritalStatus = employeeExcel.getMaritalStatus();
+                //国籍
+                String nationalityName = employeeExcel.getNationalityName();
+                //民族
+                String nationName = employeeExcel.getNationName();
+                //户口所在地名称
+                String residentCityName = employeeExcel.getResidentCityName();
+                //参保地名称
+                String insuredCityName = employeeExcel.getInsuredCityName();
+                //常住地名称
+                String permanentAddressName = employeeExcel.getPermanentAddressName();
+                //入职日期
+                String employmentDate = employeeExcel.getEmploymentDate();
+                //部门
+                String departmentName = employeeExcel.getDepartmentName();
+                //岗位
+                String postName = employeeExcel.getPostName();
+                //个人职级
+                String employeeRankName = employeeExcel.getEmployeeRankName();
+                //工号
+                if (StringUtils.isNotBlank(employeeCode)) {
+                    if (StringUtils.isNotEmpty(employeeCodes)){
+                        if (employeeCodes.contains(employeeCode)) {
+                            deleteEmployeeCodes.add(employeeCode);
+                        }
+                    }
                 }
-                if (collect2.contains(employee.getIdentityCard())) {
-                    employeeErreo.append("身份证号" + employee.getIdentityCard() + "已存在" + "\r\n");
+                //用工关系状态
+                if (StringUtils.isNotBlank(employmentStatus)) {
+                    if (StringUtils.equals(employmentStatus, "在职")) {
+                        employee2.setEmploymentStatus(1);
+                    } else if (StringUtils.equals(employmentStatus, "离职")) {
+                        employee2.setEmploymentStatus(0);
+                    }
                 }
-                employee.setCreateBy(SecurityUtils.getUserId());
-                employee.setCreateTime(DateUtils.getNowDate());
-                employee.setUpdateTime(DateUtils.getNowDate());
-                employee.setUpdateBy(SecurityUtils.getUserId());
-                employee.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                employeeList.add(employee);
+                //性别
+                if (StringUtils.isNotBlank(employeeGender)) {
+                    if (StringUtils.equals(employeeGender, "男")) {
+                        employee2.setEmployeeGender(1);
+                    } else if (StringUtils.equals(employeeGender, "女")) {
+                        employee2.setEmployeeGender(2);
+                    }
+                }
+
+                //婚姻状况
+                if (StringUtils.isNotBlank(maritalStatus)) {
+                    if (StringUtils.equals(maritalStatus, "已婚")) {
+                        employee2.setMaritalStatus(1);
+                    } else if (StringUtils.equals(maritalStatus, "未婚")) {
+                        employee2.setMaritalStatus(0);
+                    }
+                }
+                //国籍
+                if (StringUtils.isNotBlank(nationalityName)){
+                    if (StringUtils.isNotEmpty(countryDTOS)){
+                        List<CountryDTO> countryDTO = countryDTOS.stream().filter(f -> StringUtils.equals(f.getCountryName(), nationalityName)).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(countryDTO)){
+                           //国籍id
+                           employee2.setNationality(String.valueOf(countryDTO.get(0).getCountryId()));
+                        }else {
+                            employee2.setNationality("54");
+                        }
+                    }else {
+                        throw new ServiceException("国家未配置 请联系管理员!");
+                    }
+                }else {
+                    employee2.setNationality("54");
+                }
+                //民族
+                if (StringUtils.isNotBlank(nationName)){
+                    if (StringUtils.isNotEmpty(nationDTOS)){
+                        List<NationDTO> nationDTO = nationDTOS.stream().filter(f -> StringUtils.equals(f.getNationName(), nationName)).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(nationDTO)){
+                            //民族id
+                            employee2.setNationality(String.valueOf(nationDTO.get(0).getNationId()));
+                        }else {
+                            employee2.setNation("1");
+                        }
+                    }else {
+                        throw new ServiceException("民族未配置 请联系管理员!");
+                    }
+                }else {
+                    employee2.setNation("1");
+                }
+                //户口所在地 省市
+                if (StringUtils.isNotBlank(residentCityName)){
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNames)){
+                        List<RegionDTO> provinceAndCityName = regionProvinceNameAndCityNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityName(), residentCityName)).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(provinceAndCityName)){
+                            employee2.setResidentCity(provinceAndCityName.get(0).getProvinceAndCityCode());
+                        }
+                    }else {
+                        throw new ServiceException("省市区未配置 请联系管理员!");
+                    }
+                }
+                //参保地 省市
+                if (StringUtils.isNotBlank(insuredCityName)){
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNames)){
+                        List<RegionDTO> provinceAndCityName = regionProvinceNameAndCityNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityName(), insuredCityName)).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(provinceAndCityName)){
+                            employee2.setInsuredCity(provinceAndCityName.get(0).getProvinceAndCityCode());
+                        }
+                    }else {
+                        throw new ServiceException("省市区未配置 请联系管理员!");
+                    }
+                }
+
+                //常住地 省市区
+                if (StringUtils.isNotBlank(permanentAddressName)){
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNameAndDistrictNames)){
+                        List<RegionDTO> provinceAndCityAndDistrictName = regionProvinceNameAndCityNameAndDistrictNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityAndDistrictName(), permanentAddressName)).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(provinceAndCityAndDistrictName)){
+                            employee2.setPermanentAddress(provinceAndCityAndDistrictName.get(0).getProvinceAndCityAndDistrictCode());
+                        }
+                    }else {
+                        throw new ServiceException("省市区未配置 请联系管理员!");
+                    }
+                }
+                //入职日期
+                if (StringUtils.isNotBlank(employmentDate)){
+                    employee2.setEmploymentDate(simpleDateFormat.parse(employmentDate));
+                }
+                //部门
+                if (StringUtils.isNotBlank(departmentName)){
+                    if (StringUtils.isNotEmpty(departmentDTOList)){
+                        List<DepartmentDTO> parentDepartmentExcelName = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), departmentName)).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(parentDepartmentExcelName)){
+                            employee2.setEmployeeDepartmentId(parentDepartmentExcelName.get(0).getDepartmentId());
+                        }else {
+                            throw new ServiceException(departmentName+"部门不存在 请联系管理员!");
+                        }
+                    }
+                }
+                //岗位
+                if (StringUtils.isNotBlank(postName)){
+                    if (StringUtils.isNotEmpty(postDTOS)){
+                        List<PostDTO> postNames = postDTOS.stream().filter(f -> StringUtils.equals(f.getPostName(), postName)).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(postNames)){
+                            employee2.setEmployeePostId(postNames.get(0).getPostId());
+                            //个人职级
+                            if (StringUtils.isNotBlank(employeeRankName)){
+                                String rankPrefixCode = postNames.get(0).getRankPrefixCode();
+                                if (StringUtils.isNotBlank(rankPrefixCode)){
+                                    employee2.setEmployeeRank(Integer.parseInt(employeeRankName.replace(rankPrefixCode,"")));
+                                }else {
+                                    employee2.setEmployeeRank(Integer.parseInt(employeeRankName));
+                                }
+                            }
+                        }else {
+                            throw new ServiceException(postName+"岗位不存在 请联系管理员!");
+                        }
+                    }
+                }
+                //基本工资
+                employee2.setEmployeeBasicWage(new BigDecimal(employeeExcel.getEmployeeBasicWage()));
+                //手机
+                employee2.setEmployeeMobile(employeeExcel.getEmployeeMobile());
+                //邮箱
+                employee2.setEmployeeEmail(employeeExcel.getEmployeeEmail());
+                //微信
+                employee2.setWechatCode(employeeExcel.getWechatCode());
+                //通信地址
+                employee2.setContactAddress(employeeExcel.getContactAddress());
+                //详细通信地址
+                employee2.setContactAddressDetail(employeeExcel.getContactAddressDetail());
+                //紧急联系人姓名
+                employee2.setEmergencyContact(employeeExcel.getEmergencyContact());
+                //紧急联系人电话
+                employee2.setEmergencyMobile(employeeExcel.getEmergencyMobile());
+                employee2.setCreateBy(SecurityUtils.getUserId());
+                employee2.setCreateTime(DateUtils.getNowDate());
+                employee2.setUpdateTime(DateUtils.getNowDate());
+                employee2.setUpdateBy(SecurityUtils.getUserId());
+                employee2.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                successExcelList.add(employee2);
+                BeanUtils.copyProperties(employee2,employeeInfo);
+                employeeInfo.setCreateBy(SecurityUtils.getUserId());
+                employeeInfo.setCreateTime(DateUtils.getNowDate());
+                employeeInfo.setUpdateTime(DateUtils.getNowDate());
+                employeeInfo.setUpdateBy(SecurityUtils.getUserId());
+                employeeInfo.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                employeeInfoList.add(employeeInfo);
             }
-            if (employeeErreo.length() > 1) {
+            //后续优化导入
+/*            if (employeeErreo.length() > 1) {
                 throw new ServiceException(employeeErreo.toString());
+            }*/
+
+            if (StringUtils.isNotEmpty(employeeInfoList)){
+                employeeInfoMapper.batchEmployeeInfo(employeeInfoList);
             }
-            try {
-                employeeMapper.batchEmployee(employeeList);
-            } catch (Exception e) {
-                throw new ServiceException("导入人员失败");
+            if (StringUtils.isNotEmpty(successExcelList)){
+                employeeMapper.batchEmployee(successExcelList);
             }
         } else {
             throw new ServiceException("请填写excel数据！！！");
         }
     }
 
-    /**
-     * 检验身份证唯一
-     *
-     * @param list
-     * @return
-     */
-    private List<String> selectEmployeeIdCard(List<EmployeeExcel> list) {
-        //数据库数据保证唯一性
-        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
-        //code集合
-        List<String> collect1 = new ArrayList<>();
-        List<String> collect = list.stream().map(EmployeeExcel::getIdentityCard).collect(Collectors.toList());
-        if (StringUtils.isNotEmpty(collect)) {
-            employeeDTOList = employeeMapper.selectEmployeeByIdCards(collect);
-        }
-        if (StringUtils.isNotEmpty(employeeDTOList)) {
-            collect1 = employeeDTOList.stream().map(EmployeeDTO::getIdentityCard).collect(Collectors.toList());
-        }
-        return collect1;
-    }
-
-    /**
-     * 检验code唯一
-     *
-     * @param list
-     * @return
-     */
-    private List<String> selectEmployeeCodes(List<EmployeeExcel> list) {
-        //数据库数据保证唯一性
-        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
-        //code集合
-        List<String> collect1 = new ArrayList<>();
-        List<String> collect = list.stream().map(EmployeeExcel::getEmployeeCode).collect(Collectors.toList());
-        if (StringUtils.isNotEmpty(collect)) {
-            employeeDTOList = employeeMapper.selectEmployeeByEmployeeCodes(collect);
-        }
-        if (StringUtils.isNotEmpty(employeeDTOList)) {
-            collect1 = employeeDTOList.stream().map(EmployeeDTO::getEmployeeCode).collect(Collectors.toList());
-        }
-        return collect1;
-    }
 
     /**
      * 检验数据
-     *
-     * @param employeeExcel
+     *  @param employeeExcel
+     * @param employeeExcelCodes
+     * @param excelIdentityCards
+     * @param postDTOS
+     * @param departmentPostMap
+     * @param departmentDTOList
      */
-    private StringBuffer validEmployee(EmployeeExcel employeeExcel) {
+    private StringBuffer validEmployee(EmployeeExcel employeeExcel, List<String> employeeExcelCodes, List<String> excelIdentityCards, List<PostDTO> postDTOS, Map<Long, List<DepartmentPostDTO>> departmentPostMap, List<DepartmentDTO> departmentDTOList) {
+        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("yyyy/MM/dd");
         StringBuffer validEmployeeErreo = new StringBuffer();
         if (StringUtils.isNotNull(employeeExcel)) {
+            String employmentDate = employeeExcel.getEmploymentDate();
+            //部门
+            String departmentName = employeeExcel.getDepartmentName();
+            //岗位
+            String postName = employeeExcel.getPostName();
+            //个人职级名称
+            String employeeRankName = employeeExcel.getEmployeeRankName();
             if (StringUtils.isNull(employeeExcel.getEmployeeCode())) {
-                validEmployeeErreo.append("工号为必填项");
+                validEmployeeErreo.append("员工工号为必填项");
             }
             if (StringUtils.isNull(employeeExcel.getEmployeeName())) {
-                validEmployeeErreo.append("姓名为必填项");
+                validEmployeeErreo.append("员工姓名为必填项");
             }
             if (StringUtils.isNull(employeeExcel.getEmploymentStatus())) {
                 validEmployeeErreo.append("用工关系状态为必填项");
@@ -426,12 +636,101 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (StringUtils.isNull(employeeExcel.getIdentityCard())) {
                 validEmployeeErreo.append("证件号码为必填项");
             }
-            if (StringUtils.isNull(employeeExcel.getEmploymentDate())) {
+            if (StringUtils.isNull(employmentDate)) {
                 validEmployeeErreo.append("入职日期为必填项");
+            }else {
+                try {
+                    Date parse = simpleDateFormat.parse(employmentDate);
+                } catch (ParseException e) {
+                    validEmployeeErreo.append("入职日期公式必须为yyyy/MM/dd");
+                }
+            }
+            if (StringUtils.isNull(departmentName)) {
+                validEmployeeErreo.append("部门为必填项");
+            }
+            if (StringUtils.isNull(postName)) {
+                validEmployeeErreo.append("岗位为必填项");
+            }
+            if (StringUtils.isNull(employeeExcel.getEmployeeRankName())) {
+                validEmployeeErreo.append("个人职级为必填项");
             }
             if (StringUtils.isNull(employeeExcel.getEmployeeMobile())) {
                 validEmployeeErreo.append("员工手机号为必填项");
             }
+            if (StringUtils.isNull(employeeExcel.getEmployeeMobile())) {
+                validEmployeeErreo.append("紧急联系人电话为必填项");
+            }
+
+            //员工工号
+            List<String> employeeCodes = employeeExcelCodes.stream().filter(f -> f.equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
+            if (employeeCodes.size() > 1) {
+                validEmployeeErreo.append("excle列表中员工工号重复");
+            }
+            //身份证号码
+            List<String> identityCards = excelIdentityCards.stream().filter(f -> f.equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
+            if (identityCards.size() > 1) {
+                validEmployeeErreo.append("excle列表中身份证号码重复");
+            }
+            //岗位是否属于这个部门
+            if (StringUtils.isNotBlank(postName) && StringUtils.isNotBlank(departmentName)){
+                if (StringUtils.isNotEmpty(departmentDTOList)){
+                    List<DepartmentDTO> parentDepartmentExcelName = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), departmentName)).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(parentDepartmentExcelName)){
+                        Long departmentId = parentDepartmentExcelName.get(0).getDepartmentId();
+                        List<DepartmentPostDTO> departmentPostDTOList = departmentPostMap.get(departmentId);
+                        if (StringUtils.isNotEmpty(departmentPostDTOList)){
+                            if (StringUtils.isNotEmpty(postDTOS)){
+                                List<PostDTO> postNames = postDTOS.stream().filter(f -> StringUtils.equals(f.getPostName(), postName)).collect(Collectors.toList());
+                                Long postId = postNames.get(0).getPostId();
+                                List<DepartmentPostDTO> excelPostId = departmentPostDTOList.stream().filter(f -> f.getPostId() == postId).collect(Collectors.toList());
+                                if (StringUtils.isEmpty(excelPostId)){
+                                    validEmployeeErreo.append(postName+"不属于"+departmentName+"部门");
+                                }
+
+                                //个人职级名称
+                                if (StringUtils.isNotEmpty(employeeRankName)){
+                                    List<PostDTO> postIds = postDTOS.stream().filter(f -> f.getPostId() == postId).collect(Collectors.toList());
+                                    if (StringUtils.isNotEmpty(postIds)){
+                                        String rankPrefixCode = postIds.get(0).getRankPrefixCode();
+                                        if (StringUtils.isNotBlank(rankPrefixCode)){
+                                            if (employeeRankName.contains(rankPrefixCode)){
+                                                //下限
+                                                Integer postRankLower = postIds.get(0).getPostRankLower();
+                                                //上限
+                                                Integer postRankUpper = postIds.get(0).getPostRankUpper();
+                                                String replace = employeeRankName.replace(postIds.get(0).getRankPrefixCode(), "");
+                                                int i = Integer.parseInt(replace);
+                                                if (i>postRankUpper || i  < postRankLower){
+                                                    validEmployeeErreo.append("个人职级需在岗位职级上下限范围内");
+                                                }
+                                            }else {
+                                                validEmployeeErreo.append("职级与岗位不匹配");
+                                            }
+                                        }else {
+                                            //下限
+                                            Integer postRankLower = postIds.get(0).getPostRankLower();
+                                            //上限
+                                            Integer postRankUpper = postIds.get(0).getPostRankUpper();
+                                            int i = Integer.parseInt(employeeRankName);
+                                            if (i>postRankUpper || i  < postRankLower){
+                                                validEmployeeErreo.append("个人职级需在岗位职级上下限范围内");
+                                            }
+                                        }
+
+                                    }
+
+
+                                }
+                            }
+                        }
+                    }
+                }else {
+                    throw new ServiceException("部门不存在 请联系管理员!");
+                }
+
+
+            }
+
         }
         return validEmployeeErreo;
     }
@@ -448,7 +747,6 @@ public class EmployeeServiceImpl implements IEmployeeService {
         BeanUtils.copyProperties(employeeDTO, employee);
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeList(employee);
         List<EmployeeExcel> employeeExcelList = new ArrayList<>();
-        EmployeeServiceImpl.packEmployeeExcel(employeeExcelList);
         if (StringUtils.isNotEmpty(employeeDTOList)) {
             for (EmployeeDTO dto : employeeDTOList) {
                 EmployeeExcel employeeExcel = new EmployeeExcel();
@@ -469,11 +767,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         employeeExcel.setEmploymentStatus("离职");
                     }
                 }
-                //出生日期
-                if (null != dto.getEmployeeBirthday()) {
-                    Date employeeBirthday = dto.getEmployeeBirthday();
-                    employeeExcel.setEmployeeBirthday(DateUtils.format(employeeBirthday));
-                }
+
                 //婚姻状况
                 if (null != dto.getMaritalStatus()) {
                     if (dto.getMaritalStatus() == 0) {
@@ -487,31 +781,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     Date employmentDate = dto.getEmploymentDate();
                     employeeExcel.setEmploymentDate(DateUtils.format(employmentDate));
                 }
-                //离职日期
-                if (null != dto.getDepartureDate()) {
-                    Date departureDate = dto.getDepartureDate();
-                    employeeExcel.setDepartureDate(DateUtils.format(departureDate));
-                }
+
                 employeeExcelList.add(employeeExcel);
             }
         }
         return employeeExcelList;
     }
 
-    /**
-     * 封装示例数据
-     *
-     * @param employeeExcelList
-     */
-    public static void packEmployeeExcel(List<EmployeeExcel> employeeExcelList) {
-        //示例数据
-        EmployeeExcel employeeExcel1 = new EmployeeExcel("YG000001", "张三", "在职", "男", "123321200001011234", "2000/10/10", "未婚", "中国"
-                , "汉族", "广东省深圳市", "广东省深圳市", "广东省深圳市南山区", "2022/10/10", "2022/10/10", "100"
-                , "GW001", "P9", "10000", "13712344321", "youxiang@mail.com", "WX123", "广东省深圳市南山区", "李四",
-                "13799991111", "广东省深圳市南山区大冲商务中心");
-        employeeExcelList.add(employeeExcel1);
-
-    }
 
     /**
      * 查询未分配用户员工列表
@@ -615,6 +891,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 远程 查询部门下所有人员
+     *
      * @param departmentId
      * @return
      */
@@ -625,6 +902,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 根据部门id查询员工表列表
+     *
      * @param employeeDepartmentId
      * @return
      */
@@ -635,6 +913,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 查询一级部门下所有的人员 返回部门id和职级体系id
+     *
      * @param departmentIdAll
      * @return
      */
@@ -645,6 +924,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 远程查询在职所有人员
+     *
      * @return
      */
     @Override
@@ -654,6 +934,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 根据部门ID 集合查询人员
+     *
      * @param departmentIds 人员ID集合
      * @return
      */

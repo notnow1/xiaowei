@@ -58,6 +58,10 @@ public class DepartmentDTO {
     * 父级部门ID
     */
     private  Long parentDepartmentId;
+    /**
+     * 父级部门名称(excel用)
+     */
+    private  String parentDepartmentExcelName;
 
     /**
      * 级别前缀编码

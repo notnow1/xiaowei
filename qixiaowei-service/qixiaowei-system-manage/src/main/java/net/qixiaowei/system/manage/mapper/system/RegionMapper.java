@@ -130,4 +130,16 @@ public interface RegionMapper {
      * @return
      */
     List<RegionDTO> selectCodeList(@Param("regionNames") List<String> regionNames);
+
+    /**
+     * 查询所有省市
+     * @return
+     */
+    List<RegionDTO> selectRegionByProvinceNameAndCityName();
+
+    /**
+     * 查询所有省市区
+     * @return
+     */
+    List<RegionDTO> selectRegionByProvinceNameAndCityNameAndDistrictName();
 }

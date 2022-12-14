@@ -3,11 +3,12 @@ package net.qixiaowei.system.manage.controller.basic;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
@@ -15,22 +16,25 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.excel.basic.CustomVerticalCellStyleStrategy;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
+import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
-import net.qixiaowei.system.manage.service.impl.basic.EmployeeServiceImpl;
+import net.qixiaowei.system.manage.service.basic.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -44,6 +48,10 @@ public class EmployeeController extends BaseController {
 
     @Autowired
     private IEmployeeService employeeService;
+    @Autowired
+    private IDepartmentService  departmentService;
+    @Autowired
+    private IPostService postService;
 
 
     /**
@@ -106,9 +114,10 @@ public class EmployeeController extends BaseController {
     /**
      * 导入人员
      */
-    @RequiresPermissions("system:manage:employee:import")
+//    @RequiresPermissions("system:manage:employee:import")
+
     @PostMapping("import")
-    public AjaxResult importEmployee(MultipartFile file) {
+    public AjaxResult importEmployee(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -116,39 +125,61 @@ public class EmployeeController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
-        try {
+
+            List<EmployeeExcel> list  =new ArrayList<>();
             //构建读取器
             ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-            read.sheet()
-                    .registerReadListener(new EmployeeImportListener(employeeService)).doRead();
-        } catch (IOException e) {
-            throw new ServiceException("导入人员信息配置Excel失败");
-        }
-        return AjaxResult.success("操作成功");
+            List<Map<Integer, String>> listMap = read.doReadAllSync();
+            List<Object> listMaps =  read.doReadAllSync();
+
+
+            EmployeeExcel employeeExcel = new EmployeeExcel();
+            ExcelUtils.mapToListModel(2,0,listMap,employeeExcel,list);
+            // 调用importer方法
+            try {
+                employeeService.importEmployee(list);
+            } catch (ParseException e) {
+                return AjaxResult.error();
+            }
+
+        return AjaxResult.success();
     }
 
     /**
      * 导出人员
      */
     @SneakyThrows
-    @RequiresPermissions("system:manage:employee:export")
+//    @RequiresPermissions("system:manage:employee:export")
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
+        //部门名称集合
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName();
+        //岗位名称
+        List<String> postNames = new ArrayList<>();
+        PostDTO postDTO = new PostDTO();
+        //查询岗位信息
+        List<PostDTO> postDTOS = postService.selectPostList(postDTO);
+        if (StringUtils.isNotEmpty(postDTOS)){
+            postNames=postDTOS.stream().map(PostDTO::getPostName).collect(Collectors.toList());
+        }
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = EmployeeImportListener.head(selectMap);
+        List<List<String>> head = EmployeeImportListener.head(selectMap,parentDepartmentExcelNames,postNames);
         List<EmployeeExcel> employeeExcelList = employeeService.exportEmployee(employeeDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("人员信息配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        CustomVerticalCellStyleStrategy levelStrategy = new CustomVerticalCellStyleStrategy(head);
+
         EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
                 .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
-                .head(head)// 设置表头
+                .head(head)
+                .registerWriteHandler(levelStrategy)
+                .registerWriteHandler(new SimpleColumnWidthStyleStrategy(17))
                 .sheet("人员信息配置")// 设置 sheet 的名字
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
                 .doWrite(EmployeeImportListener.dataList(employeeExcelList));
     }
 
@@ -161,10 +192,9 @@ public class EmployeeController extends BaseController {
     public void exportUser(HttpServletResponse response) {
         //示例数据
         List<EmployeeExcel> employeeExcelList = new ArrayList<>();
-        EmployeeServiceImpl.packEmployeeExcel(employeeExcelList);
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = EmployeeImportListener.head(selectMap);
+        List<List<String>> head = EmployeeImportListener.head(selectMap, new ArrayList<>(), new ArrayList<>());
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("人员信息配置模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
@@ -172,11 +202,11 @@ public class EmployeeController extends BaseController {
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream())
                 .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
-                .excelType(ExcelTypeEnum.XLSX)
                 .head(head)// 设置表头
+                .excelType(ExcelTypeEnum.XLSX)
                 .sheet("人员信息配置")// 设置 sheet 的名字
                 // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).doWrite(EmployeeImportListener.dataList(employeeExcelList));
+                .doWrite(employeeExcelList);
     }
 
 

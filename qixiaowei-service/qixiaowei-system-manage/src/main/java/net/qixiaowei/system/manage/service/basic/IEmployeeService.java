@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.basic;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -150,7 +151,7 @@ public interface IEmployeeService {
      *
      * @param list
      */
-    void importEmployee(List<EmployeeExcel> list);
+    void importEmployee(List<EmployeeExcel> list) throws ParseException;
 
     /**
      * 导出Excel
