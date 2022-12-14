@@ -26,6 +26,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
+    public static String YYYY_MM_DD_HH_CN = "yyyy年MM月dd日 HH:mm";
+
     private static String[] parsePatterns = {
             "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
             "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
@@ -59,6 +61,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         ZoneId zoneId = ZoneId.systemDefault();
         // atZone()方法返回在指定时区从此Instant生成的ZonedDateTime。
         return instant.atZone(zoneId).toLocalDate();
+    }
+    /**
+     * 获取中文当前日期, 默认格式为yyyy年MM月dd日 00:00
+     *
+     * @return String
+     */
+    public static final String getCNOfTime(Date date) {
+        return parseDateToStr(YYYY_MM_DD_HH_CN, date);
     }
 
     public static final String getTime() {

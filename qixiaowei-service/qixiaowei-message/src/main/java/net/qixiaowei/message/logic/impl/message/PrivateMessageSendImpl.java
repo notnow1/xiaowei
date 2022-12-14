@@ -71,8 +71,12 @@ public class PrivateMessageSendImpl implements IMessageSendStrategy {
                 if (StringUtils.isNotEmpty(messageContentConfigDTOS)) {
                     MessageContentConfigDTO messageContentConfigDTO = messageContentConfigDTOS.get(0);
                     String messageTemplate = messageContentConfigDTO.getMessageTemplate();
-                    if (StringUtils.isNotEmpty(messageTemplate) && StringUtils.isNotEmpty(messageParam)) {
-                        messageContent = StrUtil.format(messageTemplate, JSONUtil.toBean(messageParam, Map.class));
+                    if (StringUtils.isNotEmpty(messageTemplate)) {
+                        if (StringUtils.isNotEmpty(messageParam)) {
+                            messageContent = StrUtil.format(messageTemplate, JSONUtil.toBean(messageParam, Map.class));
+                        } else {
+                            messageContent = messageTemplate;
+                        }
                     }
                 }
             }

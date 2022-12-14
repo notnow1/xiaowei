@@ -20,6 +20,8 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantInfoVO;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantLoginFormVO;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
 import net.qixiaowei.system.manage.logic.tenant.TenantLogic;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -140,66 +143,6 @@ public class TenantServiceImpl implements ITenantService {
         return tenantDTO;
     }
 
-    /**
-     * 查询企业信息
-     *
-     * @return
-     */
-    @Override
-    public TenantDTO selectTenantByTenantId() {
-        Long tenantId = SecurityUtils.getTenantId();
-        TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
-        if (StringUtils.isNull(tenantDTO)) {
-            throw new ServiceException("租户数据不存在");
-        }
-        //租户登录背景图片URL
-        tenantDTO.setLoginBackground(fileConfig.getFullDomain(tenantDTO.getLoginBackground()));
-        //租户logo图片URL
-        tenantDTO.setTenantLogo(fileConfig.getFullDomain(tenantDTO.getTenantLogo()));
-        //行业
-        IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantDTO.getTenantIndustry());
-        //客服人员
-        List<Long> collect1 = Arrays.asList(tenantDTO.getSupportStaff().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-        //人员表
-        List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeIds(collect1);
-        if (StringUtils.isNotNull(industryDefaultDTO)) {
-            //行业名称
-            tenantDTO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
-        }
-        if (StringUtils.isNotEmpty(employeeDTOList)) {
-            //客服人员名称
-            tenantDTO.setSupportStaffName(StringUtils.join(employeeDTOList.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()), ","));
-        }
-        //租户联系人
-        tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
-        //租赁模块
-        List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
-        for (TenantContractDTO tenantContractDTO : tenantContractDTOS) {
-            String productPackage = tenantContractDTO.getProductPackage();
-            List<Long> collect = Arrays.asList(productPackage.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageIds(collect);
-            if (!StringUtils.isEmpty(productPackageDTOList)) {
-                tenantContractDTO.setProductPackage(StringUtils.join(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()), ","));
-            }
-        }
-        //合同时间
-        if (StringUtils.isNotEmpty(tenantContractDTOS)) {
-            //合同开始时间
-            tenantDTO.setContractStartTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractStartTime());
-            //合同结束时间
-            tenantDTO.setContractEndTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractEndTime());
-        }
-        //租户合同
-        tenantDTO.setTenantContractDTOList(tenantContractDTOS);
-        //租户域名申请表
-        List<TenantDomainApprovalDTO> tenantDomainApprovalDTOS = tenantDomainApprovalMapper.selectTenantDomainApprovalByTenantId(tenantId);
-        tenantDTO.setTenantDomainApprovalDTOList(tenantDomainApprovalDTOS);
-        if (!StringUtils.isEmpty(tenantDomainApprovalDTOS)) {
-            //申请状态:0待审核;1审核通过;2审核驳回
-            tenantDTO.setApprovalStatus(tenantDomainApprovalDTOS.get(tenantDomainApprovalDTOS.size() - 1).getApprovalStatus());
-        }
-        return tenantDTO;
-    }
 
     /**
      * 查询租户表列表
@@ -438,63 +381,6 @@ public class TenantServiceImpl implements ITenantService {
         return tenantMapper.deleteTenantByTenantId(tenantId);
     }
 
-    /**
-     * 修改企业信息
-     *
-     * @return
-     */
-    @Override
-    public int updateMyTenant(TenantDTO tenantDTO) {
-        String domain = tenantDTO.getDomain();
-        if (tenantConfig.getExistedDomains().contains(domain)) {
-            throw new ServiceException("修改企业信息失败:域名[" + domain + "]已经被占用!");
-        }
-        //租户表
-        Tenant tenant = new Tenant();
-        //
-        Long userId = SecurityUtils.getUserId();
-        Date nowDate = DateUtils.getNowDate();
-        BeanUtils.copyProperties(tenantDTO, tenant);
-        tenant.setTenantId(SecurityUtils.getTenantId());
-        //租户登录背景图片URL
-        tenant.setLoginBackground(fileConfig.getPathOfRemoveDomain(tenant.getLoginBackground()));
-        //租户logo图片URL
-        tenant.setTenantLogo(fileConfig.getPathOfRemoveDomain(tenant.getTenantLogo()));
-        //查询租户数据
-        TenantDTO tenantDTO1 = tenantMapper.selectTenantByTenantId(tenant.getTenantId());
-        if (StringUtils.isNull(tenantDTO1)) {
-            throw new ServiceException("租户信息不存在");
-        }
-        //对比域名是否修改 修改需要保存到域名申请表中
-        if (!StringUtils.equals(tenantDTO1.getDomain(), domain)) {
-            TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
-            //租户id
-            tenantDomainApproval.setTenantId(tenant.getTenantId());
-            //申请域名
-            tenantDomainApproval.setApprovalDomain(domain);
-            //申请人用户id
-            tenantDomainApproval.setApprovalUserId(userId);
-            //申请人账号
-            tenantDomainApproval.setApplicantUserAccount(SecurityUtils.getUserAccount());
-            //提交时间
-            tenantDomainApproval.setSubmissionTime(DateUtils.getNowDate());
-            //申请状态
-            tenantDomainApproval.setApprovalStatus(0);
-            //删除标记
-            tenantDomainApproval.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            tenantDomainApproval.setCreateBy(userId);
-            tenantDomainApproval.setUpdateBy(userId);
-            tenantDomainApproval.setCreateTime(nowDate);
-            tenantDomainApproval.setUpdateTime(nowDate);
-            tenantDomainApprovalMapper.insertTenantDomainApproval(tenantDomainApproval);
-            // todo 开启工作流
-            tenantLogic.sendBacklog(tenantDomainApproval.getTenantDomainApprovalId(), tenantDTO1);
-
-        }
-        tenant.setUpdateBy(userId);
-        tenant.setUpdateTime(nowDate);
-        return tenantMapper.updateTenant(tenant);
-    }
 
     /**
      * 导出租户
@@ -611,6 +497,138 @@ public class TenantServiceImpl implements ITenantService {
             tenantList.add(tenant);
         }
         return tenantMapper.updateTenants(tenantList);
+    }
+
+    /**
+     * 租户查询自己的登录界面信息
+     */
+    @Override
+    public TenantLoginFormVO queryTenantLoginForm(HttpServletRequest request) {
+        TenantLoginFormVO tenantLoginFormVO = new TenantLoginFormVO();
+        String loginBackground = "";
+        String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
+        TenantDTO tenantDTO = tenantMapper.selectTenantByDomain(serverName);
+        if (StringUtils.isNotNull(tenantDTO)) {
+            loginBackground = fileConfig.getFullDomain(tenantDTO.getLoginBackground());
+        }
+        tenantLoginFormVO.setLoginBackground(loginBackground);
+        return tenantLoginFormVO;
+    }
+
+    /**
+     * 租户查询自己的企业信息
+     *
+     * @return
+     */
+    @Override
+    public TenantInfoVO queryTenantInfoOfSelf() {
+        Long tenantId = SecurityUtils.getTenantId();
+        TenantDTO tenantDTO = tenantMapper.selectTenantByTenantId(tenantId);
+        if (StringUtils.isNull(tenantDTO)) {
+            throw new ServiceException("租户数据不存在");
+        }
+        String domain = tenantDTO.getDomain();
+        TenantInfoVO tenantInfoVO = new TenantInfoVO();
+        tenantInfoVO.setTenantId(tenantId);
+        tenantInfoVO.setTenantName(tenantDTO.getTenantName());
+        tenantInfoVO.setTenantAddress(tenantDTO.getTenantAddress());
+        tenantInfoVO.setTenantStatus(tenantDTO.getTenantStatus());
+        //租户登录背景图片URL
+        tenantInfoVO.setLoginBackground(fileConfig.getFullDomain(tenantDTO.getLoginBackground()));
+        //租户logo图片URL
+        tenantInfoVO.setTenantLogo(fileConfig.getFullDomain(tenantDTO.getTenantLogo()));
+        //行业
+        Long tenantIndustry = tenantDTO.getTenantIndustry();
+        if (StringUtils.isNotNull(tenantIndustry)) {
+            tenantInfoVO.setTenantIndustry(tenantIndustry);
+            IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantDTO.getTenantIndustry());
+            if (StringUtils.isNotNull(industryDefaultDTO)) {
+                //行业名称
+                tenantInfoVO.setTenantIndustryName(industryDefaultDTO.getIndustryName());
+            }
+        }
+        //租赁模块
+        List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
+        //合同时间
+        if (StringUtils.isNotEmpty(tenantContractDTOS)) {
+            //合同开始时间
+            tenantInfoVO.setContractStartTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractStartTime());
+            //合同结束时间
+            tenantInfoVO.setContractEndTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractEndTime());
+        }
+        //租户域名申请待审核
+        TenantDomainApprovalDTO tenantDomainApprovalByWaiting = tenantDomainApprovalMapper.getTenantDomainApprovalByWaiting(tenantId);
+        if (StringUtils.isNotNull(tenantDomainApprovalByWaiting)) {
+            //如果存在待审核的，取审核中的域名
+            tenantInfoVO.setHadApprovalDomain(true);
+            domain = tenantDomainApprovalByWaiting.getApprovalDomain();
+        }
+        tenantInfoVO.setDomain(domain);
+        return tenantInfoVO;
+    }
+
+    /**
+     * 租户修改自己的企业信息
+     *
+     * @return
+     */
+    @Override
+    public int updateMyTenant(TenantDTO tenantDTO) {
+        Long tenantId = SecurityUtils.getTenantId();
+        TenantDTO tenantByDB = tenantMapper.selectTenantByTenantId(tenantId);
+        if (StringUtils.isNull(tenantByDB)) {
+            throw new ServiceException("修改企业信息失败:找不到企业信息");
+        }
+        if (!BusinessConstants.NORMAL.equals(tenantByDB.getTenantStatus())) {
+            throw new ServiceException("修改企业信息失败:企业状态异常");
+        }
+        String domain = tenantDTO.getDomain();
+        Long userId = SecurityUtils.getUserId();
+        String userAccount = SecurityUtils.getUserAccount();
+        Date nowDate = DateUtils.getNowDate();
+        //查询是否有待审核的，没有待审核的才能修改
+        Integer countTenantDomainApprovalByWaiting = tenantDomainApprovalMapper.countTenantDomainApprovalByWaiting(tenantId);
+        if (countTenantDomainApprovalByWaiting == 0 && !StringUtils.equals(tenantByDB.getDomain(), domain)) {
+            if (tenantConfig.getExistedDomains().contains(domain)) {
+                throw new ServiceException("修改企业信息失败:域名[" + domain + "]已经被占用!");
+            }
+            //对比域名是否修改 修改需要保存到域名申请表中
+            TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
+            //租户id
+            tenantDomainApproval.setTenantId(tenantId);
+            //申请域名
+            tenantDomainApproval.setApprovalDomain(domain);
+            //申请人用户id
+            tenantDomainApproval.setApplicantUserId(userId);
+            //申请人账号
+            tenantDomainApproval.setApplicantUserAccount(userAccount);
+            //提交时间
+            tenantDomainApproval.setSubmissionTime(nowDate);
+            //申请状态
+            tenantDomainApproval.setApprovalStatus(BusinessConstants.DISABLE);
+            //删除标记
+            tenantDomainApproval.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            tenantDomainApproval.setCreateBy(userId);
+            tenantDomainApproval.setUpdateBy(userId);
+            tenantDomainApproval.setCreateTime(nowDate);
+            tenantDomainApproval.setUpdateTime(nowDate);
+            tenantDomainApprovalMapper.insertTenantDomainApproval(tenantDomainApproval);
+            // todo 开启工作流
+            tenantLogic.sendBacklog(tenantDomainApproval.getTenantDomainApprovalId(), tenantByDB);
+        }
+        //可修改的租户信息
+        Tenant tenant = new Tenant();
+        tenant.setTenantId(tenantId);
+        tenant.setTenantName(tenantDTO.getTenantName());
+        tenant.setTenantAddress(tenantDTO.getTenantAddress());
+        tenant.setTenantIndustry(tenantDTO.getTenantIndustry());
+        //租户登录背景图片URL
+        tenant.setLoginBackground(fileConfig.getPathOfRemoveDomain(tenantDTO.getLoginBackground()));
+        //租户logo图片URL
+        tenant.setTenantLogo(fileConfig.getPathOfRemoveDomain(tenantDTO.getTenantLogo()));
+        tenant.setUpdateBy(userId);
+        tenant.setUpdateTime(nowDate);
+        return tenantMapper.updateTenant(tenant);
     }
 }
 

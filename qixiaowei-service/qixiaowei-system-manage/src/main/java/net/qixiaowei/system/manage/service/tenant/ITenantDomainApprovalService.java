@@ -10,6 +10,15 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 * @since 2022-10-09
 */
 public interface ITenantDomainApprovalService{
+
+    /**
+     * 处理租户域名申请
+     *
+     * @param tenantDomainApprovalDTO 租户域名申请
+     * @return 结果
+     */
+    int process(TenantDomainApprovalDTO tenantDomainApprovalDTO);
+
     /**
     * 查询租户域名申请
     *

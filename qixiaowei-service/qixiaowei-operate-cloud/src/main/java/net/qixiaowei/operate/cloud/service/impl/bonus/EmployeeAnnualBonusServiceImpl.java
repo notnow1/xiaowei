@@ -411,7 +411,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      * @return
      */
     @Override
-    public List<EmpAnnualBonusSnapshotDTO> addPrefabricate(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+    public EmployeeAnnualBonusDTO addPrefabricate(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         BigDecimal distributeBonusAmount = new BigDecimal("0");
 
         DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();
@@ -420,10 +420,9 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusMapper.selectDeptAnnualBonusByAnnualBonusYear(deptAnnualBonus);
         if (StringUtils.isNotNull(deptAnnualBonusDTO)){
             distributeBonusAmount=deptAnnualBonusDTO.getDepartmentAnnualBonus();
-            //部门年终奖
-            employeeAnnualBonusDTO.setDistributeBonusAmount(distributeBonusAmount);
         }
-
+        //部门年终奖
+        employeeAnnualBonusDTO.setDistributeBonusAmount(distributeBonusAmount);
 
         //所有员工的薪酬奖金合计
         BigDecimal allPaymentBonusSum = new BigDecimal("0");
@@ -504,8 +503,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             //封装计算参考值
             packReferenceValue(distributeBonusAmount, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOList);
         }
-
-        return empAnnualBonusSnapshotDTOList;
+        employeeAnnualBonusDTO.setEmpAnnualBonusSnapshotDTOs(empAnnualBonusSnapshotDTOList);
+        return employeeAnnualBonusDTO;
     }
 
     /**

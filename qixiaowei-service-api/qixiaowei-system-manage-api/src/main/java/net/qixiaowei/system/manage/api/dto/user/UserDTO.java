@@ -158,11 +158,18 @@ public class UserDTO {
      * 请求参数
      */
     private Map<String, Object> params;
-
     /**
      * 租户ID
      */
     private Long tenantId;
+    /**
+     * 租户名称
+     */
+    private  String tenantName;
+    /**
+     * 租户logo图片URL
+     */
+    private  String tenantLogo;
 
 
 }

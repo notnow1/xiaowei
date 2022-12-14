@@ -91,7 +91,30 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         }
         //部门年终奖经营绩效结果表集合
         List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList = deptAnnualBonusOperateMapper.selectDeptAnnualBonusOperateByDeptAnnualBonusId(deptAnnualBonusId);
-
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)){
+            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOList) {
+                //目标超额完成率（%） 公式=（实际值÷目标值）-1。
+                BigDecimal targetExcessPerComp = new BigDecimal("0");
+                //奖金系数（实际）公式=权重×目标超额完成率。
+                BigDecimal actualPerformanceBonusFactor = new BigDecimal("0");
+                //目标值
+                BigDecimal targetValue = deptAnnualBonusOperateDTO.getTargetValue();
+                //实际值
+                BigDecimal actualValue = deptAnnualBonusOperateDTO.getActualValue();
+                //奖金权重(%)
+                BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
+                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
+                        null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
+                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                }
+                if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
+                        targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
+                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_HALF_UP);
+                }
+                deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
+                deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
+            }
+        }
 
         //部门年终奖系数表集合
         List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOS = deptAnnualBonusFactorMapper.selectDeptAnnualBonusFactorByDeptAnnualBonusId(deptAnnualBonusId);

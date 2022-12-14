@@ -21,6 +21,23 @@ public interface TenantDomainApprovalMapper{
     */
     TenantDomainApprovalDTO selectTenantDomainApprovalByTenantDomainApprovalId(@Param("tenantDomainApprovalId")Long tenantDomainApprovalId);
 
+    /**
+     * 查询租户域名申请待审核
+     *
+     * @param tenantId 租户ID
+     * @return 待审核
+     */
+    TenantDomainApprovalDTO getTenantDomainApprovalByWaiting(@Param("tenantId")Long tenantId);
+
+
+    /**
+     * 查询租户域名申请待审核数量
+     *
+     * @param tenantId 租户ID
+     * @return 待审核数量
+     */
+    Integer countTenantDomainApprovalByWaiting(@Param("tenantId")Long tenantId);
+
 
     /**
      * 根据租户id查询租户域名申请

@@ -22,6 +22,7 @@ public class TenantDatabaseUtil {
         ignoreTables.add("tenant");
         ignoreTables.add("tenant_contacts");
         ignoreTables.add("tenant_contract");
+        ignoreTables.add("tenant_domain_approval");
         ignoreTables.add("product_package");
         ignoreTables.add("menu");
         ignoreTables.add("nation");
