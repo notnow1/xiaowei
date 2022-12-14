@@ -1026,6 +1026,8 @@ CREATE TABLE emp_salary_adjust_snap(
     seniority VARCHAR(32)    COMMENT '司龄' ,
     department_id BIGINT UNSIGNED    COMMENT '原部门ID' ,
     department_name VARCHAR(64)    COMMENT '原部门名称' ,
+    department_leader_id BIGINT UNSIGNED    COMMENT '部门负责人ID' ,
+    department_leader_name VARCHAR(64)    COMMENT '部门负责人姓名' ,
     post_id BIGINT UNSIGNED    COMMENT '原岗位ID' ,
     post_name VARCHAR(64)    COMMENT '原岗位名称' ,
     official_rank_system_id BIGINT UNSIGNED    COMMENT '原职级体系ID' ,
