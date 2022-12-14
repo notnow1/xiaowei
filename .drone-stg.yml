@@ -138,6 +138,25 @@ steps:
   depends_on:
     - scp
 
+- name: notify
+  image: plugins/webhook
+  settings:
+    urls: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b37bdc7c-f8a4-4fb8-9d8a-a70dfd2ad120
+    content_type: application/json
+    template: |
+      {
+        "msgtype": "markdown",
+        "markdown": {
+            "content": "{{#success build.status}}✅{{else}}❌{{/success}}**{{ repo.owner }}/{{ repo.name }}** (Build #{{build.number}})\n
+                        >**构建结果**: {{ build.status }}
+                        >**代码分支**: {{ build.branch }}
+                        >**提交标识**: {{ build.commit }}
+                        >**提交发起**: {{ build.author }}
+                        >**提交信息**: {{ build.message }}
+                        "
+        }
+      }
+
 volumes:
   - name: cache
     host:
