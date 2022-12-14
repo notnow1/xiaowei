@@ -29,6 +29,15 @@ public interface EmployeeInfoMapper{
     EmployeeInfoDTO selectEmployeeInfoByEmployeeId(@Param("employeeId")Long employeeId);
 
     /**
+     * 根据人员id集合查询员工信息
+     *
+     * @param employeeIds 员工主表主键
+     * @return 员工信息
+     */
+    List<EmployeeInfoDTO> selectEmployeeInfoByEmployeeIds(@Param("employeeIds")List<Long> employeeIds);
+
+
+    /**
     * 查询员工信息列表
     *
     * @param employeeInfo 员工信息

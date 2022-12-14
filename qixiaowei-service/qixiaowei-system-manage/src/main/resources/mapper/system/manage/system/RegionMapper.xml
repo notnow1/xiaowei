@@ -202,18 +202,17 @@
 <!--    查询所有省市-->
     <select id="selectRegionByProvinceNameAndCityName"
             resultType="net.qixiaowei.system.manage.api.dto.system.RegionDTO">
-        select   concat(province_name,city_name) as provinceAndCityName,
-                 case when city_code='' then province_code else concat(province_code,',',city_code) end as provinceAndCityCode
-        from region  where district_name ='' and delete_flag=0
+        select   concat(province_name,'/',city_name)  as provinceAndCityName,
+                 concat(province_code,',',city_code)  as provinceAndCityCode
+        from region  where district_name ='' and city_name != ''and delete_flag=0
     </select>
 <!--    查询所有省市区-->
     <select id="selectRegionByProvinceNameAndCityNameAndDistrictName"
             resultType="net.qixiaowei.system.manage.api.dto.system.RegionDTO">
-        select   concat(province_name,city_name,district_name) as provinceAndCityAndDistrictName,
-                 case when city_code='' then province_code
-                      when district_code='' then concat(province_code,',',city_code)
-                      else concat(province_code,',',city_code,',',district_code) end as provinceAndCityAndDistrictCode
-        from region  where town_name ='' and delete_flag=0
+        select
+            concat(province_name,'/',city_name,'/',district_name)  as provinceAndCityAndDistrictName,
+            concat(province_code,',',city_code,',',district_code)  as provinceAndCityAndDistrictCode
+        from region  where  city_name !='' and district_name !='' and town_name ='' and delete_flag=0
     </select>
     <!--新增区域表-->
     <insert id="insertRegion" useGeneratedKeys="true" keyProperty="regionId">

@@ -46,6 +46,11 @@ public class CountryDTO {
     * 国家名称
     */
     private  String countryName;
+
+    /**
+     * 国家父级名称
+     */
+    private  String CountryExcelName;
     /**
     * 排序
     */

@@ -1,11 +1,13 @@
 package net.qixiaowei.system.manage.controller.basic;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
-import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
@@ -49,7 +51,7 @@ public class EmployeeController extends BaseController {
     @Autowired
     private IEmployeeService employeeService;
     @Autowired
-    private IDepartmentService  departmentService;
+    private IDepartmentService departmentService;
     @Autowired
     private IPostService postService;
 
@@ -115,7 +117,6 @@ public class EmployeeController extends BaseController {
      * 导入人员
      */
 //    @RequiresPermissions("system:manage:employee:import")
-
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
@@ -126,21 +127,22 @@ public class EmployeeController extends BaseController {
             throw new RuntimeException("请上传正确的excel文件!");
         }
 
-            List<EmployeeExcel> list  =new ArrayList<>();
-            //构建读取器
-            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-            List<Map<Integer, String>> listMap = read.doReadAllSync();
-            List<Object> listMaps =  read.doReadAllSync();
+        List<EmployeeExcel> list = new ArrayList<>();
+
+        //构建读取器
+        ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
+        ExcelReaderSheetBuilder sheet = read.sheet(0);
+        List<Map<Integer, String>> listMap = sheet.doReadSync();
 
 
-            EmployeeExcel employeeExcel = new EmployeeExcel();
-            ExcelUtils.mapToListModel(2,0,listMap,employeeExcel,list);
-            // 调用importer方法
-            try {
-                employeeService.importEmployee(list);
-            } catch (ParseException e) {
-                return AjaxResult.error();
-            }
+        EmployeeExcel employeeExcel = new EmployeeExcel();
+        ExcelUtils.mapToListModel(2, 0, listMap, employeeExcel, list);
+        // 调用importer方法
+        try {
+            employeeService.importEmployee(list);
+        } catch (ParseException e) {
+            return AjaxResult.error();
+        }
 
         return AjaxResult.success();
     }
@@ -159,12 +161,12 @@ public class EmployeeController extends BaseController {
         PostDTO postDTO = new PostDTO();
         //查询岗位信息
         List<PostDTO> postDTOS = postService.selectPostList(postDTO);
-        if (StringUtils.isNotEmpty(postDTOS)){
-            postNames=postDTOS.stream().map(PostDTO::getPostName).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(postDTOS)) {
+            postNames = postDTOS.stream().map(PostDTO::getPostName).collect(Collectors.toList());
         }
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = EmployeeImportListener.head(selectMap,parentDepartmentExcelNames,postNames);
+        List<List<String>> head = EmployeeImportListener.head(selectMap, parentDepartmentExcelNames, postNames);
         List<EmployeeExcel> employeeExcelList = employeeService.exportEmployee(employeeDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);

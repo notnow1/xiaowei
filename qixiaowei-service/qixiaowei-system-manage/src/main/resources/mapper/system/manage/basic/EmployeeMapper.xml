@@ -1453,7 +1453,7 @@
         </foreach>
     </update>
     <!--批量新增员工表-->
-    <insert id="batchEmployee">
+    <insert id="batchEmployee" useGeneratedKeys="true" keyProperty="employeeId">
         INSERT INTO employee
         (employee_code,employee_name,employee_gender,identity_type,identity_card,employee_birthday,employee_mobile,employee_email,employee_department_id,employee_post_id,employee_rank,employee_basic_wage,employment_date,departure_date,employment_status,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
