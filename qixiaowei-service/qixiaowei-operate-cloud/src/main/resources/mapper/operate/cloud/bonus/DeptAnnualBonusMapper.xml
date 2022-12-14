@@ -69,7 +69,7 @@
 <!--    根据年份和一级部门年终奖-->
     <select id="selectDeptAnnualBonusByAnnualBonusYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO">
-        SELECT dab.department_annual_bonus
+        SELECT dabf.distribute_bonus as departmentAnnualBonus
         from dept_annual_bonus dab
                  left join dept_annual_bonus_factor dabf
                            on dab.dept_annual_bonus_id = dabf.dept_annual_bonus_id

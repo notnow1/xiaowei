@@ -579,6 +579,8 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         this.getEmployeeBudgetDTOS(budgetYear, mapEmployeeAveParent);
         //封装每个部门 相同职级的 平均薪酬
         this.packDeptOffPaymentAve(budgetYear, mapPaymentAveParent);
+
+
         //封装一级带包数
         this.packTopDeptPayMent(mapEmployeeAveParent, mapPaymentAveParent, topDeptPaymentMap);
         //封装各一级部门组织重要性系数
@@ -1180,7 +1182,11 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                     for (OfficialRankSystemDTO datum : data) {
                         if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()) {
                             employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
-                            employeeBudgetDetailsDTO.setOfficialRankName(datum.getRankPrefixCode() + employeeBudgetDetailsDTO.getOfficialRank());
+                            if (StringUtils.isNotBlank(datum.getRankPrefixCode())){
+                                employeeBudgetDetailsDTO.setOfficialRankName( datum.getRankPrefixCode()+ employeeBudgetDetailsDTO.getOfficialRank());
+                            }else {
+                                employeeBudgetDetailsDTO.setOfficialRankName(employeeBudgetDetailsDTO.getOfficialRank().toString());
+                            }
                         }
                     }
                 }
