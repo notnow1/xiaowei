@@ -612,9 +612,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 employeeInfoList.add(employeeInfo);
             }
             //后续优化导入
-/*            if (employeeErreo.length() > 1) {
+            if (employeeErreo.length() > 1) {
                 throw new ServiceException(employeeErreo.toString());
-            }*/
+            }
 
             if (StringUtils.isNotEmpty(successExcelList)) {
                 employeeMapper.batchEmployee(successExcelList);
