@@ -66,6 +66,12 @@
         WHERE delete_flag=0
         AND plan_year = #{planYear}
     </select>
+    <select id="selectMaxYear" resultType="java.lang.Integer">
+        SELECT
+        MAX(plan_year) AS plan_year
+        FROM dept_salary_adjust_plan
+        WHERE delete_flag=0
+    </select>
     <!--新增部门调薪计划表-->
     <insert id="insertDeptSalaryAdjustPlan" useGeneratedKeys="true" keyProperty="deptSalaryAdjustPlanId">
         INSERT INTO dept_salary_adjust_plan (plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)

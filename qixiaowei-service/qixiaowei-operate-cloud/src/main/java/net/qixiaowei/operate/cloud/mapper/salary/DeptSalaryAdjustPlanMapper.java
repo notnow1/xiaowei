@@ -113,4 +113,11 @@ public interface DeptSalaryAdjustPlanMapper {
      * @return
      */
     DeptSalaryAdjustPlanDTO selectDeptSalaryAdjustPlanByYear(@Param("planYear") Integer planYear);
+
+    /**
+     * 获取已有数据的最大年份
+     *
+     * @return Integer
+     */
+    Integer selectMaxYear();
 }

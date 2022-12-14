@@ -37,7 +37,7 @@ public interface IDeptSalaryAdjustPlanService {
      * @param deptSalaryAdjustPlanDTO 部门调薪计划表
      * @return 结果
      */
-    DeptSalaryAdjustPlanDTO insertDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
+    int insertDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
 
     /**
      * 修改部门调薪计划表
@@ -125,7 +125,7 @@ public interface IDeptSalaryAdjustPlanService {
      * @param deptSalaryAdjustPlanDTO 调薪计划
      * @return DeptSalaryAdjustPlanDTO
      */
-    DeptSalaryAdjustPlanDTO editDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
+    int editDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO);
 
     /**
      * 获取上年发薪包
@@ -143,4 +143,11 @@ public interface IDeptSalaryAdjustPlanService {
      * @return BigDecimal
      */
     BigDecimal getRaiseSalary(Integer planYear);
+
+    /**
+     * 获取已有数据的最大年份
+     *
+     * @return Integer
+     */
+    Integer getMaxYear();
 }

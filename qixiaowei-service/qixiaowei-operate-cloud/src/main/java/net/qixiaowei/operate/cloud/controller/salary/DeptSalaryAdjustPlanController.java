@@ -64,6 +64,15 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     }
 
     /**
+     * 获取已有数据的最大年份
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
+    @GetMapping("/getMaxYear")
+    public AjaxResult getMaxYear() {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getMaxYear());
+    }
+
+    /**
      * 获取涨薪包预算
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
@@ -84,13 +93,23 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     }
 
     /**
+     * 新增部门调薪计划表
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:insert")
+    @Log(title = "新增部门调薪计划表", businessType = BusinessType.INSERT)
+    @PostMapping("/add")
+    public AjaxResult addSave(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
+        return toAjax(deptSalaryAdjustPlanService.insertDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
+    }
+
+    /**
      * 修改部门调薪计划表
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:edit")
     @Log(title = "修改部门调薪计划表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
-        return AjaxResult.success(deptSalaryAdjustPlanService.editDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
+        return toAjax(deptSalaryAdjustPlanService.editDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
     }
 
     /**
