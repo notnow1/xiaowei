@@ -2,11 +2,14 @@ package net.qixiaowei.system.manage.service.impl.basic;
 
 import java.util.List;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.basic.Country;
@@ -53,6 +56,17 @@ public class CountryServiceImpl implements ICountryService{
     }
 
     /**
+     * 返回国籍名称附带excel父子级名称
+     * @return
+     */
+    @Override
+    public List<CountryDTO> selectCountryList() {
+        Country country=new Country();
+        this.createTree(countryMapper.selectCountryList(country),0);
+        return  this.treeToList(countryMapper.selectCountryList(country));
+    }
+
+    /**
      * 树形结构
      *
      * @param lists
@@ -63,12 +77,42 @@ public class CountryServiceImpl implements ICountryService{
         List<CountryDTO> tree = new ArrayList<>();
         for (CountryDTO catelog : lists) {
             if (catelog.getParentCountryId() == pid) {
+                if (pid==0){
+                    catelog.setCountryExcelName(catelog.getCountryExcelName());
+                } else {
+                    List<CountryDTO> countryDTOList = lists.stream().filter(f -> f.getCountryId() == pid).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(countryDTOList)){
+                        catelog.setCountryExcelName(countryDTOList.get(0).getCountryExcelName()+"/"+catelog.getCountryExcelName());
+                    }
+                }
                 catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getCountryId().toString())));
                 tree.add(catelog);
             }
         }
         return tree;
     }
+
+
+    /**
+     * 树形结构转list
+     *
+     * @param
+     * @return
+     */
+    private List<CountryDTO> treeToList(List<CountryDTO> depts) {
+
+        List<CountryDTO> resultList = new ArrayList<>();
+        for (CountryDTO countryDTO : depts) {
+            if (countryDTO.getChildren() != null && countryDTO.getChildren().size() > 0) {
+                resultList.add(countryDTO);
+                treeToList(countryDTO.getChildren());
+            } else {
+                resultList.add(countryDTO);
+            }
+        }
+        return resultList;
+    }
+
     /**
     * 新增国家表
     *

@@ -27,6 +27,13 @@ public interface ICountryService{
     List<CountryDTO> selectCountryList(CountryDTO countryDTO);
 
     /**
+     * 查询国家表列表
+     *
+     * @return 国家表集合
+     */
+    List<CountryDTO> selectCountryList();
+
+    /**
     * 新增国家表
     *
     * @param countryDTO 国家表
