@@ -1258,7 +1258,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
         }
         performanceAppraisalObjectsService.updatePerformanceAppraisalObjectss(performanceAppraisalObjectsDTOS);
-
     }
 
     /**
@@ -1266,7 +1265,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param listMap listMap
      * @param key     值
-     * @return
+     * @return List
      */
     private List<EmployeeDTO> getEmployeeDTOS(List<Map<Integer, String>> listMap, int key) {
         List<String> assessmentList = new ArrayList<>();//考核负责人Code集合
@@ -2523,25 +2522,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             throw new ServiceException("当前绩效考核对象已不存在");
         }
         Long performanceAppraisalId = performanceAppraisalObjectsDTOByObjectId.getPerformanceAppraisalId();
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
         // 更新绩效考核任务
         PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
         appraisalDTO.setPerformanceAppraisalId(performanceAppraisalId);
-        if (performanceAppraisalObjectsDTOList.size() == 1) {
-            appraisalDTO.setAppraisalStatus(1);
-            updatePerformanceAppraisal(appraisalDTO);
-        } else if (performanceAppraisalObjectsDTOList.size() > 2) {
-            int submitSum = 1;
-            for (PerformanceAppraisalObjectsDTO appraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-                if (appraisalObjectsDTO.getAppraisalObjectStatus() < 3) {
-                    submitSum += 1;
-                }
-            }
-            if (submitSum == performanceAppraisalObjectsDTOList.size()) {
-                appraisalDTO.setAppraisalStatus(1);
-                updatePerformanceAppraisal(appraisalDTO);
-            }
-        }
+        appraisalDTO.setAppraisalStatus(1);
+        updatePerformanceAppraisal(appraisalDTO);
         //更新 对象表状态
         PerformanceAppraisalObjectsDTO performanceAppraisalObjects = new PerformanceAppraisalObjectsDTO();
         performanceAppraisalObjects.setPerformAppraisalObjectsId(performAppraisalObjectsId);
