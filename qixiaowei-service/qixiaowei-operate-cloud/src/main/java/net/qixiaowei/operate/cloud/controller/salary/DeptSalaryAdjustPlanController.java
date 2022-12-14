@@ -64,21 +64,21 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     }
 
     /**
-     * 获取已有数据的最大年份
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
-    @GetMapping("/getMaxYear")
-    public AjaxResult getMaxYear() {
-        return AjaxResult.success(deptSalaryAdjustPlanService.getMaxYear());
-    }
-
-    /**
      * 获取涨薪包预算
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
     @GetMapping("/getRaiseSalary")
     public AjaxResult getRaiseSalary(@RequestParam("planYear") Integer planYear) {
         return AjaxResult.success(deptSalaryAdjustPlanService.getRaiseSalary(planYear));
+    }
+
+    /**
+     * 获取已有数据的最大年份
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
+    @GetMapping("/getMaxYear")
+    public AjaxResult getMaxYear() {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getMaxYear());
     }
 
     /**
