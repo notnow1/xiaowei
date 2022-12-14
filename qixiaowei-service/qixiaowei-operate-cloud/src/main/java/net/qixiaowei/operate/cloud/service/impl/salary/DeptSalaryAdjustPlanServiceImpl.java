@@ -124,8 +124,12 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             }
             // 上年工资包
             BigDecimal lastSalary = BigDecimal.ZERO;
-            if (StringUtils.isNotEmpty(employeeByDepartmentIds)) {
-                lastSalary = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                if (planYear < DateUtils.getYear()) {
+                    lastSalary = salaryPayMapper.selectSalaryAmountNum(planYear, DateUtils.getMonth(), employeeIds);
+                } else {
+                    lastSalary = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
+                }
             }
             BigDecimal adjustmentPercentage = deptSalaryAdjustItemDTO.getAdjustmentPercentage();//调幅
             BigDecimal coveragePercentage = deptSalaryAdjustItemDTO.getCoveragePercentage();// 覆盖比例
@@ -140,7 +144,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             BigDecimal addSalary;
             if (lastSalary.compareTo(BigDecimal.ZERO) != 0 && adjustmentPercentage.compareTo(BigDecimal.ZERO) != 0 && coveragePercentage.compareTo(BigDecimal.ZERO) != 0) {
                 addSalary = lastSalary.multiply(adjustmentPercentage).multiply(coveragePercentage)
-                        .multiply(new BigDecimal(12).subtract(new BigDecimal(month))).divide(new BigDecimal(12), 2, RoundingMode.HALF_UP);
+                        .multiply(new BigDecimal(12).subtract(new BigDecimal(month))).divide(new BigDecimal(120000), 2, RoundingMode.HALF_UP);
             } else {
                 addSalary = BigDecimal.ZERO;
             }
@@ -259,6 +263,9 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         }
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOSBefore = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOSAfter) {
+            if (StringUtils.isNull(deptSalaryAdjustItemDTO.getDepartmentId())) {
+                throw new ServiceException("部门不可以为空");
+            }
             deptSalaryAdjustItemDTO.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
             for (DeptSalaryAdjustItemDTO salaryAdjustItemDTO : deptSalaryAdjustItemDTOSBefore) {
                 if (salaryAdjustItemDTO.getDepartmentId().equals(deptSalaryAdjustItemDTO.getDepartmentId())) {
