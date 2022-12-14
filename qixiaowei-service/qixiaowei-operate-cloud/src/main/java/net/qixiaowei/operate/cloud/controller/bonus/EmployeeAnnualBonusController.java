@@ -35,8 +35,8 @@ public class EmployeeAnnualBonusController extends BaseController
     //@RequiresPermissions("operate:cloud:employeeAnnualBonus:list")
     @PostMapping("/addPrefabricate")
     public AjaxResult addPrefabricate(@RequestBody  EmployeeAnnualBonusDTO employeeAnnualBonusDTO){
-        List<EmpAnnualBonusSnapshotDTO> list = employeeAnnualBonusService.addPrefabricate(employeeAnnualBonusDTO);
-        return AjaxResult.success(list);
+        EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusService.addPrefabricate(employeeAnnualBonusDTO);
+        return AjaxResult.success(employeeAnnualBonusDTO1);
     }
 
     /**
