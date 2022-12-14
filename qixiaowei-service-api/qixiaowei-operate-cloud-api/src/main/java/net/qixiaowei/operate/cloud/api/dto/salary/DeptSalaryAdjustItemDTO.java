@@ -66,6 +66,7 @@ public class DeptSalaryAdjustItemDTO {
     /**
      * 调整时间
      */
+    @JsonFormat(pattern = "yyyy/MM", timezone = "GMT+8")
     private LocalDate adjustmentTime;
     /**
      * 上年工资包

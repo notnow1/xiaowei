@@ -135,4 +135,12 @@ public interface IDeptSalaryAdjustPlanService {
      * @return String
      */
     Map<String, BigDecimal> getLastSalary(Long departmentId, Integer planYear);
+
+    /**
+     * 获取涨薪包预算
+     *
+     * @param planYear 预算年份
+     * @return BigDecimal
+     */
+    BigDecimal getRaiseSalary(Integer planYear);
 }

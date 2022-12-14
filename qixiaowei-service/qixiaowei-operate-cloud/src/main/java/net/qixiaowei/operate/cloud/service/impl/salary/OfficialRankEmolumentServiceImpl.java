@@ -443,7 +443,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      * 查看该职级的分解信息
      *
      * @param officialEmolumentDTO 职级体系信息
-     * @return
+     * @return List
      */
     @Override
     public List<OfficialRankDecomposeDTO> selectOfficialDecomposeList(OfficialRankEmolumentDTO officialEmolumentDTO) {

@@ -96,6 +96,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         Integer planYear = deptSalaryAdjustPlanDTO.getPlanYear();
         BonusBudgetDTO bonusBudgetDTO = bonusBudgetMapper.selectBonusBudgetListByBudgetYear(planYear);
         bonusBudgetService.packPaymentBonusBudget(planYear, bonusBudgetDTO);
+        deptSalaryAdjustPlanDTO.setRaiseSalaryBonusBudget(bonusBudgetDTO.getRaiseSalaryBonusBudget());
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOS = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
         if (StringUtils.isEmpty(deptSalaryAdjustItemDTOS)) {
             return deptSalaryAdjustPlanDTO;
@@ -213,10 +214,11 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         bonusBudgetService.packPaymentBonusBudgetList(bonusBudgetDTOS);
         for (DeptSalaryAdjustPlanDTO salaryAdjustPlanDTO : deptSalaryAdjustPlanDTOS) {
             for (BonusBudgetDTO bonusBudgetDTO : bonusBudgetDTOS) {
-                if (StringUtils.isNull(bonusBudgetDTO.getRaiseSalaryBonusBudget()) || bonusBudgetDTO.getRaiseSalaryBonusBudget().compareTo(BigDecimal.ZERO) == 0) {
-                    bonusBudgetDTO.setRaiseSalaryBonusBudget(BigDecimal.ZERO);
-                }
                 if (salaryAdjustPlanDTO.getPlanYear().equals(bonusBudgetDTO.getBudgetYear())) {
+                    if (StringUtils.isNull(bonusBudgetDTO.getRaiseSalaryBonusBudget()) || bonusBudgetDTO.getRaiseSalaryBonusBudget().compareTo(BigDecimal.ZERO) == 0) {
+                        bonusBudgetDTO.setRaiseSalaryBonusBudget(BigDecimal.ZERO);
+                        break;
+                    }
                     salaryAdjustPlanDTO.setRaiseSalaryBonusBudget(bonusBudgetDTO.getRaiseSalaryBonusBudget());
                     break;
                 }
@@ -340,6 +342,19 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         BigDecimal adjustmentPercentage = (targetValue.divide(actualTotal, 2, RoundingMode.HALF_UP).subtract(BigDecimal.ONE)).multiply(new BigDecimal("0.5"));
         map.put("adjustmentPercentage", adjustmentPercentage);
         return map;
+    }
+
+    /**
+     * 获取涨薪包预算
+     *
+     * @param planYear 预算年份
+     * @return BigDecimal
+     */
+    @Override
+    public BigDecimal getRaiseSalary(Integer planYear) {
+        BonusBudgetDTO bonusBudgetDTO = bonusBudgetMapper.selectBonusBudgetListByBudgetYear(planYear);
+        bonusBudgetService.packPaymentBonusBudget(planYear, bonusBudgetDTO);
+        return bonusBudgetDTO.getRaiseSalaryBonusBudget();
     }
 
     /**

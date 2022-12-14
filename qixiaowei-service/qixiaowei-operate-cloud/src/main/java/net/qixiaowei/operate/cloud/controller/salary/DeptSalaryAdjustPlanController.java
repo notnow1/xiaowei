@@ -64,6 +64,15 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     }
 
     /**
+     * 获取涨薪包预算
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
+    @GetMapping("/getRaiseSalary")
+    public AjaxResult getRaiseSalary(@RequestParam("planYear") Integer planYear) {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getRaiseSalary(planYear));
+    }
+
+    /**
      * 查询部门调薪计划表列表
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:pageList")
