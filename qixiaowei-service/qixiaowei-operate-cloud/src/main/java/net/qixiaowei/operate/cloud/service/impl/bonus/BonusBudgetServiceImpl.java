@@ -497,8 +497,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      * @param futureBonusBudgetLaddertersDTOS
      */
     private void packAddFutureBonusTrend(BonusBudgetDTO bonusBudgetDTO, int budgetYear, List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS) {
-        //返回上年总工资包实际数：从月度工资数据管理取值（总计值）
-        BigDecimal amountBonusBudget = salaryPayMapper.selectSalaryPayAmoutNum(budgetYear);
+        //返回上年总工资包实际数：从月度工资数据管理取值（总奖金值）
+        BigDecimal amountBonusBudget = salaryPayMapper.selectSalaryBounsAmount(budgetYear);
 
         for (int i = 0; i < 4; i++) {
             FutureBonusBudgetLaddertersDTO futureBonusBudgetLaddertersDTO = new FutureBonusBudgetLaddertersDTO();
@@ -807,7 +807,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusProportionStandard && bonusProportionStandard.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).multiply(bonusWeight.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).multiply(bonusWeight.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).setScale(10,BigDecimal.ROUND_HALF_UP);
                     //总奖金包预算总奖金包预算1 公式=各项（奖金驱动因素的目标值×奖金占比基准值×权重）的和
                     amountBonusBudgetReferenceValueOne = amountBonusBudgetReferenceValueOne.add(multiply);
                 }
@@ -816,35 +816,35 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                         null != bonusProportionStandard && bonusProportionStandard.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0 &&
                         null != targetCompletionRate && targetCompletionRate.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).multiply(bonusWeight.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).multiply(targetCompletionRate.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal multiply = targetValue.multiply(bonusProportionStandard.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).multiply(bonusWeight.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).multiply(targetCompletionRate.divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN)).setScale(10,BigDecimal.ROUND_HALF_UP);
                     //总奖金包预算总奖金包预算1 公式=各项（奖金驱动因素的目标值×奖金占比基准值×权重×预算准确率）的和
                     amountBonusBudgetReferenceValueTwo = amountBonusBudgetReferenceValueTwo.add(multiply);
                 }
                 //目标值 公式 =各项（奖金驱动因素的目标值×权重）之和
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal multiply = targetValue.multiply(bonusWeight).divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal multiply = targetValue.multiply(bonusWeight).divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(10,BigDecimal.ROUND_HALF_UP);
                     //目标值 公式 =各项（奖金驱动因素的目标值×权重）之和
                     bonusTargetValue = bonusTargetValue.add(multiply);
                 }
                 //挑战值 公式 =各项（奖金驱动因素的挑战值×权重）之和
                 if (null != challengeValue && challengeValue.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal multiply = challengeValue.multiply(bonusWeight).divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal multiply = challengeValue.multiply(bonusWeight).divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(10,BigDecimal.ROUND_HALF_UP);
                     //挑战值 公式 =各项（奖金驱动因素的挑战值×权重）之和
                     bonusChallengeValue = bonusChallengeValue.add(multiply);
                 }
                 //保底值 公式 =各项（奖金驱动因素的保底值×权重）之和
                 if (null != guaranteedValue && guaranteedValue.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal multiply = guaranteedValue.multiply(bonusWeight).divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal multiply = guaranteedValue.multiply(bonusWeight).divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(10,BigDecimal.ROUND_HALF_UP);
                     //保底值 公式 =各项（奖金驱动因素的保底值×权重）之和
                     bonusGuaranteedValue = bonusGuaranteedValue.add(multiply);
                 }
                 //奖金驱动因素/比值（%）的行间差额 公式 =各项（奖金驱动因素的奖金占比浮动差值×权重）的和
                 if (null != bonusProportionVariation && bonusProportionVariation.compareTo(new BigDecimal("0")) != 0 &&
                         null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal multiply = bonusProportionVariation.multiply(bonusWeight).divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal multiply = bonusProportionVariation.multiply(bonusWeight).divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(10,BigDecimal.ROUND_HALF_UP);
                     //奖金驱动因素/比值（%）的行间差额 公式 =各项（奖金驱动因素的奖金占比浮动差值×权重）的和
                     bonusProportionDifference = bonusProportionDifference.add(multiply);
                 }
@@ -861,10 +861,10 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             if (bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
                 bonusDreamValue = bonusTargetValue.multiply(new BigDecimal("2.0"));
             }
-            if (null != amountBonusBudgetReferenceValueOne && amountBonusBudgetReferenceValueOne.compareTo(new BigDecimal("0")) != 0 &&
-                    null != bonusTargetValue && bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
+            if (amountBonusBudgetReferenceValueOne.compareTo(new BigDecimal("0")) != 0 &&
+                    bonusTargetValue.compareTo(new BigDecimal("0")) != 0) {
                 //奖金驱动因素/比值 公式=总奖金包预算参考值1÷目标值
-                bonusProportionRatio = amountBonusBudgetReferenceValueOne.divide(bonusTargetValue,10,BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                bonusProportionRatio = amountBonusBudgetReferenceValueOne.divide(bonusTargetValue,10,BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(10,BigDecimal.ROUND_HALF_UP);
             }
             //总奖金包预算总奖金包预算1
             bonusBudgetDTO.setAmountBonusBudgetReferenceValueOne(amountBonusBudgetReferenceValueOne);
@@ -1058,7 +1058,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         if (StringUtils.isNotEmpty(bonusBudgetLaddertersDTOS)) {
             for (BonusBudgetLaddertersDTO bonusBudgetLaddertersDTO : bonusBudgetLaddertersDTOS) {
                 //奖金驱动因素/比值（%）
-                BigDecimal bonusProportionRatio1 = bonusBudgetLaddertersDTO.getBonusProportionRatio().divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal bonusProportionRatio1 = bonusBudgetLaddertersDTO.getBonusProportionRatio().divide(new BigDecimal("100"),10,BigDecimal.ROUND_HALF_DOWN).setScale(10,BigDecimal.ROUND_HALF_UP);
                 //挑战值 公式=对应行的奖金驱动因素/比值×对应列的基准值（梦想值、飞跃值、挑战值、目标值、保底值、最低值）
                 BigDecimal challengeValue = new BigDecimal("0");
                 //目标值 公式=对应行的奖金驱动因素/比值×对应列的基准值（梦想值、飞跃值、挑战值、目标值、保底值、最低值）

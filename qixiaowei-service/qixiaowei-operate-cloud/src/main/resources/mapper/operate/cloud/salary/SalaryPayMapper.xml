@@ -186,7 +186,7 @@
         ORDER by pay_year desc, pay_month desc LIMIT 12
     </select>
     <!--    返回上年总工资包实际数：从月度工资数据管理取值（总计值）-->
-    <select id="selectSalaryPayAmoutNum" resultType="java.math.BigDecimal">
+    <select id="selectSalaryBounsAmount" resultType="java.math.BigDecimal">
         SELECT IFNULL(SUM(bonus_amount), 0) as pay_amount
         FROM salary_pay
         WHERE pay_year = #{budgetYear} -1
@@ -379,6 +379,12 @@
         </foreach>
         and si.third_level_item = '基本工资'
         ORDER by pay_year desc, pay_month desc LIMIT 12
+    </select>
+    <select id="selectSalaryPayAmoutNum" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(salary_amount+allowance_amount+welfare_amount), 0) as pay_amount
+        FROM salary_pay
+        WHERE pay_year = #{budgetYear} -1
+          and delete_flag = 0
     </select>
     <!--新增工资发薪表-->
     <insert id="insertSalaryPay" useGeneratedKeys="true" keyProperty="salaryPayId">

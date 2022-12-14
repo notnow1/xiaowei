@@ -846,7 +846,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
 
         //战略奖实发 公式 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
         deptAnnualBonusDTO.setStrategyDeveAward(strategyDeveAward);
-        if (null != endYearSalaryAmountBonus && null != strategyDeveAward ) {
+        if (null != strategyDeveAward ) {
             departmentAnnualBonus = endYearSalaryAmountBonus.subtract(strategyDeveAward);
         }
         //可发经营奖总包 旧：部门年终奖总包 公式=公司年终奖总包-战略奖实发。
