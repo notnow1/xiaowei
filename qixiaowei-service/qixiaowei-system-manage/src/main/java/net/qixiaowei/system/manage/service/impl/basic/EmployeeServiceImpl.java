@@ -574,6 +574,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 employee2.setEmployeeName(employeeExcel.getEmployeeName());
                 //身份证号码
                 employee2.setIdentityCard(employeeExcel.getIdentityCard());
+
+                String substring = employeeExcel.getIdentityCard().substring(7, 15);
+                String year = substring.substring(0, 3);
+                String month = substring.substring(4, 5);
+                String day = substring.substring(6, 7);
+                String employeeBirthday = year+"/"+month+"/"+day;
+                Date parse = simpleDateFormat.parse(employeeBirthday);
+                //出手日期
+                employee2.setEmployeeBirthday(parse);
                 //手机
                 employee2.setEmployeeMobile(employeeExcel.getEmployeeMobile());
                 //邮箱
