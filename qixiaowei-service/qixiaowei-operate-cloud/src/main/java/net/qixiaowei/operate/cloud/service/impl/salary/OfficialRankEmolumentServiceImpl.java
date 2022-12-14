@@ -266,7 +266,6 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         List<OfficialRankEmolumentDTO> addRankEmolumentDTOList = new ArrayList<>();
         for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
             if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())) {
-                officialRankEmolumentDTOList.remove(emolumentDTO);
                 emolumentDTO.setOfficialRankSystemId(officialRankSystemId);
                 addRankEmolumentDTOList.add(emolumentDTO);
             }
