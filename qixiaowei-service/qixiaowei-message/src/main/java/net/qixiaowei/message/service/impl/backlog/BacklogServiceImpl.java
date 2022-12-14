@@ -120,28 +120,50 @@ public class BacklogServiceImpl implements IBacklogService {
      * @return 结果
      */
     @Override
-    public int handled(BacklogDTO backlogDTO) {
+    public void handled(BacklogDTO backlogDTO) {
         Integer businessType = backlogDTO.getBusinessType();
         Integer businessSubtype = backlogDTO.getBusinessSubtype();
         Long backlogUserId = backlogDTO.getUserId();
         Long businessId = backlogDTO.getBusinessId();
-        //判断该事项是否已处理
-        BacklogDTO selectUserBacklog = backlogMapper.selectUserBacklog(businessType, businessSubtype, backlogUserId, businessId);
-        if (StringUtils.isNull(selectUserBacklog)) {
-            throw new ServiceException("不存在该待办事项");
-        }
-        if (BusinessConstants.NORMAL.equals(selectUserBacklog.getStatus())) {
-            throw new ServiceException("待办事项已处理，无需重复处理");
-        }
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
-        Backlog backlog = new Backlog();
-        backlog.setBacklogId(selectUserBacklog.getBacklogId());
-        backlog.setBacklogProcessTime(nowDate);
-        backlog.setStatus(BusinessConstants.NORMAL);
-        backlog.setUpdateTime(nowDate);
-        backlog.setUpdateBy(userId);
-        return backlogMapper.updateBacklog(backlog);
+        if (StringUtils.isNotNull(backlogUserId)) {
+            //判断该事项是否已处理
+            BacklogDTO selectUserBacklog = backlogMapper.selectUserBacklog(businessType, businessSubtype, backlogUserId, businessId);
+            if (StringUtils.isNull(selectUserBacklog)) {
+                throw new ServiceException("不存在该待办事项");
+            }
+            if (BusinessConstants.NORMAL.equals(selectUserBacklog.getStatus())) {
+                throw new ServiceException("待办事项已处理，无需重复处理");
+            }
+            Backlog backlog = new Backlog();
+            backlog.setBacklogId(selectUserBacklog.getBacklogId());
+            backlog.setBacklogProcessTime(nowDate);
+            backlog.setStatus(BusinessConstants.NORMAL);
+            backlog.setUpdateTime(nowDate);
+            backlog.setUpdateBy(userId);
+            backlogMapper.updateBacklog(backlog);
+        } else {//如果用户ID为空，则处理所有该事项未办理的为已办理
+            Backlog selectBacklog = new Backlog();
+            selectBacklog.setBusinessType(businessType);
+            selectBacklog.setBusinessSubtype(businessSubtype);
+            selectBacklog.setBusinessId(businessId);
+            selectBacklog.setStatus(BusinessConstants.DISABLE);
+            List<BacklogDTO> backlogDTOS = backlogMapper.selectBacklogList(selectBacklog);
+            if (StringUtils.isNotEmpty(backlogDTOS)) {
+                List<Backlog> backlogList = new ArrayList<>();
+                for (BacklogDTO dto : backlogDTOS) {
+                    Backlog backlog = new Backlog();
+                    backlog.setBacklogId(dto.getBacklogId());
+                    backlog.setBacklogProcessTime(nowDate);
+                    backlog.setStatus(BusinessConstants.NORMAL);
+                    backlog.setUpdateTime(nowDate);
+                    backlog.setUpdateBy(userId);
+                    backlogList.add(backlog);
+                }
+                backlogMapper.updateBacklogs(backlogList);
+            }
+        }
     }
 
     /**

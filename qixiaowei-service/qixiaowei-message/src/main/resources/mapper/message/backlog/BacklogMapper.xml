@@ -66,6 +66,15 @@
         update_time
         FROM backlog
         WHERE delete_flag=0
+        <if test="backlog.businessType != null">
+            and business_type=#{backlog.businessType}
+        </if>
+        <if test="backlog.businessSubtype != null">
+            and business_subtype=#{backlog.businessSubtype}
+        </if>
+        <if test="backlog.businessId != null">
+            and business_id=#{backlog.businessId}
+        </if>
         <if test="backlog.userId != null">
             and user_id = #{backlog.userId}
         </if>
@@ -80,22 +89,22 @@
         </if>
         <if test="backlog.params.backlogInitiationTimeStart != null and backlog.params.backlogInitiationTimeStart != ''"><!-- 开始时间检索 -->
             AND date_format(backlog_initiation_time,'%y%m%d') &gt;=
-            date_format(#{params.backlogInitiationTimeStart},'%y%m%d')
+            date_format(#{backlog.params.backlogInitiationTimeStart},'%y%m%d')
         </if>
         <if test="backlog.params.backlogInitiationTimeEnd != null and backlog.params.backlogInitiationTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(backlog_initiation_time,'%y%m%d') &lt;=
-            date_format(#{params.backlogInitiationTimeEnd},'%y%m%d')
+            date_format(#{backlog.params.backlogInitiationTimeEnd},'%y%m%d')
         </if>
         <if test="backlog.backlogProcessTime != null">
             and date_format(backlog_process_time,'%y%m%d') = date_format(#{backlog.backlogProcessTime},'%y%m%d')
         </if>
         <if test="backlog.params.backlogProcessTimeStart != null and backlog.params.backlogProcessTimeStart != ''"><!-- 开始时间检索 -->
             AND date_format(backlog_process_time,'%y%m%d') &gt;=
-            date_format(#{params.backlogProcessTimeStart},'%y%m%d')
+            date_format(#{backlog.params.backlogProcessTimeStart},'%y%m%d')
         </if>
         <if test="backlog.params.backlogProcessTimeEnd != null and backlog.params.backlogProcessTimeEnd != ''"><!-- 结束时间检索 -->
             AND date_format(backlog_process_time,'%y%m%d') &lt;=
-            date_format(#{params.backlogProcessTimeEnd},'%y%m%d')
+            date_format(#{backlog.params.backlogProcessTimeEnd},'%y%m%d')
         </if>
         <if test="backlog.status != null">
             and status=#{backlog.status}

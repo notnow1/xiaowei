@@ -46,7 +46,7 @@ public interface IBacklogService{
      * @param backlogDTO 待办事项表
      * @return 结果
      */
-    int handled(BacklogDTO backlogDTO);
+    void handled(BacklogDTO backlogDTO);
 
     /**
     * 修改待办事项表

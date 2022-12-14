@@ -1,6 +1,7 @@
 package net.qixiaowei.message.api.dto.backlog;
 
 import java.util.Date;
+import java.util.Map;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -47,7 +48,7 @@ public class BacklogDTO {
     /**
      * 业务类型
      */
-    @NotNull(message = "业务类型不能为空", groups = {BacklogDTO.AddBacklogDTO.class})
+    @NotNull(message = "业务类型不能为空", groups = {BacklogDTO.AddBacklogDTO.class, BacklogDTO.UpdateBacklogDTO.class})
     private Integer businessType;
     /**
      * 业务子类型
@@ -113,6 +114,9 @@ public class BacklogDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
-
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }
 

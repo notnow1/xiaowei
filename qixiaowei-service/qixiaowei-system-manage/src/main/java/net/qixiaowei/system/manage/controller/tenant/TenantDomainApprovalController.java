@@ -47,7 +47,7 @@ public class TenantDomainApprovalController extends BaseController {
     /**
      * 查询租户域名申请详情
      */
-    @RequiresPermissions("system:manage:tenantDomainApproval:info")
+//    @RequiresPermissions("system:manage:tenantDomainApproval:info")
     @GetMapping("/info/{tenantDomainApprovalId}")
     public AjaxResult info(@PathVariable Long tenantDomainApprovalId) {
         TenantDomainApprovalDTO tenantDomainApprovalDTO = tenantDomainApprovalService.selectTenantDomainApprovalByTenantDomainApprovalId(tenantDomainApprovalId);

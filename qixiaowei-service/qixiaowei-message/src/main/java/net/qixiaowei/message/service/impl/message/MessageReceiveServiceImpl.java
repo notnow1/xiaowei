@@ -42,7 +42,24 @@ public class MessageReceiveServiceImpl implements IMessageReceiveService {
      */
     @Override
     public MessageReceiveDTO selectMessageReceiveByMessageReceiveId(Long messageReceiveId) {
-        return messageReceiveMapper.selectMessageReceiveByMessageReceiveId(messageReceiveId);
+        MessageReceiveDTO messageReceiveDTO = messageReceiveMapper.selectMessageReceiveByMessageReceiveId(messageReceiveId);
+        if (StringUtils.isNull(messageReceiveDTO)) {
+            throw new ServiceException("找不到该消息");
+        }
+        Integer status = messageReceiveDTO.getStatus();
+        //如果是未读状态，修改为已读--产品要求更改：查阅调用详情接口即表示已经读了
+        if (BusinessConstants.DISABLE.equals(status)) {
+            Date nowDate = DateUtils.getNowDate();
+            Long userId = SecurityUtils.getUserId();
+            MessageReceive messageReceive = new MessageReceive();
+            messageReceive.setMessageReceiveId(messageReceiveId);
+            messageReceive.setReadTime(nowDate);
+            messageReceive.setStatus(BusinessConstants.NORMAL);
+            messageReceive.setUpdateTime(nowDate);
+            messageReceive.setUpdateBy(userId);
+            messageReceiveMapper.updateMessageReceive(messageReceive);
+        }
+        return messageReceiveDTO;
     }
 
     /**

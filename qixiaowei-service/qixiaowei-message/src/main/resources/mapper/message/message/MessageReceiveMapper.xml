@@ -53,10 +53,10 @@
             and date_format(mr.create_time,'%y%m%d') = date_format(#{mr.createTime},'%y%m%d')
         </if>
         <if test="messageReceive.params.createTimeStart != null and messageReceive.params.createTimeStart != ''"><!-- 开始时间检索 -->
-            AND date_format(mr.create_time,'%y%m%d') &gt;= date_format(#{mr.params.createTimeStart},'%y%m%d')
+            AND date_format(mr.create_time,'%y%m%d') &gt;= date_format(#{messageReceive.params.createTimeStart},'%y%m%d')
         </if>
         <if test="messageReceive.params.createTimeEnd != null and messageReceive.params.createTimeEnd != ''"><!-- 结束时间检索 -->
-            AND date_format(mr.create_time,'%y%m%d') &lt;= date_format(#{mr.params.createTimeEnd},'%y%m%d')
+            AND date_format(mr.create_time,'%y%m%d') &lt;= date_format(#{messageReceive.params.createTimeEnd},'%y%m%d')
         </if>
         ORDER BY mr.update_time DESC
     </select>
