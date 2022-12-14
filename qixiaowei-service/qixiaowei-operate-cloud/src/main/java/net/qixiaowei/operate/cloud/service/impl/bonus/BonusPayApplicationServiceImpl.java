@@ -28,6 +28,7 @@ import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -326,6 +327,17 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 bonusPayBudgetDept.setUpdateBy(SecurityUtils.getUserId());
                 bonusPayBudgetDept.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                 bonusPayBudgetDeptDTOList.add(bonusPayBudgetDept);
+            }
+        }else {
+            BonusPayBudgetDept bonusPayBudgetDept = new BonusPayBudgetDept();
+            //奖金发放申请ID
+            bonusPayBudgetDept.setBonusPayApplicationId(bonusPayApplication.getBonusPayApplicationId());
+            bonusPayBudgetDept.setDepartmentId(0L);
+            bonusPayBudgetDept.setBonusPercentage(new BigDecimal("100"));
+            try {
+                bonusPayBudgetDeptMapper.insertBonusPayBudgetDept(bonusPayBudgetDept);
+            } catch (Exception e) {
+                throw new ServiceException("插入公司级奖金发放预算部门失败");
             }
         }
         if (StringUtils.isNotEmpty(bonusPayBudgetDeptDTOList)) {
