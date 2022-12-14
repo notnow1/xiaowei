@@ -27,7 +27,7 @@ public class FileConfig {
      * @return fullUrl
      */
     public String getFullDomain(String url) {
-        return StringUtils.isEmpty(url) ? this.getDomain() : url.toLowerCase().startsWith("http") ? url : this.getDomain() + url;
+        return StringUtils.isEmpty(url) ? "" : url.toLowerCase().startsWith("http") ? url : this.getDomain() + url;
     }
 
     /**

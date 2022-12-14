@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.impl.user;
 
 import java.util.*;
 
+import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -73,6 +74,9 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private TenantMapper tenantMapper;
 
+    @Autowired
+    private FileConfig fileConfig;
+
 
     @Override
     @IgnoreTenant
@@ -115,8 +119,10 @@ public class UserServiceImpl implements IUserService {
         Set<String> roles = userRoleService.getRoleCodes(userDTO);
         //权限集合
         Set<String> permissions = roleMenuService.getMenuPermission(userDTO);
+        String tenantLogo = userDTO.getTenantLogo();
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(userDTO, userVO);
+        userVO.setTenantLogo(fileConfig.getFullDomain(tenantLogo));
         userInfoVO.setUser(userVO);
         userInfoVO.setRoles(roles);
         userInfoVO.setPermissions(permissions);

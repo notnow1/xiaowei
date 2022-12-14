@@ -86,17 +86,17 @@ public class TenantDTO {
     /**
     * 管理员帐号
     */
-    @NotBlank(message = "管理员帐号不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
+    @NotBlank(message = "管理员帐号不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private  String adminAccount;
     /**
     * 管理员密码
     */
-    @NotBlank(message = "管理员密码不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
+    @NotBlank(message = "管理员密码不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private  String adminPassword;
     /**
     * 客服人员
     */
-    @NotBlank(message = "客服人员不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
+    @NotBlank(message = "客服人员不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private  String supportStaff;
 
 
@@ -115,7 +115,7 @@ public class TenantDTO {
     /**
     * 状态（0待初始化 1正常 2禁用 3过期）
     */
-    @NotNull(message = "租户状态不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
+    @NotNull(message = "租户状态不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private  Integer tenantStatus;
     /**
     * 删除标记:0未删除;1已删除

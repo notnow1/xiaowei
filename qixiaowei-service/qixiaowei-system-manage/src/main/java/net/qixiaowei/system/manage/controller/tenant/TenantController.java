@@ -24,6 +24,7 @@ import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
@@ -39,6 +40,8 @@ public class TenantController extends BaseController {
     @Autowired
     private ITenantService tenantService;
 
+
+    //==============================管理租户的管理员==================================//
 
     /**
      * 分页查询租户表列表
@@ -79,24 +82,6 @@ public class TenantController extends BaseController {
     }
 
     /**
-     * 查询单个租户
-     */
-    @RequiresPermissions(value = {"system:manage:tenant:info:self", "system:manage:tenant:edit:self"}, logical = Logical.OR)
-    @GetMapping("/info")
-    public AjaxResult queryTenantDTO() {
-        return AjaxResult.success(tenantService.selectTenantByTenantId());
-    }
-
-    /**
-     * 修改企业信息
-     */
-    @RequiresPermissions("system:manage:tenant:edit:self")
-    @PostMapping("/updateInfo")
-    public AjaxResult updateMyTenantDTO(@RequestBody @Validated(TenantDTO.UpdateTenantInfoDTO.class) TenantDTO tenantDTO) {
-        return AjaxResult.success(tenantService.updateMyTenant(tenantDTO));
-    }
-
-    /**
      * 导出租户
      */
     @SneakyThrows
@@ -129,4 +114,33 @@ public class TenantController extends BaseController {
     public AjaxResult removes(@RequestBody @Validated(TenantDTO.DeleteTenantDTO.class) List<TenantDTO> TenantDtos) {
         return toAjax(tenantService.logicDeleteTenantByTenantIds(TenantDtos));
     }
+
+    //==============================租户本身==================================//
+
+    /**
+     * 租户查询自己的登录界面信息
+     */
+    @GetMapping("/loginForm")
+    public AjaxResult queryTenantLoginForm(HttpServletRequest request) {
+        return AjaxResult.success(tenantService.queryTenantLoginForm(request));
+    }
+
+    /**
+     * 租户查询自己的企业信息
+     */
+    @RequiresPermissions(value = {"system:manage:tenant:info:self", "system:manage:tenant:edit:self"}, logical = Logical.OR)
+    @GetMapping("/info")
+    public AjaxResult queryTenantInfoOfSelf() {
+        return AjaxResult.success(tenantService.queryTenantInfoOfSelf());
+    }
+
+    /**
+     * 租户修改自己的企业信息
+     */
+    @RequiresPermissions("system:manage:tenant:edit:self")
+    @PostMapping("/updateInfo")
+    public AjaxResult updateMyTenant(@RequestBody @Validated(TenantDTO.UpdateTenantInfoDTO.class) TenantDTO tenantDTO) {
+        return AjaxResult.success(tenantService.updateMyTenant(tenantDTO));
+    }
+
 }

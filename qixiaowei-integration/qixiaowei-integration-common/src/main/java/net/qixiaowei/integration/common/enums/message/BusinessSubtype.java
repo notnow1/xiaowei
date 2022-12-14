@@ -7,7 +7,7 @@ package net.qixiaowei.integration.common.enums.message;
  **/
 public enum BusinessSubtype {
 
-    TENANT_DOMAIN_APPROVAL(1001, BusinessType.TENANT, "域名申请"),
+    TENANT_DOMAIN_APPROVAL(1001, BusinessType.TENANT, "二级域名申请"),
     TENANT_DOMAIN_APPROVAL_PASS(1002, BusinessType.TENANT, "域名申请通过"),
     TENANT_DOMAIN_APPROVAL_REFUSE(1003, BusinessType.TENANT, "域名申请不通过"),
 

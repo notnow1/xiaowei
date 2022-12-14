@@ -55,9 +55,14 @@
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
         u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark, u.status,
-        u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
+        u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,
+        e.employee_name,
+        t.tenant_id,
+        t.tenant_name,
+        t.tenant_logo
         FROM user u
         LEFT JOIN employee e ON e.employee_id=u.employee_id AND e.delete_flag = 0
+        LEFT JOIN tenant t ON t.tenant_id = u.tenant_id
         WHERE u.user_id=#{userId}
         and u.delete_flag = 0
     </select>

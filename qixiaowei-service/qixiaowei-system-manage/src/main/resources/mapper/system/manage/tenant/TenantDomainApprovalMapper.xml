@@ -5,77 +5,106 @@
     <select id="selectTenantDomainApprovalByTenantDomainApprovalId"
             resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO">
         SELECT
-        tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account, submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time, update_by, update_time
+        tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account,
+        submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time,
+        update_by, update_time
         FROM tenant_domain_approval
-        WHERE  tenant_domain_approval_id=#{tenantDomainApprovalId}
+        WHERE tenant_domain_approval_id=#{tenantDomainApprovalId}
         and delete_flag=0
     </select>
 
-    <!--    查询租户域名申请列表-->
-    <select id="selectTenantDomainApprovalList" resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO">
+    <select id="getTenantDomainApprovalByWaiting"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO">
         SELECT
-        tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account, submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time, update_by, update_time
+        tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account,
+        submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time,
+        update_by, update_time
+        FROM tenant_domain_approval
+        WHERE tenant_id = #{tenantId} AND approval_status = 0
+        AND delete_flag = 0
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="countTenantDomainApprovalByWaiting"
+            resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM tenant_domain_approval
+        WHERE tenant_id = #{tenantId} AND approval_status = 0 AND delete_flag = 0
+    </select>
+
+
+    <!--    查询租户域名申请列表-->
+    <select id="selectTenantDomainApprovalList"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO">
+        SELECT
+        tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account,
+        submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time,
+        update_by, update_time
         FROM tenant_domain_approval
         WHERE delete_flag=0
-                <if test="tenantDomainApproval.tenantDomainApprovalId != null">
-                    and tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
-                </if>
-                <if test="tenantDomainApproval.tenantId != null">
-                    and tenant_id=#{tenantDomainApproval.tenantId}
-                </if>
-                <if test="tenantDomainApproval.approvalDomain != null and tenantDomainApproval.approvalDomain != ''">
-                    and approval_domain=#{tenantDomainApproval.approvalDomain}
-                </if>
-                <if test="tenantDomainApproval.applicantUserId != null">
-                    and applicant_user_id=#{tenantDomainApproval.applicantUserId}
-                </if>
-                <if test="tenantDomainApproval.applicantUserAccount != null and tenantDomainApproval.applicantUserAccount != ''">
-                    and applicant_user_account=#{tenantDomainApproval.applicantUserAccount}
-                </if>
-                <if test="tenantDomainApproval.submissionTime != null">
-                    and submission_time=#{tenantDomainApproval.submissionTime}
-                </if>
-                <if test="tenantDomainApproval.approvalTime != null">
-                    and approval_time=#{tenantDomainApproval.approvalTime}
-                </if>
-                <if test="tenantDomainApproval.approvalUserId != null">
-                    and approval_user_id=#{tenantDomainApproval.approvalUserId}
-                </if>
-                <if test="tenantDomainApproval.approvalStatus != null">
-                    and approval_status=#{tenantDomainApproval.approvalStatus}
-                </if>
-                <if test="tenantDomainApproval.remark != null and tenantDomainApproval.remark != ''">
-                    and remark=#{tenantDomainApproval.remark}
-                </if>
-                <if test="tenantDomainApproval.deleteFlag != null">
-                    and delete_flag=#{tenantDomainApproval.deleteFlag}
-                </if>
-                <if test="tenantDomainApproval.createBy != null">
-                    and create_by=#{tenantDomainApproval.createBy}
-                </if>
-                <if test="tenantDomainApproval.createTime != null">
-                    and create_time=#{tenantDomainApproval.createTime}
-                </if>
-                <if test="tenantDomainApproval.updateBy != null">
-                    and update_by=#{tenantDomainApproval.updateBy}
-                </if>
-                <if test="tenantDomainApproval.updateTime != null">
-                    and update_time=#{tenantDomainApproval.updateTime}
-                </if>
+        <if test="tenantDomainApproval.tenantDomainApprovalId != null">
+            and tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
+        </if>
+        <if test="tenantDomainApproval.tenantId != null">
+            and tenant_id=#{tenantDomainApproval.tenantId}
+        </if>
+        <if test="tenantDomainApproval.approvalDomain != null and tenantDomainApproval.approvalDomain != ''">
+            and approval_domain=#{tenantDomainApproval.approvalDomain}
+        </if>
+        <if test="tenantDomainApproval.applicantUserId != null">
+            and applicant_user_id=#{tenantDomainApproval.applicantUserId}
+        </if>
+        <if test="tenantDomainApproval.applicantUserAccount != null and tenantDomainApproval.applicantUserAccount != ''">
+            and applicant_user_account=#{tenantDomainApproval.applicantUserAccount}
+        </if>
+        <if test="tenantDomainApproval.submissionTime != null">
+            and submission_time=#{tenantDomainApproval.submissionTime}
+        </if>
+        <if test="tenantDomainApproval.approvalTime != null">
+            and approval_time=#{tenantDomainApproval.approvalTime}
+        </if>
+        <if test="tenantDomainApproval.approvalUserId != null">
+            and approval_user_id=#{tenantDomainApproval.approvalUserId}
+        </if>
+        <if test="tenantDomainApproval.approvalStatus != null">
+            and approval_status=#{tenantDomainApproval.approvalStatus}
+        </if>
+        <if test="tenantDomainApproval.remark != null and tenantDomainApproval.remark != ''">
+            and remark=#{tenantDomainApproval.remark}
+        </if>
+        <if test="tenantDomainApproval.deleteFlag != null">
+            and delete_flag=#{tenantDomainApproval.deleteFlag}
+        </if>
+        <if test="tenantDomainApproval.createBy != null">
+            and create_by=#{tenantDomainApproval.createBy}
+        </if>
+        <if test="tenantDomainApproval.createTime != null">
+            and create_time=#{tenantDomainApproval.createTime}
+        </if>
+        <if test="tenantDomainApproval.updateBy != null">
+            and update_by=#{tenantDomainApproval.updateBy}
+        </if>
+        <if test="tenantDomainApproval.updateTime != null">
+            and update_time=#{tenantDomainApproval.updateTime}
+        </if>
     </select>
-<!--    根据租户id查询租户域名申请-->
+    <!--    根据租户id查询租户域名申请-->
     <select id="selectTenantDomainApprovalByTenantId"
             resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO">
         SELECT
-            tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account, submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time, update_by, update_time
+        tenant_domain_approval_id, tenant_id, approval_domain, applicant_user_id, applicant_user_account,
+        submission_time, approval_time, approval_user_id, approval_status, remark, delete_flag, create_by, create_time,
+        update_by, update_time
         FROM tenant_domain_approval
-        WHERE  tenant_id=#{tenantId}
-          and delete_flag=0
+        WHERE tenant_id=#{tenantId}
+        and delete_flag=0
         order by update_time
     </select>
     <!--新增租户域名申请-->
     <insert id="insertTenantDomainApproval" useGeneratedKeys="true" keyProperty="tenantDomainApprovalId">
-        INSERT INTO tenant_domain_approval (tenant_id,approval_domain,applicant_user_id,applicant_user_account,submission_time,approval_time,approval_user_id,approval_status,remark,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO tenant_domain_approval
+        (tenant_id,approval_domain,applicant_user_id,applicant_user_account,submission_time,approval_time,approval_user_id,approval_status,remark,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{tenantDomainApproval.tenantId},#{tenantDomainApproval.approvalDomain},#{tenantDomainApproval.applicantUserId},#{tenantDomainApproval.applicantUserAccount},#{tenantDomainApproval.submissionTime},#{tenantDomainApproval.approvalTime},#{tenantDomainApproval.approvalUserId},#{tenantDomainApproval.approvalStatus},#{tenantDomainApproval.remark},#{tenantDomainApproval.deleteFlag},#{tenantDomainApproval.createBy},#{tenantDomainApproval.createTime},#{tenantDomainApproval.updateBy},#{tenantDomainApproval.updateTime})
     </insert>
@@ -83,77 +112,78 @@
     <update id="updateTenantDomainApproval">
         UPDATE tenant_domain_approval
         SET
-                    <if test="tenantDomainApproval.tenantId != null">
-                        tenant_id=#{tenantDomainApproval.tenantId},
-                    </if>
-                    <if test="tenantDomainApproval.approvalDomain != null and tenantDomainApproval.approvalDomain != ''">
-                        approval_domain=#{tenantDomainApproval.approvalDomain},
-                    </if>
-                    <if test="tenantDomainApproval.applicantUserId != null">
-                        applicant_user_id=#{tenantDomainApproval.applicantUserId},
-                    </if>
-                    <if test="tenantDomainApproval.applicantUserAccount != null and tenantDomainApproval.applicantUserAccount != ''">
-                        applicant_user_account=#{tenantDomainApproval.applicantUserAccount},
-                    </if>
-                    <if test="tenantDomainApproval.submissionTime != null">
-                        submission_time=#{tenantDomainApproval.submissionTime},
-                    </if>
-                    <if test="tenantDomainApproval.approvalTime != null">
-                        approval_time=#{tenantDomainApproval.approvalTime},
-                    </if>
-                    <if test="tenantDomainApproval.approvalUserId != null">
-                        approval_user_id=#{tenantDomainApproval.approvalUserId},
-                    </if>
-                    <if test="tenantDomainApproval.approvalStatus != null">
-                        approval_status=#{tenantDomainApproval.approvalStatus},
-                    </if>
-                    <if test="tenantDomainApproval.remark != null and tenantDomainApproval.remark != ''">
-                        remark=#{tenantDomainApproval.remark},
-                    </if>
-                    <if test="tenantDomainApproval.deleteFlag != null">
-                        delete_flag=#{tenantDomainApproval.deleteFlag},
-                    </if>
-                    <if test="tenantDomainApproval.createBy != null">
-                        create_by=#{tenantDomainApproval.createBy},
-                    </if>
-                    <if test="tenantDomainApproval.createTime != null">
-                        create_time=#{tenantDomainApproval.createTime},
-                    </if>
-                    <if test="tenantDomainApproval.updateBy != null">
-                        update_by=#{tenantDomainApproval.updateBy},
-                    </if>
-                    <if test="tenantDomainApproval.updateTime != null">
-                        update_time=#{tenantDomainApproval.updateTime}
-                    </if>
+        <if test="tenantDomainApproval.tenantId != null">
+            tenant_id=#{tenantDomainApproval.tenantId},
+        </if>
+        <if test="tenantDomainApproval.approvalDomain != null and tenantDomainApproval.approvalDomain != ''">
+            approval_domain=#{tenantDomainApproval.approvalDomain},
+        </if>
+        <if test="tenantDomainApproval.applicantUserId != null">
+            applicant_user_id=#{tenantDomainApproval.applicantUserId},
+        </if>
+        <if test="tenantDomainApproval.applicantUserAccount != null and tenantDomainApproval.applicantUserAccount != ''">
+            applicant_user_account=#{tenantDomainApproval.applicantUserAccount},
+        </if>
+        <if test="tenantDomainApproval.submissionTime != null">
+            submission_time=#{tenantDomainApproval.submissionTime},
+        </if>
+        <if test="tenantDomainApproval.approvalTime != null">
+            approval_time=#{tenantDomainApproval.approvalTime},
+        </if>
+        <if test="tenantDomainApproval.approvalUserId != null">
+            approval_user_id=#{tenantDomainApproval.approvalUserId},
+        </if>
+        <if test="tenantDomainApproval.approvalStatus != null">
+            approval_status=#{tenantDomainApproval.approvalStatus},
+        </if>
+        <if test="tenantDomainApproval.remark != null and tenantDomainApproval.remark != ''">
+            remark=#{tenantDomainApproval.remark},
+        </if>
+        <if test="tenantDomainApproval.deleteFlag != null">
+            delete_flag=#{tenantDomainApproval.deleteFlag},
+        </if>
+        <if test="tenantDomainApproval.createBy != null">
+            create_by=#{tenantDomainApproval.createBy},
+        </if>
+        <if test="tenantDomainApproval.createTime != null">
+            create_time=#{tenantDomainApproval.createTime},
+        </if>
+        <if test="tenantDomainApproval.updateBy != null">
+            update_by=#{tenantDomainApproval.updateBy},
+        </if>
+        <if test="tenantDomainApproval.updateTime != null">
+            update_time=#{tenantDomainApproval.updateTime}
+        </if>
         WHERE
-                 tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
+        tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
     </update>
     <!--逻辑删除租户域名申请-->
     <update id="logicDeleteTenantDomainApprovalByTenantDomainApprovalId">
         UPDATE tenant_domain_approval
-        SET     delete_flag= 1,
-                update_by=#{tenantDomainApproval.updateBy},
-                update_time=#{tenantDomainApproval.updateTime}
+        SET delete_flag= 1,
+        update_by=#{tenantDomainApproval.updateBy},
+        update_time=#{tenantDomainApproval.updateTime}
         WHERE
-                tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
+        tenant_domain_approval_id=#{tenantDomainApproval.tenantDomainApprovalId}
     </update>
     <!--逻辑批量删除租户域名申请-->
     <update id="logicDeleteTenantDomainApprovalByTenantDomainApprovalIds">
         UPDATE tenant_domain_approval
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         tenant_domain_approval_id IN
-            <foreach item="item"
-                     collection="tenantDomainApprovalIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        tenant_domain_approval_id IN
+        <foreach item="item"
+                 collection="tenantDomainApprovalIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增租户域名申请-->
     <insert id="batchTenantDomainApproval">
-        INSERT INTO tenant_domain_approval (tenant_id,approval_domain,applicant_user_id,applicant_user_account,submission_time,approval_time,approval_user_id,approval_status,remark,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO tenant_domain_approval
+        (tenant_id,approval_domain,applicant_user_id,applicant_user_account,submission_time,approval_time,approval_user_id,approval_status,remark,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="tenantDomainApprovals"
@@ -165,125 +195,125 @@
     <!--物理删除租户域名申请-->
     <delete id="deleteTenantDomainApprovalByTenantDomainApprovalId">
         DELETE FROM tenant_domain_approval
-        WHERE  tenant_domain_approval_id=#{tenantDomainApproval}
+        WHERE tenant_domain_approval_id=#{tenantDomainApproval}
 
     </delete>
     <!--物理批量删除租户域名申请-->
     <delete id="deleteTenantDomainApprovalByTenantDomainApprovalIds">
         DELETE FROM tenant_domain_approval
-        WHERE  tenant_domain_approval_id IN
-            <foreach item="item"
-                     collection="tenantDomainApprovalIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE tenant_domain_approval_id IN
+        <foreach item="item"
+                 collection="tenantDomainApprovalIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改租户域名申请-->
     <update id="updateTenantDomainApprovals">
         update tenant_domain_approval
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="tenant_id=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.tenantId != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.tenantId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="approval_domain=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.approvalDomain != null and item.approvalDomain != ''">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalDomain}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="applicant_user_id=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.applicantUserId != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="applicant_user_account=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.applicantUserAccount != null and item.applicantUserAccount != ''">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserAccount}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="submission_time=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.submissionTime != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.submissionTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="approval_time=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.approvalTime != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="approval_user_id=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.approvalUserId != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalUserId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="approval_status=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.approvalStatus != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalStatus}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="remark=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.remark != null and item.remark != ''">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.remark}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="tenantDomainApprovalList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="tenant_id=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.tenantId != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.tenantId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="approval_domain=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.approvalDomain != null and item.approvalDomain != ''">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalDomain}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="applicant_user_id=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.applicantUserId != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="applicant_user_account=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.applicantUserAccount != null and item.applicantUserAccount != ''">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.applicantUserAccount}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="submission_time=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.submissionTime != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.submissionTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="approval_time=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.approvalTime != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="approval_user_id=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.approvalUserId != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalUserId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="approval_status=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.approvalStatus != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.approvalStatus}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.remark != null and item.remark != ''">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.remark}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="tenantDomainApprovalList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when tenant_domain_approval_id=#{item.tenantDomainApprovalId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="tenantDomainApprovalList" separator="or" item="item" index="index">
-                    tenant_domain_approval_id=#{item.tenantDomainApprovalId}
+            tenant_domain_approval_id=#{item.tenantDomainApprovalId}
         </foreach>
     </update>
 </mapper>
