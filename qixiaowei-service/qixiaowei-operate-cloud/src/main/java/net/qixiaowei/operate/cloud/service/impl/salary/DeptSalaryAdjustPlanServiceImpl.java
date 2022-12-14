@@ -32,6 +32,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -95,18 +96,22 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         }
         Integer planYear = deptSalaryAdjustPlanDTO.getPlanYear();
         BonusBudgetDTO bonusBudgetDTO = bonusBudgetMapper.selectBonusBudgetListByBudgetYear(planYear);
-        bonusBudgetService.packPaymentBonusBudget(planYear, bonusBudgetDTO);
-        deptSalaryAdjustPlanDTO.setRaiseSalaryBonusBudget(bonusBudgetDTO.getRaiseSalaryBonusBudget());
+        if (StringUtils.isNull(bonusBudgetDTO)) {
+            deptSalaryAdjustPlanDTO.setRaiseSalaryBonusBudget(BigDecimal.ZERO);
+        } else {
+            bonusBudgetService.packPaymentBonusBudget(planYear, bonusBudgetDTO);
+            deptSalaryAdjustPlanDTO.setRaiseSalaryBonusBudget(bonusBudgetDTO.getRaiseSalaryBonusBudget());
+        }
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOS = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
         if (StringUtils.isEmpty(deptSalaryAdjustItemDTOS)) {
             return deptSalaryAdjustPlanDTO;
         }
         List<Long> departmentIds = deptSalaryAdjustItemDTOS.stream().map(DeptSalaryAdjustItemDTO::getDepartmentId).distinct().collect(Collectors.toList());// 去重
-        List<EmployeeDTO> employeeByDepartmentIds = getEmployeeByDepartmentIds(departmentIds);
         List<DepartmentDTO> departmentDTO = getDepartmentDTO(departmentIds);
+        List<EmployeeDTO> employeeByDepartmentIds = getEmployeeByDepartmentIds(departmentIds);
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOS) {
             for (DepartmentDTO department : departmentDTO) {
-                if (deptSalaryAdjustItemDTO.getDepartmentId().equals(department.getParentDepartmentId())) {
+                if (deptSalaryAdjustItemDTO.getDepartmentId().equals(department.getDepartmentId())) {
                     deptSalaryAdjustItemDTO.setDepartmentName(department.getDepartmentName());
                     break;
                 }
@@ -118,17 +123,20 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
                 }
             }
             // 上年工资包
-            BigDecimal lastSalary = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
-            // addSalary 新增工资包公式    =   上年工资包×覆盖比例×调幅×（12-调薪月份）÷12。
+            BigDecimal lastSalary = BigDecimal.ZERO;
+            if (StringUtils.isNotEmpty(employeeByDepartmentIds)) {
+                lastSalary = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
+            }
             BigDecimal adjustmentPercentage = deptSalaryAdjustItemDTO.getAdjustmentPercentage();//调幅
             BigDecimal coveragePercentage = deptSalaryAdjustItemDTO.getCoveragePercentage();// 覆盖比例
-            LocalDate adjustmentTime = deptSalaryAdjustItemDTO.getAdjustmentTime();//调整时间
+            LocalDate adjustmentTime = DateUtils.toLocalDate(deptSalaryAdjustItemDTO.getAdjustmentTime());//调整时间
             int month;
             if (StringUtils.isNull(adjustmentTime)) {
                 month = DateUtils.getMonth();
             } else {
                 month = DateUtils.getMonth(adjustmentTime);
             }
+            // addSalary 新增工资包公式    =   上年工资包×覆盖比例×调幅×（12-调薪月份）÷12。
             BigDecimal addSalary;
             if (lastSalary.compareTo(BigDecimal.ZERO) != 0 && adjustmentPercentage.compareTo(BigDecimal.ZERO) != 0 && coveragePercentage.compareTo(BigDecimal.ZERO) != 0) {
                 addSalary = lastSalary.multiply(adjustmentPercentage).multiply(coveragePercentage)
@@ -154,9 +162,6 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         List<EmployeeDTO> employeeDTOS = listR.getData();
         if (listR.getCode() != 200) {
             throw new ServiceException("根据部门ID 集合查询人员失败");
-        }
-        if (StringUtils.isNotEmpty(employeeDTOS)) {
-            throw new ServiceException("部门调薪项中的部门已没有没有人员信息 请检查");
         }
         return employeeDTOS;
     }
@@ -188,9 +193,6 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         if (listR.getCode() != 200) {
             throw new ServiceException("根据部门ID 集合查询部门失败");
         }
-        if (StringUtils.isNotEmpty(departmentDTOS)) {
-            throw new ServiceException("调薪项中部门的信息丢失");
-        }
         return departmentDTOS;
     }
 
@@ -211,16 +213,22 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         List<Integer> planYears = deptSalaryAdjustPlanDTOS.stream().map(DeptSalaryAdjustPlanDTO::getPlanYear).collect(Collectors.toList());
         List<BonusBudgetDTO> bonusBudgetDTOS = bonusBudgetMapper.selectBonusBudgetListByBudgetYears(planYears);
         //封装总奖金包预算列表涨薪包数据
-        bonusBudgetService.packPaymentBonusBudgetList(bonusBudgetDTOS);
-        for (DeptSalaryAdjustPlanDTO salaryAdjustPlanDTO : deptSalaryAdjustPlanDTOS) {
-            for (BonusBudgetDTO bonusBudgetDTO : bonusBudgetDTOS) {
-                if (salaryAdjustPlanDTO.getPlanYear().equals(bonusBudgetDTO.getBudgetYear())) {
-                    if (StringUtils.isNull(bonusBudgetDTO.getRaiseSalaryBonusBudget()) || bonusBudgetDTO.getRaiseSalaryBonusBudget().compareTo(BigDecimal.ZERO) == 0) {
-                        bonusBudgetDTO.setRaiseSalaryBonusBudget(BigDecimal.ZERO);
+        if (StringUtils.isEmpty(bonusBudgetDTOS)) {
+            for (DeptSalaryAdjustPlanDTO salaryAdjustPlanDTO : deptSalaryAdjustPlanDTOS) {
+                salaryAdjustPlanDTO.setRaiseSalaryBonusBudget(BigDecimal.ZERO);
+            }
+        } else {
+            bonusBudgetService.packPaymentBonusBudgetList(bonusBudgetDTOS);
+            for (DeptSalaryAdjustPlanDTO salaryAdjustPlanDTO : deptSalaryAdjustPlanDTOS) {
+                for (BonusBudgetDTO bonusBudgetDTO : bonusBudgetDTOS) {
+                    if (salaryAdjustPlanDTO.getPlanYear().equals(bonusBudgetDTO.getBudgetYear())) {
+                        if (StringUtils.isNull(bonusBudgetDTO.getRaiseSalaryBonusBudget()) || bonusBudgetDTO.getRaiseSalaryBonusBudget().compareTo(BigDecimal.ZERO) == 0) {
+                            bonusBudgetDTO.setRaiseSalaryBonusBudget(BigDecimal.ZERO);
+                            break;
+                        }
+                        salaryAdjustPlanDTO.setRaiseSalaryBonusBudget(bonusBudgetDTO.getRaiseSalaryBonusBudget());
                         break;
                     }
-                    salaryAdjustPlanDTO.setRaiseSalaryBonusBudget(bonusBudgetDTO.getRaiseSalaryBonusBudget());
-                    break;
                 }
             }
         }
@@ -255,6 +263,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      * @return 结果
      */
     @Override
+    @Transactional
     public DeptSalaryAdjustPlanDTO editDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
         if (StringUtils.isNull(deptSalaryAdjustPlanDTO)) {
             throw new ServiceException("部门调薪计划表不能为空");
@@ -279,9 +288,10 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         }
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOSBefore = deptSalaryAdjustItemService.selectDeptSalaryAdjustItemByPlanId(deptSalaryAdjustPlanId);
         for (DeptSalaryAdjustItemDTO deptSalaryAdjustItemDTO : deptSalaryAdjustItemDTOSAfter) {
+            deptSalaryAdjustItemDTO.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
             for (DeptSalaryAdjustItemDTO salaryAdjustItemDTO : deptSalaryAdjustItemDTOSBefore) {
                 if (salaryAdjustItemDTO.getDepartmentId().equals(deptSalaryAdjustItemDTO.getDepartmentId())) {
-                    deptSalaryAdjustItemDTO.setDeptSalaryAdjustPlanId(salaryAdjustItemDTO.getDeptSalaryAdjustPlanId());
+                    deptSalaryAdjustItemDTO.setDeptSalaryAdjustItemId(salaryAdjustItemDTO.getDeptSalaryAdjustItemId());
                     break;
                 }
             }
@@ -354,7 +364,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
     public BigDecimal getRaiseSalary(Integer planYear) {
         BonusBudgetDTO bonusBudgetDTO = bonusBudgetMapper.selectBonusBudgetListByBudgetYear(planYear);
         bonusBudgetService.packPaymentBonusBudget(planYear, bonusBudgetDTO);
-        return bonusBudgetDTO.getRaiseSalaryBonusBudget();
+        return Optional.ofNullable(bonusBudgetDTO.getRaiseSalaryBonusBudget()).orElse(BigDecimal.ZERO);
     }
 
     /**

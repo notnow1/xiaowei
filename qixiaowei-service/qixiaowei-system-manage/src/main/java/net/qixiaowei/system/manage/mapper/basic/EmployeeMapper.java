@@ -271,5 +271,5 @@ public interface EmployeeMapper {
      * @param departmentIds 部门ID集合
      * @return
      */
-    List<EmployeeDTO> selectEmployeeByDepartmentIds(List<Long> departmentIds);
+    List<EmployeeDTO> selectEmployeeByDepartmentIds(@Param("departmentIds") List<Long> departmentIds);
 }

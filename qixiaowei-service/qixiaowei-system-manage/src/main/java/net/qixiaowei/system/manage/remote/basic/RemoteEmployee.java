@@ -176,6 +176,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
      * @return
      */
     @Override
+    @PostMapping("/selectEmployeeByDepartmentIds")
     public R<List<EmployeeDTO>> selectEmployeeByDepartmentIds(@RequestBody List<Long> departmentIds, String source) {
         return R.ok(employeeService.selectEmployeeByDepartmentIds(departmentIds));
     }

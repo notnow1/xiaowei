@@ -101,7 +101,7 @@
     </select>
     <!--新增部门调薪项表-->
     <insert id="insertDeptSalaryAdjustItem" useGeneratedKeys="true" keyProperty="deptSalaryAdjustItemId">
-        INSERT INTO dept_salary_adjust_item (dept_salary_adjust_item_iddept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_salary_adjust_item (dept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{deptSalaryAdjustItem.deptSalaryAdjustPlanId},#{deptSalaryAdjustItem.departmentId},#{deptSalaryAdjustItem.coveragePercentage},#{deptSalaryAdjustItem.adjustmentPercentage},#{deptSalaryAdjustItem.adjustmentTime},#{deptSalaryAdjustItem.deleteFlag},#{deptSalaryAdjustItem.createBy},#{deptSalaryAdjustItem.createTime},#{deptSalaryAdjustItem.updateBy},#{deptSalaryAdjustItem.updateTime})
     </insert>
@@ -167,7 +167,7 @@
     </update>
     <!--批量新增部门调薪项表-->
     <insert id="batchDeptSalaryAdjustItem">
-        INSERT INTO dept_salary_adjust_item (dept_salary_adjust_item_iddept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_salary_adjust_item (dept_salary_adjust_plan_id,department_id,coverage_percentage,adjustment_percentage,adjustment_time,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="deptSalaryAdjustItems"

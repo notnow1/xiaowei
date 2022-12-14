@@ -68,7 +68,7 @@
     </select>
     <!--新增部门调薪计划表-->
     <insert id="insertDeptSalaryAdjustPlan" useGeneratedKeys="true" keyProperty="deptSalaryAdjustPlanId">
-        INSERT INTO dept_salary_adjust_plan (dept_salary_adjust_plan_id,plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_salary_adjust_plan (plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{deptSalaryAdjustPlan.planYear},#{deptSalaryAdjustPlan.salaryAdjustTotal},#{deptSalaryAdjustPlan.deleteFlag},#{deptSalaryAdjustPlan.createBy},#{deptSalaryAdjustPlan.createTime},#{deptSalaryAdjustPlan.updateBy},#{deptSalaryAdjustPlan.updateTime})
     </insert>
@@ -125,7 +125,7 @@
     </update>
     <!--批量新增部门调薪计划表-->
     <insert id="batchDeptSalaryAdjustPlan">
-        INSERT INTO dept_salary_adjust_plan (dept_salary_adjust_plan_id,plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO dept_salary_adjust_plan (plan_year,salary_adjust_total,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="deptSalaryAdjustPlans"
