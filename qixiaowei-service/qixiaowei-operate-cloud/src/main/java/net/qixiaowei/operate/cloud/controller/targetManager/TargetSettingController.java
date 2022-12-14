@@ -50,7 +50,7 @@ public class TargetSettingController extends BaseController {
      * 查询销售订单目标制定列表
      */
     @RequiresPermissions(value = {"operate:cloud:targetSetting:order:info", "operate:cloud:targetSetting:order:save"}, logical = Logical.OR)
-    @GetMapping("/info/order")
+    @GetMapping("/order/info")
     public AjaxResult listOrder(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectOrderTargetSettingList(targetSettingDTO));
     }
@@ -59,7 +59,7 @@ public class TargetSettingController extends BaseController {
      * 保存销售订单目标制定
      */
     @RequiresPermissions("operate:cloud:targetSetting:order:save")
-    @PostMapping("/save/order")
+    @PostMapping("/order/save")
     public AjaxResult saveOrder(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveOrderTargetSetting(targetSettingDTO));
     }
@@ -69,7 +69,7 @@ public class TargetSettingController extends BaseController {
      */
     @SneakyThrows
     @RequiresPermissions("operate:cloud:targetSetting:order:export")
-    @GetMapping("/export/order")
+    @GetMapping("/order/export")
     public void exportOrder(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
         List<TargetSettingOrderExcel> targetSettingExcelList = targetSettingService.exportOrderTargetSetting(targetSettingDTO);
         response.setContentType("application/vnd.ms-excel");
@@ -87,7 +87,7 @@ public class TargetSettingController extends BaseController {
      * 查询销售订单目标制定-历史年度数据
      */
     @RequiresPermissions(value = {"operate:cloud:targetSetting:order:info", "operate:cloud:targetSetting:order:save"}, logical = Logical.OR)
-    @GetMapping("/info/orderDrop")
+    @GetMapping("/orderDrop/info")
     public AjaxResult listOrderDrop(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectOrderDropTargetSettingList(targetSettingDTO));
     }
@@ -99,7 +99,7 @@ public class TargetSettingController extends BaseController {
      * 查询销售收入目标制定列表
      */
     @RequiresPermissions(value = {"operate:cloud:targetSetting:income:info", "operate:cloud:targetSetting:income:save"}, logical = Logical.OR)
-    @GetMapping("/info/income")
+    @GetMapping("/income/info")
     public AjaxResult listIncome(@RequestParam Integer targetYear) {
         return AjaxResult.success(targetSettingService.selectIncomeTargetSettingList(targetYear));
     }
@@ -109,7 +109,7 @@ public class TargetSettingController extends BaseController {
      */
     @RequiresPermissions("operate:cloud:targetSetting:income:save")
     @Log(title = "保存销售收入目标制定", businessType = BusinessType.UPDATE)
-    @PostMapping("/save/income")
+    @PostMapping("/income/save")
     public AjaxResult saveIncome(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveIncomeTargetSetting(targetSettingDTO));
     }
@@ -119,7 +119,7 @@ public class TargetSettingController extends BaseController {
      */
     @SneakyThrows
     @RequiresPermissions("operate:cloud:targetSetting:income:export")
-    @GetMapping("/export/income")
+    @GetMapping("/income/export")
     public void exportIncome(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
         List<TargetSettingIncomeExcel> targetSettingExcelList = targetSettingService.exportIncomeTargetSetting(targetSettingDTO);
         response.setContentType("application/vnd.ms-excel");
@@ -139,7 +139,7 @@ public class TargetSettingController extends BaseController {
      * 查询销售收入目标制定列表
      */
     @RequiresPermissions(value = {"operate:cloud:targetSetting:recovery:info", "operate:cloud:targetSetting:recovery:save"}, logical = Logical.OR)
-    @GetMapping("/info/recovery")
+    @GetMapping("/recovery/info")
     public AjaxResult listRecovery(TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.selectRecoveryTargetSettingList(targetSettingDTO));
     }
