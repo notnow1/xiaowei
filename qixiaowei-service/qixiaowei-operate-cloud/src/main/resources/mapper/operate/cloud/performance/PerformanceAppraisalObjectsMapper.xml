@@ -92,7 +92,7 @@
         pao.performance_appraisal_id,
         pao.appraisal_object_id,
         pao.appraisal_principal_id,
-        ifnull((evaluation_score), 0.00 ) AS evaluation_score,
+        pao.evaluation_score,
         pao.appraisal_result_id,
         pao.appraisal_result,
         pao.sort,
@@ -518,7 +518,8 @@
     </update>
     <update id="withdrawPerformanceAppraisalObjects">
         UPDATE performance_appraisal_objects
-        SET evaluation_score = #{performanceAppraisalObjects.evaluationScore},appraisal_object_status = #{performanceAppraisalObjects.appraisalObjectStatus}
+        SET evaluation_score = #{performanceAppraisalObjects.evaluationScore},appraisal_object_status =
+        #{performanceAppraisalObjects.appraisalObjectStatus}
         WHERE
         perform_appraisal_objects_id = #{performanceAppraisalObjects.performAppraisalObjectsId}
     </update>
