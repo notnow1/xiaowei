@@ -208,7 +208,7 @@ public class EmployeeController extends BaseController {
                 .excelType(ExcelTypeEnum.XLSX)
                 .sheet("人员信息配置")// 设置 sheet 的名字
                 // 自适应列宽
-                .doWrite(employeeExcelList);
+                .doWrite(EmployeeImportListener.dataList(employeeExcelList));
     }
 
 
