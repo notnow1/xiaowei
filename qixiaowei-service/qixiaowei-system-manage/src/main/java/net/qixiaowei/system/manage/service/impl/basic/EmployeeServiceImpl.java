@@ -578,11 +578,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 employee2.setIdentityCard(employeeExcel.getIdentityCard());
                 Pattern pt = Pattern.compile("(^[1-9]\\d{5}(19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)");
                 Matcher matcher = pt.matcher(employeeExcel.getIdentityCard());
-                if (!matcher.find()){
-                    String substring = employeeExcel.getIdentityCard().substring(7, 15);
-                    String year = substring.substring(0, 3);
-                    String month = substring.substring(4, 5);
-                    String day = substring.substring(6, 7);
+                if (matcher.find()){
+                    String substring = employeeExcel.getIdentityCard().substring(6, 15);
+                    String year = substring.substring(0, 4);
+                    String month = substring.substring(4, 6);
+                    String day = substring.substring(6,8);
                     String employeeBirthday = year+"/"+month+"/"+day;
                     Date parse = simpleDateFormat.parse(employeeBirthday);
                     //出生日期
