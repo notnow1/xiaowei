@@ -923,6 +923,7 @@ CREATE TABLE emp_annual_bonus_objects(
     attendance_factor DECIMAL(5,2)    COMMENT '考勤系数' ,
     recommend_value DECIMAL(18,2)    COMMENT '建议值' ,
     comment_value DECIMAL(18,2)    COMMENT '评议值' ,
+    status TINYINT UNSIGNED    COMMENT '状态:0草稿;1待初评;2待评议;3已评议' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
     create_time DATETIME NOT NULL   COMMENT '创建时间' ,
