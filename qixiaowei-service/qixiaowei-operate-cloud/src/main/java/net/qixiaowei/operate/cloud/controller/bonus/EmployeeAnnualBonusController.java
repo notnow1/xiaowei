@@ -38,7 +38,7 @@ public class EmployeeAnnualBonusController extends BaseController {
     }
 
     /**
-     * 新增保存个人年终奖表
+     * 保存个人年终奖表
      */
     @RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
     @PostMapping("/add")
@@ -47,38 +47,32 @@ public class EmployeeAnnualBonusController extends BaseController {
     }
 
     /**
-     * 新增提交个人年终奖表
+     * 修改个人年终奖表
      */
     //@RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
-    @PostMapping("/submit")
-    public AjaxResult submitSave(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
-        return AjaxResult.success(employeeAnnualBonusService.submitSave(employeeAnnualBonusDTO));
+    @PostMapping("/edit")
+    public AjaxResult edit(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        return AjaxResult.success(employeeAnnualBonusService.edit(employeeAnnualBonusDTO));
     }
 
     /**
-     * 保存修改个人年终奖表
+     * 主管修改个人年终奖表
      */
-    @RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
-    @PostMapping("/edit1")
-    public AjaxResult editSave(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
-        return toAjax(employeeAnnualBonusService.updateEmployeeAnnualBonus(employeeAnnualBonusDTO));
+    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
+    @PostMapping("/inChargeEdit")
+    public AjaxResult inChargeEdit(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        return AjaxResult.success(employeeAnnualBonusService.inChargeEdit(employeeAnnualBonusDTO));
     }
     /**
-     * 保存修改个人年终奖表
+     * 团队修改个人年终奖表
      */
-    @RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
-    @PostMapping("/edit2")
-    public AjaxResult editSave2(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
-        return toAjax(employeeAnnualBonusService.updateEmployeeAnnualBonus(employeeAnnualBonusDTO));
+    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
+    @PostMapping("/teamEdit")
+    public AjaxResult teamEdit(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        return AjaxResult.success(employeeAnnualBonusService.teamEdit(employeeAnnualBonusDTO));
     }
-    /**
-     * 保存修改个人年终奖表
-     */
-    @RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
-    @PostMapping("/edit3")
-    public AjaxResult editSave3(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
-        return toAjax(employeeAnnualBonusService.updateEmployeeAnnualBonus(employeeAnnualBonusDTO));
-    }
+
+
 
     /**
      * 个人年终奖表选择部门后预制数据

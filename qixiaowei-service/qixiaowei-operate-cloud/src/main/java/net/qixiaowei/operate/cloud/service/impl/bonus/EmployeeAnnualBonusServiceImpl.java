@@ -201,8 +201,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         //是否可提交 0保存 1提交
         Integer submitFlag = employeeAnnualBonusDTO.getSubmitFlag();
         EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
-        if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
-            throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
+        if (StringUtils.isNotNull(employeeAnnualBonusDTO1)) {
+            throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear() + "年 数据已存在 无需重复添加！");
         }
         //发起评议流程标记:0否;1是
         Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
@@ -216,11 +216,11 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         EmployeeAnnualBonus employeeAnnualBonus = new EmployeeAnnualBonus();
         try {
             BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
-            if (commentFlag == 0){
+            if (commentFlag == 0) {
                 employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
-                if (submitFlag==0){
+                if (submitFlag == 0) {
                     employeeAnnualBonus.setStatus(0);
-                }else {
+                } else {
                     employeeAnnualBonus.setStatus(3);
                 }
             }
@@ -312,7 +312,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
             employeeAnnualBonus.setUpdateTime(DateUtils.getNowDate());
             employeeAnnualBonus.setUpdateBy(SecurityUtils.getUserId());
-            if (commentFlag == 0 || status==2 || status==3) {
+            if (commentFlag == 0 || status == 2 || status == 3) {
                 //评议日期评议日期
                 employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
             }
@@ -425,8 +425,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         deptAnnualBonus.setAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
         deptAnnualBonus.setDepartmentId(employeeAnnualBonusDTO.getDepartmentId());
         DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusMapper.selectDeptAnnualBonusByAnnualBonusYear(deptAnnualBonus);
-        if (StringUtils.isNotNull(deptAnnualBonusDTO)){
-            distributeBonusAmount=deptAnnualBonusDTO.getDepartmentAnnualBonus();
+        if (StringUtils.isNotNull(deptAnnualBonusDTO)) {
+            distributeBonusAmount = deptAnnualBonusDTO.getDepartmentAnnualBonus();
         }
         //部门年终奖
         employeeAnnualBonusDTO.setDistributeBonusAmount(distributeBonusAmount);
@@ -580,9 +580,9 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 //绩效等级ID
                 empAnnualBonusSnapshotDTO.setPerformanceRankId(performanceRankId);
                 //绩效等级下拉框集合
-                if (null != performanceRankId){
+                if (null != performanceRankId) {
                     List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
-                    if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)){
+                    if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
                         empAnnualBonusSnapshotDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
                     }
                 }
@@ -652,17 +652,11 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      */
     @Override
     @Transactional
-    public EmployeeAnnualBonusDTO submitSave(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+    public EmployeeAnnualBonusDTO edit(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         // 是否可提交 0保存 1提交
         Integer submitFlag = employeeAnnualBonusDTO.getSubmitFlag();
-        //主表id
-        Long employeeAnnualBonusId = employeeAnnualBonusDTO.getEmployeeAnnualBonusId();
-        //状态:0草稿;1待初评;2待评议;3已评议
-        Integer status = employeeAnnualBonusDTO.getStatus();
         //发起评议流程标记:0否;1是
         Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
-        //评议环节:1管理团队评议;2主管初评+管理团队评议
-        Integer commentStep = employeeAnnualBonusDTO.getCommentStep();
         //个人年终奖发放快照信息及发放对象表集合
         List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOs();
         //个人年终奖发放对象集合
@@ -671,108 +665,128 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         List<EmpAnnualBonusSnapshot> empAnnualBonusSnapshotList = new ArrayList<>();
         //个人年终奖表
         EmployeeAnnualBonus employeeAnnualBonus = new EmployeeAnnualBonus();
-
         BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
         if (commentFlag == 0) {
-            if (submitFlag == 0){
+            if (submitFlag == 0) {
                 //评议日期
                 employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
                 employeeAnnualBonus.setStatus(Constants.ZERO);
                 packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
-            }else {
+            } else {
                 //评议日期
                 employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
                 employeeAnnualBonus.setStatus(Constants.THREE);
                 packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
             }
+        } else {
+            if (submitFlag == 0) {
+                //保存 修改数据
+                packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+            } else {
+                //保存提交 修改数据
+                employeeAnnualBonus.setStatus(Constants.ONE);
+                packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+                //todo 发送给主管通知
+            }
+        }
+        employeeAnnualBonusDTO.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
+        return employeeAnnualBonusDTO;
+    }
 
+    /**
+     * 主管修改个人年终奖表
+     *
+     * @param employeeAnnualBonusDTO
+     * @return
+     */
+    @Override
+    public EmployeeAnnualBonusDTO inChargeEdit(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        // 是否可提交 0保存 1提交
+        Integer submitFlag = employeeAnnualBonusDTO.getSubmitFlag();
+        //个人年终奖发放快照信息及发放对象表集合
+        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOs();
+        //个人年终奖发放对象集合
+        List<EmpAnnualBonusObjects> empAnnualBonusObjectsList = new ArrayList<>();
+        //个人年终奖发放快照信息集合
+        List<EmpAnnualBonusSnapshot> empAnnualBonusSnapshotList = new ArrayList<>();
+        //个人年终奖表
+        EmployeeAnnualBonus employeeAnnualBonus = new EmployeeAnnualBonus();
+        BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
+        if (submitFlag == 0) {
+            //保存 修改数据
+            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+        } else {
+            //保存提交 修改数据
+            employeeAnnualBonus.setStatus(Constants.TWO);
+            if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
+                List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
 
-        }else {
-            if (commentStep == 2){
-                if (null == employeeAnnualBonusId) {
-                    //直接提交 新增数据
-                    packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
-
-                } else {
-                    if (status == 1) {
-                        //保存提交 修改数据
-                        packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
-                        //todo 发送通知
-                    } else if (status == 2) {
-                        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
-                            List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
-
-                            List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
-                            if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
-                                //去除自己
-                                List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
-                                for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
-                                    if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
-                                        employeeAnnualBonus.setStatus(1);
-                                    }
-                                }
-                            }
-                            //保存提交 修改数据
-                            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
-                            //所有主管已初评
-                            if (employeeAnnualBonus.getStatus() == 2) {
-                                //todo 发送通知
-                            }
-                        }
-                    } else if (status == 3) {
-                        List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
-                        if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
-                            for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOS) {
-                                if (null == empAnnualBonusObjectsDTO.getCommentValue()) {
-                                    employeeAnnualBonus.setStatus(2);
-                                }
-                            }
-                          employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
-
-                            //保存提交 修改数据
-                            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
-                        }
-
-                    }
-                }
-            }else if (commentStep == 1){
-                if (null == employeeAnnualBonusId) {
-                    EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
-                    if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
-                        throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
-                    }
-                    //直接提交 新增数据
-                    packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
-
-                }else {
-                    if (status == 2) {
-                        //保存提交 修改数据
-                        packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
-                        //todo 发送通知
-                    } else if (status == 3) {
-                        if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
-                            List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
-
-                            List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusId);
-                            if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
-                                //去除自己
-                                List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
-                                for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
-                                    if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
-                                        employeeAnnualBonus.setStatus(1);
-                                    }
-                                }
-                            }
-                           employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
-                            //保存提交 修改数据
-                            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+                List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusDTO.getEmployeeAnnualBonusId());
+                if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
+                    //去除自己
+                    List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
+                    for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
+                        if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
+                            employeeAnnualBonus.setStatus(Constants.ONE);
                         }
                     }
                 }
             }
+            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+            Integer status = employeeAnnualBonus.getStatus();
+            if (status == 2){
+                //todo 发送给团队通知
+            }
 
         }
+        employeeAnnualBonusDTO.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
+        return employeeAnnualBonusDTO;
+    }
 
+    /**
+     * 团队修改个人年终奖表
+     *
+     * @param employeeAnnualBonusDTO
+     * @return
+     */
+    @Override
+    public EmployeeAnnualBonusDTO teamEdit(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        // 是否可提交 0保存 1提交
+        Integer submitFlag = employeeAnnualBonusDTO.getSubmitFlag();
+        //发起评议流程标记:0否;1是
+        Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
+        //个人年终奖发放快照信息及发放对象表集合
+        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOs();
+        //个人年终奖发放对象集合
+        List<EmpAnnualBonusObjects> empAnnualBonusObjectsList = new ArrayList<>();
+        //个人年终奖发放快照信息集合
+        List<EmpAnnualBonusSnapshot> empAnnualBonusSnapshotList = new ArrayList<>();
+        //个人年终奖表
+        EmployeeAnnualBonus employeeAnnualBonus = new EmployeeAnnualBonus();
+        BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
+
+        if (submitFlag == 0) {
+            //保存 修改数据
+            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+        } else {
+            //保存提交 修改数据
+            employeeAnnualBonus.setStatus(Constants.THREE);
+            if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
+                List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
+
+                List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusDTO.getEmployeeAnnualBonusId());
+                if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
+                    //去除自己
+                    List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
+                    for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
+                        if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
+                            employeeAnnualBonus.setStatus(Constants.TWO);
+                        }
+                    }
+                }
+            }
+            packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+        }
         employeeAnnualBonusDTO.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
         return employeeAnnualBonusDTO;
     }

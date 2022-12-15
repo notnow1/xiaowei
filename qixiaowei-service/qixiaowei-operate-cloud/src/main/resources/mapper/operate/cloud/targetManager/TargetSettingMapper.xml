@@ -153,7 +153,7 @@
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[0]}
@@ -188,7 +188,7 @@
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[1]}
@@ -223,7 +223,7 @@
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[2]}
@@ -258,7 +258,7 @@
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[3]}
@@ -293,7 +293,7 @@
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[4]}
