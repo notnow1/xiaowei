@@ -325,5 +325,9 @@ public class EmployeeDTO implements Serializable {
      * 相同部门相同职级平均人数
      */
     private BigDecimal annualAverageNum;
+    /**
+     * 部门负责人id
+     */
+    private Long departmentLeaderId;
 }
 

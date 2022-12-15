@@ -4,19 +4,20 @@ import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.message.api.dto.backlog.BacklogDTO;
+import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
+import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmpAnnualBonusObjects;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmpAnnualBonusSnapshot;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
-import net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
 import net.qixiaowei.operate.cloud.mapper.bonus.DeptAnnualBonusMapper;
@@ -64,17 +65,20 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     private PerformanceAppraisalObjectsMapper performanceAppraisalObjectsMapper;
     @Autowired
     private DeptAnnualBonusMapper deptAnnualBonusMapper;
+    @Autowired
+    private RemoteBacklogService remoteBacklogService;
 
     /**
      * 查询个人年终奖表
      *
      * @param employeeAnnualBonusId 个人年终奖表主键
+     * @param inChargeTeamFlag
      * @return 个人年终奖表
      */
     @Override
-    public EmployeeAnnualBonusDTO selectEmployeeAnnualBonusByEmployeeAnnualBonusId(Long employeeAnnualBonusId) {
+    public EmployeeAnnualBonusDTO selectEmployeeAnnualBonusByEmployeeAnnualBonusId(Long employeeAnnualBonusId, Integer inChargeTeamFlag) {
         EmployeeAnnualBonusDTO employeeAnnualBonusDTO = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusId);
-        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsAndSnapshot(employeeAnnualBonusId);
+        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsAndSnapshot(employeeAnnualBonusId,inChargeTeamFlag);
         employeeAnnualBonusDTO.setEmpAnnualBonusSnapshotDTOs(empAnnualBonusSnapshotDTOList);
         return employeeAnnualBonusDTO;
     }
@@ -223,6 +227,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 } else {
                     employeeAnnualBonus.setStatus(3);
                 }
+            }else {
+                employeeAnnualBonus.setStatus(0);
             }
             employeeAnnualBonus.setCreateBy(SecurityUtils.getUserId());
             employeeAnnualBonus.setCreateTime(DateUtils.getNowDate());
@@ -245,6 +251,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 empAnnualBonusObjects.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
                 //个人年终奖ID
                 empAnnualBonusSnapshot.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
+                empAnnualBonusObjects.setStatus(employeeAnnualBonus.getStatus());
                 empAnnualBonusObjects.setCreateBy(SecurityUtils.getUserId());
                 empAnnualBonusObjects.setCreateTime(DateUtils.getNowDate());
                 empAnnualBonusObjects.setUpdateTime(DateUtils.getNowDate());
@@ -686,7 +693,43 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 //保存提交 修改数据
                 employeeAnnualBonus.setStatus(Constants.ONE);
                 packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
-                //todo 发送给主管通知
+                //远程查询人员负责人取人员id发送通知
+                List<Long> employeeIds = empAnnualBonusObjectsList.stream().map(EmpAnnualBonusObjects::getEmployeeId).collect(Collectors.toList());
+                R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(employeeIds, SecurityConstants.INNER);
+                if (R.SUCCESS != listR.getCode()) {
+                    throw new ServiceException("查找客服失败");
+                }
+                List<EmployeeDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)) {
+                    //根据部门id分组
+                    Map<Long, List<EmployeeDTO>> employeeMap = data.parallelStream().filter(f ->f.getDepartmentLeaderId() != null).collect(Collectors.groupingBy(EmployeeDTO::getDepartmentLeaderId));
+                    for (Long key : employeeMap.keySet()) {
+                        List<EmployeeDTO> employeeDTOList = employeeMap.get(key);
+                        if (StringUtils.isNotEmpty(employeeDTOList)){
+                            List<Long> collect = employeeDTOList.stream().filter(f -> f.getUserId() != null).map(EmployeeDTO::getUserId).collect(Collectors.toList());
+                            if (StringUtils.isNotEmpty(collect)){
+                                //todo 发送给主管通知
+                                List<BacklogSendDTO> backlogSendDTOS = new ArrayList<>();
+                                BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
+                                backlogSendDTO.setBusinessType(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_SUPERVISOR.getParentBusinessType().getCode());
+                                backlogSendDTO.setBusinessSubtype(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_SUPERVISOR.getCode());
+                                backlogSendDTO.setBusinessId(employeeAnnualBonus.getEmployeeAnnualBonusId());
+
+                                backlogSendDTO.setUserId(collect.get(0));
+                                backlogSendDTO.setBacklogName("个人年终奖生成主管初评");
+                                backlogSendDTO.setBacklogInitiator(employeeAnnualBonus.getApplyEmployeeId());
+                                backlogSendDTO.setBacklogInitiatorName(employeeAnnualBonus.getApplyEmployeeName());
+                                backlogSendDTOS.add(backlogSendDTO);
+                                R<?> insertBacklogs = remoteBacklogService.insertBacklogs(backlogSendDTOS, SecurityConstants.INNER);
+                                if (R.SUCCESS != insertBacklogs.getCode()) {
+                                    throw new ServiceException("个人年终奖生成主管初评通知失败");
+                                }
+                            }
+                        }
+
+                    }
+
+                }
             }
         }
         employeeAnnualBonusDTO.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
@@ -726,18 +769,44 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     //去除自己
                     List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
                     for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
-                        if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
+                        if ( empAnnualBonusObjectsDTO.getStatus() == Constants.ONE) {
                             employeeAnnualBonus.setStatus(Constants.ONE);
                         }
                     }
                 }
             }
             packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+            //待办事项表
+            BacklogDTO backlogDTO = new BacklogDTO();
+            backlogDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
+            backlogDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
+            backlogDTO.setBusinessId(employeeAnnualBonusDTO.getEmployeeAnnualBonusId());
+            backlogDTO.setUserId(SecurityUtils.getUserId());
+            remoteBacklogService.handled(backlogDTO, SecurityConstants.INNER);
+            //状态:0草稿;1待初评;2待评议;3已评议
             Integer status = employeeAnnualBonus.getStatus();
-            if (status == 2){
+            if (status == 2) {
                 //todo 发送给团队通知
-            }
+                R<EmployeeDTO> employeeDTOR = remoteEmployeeService.selectByEmployeeId(employeeAnnualBonus.getCommentEmployeeId(), SecurityConstants.INNER);
+                EmployeeDTO data = employeeDTOR.getData();
+                if (StringUtils.isNotNull(data)) {
+                    List<BacklogSendDTO> backlogSendDTOS = new ArrayList<>();
+                    BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
+                    backlogSendDTO.setBusinessType(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_SUPERVISOR.getParentBusinessType().getCode());
+                    backlogSendDTO.setBusinessSubtype(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_SUPERVISOR.getCode());
+                    backlogSendDTO.setBusinessId(employeeAnnualBonus.getEmployeeAnnualBonusId());
+                    backlogSendDTO.setUserId(data.getUserId());
+                    backlogSendDTO.setBacklogName("个人年终奖生成主管初评");
+                    backlogSendDTO.setBacklogInitiator(employeeAnnualBonus.getApplyEmployeeId());
+                    backlogSendDTO.setBacklogInitiatorName(employeeAnnualBonus.getApplyEmployeeName());
+                    backlogSendDTOS.add(backlogSendDTO);
+                    R<?> insertBacklogs = remoteBacklogService.insertBacklogs(backlogSendDTOS, SecurityConstants.INNER);
+                    if (R.SUCCESS != insertBacklogs.getCode()) {
+                        throw new ServiceException("个人年终奖生成主管初评通知失败");
 
+                    }
+                }
+            }
         }
         employeeAnnualBonusDTO.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
         return employeeAnnualBonusDTO;
@@ -753,8 +822,6 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     public EmployeeAnnualBonusDTO teamEdit(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         // 是否可提交 0保存 1提交
         Integer submitFlag = employeeAnnualBonusDTO.getSubmitFlag();
-        //发起评议流程标记:0否;1是
-        Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
         //个人年终奖发放快照信息及发放对象表集合
         List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOs = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOs();
         //个人年终奖发放对象集合
@@ -771,21 +838,14 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         } else {
             //保存提交 修改数据
             employeeAnnualBonus.setStatus(Constants.THREE);
-            if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOs)) {
-                List<Long> collect = empAnnualBonusSnapshotDTOs.stream().map(EmpAnnualBonusSnapshotDTO::getEmpAnnualBonusObjectsId).collect(Collectors.toList());
-
-                List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(employeeAnnualBonusDTO.getEmployeeAnnualBonusId());
-                if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
-                    //去除自己
-                    List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
-                    for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
-                        if (null == empAnnualBonusObjectsDTO.getRecommendValue()) {
-                            employeeAnnualBonus.setStatus(Constants.TWO);
-                        }
-                    }
-                }
-            }
             packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
+            //将所有客服待办中的关联的域名任务都处理成已处理
+            BacklogDTO backlogDTO = new BacklogDTO();
+            backlogDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
+            backlogDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
+            backlogDTO.setBusinessId(employeeAnnualBonusDTO.getEmployeeAnnualBonusId());
+            backlogDTO.setUserId(SecurityUtils.getUserId());
+            remoteBacklogService.handled(backlogDTO, SecurityConstants.INNER);
         }
         employeeAnnualBonusDTO.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
         return employeeAnnualBonusDTO;
@@ -848,6 +908,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 BeanUtils.copyProperties(empAnnualBonusSnapshotDTO, empAnnualBonusObjects);
                 empAnnualBonusObjects.setUpdateBy(SecurityUtils.getUserId());
                 empAnnualBonusObjects.setUpdateTime(DateUtils.getNowDate());
+                empAnnualBonusObjects.setStatus(employeeAnnualBonus.getStatus());
                 empAnnualBonusSnapshot.setUpdateBy(SecurityUtils.getUserId());
                 empAnnualBonusSnapshot.setUpdateTime(DateUtils.getNowDate());
                 empAnnualBonusObjectsList.add(empAnnualBonusObjects);

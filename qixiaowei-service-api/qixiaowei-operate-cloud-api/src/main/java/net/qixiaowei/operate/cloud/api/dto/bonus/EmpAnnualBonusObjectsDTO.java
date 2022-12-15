@@ -87,6 +87,10 @@ public class EmpAnnualBonusObjectsDTO {
     */
     private  Long createBy;
     /**
+     * 状态:0草稿;1待初评;2待评议;3已评议
+     */
+    private  Integer status;
+    /**
     * 创建时间
     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")

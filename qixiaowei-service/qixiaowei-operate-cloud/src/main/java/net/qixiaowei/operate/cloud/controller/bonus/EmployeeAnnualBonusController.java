@@ -99,8 +99,8 @@ public class EmployeeAnnualBonusController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:employeeAnnualBonus:info")
     @GetMapping("/info/{employeeAnnualBonusId}")
-    public AjaxResult info(@PathVariable Long employeeAnnualBonusId) {
-        EmployeeAnnualBonusDTO employeeAnnualBonusDTO = employeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusId);
+    public AjaxResult info(@PathVariable Long employeeAnnualBonusId,@RequestParam(required = false) Integer inChargeTeamFlag) {
+        EmployeeAnnualBonusDTO employeeAnnualBonusDTO = employeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusId,inChargeTeamFlag);
         return AjaxResult.success(employeeAnnualBonusDTO);
     }
 

@@ -98,6 +98,7 @@ public class EmployeeImportListener extends AnalysisEventListener<Map<Integer, S
                 "9、户口所在地、参保地需要填写省/市，若仅填写省，则系统无法识别，会按照空导入；常住地、通信地址需要填写省/市/区（县），若仅填写省/市，则系统无法识别，会按照空导入。");
         head2.add("员工基本信息");
         head2.add("用工关系状态*");
+        selectMap.put(2, Arrays.asList("在职", "离职"));
 
         // 第四列
         List<String> head3 = new ArrayList<String>();

@@ -17,9 +17,10 @@ public interface IEmployeeAnnualBonusService{
     * 查询个人年终奖表
     *
     * @param employeeAnnualBonusId 个人年终奖表主键
-    * @return 个人年终奖表
+    * @param inChargeTeamFlag
+     * @return 个人年终奖表
     */
-    EmployeeAnnualBonusDTO selectEmployeeAnnualBonusByEmployeeAnnualBonusId(Long employeeAnnualBonusId);
+    EmployeeAnnualBonusDTO selectEmployeeAnnualBonusByEmployeeAnnualBonusId(Long employeeAnnualBonusId, Integer inChargeTeamFlag);
 
     /**
     * 查询个人年终奖表列表

@@ -120,7 +120,8 @@ public interface EmpAnnualBonusObjectsMapper{
     /**
      * 根据个人年终奖id查询子表集合
      * @param employeeAnnualBonusId
+     * @param inChargeTeamFlag
      * @return
      */
-    List<EmpAnnualBonusSnapshotDTO> selectEmpAnnualBonusObjectsAndSnapshot(@Param("employeeAnnualBonusId") Long employeeAnnualBonusId);
+    List<EmpAnnualBonusSnapshotDTO> selectEmpAnnualBonusObjectsAndSnapshot(@Param("employeeAnnualBonusId") Long employeeAnnualBonusId, @Param("inChargeTeamFlag")Integer inChargeTeamFlag);
 }

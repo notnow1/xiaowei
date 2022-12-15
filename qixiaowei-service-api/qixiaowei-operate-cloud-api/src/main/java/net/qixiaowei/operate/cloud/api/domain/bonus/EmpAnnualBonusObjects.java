@@ -11,7 +11,7 @@ import java.util.Date;
 /**
 * 个人年终奖发放对象表
 * @author TANGMICHI
-* @since 2022-12-06
+* @since 2022-12-15
 */
 @Data
 @Accessors(chain = true)
@@ -63,6 +63,10 @@ public class EmpAnnualBonusObjects extends TenantEntity {
      * 评议值
      */
      private  BigDecimal  commentValue;
+     /**
+     * 状态:0草稿;1待初评;2待评议;3已评议
+     */
+     private  Integer  status;
 
 }
 

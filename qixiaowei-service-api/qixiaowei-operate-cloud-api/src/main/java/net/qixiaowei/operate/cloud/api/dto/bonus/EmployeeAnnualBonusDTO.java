@@ -113,6 +113,10 @@ public class EmployeeAnnualBonusDTO {
      */
     private Integer submitFlag;
     /**
+     * 详情展示数据 0草稿 1主管 2团队
+     */
+    private Integer inChargeTeamFlag;
+    /**
     * 删除标记:0未删除;1已删除
     */
     private  Integer deleteFlag;
