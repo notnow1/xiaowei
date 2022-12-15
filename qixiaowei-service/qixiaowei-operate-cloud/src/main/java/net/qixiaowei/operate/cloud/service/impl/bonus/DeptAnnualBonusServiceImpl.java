@@ -860,8 +860,10 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         deptAnnualBonusDTO.setBeYearAmountBonusBudget(beYearAmountBonusBudget);
         //年底应发总奖金包（根据实际业绩测算) 总奖金包预算×（1+∑各驱动因素的奖金系数）
         deptAnnualBonusDTO.setEndYearSalaryAmountBonus(endYearSalaryAmountBonus);
-        //最终可发总奖金包 旧：公司年终奖总包 默认等于总奖金包实际
-        deptAnnualBonusDTO.setCompanyAnnualBonus(endYearSalaryAmountBonus);
+        if (null == deptAnnualBonusDTO.getCompanyAnnualBonus()){
+            //最终可发总奖金包 旧：公司年终奖总包 默认等于总奖金包实际
+            deptAnnualBonusDTO.setCompanyAnnualBonus(endYearSalaryAmountBonus);
+        }
         //查询战略奖的工资项id
         SalaryItemDTO salaryItemDTO = salaryItemMapper.selectSalaryItemByAward();
         if (StringUtils.isNull(salaryItemDTO)) {
