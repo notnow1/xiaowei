@@ -167,8 +167,13 @@ public class TenantServiceImpl implements ITenantService {
     @Override
     public TenantDTO insertTenant(TenantDTO tenantDTO) {
         String domain = tenantDTO.getDomain();
+        String tenantCode = tenantDTO.getTenantCode();
         if (tenantConfig.getExistedDomains().contains(domain)) {
-            throw new ServiceException("创建租户失败:域名[" + domain + "]已经被占用!");
+            throw new ServiceException("保存失败:域名[" + domain + "]已经被占用!");
+        }
+        TenantDTO selectTenantByTenantCode = tenantMapper.selectTenantByTenantCode(tenantCode);
+        if (StringUtils.isNotNull(selectTenantByTenantCode)) {
+            throw new ServiceException("保存失败:租户编码[" + tenantCode + "]已存在。");
         }
         //租户
         Tenant tenant = new Tenant();

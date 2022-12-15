@@ -113,7 +113,21 @@ public interface IEmployeeAnnualBonusService{
      * @param employeeAnnualBonusDTO
      * @return
      */
-    EmployeeAnnualBonusDTO submitSave(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
+    EmployeeAnnualBonusDTO edit(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
+
+    /**
+     * 主管修改个人年终奖表
+     * @param employeeAnnualBonusDTO
+     * @return
+     */
+    EmployeeAnnualBonusDTO inChargeEdit(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
+
+    /**
+     * 团队修改个人年终奖表
+     * @param employeeAnnualBonusDTO
+     * @return
+     */
+    EmployeeAnnualBonusDTO teamEdit(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
 
     /**
      * 实时查询个人年终奖表详情

@@ -1,16 +1,16 @@
 package net.qixiaowei.system.manage.controller.basic;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.metadata.Head;
+import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
-import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
-import com.alibaba.excel.write.style.AbstractCellStyleStrategy;
+import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
-import com.alibaba.excel.write.style.row.SimpleRowHeightStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -29,7 +29,7 @@ import net.qixiaowei.system.manage.excel.basic.EmployeeImportListener;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.system.manage.service.basic.IPostService;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -224,6 +224,16 @@ public class EmployeeController extends BaseController {
                 .head(head)
                 .registerWriteHandler(levelStrategy)
                 .registerWriteHandler(new SimpleColumnWidthStyleStrategy(17))
+                // 重写AbstractColumnWidthStyleStrategy策略的setColumnWidth方法
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> list, Cell cell, Head head, Integer integer, Boolean aBoolean) {
+                        if (integer == 0){
+                            Row row = cell.getRow();
+                            row.setHeightInPoints(144);
+                        }
+                    }
+                })
                 .sheet("人员信息配置")// 设置 sheet 的名字
                 .doWrite(new ArrayList<>());
     }

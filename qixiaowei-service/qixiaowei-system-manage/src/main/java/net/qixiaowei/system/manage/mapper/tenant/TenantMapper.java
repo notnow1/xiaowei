@@ -30,6 +30,14 @@ public interface TenantMapper{
     TenantDTO selectTenantByDomain(@Param("domain")String domain);
 
     /**
+     * 根据租户编码查询租户表
+     *
+     * @param tenantCode 租户编码
+     * @return 租户表
+     */
+    TenantDTO selectTenantByTenantCode(@Param("tenantCode")String tenantCode);
+
+    /**
     * 查询租户表列表
     *
     * @param tenant 租户表

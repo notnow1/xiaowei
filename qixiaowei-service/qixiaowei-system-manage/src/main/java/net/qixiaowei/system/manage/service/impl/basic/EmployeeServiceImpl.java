@@ -713,6 +713,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (identityCards.size() > 1) {
                 validEmployeeErreo.append("excle列表中身份证号码重复");
             }
+
+            Pattern pt = Pattern.compile("(^[1-9]\\d{5}(19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)");
+            Matcher matcher = pt.matcher(employeeExcel.getIdentityCard());
+            if (!matcher.find()){
+                validEmployeeErreo.append("身份证号格式不对");
+            }
             //岗位是否属于这个部门
             if (StringUtils.isNotBlank(postName) && StringUtils.isNotBlank(departmentName)) {
                 if (StringUtils.isNotEmpty(departmentDTOList)) {

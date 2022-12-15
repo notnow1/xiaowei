@@ -109,9 +109,9 @@ public class EmployeeAnnualBonusDTO {
      */
     private List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOsTwo;
     /**
-     * 是否可提交 0可 1不可
+     * 是否可提交 0保存 1提交
      */
-    private Boolean submitFlag;
+    private Integer submitFlag;
     /**
     * 删除标记:0未删除;1已删除
     */

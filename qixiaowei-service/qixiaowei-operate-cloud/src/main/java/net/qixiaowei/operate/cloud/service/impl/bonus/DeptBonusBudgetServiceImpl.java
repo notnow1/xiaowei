@@ -723,11 +723,11 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         BigDecimal departmentImportanceFactor = deptBonusBudgetDetailsDTO.getDepartmentImportanceFactor();
                         if (null != topDeptPay && topDeptPay.compareTo(new BigDecimal("0")) != 0 &&
                                 null != departmentImportanceFactor && departmentImportanceFactor.compareTo(new BigDecimal("0")) != 0) {
-                            nowTopDeptPay = topDeptPay.multiply(departmentImportanceFactor).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+                            nowTopDeptPay = topDeptPay.multiply(departmentImportanceFactor).setScale(2, BigDecimal.ROUND_HALF_UP);
                         }
                         if (null != nowTopDeptPay && nowTopDeptPay.compareTo(new BigDecimal("0")) != 0 &&
                                 null != topDeptPaySum && topDeptPaySum.compareTo(new BigDecimal("0")) != 0) {
-                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 10, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                            BigDecimal multiply = nowTopDeptPay.divide(topDeptPaySum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
                             deptBonusBudgetDetailsDTO.setDeptBonusPercentageReference(multiply);
                         }
                     }
@@ -810,15 +810,15 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 BigDecimal strategyAwardAmount = new BigDecimal("0");
                 if (null == deptBonusBudgetDTO.getStrategyAwardPercentage()) {
                     //战略奖金额
-                    strategyAwardAmount = amountBonusBudget.multiply(new BigDecimal("0.05")).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+                    strategyAwardAmount = amountBonusBudget.multiply(new BigDecimal("0.05")).setScale(2, BigDecimal.ROUND_HALF_UP);
                 } else {
                     //战略奖金额
-                    strategyAwardAmount = amountBonusBudget.multiply(deptBonusBudgetDTO.getStrategyAwardPercentage().divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+                    strategyAwardAmount = amountBonusBudget.multiply(deptBonusBudgetDTO.getStrategyAwardPercentage().divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
                 ////战略奖金额
                 deptBonusBudgetDTO.setStrategyAwardAmount(strategyAwardAmount);
                 // 部门总奖金包 公式=总奖金包预算-战略奖金额
-                BigDecimal deptAmountBonus = amountBonusBudget.subtract(strategyAwardAmount).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+                BigDecimal deptAmountBonus = amountBonusBudget.subtract(strategyAwardAmount).setScale(2, BigDecimal.ROUND_HALF_UP);
                 deptBonusBudgetDTO.setDeptAmountBonus(deptAmountBonus);
 
             }
@@ -945,7 +945,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                                             //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
                                                             BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                                                             //公式=某职级的总薪酬包（包含总工资包和总奖金包）÷某职级的人数。
-                                                            payAmountSum = reduce.divide(new BigDecimal(String.valueOf(salaryPayDTOS.size())), 4, BigDecimal.ROUND_HALF_DOWN);
+                                                            payAmountSum = reduce.divide(new BigDecimal(String.valueOf(salaryPayDTOS.size())), 4, BigDecimal.ROUND_HALF_UP);
                                                         }
                                                         map.put(datum.getEmployeeRankName(), payAmountSum);
                                                         mapPaymentAve.put(key, map);

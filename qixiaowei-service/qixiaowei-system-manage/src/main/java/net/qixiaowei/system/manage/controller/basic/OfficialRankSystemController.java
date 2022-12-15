@@ -92,6 +92,15 @@ public class OfficialRankSystemController extends BaseController {
     }
 
     /**
+     * 查询岗位职级一览表
+     */
+    @RequiresPermissions("system:manage:officialRankSystem:rankView:list")
+    @GetMapping("/rankView/list")
+    public AjaxResult rankViewList(OfficialRankSystemDTO officialRankSystemDTO) {
+        return AjaxResult.success(officialRankSystemService.selectRankViewList(officialRankSystemDTO));
+    }
+
+    /**
      * 通过Id查找职级上下限
      *
      * @param officialRankSystemId
@@ -122,12 +131,6 @@ public class OfficialRankSystemController extends BaseController {
         return AjaxResult.success(list);
     }
 
-    /**
-     * 查询岗位职级一览表
-     */
-    @GetMapping("/rankView/list")
-    public AjaxResult rankViewList(OfficialRankSystemDTO officialRankSystemDTO) {
-        return AjaxResult.success(officialRankSystemService.selectRankViewList(officialRankSystemDTO));
-    }
+
 
 }

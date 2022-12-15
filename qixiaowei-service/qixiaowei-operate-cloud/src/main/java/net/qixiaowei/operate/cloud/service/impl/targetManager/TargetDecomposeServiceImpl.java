@@ -15,6 +15,7 @@ import net.qixiaowei.integration.common.enums.message.MessageType;
 import net.qixiaowei.integration.common.enums.targetManager.DecompositionDimension;
 import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeDimensionCode;
 import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeType;
+import net.qixiaowei.integration.common.enums.targetManager.TimeDimension;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -270,7 +271,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();
                 decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                 for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
-                  int nowForecastYear = packForecastYearType(targetDecomposeDTO);
+                    int nowForecastYear = packForecastYearType(targetDecomposeDTO);
                     Integer cycleNumber = decomposeDetailCyclesDTO.getCycleNumber();
                     //传入年份
                     Integer targetYear = targetDecomposeDTO.getTargetYear();
@@ -278,24 +279,24 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     int year = DateUtils.getYear();
 
                     //判断年份
-                    if (targetYear>year){
+                    if (targetYear > year) {
                         if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
                             //预测值
                             forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
                         }
-                    }else if (targetYear<year){
+                    } else if (targetYear < year) {
                         if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
                             //预测值
                             forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleActual());
                         }
-                    }else {
+                    } else {
                         //实际值
-                        if (cycleNumber < nowForecastYear){
+                        if (cycleNumber < nowForecastYear) {
                             if (null != decomposeDetailCyclesDTO.getCycleActual() && decomposeDetailCyclesDTO.getCycleActual().compareTo(BigDecimal.ZERO) != 0) {
                                 //预测值
                                 forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleActual());
                             }
-                        }else {
+                        } else {
                             if (null != decomposeDetailCyclesDTO.getCycleForecast() && decomposeDetailCyclesDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
                                 //预测值
                                 forecastYear = forecastYear.add(decomposeDetailCyclesDTO.getCycleForecast());
@@ -313,7 +314,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //被除数 不能为0和空
                     if (null != amountTarget && amountTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(amountTarget,4,BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(amountTarget, 4, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 targetDecomposeDetailsDTO.setForecastYear(forecastYear);
@@ -331,6 +332,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
     /**
      * 封装根据时间类型当前时间顺序
+     *
      * @param targetDecomposeDTO
      * @return
      */
@@ -1996,6 +1998,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         Long employeeId = SecurityUtils.getEmployeeId();
         UserDTO userDTO = SecurityUtils.getLoginUser().getUserDTO();
         List<MessageSendDTO> messageSendDTOS = new ArrayList<>();
+        List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
+        if (StringUtils.isEmpty(targetDecomposeDTOS)) {
+            throw new ServiceException("找不到要移交预测负责人的目标分解记录");
+        }
         //目标分解详情集合
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeIds(targetDecomposeIds);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
@@ -2013,7 +2019,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             try {
                 int i = targetDecomposeDetailsMapper.updateTargetDecomposeDetailss(targetDecomposeDetailsList);
                 // todo 发送通知
-                for (Long targetDecomposeId : targetDecomposeIds) {
+                for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                    Long targetDecomposeId = decomposeDTO.getTargetDecomposeId();
                     MessageSendDTO messageSendDTO = new MessageSendDTO();
                     messageSendDTO.setMessageType(MessageType.PRIVATE_MESSAGE.getCode());
                     messageSendDTO.setBusinessType(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getParentBusinessType().getCode());
@@ -2027,13 +2034,13 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //员工工号
                     paramMap.put("employee_code", userDTO.getEmployeeCode());
                     //目标年度
-                    paramMap.put("target_year", 2022);
+                    paramMap.put("target_year", decomposeDTO.getTargetYear());
                     //分解维度
-                    paramMap.put("decomposition_dimension", "分解维度");
+                    paramMap.put("decomposition_dimension", decomposeDTO.getDecompositionDimension());
                     //时间维度
-                    paramMap.put("time_dimension", "时间维度");
+                    paramMap.put("time_dimension", TimeDimension.getInfo(decomposeDTO.getTimeDimension()));
                     //分解类型
-                    paramMap.put("target_decompose_type", "分解类型");
+                    paramMap.put("target_decompose_type", TargetDecomposeType.getInfo(decomposeDTO.getTargetDecomposeType()));
                     String messageParam = JSONUtil.toJsonStr(paramMap);
                     messageSendDTO.setMessageParam(messageParam);
                     messageSendDTO.setSendUserId(userId);

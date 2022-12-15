@@ -897,13 +897,14 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                                 employeeBudgetDetailsDTO.getOfficialRank() == datum.getEmployeeRank()) {
                             //人员id
                             employeeIds.add(datum.getEmployeeId());
+
                         }//取职级确定薪酬中位数
-                        else if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() &&
-                                employeeBudgetDetailsDTO.getOfficialRank() != datum.getEmployeeRank()){
+                        else {
                             OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(datum.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                             if (StringUtils.isNotNull(officialRankEmolumentDTO)){
-                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(2,BigDecimal.ROUND_FLOOR));
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(2,BigDecimal.ROUND_HALF_UP));
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
+
                             }
 
                         }
@@ -921,7 +922,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                         }
 
                         if (payAmountSum.compareTo(new BigDecimal("0")) != 0 && size > 0) {
-                            BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),4,BigDecimal.ROUND_HALF_DOWN);
+                            BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),4,BigDecimal.ROUND_HALF_UP);
                             //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
                             employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
                             employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(0);
