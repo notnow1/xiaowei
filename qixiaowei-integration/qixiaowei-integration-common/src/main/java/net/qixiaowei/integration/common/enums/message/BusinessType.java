@@ -7,13 +7,15 @@ package net.qixiaowei.integration.common.enums.message;
  **/
 public enum BusinessType {
 
-    TENANT(1, "租户"),
+    TENANT(1, "租户管理"),
 
-    TARGET(2, "目标"),
+    TARGET_SETTING(2, "目标制定"),
 
-    PERFORMANCE(3, "绩效"),
+    PROCESS_MANAGEMENT(3, "过程管理"),
 
-    BONUS(4, "奖金");
+    PERFORMANCE_MANAGEMENT(4, "绩效管理"),
+
+    USAGE_OF_RESULTS(5, "结果应用");
 
 
     private Integer code;

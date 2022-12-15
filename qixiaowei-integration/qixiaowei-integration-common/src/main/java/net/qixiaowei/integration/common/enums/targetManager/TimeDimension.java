@@ -31,5 +31,14 @@ public enum TimeDimension {
         return info;
     }
 
+    public static String getInfo(Integer code) {
+        for (TimeDimension timeDimension : TimeDimension.values()) {
+            if (timeDimension.getCode().equals(code)) {
+                return timeDimension.getInfo();
+            }
+        }
+        return "";
+    }
+
 
 }
