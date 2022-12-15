@@ -114,8 +114,8 @@ public class UserController extends BaseController {
      */
     @RequiresPermissions(value = {"system:manage:user:add", "system:manage:user:edit"}, logical = Logical.OR)
     @GetMapping("/unallocatedEmployees")
-    public AjaxResult unallocatedEmployees() {
-        return AjaxResult.success(userService.unallocatedEmployees());
+    public AjaxResult unallocatedEmployees(@RequestParam(value = "userId", required = false) Long userId) {
+        return AjaxResult.success(userService.unallocatedEmployees(userId));
     }
 
     /**

@@ -164,7 +164,7 @@ public interface IEmployeeService {
     /**
      * 查询未分配用户员工列表
      */
-    List<EmployeeDTO> unallocatedUserList();
+    List<EmployeeDTO> unallocatedUserList(Long userId);
 
     /**
      * 分页查询岗位薪酬报表

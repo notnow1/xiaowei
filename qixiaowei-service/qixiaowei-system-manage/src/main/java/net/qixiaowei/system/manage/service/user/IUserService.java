@@ -120,6 +120,6 @@ public interface IUserService{
     /**
      * 查询未分配用户员工列表
      */
-    List<EmployeeDTO> unallocatedEmployees();
+    List<EmployeeDTO> unallocatedEmployees(Long userId);
 
 }

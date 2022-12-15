@@ -63,7 +63,7 @@ public interface EmployeeMapper {
      *
      * @return 员工表集合
      */
-    List<EmployeeDTO> unallocatedUserList();
+    List<EmployeeDTO> unallocatedUserList(@Param("userId")Long userId);
 
     /**
      * 新增员工表

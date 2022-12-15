@@ -841,8 +841,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * 查询未分配用户员工列表
      */
     @Override
-    public List<EmployeeDTO> unallocatedUserList() {
-        return employeeMapper.unallocatedUserList();
+    public List<EmployeeDTO> unallocatedUserList(Long userId) {
+        return employeeMapper.unallocatedUserList(userId);
     }
 
     /**

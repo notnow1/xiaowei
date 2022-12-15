@@ -792,17 +792,17 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 if (StringUtils.isNotNull(data)) {
                     List<BacklogSendDTO> backlogSendDTOS = new ArrayList<>();
                     BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
-                    backlogSendDTO.setBusinessType(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_SUPERVISOR.getParentBusinessType().getCode());
-                    backlogSendDTO.setBusinessSubtype(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_SUPERVISOR.getCode());
+                    backlogSendDTO.setBusinessType(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_MANAGEMENT_TEAM.getParentBusinessType().getCode());
+                    backlogSendDTO.setBusinessSubtype(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_MANAGEMENT_TEAM.getCode());
                     backlogSendDTO.setBusinessId(employeeAnnualBonus.getEmployeeAnnualBonusId());
                     backlogSendDTO.setUserId(data.getUserId());
-                    backlogSendDTO.setBacklogName("个人年终奖生成主管初评");
+                    backlogSendDTO.setBacklogName(BusinessSubtype.EMPLOYEE_ANNUAL_BONUS_COMMENT_MANAGEMENT_TEAM.getInfo());
                     backlogSendDTO.setBacklogInitiator(employeeAnnualBonus.getApplyEmployeeId());
                     backlogSendDTO.setBacklogInitiatorName(employeeAnnualBonus.getApplyEmployeeName());
                     backlogSendDTOS.add(backlogSendDTO);
                     R<?> insertBacklogs = remoteBacklogService.insertBacklogs(backlogSendDTOS, SecurityConstants.INNER);
                     if (R.SUCCESS != insertBacklogs.getCode()) {
-                        throw new ServiceException("个人年终奖生成主管初评通知失败");
+                        throw new ServiceException("个人年终奖生成管理团队评议失败");
 
                     }
                 }

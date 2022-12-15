@@ -379,8 +379,8 @@ public class UserServiceImpl implements IUserService {
      * 查询未分配用户员工列表
      */
     @Override
-    public List<EmployeeDTO> unallocatedEmployees() {
-        return employeeService.unallocatedUserList();
+    public List<EmployeeDTO> unallocatedEmployees(Long userId) {
+        return employeeService.unallocatedUserList(userId);
     }
 
     /**
