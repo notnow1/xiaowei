@@ -9,8 +9,6 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.DeptSalaryAdjustPlanExcel;
@@ -45,6 +43,35 @@ public class DeptSalaryAdjustPlanController extends BaseController {
 
 
     /**
+     * 查询部门调薪计划表列表
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:pageList")
+    @GetMapping("/pageList")
+    public TableDataInfo list(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
+        startPage();
+        List<DeptSalaryAdjustPlanDTO> list = deptSalaryAdjustPlanService.selectDeptSalaryAdjustPlanList(deptSalaryAdjustPlanDTO);
+        return getDataTable(list);
+    }
+
+    /**
+     * 新增部门调薪计划表
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:add")
+    @PostMapping("/add")
+    public AjaxResult addSave(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
+        return toAjax(deptSalaryAdjustPlanService.insertDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
+    }
+
+    /**
+     * 修改部门调薪计划表
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:edit")
+    @PostMapping("/edit")
+    public AjaxResult editSave(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
+        return toAjax(deptSalaryAdjustPlanService.editDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
+    }
+
+    /**
      * 查询部门调薪计划表详情
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
@@ -64,59 +91,9 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     }
 
     /**
-     * 获取涨薪包预算
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
-    @GetMapping("/getRaiseSalary")
-    public AjaxResult getRaiseSalary(@RequestParam("planYear") Integer planYear) {
-        return AjaxResult.success(deptSalaryAdjustPlanService.getRaiseSalary(planYear));
-    }
-
-    /**
-     * 获取已有数据的最大年份
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
-    @GetMapping("/getMaxYear")
-    public AjaxResult getMaxYear() {
-        return AjaxResult.success(deptSalaryAdjustPlanService.getMaxYear());
-    }
-
-    /**
-     * 查询部门调薪计划表列表
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:pageList")
-    @GetMapping("/pageList")
-    public TableDataInfo list(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
-        startPage();
-        List<DeptSalaryAdjustPlanDTO> list = deptSalaryAdjustPlanService.selectDeptSalaryAdjustPlanList(deptSalaryAdjustPlanDTO);
-        return getDataTable(list);
-    }
-
-    /**
-     * 新增部门调薪计划表
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:insert")
-    @Log(title = "新增部门调薪计划表", businessType = BusinessType.INSERT)
-    @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
-        return toAjax(deptSalaryAdjustPlanService.insertDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
-    }
-
-    /**
-     * 修改部门调薪计划表
-     */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:edit")
-    @Log(title = "修改部门调薪计划表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
-        return toAjax(deptSalaryAdjustPlanService.editDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO));
-    }
-
-    /**
      * 逻辑删除部门调薪计划表
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:remove")
-    @Log(title = "删除部门调薪计划表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
         return toAjax(deptSalaryAdjustPlanService.logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanId(deptSalaryAdjustPlanDTO));
@@ -125,12 +102,32 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     /**
      * 逻辑批量删除部门调薪计划表
      */
-    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:removes")
-    @Log(title = "批量删除部门调薪计划表", businessType = BusinessType.DELETE)
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> deptSalaryAdjustPlanIds) {
         return toAjax(deptSalaryAdjustPlanService.logicDeleteDeptSalaryAdjustPlanByDeptSalaryAdjustPlanIds(deptSalaryAdjustPlanIds));
     }
+
+    /**
+     * 获取涨薪包预算
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:add")
+    @GetMapping("/getRaiseSalary")
+    public AjaxResult getRaiseSalary(@RequestParam("planYear") Integer planYear) {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getRaiseSalary(planYear));
+    }
+
+    /**
+     * 获取已有数据的最大年份
+     */
+    @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:add")
+    @GetMapping("/getMaxYear")
+    public AjaxResult getMaxYear() {
+        return AjaxResult.success(deptSalaryAdjustPlanService.getMaxYear());
+    }
+
+
+    //==============================其他==================================//
 
     /**
      * 导入部门调薪计划表
