@@ -116,7 +116,7 @@ public class EmployeeController extends BaseController {
     /**
      * 导入人员
      */
-    @RequiresPermissions("system:manage:employee:import")
+//    @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
@@ -151,7 +151,7 @@ public class EmployeeController extends BaseController {
      * 导出人员
      */
     @SneakyThrows
-    @RequiresPermissions("system:manage:employee:export")
+//    @RequiresPermissions("system:manage:employee:export")
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
         //部门名称集合
@@ -192,23 +192,35 @@ public class EmployeeController extends BaseController {
     @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
     public void exportUser(HttpServletResponse response) {
-        //示例数据
-        List<EmployeeExcel> employeeExcelList = new ArrayList<>();
+        //部门名称集合
+        List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName();
+        //岗位名称
+        List<String> postNames = new ArrayList<>();
+        PostDTO postDTO = new PostDTO();
+        //查询岗位信息
+        List<PostDTO> postDTOS = postService.selectPostList(postDTO);
+        if (StringUtils.isNotEmpty(postDTOS)) {
+            postNames = postDTOS.stream().map(PostDTO::getPostName).collect(Collectors.toList());
+        }
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = EmployeeImportListener.head(selectMap, new ArrayList<>(), new ArrayList<>());
+        List<List<String>> head = EmployeeImportListener.head(selectMap, parentDepartmentExcelNames, postNames);
+
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
-        String fileName = URLEncoder.encode("人员信息配置模板" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+        String fileName = URLEncoder.encode("人员信息配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
                 , CharsetKit.UTF_8);
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        CustomVerticalCellStyleStrategy levelStrategy = new CustomVerticalCellStyleStrategy(head);
+
         EasyExcel.write(response.getOutputStream())
-                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
-                .head(head)// 设置表头
                 .excelType(ExcelTypeEnum.XLSX)
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .head(head)
+                .registerWriteHandler(levelStrategy)
+                .registerWriteHandler(new SimpleColumnWidthStyleStrategy(17))
                 .sheet("人员信息配置")// 设置 sheet 的名字
-                // 自适应列宽
-                .doWrite(EmployeeImportListener.dataList(employeeExcelList));
+                .doWrite(new ArrayList<>());
     }
 
 

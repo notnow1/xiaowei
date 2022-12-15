@@ -11,8 +11,10 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.tenant.utils.TenantUtils;
+import net.qixiaowei.message.api.dto.backlog.BacklogDTO;
 import net.qixiaowei.message.api.dto.message.MessageReceiverDTO;
 import net.qixiaowei.message.api.dto.message.MessageSendDTO;
+import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.message.api.remote.message.RemoteMessageService;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
@@ -45,6 +47,9 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
 
     @Autowired
     private TenantMapper tenantMapper;
+
+    @Autowired
+    private RemoteBacklogService remoteBacklogService;
 
 
     /**
@@ -122,6 +127,12 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
                     remoteMessageService.sendMessage(messageSendDTO, SecurityConstants.INNER);
                 }
         );
+        //将所有客服待办中的关联的域名任务都处理成已处理
+        BacklogDTO backlogDTO = new BacklogDTO();
+        backlogDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
+        backlogDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
+        backlogDTO.setBusinessId(tenantDomainApprovalId);
+        remoteBacklogService.handled(backlogDTO, SecurityConstants.INNER);
         return update;
     }
 

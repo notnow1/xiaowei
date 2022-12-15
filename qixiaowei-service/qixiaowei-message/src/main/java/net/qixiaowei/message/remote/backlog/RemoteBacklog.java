@@ -54,6 +54,7 @@ public class RemoteBacklog implements RemoteBacklogService {
     @Override
     @PostMapping("/handled")
     public R<?> handled(@RequestBody BacklogDTO backlogDTO, String source) {
-        return R.ok(backlogService.handled(backlogDTO));
+        backlogService.handled(backlogDTO);
+        return R.ok();
     }
 }
