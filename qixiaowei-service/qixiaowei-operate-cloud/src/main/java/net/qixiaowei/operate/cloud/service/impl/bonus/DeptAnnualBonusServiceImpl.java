@@ -105,7 +105,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
                         null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
-                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
                 }
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
                         targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
@@ -632,7 +632,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
                         null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
-                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
                 }
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
                         targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
@@ -719,7 +719,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             }
                         }
                         if (deptPaymentBonus.compareTo(new BigDecimal("0")) > 0 && deptPaymentBonusSum.compareTo(new BigDecimal("0")) > 0) {
-                            weight = deptPaymentBonus.divide(deptPaymentBonusSum, 10, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                            weight = deptPaymentBonus.divide(deptPaymentBonusSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
                         }
 
                     }
@@ -759,7 +759,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal deptBonusPercentageReference = new BigDecimal("0");
                 if (syntheticalBonusFactorSum.compareTo(new BigDecimal("0")) > 0 &&
                         null != syntheticalBonusFactor && syntheticalBonusFactor.compareTo(new BigDecimal("0")) > 0) {
-                    deptBonusPercentageReference = syntheticalBonusFactor.divide(syntheticalBonusFactorSum, 10, BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    deptBonusPercentageReference = syntheticalBonusFactor.divide(syntheticalBonusFactorSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
                 }
                 //部门奖金包占比参考值
                 deptAnnualBonusFactorDTO.setDeptBonusPercentageReference(deptBonusPercentageReference);
@@ -899,7 +899,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             BeanUtils.copyProperties(bonusBudgetParametersDTO, deptAnnualBonusOperateDTO);
             if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
                     null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
-                targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_DOWN).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
             }
             if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
                     targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {

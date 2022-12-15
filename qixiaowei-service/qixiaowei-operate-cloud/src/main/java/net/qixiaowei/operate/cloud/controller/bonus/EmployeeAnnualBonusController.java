@@ -59,11 +59,26 @@ public class EmployeeAnnualBonusController extends BaseController {
      * 保存修改个人年终奖表
      */
     @RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
-    @PostMapping("/edit")
+    @PostMapping("/edit1")
     public AjaxResult editSave(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         return toAjax(employeeAnnualBonusService.updateEmployeeAnnualBonus(employeeAnnualBonusDTO));
     }
-
+    /**
+     * 保存修改个人年终奖表
+     */
+    @RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
+    @PostMapping("/edit2")
+    public AjaxResult editSave2(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        return toAjax(employeeAnnualBonusService.updateEmployeeAnnualBonus(employeeAnnualBonusDTO));
+    }
+    /**
+     * 保存修改个人年终奖表
+     */
+    @RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
+    @PostMapping("/edit3")
+    public AjaxResult editSave3(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        return toAjax(employeeAnnualBonusService.updateEmployeeAnnualBonus(employeeAnnualBonusDTO));
+    }
 
     /**
      * 个人年终奖表选择部门后预制数据

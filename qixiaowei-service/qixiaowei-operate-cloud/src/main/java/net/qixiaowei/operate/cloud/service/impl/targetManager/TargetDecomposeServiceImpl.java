@@ -313,7 +313,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //被除数 不能为0和空
                     if (null != amountTarget && amountTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(amountTarget,4,BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(amountTarget,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 targetDecomposeDetailsDTO.setForecastYear(forecastYear);

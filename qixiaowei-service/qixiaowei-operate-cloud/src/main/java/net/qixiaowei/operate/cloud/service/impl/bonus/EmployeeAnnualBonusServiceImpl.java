@@ -198,6 +198,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     @Override
     @Transactional
     public EmployeeAnnualBonusDTO insertEmployeeAnnualBonus(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        //是否可提交 0保存 1提交
+        Integer submitFlag = employeeAnnualBonusDTO.getSubmitFlag();
         EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
         if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
             throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
@@ -216,6 +218,11 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
             if (commentFlag == 0){
                 employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
+                if (submitFlag==0){
+                    employeeAnnualBonus.setStatus(0);
+                }else {
+                    employeeAnnualBonus.setStatus(3);
+                }
             }
             employeeAnnualBonus.setCreateBy(SecurityUtils.getUserId());
             employeeAnnualBonus.setCreateTime(DateUtils.getNowDate());
@@ -533,7 +540,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             BigDecimal bonusAmountSum = bonusAmountSumMap.get(empAnnualBonusSnapshotDTO.getEmployeeId());
             if (null != paymentBonusSum && paymentBonusSum.compareTo(new BigDecimal("0")) != 0 &&
                     allPaymentBonusSum.compareTo(new BigDecimal("0")) != 0) {
-                bonusPercentageOne = paymentBonusSum.divide(allPaymentBonusSum, 4, BigDecimal.ROUND_HALF_DOWN);
+                bonusPercentageOne = paymentBonusSum.divide(allPaymentBonusSum, 4, BigDecimal.ROUND_HALF_UP);
             }
             if (null != distributeBonusAmount && distributeBonusAmount.compareTo(new BigDecimal("0")) != 0 &&
                     bonusPercentageOne.compareTo(new BigDecimal("0")) != 0) {
@@ -541,7 +548,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             }
             if (null != bonusAmountSum && bonusAmountSum.compareTo(new BigDecimal("0")) != 0 &&
                     allBonusAmountSum.compareTo(new BigDecimal("0")) != 0) {
-                bonusPercentageTwo = allBonusAmountSum.divide(bonusAmountSum, 4, BigDecimal.ROUND_HALF_DOWN);
+                bonusPercentageTwo = allBonusAmountSum.divide(bonusAmountSum, 4, BigDecimal.ROUND_HALF_UP);
             }
             if (null != distributeBonusAmount && distributeBonusAmount.compareTo(new BigDecimal("0")) != 0 &&
                     bonusPercentageTwo.compareTo(new BigDecimal("0")) != 0) {
@@ -646,6 +653,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     @Override
     @Transactional
     public EmployeeAnnualBonusDTO submitSave(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        // 是否可提交 0保存 1提交
+        Integer submitFlag = employeeAnnualBonusDTO.getSubmitFlag();
         //主表id
         Long employeeAnnualBonusId = employeeAnnualBonusDTO.getEmployeeAnnualBonusId();
         //状态:0草稿;1待初评;2待评议;3已评议
@@ -665,28 +674,22 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
         BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
         if (commentFlag == 0) {
-            //评议日期
-            employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
-            employeeAnnualBonus.setStatus(Constants.THREE);
-            if (null == employeeAnnualBonusId) {
-                EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
-                if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
-                    throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
-                }
-                //直接提交 新增数据
-                packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
-                //todo 发送通知
+            if (submitFlag == 0){
+                //评议日期
+                employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
+                employeeAnnualBonus.setStatus(Constants.ZERO);
+                packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
             }else {
-                //保存提交 修改数据
+                //评议日期
+                employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
+                employeeAnnualBonus.setStatus(Constants.THREE);
                 packSubmitEdit(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus);
             }
+
+
         }else {
             if (commentStep == 2){
                 if (null == employeeAnnualBonusId) {
-                    EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
-                    if (StringUtils.isNotNull(employeeAnnualBonusDTO1)){
-                        throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear()+"年 数据已存在 无需重复添加！");
-                    }
                     //直接提交 新增数据
                     packsubmitAdd(empAnnualBonusSnapshotDTOs, empAnnualBonusObjectsList, empAnnualBonusSnapshotList, employeeAnnualBonus, commentFlag);
 
