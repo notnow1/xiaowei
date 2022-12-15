@@ -1422,8 +1422,6 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      */
     @Override
     public TargetSettingDTO selectIncomeTargetSettingList(Integer targetYear) {
-        IndicatorDTO indicatorIncomeDTO = getIndicator(IndicatorCode.INCOME.getCode());
-        IndicatorDTO indicatorOrderDTO = getIndicator(IndicatorCode.ORDER.getCode());
         List<Integer> historyNumS = getHistoryYearOppositeList(targetYear + 1, 4);
         TargetSetting targetSetting = new TargetSetting();
 //        targetSetting.setIndicatorId(indicatorIncomeDTO.getIndicatorId());
@@ -1497,7 +1495,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingDTO.setGuaranteedValue(BigDecimal.ZERO);
                 BigDecimal targetValue = targetSettingByIndicator.getTargetValue();
                 BigDecimal percentage = setting.getPercentage();
-                BigDecimal income = percentage.multiply(targetValue);
+                BigDecimal income = percentage.multiply(targetValue).divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
                 targetSettingIncomeVO.setMoney(targetValue);
                 targetSettingIncomeVO.setConversion(percentage);
                 targetSettingIncomeVO.setIncome(income);
