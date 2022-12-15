@@ -1495,10 +1495,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingDTO.setChallengeValue(BigDecimal.ZERO);
                 targetSettingDTO.setTargetValue(BigDecimal.ZERO);
                 targetSettingDTO.setGuaranteedValue(BigDecimal.ZERO);
-                BigDecimal targetValue = BigDecimal.ZERO;
-                if (StringUtils.isNull(targetSettingByIndicator.getTargetValue())) {
-                    targetValue = targetSettingByIndicator.getTargetValue();
-                }
+                BigDecimal targetValue = targetSettingByIndicator.getTargetValue();
                 BigDecimal percentage = setting.getPercentage();
                 BigDecimal income = percentage.multiply(targetValue);
                 targetSettingIncomeVO.setMoney(targetValue);
