@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 /**
@@ -264,10 +263,12 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         }
         // 处理脏数据-新增
         List<OfficialRankEmolumentDTO> addRankEmolumentDTOList = new ArrayList<>();
-        for (OfficialRankEmolumentDTO emolumentDTO : officialRankEmolumentDTOList) {
+        for (int i = officialRankEmolumentDTOList.size() - 1; i >= 0; i--) {
+            OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentDTOList.get(i);
             if (StringUtils.isNull(emolumentDTO.getOfficialRankEmolumentId())) {
                 emolumentDTO.setOfficialRankSystemId(officialRankSystemId);
                 addRankEmolumentDTOList.add(emolumentDTO);
+                officialRankEmolumentDTOList.remove(i);
             }
         }
         if (StringUtils.isNotEmpty(addRankEmolumentDTOList)) {
