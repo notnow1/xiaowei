@@ -148,7 +148,7 @@ public class TargetSettingController extends BaseController {
      * 新增目标制定
      */
     @RequiresPermissions("operate:cloud:targetSetting:recovery:save")
-    @PostMapping("/save/recovery")
+    @PostMapping("/recovery/save")
     public AjaxResult saveRecoveries(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveRecoveryTargetSetting(targetSettingDTO));
     }
@@ -158,7 +158,7 @@ public class TargetSettingController extends BaseController {
      */
     @SneakyThrows
     @RequiresPermissions("operate:cloud:targetSetting:recovery:export")
-    @GetMapping("/export/recovery")
+    @GetMapping("/recovery/export")
     public void exportRecovery(@RequestParam Map<String, Object> targetSetting, TargetSettingDTO targetSettingDTO, HttpServletResponse response) {
         List<List<String>> headRecovery = TargetSettingImportListener.headRecovery();
         List<TargetSettingRecoveriesExcel> targetSettingRecoveriesExcels = targetSettingService.exportRecoveryTargetSetting(targetSettingDTO);
