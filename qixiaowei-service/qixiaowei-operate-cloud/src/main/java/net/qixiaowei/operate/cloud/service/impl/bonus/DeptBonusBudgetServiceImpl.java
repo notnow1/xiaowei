@@ -701,7 +701,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      * @param topDeptPaymentMap
      * @param topDeptPaySum
      */
-    private void packDepartmentImportanceFactor(List<DepartmentDTO> departmentAll, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS, Map<Long, BigDecimal> topDeptPaymentMap, BigDecimal topDeptPaySum) {
+    private void    packDepartmentImportanceFactor(List<DepartmentDTO> departmentAll, List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOS, Map<Long, BigDecimal> topDeptPaymentMap, BigDecimal topDeptPaySum) {
         //赋值所有部门
         if (StringUtils.isEmpty(deptBonusBudgetDetailsDTOS)) {
             for (DepartmentDTO departmentDTO : departmentAll) {
@@ -962,9 +962,15 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                                         }
                                                         if (StringUtils.isNotEmpty(officialRankEmolumentDTOList)) {
                                                             for (OfficialRankEmolumentDTO officialRankEmolumentDTO : officialRankEmolumentDTOList) {
-                                                                map.put(data1.getRankPrefixCode() + data1.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
-                                                                mapPaymentAve.put(key, map);
-                                                                mapList.add(mapPaymentAve);
+                                                                if (null != officialRankEmolumentDTO.getOfficialRank()){
+                                                                    if (StringUtils.isNotBlank(data1.getRankPrefixCode())){
+                                                                        map.put(data1.getRankPrefixCode() + officialRankEmolumentDTO.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
+                                                                    }else {
+                                                                        map.put(officialRankEmolumentDTO.getOfficialRank().toString(), officialRankEmolumentDTO.getSalaryMedian());
+                                                                    }
+                                                                    mapPaymentAve.put(key, map);
+                                                                    mapList.add(mapPaymentAve);
+                                                                }
                                                             }
                                                         }
 
@@ -1006,9 +1012,16 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                                                 //终止级别
                                                                 Integer rankEnd = officialRankSystemDTO.getRankEnd();
                                                                 for (Integer i = rankStart; i <= rankEnd; i++) {
-                                                                    map.put(officialRankSystemDTO.getRankPrefixCode() + officialRankSystemDTO.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
-                                                                    mapPaymentAve.put(key, map);
-                                                                    mapList.add(mapPaymentAve);
+                                                                    if ( StringUtils.isNotBlank(officialRankSystemDTO.getOfficialRank())){
+                                                                        if (StringUtils.isNotBlank(officialRankSystemDTO.getRankPrefixCode())){
+                                                                            map.put(officialRankSystemDTO.getRankPrefixCode() + officialRankSystemDTO.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
+                                                                        }else {
+                                                                            map.put(officialRankSystemDTO.getOfficialRank(), officialRankEmolumentDTO.getSalaryMedian());
+                                                                        }
+                                                                        mapPaymentAve.put(key, map);
+                                                                        mapList.add(mapPaymentAve);
+                                                                    }
+
                                                                 }
 
                                                             }
@@ -1117,10 +1130,12 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                     packRankName(employeeBudgetDetailsDTOS);
                                     for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                                         Map<String, BigDecimal> map = new HashMap<>();
-                                        map.put(employeeBudgetDetailsDTO.getOfficialRankName(), employeeBudgetDetailsDTO.getAnnualAverageNum());
-                                        //相同部门的 职级体系平均人数
-                                        mapEmployeeAve.put(key, map);
-                                        mapList.add(mapEmployeeAve);
+                                        if (StringUtils.isNotBlank(employeeBudgetDetailsDTO.getOfficialRankName())){
+                                            map.put(employeeBudgetDetailsDTO.getOfficialRankName(), employeeBudgetDetailsDTO.getAnnualAverageNum());
+                                            //相同部门的 职级体系平均人数
+                                            mapEmployeeAve.put(key, map);
+                                            mapList.add(mapEmployeeAve);
+                                        }
                                     }
                                 }
                             }
@@ -1143,10 +1158,12 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                             if (StringUtils.isNotEmpty(employeeDTOList)) {
                                                 for (EmployeeDTO employeeDTO : employeeDTOList) {
                                                     Map<String, BigDecimal> map = new HashMap<>();
-                                                    //职级 人数
-                                                    map.put(employeeDTO.getEmployeeRankName(), employeeDTO.getAnnualAverageNum());
-                                                    mapEmployeeAve.put(key, map);
-                                                    mapList.add(mapEmployeeAve);
+                                                    if (StringUtils.isNotBlank(employeeDTO.getEmployeeRankName())){
+                                                        //职级 人数
+                                                        map.put(employeeDTO.getEmployeeRankName(), employeeDTO.getAnnualAverageNum());
+                                                        mapEmployeeAve.put(key, map);
+                                                        mapList.add(mapEmployeeAve);
+                                                    }
                                                 }
                                             }
 
