@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 import net.qixiaowei.operate.cloud.service.bonus.IEmployeeAnnualBonusService;
@@ -25,7 +26,16 @@ public class EmployeeAnnualBonusController extends BaseController {
     @Autowired
     private IEmployeeAnnualBonusService employeeAnnualBonusService;
 
-
+    /**
+     * 分页查询奖金发放台账
+     */
+    @RequiresPermissions("operate:cloud:employeeAnnualBonus:bonusGrantStandingPage")
+    @GetMapping("/bonusGrantStandingPage")
+    public TableDataInfo bonusGrantStandingPage(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        startPage();
+        List<EmployeeAnnualBonusDTO> list = employeeAnnualBonusService.selectEmployeeAnnualBonusList(employeeAnnualBonusDTO);
+        return getDataTable(list);
+    }
     /**
      * 分页查询个人年终奖表列表
      */
