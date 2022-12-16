@@ -28,6 +28,16 @@ public class BonusBudgetController extends BaseController {
     @Autowired
     private IBonusBudgetService bonusBudgetService;
 
+    /**
+     * 分页查询奖金发放台账
+     */
+    @RequiresPermissions("operate:cloud:bonusBudget:bonusGrantStandingPage")
+    @GetMapping("/bonusGrantStandingPage")
+    public TableDataInfo bonusGrantStandingPage(BonusBudgetDTO bonusBudgetDTO) {
+        startPage();
+        List<BonusBudgetDTO> list = bonusBudgetService.selectBonusBudgetList(bonusBudgetDTO);
+        return getDataTable(list);
+    }
 
     /**
      * 分页查询奖金预算表列表
