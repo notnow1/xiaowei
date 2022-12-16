@@ -334,6 +334,11 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             bonusPayBudgetDept.setBonusPayApplicationId(bonusPayApplication.getBonusPayApplicationId());
             bonusPayBudgetDept.setDepartmentId(0L);
             bonusPayBudgetDept.setBonusPercentage(new BigDecimal("100"));
+            bonusPayBudgetDept.setCreateBy(SecurityUtils.getUserId());
+            bonusPayBudgetDept.setCreateTime(DateUtils.getNowDate());
+            bonusPayBudgetDept.setUpdateTime(DateUtils.getNowDate());
+            bonusPayBudgetDept.setUpdateBy(SecurityUtils.getUserId());
+            bonusPayBudgetDept.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
             try {
                 bonusPayBudgetDeptMapper.insertBonusPayBudgetDept(bonusPayBudgetDept);
             } catch (Exception e) {

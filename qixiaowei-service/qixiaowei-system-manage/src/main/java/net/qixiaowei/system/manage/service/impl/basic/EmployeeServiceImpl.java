@@ -618,7 +618,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
             //后续优化导入
             if (employeeErreo.length() > 1) {
-                throw new ServiceException(employeeErreo.toString());
+                throw new ServiceException("人员导入失败，请检查Excel：\n" +
+                        "1、*为必填字段；\n" +
+                        "2、若某一数据有误导致导入失败，所有数据将会导入失败；\n" +
+                        "3、员工工号、身份证号码有唯一性校验，若出现重复，可能会导致导入失败；\n" +
+                        "4、岗位需在该部门下所属岗位，否则将会导入失败；个人职级需在岗位职级上下限范围内，否则将会导入失败;\n" +
+                        "5、入职日期需按照YYYY/MM/DD格式进行录入，否则将会导入失败。\n" +
+                        "6、员工工号录入时可使用英文字母以及数字，请勿使用中文，若使用中文会导致系统无法识别。\n" +
+                        "7、编辑导入模板时，若涉及到需要填充数字的字段，请注意单元格格式，避免以“0”作为开头的数字被省略掉“0”。\n" +
+                        "8、若模板中出现两条重复数据，此数据将会导入失败。\n" +
+                        "9、户口所在地、参保地需要填写省/市，若仅填写省，则系统无法识别，会按照空导入；常住地、通信地址需要填写省/市/区（县），若仅填写省/市，则系统无法识别，会按照空导入。");
             }
 
             if (StringUtils.isNotEmpty(successExcelList)) {
