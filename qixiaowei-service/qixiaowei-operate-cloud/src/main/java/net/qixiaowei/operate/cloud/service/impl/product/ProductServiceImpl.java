@@ -128,9 +128,12 @@ public class ProductServiceImpl implements IProductService {
                     if (StringUtils.isNotEmpty(data)){
                         for (ProductDTO dto : productDTOList) {
                             for (DictionaryDataDTO datum : data) {
-                                if (Long.valueOf(dto.getProductCategory()).equals(datum.getDictionaryDataId())){
-                                    dto.setProductCategoryName(datum.getDictionaryLabel());
+                                if (StringUtils.isNotBlank(dto.getProductCategory())){
+                                    if (Long.valueOf(dto.getProductCategory()).equals(datum.getDictionaryDataId())){
+                                        dto.setProductCategoryName(datum.getDictionaryLabel());
+                                    }
                                 }
+
                             }
                         }
                     }
