@@ -3,7 +3,9 @@ package net.qixiaowei.operate.cloud.controller.bonus;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 import net.qixiaowei.operate.cloud.service.bonus.IEmployeeAnnualBonusService;
@@ -24,7 +26,6 @@ public class EmployeeAnnualBonusController extends BaseController {
 
     @Autowired
     private IEmployeeAnnualBonusService employeeAnnualBonusService;
-
 
     /**
      * 分页查询个人年终奖表列表
@@ -49,35 +50,61 @@ public class EmployeeAnnualBonusController extends BaseController {
     /**
      * 修改个人年终奖表
      */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
+    @RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
     @PostMapping("/edit")
     public AjaxResult edit(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         return AjaxResult.success(employeeAnnualBonusService.edit(employeeAnnualBonusDTO));
     }
 
     /**
+     * 查询个人年终奖表详情-注：权限前台控制，后端暂时不控制，因为详情在主管和团队待办中同时用到了
+     *
+     * @RequiresPermissions("operate:cloud:employeeAnnualBonus:info")
+     */
+    @GetMapping("/info/{employeeAnnualBonusId}")
+    public AjaxResult info(@PathVariable Long employeeAnnualBonusId, @RequestParam(required = false) Integer inChargeTeamFlag) {
+        EmployeeAnnualBonusDTO employeeAnnualBonusDTO = employeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusId, inChargeTeamFlag);
+        return AjaxResult.success(employeeAnnualBonusDTO);
+    }
+
+    /**
      * 主管修改个人年终奖表
      */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
     @PostMapping("/inChargeEdit")
     public AjaxResult inChargeEdit(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         return AjaxResult.success(employeeAnnualBonusService.inChargeEdit(employeeAnnualBonusDTO));
     }
+
     /**
      * 团队修改个人年终奖表
      */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
     @PostMapping("/teamEdit")
     public AjaxResult teamEdit(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         return AjaxResult.success(employeeAnnualBonusService.teamEdit(employeeAnnualBonusDTO));
     }
 
+    /**
+     * 逻辑删除个人年终奖表
+     */
+    @RequiresPermissions("operate:cloud:employeeAnnualBonus:remove")
+    @PostMapping("/remove")
+    public AjaxResult remove(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
+        return toAjax(employeeAnnualBonusService.logicDeleteEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusDTO));
+    }
 
+    /**
+     * 逻辑批量删除个人年终奖表
+     */
+    @RequiresPermissions("operate:cloud:employeeAnnualBonus:remove")
+    @PostMapping("/removes")
+    public AjaxResult removes(@RequestBody List<Long> employeeAnnualBonusIds) {
+        return toAjax(employeeAnnualBonusService.logicDeleteEmployeeAnnualBonusByEmployeeAnnualBonusIds(employeeAnnualBonusIds));
+    }
 
     /**
      * 个人年终奖表选择部门后预制数据
      */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:list")
+    @RequiresPermissions(value = {"operate:cloud:employeeAnnualBonus:add", "operate:cloud:employeeAnnualBonus:edit"}, logical = Logical.OR)
     @PostMapping("/addPrefabricate")
     public AjaxResult addPrefabricate(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusService.addPrefabricate(employeeAnnualBonusDTO);
@@ -87,7 +114,7 @@ public class EmployeeAnnualBonusController extends BaseController {
     /**
      * 实时查询个人年终奖表详情
      */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:info")
+    @RequiresPermissions(value = {"operate:cloud:employeeAnnualBonus:add", "operate:cloud:employeeAnnualBonus:edit"}, logical = Logical.OR)
     @PostMapping("/realTimeDetails")
     public AjaxResult realTimeDetails(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         List<EmpAnnualBonusSnapshotDTO> list = employeeAnnualBonusService.realTimeDetails(employeeAnnualBonusDTO);
@@ -95,63 +122,13 @@ public class EmployeeAnnualBonusController extends BaseController {
     }
 
     /**
-     * 查询个人年终奖表详情
-     */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:info")
-    @GetMapping("/info/{employeeAnnualBonusId}")
-    public AjaxResult info(@PathVariable Long employeeAnnualBonusId,@RequestParam(required = false) Integer inChargeTeamFlag) {
-        EmployeeAnnualBonusDTO employeeAnnualBonusDTO = employeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusId,inChargeTeamFlag);
-        return AjaxResult.success(employeeAnnualBonusDTO);
-    }
-
-    /**
      * 查询个人年终奖表列表
      */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:list")
+    @RequiresPermissions("operate:cloud:employeeAnnualBonus:pageList")
     @GetMapping("/list")
     public AjaxResult list(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         List<EmployeeAnnualBonusDTO> list = employeeAnnualBonusService.selectEmployeeAnnualBonusList(employeeAnnualBonusDTO);
         return AjaxResult.success(list);
-    }
-
-    /**
-     * 逻辑删除个人年终奖表
-     */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:remove")
-    //@Log(title = "删除个人年终奖表", businessType = BusinessType.DELETE)
-    @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
-        return toAjax(employeeAnnualBonusService.logicDeleteEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusDTO));
-    }
-
-    /**
-     * 批量修改个人年终奖表
-     */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:edits")
-    //@Log(title = "批量修改个人年终奖表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<EmployeeAnnualBonusDTO> employeeAnnualBonusDtos) {
-        return toAjax(employeeAnnualBonusService.updateEmployeeAnnualBonuss(employeeAnnualBonusDtos));
-    }
-
-    /**
-     * 批量新增个人年终奖表
-     */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:insertEmployeeAnnualBonuss")
-    //@Log(title = "批量新增个人年终奖表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertEmployeeAnnualBonuss")
-    public AjaxResult insertEmployeeAnnualBonuss(@RequestBody List<EmployeeAnnualBonusDTO> employeeAnnualBonusDtos) {
-        return toAjax(employeeAnnualBonusService.insertEmployeeAnnualBonuss(employeeAnnualBonusDtos));
-    }
-
-    /**
-     * 逻辑批量删除个人年终奖表
-     */
-    //@RequiresPermissions("operate:cloud:employeeAnnualBonus:removes")
-    //@Log(title = "批量删除个人年终奖表", businessType = BusinessType.DELETE)
-    @PostMapping("/removes")
-    public AjaxResult removes(@RequestBody List<Long> employeeAnnualBonusIds) {
-        return toAjax(employeeAnnualBonusService.logicDeleteEmployeeAnnualBonusByEmployeeAnnualBonusIds(employeeAnnualBonusIds));
     }
 
 

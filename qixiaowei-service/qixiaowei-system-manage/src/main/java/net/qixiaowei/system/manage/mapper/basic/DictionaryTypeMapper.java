@@ -107,6 +107,6 @@ public interface DictionaryTypeMapper{
      * @param dictionaryType
      * @return
      */
-    String selectDictionaryTypeByDictionaryType(@Param("dictionaryType")String dictionaryType);
+    DictionaryTypeDTO selectDictionaryTypeByDictionaryType(@Param("dictionaryType")String dictionaryType);
 
 }

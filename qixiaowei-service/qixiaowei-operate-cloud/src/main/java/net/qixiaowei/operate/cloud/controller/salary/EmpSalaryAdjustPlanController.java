@@ -9,8 +9,6 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.EmpSalaryAdjustPlanExcel;
@@ -45,16 +43,6 @@ public class EmpSalaryAdjustPlanController extends BaseController {
 
 
     /**
-     * 查询个人调薪计划表详情
-     */
-    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:info")
-    @GetMapping("/info/{empSalaryAdjustPlanId}")
-    public AjaxResult info(@PathVariable Long empSalaryAdjustPlanId) {
-        EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO = empSalaryAdjustPlanService.selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
-        return AjaxResult.success(empSalaryAdjustPlanDTO);
-    }
-
-    /**
      * 分页查询个人调薪计划表列表
      */
     @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:pageList")
@@ -66,75 +54,59 @@ public class EmpSalaryAdjustPlanController extends BaseController {
     }
 
     /**
-     * 查询个人调薪计划表列表
-     */
-    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:list")
-    @GetMapping("/list")
-    public AjaxResult list(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
-        List<EmpSalaryAdjustPlanDTO> list = empSalaryAdjustPlanService.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlanDTO);
-        return AjaxResult.success(list);
-    }
-
-
-    /**
      * 新增个人调薪计划表
      */
     @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:add")
-    @Log(title = "新增个人调薪计划表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
         return AjaxResult.success(empSalaryAdjustPlanService.insertEmpSalaryAdjustPlan(empSalaryAdjustPlanDTO));
     }
 
-
     /**
      * 修改个人调薪计划表
      */
     @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:edit")
-    @Log(title = "修改个人调薪计划表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
         return toAjax(empSalaryAdjustPlanService.updateEmpSalaryAdjustPlan(empSalaryAdjustPlanDTO));
     }
 
     /**
+     * 查询个人调薪计划表详情
+     */
+    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:info")
+    @GetMapping("/info/{empSalaryAdjustPlanId}")
+    public AjaxResult info(@PathVariable Long empSalaryAdjustPlanId) {
+        EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO = empSalaryAdjustPlanService.selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
+        return AjaxResult.success(empSalaryAdjustPlanDTO);
+    }
+
+    /**
      * 逻辑删除个人调薪计划表
      */
     @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:remove")
-    @Log(title = "删除个人调薪计划表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
         return toAjax(empSalaryAdjustPlanService.logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(empSalaryAdjustPlanDTO));
     }
 
     /**
-     * 批量修改个人调薪计划表
-     */
-    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:edits")
-    @Log(title = "批量修改个人调薪计划表", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDtos) {
-        return toAjax(empSalaryAdjustPlanService.updateEmpSalaryAdjustPlans(empSalaryAdjustPlanDtos));
-    }
-
-    /**
-     * 批量新增个人调薪计划表
-     */
-    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:insertEmpSalaryAdjustPlans")
-    @Log(title = "批量新增个人调薪计划表", businessType = BusinessType.INSERT)
-    @PostMapping("/insertEmpSalaryAdjustPlans")
-    public AjaxResult insertEmpSalaryAdjustPlans(@RequestBody List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDtos) {
-        return toAjax(empSalaryAdjustPlanService.insertEmpSalaryAdjustPlans(empSalaryAdjustPlanDtos));
-    }
-
-    /**
      * 逻辑批量删除个人调薪计划表
      */
-    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:removes")
-    @Log(title = "批量删除个人调薪计划表", businessType = BusinessType.DELETE)
+    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:remove")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> empSalaryAdjustPlanIds) {
         return toAjax(empSalaryAdjustPlanService.logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanIds(empSalaryAdjustPlanIds));
+    }
+
+    /**
+     * 查询个人调薪计划表列表
+     */
+    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:pageList")
+    @GetMapping("/list")
+    public AjaxResult list(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
+        List<EmpSalaryAdjustPlanDTO> list = empSalaryAdjustPlanService.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlanDTO);
+        return AjaxResult.success(list);
     }
 
     /**

@@ -742,6 +742,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     public List<TargetSettingDTO> analyseList(TargetSettingDTO targetSettingDTO) {
         TargetSetting targetSetting = new TargetSetting();
         targetSetting.setTargetYear(targetSettingDTO.getTargetYear());
+        targetSetting.setTenantId(SecurityUtils.getTenantId());
         //指标code集合
         List<String> list = new ArrayList<>();
         //订单（不含税）

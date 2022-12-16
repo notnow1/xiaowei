@@ -188,5 +188,4 @@ public class TargetSettingDTO {
      * 目标制定销售回款集合表
      */
     private List<TargetSettingRecoveriesDTO> targetSettingIndicatorDTOS;
-
 }
