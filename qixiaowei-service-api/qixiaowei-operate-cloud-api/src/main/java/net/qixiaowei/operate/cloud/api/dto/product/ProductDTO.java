@@ -48,6 +48,10 @@ public class ProductDTO {
     */
     private  Long parentProductId;
     /**
+     * 父级产品名称
+     */
+    private  String parentProductName;
+    /**
     * 祖级列表ID，按层级用英文逗号隔开
     */
     private  String ancestors;

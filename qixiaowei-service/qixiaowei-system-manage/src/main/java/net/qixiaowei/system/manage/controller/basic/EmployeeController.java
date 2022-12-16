@@ -2,11 +2,18 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.Head;
+import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.handler.CellWriteHandler;
+import com.alibaba.excel.write.handler.SheetWriteHandler;
+import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
+import com.alibaba.excel.write.handler.context.SheetWriteHandlerContext;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
+import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
@@ -186,6 +193,18 @@ public class EmployeeController extends BaseController {
                 .head(head)
                 .registerWriteHandler(levelStrategy)
                 .registerWriteHandler(new SimpleColumnWidthStyleStrategy(17))
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                    }
+                })
                 .sheet("人员信息配置")// 设置 sheet 的名字
                 .doWrite(EmployeeImportListener.dataList(employeeExcelList));
     }
@@ -194,7 +213,7 @@ public class EmployeeController extends BaseController {
      * 导出模板
      */
     @SneakyThrows
-    @RequiresPermissions("system:manage:employee:import")
+//    @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
     public void exportUser(HttpServletResponse response) {
         //部门名称集合

@@ -7,6 +7,7 @@
         SELECT
             p.product_id,
             p.parent_product_id,
+            (SELECT p2.product_name FROM product p2 WHERE p2.product_id = p.parent_product_id and p2.delete_flag = 0) AS parentProductName,
             pu.product_unit_name,
             p.ancestors,
             p.product_code,

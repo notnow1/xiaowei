@@ -69,12 +69,11 @@ public class ProductServiceImpl implements IProductService {
                 R<DictionaryDataDTO> info = remoteDictionaryDataService.info(Long.valueOf(productCategory), SecurityConstants.INNER);
                 DictionaryDataDTO data = info.getData();
                 if (StringUtils.isNotNull(data)){
-                    productDTO.setProductCategoryName(data.getDictionaryType());
+                    productDTO.setProductCategoryName(data.getDictionaryLabel());
                 }
             }
 
         }
-
         //产品文件表
         List<ProductFileDTO> productFileDTOS = productFileMapper.selectProductFileByProductId(productId);
         //拼接文件路径
