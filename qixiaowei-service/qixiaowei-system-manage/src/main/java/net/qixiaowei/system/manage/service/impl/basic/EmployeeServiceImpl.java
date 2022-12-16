@@ -459,7 +459,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         List<CountryDTO> countryDTO = countryDTOS.stream().filter(f -> StringUtils.equals(f.getCountryExcelName(), nationalityName)).collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(countryDTO)) {
                             //国籍id
-                            employee2.setNationality(countryDTO.get(0).getParentCountryId()+countryDTO.get(0).getCountryId().toString());
+                            employee2.setNationality(countryDTO.get(0).getParentCountryId()+","+countryDTO.get(0).getCountryId().toString());
                         } else {
                             employee2.setNationality("1,54");
                         }
@@ -800,6 +800,22 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Override
     public List<EmployeeExcel> exportEmployee(EmployeeDTO employeeDTO) {
+        //所有民族
+        Nation nation = new Nation();
+        List<NationDTO> nationDTOS = nationMapper.selectNationList(nation);
+        //所有国籍
+        List<CountryDTO> countryDTOS = countryService.selectCountryList();
+
+        //查询所有省市
+        List<RegionDTO> regionProvinceNameAndCityNames = regionMapper.selectRegionByProvinceNameAndCityName();
+        //查询所有省市区
+        List<RegionDTO> regionProvinceNameAndCityNameAndDistrictNames = regionMapper.selectRegionByProvinceNameAndCityNameAndDistrictName();
+        //所有岗位
+        Post post = new Post();
+        List<PostDTO> postDTOS = postMapper.selectPostList(post);
+        //查询部门名称附加父级名称
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(departmentDTO);
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeList(employee);
@@ -833,10 +849,91 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         employeeExcel.setMaritalStatus("已婚");
                     }
                 }
+                //国籍
+                if (null != dto.getNationality()){
+                    if (StringUtils.isNotEmpty(countryDTOS)){
+                        List<CountryDTO> nationalitys = countryDTOS.stream().filter(f -> StringUtils.equals(f.getParentCountryId()+","+f.getCountryId(), dto.getNationality())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(nationalitys)){
+                            employeeExcel.setNationalityName(nationalitys.get(0).getCountryExcelName());
+                        }
+                    }else {
+                        throw new ServiceException("国籍未配置 请联系管理员！");
+                    }
+
+                }
+                //民族
+                if (null != dto.getNation()){
+                    if (StringUtils.isNotEmpty(nationDTOS)){
+                        List<NationDTO> nationNames = nationDTOS.stream().filter(f -> StringUtils.equals(String.valueOf(f.getNationId()), dto.getNation())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(nationNames)){
+                            employeeExcel.setNationName(nationNames.get(0).getNationName());
+                        }
+                    }else {
+                        throw new ServiceException("民族未配置 请联系管理员！");
+                    }
+
+                }
+                //户口所在地
+                if (null != dto.getResidentCity()){
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNames)){
+                        List<RegionDTO> collect = regionProvinceNameAndCityNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityCode(),dto.getResidentCity())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)){
+                            employeeExcel.setResidentCityName(collect.get(0).getProvinceAndCityName());
+                        }
+                    }
+
+                }
+                //参保地
+                if (null != dto.getInsuredCity()){
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNames)){
+                        List<RegionDTO> collect = regionProvinceNameAndCityNames.stream().filter(f ->StringUtils.equals(f.getProvinceAndCityCode(),dto.getInsuredCity())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)){
+                            employeeExcel.setInsuredCityName(collect.get(0).getProvinceAndCityName());
+                        }
+                    }
+                }
+                //常住地
+                if (null != dto.getPermanentAddress()){
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNameAndDistrictNames)){
+                        List<RegionDTO> collect = regionProvinceNameAndCityNameAndDistrictNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityAndDistrictCode(),dto.getPermanentAddress())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)){
+                            employeeExcel.setPermanentAddressName(collect.get(0).getProvinceAndCityAndDistrictName());
+                        }
+                    }
+
+                }
                 //入职日期
                 if (null != dto.getEmploymentDate()) {
                     Date employmentDate = dto.getEmploymentDate();
                     employeeExcel.setEmploymentDate(DateUtils.format(employmentDate));
+                }
+                //部门*
+                if (null != dto.getEmployeeDepartmentId()){
+
+                    if (StringUtils.isNotEmpty(departmentDTOList)){
+                        List<DepartmentDTO> employeePostIds = departmentDTOList.stream().filter(f -> f.getDepartmentId() == dto.getEmployeePostId()).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(employeePostIds)){
+                            employeeExcel.setDepartmentName(employeePostIds.get(0).getParentDepartmentExcelName());
+                        }
+                    }
+                }
+                //岗位*
+                if (null != dto.getEmployeePostId()){
+                if (StringUtils.isNotEmpty(postDTOS)){
+                    List<PostDTO> employeePostIds = postDTOS.stream().filter(f -> f.getPostId() == dto.getEmployeePostId()).collect(Collectors.toList());
+                    if (StringUtils.isNotEmpty(employeePostIds)){
+                        employeeExcel.setPostName(employeePostIds.get(0).getPostName());
+                    }
+                }
+                }
+                //通信地址
+                if (null != dto.getContactAddress()){
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNameAndDistrictNames)){
+                        List<RegionDTO> collect = regionProvinceNameAndCityNameAndDistrictNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityAndDistrictCode(),dto.getContactAddress())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)){
+                            employeeExcel.setContactAddress(collect.get(0).getProvinceAndCityAndDistrictName());
+                        }
+                    }
                 }
 
                 employeeExcelList.add(employeeExcel);

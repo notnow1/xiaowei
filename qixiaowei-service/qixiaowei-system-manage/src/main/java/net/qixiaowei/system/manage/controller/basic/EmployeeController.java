@@ -121,7 +121,7 @@ public class EmployeeController extends BaseController {
     /**
      * 导入人员
      */
-    @RequiresPermissions("system:manage:employee:import")
+//    @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
@@ -156,7 +156,7 @@ public class EmployeeController extends BaseController {
      * 导出人员
      */
     @SneakyThrows
-    @RequiresPermissions("system:manage:employee:export")
+//    @RequiresPermissions("system:manage:employee:export")
     @GetMapping("export")
     public void exportEmployee(@RequestParam Map<String, Object> employee, EmployeeDTO employeeDTO, HttpServletResponse response) {
         //部门名称集合
