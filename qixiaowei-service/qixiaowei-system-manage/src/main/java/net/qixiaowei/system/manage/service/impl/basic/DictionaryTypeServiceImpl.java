@@ -43,7 +43,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
      * @return
      */
     @Override
-    public String selectDictionaryTypeByDictionaryType(String dictionaryType) {
+    public DictionaryTypeDTO selectDictionaryTypeByDictionaryType(String dictionaryType) {
         return dictionaryTypeMapper.selectDictionaryTypeByDictionaryType(dictionaryType);
     }
 

@@ -150,10 +150,11 @@
         and toe.delete_flag = 0
         left join target_outcome_details tod
         on ts.indicator_id = tod.indicator_id
+        and toe.target_outcome_id = tod.target_outcome_id
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId}   and tod2.indicator_id = #{targetSetting.indicatorIds[0]}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[0]}
@@ -185,10 +186,11 @@
         and toe.delete_flag = 0
         left join target_outcome_details tod
         on ts.indicator_id = tod.indicator_id
+        and toe.target_outcome_id = tod.target_outcome_id
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId} and tod2.indicator_id = #{targetSetting.indicatorIds[1]}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[1]}
@@ -220,10 +222,11 @@
         and toe.delete_flag = 0
         left join target_outcome_details tod
         on ts.indicator_id = tod.indicator_id
+        and toe.target_outcome_id = tod.target_outcome_id
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId} and tod2.indicator_id = #{targetSetting.indicatorIds[2]}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[2]}
@@ -255,10 +258,11 @@
         and toe.delete_flag = 0
         left join target_outcome_details tod
         on ts.indicator_id = tod.indicator_id
+        and toe.target_outcome_id = tod.target_outcome_id
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId} and tod2.indicator_id = #{targetSetting.indicatorIds[3]}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[3]}
@@ -290,10 +294,11 @@
         and toe.delete_flag = 0
         left join target_outcome_details tod
         on ts.indicator_id = tod.indicator_id
+        and toe.target_outcome_id = tod.target_outcome_id
         and tod.delete_flag = 0
         left join target_outcome_details tod2
         on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId}) = tod2.target_outcome_id
+        = 0 and tenant_id=#{targetSetting.tenantId} and tod2.indicator_id = #{targetSetting.indicatorIds[4]}) = tod2.target_outcome_id
         and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[4]}

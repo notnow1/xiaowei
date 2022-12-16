@@ -24,7 +24,7 @@ public interface IDictionaryTypeService{
      * @param dictionaryType 字典类型表主键
      * @return 字典类型表
      */
-    String selectDictionaryTypeByDictionaryType(String dictionaryType);
+    DictionaryTypeDTO selectDictionaryTypeByDictionaryType(String dictionaryType);
     /**
     * 查询字典类型表列表
     *
