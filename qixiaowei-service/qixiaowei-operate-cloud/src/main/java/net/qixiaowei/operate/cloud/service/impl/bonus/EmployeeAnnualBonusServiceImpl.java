@@ -204,10 +204,6 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     public EmployeeAnnualBonusDTO insertEmployeeAnnualBonus(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         //是否可提交 0保存 1提交
         Integer submitFlag = employeeAnnualBonusDTO.getSubmitFlag();
-        EmployeeAnnualBonusDTO employeeAnnualBonusDTO1 = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByAnnualBonusYear(employeeAnnualBonusDTO.getAnnualBonusYear());
-        if (StringUtils.isNotNull(employeeAnnualBonusDTO1)) {
-            throw new ServiceException(employeeAnnualBonusDTO.getAnnualBonusYear() + "年 数据已存在 无需重复添加！");
-        }
         //发起评议流程标记:0否;1是
         Integer commentFlag = employeeAnnualBonusDTO.getCommentFlag();
         //个人年终奖发放快照信息及发放对象表集合
