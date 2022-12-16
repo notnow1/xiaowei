@@ -27,16 +27,6 @@ public class EmployeeAnnualBonusController extends BaseController {
     private IEmployeeAnnualBonusService employeeAnnualBonusService;
 
     /**
-     * 分页查询奖金发放台账
-     */
-    @RequiresPermissions("operate:cloud:employeeAnnualBonus:bonusGrantStandingPage")
-    @GetMapping("/bonusGrantStandingPage")
-    public TableDataInfo bonusGrantStandingPage(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
-        startPage();
-        List<EmployeeAnnualBonusDTO> list = employeeAnnualBonusService.selectEmployeeAnnualBonusList(employeeAnnualBonusDTO);
-        return getDataTable(list);
-    }
-    /**
      * 分页查询个人年终奖表列表
      */
     @RequiresPermissions("operate:cloud:employeeAnnualBonus:pageList")
