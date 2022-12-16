@@ -172,4 +172,12 @@ public interface PerformanceAppraisalObjectsMapper {
      * @return int
      */
     int withdrawPerformanceAppraisalObjects(@Param("performanceAppraisalObjects") PerformanceAppraisalObjectsDTO performanceAppraisalObjects);
+
+    /**
+     * 员工调薪近三次绩效结果
+     *
+     * @param performAppraisalObjectsId 绩效对象ID
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> performanceResult(Long performAppraisalObjectsId);
 }

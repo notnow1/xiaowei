@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
@@ -63,7 +64,7 @@ public interface IEmployeeService {
      * @param idMaps id集合表
      * @return 员工表集合
      */
-    List<EmployeeDTO> selectEmployeeByPDRIds(Map<String,List<String>> idMaps);
+    List<EmployeeDTO> selectEmployeeByPDRIds(Map<String, List<String>> idMaps);
 
     /**
      * 查询员工单条信息
@@ -244,4 +245,12 @@ public interface IEmployeeService {
      * @return
      */
     List<EmployeeDTO> selectEmployeeByDepartmentIds(List<Long> departmentIds);
+
+    /**
+     * 远程个人调薪计划员工信息
+     *
+     * @param employeeDTO 员工DTO
+     * @return R
+     */
+    EmployeeDTO empSalaryAdjustPlan(EmployeeDTO employeeDTO);
 }

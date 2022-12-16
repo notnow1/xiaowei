@@ -13,6 +13,7 @@ import net.qixiaowei.operate.cloud.api.domain.salary.DeptSalaryAdjustPlan;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustPlanDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.excel.salary.DeptSalaryAdjustPlanExcel;
@@ -123,12 +124,16 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
                 }
             }
             // 上年工资包
-            BigDecimal lastSalary = BigDecimal.ZERO;
+            BigDecimal lastSalary = new BigDecimal(0);
+            List<SalaryPayDetailsDTO> salaryPayDetailsDTOList = null;
             if (StringUtils.isNotEmpty(employeeIds)) {
                 if (planYear < DateUtils.getYear()) {
-                    lastSalary = salaryPayMapper.selectSalaryAmountNum(planYear, DateUtils.getMonth(), employeeIds);
+                    salaryPayDetailsDTOList = salaryPayMapper.selectSalaryAmountNum(planYear, employeeIds);
                 } else {
-                    lastSalary = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
+                    salaryPayDetailsDTOList = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), employeeIds);
+                }
+                if (StringUtils.isNotEmpty(salaryPayDetailsDTOList)) {
+                    lastSalary = getLastSalaryAmount(lastSalary, salaryPayDetailsDTOList);
                 }
             }
             BigDecimal adjustmentPercentage = deptSalaryAdjustItemDTO.getAdjustmentPercentage();//调幅
@@ -352,22 +357,22 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
     public Map<String, BigDecimal> getLastSalary(Long departmentId, Integer planYear) {
         Map<String, BigDecimal> map = new HashMap<>();
         List<EmployeeDTO> employeeByDepartmentId = getEmployeeByDepartmentId(departmentId);
-        if (StringUtils.isEmpty(employeeByDepartmentId)) {
-            map.put("lastSalary", BigDecimal.ZERO);
-        } else {
+        BigDecimal lastSalary = new BigDecimal(0);
+        if (StringUtils.isNotEmpty(employeeByDepartmentId)) {
             List<Long> employeeIds = employeeByDepartmentId.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
             // 上年工资包
             if (StringUtils.isNull(planYear)) {
                 planYear = DateUtils.getYear();
             }
-            BigDecimal lastSalary;
+            List<SalaryPayDetailsDTO> salaryPayDetailsDTOList;
             if (planYear < DateUtils.getYear()) {
-                lastSalary = salaryPayMapper.selectSalaryAmountNum(planYear, DateUtils.getMonth(), employeeIds);
+                salaryPayDetailsDTOList = salaryPayMapper.selectSalaryAmountNum(planYear, employeeIds);
             } else {
-                lastSalary = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), DateUtils.getMonth(), employeeIds);
+                salaryPayDetailsDTOList = salaryPayMapper.selectSalaryAmountNum(DateUtils.getYear(), employeeIds);
             }
-            map.put("lastSalary", lastSalary);
+            lastSalary = getLastSalaryAmount(lastSalary, salaryPayDetailsDTOList);
         }
+        map.put("lastSalary", lastSalary);
         TargetSettingDTO targetSettingDTO = new TargetSettingDTO();
         targetSettingDTO.setTargetSettingType(2);
         List<Integer> planYears = new ArrayList<>();
@@ -383,15 +388,44 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             map.put("adjustmentPercentage", BigDecimal.ZERO);
             return map;
         }
+
         BigDecimal targetValue = Optional.ofNullable(targetSettingDTOList.get(0).getTargetValue()).orElse(BigDecimal.ZERO);
         BigDecimal actualTotal = Optional.ofNullable(targetOutcomeDetailsDTO.getActualTotal()).orElse(BigDecimal.ZERO);
         if (targetValue.compareTo(BigDecimal.ZERO) == 0 || actualTotal.compareTo(BigDecimal.ZERO) == 0) {
             map.put("adjustmentPercentage", BigDecimal.ZERO);
             return map;
         }
+
         BigDecimal adjustmentPercentage = (targetValue.divide(actualTotal, 2, RoundingMode.HALF_UP).subtract(BigDecimal.ONE)).multiply(new BigDecimal("0.5"));
         map.put("adjustmentPercentage", adjustmentPercentage);
         return map;
+    }
+
+    /**
+     * 获取上年工资包金额
+     *
+     * @param lastSalary              工资包金额
+     * @param salaryPayDetailsDTOList 工资详情LIST
+     * @return BigDecimal
+     */
+    private BigDecimal getLastSalaryAmount(BigDecimal lastSalary, List<SalaryPayDetailsDTO> salaryPayDetailsDTOList) {
+        Map<Long, List<SalaryPayDetailsDTO>> employeeMap = salaryPayDetailsDTOList.stream().collect(Collectors.groupingBy(SalaryPayDetailsDTO::getEmployeeId));
+        for (Long employeeId : employeeMap.keySet()) {
+            List<SalaryPayDetailsDTO> salaryPayDetailsDTOS = employeeMap.get(employeeId);
+            for (int i = salaryPayDetailsDTOS.size() - 1; i >= 0; i--) {
+                SalaryPayDetailsDTO salaryPayDetailsDTO = salaryPayDetailsDTOS.get(i);
+                if (salaryPayDetailsDTO.getPayYear() == DateUtils.getYear() && salaryPayDetailsDTO.getPayMonth() >= DateUtils.getMonth()) {
+                    salaryPayDetailsDTOS.remove(i);
+                }
+            }
+            if (salaryPayDetailsDTOS.size() > 12) {
+                salaryPayDetailsDTOS = salaryPayDetailsDTOS.subList(0, 12);//取0-12月
+            }
+            for (SalaryPayDetailsDTO payDetailsDTO : salaryPayDetailsDTOS) {
+                lastSalary = lastSalary.add(payDetailsDTO.getAmount());
+            }
+        }
+        return lastSalary;
     }
 
     /**

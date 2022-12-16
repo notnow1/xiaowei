@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.api.dto.performance;
 
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 import lombok.Data;
@@ -142,6 +143,11 @@ public class PerformanceAppraisalObjectsDTO {
      * 考核结果
      */
     private String appraisalResult;
+    /**
+     * 归档日期
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private LocalDate filingDate;
     /**
      * 绩效等级ID
      */

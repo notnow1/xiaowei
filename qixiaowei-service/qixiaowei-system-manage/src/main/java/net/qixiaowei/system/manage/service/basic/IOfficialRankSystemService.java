@@ -152,10 +152,19 @@ public interface IOfficialRankSystemService {
     List<Map<String, String>> selectOfficialRankMapBySystemId(Long officialRankSystemId);
 
     /**
+     * 根据岗位查询调薪的职级下拉列表
+     *
+     * @param postId 岗位ID
+     * @return List
+     */
+    List<Map<String, String>> selectOfficialRankMapByPostId(Long postId);
+
+    /**
      * 查询岗位职级一览表
      *
      * @param officialRankSystemDTO 职级体系
      * @return
      */
     Map<String, Object> selectRankViewList(OfficialRankSystemDTO officialRankSystemDTO);
+
 }

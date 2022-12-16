@@ -27,4 +27,18 @@ public class RemotePost implements RemotePostService {
         return R.ok(postService.selectPostListByOfficialRank(officialRankSystemId));
     }
 
+    /**
+     * 查找部门根据部门ID
+     *
+     * @param postId 部门ID
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/selectPostListByPostId")
+    public R<PostDTO> selectPostByPostId(@RequestParam("postId") Long postId, String source) {
+        return R.ok(postService.selectPostByPostId(postId));
+    }
+
 }

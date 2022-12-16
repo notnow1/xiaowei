@@ -137,7 +137,16 @@ public interface OfficialRankSystemMapper {
 
     /**
      * 获取当前职级体系第一行数据的ID
+     *
      * @return Long
      */
     Long selectFirstOfficialRankSystem();
+
+    /**
+     * 根据岗位查询调薪的职级下拉列表
+     *
+     * @param postId 岗位ID
+     * @return List
+     */
+    OfficialRankSystemDTO selectOfficialRankSystemByPostId(@Param("postId") Long postId);
 }

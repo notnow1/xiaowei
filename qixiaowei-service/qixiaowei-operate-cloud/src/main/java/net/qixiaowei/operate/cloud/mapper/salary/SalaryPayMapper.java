@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.mapper.salary;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryPay;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -171,11 +172,10 @@ public interface SalaryPayMapper {
      * 当前月份倒推12个月的工资总计
      *
      * @param budgetYear  年份
-     * @param month       月份
      * @param employeeIds 员工Id集合
      * @return BigDecimal
      */
-    BigDecimal selectSalaryAmountNum(@Param("budgetYear") int budgetYear, @Param("month") int month, @Param("employeeIds") List<Long> employeeIds);
+    List<SalaryPayDetailsDTO> selectSalaryAmountNum(@Param("budgetYear") int budgetYear, @Param("employeeIds") List<Long> employeeIds);
 
     /**
      * 返回上年总工资包实际数：从月度工资数据管理取值（总计值）

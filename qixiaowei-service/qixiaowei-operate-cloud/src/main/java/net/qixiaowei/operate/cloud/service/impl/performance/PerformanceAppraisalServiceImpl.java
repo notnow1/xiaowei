@@ -2817,44 +2817,48 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     private static void setObjectFieldName(PerformanceAppraisalObjectsDTO appraisalObjectsDTO) {
         // 考核周期类型/考核周期
-        if (StringUtils.isNotNull(appraisalObjectsDTO) && StringUtils.isNotNull(appraisalObjectsDTO.getCycleType())) {
-            switch (appraisalObjectsDTO.getCycleType()) {
-                case 1:
-                    appraisalObjectsDTO.setCycleTypeName("月度");
-                    appraisalObjectsDTO.setCycleNumberName(appraisalObjectsDTO.getCycleNumber().toString() + "月");
-                    break;
-                case 2:
-                    appraisalObjectsDTO.setCycleTypeName("季度");
-                    appraisalObjectsDTO.setCycleNumberName(appraisalObjectsDTO.getCycleNumber().toString() + "季度");
-                    break;
-                case 3:
-                    appraisalObjectsDTO.setCycleTypeName("半年度");
-                    if (appraisalObjectsDTO.getCycleNumber() == 1) {
-                        appraisalObjectsDTO.setCycleNumberName("上半年");
-                    } else {
-                        appraisalObjectsDTO.setCycleNumberName("下半年");
-                    }
-                    break;
-                case 4:
-                    appraisalObjectsDTO.setCycleTypeName("年度");
-                    appraisalObjectsDTO.setCycleNumberName("整年度");
-                    break;
+        if (StringUtils.isNotNull(appraisalObjectsDTO)) {
+            if (StringUtils.isNotNull(appraisalObjectsDTO.getCycleType())) {
+                switch (appraisalObjectsDTO.getCycleType()) {
+                    case 1:
+                        appraisalObjectsDTO.setCycleTypeName("月度");
+                        appraisalObjectsDTO.setCycleNumberName(appraisalObjectsDTO.getCycleNumber().toString() + "月");
+                        break;
+                    case 2:
+                        appraisalObjectsDTO.setCycleTypeName("季度");
+                        appraisalObjectsDTO.setCycleNumberName(appraisalObjectsDTO.getCycleNumber().toString() + "季度");
+                        break;
+                    case 3:
+                        appraisalObjectsDTO.setCycleTypeName("半年度");
+                        if (appraisalObjectsDTO.getCycleNumber() == 1) {
+                            appraisalObjectsDTO.setCycleNumberName("上半年");
+                        } else {
+                            appraisalObjectsDTO.setCycleNumberName("下半年");
+                        }
+                        break;
+                    case 4:
+                        appraisalObjectsDTO.setCycleTypeName("年度");
+                        appraisalObjectsDTO.setCycleNumberName("整年度");
+                        break;
+                }
             }
-            // 考核阶段
-            switch (appraisalObjectsDTO.getAppraisalObjectStatus()) {
-                case 1:
-                    appraisalObjectsDTO.setAppraisalObjectStatusName("未制定");
-                    break;
-                case 2:
-                case 4:
-                    appraisalObjectsDTO.setAppraisalObjectStatusName("草稿");
-                    break;
-                case 3:
-                    appraisalObjectsDTO.setAppraisalObjectStatusName("未评议");
-                    break;
-                case 5:
-                    appraisalObjectsDTO.setAppraisalObjectStatusName("未排名");
-                    break;
+            if (StringUtils.isNotNull(appraisalObjectsDTO.getAppraisalObjectStatus())) {
+                // 考核阶段
+                switch (appraisalObjectsDTO.getAppraisalObjectStatus()) {
+                    case 1:
+                        appraisalObjectsDTO.setAppraisalObjectStatusName("未制定");
+                        break;
+                    case 2:
+                    case 4:
+                        appraisalObjectsDTO.setAppraisalObjectStatusName("草稿");
+                        break;
+                    case 3:
+                        appraisalObjectsDTO.setAppraisalObjectStatusName("未评议");
+                        break;
+                    case 5:
+                        appraisalObjectsDTO.setAppraisalObjectStatusName("未排名");
+                        break;
+                }
             }
         }
     }

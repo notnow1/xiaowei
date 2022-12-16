@@ -642,8 +642,10 @@
         p.post_code,
         d.department_name as employee_department_name,
         e2.employee_name as in_charge,
+        d.department_leader_id,
         d.department_code,
         ors.official_rank_system_name,
+        ors.official_rank_system_id,
         case when ors.rank_prefix_code is null then e.employee_rank
         when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,e.employee_rank) end as
         employee_rank_name,

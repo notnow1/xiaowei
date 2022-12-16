@@ -114,12 +114,23 @@ public class OfficialRankSystemController extends BaseController {
     /**
      * 通过Id查找职级上下限
      *
-     * @param officialRankSystemId
+     * @param officialRankSystemId 职级id
      * @return
      */
     @GetMapping("/selectRankMapById/{officialRankSystemId}")
     public AjaxResult selectRankMapById(@PathVariable Long officialRankSystemId) {
         return AjaxResult.success(officialRankSystemService.selectOfficialRankMapBySystemId(officialRankSystemId));
+    }
+
+    /**
+     * 根据岗位查询调薪的职级下拉列表
+     *
+     * @param postId 岗位
+     * @return
+     */
+    @GetMapping("/selectRankByPost/{postId}")
+    public AjaxResult selectRankMapByPostId(@PathVariable Long postId) {
+        return AjaxResult.success(officialRankSystemService.selectOfficialRankMapByPostId(postId));
     }
 
     /**

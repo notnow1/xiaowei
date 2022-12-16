@@ -21,6 +21,11 @@ public class RemotePostFallbackFactory implements FallbackFactory<RemotePostServ
             public R<List<PostDTO>> selectPostListByOfficialRank(Long officialRankSystemId, String source) {
                 return R.fail("根据职级体系ID获取行业信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<PostDTO> selectPostByPostId(Long postId, String source) {
+                return R.fail("查找部门根据部门ID失败:" + throwable.getMessage());
+            }
         };
     }
 }

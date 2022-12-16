@@ -237,6 +237,31 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
     }
 
     /**
+     * 根据岗位查询调薪的职级下拉列表
+     *
+     * @param postId 岗位ID
+     * @return List
+     */
+    @Override
+    public List<Map<String, String>> selectOfficialRankMapByPostId(Long postId) {
+        if (StringUtils.isNull(postId)) {
+            throw new ServiceException("岗位ID不能为空");
+        }
+        List<Map<String, String>> list = new ArrayList<>();
+        OfficialRankSystemDTO officialRankSystemDTO = officialRankSystemMapper.selectOfficialRankSystemByPostId(postId);
+        String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
+        Integer postRankUpper = officialRankSystemDTO.getPostRankUpper();
+        Integer postRankLower = officialRankSystemDTO.getPostRankLower();
+        for (int i = postRankUpper; i < postRankLower + 1; i++) {
+            Map<String, String> map = new HashMap<>();
+            map.put("officialRankName", rankPrefixCode + i);
+            map.put("officialRank", String.valueOf(i));
+            list.add(map);
+        }
+        return list;
+    }
+
+    /**
      * 查询岗位职级一览表
      *
      * @param officialRankSystemDTO 职级体系

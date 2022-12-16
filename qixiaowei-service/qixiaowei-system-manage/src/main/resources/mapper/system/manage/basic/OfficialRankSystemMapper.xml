@@ -113,6 +113,19 @@
         ORDER BY create_time ASC
         limit 1
     </select>
+    <select id="selectOfficialRankSystemByPostId"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO">
+        SELECT
+        ors.rank_prefix_code,
+        p.post_rank_upper,
+        p.post_rank_lower
+        FROM official_rank_system ors
+        LEFT JOIN post p
+        ON p.official_rank_system_id = ors.official_rank_system_id
+        AND p.delete_flag=0
+        WHERE p.post_id = #{postId}
+        AND ors.delete_flag=0
+    </select>
     <!--新增职级体系表-->
     <insert id="insertOfficialRankSystem" useGeneratedKeys="true" keyProperty="officialRankSystemId">
         INSERT INTO official_rank_system

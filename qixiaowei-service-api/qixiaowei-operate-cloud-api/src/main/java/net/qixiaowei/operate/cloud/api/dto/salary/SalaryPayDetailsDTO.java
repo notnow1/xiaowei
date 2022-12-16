@@ -59,6 +59,18 @@ public class SalaryPayDetailsDTO {
      */
     private Integer sort;
     /**
+     * 员工ID
+     */
+    private Long employeeId;
+    /**
+     * 发薪年份
+     */
+    private Integer payYear;
+    /**
+     * 发薪月份
+     */
+    private Integer payMonth;
+    /**
      * 一级项目:1总工资包;2总奖金包;3总扣减项
      */
     private Integer firstLevelItem;

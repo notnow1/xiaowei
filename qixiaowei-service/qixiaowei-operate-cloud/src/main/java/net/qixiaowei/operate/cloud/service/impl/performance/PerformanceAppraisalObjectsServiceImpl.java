@@ -1,21 +1,23 @@
 package net.qixiaowei.operate.cloud.service.impl.performance;
 
-import java.util.*;
-
-import net.qixiaowei.integration.common.utils.DateUtils;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalObjects;
-import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalObjectsExcel;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
-import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalObjectsMapper;
-import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalObjectsService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalObjects;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
+import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalObjectsExcel;
+import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalObjectsMapper;
+import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalObjectsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -300,6 +302,17 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
     @Override
     public int withdrawPerformanceAppraisalObjects(PerformanceAppraisalObjectsDTO performanceAppraisalObjects) {
         return performanceAppraisalObjectsMapper.withdrawPerformanceAppraisalObjects(performanceAppraisalObjects);
+    }
+
+    /**
+     * 员工调薪近三次绩效结果
+     *
+     * @param performAppraisalObjectsId 绩效对象ID
+     * @return List
+     */
+    @Override
+    public List<PerformanceAppraisalObjectsDTO> performanceResult(Long performAppraisalObjectsId) {
+        return performanceAppraisalObjectsMapper.performanceResult(performAppraisalObjectsId);
     }
 }
 

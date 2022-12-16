@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.EmpSalaryAdjustPlanMapper">
+    <!--    查询个人调薪计划表-->
+    <select id="selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO">
+        SELECT
+        esa.emp_salary_adjust_plan_id,
+        esa.employee_id,
+        esa.effective_date,
+        esa.adjustment_type,
+        esa.adjust_department_id,
+        esa.adjust_department_name,
+        esa.adjust_post_id,
+        esa.adjust_post_name,
+        esa.adjust_official_rank_system_id,
+        esa.adjust_official_rank_system_name,
+        esa.adjust_official_rank,
+        esa.adjust_official_rank_name,
+        esa.adjust_emolument,
+        esa.adjust_explain,
+        esa.status,
+        ess.emp_salary_adjust_snap_id,
+        ess.emp_salary_adjust_plan_id,
+        ess.employee_name,
+        ess.employment_date,
+        ess.seniority,
+        ess.department_id,
+        ess.department_name,
+        ess.department_leader_id,
+        ess.department_leader_name,
+        ess.post_id,
+        ess.post_name,
+        ess.official_rank_system_id,
+        ess.official_rank_system_name,
+        ess.official_rank,
+        ess.official_rank_name,
+        ess.basic_wage
+        FROM emp_salary_adjust_plan esa
+        LEFT JOIN emp_salary_adjust_snap ess ON esa.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
+        AND ess.delete_flag = 0
+        LEFT JOIN emp_salary_adjust_snap ess ON esa.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
+        AND ess.delete_flag = 0
+        WHERE esa.emp_salary_adjust_plan_id=#{empSalaryAdjustPlanId}
+        and esa.delete_flag=0
+    </select>
+
+    <!--    批量查询个人调薪计划表-->
+    <select id="selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO">
+        SELECT
+        emp_salary_adjust_plan_id,employee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM emp_salary_adjust_plan
+        WHERE emp_salary_adjust_plan_id in
+        <foreach item="item"
+                 collection="empSalaryAdjustPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询个人调薪计划表列表-->
+    <select id="selectEmpSalaryAdjustPlanList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO">
+        SELECT
+        emp_salary_adjust_plan_id,employee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM emp_salary_adjust_plan
+        WHERE delete_flag=0
+        <if test="empSalaryAdjustPlan.empSalaryAdjustPlanId != null">
+            and emp_salary_adjust_plan_id=#{empSalaryAdjustPlan.empSalaryAdjustPlanId}
+        </if>
+        <if test="empSalaryAdjustPlan.employeeId != null">
+            and employee_id=#{empSalaryAdjustPlan.employeeId}
+        </if>
+        <if test="empSalaryAdjustPlan.effectiveDate != null">
+            and effective_date=#{empSalaryAdjustPlan.effectiveDate}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustmentType != null and empSalaryAdjustPlan.adjustmentType != ''">
+            and adjustment_type=#{empSalaryAdjustPlan.adjustmentType}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustDepartmentId != null">
+            and adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustDepartmentName != null and empSalaryAdjustPlan.adjustDepartmentName != ''">
+            and adjust_department_name=#{empSalaryAdjustPlan.adjustDepartmentName}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustPostId != null">
+            and adjust_post_id=#{empSalaryAdjustPlan.adjustPostId}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustPostName != null and empSalaryAdjustPlan.adjustPostName != ''">
+            and adjust_post_name=#{empSalaryAdjustPlan.adjustPostName}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustOfficialRankSystemId != null">
+            and adjust_official_rank_system_id=#{empSalaryAdjustPlan.adjustOfficialRankSystemId}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustOfficialRankSystemName != null and empSalaryAdjustPlan.adjustOfficialRankSystemName != ''">
+            and adjust_official_rank_system_name=#{empSalaryAdjustPlan.adjustOfficialRankSystemName}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustOfficialRank != null">
+            and adjust_official_rank=#{empSalaryAdjustPlan.adjustOfficialRank}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustOfficialRankName != null and empSalaryAdjustPlan.adjustOfficialRankName != ''">
+            and adjust_official_rank_name=#{empSalaryAdjustPlan.adjustOfficialRankName}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustEmolument != null">
+            and adjust_emolument=#{empSalaryAdjustPlan.adjustEmolument}
+        </if>
+        <if test="empSalaryAdjustPlan.adjustExplain != null and empSalaryAdjustPlan.adjustExplain != ''">
+            and adjust_explain=#{empSalaryAdjustPlan.adjustExplain}
+        </if>
+        <if test="empSalaryAdjustPlan.status != null">
+            and status=#{empSalaryAdjustPlan.status}
+        </if>
+        <if test="empSalaryAdjustPlan.deleteFlag != null">
+            and delete_flag=#{empSalaryAdjustPlan.deleteFlag}
+        </if>
+        <if test="empSalaryAdjustPlan.createBy != null">
+            and create_by=#{empSalaryAdjustPlan.createBy}
+        </if>
+        <if test="empSalaryAdjustPlan.createTime != null">
+            and create_time=#{empSalaryAdjustPlan.createTime}
+        </if>
+        <if test="empSalaryAdjustPlan.updateBy != null">
+            and update_by=#{empSalaryAdjustPlan.updateBy}
+        </if>
+        <if test="empSalaryAdjustPlan.updateTime != null">
+            and update_time=#{empSalaryAdjustPlan.updateTime}
+        </if>
+    </select>
+    <!--根据员工ID获取个人调薪计划表-->
+    <select id="selectByEmployeeId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO">
+        SELECT
+        esp.emp_salary_adjust_plan_id,
+        esp.employee_id,
+        esp.effective_date,
+        esp.adjustment_type,
+        esp.adjust_department_id,
+        esp.adjust_department_name,
+        esp.adjust_post_id,
+        esp.adjust_post_name,
+        esp.adjust_official_rank_system_id,
+        esp.adjust_official_rank_system_name,
+        esp.adjust_official_rank,
+        esp.adjust_official_rank_name,
+        esp.adjust_emolument,
+        esp.adjust_explain,
+        esp.status,
+        ess.post_id,
+        ess.post_name,
+        ess.official_rank_name,
+        ess.basic_wage
+        FROM emp_salary_adjust_plan esp
+        LEFT JOIN emp_salary_adjust_snap ess
+        ON esp.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
+        AND ess.delete_flag=0
+        WHERE esp.delete_flag=0
+    </select>
+    <!--新增个人调薪计划表-->
+    <insert id="insertEmpSalaryAdjustPlan" useGeneratedKeys="true" keyProperty="empSalaryAdjustPlanId">
+        INSERT INTO emp_salary_adjust_plan
+        (emp_salary_adjust_plan_idemployee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{empSalaryAdjustPlan.employeeId},#{empSalaryAdjustPlan.effectiveDate},#{empSalaryAdjustPlan.adjustmentType},#{empSalaryAdjustPlan.adjustDepartmentId},#{empSalaryAdjustPlan.adjustDepartmentName},#{empSalaryAdjustPlan.adjustPostId},#{empSalaryAdjustPlan.adjustPostName},#{empSalaryAdjustPlan.adjustOfficialRankSystemId},#{empSalaryAdjustPlan.adjustOfficialRankSystemName},#{empSalaryAdjustPlan.adjustOfficialRank},#{empSalaryAdjustPlan.adjustOfficialRankName},#{empSalaryAdjustPlan.adjustEmolument},#{empSalaryAdjustPlan.adjustExplain},#{empSalaryAdjustPlan.status},#{empSalaryAdjustPlan.deleteFlag},#{empSalaryAdjustPlan.createBy},#{empSalaryAdjustPlan.createTime},#{empSalaryAdjustPlan.updateBy},#{empSalaryAdjustPlan.updateTime})
+    </insert>
+    <!--修改个人调薪计划表-->
+    <update id="updateEmpSalaryAdjustPlan">
+        UPDATE emp_salary_adjust_plan
+        SET
+        <if test="empSalaryAdjustPlan.employeeId != null">
+            employee_id=#{empSalaryAdjustPlan.employeeId},
+        </if>
+        <if test="empSalaryAdjustPlan.effectiveDate != null">
+            effective_date=#{empSalaryAdjustPlan.effectiveDate},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustmentType != null and empSalaryAdjustPlan.adjustmentType != ''">
+            adjustment_type=#{empSalaryAdjustPlan.adjustmentType},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustDepartmentId != null">
+            adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustDepartmentName != null and empSalaryAdjustPlan.adjustDepartmentName != ''">
+            adjust_department_name=#{empSalaryAdjustPlan.adjustDepartmentName},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustPostId != null">
+            adjust_post_id=#{empSalaryAdjustPlan.adjustPostId},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustPostName != null and empSalaryAdjustPlan.adjustPostName != ''">
+            adjust_post_name=#{empSalaryAdjustPlan.adjustPostName},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustOfficialRankSystemId != null">
+            adjust_official_rank_system_id=#{empSalaryAdjustPlan.adjustOfficialRankSystemId},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustOfficialRankSystemName != null and empSalaryAdjustPlan.adjustOfficialRankSystemName != ''">
+            adjust_official_rank_system_name=#{empSalaryAdjustPlan.adjustOfficialRankSystemName},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustOfficialRank != null">
+            adjust_official_rank=#{empSalaryAdjustPlan.adjustOfficialRank},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustOfficialRankName != null and empSalaryAdjustPlan.adjustOfficialRankName != ''">
+            adjust_official_rank_name=#{empSalaryAdjustPlan.adjustOfficialRankName},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustEmolument != null">
+            adjust_emolument=#{empSalaryAdjustPlan.adjustEmolument},
+        </if>
+        <if test="empSalaryAdjustPlan.adjustExplain != null and empSalaryAdjustPlan.adjustExplain != ''">
+            adjust_explain=#{empSalaryAdjustPlan.adjustExplain},
+        </if>
+        <if test="empSalaryAdjustPlan.status != null">
+            status=#{empSalaryAdjustPlan.status},
+        </if>
+        <if test="empSalaryAdjustPlan.deleteFlag != null">
+            delete_flag=#{empSalaryAdjustPlan.deleteFlag},
+        </if>
+        <if test="empSalaryAdjustPlan.createBy != null">
+            create_by=#{empSalaryAdjustPlan.createBy},
+        </if>
+        <if test="empSalaryAdjustPlan.createTime != null">
+            create_time=#{empSalaryAdjustPlan.createTime},
+        </if>
+        <if test="empSalaryAdjustPlan.updateBy != null">
+            update_by=#{empSalaryAdjustPlan.updateBy},
+        </if>
+        <if test="empSalaryAdjustPlan.updateTime != null">
+            update_time=#{empSalaryAdjustPlan.updateTime}
+        </if>
+        WHERE
+        emp_salary_adjust_plan_id=#{empSalaryAdjustPlan.empSalaryAdjustPlanId}
+    </update>
+    <!--逻辑删除个人调薪计划表-->
+    <update id="logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId">
+        UPDATE emp_salary_adjust_plan
+        SET delete_flag= 1,
+        update_by=#{empSalaryAdjustPlan.updateBy},
+        update_time=#{empSalaryAdjustPlan.updateTime}
+        WHERE
+        emp_salary_adjust_plan_id=#{empSalaryAdjustPlan.empSalaryAdjustPlanId}
+    </update>
+    <!--逻辑批量删除个人调薪计划表-->
+    <update id="logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanIds">
+        UPDATE emp_salary_adjust_plan
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        emp_salary_adjust_plan_id IN
+        <foreach item="item"
+                 collection="empSalaryAdjustPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增个人调薪计划表-->
+    <insert id="batchEmpSalaryAdjustPlan">
+        INSERT INTO emp_salary_adjust_plan
+        (emp_salary_adjust_plan_idemployee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="empSalaryAdjustPlans"
+                 separator=",">
+            (#{item.employeeId},#{item.effectiveDate},#{item.adjustmentType},#{item.adjustDepartmentId},#{item.adjustDepartmentName},#{item.adjustPostId},#{item.adjustPostName},#{item.adjustOfficialRankSystemId},#{item.adjustOfficialRankSystemName},#{item.adjustOfficialRank},#{item.adjustOfficialRankName},#{item.adjustEmolument},#{item.adjustExplain},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除个人调薪计划表-->
+    <delete id="deleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId">
+        DELETE FROM emp_salary_adjust_plan
+        WHERE emp_salary_adjust_plan_id=#{empSalaryAdjustPlan}
+
+    </delete>
+    <!--物理批量删除个人调薪计划表-->
+    <delete id="deleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanIds">
+        DELETE FROM emp_salary_adjust_plan
+        WHERE emp_salary_adjust_plan_id IN
+        <foreach item="item"
+                 collection="empSalaryAdjustPlanIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改个人调薪计划表-->
+    <update id="updateEmpSalaryAdjustPlans">
+        update emp_salary_adjust_plan
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="employee_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.employeeId != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.employeeId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="effective_date=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.effectiveDate != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.effectiveDate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjustment_type=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustmentType != null and item.adjustmentType != ''">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustmentType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_department_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustDepartmentId != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustDepartmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_department_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustDepartmentName != null and item.adjustDepartmentName != ''">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustDepartmentName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_post_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustPostId != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustPostId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_post_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustPostName != null and item.adjustPostName != ''">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustPostName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_official_rank_system_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustOfficialRankSystemId != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then
+                        #{item.adjustOfficialRankSystemId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_official_rank_system_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustOfficialRankSystemName != null and item.adjustOfficialRankSystemName != ''">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then
+                        #{item.adjustOfficialRankSystemName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_official_rank=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustOfficialRank != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustOfficialRank}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_official_rank_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustOfficialRankName != null and item.adjustOfficialRankName != ''">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustOfficialRankName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_emolument=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustEmolument != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustEmolument}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="adjust_explain=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.adjustExplain != null and item.adjustExplain != ''">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.adjustExplain}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.status != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPlanList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="empSalaryAdjustPlanList" separator="or" item="item" index="index">
+            emp_salary_adjust_plan_id=#{item.empSalaryAdjustPlanId}
+        </foreach>
+    </update>
+</mapper>
+
+

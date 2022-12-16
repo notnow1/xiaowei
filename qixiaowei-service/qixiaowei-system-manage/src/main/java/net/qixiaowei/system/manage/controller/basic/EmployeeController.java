@@ -280,5 +280,15 @@ public class EmployeeController extends BaseController {
         return AjaxResult.success(employeeService.selecTamountLastYearList(employeeDTO));
     }
 
+    /**
+     * 根据部门id查询员工表列表
+     */
+    @GetMapping("/empSalaryAdjustPlanById/{employeeId}")
+    public AjaxResult empSalaryAdjustPlanById(@PathVariable Long employeeId) {
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setEmployeeId(employeeId);
+        return AjaxResult.success(employeeService.empSalaryAdjustPlan(employeeDTO));
+    }
+
 
 }

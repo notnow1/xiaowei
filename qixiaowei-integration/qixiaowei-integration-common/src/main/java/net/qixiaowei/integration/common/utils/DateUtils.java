@@ -7,6 +7,7 @@ import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -62,6 +63,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         // atZone()方法返回在指定时区从此Instant生成的ZonedDateTime。
         return instant.atZone(zoneId).toLocalDate();
     }
+
     /**
      * 获取中文当前日期, 默认格式为yyyy年MM月dd日 00:00
      *
@@ -522,5 +524,16 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         calendar.setTime(Date.from(zdt.toInstant()));
         // 获取当前年
         return calendar.get(Calendar.MONTH) + 1;
+    }
+
+    /**
+     * 获取LocalTime时间类型的月份
+     *
+     * @param localTime 时间
+     * @return String
+     */
+    public static String localToString(LocalDate localTime) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return localTime.format(df);
     }
 }

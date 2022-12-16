@@ -16,6 +16,7 @@ import javax.validation.constraints.*;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
@@ -329,5 +330,14 @@ public class EmployeeDTO implements Serializable {
      * 部门负责人id
      */
     private Long departmentLeaderId;
+    /**
+     * 近三次绩效结果集合
+     */
+    private List<Map<String, String>> performanceResultList;
+    /**
+     * 个人调薪记录
+     */
+    private List<EmployeeSalarySnapVO> employeeSalarySnapVOS;
+
 }
 

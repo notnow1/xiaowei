@@ -20,6 +20,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemServ
 import net.qixiaowei.system.manage.api.remote.basic.RemotePostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -245,6 +246,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateOfficialRankEmolument(OfficialRankEmolumentDTO officialRankEmolumentDTO) {
         Long officialRankSystemId = officialRankEmolumentDTO.getOfficialRankSystemId();
         if (StringUtils.isNull(officialRankSystemId)) {

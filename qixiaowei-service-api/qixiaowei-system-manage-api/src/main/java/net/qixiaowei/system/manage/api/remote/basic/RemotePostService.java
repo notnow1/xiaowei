@@ -24,4 +24,12 @@ public interface RemotePostService {
     @GetMapping(API_PREFIX_POST + "/selectPostListByOfficialRank")
     R<List<PostDTO>> selectPostListByOfficialRank(@RequestParam("officialRankSystemId") Long officialRankSystemId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
+    /**
+     * 查找部门根据部门ID
+     *
+     * @return 结果
+     */
+    @GetMapping(API_PREFIX_POST + "/selectPostListByPostId")
+    R<PostDTO> selectPostByPostId(@RequestParam("postId") Long postId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
 }

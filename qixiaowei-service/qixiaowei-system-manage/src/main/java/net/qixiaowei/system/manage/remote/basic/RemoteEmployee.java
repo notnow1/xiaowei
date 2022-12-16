@@ -124,7 +124,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @Override
     @InnerAuth
     @PostMapping("/selectEmployeeByPDRIds")
-    public R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String,List<String>> idMaps, String source) {
+    public R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String, List<String>> idMaps, String source) {
         return R.ok(employeeService.selectEmployeeByPDRIds(idMaps));
     }
 
@@ -179,5 +179,18 @@ public class RemoteEmployee implements RemoteEmployeeService {
     @PostMapping("/selectEmployeeByDepartmentIds")
     public R<List<EmployeeDTO>> selectEmployeeByDepartmentIds(@RequestBody List<Long> departmentIds, String source) {
         return R.ok(employeeService.selectEmployeeByDepartmentIds(departmentIds));
+    }
+
+    /**
+     * 远程个人调薪计划员工信息
+     *
+     * @param employeeDTO 员工信息
+     * @param source
+     * @return
+     */
+    @Override
+    @PostMapping("/empSalaryAdjustPlan")
+    public R<EmployeeDTO> empSalaryAdjustPlan(EmployeeDTO employeeDTO, String source) {
+        return R.ok(employeeService.empSalaryAdjustPlan(employeeDTO));
     }
 }

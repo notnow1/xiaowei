@@ -8,12 +8,17 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppraisalService;
+import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.*;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.mapper.basic.*;
 import net.qixiaowei.system.manage.mapper.system.RegionMapper;
@@ -68,6 +73,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private ICountryService countryService;
     @Autowired
     private RegionMapper regionMapper;
+    @Autowired
+    private RemotePerformanceAppraisalService performanceAppraisalService;
+    @Autowired
+    private RemoteSalaryAdjustPlanService salaryAdjustPlanService;
 
 
     /**
@@ -1187,7 +1196,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Transactional
     @Override
     public int deleteEmployeeByEmployeeIds(List<EmployeeDTO> employeeDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (EmployeeDTO employeeDTO : employeeDtos) {
             stringList.add(employeeDTO.getEmployeeId());
         }
@@ -1201,7 +1210,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Transactional
     public int insertEmployees(List<EmployeeDTO> employeeDtos) {
-        List<Employee> employeeList = new ArrayList();
+        List<Employee> employeeList = new ArrayList<>();
 
         for (EmployeeDTO employeeDTO : employeeDtos) {
             Employee employee = new Employee();
@@ -1235,6 +1244,137 @@ public class EmployeeServiceImpl implements IEmployeeService {
             employeeList.add(employee);
         }
         return employeeMapper.updateEmployees(employeeList);
+    }
+
+    /**
+     * 新增人力预算上年期末数集合预制数据
+     *
+     * @param employeeDTO 员工DTO
+     * @return EmployeeDTO
+     */
+    @Override
+    public EmployeeDTO empSalaryAdjustPlan(EmployeeDTO employeeDTO) {
+        Long employeeId = employeeDTO.getEmployeeId();
+        if (StringUtils.isNull(employeeId)) {
+            throw new ServiceException("员工ID不可以为空");
+        }
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        List<EmployeeDTO> employeeDTOS = employeeMapper.selectPostSalaryReportList(employee);
+        if (StringUtils.isEmpty(employeeDTOS)) {
+            throw new ServiceException("员工信息已不存在 检查员工配置");
+        }
+        EmployeeDTO dto = employeeDTOS.get(0);
+        // 最近三次绩效结果
+        List<Map<String, String>> performanceResultList = new ArrayList<>();
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = getPerformanceAppraisalObject(employeeId);
+        if (StringUtils.isNotEmpty(performanceAppraisalObjectsDTOS)) {
+            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
+                setObjectFieldName(performanceAppraisalObjectsDTO);
+                HashMap<String, String> map = new HashMap<>();
+                map.put("appraisalResult", performanceAppraisalObjectsDTO.getAppraisalResult());
+                map.put("cycleNumberName", performanceAppraisalObjectsDTO.getCycleNumberName());
+                map.put("filingDate", DateUtils.localToString(performanceAppraisalObjectsDTO.getFilingDate()));
+                performanceResultList.add(map);
+                dto.setPerformanceResultList(performanceResultList);
+            }
+        }
+        // 个人调薪计划
+        List<EmpSalaryAdjustPlanDTO> salaryPlanList = getSalaryPlanList(employeeId);
+        if (StringUtils.isNotEmpty(salaryPlanList)) {
+            List<EmployeeSalarySnapVO> employeeSalarySnapVOS = new ArrayList<>();
+            for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : salaryPlanList) {
+                setPlanValue(empSalaryAdjustPlanDTO);
+                EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
+                BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
+            }
+            dto.setEmployeeSalarySnapVOS(employeeSalarySnapVOS);
+        }
+        return dto;
+    }
+
+    /**
+     * 给岗位类型赋值
+     *
+     * @param empSalaryAdjustPlanDTO 个人调薪计划DTO
+     */
+    private void setPlanValue(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
+        if (StringUtils.isNotNull(empSalaryAdjustPlanDTO) && StringUtils.isNotNull(empSalaryAdjustPlanDTO.getAdjustmentType())) {
+            String adjustmentType = empSalaryAdjustPlanDTO.getAdjustmentType();
+            List<String> adjustmentTypeList = Arrays.asList(adjustmentType.split(","));
+            if (StringUtils.isNotEmpty(adjustmentTypeList)) {
+                List<String> adjustmentList = new ArrayList<>();
+                for (String adjustment : adjustmentTypeList) {
+                    switch (adjustment) {//调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开
+                        case "1":
+                            adjustmentList.add("调岗");
+                            break;
+                        case "2":
+                            adjustmentList.add("调级");
+                            break;
+                        case "3":
+                            adjustmentList.add("调薪");
+                            break;
+                    }
+                }
+                empSalaryAdjustPlanDTO.setAdjustmentTypeNameList(adjustmentList);
+            }
+        }
+    }
+
+    private List<EmpSalaryAdjustPlanDTO> getSalaryPlanList(Long employeeId) {
+        R<List<EmpSalaryAdjustPlanDTO>> listR = salaryAdjustPlanService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程调用个人调薪计划表失败 请联系管理员");
+        }
+        return listR.getData();
+    }
+
+    /**
+     * 为绩效字段字段命名
+     *
+     * @param appraisalObjectsDTO 考核对象任务
+     */
+    private void setObjectFieldName(PerformanceAppraisalObjectsDTO appraisalObjectsDTO) {
+        // 考核周期类型/考核周期
+        if (StringUtils.isNotNull(appraisalObjectsDTO) && StringUtils.isNotNull(appraisalObjectsDTO.getCycleType())) {
+            switch (appraisalObjectsDTO.getCycleType()) {
+                case 1:
+                    appraisalObjectsDTO.setCycleTypeName("月度");
+                    appraisalObjectsDTO.setCycleNumberName(appraisalObjectsDTO.getCycleNumber().toString() + "月");
+                    break;
+                case 2:
+                    appraisalObjectsDTO.setCycleTypeName("季度");
+                    appraisalObjectsDTO.setCycleNumberName(appraisalObjectsDTO.getCycleNumber().toString() + "季度");
+                    break;
+                case 3:
+                    appraisalObjectsDTO.setCycleTypeName("半年度");
+                    if (appraisalObjectsDTO.getCycleNumber() == 1) {
+                        appraisalObjectsDTO.setCycleNumberName("上半年");
+                    } else {
+                        appraisalObjectsDTO.setCycleNumberName("下半年");
+                    }
+                    break;
+                case 4:
+                    appraisalObjectsDTO.setCycleTypeName("年度");
+                    appraisalObjectsDTO.setCycleNumberName("整年度");
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 获取绩效对象信息
+     *
+     * @param employeeId 员工ID
+     * @return R
+     */
+    private List<PerformanceAppraisalObjectsDTO> getPerformanceAppraisalObject(Long employeeId) {
+        R<List<PerformanceAppraisalObjectsDTO>> listR = performanceAppraisalService.performanceResult(employeeId, SecurityConstants.INNER);
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程获取绩效信息失败 请联系管理员");
+        }
+        return listR.getData();
     }
 }
 

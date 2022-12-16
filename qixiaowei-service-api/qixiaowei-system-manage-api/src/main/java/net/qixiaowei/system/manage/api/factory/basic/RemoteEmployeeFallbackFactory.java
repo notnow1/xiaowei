@@ -59,7 +59,7 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             }
 
             @Override
-            public R<List<EmployeeDTO>> selectEmployeeByPDRIds(Map<String,List<String>> idMaps, String source) {
+            public R<List<EmployeeDTO>> selectEmployeeByPDRIds(Map<String, List<String>> idMaps, String source) {
                 return R.fail("通过部门，岗位，职级集合查询员工信息失败:" + throwable.getMessage());
             }
 
@@ -81,6 +81,11 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             @Override
             public R<List<EmployeeDTO>> selectEmployeeByDepartmentIds(List<Long> departmentIds, String source) {
                 return R.fail("根据部门ID 集合查询人员失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<EmployeeDTO> empSalaryAdjustPlan(EmployeeDTO employeeDTO, String source) {
+                return R.fail("远程个人调薪计划员工信息 集合查询人员失败:" + throwable.getMessage());
             }
         };
     }

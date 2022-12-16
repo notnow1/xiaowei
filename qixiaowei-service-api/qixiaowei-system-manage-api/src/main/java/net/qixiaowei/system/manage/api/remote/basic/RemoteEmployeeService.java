@@ -91,7 +91,7 @@ public interface RemoteEmployeeService {
      * @return
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByPDRIds")
-    R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String,List<String>> idMaps, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<List<EmployeeDTO>> selectEmployeeByPDRIds(@RequestBody Map<String, List<String>> idMaps, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 查询部门下所有人员
@@ -129,5 +129,14 @@ public interface RemoteEmployeeService {
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/selectEmployeeByDepartmentIds")
     R<List<EmployeeDTO>> selectEmployeeByDepartmentIds(@RequestBody List<Long> departmentIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 远程个人调薪计划员工信息
+     *
+     * @param employeeDTO 员工信息
+     * @return R
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/empSalaryAdjustPlan")
+    R<EmployeeDTO> empSalaryAdjustPlan(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

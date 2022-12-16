@@ -82,7 +82,7 @@ public class DeptSalaryAdjustPlanController extends BaseController {
     }
 
     /**
-     * 查询部门调薪计划表详情
+     * 获取上年工资包
      */
     @RequiresPermissions("operate:cloud:deptSalaryAdjustPlan:info")
     @GetMapping("/getLastSalary")

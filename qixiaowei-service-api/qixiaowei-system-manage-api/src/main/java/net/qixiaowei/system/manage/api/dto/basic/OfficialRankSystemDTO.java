@@ -65,6 +65,14 @@ public class OfficialRankSystemDTO {
      */
     private Integer rankEnd;
     /**
+     * 岗位职级下限
+     */
+    private Integer postRankLower;
+    /**
+     * 岗位职级上限
+     */
+    private Integer postRankUpper;
+    /**
      * 职级分解维度:1部门;2区域;3省份;4产品
      */
     private Integer rankDecomposeDimension;

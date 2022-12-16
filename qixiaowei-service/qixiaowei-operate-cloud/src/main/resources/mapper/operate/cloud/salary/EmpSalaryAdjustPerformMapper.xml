@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.operate.cloud.mapper.salary.EmpSalaryAdjustPerformMapper">
+    <!--    查询个人调薪绩效记录表-->
+    <select id="selectEmpSalaryAdjustPerformByEmpSalaryAdjustPerformId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPerformDTO">
+        SELECT
+        esp.emp_salary_adjust_perform_id,
+        esp.emp_salary_adjust_plan_id,
+        esp.performance_appraisal_id,
+        esp.perform_appraisal_objects_id,
+        esp.cycle_type,
+        esp.cycle_number,
+        esp.filing_date,
+        esp.appraisal_result,
+        esp.delete_flag,
+        esp.create_by,
+        esp.create_time,
+        esp.update_by,
+        esp.update_time
+        FROM emp_salary_adjust_perform esp
+        WHERE esp.emp_salary_adjust_perform_id=#{empSalaryAdjustPerformId}
+        and esp.delete_flag=0
+    </select>
+
+    <!--    批量查询个人调薪绩效记录表-->
+    <select id="selectEmpSalaryAdjustPerformByEmpSalaryAdjustPerformIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPerformDTO">
+        SELECT
+        emp_salary_adjust_perform_id,emp_salary_adjust_plan_id,performance_appraisal_id,perform_appraisal_objects_id,cycle_type,cycle_number,filing_date,appraisal_result,delete_flag,create_by,create_time,update_by,update_time
+        FROM emp_salary_adjust_perform
+        WHERE emp_salary_adjust_perform_id in
+        <foreach item="item"
+                 collection="empSalaryAdjustPerformIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询个人调薪绩效记录表列表-->
+    <select id="selectEmpSalaryAdjustPerformList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPerformDTO">
+        SELECT
+        emp_salary_adjust_perform_id,emp_salary_adjust_plan_id,performance_appraisal_id,perform_appraisal_objects_id,cycle_type,cycle_number,filing_date,appraisal_result,delete_flag,create_by,create_time,update_by,update_time
+        FROM emp_salary_adjust_perform
+        WHERE delete_flag=0
+        <if test="empSalaryAdjustPerform.empSalaryAdjustPerformId != null">
+            and emp_salary_adjust_perform_id=#{empSalaryAdjustPerform.empSalaryAdjustPerformId}
+        </if>
+        <if test="empSalaryAdjustPerform.empSalaryAdjustPlanId != null">
+            and emp_salary_adjust_plan_id=#{empSalaryAdjustPerform.empSalaryAdjustPlanId}
+        </if>
+        <if test="empSalaryAdjustPerform.performanceAppraisalId != null">
+            and performance_appraisal_id=#{empSalaryAdjustPerform.performanceAppraisalId}
+        </if>
+        <if test="empSalaryAdjustPerform.performAppraisalObjectsId != null">
+            and perform_appraisal_objects_id=#{empSalaryAdjustPerform.performAppraisalObjectsId}
+        </if>
+        <if test="empSalaryAdjustPerform.cycleType != null">
+            and cycle_type=#{empSalaryAdjustPerform.cycleType}
+        </if>
+        <if test="empSalaryAdjustPerform.cycleNumber != null">
+            and cycle_number=#{empSalaryAdjustPerform.cycleNumber}
+        </if>
+        <if test="empSalaryAdjustPerform.filingDate != null">
+            and filing_date=#{empSalaryAdjustPerform.filingDate}
+        </if>
+        <if test="empSalaryAdjustPerform.appraisalResult != null and empSalaryAdjustPerform.appraisalResult != ''">
+            and appraisal_result=#{empSalaryAdjustPerform.appraisalResult}
+        </if>
+        <if test="empSalaryAdjustPerform.deleteFlag != null">
+            and delete_flag=#{empSalaryAdjustPerform.deleteFlag}
+        </if>
+        <if test="empSalaryAdjustPerform.createBy != null">
+            and create_by=#{empSalaryAdjustPerform.createBy}
+        </if>
+        <if test="empSalaryAdjustPerform.createTime != null">
+            and create_time=#{empSalaryAdjustPerform.createTime}
+        </if>
+        <if test="empSalaryAdjustPerform.updateBy != null">
+            and update_by=#{empSalaryAdjustPerform.updateBy}
+        </if>
+        <if test="empSalaryAdjustPerform.updateTime != null">
+            and update_time=#{empSalaryAdjustPerform.updateTime}
+        </if>
+    </select>
+    <!--新增个人调薪绩效记录表-->
+    <insert id="insertEmpSalaryAdjustPerform" useGeneratedKeys="true" keyProperty="empSalaryAdjustPerformId">
+        INSERT INTO emp_salary_adjust_perform
+        (emp_salary_adjust_perform_idemp_salary_adjust_plan_id,performance_appraisal_id,perform_appraisal_objects_id,cycle_type,cycle_number,filing_date,appraisal_result,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{empSalaryAdjustPerform.empSalaryAdjustPlanId},#{empSalaryAdjustPerform.performanceAppraisalId},#{empSalaryAdjustPerform.performAppraisalObjectsId},#{empSalaryAdjustPerform.cycleType},#{empSalaryAdjustPerform.cycleNumber},#{empSalaryAdjustPerform.filingDate},#{empSalaryAdjustPerform.appraisalResult},#{empSalaryAdjustPerform.deleteFlag},#{empSalaryAdjustPerform.createBy},#{empSalaryAdjustPerform.createTime},#{empSalaryAdjustPerform.updateBy},#{empSalaryAdjustPerform.updateTime})
+    </insert>
+    <!--修改个人调薪绩效记录表-->
+    <update id="updateEmpSalaryAdjustPerform">
+        UPDATE emp_salary_adjust_perform
+        SET
+        <if test="empSalaryAdjustPerform.empSalaryAdjustPlanId != null">
+            emp_salary_adjust_plan_id=#{empSalaryAdjustPerform.empSalaryAdjustPlanId},
+        </if>
+        <if test="empSalaryAdjustPerform.performanceAppraisalId != null">
+            performance_appraisal_id=#{empSalaryAdjustPerform.performanceAppraisalId},
+        </if>
+        <if test="empSalaryAdjustPerform.performAppraisalObjectsId != null">
+            perform_appraisal_objects_id=#{empSalaryAdjustPerform.performAppraisalObjectsId},
+        </if>
+        <if test="empSalaryAdjustPerform.cycleType != null">
+            cycle_type=#{empSalaryAdjustPerform.cycleType},
+        </if>
+        <if test="empSalaryAdjustPerform.cycleNumber != null">
+            cycle_number=#{empSalaryAdjustPerform.cycleNumber},
+        </if>
+        <if test="empSalaryAdjustPerform.filingDate != null">
+            filing_date=#{empSalaryAdjustPerform.filingDate},
+        </if>
+        <if test="empSalaryAdjustPerform.appraisalResult != null and empSalaryAdjustPerform.appraisalResult != ''">
+            appraisal_result=#{empSalaryAdjustPerform.appraisalResult},
+        </if>
+        <if test="empSalaryAdjustPerform.deleteFlag != null">
+            delete_flag=#{empSalaryAdjustPerform.deleteFlag},
+        </if>
+        <if test="empSalaryAdjustPerform.createBy != null">
+            create_by=#{empSalaryAdjustPerform.createBy},
+        </if>
+        <if test="empSalaryAdjustPerform.createTime != null">
+            create_time=#{empSalaryAdjustPerform.createTime},
+        </if>
+        <if test="empSalaryAdjustPerform.updateBy != null">
+            update_by=#{empSalaryAdjustPerform.updateBy},
+        </if>
+        <if test="empSalaryAdjustPerform.updateTime != null">
+            update_time=#{empSalaryAdjustPerform.updateTime}
+        </if>
+        WHERE
+        emp_salary_adjust_perform_id=#{empSalaryAdjustPerform.empSalaryAdjustPerformId}
+    </update>
+    <!--逻辑删除个人调薪绩效记录表-->
+    <update id="logicDeleteEmpSalaryAdjustPerformByEmpSalaryAdjustPerformId">
+        UPDATE emp_salary_adjust_perform
+        SET delete_flag= 1,
+        update_by=#{empSalaryAdjustPerform.updateBy},
+        update_time=#{empSalaryAdjustPerform.updateTime}
+        WHERE
+        emp_salary_adjust_perform_id=#{empSalaryAdjustPerform.empSalaryAdjustPerformId}
+    </update>
+    <!--逻辑批量删除个人调薪绩效记录表-->
+    <update id="logicDeleteEmpSalaryAdjustPerformByEmpSalaryAdjustPerformIds">
+        UPDATE emp_salary_adjust_perform
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        emp_salary_adjust_perform_id IN
+        <foreach item="item"
+                 collection="empSalaryAdjustPerformIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增个人调薪绩效记录表-->
+    <insert id="batchEmpSalaryAdjustPerform">
+        INSERT INTO emp_salary_adjust_perform
+        (emp_salary_adjust_perform_idemp_salary_adjust_plan_id,performance_appraisal_id,perform_appraisal_objects_id,cycle_type,cycle_number,filing_date,appraisal_result,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="empSalaryAdjustPerforms"
+                 separator=",">
+            (#{item.empSalaryAdjustPlanId},#{item.performanceAppraisalId},#{item.performAppraisalObjectsId},#{item.cycleType},#{item.cycleNumber},#{item.filingDate},#{item.appraisalResult},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除个人调薪绩效记录表-->
+    <delete id="deleteEmpSalaryAdjustPerformByEmpSalaryAdjustPerformId">
+        DELETE FROM emp_salary_adjust_perform
+        WHERE emp_salary_adjust_perform_id=#{empSalaryAdjustPerform}
+
+    </delete>
+    <!--物理批量删除个人调薪绩效记录表-->
+    <delete id="deleteEmpSalaryAdjustPerformByEmpSalaryAdjustPerformIds">
+        DELETE FROM emp_salary_adjust_perform
+        WHERE emp_salary_adjust_perform_id IN
+        <foreach item="item"
+                 collection="empSalaryAdjustPerformIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改个人调薪绩效记录表-->
+    <update id="updateEmpSalaryAdjustPerforms">
+        update emp_salary_adjust_perform
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="emp_salary_adjust_plan_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.empSalaryAdjustPlanId != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then
+                        #{item.empSalaryAdjustPlanId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="performance_appraisal_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.performanceAppraisalId != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then
+                        #{item.performanceAppraisalId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="perform_appraisal_objects_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.performAppraisalObjectsId != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then
+                        #{item.performAppraisalObjectsId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_type=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.cycleType != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.cycleType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="cycle_number=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.cycleNumber != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.cycleNumber}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="filing_date=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.filingDate != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.filingDate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="appraisal_result=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.appraisalResult != null and item.appraisalResult != ''">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.appraisalResult}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="empSalaryAdjustPerformList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="empSalaryAdjustPerformList" separator="or" item="item" index="index">
+            emp_salary_adjust_perform_id=#{item.empSalaryAdjustPerformId}
+        </foreach>
+    </update>
+</mapper>
+
+
