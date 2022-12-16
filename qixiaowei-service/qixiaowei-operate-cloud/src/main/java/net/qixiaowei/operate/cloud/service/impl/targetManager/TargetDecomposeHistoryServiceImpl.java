@@ -132,7 +132,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     //被除数 不能为0和空
                     if (null != decomposeDetailsSnapshotDTO.getDecomposeTarget() && decomposeDetailsSnapshotDTO.getDecomposeTarget().compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = targetPercentageComplete.divide(decomposeDetailsSnapshotDTO.getDecomposeTarget(),BigDecimal.ROUND_CEILING);
+                        targetPercentageComplete = targetPercentageComplete.divide(decomposeDetailsSnapshotDTO.getDecomposeTarget(),BigDecimal.ROUND_HALF_UP);
                     }
                 }
                 decomposeDetailsSnapshotDTO.setForecastYear(forecastYear);

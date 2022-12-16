@@ -87,21 +87,21 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                 //er值 公式=上年E/R值×（1-本年E/R值改进率）
                 BigDecimal subtract = new BigDecimal("100").subtract(emolumentRevenueImprove);
                 //er值
-                BigDecimal multiply = erBeforeOne.multiply(subtract).divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING);
+                BigDecimal multiply = erBeforeOne.multiply(subtract).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEr(multiply);
                 if (null != erImproveAfterOne && erImproveAfterOne.compareTo(new BigDecimal("0"))!= 0){
                     //er值
                     BigDecimal er = emolumentPlanDTO.getEr();
                     BigDecimal subtract1 = new BigDecimal("100").subtract(erImproveAfterOne);
                     //预算年后一年E/R值(%)
-                    BigDecimal multiply1 = er.multiply(subtract1).divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING);
+                    BigDecimal multiply1 = er.multiply(subtract1).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                     emolumentPlanDTO.setErAfterOne(multiply1);
                     if (null != erImproveAfterTwo && erImproveAfterTwo.compareTo(new BigDecimal("0"))!= 0){
                         //预算年后一年E/R值(%)
                         BigDecimal erAfterOne = emolumentPlanDTO.getErAfterOne();
                         BigDecimal subtract2 = new BigDecimal("100").subtract(erImproveAfterTwo);
                         //预算年后二年E/R值(%)
-                        BigDecimal multiply2 = erAfterOne.multiply(subtract2).divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING);
+                        BigDecimal multiply2 = erAfterOne.multiply(subtract2).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                         emolumentPlanDTO.setErAfterTwo(multiply2);
                     }
                 }
@@ -117,17 +117,17 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             BigDecimal erAfterTwo = emolumentPlanDTO.getErAfterTwo();
             if (null !=revenue && revenue.compareTo(new BigDecimal("0"))>0 && null !=er && er.compareTo(new BigDecimal("0"))>0){
                 //预算年总薪酬包
-                BigDecimal multiply = revenue.multiply(er).divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING);
+                BigDecimal multiply = revenue.multiply(er).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEmolumentPackage(multiply);
             }
             if (null !=revenueAfterOne && revenueAfterOne.compareTo(new BigDecimal("0"))>0 && null !=erAfterOne && erAfterOne.compareTo(new BigDecimal("0"))>0){
                 //预算年后一年总薪酬包
-                BigDecimal multiply1 = revenueAfterOne.multiply(erAfterOne).divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING);
+                BigDecimal multiply1 = revenueAfterOne.multiply(erAfterOne).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEmolumentPackageAfterOne(multiply1);
             }
             if (null !=revenueAfterTwo && revenueAfterTwo.compareTo(new BigDecimal("0"))>0 && null !=erAfterTwo && erAfterTwo.compareTo(new BigDecimal("0"))>0){
                 //预算年后二年总薪酬包
-                BigDecimal multiply2 = revenueAfterTwo.multiply(erAfterTwo).divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING);
+                BigDecimal multiply2 = revenueAfterTwo.multiply(erAfterTwo).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEmolumentPackageAfterTwo(multiply2);
             }
         }
@@ -197,7 +197,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                 //er值 公式=上年E/R值×（1-本年E/R值改进率）
                 BigDecimal subtract = new BigDecimal("100").subtract(emolumentRevenueImprove);
                 //er值
-                BigDecimal multiply = erBeforeOne.multiply(subtract).divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING);
+                BigDecimal multiply = erBeforeOne.multiply(subtract).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEr(multiply);
             }
             //总薪酬包 未来年度：公式=销售收入×E/R值
@@ -205,12 +205,12 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             BigDecimal er = emolumentPlanDTO.getEr();
             if (null !=revenue && revenue.compareTo(new BigDecimal("0"))!=0 && null !=er && er.compareTo(new BigDecimal("0"))!=0){
                 //预算年总薪酬包
-                BigDecimal multiply = revenue.multiply(er).divide(new BigDecimal("100"),BigDecimal.ROUND_CEILING);
+                BigDecimal multiply = revenue.multiply(er).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEmolumentPackage(multiply);
             }
             //E/R值实际改进率（%）：公式=（上年E/R值÷本年E/R值-1）*100%
             if (null !=erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0"))!=0 && null !=er && er.compareTo(new BigDecimal("0"))!=0){
-                BigDecimal subtract = erBeforeOne.divide(er, BigDecimal.ROUND_CEILING).subtract(new BigDecimal("1"));
+                BigDecimal subtract = erBeforeOne.divide(er, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1"));
                 //E/R值实际改进率（%）
                 BigDecimal multiply = subtract.multiply(new BigDecimal("100"));
                 emolumentPlanDTO.setEmolumentPracticalRevenueImprove(multiply);
@@ -335,7 +335,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             //预算年前一年总薪酬包
             BigDecimal emolumentPackageBeforeOne = emolumentPlanDTO.getEmolumentPackageBeforeOne();
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0 && null != emolumentPackageBeforeOne && emolumentPackageBeforeOne.compareTo(new BigDecimal("0")) != 0){
-                BigDecimal er = emolumentPackageBeforeOne.divide(revenueBeforeOne, BigDecimal.ROUND_CEILING);
+                BigDecimal er = emolumentPackageBeforeOne.divide(revenueBeforeOne, BigDecimal.ROUND_HALF_UP);
                 if (er.compareTo(new BigDecimal("0")) > 0){
                     emolumentPlanDTO.setEr(er);
                 }
