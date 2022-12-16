@@ -512,9 +512,14 @@ public class TenantServiceImpl implements ITenantService {
         TenantLoginFormVO tenantLoginFormVO = new TenantLoginFormVO();
         String loginBackground = "";
         String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
-        TenantDTO tenantDTO = tenantMapper.selectTenantByDomain(serverName);
-        if (StringUtils.isNotNull(tenantDTO)) {
-            loginBackground = fileConfig.getFullDomain(tenantDTO.getLoginBackground());
+        if (StringUtils.isNotEmpty(serverName)) {
+            serverName = serverName.replace("." + tenantConfig.getMainDomain(), "");
+            if (StringUtils.isNotEmpty(serverName) && !"www".equals(serverName)) {
+                TenantDTO tenantDTO = tenantMapper.selectTenantByDomain(serverName);
+                if (StringUtils.isNotNull(tenantDTO)) {
+                    loginBackground = fileConfig.getFullDomain(tenantDTO.getLoginBackground());
+                }
+            }
         }
         tenantLoginFormVO.setLoginBackground(loginBackground);
         return tenantLoginFormVO;

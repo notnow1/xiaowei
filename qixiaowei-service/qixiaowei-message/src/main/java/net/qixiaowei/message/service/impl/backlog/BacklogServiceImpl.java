@@ -129,7 +129,7 @@ public class BacklogServiceImpl implements IBacklogService {
         Date nowDate = DateUtils.getNowDate();
         if (StringUtils.isNotNull(backlogUserId)) {
             //判断该事项是否已处理
-            BacklogDTO selectUserBacklog = backlogMapper.selectUserBacklog(businessType, businessSubtype, backlogUserId, businessId);
+            BacklogDTO selectUserBacklog = backlogMapper.selectUserBacklog(businessType, businessSubtype, businessId, backlogUserId);
             if (StringUtils.isNull(selectUserBacklog)) {
                 throw new ServiceException("不存在该待办事项");
             }
