@@ -84,7 +84,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         if (StringUtils.isNull(performanceRankCategory)) {
             throw new ServiceException("请选择绩效类别");
         }
-        int count = performanceRankMapper.checkUniqueName(performanceRankName);
+        int count = performanceRankMapper.checkUniqueName(performanceRankName,performanceRankCategory);
         if (count > 0) {
             throw new ServiceException("绩效等级名称不能重复");
         }
