@@ -2,11 +2,13 @@ package net.qixiaowei.system.manage.service.impl.tenant;
 
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
+import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.tenant.Tenant;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
@@ -81,6 +83,9 @@ public class TenantServiceImpl implements ITenantService {
 
     @Autowired
     private TenantLogic tenantLogic;
+
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 查询租户表
@@ -231,6 +236,7 @@ public class TenantServiceImpl implements ITenantService {
         }
         //返回数据
         tenantDTO.setTenantId(tenant.getTenantId());
+        this.setTenantIdsCache();
         return tenantDTO;
     }
 
@@ -352,7 +358,7 @@ public class TenantServiceImpl implements ITenantService {
                 throw new ServiceException("修改租户联系人失败" + e);
             }
         }
-
+        this.setTenantIdsCache();
         return i;
     }
 
@@ -639,6 +645,33 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setUpdateBy(userId);
         tenant.setUpdateTime(nowDate);
         return tenantMapper.updateTenant(tenant);
+    }
+
+    /**
+     * @description: 获取有效租户ID集合
+     * @Author: hzk
+     * @date: 2022/12/16 19:43
+     * @param: []
+     * @return: java.util.List<java.lang.Long>
+     **/
+    @Override
+    public List<Long> getTenantIds() {
+        return this.setTenantIdsCache();
+    }
+
+    /**
+     * @description: 设置租户ID集合的缓存
+     * @Author: hzk
+     * @date: 2022/12/16 20:01
+     * @param: []
+     * @return: java.util.List<java.lang.Long>
+     **/
+    public List<Long> setTenantIdsCache() {
+        List<Long> tenantIds = tenantMapper.getTenantIds();
+        if (StringUtils.isNotEmpty(tenantIds)) {
+            redisService.setCacheList(CacheConstants.TENANT_IDS_KEY, tenantIds);
+        }
+        return tenantIds;
     }
 }
 

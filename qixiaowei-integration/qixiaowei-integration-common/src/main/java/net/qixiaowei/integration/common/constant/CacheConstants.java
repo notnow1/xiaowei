@@ -2,10 +2,8 @@ package net.qixiaowei.integration.common.constant;
 
 /**
  * 缓存常量信息
- *
  */
-public interface CacheConstants
-{
+public interface CacheConstants {
     /**
      * 缓存有效期，默认720（分钟）
      */
@@ -50,4 +48,9 @@ public interface CacheConstants
      * 登录账户密码错误次数 redis key
      */
     String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * 租户ID集合 redis key
+     */
+    String TENANT_IDS_KEY = "tenant_ids:";
 }

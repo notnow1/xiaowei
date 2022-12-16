@@ -5,25 +5,25 @@
     <select id="selectTenantByTenantId"
             resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantDTO">
         SELECT t.tenant_id,
-               t.tenant_code,
-               t.tenant_name,
-               t.tenant_address,
-               t.tenant_industry,
-               t.domain,
-               t.admin_account,
-               t.admin_password,
-               t.support_staff,
-               t.login_background,
-               t.tenant_logo,
-               t.tenant_status,
-               t.delete_flag,
-               t.create_by,
-               t.create_time,
-               t.update_by,
-               t.update_time
+        t.tenant_code,
+        t.tenant_name,
+        t.tenant_address,
+        t.tenant_industry,
+        t.domain,
+        t.admin_account,
+        t.admin_password,
+        t.support_staff,
+        t.login_background,
+        t.tenant_logo,
+        t.tenant_status,
+        t.delete_flag,
+        t.create_by,
+        t.create_time,
+        t.update_by,
+        t.update_time
         FROM tenant t
         WHERE t.tenant_id = #{tenantId}
-          and t.delete_flag = 0
+        and t.delete_flag = 0
     </select>
 
     <select id="selectTenantByDomain"
@@ -106,7 +106,7 @@
         and e.delete_flag = 0
         where t.delete_flag = 0
         <if test="tenant.tenantIds  != null and tenant.tenantIds.size()!=0">
-            and   t.tenant_id  in
+            and t.tenant_id in
             <foreach item="item"
                      collection="tenant.tenantIds"
                      index="index" open="(" separator="," close=")">
@@ -114,10 +114,10 @@
             </foreach>
         </if>
         <if test="tenant.tenantIndustryName != null and tenant.tenantIndustryName != ''">
-            and   id.industry_name  like '%${tenant.tenantIndustryName}%'
+            and id.industry_name like '%${tenant.tenantIndustryName}%'
         </if>
         <if test="tenant.supportStaffName != null and tenant.supportStaffName != ''">
-          and   e.employee_name like '%${tenant.supportStaffName}%'
+            and e.employee_name like '%${tenant.supportStaffName}%'
         </if>
         <if test="tenant.tenantId != null and tenant.tenantId != ''">
             and t.tenant_id like '%${tenant.tenantId}%'
@@ -153,15 +153,24 @@
             and t.tenant_status =#{tenant.tenantStatus}
         </if>
     </select>
+
+    <select id="getTenantIds" resultType="java.lang.Long">
+        select
+        t.tenant_id
+        from
+        tenant t where t.delete_flag = 0
+    </select>
+
+
     <!--新增租户表-->
     <insert id="insertTenant" useGeneratedKeys="true" keyProperty="tenantId">
         INSERT INTO tenant (tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account,
-                            admin_password, support_staff, login_background, tenant_logo, tenant_status, delete_flag,
-                            create_by, create_time, update_by, update_time)
+        admin_password, support_staff, login_background, tenant_logo, tenant_status, delete_flag,
+        create_by, create_time, update_by, update_time)
         VALUES (#{tenant.tenantCode}, #{tenant.tenantName}, #{tenant.tenantAddress}, #{tenant.tenantIndustry},
-                #{tenant.domain}, #{tenant.adminAccount}, #{tenant.adminPassword}, #{tenant.supportStaff},
-                #{tenant.loginBackground}, #{tenant.tenantLogo}, #{tenant.tenantStatus}, #{tenant.deleteFlag},
-                #{tenant.createBy}, #{tenant.createTime}, #{tenant.updateBy}, #{tenant.updateTime})
+        #{tenant.domain}, #{tenant.adminAccount}, #{tenant.adminPassword}, #{tenant.supportStaff},
+        #{tenant.loginBackground}, #{tenant.tenantLogo}, #{tenant.tenantStatus}, #{tenant.deleteFlag},
+        #{tenant.createBy}, #{tenant.createTime}, #{tenant.updateBy}, #{tenant.updateTime})
     </insert>
     <!--修改租户表-->
     <update id="updateTenant">
@@ -222,8 +231,8 @@
     <update id="logicDeleteTenantByTenantId">
         UPDATE tenant
         SET delete_flag= 1,
-            update_by=#{tenant.updateBy},
-            update_time=#{tenant.updateTime}
+        update_by=#{tenant.updateBy},
+        update_time=#{tenant.updateTime}
         WHERE tenant_id = #{tenant.tenantId}
     </update>
     <!--逻辑批量删除租户表-->

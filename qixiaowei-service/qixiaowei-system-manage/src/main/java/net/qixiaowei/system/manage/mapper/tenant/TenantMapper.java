@@ -45,6 +45,14 @@ public interface TenantMapper{
     */
     List<TenantDTO> selectTenantList(@Param("tenant")Tenant tenant);
 
+
+    /**
+     * 查询有效的租户ID集合
+     *
+     * @return 租户ID集合
+     */
+    List<Long> getTenantIds();
+
     /**
     * 新增租户表
     *

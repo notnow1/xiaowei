@@ -3,3 +3,5 @@ net.qixiaowei.integration.tenant.db.TenantDatabaseInterceptor
 net.qixiaowei.integration.tenant.utils.SqlConditionHelper
 net.qixiaowei.integration.tenant.utils.SqlFieldHelper
 net.qixiaowei.integration.tenant.feign.TenantFeignRequestInterceptor
+net.qixiaowei.integration.tenant.job.TenantJobAspect
+net.qixiaowei.integration.tenant.service.impl.TenantServiceImpl

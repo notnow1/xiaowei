@@ -38,6 +38,12 @@
             <artifactId>qixiaowei-integration-job</artifactId>
         </dependency>
 
+        <!-- qixiaowei integration tenant -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-tenant</artifactId>
+        </dependency>
+
         <!-- qixiaowei integration security -->
         <dependency>
             <groupId>net.qixiaowei</groupId>

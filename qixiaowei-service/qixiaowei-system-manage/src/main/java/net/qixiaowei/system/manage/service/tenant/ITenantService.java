@@ -145,4 +145,11 @@ public interface ITenantService {
      */
     int updateMyTenant(TenantDTO tenantDTO);
 
+    /**
+     * 获取租户ID集合
+     *
+     * @return
+     */
+    List<Long> getTenantIds();
+
 }
