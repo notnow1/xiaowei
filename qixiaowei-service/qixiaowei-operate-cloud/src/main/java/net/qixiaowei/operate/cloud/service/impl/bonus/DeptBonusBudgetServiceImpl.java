@@ -771,7 +771,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         BigDecimal departmentImportanceFactor = deptImportFactorMap.get(aLong1);
                         if (null != topDeptPay && topDeptPay.compareTo(new BigDecimal("0")) != 0 &&
                                 null != departmentImportanceFactor && departmentImportanceFactor.compareTo(new BigDecimal("0")) != 0) {
-                            topDeptPaySum = topDeptPay.multiply(departmentImportanceFactor).setScale(2, RoundingMode.HALF_DOWN);
+                            topDeptPaySum =topDeptPaySum.add(topDeptPay.multiply(departmentImportanceFactor).setScale(2, RoundingMode.HALF_UP));
                         }
 
                     }
