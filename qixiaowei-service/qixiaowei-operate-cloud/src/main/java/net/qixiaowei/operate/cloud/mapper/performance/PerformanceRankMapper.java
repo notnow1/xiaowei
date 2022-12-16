@@ -100,10 +100,11 @@ public interface PerformanceRankMapper {
     /**
      * 绩效等级名称重复校验
      *
-     * @param performanceRankName
-     * @return
+     * @param performanceRankName     绩效等级名称
+     * @param performanceRankCategory 绩效等级类型
+     * @return int
      */
-    int checkUniqueName(@Param("performanceRankName") String performanceRankName);
+    int checkUniqueName(@Param("performanceRankName") String performanceRankName, @Param("performanceRankCategory") Integer performanceRankCategory);
 
     /**
      * 查询与绩效等级关联的绩效等级系数Ids
