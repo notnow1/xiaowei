@@ -46,25 +46,17 @@ public class BonusPayStandingDTO {
      */
     private  String  departmentName;
     /**
-     * 奖金发放台账工资项集合
+     * 奖项类别,工资条ID
      */
-    private List<BonusPaySalaryDTO> bonusPaySalaryDTOs;
+    private  Long salaryItemId;
+    /**
+     * 奖项名称
+     */
+    private  String awardName;
     /**
      * 年初预算包
      */
     private BigDecimal beYearAmountBonusBudget;
-    /**
-     * 获奖时间-年月
-     */
-    private  Integer awardYearAndMonth;
-    /**
-     * 获奖时间-年
-     */
-    private  Integer awardYear;
-    /**
-     * 获奖时间-月
-     */
-    private  Integer awardMonth;
 
     /**
      * 一月实际值
