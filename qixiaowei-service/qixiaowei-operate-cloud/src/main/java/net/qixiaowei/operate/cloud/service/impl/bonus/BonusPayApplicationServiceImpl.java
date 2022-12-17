@@ -754,11 +754,18 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                         bonusPayStandingDTOList.add(bonusPayStandingDTO);
                     }
                 }
-                //公司级别
-                BonusPayStandingDTO bonusPayStandingDTO2 = new BonusPayStandingDTO();
-                bonusPayStandingDTO2.setDepartmentName("公司");
-                bonusPayStandingDTO2.setDepartmentId(0L);
-                bonusPayStandingDTOList.add(bonusPayStandingDTO2);
+                for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+                    //公司级别
+                    BonusPayStandingDTO bonusPayStandingDTO2 = new BonusPayStandingDTO();
+                    bonusPayStandingDTO2.setDepartmentName("公司");
+                    bonusPayStandingDTO2.setDepartmentId(0L);
+                    //奖项类别,工资条ID
+                    bonusPayStandingDTO2.setSalaryItemId(salaryItemDTO.getSalaryItemId());
+                    //三级项目(奖项名称)
+                    bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+                    bonusPayStandingDTOList.add(bonusPayStandingDTO2);
+                }
+
 
                 if (StringUtils.isNotEmpty(bonusPayStandingDTOList)){
                     for (BonusPayStandingDTO bonusPayStandingDTO : bonusPayStandingDTOList) {
