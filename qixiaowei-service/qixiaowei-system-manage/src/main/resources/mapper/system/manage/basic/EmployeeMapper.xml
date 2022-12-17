@@ -690,12 +690,10 @@
         left join department d
         on d.department_id = e.employee_department_id
         and d.delete_flag =0
-        left join  employee e2
+        inner join  employee e2
         on e2.employee_id =e.employee_id
         and e2.delete_flag =0
-        left join department d2
-        on d2.department_leader_id = e2.employee_id
-        and d2.delete_flag =0
+        and  d.department_leader_id = e2.employee_id
         left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
         where
@@ -913,7 +911,7 @@
         p.post_name as employee_post_name,
         p.post_code,
         d.department_name as employee_department_name,
-        d.department_leader_id as in_charge,
+        d.department_leader_id,
         d.department_code,
         ors.official_rank_system_name,
         case when ors.rank_prefix_code is null then e.employee_rank
