@@ -127,8 +127,8 @@
         update_by,
         update_time from (
         SELECT
-        sum(tod.actual_total)  as actualTotal,
-        sum(tod2.actual_total)  as lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[0]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[0]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -145,17 +145,6 @@
         ts.update_by,
         ts.update_time
         FROM target_setting ts
-        left join target_outcome toe
-        on toe.target_year = ts.target_year
-        and toe.delete_flag = 0
-        left join target_outcome_details tod
-        on ts.indicator_id = tod.indicator_id
-        and toe.target_outcome_id = tod.target_outcome_id
-        and tod.delete_flag = 0
-        left join target_outcome_details tod2
-        on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId}   and tod2.indicator_id = #{targetSetting.indicatorIds[0]}) = tod2.target_outcome_id
-        and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[0]}
         <if test="targetSetting.targetYear != null">
@@ -163,8 +152,8 @@
         </if>
         union
         SELECT
-        sum(tod.actual_total)  as actualTotal,
-        sum(tod2.actual_total)  as lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[1]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[1]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -181,17 +170,6 @@
         ts.update_by,
         ts.update_time
         FROM target_setting ts
-        left join target_outcome toe
-        on toe.target_year = ts.target_year
-        and toe.delete_flag = 0
-        left join target_outcome_details tod
-        on ts.indicator_id = tod.indicator_id
-        and toe.target_outcome_id = tod.target_outcome_id
-        and tod.delete_flag = 0
-        left join target_outcome_details tod2
-        on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId} and tod2.indicator_id = #{targetSetting.indicatorIds[1]}) = tod2.target_outcome_id
-        and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[1]}
         <if test="targetSetting.targetYear != null">
@@ -199,8 +177,8 @@
         </if>
         union
         SELECT
-        sum(tod.actual_total)  as actualTotal,
-        sum(tod2.actual_total)  as lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[2]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[2]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -217,17 +195,6 @@
         ts.update_by,
         ts.update_time
         FROM target_setting ts
-        left join target_outcome toe
-        on toe.target_year = ts.target_year
-        and toe.delete_flag = 0
-        left join target_outcome_details tod
-        on ts.indicator_id = tod.indicator_id
-        and toe.target_outcome_id = tod.target_outcome_id
-        and tod.delete_flag = 0
-        left join target_outcome_details tod2
-        on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId} and tod2.indicator_id = #{targetSetting.indicatorIds[2]}) = tod2.target_outcome_id
-        and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[2]}
         <if test="targetSetting.targetYear != null">
@@ -235,8 +202,8 @@
         </if>
         union
         SELECT
-        sum(tod.actual_total)  as actualTotal,
-        sum(tod2.actual_total)  as lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[3]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[3]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -253,17 +220,6 @@
         ts.update_by,
         ts.update_time
         FROM target_setting ts
-        left join target_outcome toe
-        on toe.target_year = ts.target_year
-        and toe.delete_flag = 0
-        left join target_outcome_details tod
-        on ts.indicator_id = tod.indicator_id
-        and toe.target_outcome_id = tod.target_outcome_id
-        and tod.delete_flag = 0
-        left join target_outcome_details tod2
-        on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId} and tod2.indicator_id = #{targetSetting.indicatorIds[3]}) = tod2.target_outcome_id
-        and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[3]}
         <if test="targetSetting.targetYear != null">
@@ -271,8 +227,8 @@
         </if>
         union
         SELECT
-        sum(tod.actual_total)  as actualTotal,
-        sum(tod2.actual_total)  as lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[4]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0 and  toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[4]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -289,17 +245,6 @@
         ts.update_by,
         ts.update_time
         FROM target_setting ts
-        left join target_outcome toe
-        on toe.target_year = ts.target_year
-        and toe.delete_flag = 0
-        left join target_outcome_details tod
-        on ts.indicator_id = tod.indicator_id
-        and toe.target_outcome_id = tod.target_outcome_id
-        and tod.delete_flag = 0
-        left join target_outcome_details tod2
-        on (select target_outcome_id from target_outcome where target_year=#{targetSetting.targetYear}-1 and delete_flag
-        = 0 and tenant_id=#{targetSetting.tenantId} and tod2.indicator_id = #{targetSetting.indicatorIds[4]}) = tod2.target_outcome_id
-        and tod2.delete_flag = 0
         WHERE ts.delete_flag = 0
         and ts.indicator_id = #{targetSetting.indicatorIds[4]}
         <if test="targetSetting.targetYear != null">
