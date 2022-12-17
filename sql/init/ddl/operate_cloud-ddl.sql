@@ -997,8 +997,8 @@ CREATE TABLE dept_salary_adjust_item(
 CREATE TABLE emp_salary_adjust_plan(
     emp_salary_adjust_plan_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     employee_id BIGINT UNSIGNED NOT NULL   COMMENT '员工ID' ,
-    effective_date DATETIME NOT NULL   COMMENT '生效日期' ,
-    adjustment_type VARCHAR(16) NOT NULL   COMMENT '调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开' ,
+    effective_date DATETIME    COMMENT '生效日期' ,
+    adjustment_type VARCHAR(16)    COMMENT '调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开' ,
     adjust_department_id BIGINT UNSIGNED    COMMENT '调整部门ID' ,
     adjust_department_name VARCHAR(64)    COMMENT '调整部门名称' ,
     adjust_post_id BIGINT UNSIGNED    COMMENT '调整岗位ID' ,
@@ -1023,6 +1023,7 @@ CREATE TABLE emp_salary_adjust_plan(
 CREATE TABLE emp_salary_adjust_snap(
     emp_salary_adjust_snap_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     emp_salary_adjust_plan_id BIGINT UNSIGNED NOT NULL   COMMENT '个人调薪计划ID' ,
+    employee_code VARCHAR(32)    COMMENT '员工编码' ,
     employee_name VARCHAR(64)    COMMENT '员工姓名' ,
     employment_date DATE    COMMENT '入职日期' ,
     seniority VARCHAR(32)    COMMENT '司龄' ,
