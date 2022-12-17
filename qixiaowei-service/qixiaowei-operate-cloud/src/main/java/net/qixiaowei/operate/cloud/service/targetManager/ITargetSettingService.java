@@ -46,7 +46,7 @@ public interface ITargetSettingService {
     List<Tree<Long>> selectTargetSettingTreeList(TargetSettingDTO targetSettingDTO);
 
     /**
-     * 查询经营分析报表列表
+     * 查询and toe.tenant_id=#{targetSetting.tenantId}列表
      *
      * @param targetSettingDTO 目标制定
      * @return 目标制定集合

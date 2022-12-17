@@ -43,6 +43,11 @@ public class BonusPayApplicationDTO {
     * 奖项类别,工资条ID
     */
     private  Long salaryItemId;
+
+    /**
+     * 部门类型 0 申请部门 1 预算部门 2 获奖部门
+     */
+    private  Integer  departmentType;
     /**
      * 三级项目(奖项类别名称)
      */

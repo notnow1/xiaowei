@@ -50,65 +50,66 @@ public class BonusPayStandingDTO {
      */
     private  Long salaryItemId;
     /**
-     * 奖项名称
+     * 三级项目(奖项名称)
      */
-    private  String awardName;
+    private String thirdLevelItem;
     /**
      * 年初预算包
      */
     private BigDecimal beYearAmountBonusBudget;
 
     /**
-     * 一月实际值
+     * 一月金额
      */
     private BigDecimal amountJanuary;
     /**
-     * 二月实际值
+     * 二月金额
      */
     private BigDecimal amountFebruary;
     /**
-     * 三月实际值
+     * 三月金额
      */
     private BigDecimal amountMarch;
     /**
-     * 四月实际值
+     * 四月金额
      */
     private BigDecimal amountApril;
     /**
-     * 五月实际值
+     * 五月金额
      */
     private BigDecimal amountMay;
     /**
-     * 六月实际值
+     * 六月金额
      */
     private BigDecimal amountJune;
     /**
-     * 七月实际值
+     * 七月金额
      */
     private BigDecimal amountJuly;
     /**
-     * 八月实际值
+     * 八月金额
      */
     private BigDecimal amountAugust;
     /**
-     * 九月实际值
+     * 九月金额
      */
     private BigDecimal amountSeptember;
     /**
-     * 十月实际值
+     * 十月金额
      */
     private BigDecimal amountOctober;
     /**
-     * 十一月实际值
+     * 十一月金额
      */
     private BigDecimal amountNovember;
     /**
-     * 十二月实际值
+     * 十二月金额
      */
     private BigDecimal amountDecember;
-
-
-
+    /**
+     * 累计发放
+     */
+    private BigDecimal amountTotal;
 
 }
 

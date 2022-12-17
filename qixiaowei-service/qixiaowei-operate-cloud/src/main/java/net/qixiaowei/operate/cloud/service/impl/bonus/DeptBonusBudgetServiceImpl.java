@@ -838,6 +838,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
 
         if (StringUtils.isNotEmpty(mapEmployeeAveParent) && StringUtils.isNotEmpty(mapPaymentAveParent)) {
             for (Long aLong : mapEmployeeAveParent.keySet()) {
+                BigDecimal bigDecimalSum = new BigDecimal(0);
                 for (Long aLong1 : mapPaymentAveParent.keySet()) {
                     //相同一级部门
                     if (aLong == aLong1) {
@@ -864,7 +865,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                                         BigDecimal bigDecimal1 = paymentAveBigDecimalMap.get(s1);
                                                         if (null != bigDecimal && bigDecimal.compareTo(new BigDecimal("0")) > 0 &&
                                                                 null != bigDecimal1 && bigDecimal1.compareTo(new BigDecimal("0")) > 0) {
-                                                            topDeptPaymentMap.put(aLong, bigDecimal.multiply(bigDecimal1));
+                                                            bigDecimalSum =bigDecimalSum.add(bigDecimal.multiply(bigDecimal1));
                                                         }
                                                     }
                                                 }
@@ -876,6 +877,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         }
                     }
                 }
+                topDeptPaymentMap.put(aLong, bigDecimalSum);
             }
 
         }

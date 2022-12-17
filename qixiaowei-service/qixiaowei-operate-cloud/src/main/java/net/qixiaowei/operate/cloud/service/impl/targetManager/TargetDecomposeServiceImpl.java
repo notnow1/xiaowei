@@ -152,8 +152,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     BigDecimal cycleActual = decomposeDetailCyclesDTO.getCycleActual();
                     //周期目标值
                     BigDecimal cycleTarget = decomposeDetailCyclesDTO.getCycleTarget();
-                    //预测偏差
-                    BigDecimal cycleForecastDeviation = new BigDecimal("0");
                     //预测与目标偏差率
                     BigDecimal cycleForecastDeviationRate = new BigDecimal("0");
                     //目标完成率
@@ -168,19 +166,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     }
 
 
-                    if (cycleForecast != null) {
-                        if (cycleTarget != null) {
-                            cycleForecastDeviation = cycleForecast.subtract(cycleTarget).setScale(2);
-                        }
+                    if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0 &&
+                            cycleForecast != null && cycleForecast.compareTo(new BigDecimal("0")) != 0) {
+                        cycleForecastDeviationRate = cycleActual.subtract(cycleForecast).setScale(10, BigDecimal.ROUND_HALF_UP).divide(cycleActual, 10, BigDecimal.ROUND_HALF_UP);
                     }
-                    //预测偏差
-                    decomposeDetailCyclesDTO.setCycleForecastDeviation(cycleForecastDeviation);
 
-                    if (cycleForecastDeviation != null && cycleForecastDeviation.compareTo(new BigDecimal("0")) != 0) {
-                        if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
-                            cycleForecastDeviationRate = cycleForecastDeviation.divide(cycleTarget, BigDecimal.ROUND_HALF_UP);
-                        }
-                    }
+
                     //预测与目标偏差率
                     decomposeDetailCyclesDTO.setCycleForecastDeviationRate(cycleForecastDeviationRate);
 

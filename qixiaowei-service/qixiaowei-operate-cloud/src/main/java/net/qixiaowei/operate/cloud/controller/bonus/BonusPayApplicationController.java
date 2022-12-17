@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.controller.bonus;
 
 import java.util.List;
 
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -98,13 +99,13 @@ public class BonusPayApplicationController extends BaseController {
 
 
     /**
-     * 分页查询奖金发放申请表列表
+     * 分页查询奖金发放台账
      */
     @RequiresPermissions("operate:cloud:bonusPayApplication:bonusGrantStandingPage")
     @GetMapping("/bonusGrantStandingPage")
     public TableDataInfo bonusGrantStandingPage(BonusPayApplicationDTO bonusPayApplicationDTO) {
         startPage();
-        List<BonusPayApplicationDTO> list = bonusPayApplicationService.selectBonusPayApplicationList(bonusPayApplicationDTO);
+        List<BonusPayStandingDTO> list = bonusPayApplicationService.bonusGrantStandingList(bonusPayApplicationDTO);
         return getDataTable(list);
     }
 }
