@@ -78,6 +78,10 @@ public class BonusPayApplicationDTO {
     */
     private  Long applyDepartmentId;
     /**
+     * 申请部门ID集合
+     */
+    private  List<Long> applyDepartmentIds;
+    /**
      * 申请部门名称
      */
     private  String applyDepartmentName;
@@ -96,6 +100,10 @@ public class BonusPayApplicationDTO {
     * 奖项总金额
     */
     private  BigDecimal awardTotalAmount;
+    /**
+     * 奖金比例
+     */
+    private  BigDecimal bonusPercentage;
     /**
     * 奖金发放对象:1部门;2员工;3部门+员工
     */

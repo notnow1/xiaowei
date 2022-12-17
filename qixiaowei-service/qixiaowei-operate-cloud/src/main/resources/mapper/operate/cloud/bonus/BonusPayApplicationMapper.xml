@@ -129,6 +129,45 @@
         and salary_item_id=#{salaryItemId}
         and delete_flag=0
     </select>
+<!--    查询奖金发放台账申请部门-->
+    <select id="bonusGrantStandingApplyList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO">
+        SELECT
+        bpa.salary_item_id ,
+        ifnull(sum(bpa.award_total_amount),0) as award_total_amount
+        FROM  bonus_pay_application bpa
+        WHERE  bpa.delete_flag =0
+          and bpa.award_year =#{bonusPayApplicationDTO.awardYear}
+          and bpa.apply_department_id in
+        <foreach item="item"
+                 collection="#{bonusPayApplicationDTO.applyDepartmentIds}"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+   order by bpa.award_month
+    </select>
+<!--    查询奖金发放台账预算部门-->
+    <select id="bonusGrantStandingBudgetList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
+        SELECT
+            DISTINCT
+            bpa.salary_item_id ,
+            ifnull(sum(bpa.award_total_amount),0) as award_total_amount,
+            bpbd.bonus_percentage
+        FROM  bonus_pay_budget_dept bpbd
+                  left join bonus_pay_application bpa
+                            on bpa.bonus_pay_application_id = bpbd .bonus_pay_application_id
+                                and bpa.delete_flag =0
+        WHERE  bpbd.delete_flag =0
+          and bpa.award_year =#{bonusPayApplicationDTO.awardYear}
+          and bpbd.department_id in
+        <foreach item="item"
+                 collection="#{bonusPayApplicationDTO.applyDepartmentIds}"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by bpa.award_month
+    </select>
     <!--新增奖金发放申请表-->
     <insert id="insertBonusPayApplication" useGeneratedKeys="true" keyProperty="bonusPayApplicationId">
         INSERT INTO bonus_pay_application (salary_item_id,award_code,award_name,award_year,award_month,apply_department_id,award_total_amount,bonus_pay_object,award_description,delete_flag,create_by,create_time,update_by,update_time)

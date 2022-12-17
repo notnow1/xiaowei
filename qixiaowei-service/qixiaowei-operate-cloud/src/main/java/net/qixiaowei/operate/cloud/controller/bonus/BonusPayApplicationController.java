@@ -101,7 +101,7 @@ public class BonusPayApplicationController extends BaseController {
     /**
      * 分页查询奖金发放台账
      */
-    @RequiresPermissions("operate:cloud:bonusPayApplication:bonusGrantStandingPage")
+//    @RequiresPermissions("operate:cloud:bonusPayApplication:bonusGrantStandingPage")
     @GetMapping("/bonusGrantStandingPage")
     public TableDataInfo bonusGrantStandingPage(BonusPayApplicationDTO bonusPayApplicationDTO) {
         startPage();

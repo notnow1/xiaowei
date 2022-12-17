@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayApplication;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -109,4 +110,18 @@ public interface BonusPayApplicationMapper{
      * @return
      */
     BigDecimal selectBonusPayApplicationAddDeptAnnual(@Param("annualBonusYear")int annualBonusYear,@Param("salaryItemId") Long salaryItemId);
+
+    /**
+     * 查询奖金发放台账申请部门
+     * @param bonusPayApplicationDTO
+     * @return
+     */
+    List<BonusPayApplicationDTO> bonusGrantStandingApplyList(@Param("bonusPayApplicationDTO") BonusPayApplicationDTO bonusPayApplicationDTO);
+
+    /**
+     * 查询奖金发放台账预算部门
+     * @param bonusPayApplicationDTO
+     * @return
+     */
+    List<BonusPayApplicationDTO> bonusGrantStandingBudgetList(@Param("bonusPayApplicationDTO") BonusPayApplicationDTO bonusPayApplicationDTO);
 }

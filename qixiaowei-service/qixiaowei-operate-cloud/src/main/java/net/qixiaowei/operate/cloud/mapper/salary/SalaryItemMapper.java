@@ -142,6 +142,13 @@ public interface SalaryItemMapper {
     List<SalaryItemDTO> selectSalaryItemByBonus();
 
     /**
+     * 根据id查询所有二级工资项目为奖金且级别为部门级的三级工资项目
+     *
+     * @return
+     */
+    List<SalaryItemDTO> selectSalaryItemByBonusId(@Param("salaryItemId") Long salaryItemId);
+
+    /**
      * 查询最大排序值
      *
      * @return Integer
@@ -153,4 +160,11 @@ public interface SalaryItemMapper {
      * @return
      */
     List<SalaryItemDTO> applyBonusList();
+
+
+    /**
+     * 根据id查找二级为奖金的三级工资条
+     * @return
+     */
+    List<SalaryItemDTO> applyByIdList(@Param("salaryItemId") Long salaryItemId);
 }
