@@ -117,6 +117,12 @@ public interface BonusPayApplicationMapper{
      * @return
      */
     List<BonusPayApplicationDTO> bonusGrantStandingApplyList(@Param("bonusPayApplicationDTO") BonusPayApplicationDTO bonusPayApplicationDTO);
+    /**
+     * 查询奖金发放台账受益部门
+     * @param bonusPayApplicationDTO
+     * @return
+     */
+    List<BonusPayApplicationDTO> bonusGrantStandingBeneFitList(@Param("bonusPayApplicationDTO") BonusPayApplicationDTO bonusPayApplicationDTO);
 
     /**
      * 查询奖金发放台账预算部门

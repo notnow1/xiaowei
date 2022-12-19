@@ -705,7 +705,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                         if (StringUtils.isNotEmpty(data1)){
                             bonusPayApplicationDTO.setApplyDepartmentIds(data1.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList()));
                         }
-                        List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.bonusGrantStandingApplyList(bonusPayApplicationDTO);
+                        List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.bonusGrantStandingBeneFitList(bonusPayApplicationDTO);
                         if (StringUtils.isNotEmpty(bonusPayApplicationDTOS) && bonusPayApplicationDTOS.get(0) != null){
                             //根据月份分组
                             Map<Integer, List<BonusPayApplicationDTO>> bonusPayApplicationMonthMap = bonusPayApplicationDTOS.parallelStream().filter(f -> null != f.getAwardMonth()).collect(Collectors.groupingBy(BonusPayApplicationDTO::getAwardMonth));
@@ -924,35 +924,35 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 //累计发放
                 BigDecimal amountTotal = new BigDecimal("0");
                 //一月金额
-                BigDecimal amountJanuary = bonusPayStandingDTO.getAmountJanuary();
+                BigDecimal amountJanuary =  null== bonusPayStandingDTO.getAmountJanuary()?new BigDecimal("0"):bonusPayStandingDTO.getAmountJanuary() ;
                 //二月金额
-                BigDecimal amountFebruary = bonusPayStandingDTO.getAmountFebruary();
+                BigDecimal amountFebruary = null==bonusPayStandingDTO.getAmountFebruary()?new BigDecimal("0"):bonusPayStandingDTO.getAmountFebruary();
                 //三月金额
-                BigDecimal amountMarch = bonusPayStandingDTO.getAmountMarch();
+                BigDecimal amountMarch =  null==bonusPayStandingDTO.getAmountMarch()?new BigDecimal("0"):bonusPayStandingDTO.getAmountMarch();
                 //四月金额
-                BigDecimal amountApril = bonusPayStandingDTO.getAmountApril();
+                BigDecimal amountApril = null==bonusPayStandingDTO.getAmountApril()?new BigDecimal("0"):bonusPayStandingDTO.getAmountApril();
                 //五月金额
-                BigDecimal amountMay = bonusPayStandingDTO.getAmountMay();
+                BigDecimal amountMay = null==bonusPayStandingDTO.getAmountMay()?new BigDecimal("0"):bonusPayStandingDTO.getAmountMay();
                 //六月金额
-                BigDecimal amountJune = bonusPayStandingDTO.getAmountJune();
+                BigDecimal amountJune = null==bonusPayStandingDTO.getAmountJune()?new BigDecimal("0"):bonusPayStandingDTO.getAmountJune();
                 //七月金额
-                BigDecimal amountJuly = bonusPayStandingDTO.getAmountJuly();
+                BigDecimal amountJuly = null==bonusPayStandingDTO.getAmountJuly()?new BigDecimal("0"):bonusPayStandingDTO.getAmountJuly();
                 //八月金额
-                BigDecimal amountAugust = bonusPayStandingDTO.getAmountAugust();
+                BigDecimal amountAugust = null==bonusPayStandingDTO.getAmountAugust()?new BigDecimal("0"):bonusPayStandingDTO.getAmountAugust();
                 //九月金额
-                BigDecimal amountSeptember = bonusPayStandingDTO.getAmountSeptember();
+                BigDecimal amountSeptember = null==bonusPayStandingDTO.getAmountSeptember()?new BigDecimal("0"):bonusPayStandingDTO.getAmountSeptember();
                 //十月金额
-                BigDecimal amountOctober = bonusPayStandingDTO.getAmountOctober();
+                BigDecimal amountOctober = null==bonusPayStandingDTO.getAmountOctober()?new BigDecimal("0"):bonusPayStandingDTO.getAmountOctober();
                 //十一月金额
-                BigDecimal amountNovember = bonusPayStandingDTO.getAmountNovember();
+                BigDecimal amountNovember = null==bonusPayStandingDTO.getAmountNovember()?new BigDecimal("0"):bonusPayStandingDTO.getAmountNovember();
                 //十二月金额
-                BigDecimal amountDecember = bonusPayStandingDTO.getAmountDecember();
+                BigDecimal amountDecember = null==bonusPayStandingDTO.getAmountDecember()?new BigDecimal("0"):bonusPayStandingDTO.getAmountDecember();
                 try {
                     //累计发放
-                    amountTotal.add(amountJanuary).add(amountFebruary).add(amountMarch).add(amountApril).add(amountMay).add(amountJune).add(amountJuly).add(amountAugust).add(amountSeptember).add(amountOctober).add(amountNovember).add(amountDecember).setScale(10,RoundingMode.HALF_UP);
+                    amountTotal= amountTotal.add(amountJanuary).add(amountFebruary).add(amountMarch).add(amountApril).add(amountMay).add(amountJune).add(amountJuly).add(amountAugust).add(amountSeptember).add(amountOctober).add(amountNovember).add(amountDecember).setScale(10,RoundingMode.HALF_UP);
                 } catch (Exception e) {
                     //累计发放
-                    bonusPayStandingDTO.setAmountTotal(new BigDecimal("0"));
+                 bonusPayStandingDTO.setAmountTotal(new BigDecimal("0"));
                 }
                 //累计发放
                 bonusPayStandingDTO.setAmountTotal(amountTotal);
