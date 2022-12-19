@@ -13,6 +13,7 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.*;
 import net.qixiaowei.operate.cloud.api.dto.product.*;
+import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
@@ -943,6 +944,11 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductDTO> selectProductList(List<Long> productIds) {
         return productMapper.selectProductListByProductIds(productIds);
+    }
+
+    @Override
+    public void importProduct(List<ProductExcel> list) {
+
     }
 
     /**

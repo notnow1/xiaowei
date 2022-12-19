@@ -1,4 +1,4 @@
-package net.qixiaowei.system.manage.excel.basic;
+package net.qixiaowei.integration.common.utils.excel;
 
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;

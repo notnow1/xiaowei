@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDataDTO;
+import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 
 
 /**
@@ -140,4 +141,9 @@ public interface IProductService {
      */
     List<ProductDTO> selectProductList(List<Long> productIds);
 
+    /**
+     * 导入产品
+     * @param list
+     */
+    void importProduct(List<ProductExcel> list);
 }

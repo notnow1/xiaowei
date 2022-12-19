@@ -42,4 +42,16 @@ public class RemoteDictionaryData implements RemoteDictionaryDataService {
         return R.ok(dictionaryDataService.selectDictionaryDataByDictionaryDataIds(dictionaryDataIds));
     }
 
+    /**
+     * 根据枚举查询产品应用字典名称数据
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/selectDictionaryTypeByProduct")
+    public R<List<DictionaryDataDTO>> selectDictionaryTypeByProduct(String source) {
+        return null;
+    }
+
 }

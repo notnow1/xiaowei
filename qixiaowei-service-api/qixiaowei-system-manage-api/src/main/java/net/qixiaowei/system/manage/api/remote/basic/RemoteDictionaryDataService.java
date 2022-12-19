@@ -28,4 +28,9 @@ public interface RemoteDictionaryDataService {
      */
     @PostMapping(API_PREFIX_DICTIONARYDATA+"/selectDictionaryDataIds")
     public R<List<DictionaryDataDTO>> selectDictionaryDataByDictionaryDataIds(@RequestBody List<Long> dictionaryDataIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    /**
+     * 根据枚举查询产品应用字典名称数据
+     */
+    @GetMapping(API_PREFIX_DICTIONARYDATA+"/selectDictionaryTypeByProduct")
+    public R<List<DictionaryDataDTO>> selectDictionaryTypeByProduct(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

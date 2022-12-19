@@ -33,6 +33,11 @@ public class RemoteDictionaryDataFallbackFactory implements FallbackFactory<Remo
             public R<List<DictionaryDataDTO>> selectDictionaryDataByDictionaryDataIds(List<Long> dictionaryDataIds, String source) {
                 return R.fail("根据字典id集合获取字典信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<DictionaryDataDTO>> selectDictionaryTypeByProduct(String source) {
+                return R.fail("根据枚举查询产品应用字典名称数据失败:" + throwable.getMessage());
+            }
         };
     }
 }
