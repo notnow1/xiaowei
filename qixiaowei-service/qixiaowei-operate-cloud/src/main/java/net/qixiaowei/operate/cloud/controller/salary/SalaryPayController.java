@@ -119,16 +119,6 @@ public class SalaryPayController extends BaseController {
     @RequiresPermissions("operate:cloud:salaryPay:import")
     @PostMapping("import")
     public AjaxResult importSalaryPay(MultipartFile file) throws IOException {
-        int i = 1;
-        while (i < 4) {
-            try {
-                Thread.sleep(1000 * 5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("hello world!");
-            i++;
-        }
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
