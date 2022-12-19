@@ -98,7 +98,22 @@ public class UserVO {
      * 部门对象
      */
     private SysDept dept;
-
+    /**
+     * 部门ID
+     */
+    private Long departmentId;
+    /**
+     * 部门名称
+     */
+    private String departmentName;
+    /**
+     * 岗位ID
+     */
+    private  Long  postId;
+    /**
+     * 岗位名称
+     */
+    private  String  postName;
     /**
      * 角色对象
      */

@@ -68,6 +68,23 @@ public class UserDTO {
      */
     private String employeeCode;
     /**
+     * 部门ID
+     */
+    private Long departmentId;
+    /**
+     * 部门名称
+     */
+    private String departmentName;
+    /**
+     * 岗位ID
+     */
+    private  Long  postId;
+    /**
+     * 岗位名称
+     */
+    private  String  postName;
+
+    /**
      * 用户帐号
      */
     @Xss(message = "用户账号不能包含脚本字符")

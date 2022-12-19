@@ -111,5 +111,6 @@ public class BonusPayStandingDTO {
      */
     private BigDecimal amountTotal;
 
+
 }
 

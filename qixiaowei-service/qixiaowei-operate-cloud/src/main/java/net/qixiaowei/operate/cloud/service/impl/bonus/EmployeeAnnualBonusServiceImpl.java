@@ -509,6 +509,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     empAnnualBonusSnapshotDTO.setBonusBeforeTwo(bonusBeforeTwo);
                 }
             }
+
             //封装绩效
             packperformance(empAnnualBonusSnapshotDTOList);
 
@@ -561,9 +562,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     bonusPercentageTwo.compareTo(new BigDecimal("0")) != 0) {
                 referenceValueTwo = distributeBonusAmount.multiply(bonusPercentageTwo);
             }
-            empAnnualBonusSnapshotDTO.setBonusBeforeOne(bonusPercentageOne);
+
             empAnnualBonusSnapshotDTO.setReferenceValueOne(referenceValueOne);
-            empAnnualBonusSnapshotDTO.setBonusBeforeTwo(bonusPercentageTwo);
             empAnnualBonusSnapshotDTO.setReferenceValueTwo(referenceValueTwo);
         }
     }

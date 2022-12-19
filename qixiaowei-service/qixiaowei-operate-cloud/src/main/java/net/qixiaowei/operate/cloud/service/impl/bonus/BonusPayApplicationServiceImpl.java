@@ -245,7 +245,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(budgetDepartmentIds, SecurityConstants.INNER);
                     List<DepartmentDTO> data = listR.getData();
                     if (StringUtils.isNotEmpty(data)) {
-                        payApplicationDTO.setBudgetDepartmentNames(data.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString());
+                        payApplicationDTO.setBudgetDepartmentList(data.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()));
                     }
                 }
             }
@@ -688,20 +688,13 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @param bonusPayApplicationDTO
      */
     private void bonusGrantStandingBenefitList(List<SalaryItemDTO> salaryItemDTOS, List<DepartmentDTO> data, List<BonusPayStandingDTO> bonusPayStandingDTOList, BonusPayApplicationDTO bonusPayApplicationDTO) {
+        Long salaryItemId = bonusPayApplicationDTO.getSalaryItemId();
         if (StringUtils.isNotEmpty(data)) {
             if (StringUtils.isNotEmpty(salaryItemDTOS)) {
                 for (DepartmentDTO datum : data) {
                     for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
-                        BonusPayStandingDTO bonusPayStandingDTO = new BonusPayStandingDTO();
-                        //部门id
-                        bonusPayStandingDTO.setDepartmentId(datum.getDepartmentId());
-                        //部门名称
-                        bonusPayStandingDTO.setDepartmentName(datum.getDepartmentName());
-                        //奖项类别,工资条ID
-                        bonusPayStandingDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
-                        //三级项目(奖项名称)
-                        bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
-                        bonusPayStandingDTOList.add(bonusPayStandingDTO);
+                        //封装工资项目
+                        this.packSalaryItemList(bonusPayStandingDTOList, salaryItemId, datum, salaryItemDTO);
                     }
                 }
 
@@ -738,77 +731,107 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @param bonusPayApplicationDTO
      */
     private void bonusGrantStandingBudgetList(List<SalaryItemDTO> salaryItemDTOS, List<DepartmentDTO> data, List<BonusPayStandingDTO> bonusPayStandingDTOList, BonusPayApplicationDTO bonusPayApplicationDTO) {
+        Long salaryItemId = bonusPayApplicationDTO.getSalaryItemId();
         if (StringUtils.isNotEmpty(data)) {
             if (StringUtils.isNotEmpty(salaryItemDTOS)) {
                 for (DepartmentDTO datum : data) {
                     for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
-                        BonusPayStandingDTO bonusPayStandingDTO = new BonusPayStandingDTO();
-                        //部门id
-                        bonusPayStandingDTO.setDepartmentId(datum.getDepartmentId());
-                        //部门名称
-                        bonusPayStandingDTO.setDepartmentName(datum.getDepartmentName());
-                        //奖项类别,工资条ID
-                        bonusPayStandingDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
-                        //三级项目(奖项名称)
-                        bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
-                        bonusPayStandingDTOList.add(bonusPayStandingDTO);
+                        //封装工资项目
+                        this.packSalaryItemList(bonusPayStandingDTOList, salaryItemId, datum, salaryItemDTO);
                     }
                 }
                 for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
-                    //公司级别
-                    BonusPayStandingDTO bonusPayStandingDTO2 = new BonusPayStandingDTO();
-                    bonusPayStandingDTO2.setDepartmentName("公司");
-                    bonusPayStandingDTO2.setDepartmentId(0L);
-                    //奖项类别,工资条ID
-                    bonusPayStandingDTO2.setSalaryItemId(salaryItemDTO.getSalaryItemId());
-                    //三级项目(奖项名称)
-                    bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
-                    bonusPayStandingDTOList.add(bonusPayStandingDTO2);
+                    //封装公司工资项目
+                    this.packSalaryItemCompany(bonusPayStandingDTOList, salaryItemId, salaryItemDTO);
+                }
+                //封装预算部门
+                packBudget(bonusPayStandingDTOList, bonusPayApplicationDTO);
+            }else {
+                //根据id查询所有二级工资项目为奖金且级别为公司级的三级工资项目
+                List<SalaryItemDTO> salaryItemDTOS1 = salaryItemMapper.selectSalaryItemByCompany(bonusPayApplicationDTO.getSalaryItemId());
+                for (SalaryItemDTO salaryItemDTO : salaryItemDTOS1) {
+                    //封装公司工资项目
+                    this.packSalaryItemCompany(bonusPayStandingDTOList, salaryItemId, salaryItemDTO);
+                }
+                packBudget(bonusPayStandingDTOList, bonusPayApplicationDTO);
+            }
+        }
+    }
+
+    /**
+     * 封装公司工资项目
+     * @param bonusPayStandingDTOList
+     * @param salaryItemId
+     * @param salaryItemDTO
+     */
+    private void packSalaryItemCompany(List<BonusPayStandingDTO> bonusPayStandingDTOList, Long salaryItemId, SalaryItemDTO salaryItemDTO) {
+        if (null == salaryItemId){
+            //公司级别
+            BonusPayStandingDTO bonusPayStandingDTO2 = new BonusPayStandingDTO();
+            bonusPayStandingDTO2.setDepartmentName("公司");
+            bonusPayStandingDTO2.setDepartmentId(0L);
+            //奖项类别,工资条ID
+            bonusPayStandingDTO2.setSalaryItemId(salaryItemDTO.getSalaryItemId());
+            //三级项目(奖项名称)
+            bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+            bonusPayStandingDTOList.add(bonusPayStandingDTO2);
+        }else {
+            if (salaryItemDTO.getSalaryItemId() == salaryItemId) {
+                //公司级别
+                BonusPayStandingDTO bonusPayStandingDTO2 = new BonusPayStandingDTO();
+                bonusPayStandingDTO2.setDepartmentName("公司");
+                bonusPayStandingDTO2.setDepartmentId(0L);
+                //奖项类别,工资条ID
+                bonusPayStandingDTO2.setSalaryItemId(salaryItemDTO.getSalaryItemId());
+                //三级项目(奖项名称)
+                bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+                bonusPayStandingDTOList.add(bonusPayStandingDTO2);
+            }
+        }
+    }
+
+    //封装预算部门
+    private void packBudget(List<BonusPayStandingDTO> bonusPayStandingDTOList, BonusPayApplicationDTO bonusPayApplicationDTO) {
+        if (StringUtils.isNotEmpty(bonusPayStandingDTOList)){
+            for (BonusPayStandingDTO bonusPayStandingDTO : bonusPayStandingDTOList) {
+                Long departmentId = bonusPayStandingDTO.getDepartmentId();
+                if (0 != departmentId){
+                    R<List<DepartmentDTO>> sublevelDepartment = remoteDepartmentService.selectSublevelDepartment(departmentId, SecurityConstants.INNER);
+                    List<DepartmentDTO> data1 = sublevelDepartment.getData();
+                    if (StringUtils.isNotEmpty(data1)){
+                        bonusPayApplicationDTO.setApplyDepartmentIds(data1.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList()));
+                    }
+                }else {
+                    List<Long> applyDepartmentIds = new ArrayList<>();
+                    applyDepartmentIds.add(0L);
+                    bonusPayApplicationDTO.setApplyDepartmentIds(applyDepartmentIds);
                 }
 
-
-                if (StringUtils.isNotEmpty(bonusPayStandingDTOList)){
-                    for (BonusPayStandingDTO bonusPayStandingDTO : bonusPayStandingDTOList) {
-                        Long departmentId = bonusPayStandingDTO.getDepartmentId();
-                        if (0 != departmentId){
-                            R<List<DepartmentDTO>> sublevelDepartment = remoteDepartmentService.selectSublevelDepartment(departmentId, SecurityConstants.INNER);
-                            List<DepartmentDTO> data1 = sublevelDepartment.getData();
-                            if (StringUtils.isNotEmpty(data1)){
-                                bonusPayApplicationDTO.setApplyDepartmentIds(data1.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList()));
+                List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.bonusGrantStandingBudgetList(bonusPayApplicationDTO);
+                if (StringUtils.isNotEmpty(bonusPayApplicationDTOS) && bonusPayApplicationDTOS.get(0) != null){
+                    //根据月份分组
+                    Map<Integer, List<BonusPayApplicationDTO>> bonusPayApplicationMonthMap = bonusPayApplicationDTOS.parallelStream().filter(f -> null != f.getAwardMonth()).collect(Collectors.groupingBy(BonusPayApplicationDTO::getAwardMonth));
+                    for (Integer integer : bonusPayApplicationMonthMap.keySet()) {
+                        List<BonusPayApplicationDTO> bonusPayApplicationDTOS1 = bonusPayApplicationMonthMap.get(integer);
+                        for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
+                            BigDecimal bigDecimal = new BigDecimal("0");
+                            //奖项总金额
+                            BigDecimal awardTotalAmount = payApplicationDTO.getAwardTotalAmount();
+                            //奖金比例
+                            BigDecimal bonusPercentage = payApplicationDTO.getBonusPercentage();
+                            if (null != awardTotalAmount && awardTotalAmount.compareTo(new BigDecimal("0")) != 0 &&
+                                    null != bonusPercentage && bonusPercentage.compareTo(new BigDecimal("0")) != 0){
+                                bigDecimal=awardTotalAmount.multiply(bonusPercentage.divide(new BigDecimal("100"))).setScale(10, RoundingMode.HALF_UP);
                             }
-                        }else {
-                            List<Long> applyDepartmentIds = new ArrayList<>();
-                            applyDepartmentIds.add(0L);
-                            bonusPayApplicationDTO.setApplyDepartmentIds(applyDepartmentIds);
+                            payApplicationDTO.setAwardTotalAmount(bigDecimal);
                         }
-
-                        List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.bonusGrantStandingBudgetList(bonusPayApplicationDTO);
-                        if (StringUtils.isNotEmpty(bonusPayApplicationDTOS) && bonusPayApplicationDTOS.get(0) != null){
-                            //根据月份分组
-                            Map<Integer, List<BonusPayApplicationDTO>> bonusPayApplicationMonthMap = bonusPayApplicationDTOS.parallelStream().filter(f -> null != f.getAwardMonth()).collect(Collectors.groupingBy(BonusPayApplicationDTO::getAwardMonth));
-                            for (Integer integer : bonusPayApplicationMonthMap.keySet()) {
-                                List<BonusPayApplicationDTO> bonusPayApplicationDTOS1 = bonusPayApplicationMonthMap.get(integer);
-                                for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                                    BigDecimal bigDecimal = new BigDecimal("0");
-                                    //奖项总金额
-                                    BigDecimal awardTotalAmount = payApplicationDTO.getAwardTotalAmount();
-                                    //奖金比例
-                                    BigDecimal bonusPercentage = payApplicationDTO.getBonusPercentage();
-                                    if (null != awardTotalAmount && awardTotalAmount.compareTo(new BigDecimal("0")) != 0 &&
-                                            null != bonusPercentage && bonusPercentage.compareTo(new BigDecimal("0")) != 0){
-                                        bigDecimal=awardTotalAmount.multiply(bonusPercentage.divide(new BigDecimal("100"))).setScale(10, RoundingMode.HALF_UP);
-                                    }
-                                    payApplicationDTO.setAwardTotalAmount(bigDecimal);
-                                }
-                                //封装月份金额
-                                this.packAmoutMonth(bonusPayStandingDTO, integer, bonusPayApplicationDTOS1);
-                            }
-                        }
+                        //封装月份金额
+                        this.packAmoutMonth(bonusPayStandingDTO, integer, bonusPayApplicationDTOS1);
                     }
-                    //封装累计发放
-                    packAmountTotal(bonusPayStandingDTOList);
                 }
             }
+            //封装累计发放
+            packAmountTotal(bonusPayStandingDTOList);
         }
     }
 
@@ -820,20 +843,14 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @param bonusPayApplicationDTO
      */
     private void bonusGrantStandingApplyList(List<SalaryItemDTO> salaryItemDTOS, List<DepartmentDTO> data, List<BonusPayStandingDTO> bonusPayStandingDTOList, BonusPayApplicationDTO bonusPayApplicationDTO) {
+        Long salaryItemId = bonusPayApplicationDTO.getSalaryItemId();
+        
         if (StringUtils.isNotEmpty(data)) {
             if (StringUtils.isNotEmpty(salaryItemDTOS)) {
                 for (DepartmentDTO datum : data) {
                     for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
-                        BonusPayStandingDTO bonusPayStandingDTO = new BonusPayStandingDTO();
-                        //部门id
-                        bonusPayStandingDTO.setDepartmentId(datum.getDepartmentId());
-                        //部门名称
-                        bonusPayStandingDTO.setDepartmentName(datum.getDepartmentName());
-                        //奖项类别,工资条ID
-                        bonusPayStandingDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
-                        //三级项目(奖项名称)
-                        bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
-                        bonusPayStandingDTOList.add(bonusPayStandingDTO);
+                        //封装工资项目
+                        this.packSalaryItemList(bonusPayStandingDTOList, salaryItemId, datum, salaryItemDTO);
                     }
                 }
 
@@ -858,6 +875,41 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     //封装累计发放
                     packAmountTotal(bonusPayStandingDTOList);
                 }
+            }
+        }
+    }
+
+    /**
+     * 封装工资项目
+     * @param bonusPayStandingDTOList
+     * @param salaryItemId
+     * @param datum
+     * @param salaryItemDTO
+     */
+    private void packSalaryItemList(List<BonusPayStandingDTO> bonusPayStandingDTOList, Long salaryItemId, DepartmentDTO datum, SalaryItemDTO salaryItemDTO) {
+        if (null == salaryItemId) {
+            BonusPayStandingDTO bonusPayStandingDTO = new BonusPayStandingDTO();
+            //部门id
+            bonusPayStandingDTO.setDepartmentId(datum.getDepartmentId());
+            //部门名称
+            bonusPayStandingDTO.setDepartmentName(datum.getDepartmentName());
+            //奖项类别,工资条ID
+            bonusPayStandingDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
+            //三级项目(奖项名称)
+            bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+            bonusPayStandingDTOList.add(bonusPayStandingDTO);
+        }else {
+            if (salaryItemDTO.getSalaryItemId() == salaryItemId) {
+                BonusPayStandingDTO bonusPayStandingDTO = new BonusPayStandingDTO();
+                //部门id
+                bonusPayStandingDTO.setDepartmentId(datum.getDepartmentId());
+                //部门名称
+                bonusPayStandingDTO.setDepartmentName(datum.getDepartmentName());
+                //奖项类别,工资条ID
+                bonusPayStandingDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
+                //三级项目(奖项名称)
+                bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
+                bonusPayStandingDTOList.add(bonusPayStandingDTO);
             }
         }
     }

@@ -298,41 +298,76 @@
         SELECT sp.employee_id,
         sp.pay_year,
         sp.pay_month,
-        IFNULL(sp1.bonusBeforeTwo,0),
-        IFNULL(sp2.bonusBeforeOne,0) ,
-        IFNULL(sp3.emolumentBeforeOne,0),
-        IFNULL(sp4.employeeBasicWage,0)
+        IFNULL(sp1.bonusBeforeTwo,0) as  bonusBeforeTwo,
+        IFNULL(sp2.bonusBeforeOne,0)  as bonusBeforeOne,
+        IFNULL(sp3.emolumentBeforeOne,0) as emolumentBeforeOne,
+        IFNULL(sp4.employeeBasicWage,0) as employeeBasicWage
         FROM salary_pay sp
-        left join (SELECT employee_id,
-        case when pay_year = #{payYear} - 2 then sum(bonus_amount) end as bonusBeforeTwo
-        FROM salary_pay
-        WHERE pay_year = #{payYear}
-        and delete_flag = 0
+        left join (select employee_id ,
+        sum(bonus_amount)  AS bonusBeforeTwo
+        FROM
+        salary_pay
+        WHERE
+        pay_year = #{payYear} -2
+        AND delete_flag = 0
+        and employee_id in
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         group by employee_id
         order by pay_year desc, pay_month desc) sp1
         on sp1.employee_id = sp.employee_id
-        left join (SELECT employee_id,
-        case when pay_year = #{payYear} - 1 then sum(bonus_amount) end as bonusBeforeOne
-        FROM salary_pay
-        WHERE pay_year = #{payYear}
-        and delete_flag = 0
+        left join (SELECT
+        employee_id ,
+        sum(bonus_amount)  AS bonusBeforeOne
+        FROM
+        salary_pay
+        WHERE
+        pay_year = #{payYear} -1
+        AND delete_flag = 0
+        and employee_id in
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         group by employee_id
         order by pay_year desc, pay_month desc) sp2
         on sp2.employee_id = sp.employee_id
-        left join (SELECT employee_id,
-        case when pay_year = #{payYear} - 1 then sum(pay_amount) end as emolumentBeforeOne
-        FROM salary_pay
-        WHERE pay_year = #{payYear}
-        and delete_flag = 0
+        left join (SELECT
+        employee_id ,
+        sum(pay_amount)  AS emolumentBeforeOne
+        FROM
+        salary_pay
+        WHERE
+        pay_year = #{payYear} -1
+        AND delete_flag = 0
+        and employee_id in
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         group by employee_id
         order by pay_year desc, pay_month desc) sp3
         on sp3.employee_id = sp.employee_id
 
-        left join (SELECT employee_id,
-        salary_amount as employeeBasicWage
-        FROM salary_pay
-        WHERE pay_year = #{payYear}
-        and delete_flag = 0
+        left join (SELECT
+        employee_id,
+        salary_amount AS employeeBasicWage
+        FROM
+        salary_pay
+        WHERE
+        pay_year = #{payYear}
+        AND delete_flag = 0
+        and employee_id in
+        <foreach item="item"
+                 collection="employeeIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         group by employee_id
         order by pay_year desc, pay_month desc) sp4
         on sp4.employee_id = sp.employee_id
@@ -343,7 +378,6 @@
             #{item}
         </foreach>
         AND sp.delete_flag = 0
-        AND sp.pay_year=#{payYear}
         GROUP BY sp.employee_id
     </select>
     <!--    员工倒推12个月的薪酬合计和奖金合计-->

@@ -131,16 +131,17 @@
     </select>
 <!--    查询奖金发放台账申请部门-->
     <select id="bonusGrantStandingApplyList"
-            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO">
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
         SELECT
         bpa.salary_item_id ,
-        ifnull(sum(bpa.award_total_amount),0) as award_total_amount
+        bpa.award_month,
+        ifnull(sum(bpa.award_total_amount),0) as awardTotalAmount
         FROM  bonus_pay_application bpa
         WHERE  bpa.delete_flag =0
           and bpa.award_year =#{bonusPayApplicationDTO.awardYear}
           and bpa.apply_department_id in
         <foreach item="item"
-                 collection="#{bonusPayApplicationDTO.applyDepartmentIds}"
+                 collection="bonusPayApplicationDTO.applyDepartmentIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
@@ -152,6 +153,7 @@
         SELECT
             DISTINCT
             bpa.salary_item_id ,
+            bpa.award_month,
             ifnull(sum(bpa.award_total_amount),0) as award_total_amount,
             bpbd.bonus_percentage
         FROM  bonus_pay_budget_dept bpbd
@@ -162,7 +164,7 @@
           and bpa.award_year =#{bonusPayApplicationDTO.awardYear}
           and bpbd.department_id in
         <foreach item="item"
-                 collection="#{bonusPayApplicationDTO.applyDepartmentIds}"
+                 collection="bonusPayApplicationDTO.applyDepartmentIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>

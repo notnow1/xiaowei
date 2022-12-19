@@ -97,6 +97,10 @@ public class BonusPayApplicationDTO {
      */
     private String budgetDepartmentNames;
     /**
+     * 预算部门名称集合
+     */
+    private List<String> budgetDepartmentList;
+    /**
     * 奖项总金额
     */
     private  BigDecimal awardTotalAmount;
