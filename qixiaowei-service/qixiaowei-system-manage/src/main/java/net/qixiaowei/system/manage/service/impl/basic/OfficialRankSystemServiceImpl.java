@@ -252,7 +252,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         String rankPrefixCode = officialRankSystemDTO.getRankPrefixCode();
         Integer postRankUpper = officialRankSystemDTO.getPostRankUpper();
         Integer postRankLower = officialRankSystemDTO.getPostRankLower();
-        for (int i = postRankUpper; i < postRankLower + 1; i++) {
+        for (int i = postRankLower; i < postRankUpper + 1; i++) {
             Map<String, String> map = new HashMap<>();
             map.put("officialRankName", rankPrefixCode + i);
             map.put("officialRank", String.valueOf(i));

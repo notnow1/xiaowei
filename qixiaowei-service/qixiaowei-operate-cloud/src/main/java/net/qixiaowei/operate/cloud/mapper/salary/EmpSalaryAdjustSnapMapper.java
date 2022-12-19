@@ -113,4 +113,13 @@ public interface EmpSalaryAdjustSnapMapper {
      * @return List
      */
     List<EmpSalaryAdjustSnapDTO> selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanId(@Param("empSalaryAdjustPlanId") Long empSalaryAdjustPlanId);
+
+    /**
+     * 根据计划ID集合查询个人调薪快照表
+     *
+     * @param empSalaryAdjustPlanIds 计划ID集合查询
+     * @return List
+     */
+    List<EmpSalaryAdjustSnapDTO> selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanIds(@Param("empSalaryAdjustPlanIds") List<Long> empSalaryAdjustPlanIds);
+
 }

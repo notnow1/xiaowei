@@ -49,4 +49,13 @@ public class OfficialRankEmolumentController extends BaseController {
         return toAjax(officialRankEmolumentService.updateOfficialRankEmolument(officialRankEmolumentDTO));
     }
 
+    /**
+     * 根据岗位ID获取职级确定薪酬提示
+     */
+    @RequiresPermissions("operate:cloud:officialRankEmolument:info")
+    @GetMapping("/selectByPostId/{postId}")
+    public AjaxResult selectByPostId(@PathVariable Long postId) {
+        return AjaxResult.success(officialRankEmolumentService.selectByPostId(postId));
+    }
+
 }

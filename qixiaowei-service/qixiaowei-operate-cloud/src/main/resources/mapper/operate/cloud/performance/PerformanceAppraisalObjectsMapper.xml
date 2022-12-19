@@ -300,7 +300,7 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
         SELECT
         pa.performance_appraisal_id,
-        pa.perform_appraisal_objects_id,
+        pao.perform_appraisal_objects_id,
         pa.cycle_number,
         pa.cycle_type,
         pao.appraisal_result,

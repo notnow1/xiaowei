@@ -48,13 +48,17 @@ public class EmpSalaryAdjustPlanDTO {
      * 员工ID
      */
     private Long employeeId;
+    /**
+     * 工号
+     */
+    private String employeeCode;
 
     //==============================员工调整后的数据==================================//
 
     /**
      * 生效日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date effectiveDate;
     /**
      * 调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开
@@ -67,7 +71,7 @@ public class EmpSalaryAdjustPlanDTO {
     /**
      * 调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开
      */
-    private List<String> adjustmentTypeNameList;
+    private String adjustmentTypeName;
     /**
      * 调整部门ID
      */
@@ -116,6 +120,14 @@ public class EmpSalaryAdjustPlanDTO {
      * 是否提交(0保存;1提交)
      */
     private Integer isSubmit;
+    /**
+     * 近三次绩效结果
+     */
+    List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDTOS;
+    /**
+     * 个人调薪记录
+     */
+    List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS;
 
     //==============================员工调整前的数据==================================//
 
@@ -126,6 +138,7 @@ public class EmpSalaryAdjustPlanDTO {
     /**
      * 入职日期
      */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private LocalDate employmentDate;
     /**
      * 司龄

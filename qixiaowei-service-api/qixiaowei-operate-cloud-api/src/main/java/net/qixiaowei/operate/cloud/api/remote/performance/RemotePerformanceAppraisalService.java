@@ -19,9 +19,11 @@ import java.util.List;
 @FeignClient(contextId = "remotePerformanceAppraisalService", value = ServiceNameConstants.OPERATE_CLOUD_SERVICE, fallbackFactory = RemotePerformanceAppraisalFallbackFactory.class)
 public interface RemotePerformanceAppraisalService {
 
+    String API_PREFIX_PERFORMANCE_APPRAISAL = "/performanceAppraisal";
+
     /**
      * 查询员工近三次考核成绩
      */
-    @GetMapping("/performanceAppraisal/queryEmployeeResult")
+    @GetMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryEmployeeResult")
     R<List<PerformanceAppraisalObjectsDTO>> performanceResult(@RequestParam("performanceObjectId") Long performanceObjectId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

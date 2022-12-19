@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -190,7 +191,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
      */
     @Override
     @PostMapping("/empSalaryAdjustPlan")
-    public R<EmployeeDTO> empSalaryAdjustPlan(EmployeeDTO employeeDTO, String source) {
+    public R<EmployeeSalaryPlanVO> empSalaryAdjustPlan(EmployeeDTO employeeDTO, String source) {
         return R.ok(employeeService.empSalaryAdjustPlan(employeeDTO));
     }
 }

@@ -18,6 +18,7 @@ import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeServi
 import net.qixiaowei.system.manage.api.domain.basic.*;
 import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import net.qixiaowei.system.manage.mapper.basic.*;
@@ -403,7 +404,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 //员工详细详细
                 EmployeeInfo employeeInfo = new EmployeeInfo();
                 StringBuffer stringBuffer = new StringBuffer();
-                stringBuffer = this.validEmployee(employeeCodes,employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, departmentDTOList);
+                stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, departmentDTOList);
                 if (stringBuffer.length() > 1) {
                     errorExcelList.add(employeeExcel);
                     employeeErreo.append(stringBuffer);
@@ -468,7 +469,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         List<CountryDTO> countryDTO = countryDTOS.stream().filter(f -> StringUtils.equals(f.getCountryExcelName(), nationalityName)).collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(countryDTO)) {
                             //国籍id
-                            employee2.setNationality(countryDTO.get(0).getParentCountryId()+","+countryDTO.get(0).getCountryId().toString());
+                            employee2.setNationality(countryDTO.get(0).getParentCountryId() + "," + countryDTO.get(0).getCountryId().toString());
                         } else {
                             employee2.setNationality("1,54");
                         }
@@ -587,12 +588,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 employee2.setIdentityCard(employeeExcel.getIdentityCard());
                 Pattern pt = Pattern.compile("(^[1-9]\\d{5}(19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)");
                 Matcher matcher = pt.matcher(employeeExcel.getIdentityCard());
-                if (matcher.find()){
+                if (matcher.find()) {
                     String substring = employeeExcel.getIdentityCard().substring(6, 15);
                     String year = substring.substring(0, 4);
                     String month = substring.substring(4, 6);
-                    String day = substring.substring(6,8);
-                    String employeeBirthday = year+"/"+month+"/"+day;
+                    String day = substring.substring(6, 8);
+                    String employeeBirthday = year + "/" + month + "/" + day;
                     Date parse = simpleDateFormat.parse(employeeBirthday);
                     //出生日期
                     employee2.setEmployeeBirthday(parse);
@@ -720,7 +721,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     }
                 }
             }
-            
+
             //员工工号
             List<String> employeeCodeList = employeeExcelCodes.stream().filter(f -> f.equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
             if (employeeCodeList.size() > 1) {
@@ -734,7 +735,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
             Pattern pt = Pattern.compile("(^[1-9]\\d{5}(19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)");
             Matcher matcher = pt.matcher(employeeExcel.getIdentityCard());
-            if (!matcher.find()){
+            if (!matcher.find()) {
                 validEmployeeErreo.append("身份证号格式不对");
             }
             //岗位是否属于这个部门
@@ -859,53 +860,53 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     }
                 }
                 //国籍
-                if (null != dto.getNationality()){
-                    if (StringUtils.isNotEmpty(countryDTOS)){
-                        List<CountryDTO> nationalitys = countryDTOS.stream().filter(f -> StringUtils.equals(f.getParentCountryId()+","+f.getCountryId(), dto.getNationality())).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(nationalitys)){
+                if (null != dto.getNationality()) {
+                    if (StringUtils.isNotEmpty(countryDTOS)) {
+                        List<CountryDTO> nationalitys = countryDTOS.stream().filter(f -> StringUtils.equals(f.getParentCountryId() + "," + f.getCountryId(), dto.getNationality())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(nationalitys)) {
                             employeeExcel.setNationalityName(nationalitys.get(0).getCountryExcelName());
                         }
-                    }else {
+                    } else {
                         throw new ServiceException("国籍未配置 请联系管理员！");
                     }
 
                 }
                 //民族
-                if (null != dto.getNation()){
-                    if (StringUtils.isNotEmpty(nationDTOS)){
+                if (null != dto.getNation()) {
+                    if (StringUtils.isNotEmpty(nationDTOS)) {
                         List<NationDTO> nationNames = nationDTOS.stream().filter(f -> StringUtils.equals(String.valueOf(f.getNationId()), dto.getNation())).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(nationNames)){
+                        if (StringUtils.isNotEmpty(nationNames)) {
                             employeeExcel.setNationName(nationNames.get(0).getNationName());
                         }
-                    }else {
+                    } else {
                         throw new ServiceException("民族未配置 请联系管理员！");
                     }
 
                 }
                 //户口所在地
-                if (null != dto.getResidentCity()){
-                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNames)){
-                        List<RegionDTO> collect = regionProvinceNameAndCityNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityCode(),dto.getResidentCity())).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(collect)){
+                if (null != dto.getResidentCity()) {
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNames)) {
+                        List<RegionDTO> collect = regionProvinceNameAndCityNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityCode(), dto.getResidentCity())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)) {
                             employeeExcel.setResidentCityName(collect.get(0).getProvinceAndCityName());
                         }
                     }
 
                 }
                 //参保地
-                if (null != dto.getInsuredCity()){
-                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNames)){
-                        List<RegionDTO> collect = regionProvinceNameAndCityNames.stream().filter(f ->StringUtils.equals(f.getProvinceAndCityCode(),dto.getInsuredCity())).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(collect)){
+                if (null != dto.getInsuredCity()) {
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNames)) {
+                        List<RegionDTO> collect = regionProvinceNameAndCityNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityCode(), dto.getInsuredCity())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)) {
                             employeeExcel.setInsuredCityName(collect.get(0).getProvinceAndCityName());
                         }
                     }
                 }
                 //常住地
-                if (null != dto.getPermanentAddress()){
-                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNameAndDistrictNames)){
-                        List<RegionDTO> collect = regionProvinceNameAndCityNameAndDistrictNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityAndDistrictCode(),dto.getPermanentAddress())).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(collect)){
+                if (null != dto.getPermanentAddress()) {
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNameAndDistrictNames)) {
+                        List<RegionDTO> collect = regionProvinceNameAndCityNameAndDistrictNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityAndDistrictCode(), dto.getPermanentAddress())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)) {
                             employeeExcel.setPermanentAddressName(collect.get(0).getProvinceAndCityAndDistrictName());
                         }
                     }
@@ -917,29 +918,29 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     employeeExcel.setEmploymentDate(DateUtils.format(employmentDate));
                 }
                 //部门*
-                if (null != dto.getEmployeeDepartmentId()){
+                if (null != dto.getEmployeeDepartmentId()) {
 
-                    if (StringUtils.isNotEmpty(departmentDTOList)){
+                    if (StringUtils.isNotEmpty(departmentDTOList)) {
                         List<DepartmentDTO> employeePostIds = departmentDTOList.stream().filter(f -> f.getDepartmentId() == dto.getEmployeePostId()).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(employeePostIds)){
+                        if (StringUtils.isNotEmpty(employeePostIds)) {
                             employeeExcel.setDepartmentName(employeePostIds.get(0).getParentDepartmentExcelName());
                         }
                     }
                 }
                 //岗位*
-                if (null != dto.getEmployeePostId()){
-                if (StringUtils.isNotEmpty(postDTOS)){
-                    List<PostDTO> employeePostIds = postDTOS.stream().filter(f -> f.getPostId() == dto.getEmployeePostId()).collect(Collectors.toList());
-                    if (StringUtils.isNotEmpty(employeePostIds)){
-                        employeeExcel.setPostName(employeePostIds.get(0).getPostName());
+                if (null != dto.getEmployeePostId()) {
+                    if (StringUtils.isNotEmpty(postDTOS)) {
+                        List<PostDTO> employeePostIds = postDTOS.stream().filter(f -> f.getPostId() == dto.getEmployeePostId()).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(employeePostIds)) {
+                            employeeExcel.setPostName(employeePostIds.get(0).getPostName());
+                        }
                     }
                 }
-                }
                 //通信地址
-                if (null != dto.getContactAddress()){
-                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNameAndDistrictNames)){
-                        List<RegionDTO> collect = regionProvinceNameAndCityNameAndDistrictNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityAndDistrictCode(),dto.getContactAddress())).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(collect)){
+                if (null != dto.getContactAddress()) {
+                    if (StringUtils.isNotEmpty(regionProvinceNameAndCityNameAndDistrictNames)) {
+                        List<RegionDTO> collect = regionProvinceNameAndCityNameAndDistrictNames.stream().filter(f -> StringUtils.equals(f.getProvinceAndCityAndDistrictCode(), dto.getContactAddress())).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(collect)) {
                             employeeExcel.setContactAddress(collect.get(0).getProvinceAndCityAndDistrictName());
                         }
                     }
@@ -1253,7 +1254,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @return EmployeeDTO
      */
     @Override
-    public EmployeeDTO empSalaryAdjustPlan(EmployeeDTO employeeDTO) {
+    public EmployeeSalaryPlanVO empSalaryAdjustPlan(EmployeeDTO employeeDTO) {
         Long employeeId = employeeDTO.getEmployeeId();
         if (StringUtils.isNull(employeeId)) {
             throw new ServiceException("员工ID不可以为空");
@@ -1261,10 +1262,35 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         List<EmployeeDTO> employeeDTOS = employeeMapper.selectPostSalaryReportList(employee);
+        for (EmployeeDTO dto : employeeDTOS) {
+            if (dto.getEmploymentStatus() == 1) {
+                dto.setEmploymentStatusName("在职");
+            } else {
+                dto.setEmploymentStatusName("离职");
+            }
+        }
         if (StringUtils.isEmpty(employeeDTOS)) {
             throw new ServiceException("员工信息已不存在 检查员工配置");
         }
         EmployeeDTO dto = employeeDTOS.get(0);
+        EmployeeSalaryPlanVO employeeSalaryPlanVO = new EmployeeSalaryPlanVO();
+        employeeSalaryPlanVO.setEmployeeId(dto.getEmployeeId());
+        employeeSalaryPlanVO.setOfficialRankSystemId(dto.getOfficialRankSystemId());
+        employeeSalaryPlanVO.setOfficialRankSystemName(dto.getOfficialRankSystemName());
+        employeeSalaryPlanVO.setEmployeeName(dto.getEmployeeName());
+        employeeSalaryPlanVO.setEmployeeCode(dto.getEmployeeCode());
+        employeeSalaryPlanVO.setSeniority(dto.getWorkingAge());
+        employeeSalaryPlanVO.setEmploymentDate(dto.getEmploymentDate());
+        employeeSalaryPlanVO.setEmploymentStatusName(dto.getEmploymentStatusName());
+        employeeSalaryPlanVO.setDepartmentLeaderId(dto.getDepartmentLeaderId());
+        employeeSalaryPlanVO.setDepartmentLeaderName(dto.getInCharge());
+        employeeSalaryPlanVO.setOfficialRank(dto.getEmployeeRank());
+        employeeSalaryPlanVO.setOfficialRankName(dto.getEmployeeRankName());
+        employeeSalaryPlanVO.setDepartmentId(dto.getEmployeeDepartmentId());
+        employeeSalaryPlanVO.setDepartmentName(dto.getEmployeeDepartmentName());
+        employeeSalaryPlanVO.setPostId(dto.getEmployeePostId());
+        employeeSalaryPlanVO.setPostName(dto.getEmployeePostName());
+        employeeSalaryPlanVO.setBasicWage(dto.getEmployeeBasicWage());
         // 最近三次绩效结果
         List<Map<String, String>> performanceResultList = new ArrayList<>();
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = getPerformanceAppraisalObject(employeeId);
@@ -1276,21 +1302,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 map.put("cycleNumberName", performanceAppraisalObjectsDTO.getCycleNumberName());
                 map.put("filingDate", DateUtils.localToString(performanceAppraisalObjectsDTO.getFilingDate()));
                 performanceResultList.add(map);
-                dto.setPerformanceResultList(performanceResultList);
             }
         }
+        employeeSalaryPlanVO.setPerformanceResultList(performanceResultList);
         // 个人调薪计划
         List<EmpSalaryAdjustPlanDTO> salaryPlanList = getSalaryPlanList(employeeId);
+        List<EmployeeSalarySnapVO> employeeSalarySnapVOS = new ArrayList<>();
         if (StringUtils.isNotEmpty(salaryPlanList)) {
-            List<EmployeeSalarySnapVO> employeeSalarySnapVOS = new ArrayList<>();
             for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : salaryPlanList) {
                 setPlanValue(empSalaryAdjustPlanDTO);
                 EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
                 BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
             }
-            dto.setEmployeeSalarySnapVOS(employeeSalarySnapVOS);
         }
-        return dto;
+        employeeSalaryPlanVO.setEmployeeSalarySnapVOS(employeeSalarySnapVOS);
+        return employeeSalaryPlanVO;
     }
 
     /**
@@ -1317,11 +1343,21 @@ public class EmployeeServiceImpl implements IEmployeeService {
                             break;
                     }
                 }
-                empSalaryAdjustPlanDTO.setAdjustmentTypeNameList(adjustmentList);
+                StringBuilder adjustment = new StringBuilder();
+                for (String adjust : adjustmentList) {
+                    adjustment.append(adjust);
+                }
+                empSalaryAdjustPlanDTO.setAdjustmentType(adjustment.toString());
             }
         }
     }
 
+    /**
+     * 获取历史个人调薪计划表
+     *
+     * @param employeeId 员工ID
+     * @return List
+     */
     private List<EmpSalaryAdjustPlanDTO> getSalaryPlanList(Long employeeId) {
         R<List<EmpSalaryAdjustPlanDTO>> listR = salaryAdjustPlanService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
         if (listR.getCode() != 200) {

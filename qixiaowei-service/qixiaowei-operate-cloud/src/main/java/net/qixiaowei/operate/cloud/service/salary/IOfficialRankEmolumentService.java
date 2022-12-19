@@ -125,4 +125,12 @@ public interface IOfficialRankEmolumentService {
      * @return
      */
     List<OfficialRankDecomposeDTO> selectOfficialDecomposeList(OfficialRankEmolumentDTO officialRankEmolumentDTO);
+
+    /**
+     * 根据岗位ID获取职级确定薪酬提示
+     *
+     * @param postId 岗位id
+     * @return String
+     */
+    String selectByPostId(Long postId);
 }

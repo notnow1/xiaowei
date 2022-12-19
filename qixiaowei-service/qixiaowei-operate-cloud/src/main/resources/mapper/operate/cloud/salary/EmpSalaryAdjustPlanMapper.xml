@@ -23,6 +23,7 @@
         ess.emp_salary_adjust_snap_id,
         ess.emp_salary_adjust_plan_id,
         ess.employee_name,
+        ess.employee_code,
         ess.employment_date,
         ess.seniority,
         ess.department_id,
@@ -37,8 +38,6 @@
         ess.official_rank_name,
         ess.basic_wage
         FROM emp_salary_adjust_plan esa
-        LEFT JOIN emp_salary_adjust_snap ess ON esa.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
-        AND ess.delete_flag = 0
         LEFT JOIN emp_salary_adjust_snap ess ON esa.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
         AND ess.delete_flag = 0
         WHERE esa.emp_salary_adjust_plan_id=#{empSalaryAdjustPlanId}
@@ -64,69 +63,124 @@
     <select id="selectEmpSalaryAdjustPlanList"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO">
         SELECT
-        emp_salary_adjust_plan_id,employee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time
-        FROM emp_salary_adjust_plan
-        WHERE delete_flag=0
+        esa.emp_salary_adjust_plan_id,
+        esa.employee_id,
+        esa.effective_date,
+        esa.adjustment_type,
+        esa.adjust_department_id,
+        esa.adjust_department_name,
+        esa.adjust_post_id,
+        esa.adjust_post_name,
+        esa.adjust_official_rank_system_id,
+        esa.adjust_official_rank_system_name,
+        esa.adjust_official_rank,
+        esa.adjust_official_rank_name,
+        esa.adjust_emolument,
+        esa.adjust_explain,
+        esa.status,
+        ess.emp_salary_adjust_snap_id,
+        ess.emp_salary_adjust_plan_id,
+        ess.employee_name,
+        ess.employee_code,
+        ess.employment_date,
+        ess.seniority,
+        ess.department_id,
+        ess.department_name,
+        ess.department_leader_id,
+        ess.department_leader_name,
+        ess.post_id,
+        ess.post_name,
+        ess.official_rank_system_id,
+        ess.official_rank_system_name,
+        ess.official_rank,
+        ess.official_rank_name,
+        ess.basic_wage
+        FROM emp_salary_adjust_plan esa
+        LEFT JOIN emp_salary_adjust_snap ess
+        ON esa.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
+        AND ess.delete_flag=0
+        WHERE esa.delete_flag=0
         <if test="empSalaryAdjustPlan.empSalaryAdjustPlanId != null">
-            and emp_salary_adjust_plan_id=#{empSalaryAdjustPlan.empSalaryAdjustPlanId}
+            and esa.emp_salary_adjust_plan_id=#{empSalaryAdjustPlan.empSalaryAdjustPlanId}
         </if>
         <if test="empSalaryAdjustPlan.employeeId != null">
-            and employee_id=#{empSalaryAdjustPlan.employeeId}
+            and esa.employee_id=#{empSalaryAdjustPlan.employeeId}
         </if>
         <if test="empSalaryAdjustPlan.effectiveDate != null">
-            and effective_date=#{empSalaryAdjustPlan.effectiveDate}
-        </if>
-        <if test="empSalaryAdjustPlan.adjustmentType != null and empSalaryAdjustPlan.adjustmentType != ''">
-            and adjustment_type=#{empSalaryAdjustPlan.adjustmentType}
+            and esa.effective_date=#{empSalaryAdjustPlan.effectiveDate}
         </if>
         <if test="empSalaryAdjustPlan.adjustDepartmentId != null">
-            and adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId}
+            and esa.adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId}
         </if>
         <if test="empSalaryAdjustPlan.adjustDepartmentName != null and empSalaryAdjustPlan.adjustDepartmentName != ''">
-            and adjust_department_name=#{empSalaryAdjustPlan.adjustDepartmentName}
+            and esa.adjust_department_name=#{empSalaryAdjustPlan.adjustDepartmentName}
         </if>
         <if test="empSalaryAdjustPlan.adjustPostId != null">
-            and adjust_post_id=#{empSalaryAdjustPlan.adjustPostId}
+            and esa.adjust_post_id=#{empSalaryAdjustPlan.adjustPostId}
         </if>
         <if test="empSalaryAdjustPlan.adjustPostName != null and empSalaryAdjustPlan.adjustPostName != ''">
-            and adjust_post_name=#{empSalaryAdjustPlan.adjustPostName}
+            and esa.adjust_post_name=#{empSalaryAdjustPlan.adjustPostName}
         </if>
         <if test="empSalaryAdjustPlan.adjustOfficialRankSystemId != null">
-            and adjust_official_rank_system_id=#{empSalaryAdjustPlan.adjustOfficialRankSystemId}
+            and esa.adjust_official_rank_system_id=#{empSalaryAdjustPlan.adjustOfficialRankSystemId}
         </if>
         <if test="empSalaryAdjustPlan.adjustOfficialRankSystemName != null and empSalaryAdjustPlan.adjustOfficialRankSystemName != ''">
-            and adjust_official_rank_system_name=#{empSalaryAdjustPlan.adjustOfficialRankSystemName}
+            and esa.adjust_official_rank_system_name=#{empSalaryAdjustPlan.adjustOfficialRankSystemName}
         </if>
         <if test="empSalaryAdjustPlan.adjustOfficialRank != null">
-            and adjust_official_rank=#{empSalaryAdjustPlan.adjustOfficialRank}
+            and esa.adjust_official_rank=#{empSalaryAdjustPlan.adjustOfficialRank}
         </if>
         <if test="empSalaryAdjustPlan.adjustOfficialRankName != null and empSalaryAdjustPlan.adjustOfficialRankName != ''">
-            and adjust_official_rank_name=#{empSalaryAdjustPlan.adjustOfficialRankName}
+            and esa.adjust_official_rank_name=#{empSalaryAdjustPlan.adjustOfficialRankName}
         </if>
         <if test="empSalaryAdjustPlan.adjustEmolument != null">
-            and adjust_emolument=#{empSalaryAdjustPlan.adjustEmolument}
+            and esa.adjust_emolument=#{empSalaryAdjustPlan.adjustEmolument}
         </if>
-        <if test="empSalaryAdjustPlan.adjustExplain != null and empSalaryAdjustPlan.adjustExplain != ''">
-            and adjust_explain=#{empSalaryAdjustPlan.adjustExplain}
-        </if>
-        <if test="empSalaryAdjustPlan.status != null">
-            and status=#{empSalaryAdjustPlan.status}
-        </if>
-        <if test="empSalaryAdjustPlan.deleteFlag != null">
-            and delete_flag=#{empSalaryAdjustPlan.deleteFlag}
-        </if>
-        <if test="empSalaryAdjustPlan.createBy != null">
-            and create_by=#{empSalaryAdjustPlan.createBy}
-        </if>
-        <if test="empSalaryAdjustPlan.createTime != null">
-            and create_time=#{empSalaryAdjustPlan.createTime}
-        </if>
-        <if test="empSalaryAdjustPlan.updateBy != null">
-            and update_by=#{empSalaryAdjustPlan.updateBy}
-        </if>
-        <if test="empSalaryAdjustPlan.updateTime != null">
-            and update_time=#{empSalaryAdjustPlan.updateTime}
-        </if>
+        <!--        <if test="empSalaryAdjustPlan.employeeName != null and empSalaryAdjustPlan.employeeName != ''">-->
+        <!--            and ess.employee_name=#{empSalaryAdjustPlan.employeeName}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.employeeCode != null and empSalaryAdjustPlan.employeeCode != ''">-->
+        <!--            and ess.employee_code=#{empSalaryAdjustPlan.employeeCode}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.employmentDate != null">-->
+        <!--            and ess.employment_date=#{empSalaryAdjustPlan.employmentDate}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.seniority != null and empSalaryAdjustPlan.seniority != ''">-->
+        <!--            and ess.seniority=#{empSalaryAdjustPlan.seniority}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.departmentId != null">-->
+        <!--            and ess.department_id=#{empSalaryAdjustPlan.departmentId}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.departmentName != null and empSalaryAdjustPlan.departmentName != ''">-->
+        <!--            and ess.department_name=#{empSalaryAdjustPlan.departmentName}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.departmentLeaderId != null">-->
+        <!--            and ess.department_leader_id=#{empSalaryAdjustPlan.departmentLeaderId}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.departmentLeaderName != null and empSalaryAdjustPlan.departmentLeaderName != ''">-->
+        <!--            and ess.department_leader_name=#{empSalaryAdjustPlan.departmentLeaderName}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.postId != null">-->
+        <!--            and ess.post_id=#{empSalaryAdjustPlan.postId}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.postName != null and empSalaryAdjustPlan.postName != ''">-->
+        <!--            and ess.post_name=#{empSalaryAdjustPlan.postName}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.officialRankSystemId != null">-->
+        <!--            and ess.official_rank_system_id=#{empSalaryAdjustPlan.officialRankSystemId}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.officialRankSystemName != null and empSalaryAdjustPlan.officialRankSystemName != ''">-->
+        <!--            and ess.official_rank_system_name=#{empSalaryAdjustPlan.officialRankSystemName}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.officialRank != null">-->
+        <!--            and ess.official_rank=#{empSalaryAdjustPlan.officialRank}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.officialRankName != null and empSalaryAdjustPlan.officialRankName != ''">-->
+        <!--            and ess.official_rank_name=#{empSalaryAdjustPlan.officialRankName}-->
+        <!--        </if>-->
+        <!--        <if test="empSalaryAdjustPlan.basicWage != null">-->
+        <!--            and ess.basic_wage=#{empSalaryAdjustPlan.basicWage}-->
+        <!--        </if>-->
     </select>
     <!--根据员工ID获取个人调薪计划表-->
     <select id="selectByEmployeeId"
@@ -156,11 +210,13 @@
         ON esp.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
         AND ess.delete_flag=0
         WHERE esp.delete_flag=0
+        AND esp.status = 1
+        AND esp.employee_id = #{employeeId}
     </select>
     <!--新增个人调薪计划表-->
     <insert id="insertEmpSalaryAdjustPlan" useGeneratedKeys="true" keyProperty="empSalaryAdjustPlanId">
         INSERT INTO emp_salary_adjust_plan
-        (emp_salary_adjust_plan_idemployee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time)
+        (employee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{empSalaryAdjustPlan.employeeId},#{empSalaryAdjustPlan.effectiveDate},#{empSalaryAdjustPlan.adjustmentType},#{empSalaryAdjustPlan.adjustDepartmentId},#{empSalaryAdjustPlan.adjustDepartmentName},#{empSalaryAdjustPlan.adjustPostId},#{empSalaryAdjustPlan.adjustPostName},#{empSalaryAdjustPlan.adjustOfficialRankSystemId},#{empSalaryAdjustPlan.adjustOfficialRankSystemName},#{empSalaryAdjustPlan.adjustOfficialRank},#{empSalaryAdjustPlan.adjustOfficialRankName},#{empSalaryAdjustPlan.adjustEmolument},#{empSalaryAdjustPlan.adjustExplain},#{empSalaryAdjustPlan.status},#{empSalaryAdjustPlan.deleteFlag},#{empSalaryAdjustPlan.createBy},#{empSalaryAdjustPlan.createTime},#{empSalaryAdjustPlan.updateBy},#{empSalaryAdjustPlan.updateTime})
     </insert>
@@ -171,40 +227,18 @@
         <if test="empSalaryAdjustPlan.employeeId != null">
             employee_id=#{empSalaryAdjustPlan.employeeId},
         </if>
-        <if test="empSalaryAdjustPlan.effectiveDate != null">
-            effective_date=#{empSalaryAdjustPlan.effectiveDate},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustmentType != null and empSalaryAdjustPlan.adjustmentType != ''">
-            adjustment_type=#{empSalaryAdjustPlan.adjustmentType},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustDepartmentId != null">
-            adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustDepartmentName != null and empSalaryAdjustPlan.adjustDepartmentName != ''">
-            adjust_department_name=#{empSalaryAdjustPlan.adjustDepartmentName},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustPostId != null">
-            adjust_post_id=#{empSalaryAdjustPlan.adjustPostId},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustPostName != null and empSalaryAdjustPlan.adjustPostName != ''">
-            adjust_post_name=#{empSalaryAdjustPlan.adjustPostName},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustOfficialRankSystemId != null">
-            adjust_official_rank_system_id=#{empSalaryAdjustPlan.adjustOfficialRankSystemId},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustOfficialRankSystemName != null and empSalaryAdjustPlan.adjustOfficialRankSystemName != ''">
-            adjust_official_rank_system_name=#{empSalaryAdjustPlan.adjustOfficialRankSystemName},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustOfficialRank != null">
-            adjust_official_rank=#{empSalaryAdjustPlan.adjustOfficialRank},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustOfficialRankName != null and empSalaryAdjustPlan.adjustOfficialRankName != ''">
-            adjust_official_rank_name=#{empSalaryAdjustPlan.adjustOfficialRankName},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustEmolument != null">
-            adjust_emolument=#{empSalaryAdjustPlan.adjustEmolument},
-        </if>
-        <if test="empSalaryAdjustPlan.adjustExplain != null and empSalaryAdjustPlan.adjustExplain != ''">
+        effective_date=#{empSalaryAdjustPlan.effectiveDate},
+        adjustment_type=#{empSalaryAdjustPlan.adjustmentType},
+        adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId},
+        adjust_department_name=#{empSalaryAdjustPlan.adjustDepartmentName},
+        adjust_post_id=#{empSalaryAdjustPlan.adjustPostId},
+        adjust_post_name=#{empSalaryAdjustPlan.adjustPostName},
+        adjust_official_rank_system_id=#{empSalaryAdjustPlan.adjustOfficialRankSystemId},
+        adjust_official_rank_system_name=#{empSalaryAdjustPlan.adjustOfficialRankSystemName},
+        adjust_official_rank=#{empSalaryAdjustPlan.adjustOfficialRank},
+        adjust_official_rank_name=#{empSalaryAdjustPlan.adjustOfficialRankName},
+        adjust_emolument=#{empSalaryAdjustPlan.adjustEmolument},
+        <if test="empSalaryAdjustPlan.adjustExplain != null">
             adjust_explain=#{empSalaryAdjustPlan.adjustExplain},
         </if>
         <if test="empSalaryAdjustPlan.status != null">
@@ -254,7 +288,7 @@
     <!--批量新增个人调薪计划表-->
     <insert id="batchEmpSalaryAdjustPlan">
         INSERT INTO emp_salary_adjust_plan
-        (emp_salary_adjust_plan_idemployee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time)
+        (employee_id,effective_date,adjustment_type,adjust_department_id,adjust_department_name,adjust_post_id,adjust_post_name,adjust_official_rank_system_id,adjust_official_rank_system_name,adjust_official_rank,adjust_official_rank_name,adjust_emolument,adjust_explain,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="empSalaryAdjustPlans"

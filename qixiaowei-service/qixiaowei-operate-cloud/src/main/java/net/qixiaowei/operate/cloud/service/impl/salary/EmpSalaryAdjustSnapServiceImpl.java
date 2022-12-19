@@ -119,6 +119,17 @@ public class EmpSalaryAdjustSnapServiceImpl implements IEmpSalaryAdjustSnapServi
     }
 
     /**
+     * 根据计划ID集合查询个人调薪快照表
+     *
+     * @param empSalaryAdjustPlanIds 计划ID集合查询
+     * @return List
+     */
+    @Override
+    public List<EmpSalaryAdjustSnapDTO> selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanIds(List<Long> empSalaryAdjustPlanIds) {
+        return empSalaryAdjustSnapMapper.selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanIds(empSalaryAdjustPlanIds);
+    }
+
+    /**
      * 逻辑删除个人调薪快照表信息
      *
      * @param empSalaryAdjustSnapDTO 个人调薪快照表

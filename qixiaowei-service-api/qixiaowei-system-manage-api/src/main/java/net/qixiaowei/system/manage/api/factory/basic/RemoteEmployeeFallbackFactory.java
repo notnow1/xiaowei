@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.api.factory.basic;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -84,7 +85,7 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             }
 
             @Override
-            public R<EmployeeDTO> empSalaryAdjustPlan(EmployeeDTO employeeDTO, String source) {
+            public R<EmployeeSalaryPlanVO> empSalaryAdjustPlan(EmployeeDTO employeeDTO, String source) {
                 return R.fail("远程个人调薪计划员工信息 集合查询人员失败:" + throwable.getMessage());
             }
         };

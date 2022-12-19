@@ -110,7 +110,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                     targetOutcomeDetailsDTO.setTargetValue(targetValue);
                     BigDecimal targetCompletionRate;
                     if (targetValue.compareTo(BigDecimal.ZERO) != 0) {
-                        targetCompletionRate = actualTotal.divide(targetValue, 2, RoundingMode.HALF_UP);
+                        targetCompletionRate = actualTotal.multiply(new BigDecimal(100)).divide(targetValue, 2, RoundingMode.HALF_UP);
                     } else {
                         targetCompletionRate = BigDecimal.ZERO;
                     }

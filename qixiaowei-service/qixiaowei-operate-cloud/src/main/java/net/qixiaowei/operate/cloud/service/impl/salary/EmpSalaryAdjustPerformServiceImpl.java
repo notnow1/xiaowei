@@ -108,6 +108,28 @@ public class EmpSalaryAdjustPerformServiceImpl implements IEmpSalaryAdjustPerfor
     }
 
     /**
+     * 根据计划ID获取近三次绩效结果
+     *
+     * @param empSalaryAdjustPlanId 个人调薪计划ID
+     * @return List
+     */
+    @Override
+    public List<EmpSalaryAdjustPerformDTO> selectEmpSalaryAdjustPerformByPlanId(Long empSalaryAdjustPlanId) {
+        return empSalaryAdjustPerformMapper.selectEmpSalaryAdjustPerformByPlanId(empSalaryAdjustPlanId);
+    }
+
+    /**
+     * 根据计划ID集合查询最近三次绩效结果
+     *
+     * @param empSalaryAdjustPlanIds 计划ID集合
+     * @return List
+     */
+    @Override
+    public List<EmpSalaryAdjustPerformDTO> selectEmpSalaryAdjustPerformByPlanIds(List<Long> empSalaryAdjustPlanIds) {
+        return empSalaryAdjustPerformMapper.selectEmpSalaryAdjustPerformByPlanIds(empSalaryAdjustPlanIds);
+    }
+
+    /**
      * 逻辑删除个人调薪绩效记录表信息
      *
      * @param empSalaryAdjustPerformDTO 个人调薪绩效记录表

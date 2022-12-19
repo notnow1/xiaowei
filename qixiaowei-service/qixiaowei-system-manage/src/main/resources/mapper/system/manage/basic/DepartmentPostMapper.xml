@@ -5,18 +5,18 @@
     <select id="selectDepartmentPostByDepartmentPostId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
         SELECT department_post_id,
-               department_id,
-               post_id,
-               department_sort,
-               post_sort,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        department_id,
+        post_id,
+        department_sort,
+        post_sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM department_post
         WHERE department_post_id = #{departmentPostId}
-          and delete_flag = 0
+        and delete_flag = 0
     </select>
 
     <!--    查询部门岗位关联表列表-->
@@ -59,48 +59,50 @@
     </select>
     <select id="selectDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
         SELECT department_post_id,
-               department_id,
-               post_id,
-               department_sort,
-               post_sort,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        department_id,
+        post_id,
+        department_sort,
+        post_sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM department_post
         WHERE department_id = #{departmentId}
-          and delete_flag = 0
+        and delete_flag = 0
     </select>
     <!--    根据部门中间表id查询出数据库的数据-->
     <select id="selectDepartmentPostId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         select ors.rank_prefix_code,
-               dm.department_code,
-               dm.department_name,
-               p.post_name as  department_leader_post_name,
-               dp.department_post_id,
-               dp.department_id,
-               dp.post_id,
-               dp.department_sort,
-               dp.post_sort,
-               dp.delete_flag,
-               dp.create_by,
-               dp.create_time,
-               dp.update_by,
-               dp.update_time
+        dm.department_code,
+        ors.official_rank_system_id,
+        ors.official_rank_system_name,
+        dm.department_name,
+        p.post_name as department_leader_post_name,
+        dp.department_post_id,
+        dp.department_id,
+        dp.post_id,
+        dp.department_sort,
+        dp.post_sort,
+        dp.delete_flag,
+        dp.create_by,
+        dp.create_time,
+        dp.update_by,
+        dp.update_time
         from department_post dp
-                 left join department dm
-                           on dm.department_id = dp.department_id
-                               and dm.delete_flag = 0
-                 left join post p
-                           on p.post_id = dp.post_id
-                               and p.delete_flag = 0
-                 left join official_rank_system ors
-                           on p.official_rank_system_id = ors.official_rank_system_id
-                               and ors.delete_flag = 0
+        left join department dm
+        on dm.department_id = dp.department_id
+        and dm.delete_flag = 0
+        left join post p
+        on p.post_id = dp.post_id
+        and p.delete_flag = 0
+        left join official_rank_system ors
+        on p.official_rank_system_id = ors.official_rank_system_id
+        and ors.delete_flag = 0
         where dp.post_id =
-              #{postId}
-          and dp.delete_flag = 0
+        #{postId}
+        and dp.delete_flag = 0
     </select>
     <!--    根据部门id批量查询出数据库的数据-->
     <select id="selectDepartmentIds" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
@@ -132,9 +134,9 @@
         p.post_name,
         p.post_rank
         FROM department_post dp
-            LEFT JOIN post p
-            ON p.post_id = dp.post_id
-            AND p.delete_flag=0
+        LEFT JOIN post p
+        ON p.post_id = dp.post_id
+        AND p.delete_flag=0
         WHERE dp.department_id in
         <foreach item="item"
                  collection="departmentIds"
@@ -146,10 +148,10 @@
     <!--新增部门岗位关联表-->
     <insert id="insertDepartmentPost" useGeneratedKeys="true" keyProperty="departmentPostId">
         INSERT INTO department_post (department_id, post_id, department_sort, post_sort, delete_flag, create_by,
-                                     create_time, update_by, update_time)
+        create_time, update_by, update_time)
         VALUES (#{departmentPost.departmentId}, #{departmentPost.postId}, #{departmentPost.departmentSort},
-                #{departmentPost.postSort}, #{departmentPost.deleteFlag}, #{departmentPost.createBy},
-                #{departmentPost.createTime}, #{departmentPost.updateBy}, #{departmentPost.updateTime})
+        #{departmentPost.postSort}, #{departmentPost.deleteFlag}, #{departmentPost.createBy},
+        #{departmentPost.createTime}, #{departmentPost.updateBy}, #{departmentPost.updateTime})
     </insert>
     <!--修改部门岗位关联表-->
     <update id="updateDepartmentPost">
@@ -189,8 +191,8 @@
     <update id="logicDeleteDepartmentPostByDepartmentPostId">
         UPDATE department_post
         SET delete_flag= 1,
-            update_by=#{departmentPost.updateBy},
-            update_time=#{departmentPost.updateTime}
+        update_by=#{departmentPost.updateBy},
+        update_time=#{departmentPost.updateTime}
         WHERE department_post_id = #{departmentPost.departmentPostId}
     </update>
     <!--逻辑批量删除部门岗位关联表-->

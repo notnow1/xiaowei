@@ -205,7 +205,7 @@ public class EmployeeDTO implements Serializable {
     /**
      * 员工职级
      */
-    @NotNull(message = "个人职级不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
+    @NotNull(message = "个人职级不能为空", groups = {EmployeeDTO.AddEmployeeDTO.class, EmployeeDTO.UpdateEmployeeDTO.class})
     private Integer employeeRank;
 
     private String employeeRankName;
@@ -230,6 +230,7 @@ public class EmployeeDTO implements Serializable {
      */
 //    @NotNull(message = "用工状态不能为空",groups = {EmployeeDTO.AddEmployeeDTO.class,EmployeeDTO.UpdateEmployeeDTO.class})
     private Integer employmentStatus;
+    private String employmentStatusName;
     /**
      * 状态:0暂存;1生效
      */
@@ -330,14 +331,6 @@ public class EmployeeDTO implements Serializable {
      * 部门负责人id
      */
     private Long departmentLeaderId;
-    /**
-     * 近三次绩效结果集合
-     */
-    private List<Map<String, String>> performanceResultList;
-    /**
-     * 个人调薪记录
-     */
-    private List<EmployeeSalarySnapVO> employeeSalarySnapVOS;
 
 }
 

@@ -85,10 +85,58 @@
             and update_time=#{empSalaryAdjustPerform.updateTime}
         </if>
     </select>
+    <!--根据计划ID获取近三次绩效结果-->
+    <select id="selectEmpSalaryAdjustPerformByPlanId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPerformDTO">
+        SELECT
+        esp.emp_salary_adjust_perform_id,
+        esp.emp_salary_adjust_plan_id,
+        esp.performance_appraisal_id,
+        esp.perform_appraisal_objects_id,
+        esp.cycle_type,
+        esp.cycle_number,
+        esp.filing_date,
+        esp.appraisal_result,
+        esp.delete_flag,
+        esp.create_by,
+        esp.create_time,
+        esp.update_by,
+        esp.update_time
+        FROM emp_salary_adjust_perform esp
+        WHERE esp.emp_salary_adjust_plan_id=#{empSalaryAdjustPlanId}
+        and esp.delete_flag=0
+        LIMIT 3
+        ORDER BY esp.create_by DESC
+    </select>
+    <!--根据计划ID集合查询最近三次绩效结果-->
+    <select id="selectEmpSalaryAdjustPerformByPlanIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPerformDTO">
+        SELECT
+        esp.emp_salary_adjust_perform_id,
+        esp.emp_salary_adjust_plan_id,
+        esp.performance_appraisal_id,
+        esp.perform_appraisal_objects_id,
+        esp.cycle_type,
+        esp.cycle_number,
+        esp.filing_date,
+        esp.appraisal_result,
+        esp.delete_flag,
+        esp.create_by,
+        esp.create_time,
+        esp.update_by,
+        esp.update_time
+        FROM emp_salary_adjust_perform esp
+        WHERE esp.emp_salary_adjust_plan_id
+        IN
+        <foreach collection="empSalaryAdjustPlanIds" open="(" close=")" separator="," item="item" index="index">
+            #{item}
+        </foreach>
+        and esp.delete_flag=0
+    </select>
     <!--新增个人调薪绩效记录表-->
     <insert id="insertEmpSalaryAdjustPerform" useGeneratedKeys="true" keyProperty="empSalaryAdjustPerformId">
         INSERT INTO emp_salary_adjust_perform
-        (emp_salary_adjust_perform_idemp_salary_adjust_plan_id,performance_appraisal_id,perform_appraisal_objects_id,cycle_type,cycle_number,filing_date,appraisal_result,delete_flag,create_by,create_time,update_by,update_time)
+        (emp_salary_adjust_plan_id,performance_appraisal_id,perform_appraisal_objects_id,cycle_type,cycle_number,filing_date,appraisal_result,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{empSalaryAdjustPerform.empSalaryAdjustPlanId},#{empSalaryAdjustPerform.performanceAppraisalId},#{empSalaryAdjustPerform.performAppraisalObjectsId},#{empSalaryAdjustPerform.cycleType},#{empSalaryAdjustPerform.cycleNumber},#{empSalaryAdjustPerform.filingDate},#{empSalaryAdjustPerform.appraisalResult},#{empSalaryAdjustPerform.deleteFlag},#{empSalaryAdjustPerform.createBy},#{empSalaryAdjustPerform.createTime},#{empSalaryAdjustPerform.updateBy},#{empSalaryAdjustPerform.updateTime})
     </insert>
@@ -161,7 +209,7 @@
     <!--批量新增个人调薪绩效记录表-->
     <insert id="batchEmpSalaryAdjustPerform">
         INSERT INTO emp_salary_adjust_perform
-        (emp_salary_adjust_perform_idemp_salary_adjust_plan_id,performance_appraisal_id,perform_appraisal_objects_id,cycle_type,cycle_number,filing_date,appraisal_result,delete_flag,create_by,create_time,update_by,update_time)
+        (emp_salary_adjust_plan_id,performance_appraisal_id,perform_appraisal_objects_id,cycle_type,cycle_number,filing_date,appraisal_result,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="empSalaryAdjustPerforms"

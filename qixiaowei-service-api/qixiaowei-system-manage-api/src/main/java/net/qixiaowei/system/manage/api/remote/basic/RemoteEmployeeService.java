@@ -5,6 +5,7 @@ import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteEmployeeFallbackFactory;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -137,6 +138,6 @@ public interface RemoteEmployeeService {
      * @return R
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/empSalaryAdjustPlan")
-    R<EmployeeDTO> empSalaryAdjustPlan(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<EmployeeSalaryPlanVO> empSalaryAdjustPlan(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

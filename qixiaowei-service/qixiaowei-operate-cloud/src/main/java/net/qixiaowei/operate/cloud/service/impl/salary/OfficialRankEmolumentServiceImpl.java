@@ -500,5 +500,24 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         }
         return officialRankDecomposeDTOS;
     }
+
+    /**
+     * 根据岗位ID获取职级确定薪酬提示
+     *
+     * @param postId 岗位id
+     * @return String
+     */
+    @Override
+    public String selectByPostId(Long postId) {
+        R<PostDTO> postDTOR = postService.selectPostByPostId(postId, SecurityConstants.INNER);
+        if (postDTOR.getCode() != 200) {
+            throw new ServiceException("远程获取岗位信息失败");
+        }
+        PostDTO postDTO = postDTOR.getData();
+        if (StringUtils.isNull(postDTO)) {
+            postDTO.getRankPrefixCode();
+        }
+        return null;
+    }
 }
 

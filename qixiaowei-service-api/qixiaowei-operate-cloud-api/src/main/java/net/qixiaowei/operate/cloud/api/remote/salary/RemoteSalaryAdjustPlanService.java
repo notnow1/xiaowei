@@ -7,10 +7,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.api.factory.salary.RemoteSalaryAdjustPlanFallbackFactory;
 import net.qixiaowei.operate.cloud.api.factory.salary.RemoteSalaryItemFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,7 +20,7 @@ public interface RemoteSalaryAdjustPlanService {
     /**
      * 初始化工资项
      */
-    @PostMapping(API_PREFIX_SALARY_ITEM + "/selectByEmployeeId")
+    @GetMapping(API_PREFIX_SALARY_ITEM + "/selectByEmployeeId")
     R<List<EmpSalaryAdjustPlanDTO>> selectByEmployeeId(@RequestParam("employeeId") Long employeeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

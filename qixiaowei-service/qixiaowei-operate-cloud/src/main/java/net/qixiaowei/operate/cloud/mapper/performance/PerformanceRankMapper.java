@@ -109,8 +109,8 @@ public interface PerformanceRankMapper {
     /**
      * 查询与绩效等级关联的绩效等级系数Ids
      *
-     * @param performanceRankIds
-     * @return
+     * @param performanceRankIds 绩效等级ID集合
+     * @return List
      */
     List<Long> selectPerformanceRankFactorIds(@Param("performanceRankIds") List<Long> performanceRankIds);
 

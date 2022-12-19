@@ -52,9 +52,13 @@ public class EmpSalaryAdjustSnapDTO {
      */
     private String employeeName;
     /**
+     * 员工姓名
+     */
+    private String employeeCode;
+    /**
      * 入职日期
      */
-    private LocalDate employmentDate;
+    private Date employmentDate;
     /**
      * 司龄
      */

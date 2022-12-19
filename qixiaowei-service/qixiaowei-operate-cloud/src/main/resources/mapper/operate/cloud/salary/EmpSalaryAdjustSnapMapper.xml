@@ -8,6 +8,7 @@
         emp_salary_adjust_snap_id,
         emp_salary_adjust_plan_id,
         employee_name,
+        employee_code,
         employment_date,
         seniority,
         department_id,
@@ -27,7 +28,7 @@
         update_by,
         update_time
         FROM emp_salary_adjust_snap
-        WHERE  emp_salary_adjust_snap_id=#{empSalaryAdjustSnapId}
+        WHERE emp_salary_adjust_snap_id=#{empSalaryAdjustSnapId}
         and delete_flag=0
     </select>
 
@@ -35,86 +36,117 @@
     <select id="selectEmpSalaryAdjustSnapByEmpSalaryAdjustSnapIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustSnapDTO">
         SELECT
-        emp_salary_adjust_snap_id,emp_salary_adjust_plan_id,employee_name,employment_date,seniority,department_id,department_name,department_leader_id,department_leader_name,post_id,post_name,official_rank_system_id,official_rank_system_name,official_rank,official_rank_name,basic_wage,delete_flag,create_by,create_time,update_by,update_time
+        emp_salary_adjust_snap_id,
+        emp_salary_adjust_plan_id,
+        employee_name,
+        employee_code,
+        employment_date,
+        seniority,
+        department_id,
+        department_name,
+        department_leader_id,
+        department_leader_name,
+        post_id,
+        post_name,
+        official_rank_system_id,
+        official_rank_system_name,
+        official_rank,
+        official_rank_name,
+        basic_wage,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM emp_salary_adjust_snap
-        WHERE  emp_salary_adjust_snap_id in
-            <foreach item="item"
-                     collection="empSalaryAdjustSnapIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE emp_salary_adjust_snap_id in
+        <foreach item="item"
+                 collection="empSalaryAdjustSnapIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询个人调薪快照表列表-->
-    <select id="selectEmpSalaryAdjustSnapList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustSnapDTO">
+    <select id="selectEmpSalaryAdjustSnapList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustSnapDTO">
         SELECT
-        emp_salary_adjust_snap_id,emp_salary_adjust_plan_id,employee_name,employment_date,seniority,department_id,department_name,department_leader_id,department_leader_name,post_id,post_name,official_rank_system_id,official_rank_system_name,official_rank,official_rank_name,basic_wage,delete_flag,create_by,create_time,update_by,update_time
-        FROM emp_salary_adjust_snap
+        ess.emp_salary_adjust_snap_id,
+        ess.emp_salary_adjust_plan_id,
+        ess.employee_name,
+        ess.employee_code,
+        ess.employment_date,
+        ess.seniority,
+        ess.department_id,
+        ess.department_name,
+        ess.department_leader_id,
+        ess.department_leader_name,
+        ess.post_id,
+        ess.post_name,
+        ess.official_rank_system_id,
+        ess.official_rank_system_name,
+        ess.official_rank,
+        ess.official_rank_name,
+        ess.basic_wage,
+        ess.delete_flag,
+        ess.create_by,
+        ess.create_time,
+        ess.update_by,
+        ess.update_time
+        FROM emp_salary_adjust_snap ess
         WHERE delete_flag=0
-                        <if test="empSalaryAdjustSnap.empSalaryAdjustSnapId != null">
-                            and emp_salary_adjust_snap_id=#{empSalaryAdjustSnap.empSalaryAdjustSnapId}
-                        </if>
-                        <if test="empSalaryAdjustSnap.empSalaryAdjustPlanId != null">
-                            and emp_salary_adjust_plan_id=#{empSalaryAdjustSnap.empSalaryAdjustPlanId}
-                        </if>
-                        <if test="empSalaryAdjustSnap.employeeName != null and empSalaryAdjustSnap.employeeName != ''">
-                            and employee_name=#{empSalaryAdjustSnap.employeeName}
-                        </if>
-                        <if test="empSalaryAdjustSnap.employmentDate != null">
-                            and employment_date=#{empSalaryAdjustSnap.employmentDate}
-                        </if>
-                        <if test="empSalaryAdjustSnap.seniority != null and empSalaryAdjustSnap.seniority != ''">
-                            and seniority=#{empSalaryAdjustSnap.seniority}
-                        </if>
-                        <if test="empSalaryAdjustSnap.departmentId != null">
-                            and department_id=#{empSalaryAdjustSnap.departmentId}
-                        </if>
-                        <if test="empSalaryAdjustSnap.departmentName != null and empSalaryAdjustSnap.departmentName != ''">
-                            and department_name=#{empSalaryAdjustSnap.departmentName}
-                        </if>
-                        <if test="empSalaryAdjustSnap.departmentLeaderId != null">
-                            and department_leader_id=#{empSalaryAdjustSnap.departmentLeaderId}
-                        </if>
-                        <if test="empSalaryAdjustSnap.departmentLeaderName != null and empSalaryAdjustSnap.departmentLeaderName != ''">
-                            and department_leader_name=#{empSalaryAdjustSnap.departmentLeaderName}
-                        </if>
-                        <if test="empSalaryAdjustSnap.postId != null">
-                            and post_id=#{empSalaryAdjustSnap.postId}
-                        </if>
-                        <if test="empSalaryAdjustSnap.postName != null and empSalaryAdjustSnap.postName != ''">
-                            and post_name=#{empSalaryAdjustSnap.postName}
-                        </if>
-                        <if test="empSalaryAdjustSnap.officialRankSystemId != null">
-                            and official_rank_system_id=#{empSalaryAdjustSnap.officialRankSystemId}
-                        </if>
-                        <if test="empSalaryAdjustSnap.officialRankSystemName != null and empSalaryAdjustSnap.officialRankSystemName != ''">
-                            and official_rank_system_name=#{empSalaryAdjustSnap.officialRankSystemName}
-                        </if>
-                        <if test="empSalaryAdjustSnap.officialRank != null">
-                            and official_rank=#{empSalaryAdjustSnap.officialRank}
-                        </if>
-                        <if test="empSalaryAdjustSnap.officialRankName != null and empSalaryAdjustSnap.officialRankName != ''">
-                            and official_rank_name=#{empSalaryAdjustSnap.officialRankName}
-                        </if>
-                        <if test="empSalaryAdjustSnap.basicWage != null">
-                            and basic_wage=#{empSalaryAdjustSnap.basicWage}
-                        </if>
-                        <if test="empSalaryAdjustSnap.deleteFlag != null">
-                            and delete_flag=#{empSalaryAdjustSnap.deleteFlag}
-                        </if>
-                        <if test="empSalaryAdjustSnap.createBy != null">
-                            and create_by=#{empSalaryAdjustSnap.createBy}
-                        </if>
-                        <if test="empSalaryAdjustSnap.createTime != null">
-                            and create_time=#{empSalaryAdjustSnap.createTime}
-                        </if>
-                        <if test="empSalaryAdjustSnap.updateBy != null">
-                            and update_by=#{empSalaryAdjustSnap.updateBy}
-                        </if>
-                        <if test="empSalaryAdjustSnap.updateTime != null">
-                            and update_time=#{empSalaryAdjustSnap.updateTime}
-                        </if>
+        <if test="empSalaryAdjustSnap.empSalaryAdjustSnapId != null">
+            and ess.emp_salary_adjust_snap_id=#{empSalaryAdjustSnap.empSalaryAdjustSnapId}
+        </if>
+        <if test="empSalaryAdjustSnap.empSalaryAdjustPlanId != null">
+            and ess.emp_salary_adjust_plan_id=#{empSalaryAdjustSnap.empSalaryAdjustPlanId}
+        </if>
+        <if test="empSalaryAdjustSnap.employeeName != null and empSalaryAdjustSnap.employeeName != ''">
+            and ess.employee_name=#{empSalaryAdjustSnap.employeeName}
+        </if>
+        <if test="empSalaryAdjustSnap.employeeCode != null and empSalaryAdjustSnap.employeeCode != ''">
+            and ess.employee_code=#{empSalaryAdjustSnap.employeeCode}
+        </if>
+        <if test="empSalaryAdjustSnap.employmentDate != null">
+            and ess.employment_date=#{empSalaryAdjustSnap.employmentDate}
+        </if>
+        <if test="empSalaryAdjustSnap.seniority != null and empSalaryAdjustSnap.seniority != ''">
+            and ess.seniority=#{empSalaryAdjustSnap.seniority}
+        </if>
+        <if test="empSalaryAdjustSnap.departmentId != null">
+            and ess.department_id=#{empSalaryAdjustSnap.departmentId}
+        </if>
+        <if test="empSalaryAdjustSnap.departmentName != null and empSalaryAdjustSnap.departmentName != ''">
+            and ess.department_name=#{empSalaryAdjustSnap.departmentName}
+        </if>
+        <if test="empSalaryAdjustSnap.departmentLeaderId != null">
+            and ess.department_leader_id=#{empSalaryAdjustSnap.departmentLeaderId}
+        </if>
+        <if test="empSalaryAdjustSnap.departmentLeaderName != null and empSalaryAdjustSnap.departmentLeaderName != ''">
+            and ess.department_leader_name=#{empSalaryAdjustSnap.departmentLeaderName}
+        </if>
+        <if test="empSalaryAdjustSnap.postId != null">
+            and ess.post_id=#{empSalaryAdjustSnap.postId}
+        </if>
+        <if test="empSalaryAdjustSnap.postName != null and empSalaryAdjustSnap.postName != ''">
+            and ess.post_name=#{empSalaryAdjustSnap.postName}
+        </if>
+        <if test="empSalaryAdjustSnap.officialRankSystemId != null">
+            and ess.official_rank_system_id=#{empSalaryAdjustSnap.officialRankSystemId}
+        </if>
+        <if test="empSalaryAdjustSnap.officialRankSystemName != null and empSalaryAdjustSnap.officialRankSystemName != ''">
+            and ess.official_rank_system_name=#{empSalaryAdjustSnap.officialRankSystemName}
+        </if>
+        <if test="empSalaryAdjustSnap.officialRank != null">
+            and ess.official_rank=#{empSalaryAdjustSnap.officialRank}
+        </if>
+        <if test="empSalaryAdjustSnap.officialRankName != null and empSalaryAdjustSnap.officialRankName != ''">
+            and ess.official_rank_name=#{empSalaryAdjustSnap.officialRankName}
+        </if>
+        <if test="empSalaryAdjustSnap.basicWage != null">
+            and ess.basic_wage=#{empSalaryAdjustSnap.basicWage}
+        </if>
     </select>
     <!--根据计划ID获取调薪快照表-->
     <select id="selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanId"
@@ -123,6 +155,7 @@
         emp_salary_adjust_snap_id,
         emp_salary_adjust_plan_id,
         employee_name,
+        employee_code,
         employment_date,
         seniority,
         department_id,
@@ -145,277 +178,323 @@
         WHERE delete_flag=0
         AND emp_salary_adjust_plan_id = #{empSalaryAdjustPlanId}
     </select>
+    <!--根据计划ID集合查询个人调薪快照表-->
+    <select id="selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustSnapDTO">
+        SELECT
+        emp_salary_adjust_snap_id,
+        emp_salary_adjust_plan_id,
+        employee_name,
+        employee_code,
+        employment_date,
+        seniority,
+        department_id,
+        department_name,
+        department_leader_id,
+        department_leader_name,
+        post_id,
+        post_name,
+        official_rank_system_id,
+        official_rank_system_name,
+        official_rank,
+        official_rank_name,
+        basic_wage,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM emp_salary_adjust_snap
+        WHERE delete_flag=0
+        AND emp_salary_adjust_plan_id
+        IN
+        <foreach collection="empSalaryAdjustPlanIds" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--新增个人调薪快照表-->
     <insert id="insertEmpSalaryAdjustSnap" useGeneratedKeys="true" keyProperty="empSalaryAdjustSnapId">
-        INSERT INTO emp_salary_adjust_snap (emp_salary_adjust_snap_idemp_salary_adjust_plan_id,employee_name,employment_date,seniority,department_id,department_name,department_leader_id,department_leader_name,post_id,post_name,official_rank_system_id,official_rank_system_name,official_rank,official_rank_name,basic_wage,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO emp_salary_adjust_snap
+        (emp_salary_adjust_plan_id,employee_name,employee_code,employment_date,seniority,department_id,department_name,department_leader_id,department_leader_name,post_id,post_name,official_rank_system_id,official_rank_system_name,official_rank,official_rank_name,basic_wage,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{empSalaryAdjustSnap.empSalaryAdjustPlanId},#{empSalaryAdjustSnap.employeeName},#{empSalaryAdjustSnap.employmentDate},#{empSalaryAdjustSnap.seniority},#{empSalaryAdjustSnap.departmentId},#{empSalaryAdjustSnap.departmentName},#{empSalaryAdjustSnap.departmentLeaderId},#{empSalaryAdjustSnap.departmentLeaderName},#{empSalaryAdjustSnap.postId},#{empSalaryAdjustSnap.postName},#{empSalaryAdjustSnap.officialRankSystemId},#{empSalaryAdjustSnap.officialRankSystemName},#{empSalaryAdjustSnap.officialRank},#{empSalaryAdjustSnap.officialRankName},#{empSalaryAdjustSnap.basicWage},#{empSalaryAdjustSnap.deleteFlag},#{empSalaryAdjustSnap.createBy},#{empSalaryAdjustSnap.createTime},#{empSalaryAdjustSnap.updateBy},#{empSalaryAdjustSnap.updateTime})
+        (#{empSalaryAdjustSnap.empSalaryAdjustPlanId},#{empSalaryAdjustSnap.employeeName},#{empSalaryAdjustSnap.employeeCode},#{empSalaryAdjustSnap.employmentDate},#{empSalaryAdjustSnap.seniority},#{empSalaryAdjustSnap.departmentId},#{empSalaryAdjustSnap.departmentName},#{empSalaryAdjustSnap.departmentLeaderId},#{empSalaryAdjustSnap.departmentLeaderName},#{empSalaryAdjustSnap.postId},#{empSalaryAdjustSnap.postName},#{empSalaryAdjustSnap.officialRankSystemId},#{empSalaryAdjustSnap.officialRankSystemName},#{empSalaryAdjustSnap.officialRank},#{empSalaryAdjustSnap.officialRankName},#{empSalaryAdjustSnap.basicWage},#{empSalaryAdjustSnap.deleteFlag},#{empSalaryAdjustSnap.createBy},#{empSalaryAdjustSnap.createTime},#{empSalaryAdjustSnap.updateBy},#{empSalaryAdjustSnap.updateTime})
     </insert>
     <!--修改个人调薪快照表-->
     <update id="updateEmpSalaryAdjustSnap">
         UPDATE emp_salary_adjust_snap
         SET
-                    <if test="empSalaryAdjustSnap.empSalaryAdjustPlanId != null">
-                        emp_salary_adjust_plan_id=#{empSalaryAdjustSnap.empSalaryAdjustPlanId},
-                    </if>
-                    <if test="empSalaryAdjustSnap.employeeName != null and empSalaryAdjustSnap.employeeName != ''">
-                        employee_name=#{empSalaryAdjustSnap.employeeName},
-                    </if>
-                    <if test="empSalaryAdjustSnap.employmentDate != null">
-                        employment_date=#{empSalaryAdjustSnap.employmentDate},
-                    </if>
-                    <if test="empSalaryAdjustSnap.seniority != null and empSalaryAdjustSnap.seniority != ''">
-                        seniority=#{empSalaryAdjustSnap.seniority},
-                    </if>
-                    <if test="empSalaryAdjustSnap.departmentId != null">
-                        department_id=#{empSalaryAdjustSnap.departmentId},
-                    </if>
-                    <if test="empSalaryAdjustSnap.departmentName != null and empSalaryAdjustSnap.departmentName != ''">
-                        department_name=#{empSalaryAdjustSnap.departmentName},
-                    </if>
-                    <if test="empSalaryAdjustSnap.departmentLeaderId != null">
-                        department_leader_id=#{empSalaryAdjustSnap.departmentLeaderId},
-                    </if>
-                    <if test="empSalaryAdjustSnap.departmentLeaderName != null and empSalaryAdjustSnap.departmentLeaderName != ''">
-                        department_leader_name=#{empSalaryAdjustSnap.departmentLeaderName},
-                    </if>
-                    <if test="empSalaryAdjustSnap.postId != null">
-                        post_id=#{empSalaryAdjustSnap.postId},
-                    </if>
-                    <if test="empSalaryAdjustSnap.postName != null and empSalaryAdjustSnap.postName != ''">
-                        post_name=#{empSalaryAdjustSnap.postName},
-                    </if>
-                    <if test="empSalaryAdjustSnap.officialRankSystemId != null">
-                        official_rank_system_id=#{empSalaryAdjustSnap.officialRankSystemId},
-                    </if>
-                    <if test="empSalaryAdjustSnap.officialRankSystemName != null and empSalaryAdjustSnap.officialRankSystemName != ''">
-                        official_rank_system_name=#{empSalaryAdjustSnap.officialRankSystemName},
-                    </if>
-                    <if test="empSalaryAdjustSnap.officialRank != null">
-                        official_rank=#{empSalaryAdjustSnap.officialRank},
-                    </if>
-                    <if test="empSalaryAdjustSnap.officialRankName != null and empSalaryAdjustSnap.officialRankName != ''">
-                        official_rank_name=#{empSalaryAdjustSnap.officialRankName},
-                    </if>
-                    <if test="empSalaryAdjustSnap.basicWage != null">
-                        basic_wage=#{empSalaryAdjustSnap.basicWage},
-                    </if>
-                    <if test="empSalaryAdjustSnap.deleteFlag != null">
-                        delete_flag=#{empSalaryAdjustSnap.deleteFlag},
-                    </if>
-                    <if test="empSalaryAdjustSnap.createBy != null">
-                        create_by=#{empSalaryAdjustSnap.createBy},
-                    </if>
-                    <if test="empSalaryAdjustSnap.createTime != null">
-                        create_time=#{empSalaryAdjustSnap.createTime},
-                    </if>
-                    <if test="empSalaryAdjustSnap.updateBy != null">
-                        update_by=#{empSalaryAdjustSnap.updateBy},
-                    </if>
-                    <if test="empSalaryAdjustSnap.updateTime != null">
-                        update_time=#{empSalaryAdjustSnap.updateTime}
-                    </if>
+        <if test="empSalaryAdjustSnap.empSalaryAdjustPlanId != null">
+            emp_salary_adjust_plan_id=#{empSalaryAdjustSnap.empSalaryAdjustPlanId},
+        </if>
+        <if test="empSalaryAdjustSnap.employeeName != null and empSalaryAdjustSnap.employeeName != ''">
+            employee_name=#{empSalaryAdjustSnap.employeeName},
+        </if>
+        <if test="empSalaryAdjustSnap.employeeCode != null and empSalaryAdjustSnap.employeeCode != ''">
+            employee_code=#{empSalaryAdjustSnap.employeeCode},
+        </if>
+        <if test="empSalaryAdjustSnap.employmentDate != null">
+            employment_date=#{empSalaryAdjustSnap.employmentDate},
+        </if>
+        <if test="empSalaryAdjustSnap.seniority != null and empSalaryAdjustSnap.seniority != ''">
+            seniority=#{empSalaryAdjustSnap.seniority},
+        </if>
+        <if test="empSalaryAdjustSnap.departmentId != null">
+            department_id=#{empSalaryAdjustSnap.departmentId},
+        </if>
+        <if test="empSalaryAdjustSnap.departmentName != null and empSalaryAdjustSnap.departmentName != ''">
+            department_name=#{empSalaryAdjustSnap.departmentName},
+        </if>
+        <if test="empSalaryAdjustSnap.departmentLeaderId != null">
+            department_leader_id=#{empSalaryAdjustSnap.departmentLeaderId},
+        </if>
+        <if test="empSalaryAdjustSnap.departmentLeaderName != null and empSalaryAdjustSnap.departmentLeaderName != ''">
+            department_leader_name=#{empSalaryAdjustSnap.departmentLeaderName},
+        </if>
+        <if test="empSalaryAdjustSnap.postId != null">
+            post_id=#{empSalaryAdjustSnap.postId},
+        </if>
+        <if test="empSalaryAdjustSnap.postName != null and empSalaryAdjustSnap.postName != ''">
+            post_name=#{empSalaryAdjustSnap.postName},
+        </if>
+        <if test="empSalaryAdjustSnap.officialRankSystemId != null">
+            official_rank_system_id=#{empSalaryAdjustSnap.officialRankSystemId},
+        </if>
+        <if test="empSalaryAdjustSnap.officialRankSystemName != null and empSalaryAdjustSnap.officialRankSystemName != ''">
+            official_rank_system_name=#{empSalaryAdjustSnap.officialRankSystemName},
+        </if>
+        <if test="empSalaryAdjustSnap.officialRank != null">
+            official_rank=#{empSalaryAdjustSnap.officialRank},
+        </if>
+        <if test="empSalaryAdjustSnap.officialRankName != null and empSalaryAdjustSnap.officialRankName != ''">
+            official_rank_name=#{empSalaryAdjustSnap.officialRankName},
+        </if>
+        <if test="empSalaryAdjustSnap.basicWage != null">
+            basic_wage=#{empSalaryAdjustSnap.basicWage},
+        </if>
+        <if test="empSalaryAdjustSnap.deleteFlag != null">
+            delete_flag=#{empSalaryAdjustSnap.deleteFlag},
+        </if>
+        <if test="empSalaryAdjustSnap.createBy != null">
+            create_by=#{empSalaryAdjustSnap.createBy},
+        </if>
+        <if test="empSalaryAdjustSnap.createTime != null">
+            create_time=#{empSalaryAdjustSnap.createTime},
+        </if>
+        <if test="empSalaryAdjustSnap.updateBy != null">
+            update_by=#{empSalaryAdjustSnap.updateBy},
+        </if>
+        <if test="empSalaryAdjustSnap.updateTime != null">
+            update_time=#{empSalaryAdjustSnap.updateTime}
+        </if>
         WHERE
-                 emp_salary_adjust_snap_id=#{empSalaryAdjustSnap.empSalaryAdjustSnapId}
+        emp_salary_adjust_snap_id=#{empSalaryAdjustSnap.empSalaryAdjustSnapId}
     </update>
     <!--逻辑删除个人调薪快照表-->
     <update id="logicDeleteEmpSalaryAdjustSnapByEmpSalaryAdjustSnapId">
         UPDATE emp_salary_adjust_snap
-        SET     delete_flag= 1,
-                update_by=#{empSalaryAdjustSnap.updateBy},
-                update_time=#{empSalaryAdjustSnap.updateTime}
+        SET delete_flag= 1,
+        update_by=#{empSalaryAdjustSnap.updateBy},
+        update_time=#{empSalaryAdjustSnap.updateTime}
         WHERE
-                emp_salary_adjust_snap_id=#{empSalaryAdjustSnap.empSalaryAdjustSnapId}
+        emp_salary_adjust_snap_id=#{empSalaryAdjustSnap.empSalaryAdjustSnapId}
     </update>
     <!--逻辑批量删除个人调薪快照表-->
     <update id="logicDeleteEmpSalaryAdjustSnapByEmpSalaryAdjustSnapIds">
         UPDATE emp_salary_adjust_snap
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         emp_salary_adjust_snap_id IN
-            <foreach item="item"
-                     collection="empSalaryAdjustSnapIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        emp_salary_adjust_snap_id IN
+        <foreach item="item"
+                 collection="empSalaryAdjustSnapIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增个人调薪快照表-->
     <insert id="batchEmpSalaryAdjustSnap">
-        INSERT INTO emp_salary_adjust_snap (emp_salary_adjust_snap_idemp_salary_adjust_plan_id,employee_name,employment_date,seniority,department_id,department_name,department_leader_id,department_leader_name,post_id,post_name,official_rank_system_id,official_rank_system_name,official_rank,official_rank_name,basic_wage,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO emp_salary_adjust_snap
+        (emp_salary_adjust_plan_id,employee_name,employee_code,employment_date,seniority,department_id,department_name,department_leader_id,department_leader_name,post_id,post_name,official_rank_system_id,official_rank_system_name,official_rank,official_rank_name,basic_wage,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="empSalaryAdjustSnaps"
                  separator=",">
-            (#{item.empSalaryAdjustPlanId},#{item.employeeName},#{item.employmentDate},#{item.seniority},#{item.departmentId},#{item.departmentName},#{item.departmentLeaderId},#{item.departmentLeaderName},#{item.postId},#{item.postName},#{item.officialRankSystemId},#{item.officialRankSystemName},#{item.officialRank},#{item.officialRankName},#{item.basicWage},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.empSalaryAdjustPlanId},#{item.employeeName},#{item.employeeCode},#{item.employmentDate},#{item.seniority},#{item.departmentId},#{item.departmentName},#{item.departmentLeaderId},#{item.departmentLeaderName},#{item.postId},#{item.postName},#{item.officialRankSystemId},#{item.officialRankSystemName},#{item.officialRank},#{item.officialRankName},#{item.basicWage},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
     <!--物理删除个人调薪快照表-->
     <delete id="deleteEmpSalaryAdjustSnapByEmpSalaryAdjustSnapId">
         DELETE FROM emp_salary_adjust_snap
-        WHERE  emp_salary_adjust_snap_id=#{empSalaryAdjustSnap}
+        WHERE emp_salary_adjust_snap_id=#{empSalaryAdjustSnap}
 
     </delete>
     <!--物理批量删除个人调薪快照表-->
     <delete id="deleteEmpSalaryAdjustSnapByEmpSalaryAdjustSnapIds">
         DELETE FROM emp_salary_adjust_snap
-        WHERE  emp_salary_adjust_snap_id IN
-            <foreach item="item"
-                     collection="empSalaryAdjustSnapIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE emp_salary_adjust_snap_id IN
+        <foreach item="item"
+                 collection="empSalaryAdjustSnapIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改个人调薪快照表-->
     <update id="updateEmpSalaryAdjustSnaps">
         update emp_salary_adjust_snap
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="emp_salary_adjust_plan_id=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.empSalaryAdjustPlanId != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.empSalaryAdjustPlanId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="employee_name=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.employeeName != null and item.employeeName != ''">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.employeeName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="employment_date=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.employmentDate != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.employmentDate}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="seniority=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.seniority != null and item.seniority != ''">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.seniority}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_id=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.departmentId != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.departmentId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_name=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.departmentName != null and item.departmentName != ''">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.departmentName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_leader_id=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.departmentLeaderId != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.departmentLeaderId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_leader_name=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.departmentLeaderName != null and item.departmentLeaderName != ''">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.departmentLeaderName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="post_id=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.postId != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.postId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="post_name=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.postName != null and item.postName != ''">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.postName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="official_rank_system_id=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.officialRankSystemId != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.officialRankSystemId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="official_rank_system_name=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.officialRankSystemName != null and item.officialRankSystemName != ''">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.officialRankSystemName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="official_rank=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.officialRank != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.officialRank}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="official_rank_name=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.officialRankName != null and item.officialRankName != ''">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.officialRankName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="basic_wage=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.basicWage != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.basicWage}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="emp_salary_adjust_plan_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.empSalaryAdjustPlanId != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.empSalaryAdjustPlanId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="employee_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.employeeName != null and item.employeeName != ''">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.employeeName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="employee_code=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.employeeCode != null and item.employeeCode != ''">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.employeeCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="employment_date=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.employmentDate != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.employmentDate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="seniority=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.seniority != null and item.seniority != ''">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.seniority}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.departmentName != null and item.departmentName != ''">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.departmentName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_leader_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.departmentLeaderId != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.departmentLeaderId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_leader_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.departmentLeaderName != null and item.departmentLeaderName != ''">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.departmentLeaderName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="post_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.postId != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.postId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="post_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.postName != null and item.postName != ''">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.postName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="official_rank_system_id=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.officialRankSystemId != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.officialRankSystemId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="official_rank_system_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.officialRankSystemName != null and item.officialRankSystemName != ''">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.officialRankSystemName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="official_rank=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.officialRank != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.officialRank}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="official_rank_name=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.officialRankName != null and item.officialRankName != ''">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.officialRankName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="basic_wage=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.basicWage != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.basicWage}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="empSalaryAdjustSnapList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="empSalaryAdjustSnapList" separator="or" item="item" index="index">
-                    emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId}
+            emp_salary_adjust_snap_id=#{item.empSalaryAdjustSnapId}
         </foreach>
     </update>
 </mapper>

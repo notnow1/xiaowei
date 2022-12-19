@@ -2,13 +2,10 @@ package net.qixiaowei.system.manage.api.dto.basic;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;

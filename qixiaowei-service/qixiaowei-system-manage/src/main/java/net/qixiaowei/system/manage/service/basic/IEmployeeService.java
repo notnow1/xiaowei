@@ -7,6 +7,7 @@ import java.util.Map;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import org.apache.ibatis.annotations.Param;
 
@@ -252,5 +253,5 @@ public interface IEmployeeService {
      * @param employeeDTO 员工DTO
      * @return R
      */
-    EmployeeDTO empSalaryAdjustPlan(EmployeeDTO employeeDTO);
+    EmployeeSalaryPlanVO empSalaryAdjustPlan(EmployeeDTO employeeDTO);
 }

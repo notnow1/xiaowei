@@ -28,12 +28,16 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import net.qixiaowei.system.manage.api.remote.basic.RemotePostService;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -71,6 +75,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
     @Autowired
     private IPerformanceAppraisalObjectsService performanceAppraisalObjectsService;
 
+
     /**
      * 查询个人调薪计划表
      *
@@ -79,11 +84,110 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      */
     @Override
     public EmpSalaryAdjustPlanDTO selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(Long empSalaryAdjustPlanId) {
+        if (StringUtils.isNull(empSalaryAdjustPlanId)) {
+            throw new ServiceException("请传入个人调薪计划ID");
+        }
         EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
         if (StringUtils.isNull(empSalaryAdjustPlanDTO)) {
             throw new ServiceException("当前个人调薪计划已不存在");
         }
-        return null;
+        String adjustmentType = empSalaryAdjustPlanDTO.getAdjustmentType();
+        List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
+        empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
+        Long employeeId = empSalaryAdjustPlanDTO.getEmployeeId();
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = selectByEmployeeId(employeeId);
+        if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS)) {
+            for (EmpSalaryAdjustPlanDTO empDTO : empSalaryAdjustPlanDTOS) {
+                setHistoryPlanValue(empDTO);
+            }
+            empSalaryAdjustPlanDTO.setEmpSalaryAdjustPlanDTOS(empSalaryAdjustPlanDTOS);
+        }
+        List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDTOS = empSalaryAdjustPerformService.selectEmpSalaryAdjustPerformByPlanId(empSalaryAdjustPlanId);
+        if (StringUtils.isNotEmpty(empSalaryAdjustPerformDTOS)) {
+            for (EmpSalaryAdjustPerformDTO empSalaryAdjustPerformDTO : empSalaryAdjustPerformDTOS) {
+                setPerformName(empSalaryAdjustPerformDTO);
+            }
+        }
+        return empSalaryAdjustPlanDTO;
+    }
+
+    /**
+     * 为字段命名
+     *
+     * @param empSalaryAdjustPerformDTO 考核任务
+     */
+    private static void setPerformName(EmpSalaryAdjustPerformDTO empSalaryAdjustPerformDTO) {
+        // 考核周期类型/考核周期
+        if (StringUtils.isNotNull(empSalaryAdjustPerformDTO.getCycleType())) {
+            switch (empSalaryAdjustPerformDTO.getCycleType()) {
+                case 1:
+                    empSalaryAdjustPerformDTO.setCycleTypeName("月度");
+                    empSalaryAdjustPerformDTO.setCycleNumberName(empSalaryAdjustPerformDTO.getCycleNumber().toString() + "月");
+                    break;
+                case 2:
+                    empSalaryAdjustPerformDTO.setCycleTypeName("季度");
+                    empSalaryAdjustPerformDTO.setCycleNumberName(empSalaryAdjustPerformDTO.getCycleNumber().toString() + "季度");
+                    break;
+                case 3:
+                    empSalaryAdjustPerformDTO.setCycleTypeName("半年度");
+                    if (empSalaryAdjustPerformDTO.getCycleNumber() == 1) {
+                        empSalaryAdjustPerformDTO.setCycleNumberName("上半年");
+                    } else {
+                        empSalaryAdjustPerformDTO.setCycleNumberName("下半年");
+                    }
+                    break;
+                case 4:
+                    empSalaryAdjustPerformDTO.setCycleTypeName("年度");
+                    empSalaryAdjustPerformDTO.setCycleNumberName("整年度");
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 给岗位类型赋值
+     *
+     * @param empSalaryAdjustPlanDTO 个人调薪计划DTO
+     */
+    private void setHistoryPlanValue(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
+        if (StringUtils.isNotNull(empSalaryAdjustPlanDTO.getAdjustmentType())) {
+            String adjustmentType = empSalaryAdjustPlanDTO.getAdjustmentType();
+            List<String> adjustmentTypeList = Arrays.asList(adjustmentType.split(","));
+            if (StringUtils.isNotEmpty(adjustmentTypeList)) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String adjustment : adjustmentTypeList) {
+                    switch (adjustment) {//调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开
+                        case "1":
+                            stringBuilder.append("调岗；");
+                            break;
+                        case "2":
+                            stringBuilder.append("调级；");
+                            break;
+                        case "3":
+                            stringBuilder.append("调薪；");
+                            break;
+                    }
+                }
+                String adjustTypeName = stringBuilder.toString();
+                empSalaryAdjustPlanDTO.setAdjustmentTypeName(adjustTypeName.substring(0, adjustTypeName.length() - 1));
+            }
+        }
+    }
+
+    /**
+     * 给岗位类型赋List<Integer>
+     *
+     * @param adjustmentType 调整类型
+     */
+    private List<Integer> setPlanListValue(String adjustmentType) {
+        ArrayList<Integer> list = new ArrayList<>();
+        if (StringUtils.isNotNull(adjustmentType)) {
+            String[] adjustmentTypeList = adjustmentType.split(",");
+            for (String s : adjustmentTypeList) {
+                list.add(Integer.valueOf(s));
+            }
+        }
+        return list;
     }
 
     /**
@@ -96,116 +200,13 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
     public List<EmpSalaryAdjustPlanDTO> selectEmpSalaryAdjustPlanList(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
         EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
         BeanUtils.copyProperties(empSalaryAdjustPlanDTO, empSalaryAdjustPlan);
-        return empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
-    }
-
-    /**
-     * 新增个人调薪计划表
-     *
-     * @param empSalaryAdjustPlanDTO 个人调薪计划表
-     * @return 结果
-     */
-    @Override
-    public int insertEmpSalaryAdjustPlan(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
-        if (StringUtils.isNull(empSalaryAdjustPlanDTO)) {
-            throw new ServiceException("请传入个人调薪计划表");
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
+        for (EmpSalaryAdjustPlanDTO salaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
+            String adjustmentType = salaryAdjustPlanDTO.getAdjustmentType();
+            List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
+            empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
         }
-        Long employeeId = empSalaryAdjustPlanDTO.getEmployeeId();
-        Integer isSubmit = empSalaryAdjustPlanDTO.getIsSubmit();
-        Date effectiveDate = empSalaryAdjustPlanDTO.getEffectiveDate();
-        List<Integer> adjustmentTypeList = empSalaryAdjustPlanDTO.getAdjustmentTypeList();
-        if (StringUtils.isNull(employeeId)) {
-            throw new ServiceException("请传入员工ID");
-        }
-        if (StringUtils.isNull(isSubmit)) {
-            throw new ServiceException("请提供是否提交标识");
-        }
-        if (isSubmit == 1) {
-            if (StringUtils.isEmpty(adjustmentTypeList)) {
-                throw new ServiceException("至少选择一个调岗/调薪/调级才可以提交");
-            }
-            if (StringUtils.isNull(effectiveDate)) {
-                throw new ServiceException("请提供生效日期");
-            }
-        }
-        EmployeeDTO employeeDTO = getEmployee(employeeId);
-        // 调薪计划表
-        // todo 获取部门名称  根据岗位ID获取就获取岗位名称
-        Long adjustOfficialRankSystemId = empSalaryAdjustPlanDTO.getAdjustOfficialRankSystemId();
-        OfficialRankSystemDTO officialRankSystem = getOfficialRankSystem(adjustOfficialRankSystemId);
-        String adjustOfficialRankSystemName = officialRankSystem.getOfficialRankSystemName();
-        Long adjustDepartmentId = empSalaryAdjustPlanDTO.getAdjustDepartmentId();
-        DepartmentDTO departmentDTO = getDepartment(adjustDepartmentId);
-        String adjustDepartmentName = departmentDTO.getDepartmentName();
-        Long adjustPostId = empSalaryAdjustPlanDTO.getAdjustPostId();
-        PostDTO post = getPost(adjustPostId);
-        String adjustPostName = post.getPostName();
-        EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
-        if (StringUtils.isNotEmpty(adjustmentTypeList)) {
-            String adjustmentType = StringUtils.join(",", adjustmentTypeList);
-            empSalaryAdjustPlan.setAdjustmentType(adjustmentType);
-        }
-        empSalaryAdjustPlan.setEmployeeId(employeeId);
-        empSalaryAdjustPlan.setEffectiveDate(effectiveDate);
-        empSalaryAdjustPlan.setAdjustOfficialRank(empSalaryAdjustPlanDTO.getAdjustOfficialRank());// 职级
-        empSalaryAdjustPlan.setAdjustOfficialRankName(empSalaryAdjustPlanDTO.getAdjustOfficialRankName());// 职级名称
-        empSalaryAdjustPlan.setAdjustOfficialRankSystemId(adjustOfficialRankSystemId);
-        empSalaryAdjustPlan.setAdjustOfficialRankSystemName(adjustOfficialRankSystemName);
-        empSalaryAdjustPlan.setAdjustDepartmentId(adjustDepartmentId);
-        empSalaryAdjustPlan.setAdjustDepartmentName(adjustDepartmentName);
-        empSalaryAdjustPlan.setAdjustPostId(adjustPostId);
-        empSalaryAdjustPlan.setAdjustPostName(adjustPostName);
-        empSalaryAdjustPlan.setAdjustEmolument(empSalaryAdjustPlanDTO.getAdjustEmolument());
-        empSalaryAdjustPlan.setAdjustExplain(empSalaryAdjustPlanDTO.getAdjustExplain());
-        if (isSubmit == 1) {
-            empSalaryAdjustPlan.setStatus(1);
-        } else {
-            empSalaryAdjustPlan.setStatus(0);
-        }
-        addEmpSalaryAdjustPlan(empSalaryAdjustPlan);
-        Long empSalaryAdjustPlanId = empSalaryAdjustPlan.getEmpSalaryAdjustPlanId();
-        List<EmpSalaryAdjustSnapDTO> empSalaryAdjustSnapDTOS = empSalaryAdjustSnapService.selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
-        if (StringUtils.isNotEmpty(empSalaryAdjustSnapDTOS)) {
-            throw new ServiceException("调薪快照数据异常 请联系管理员");
-        }
-        // 调薪快照表
-        EmpSalaryAdjustSnapDTO empSalaryAdjustSnapDTO = new EmpSalaryAdjustSnapDTO();
-        empSalaryAdjustSnapDTO.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
-        empSalaryAdjustSnapDTO.setEmployeeName(employeeDTO.getEmployeeName());
-        empSalaryAdjustSnapDTO.setEmploymentDate(DateUtils.toLocalDate(employeeDTO.getEmploymentDate()));
-        empSalaryAdjustSnapDTO.setSeniority(employeeDTO.getWorkingAge());
-        empSalaryAdjustSnapDTO.setDepartmentId(employeeDTO.getEmployeeDepartmentId());
-        empSalaryAdjustSnapDTO.setDepartmentName(employeeDTO.getEmployeeDepartmentName());
-        empSalaryAdjustSnapDTO.setDepartmentLeaderId(employeeDTO.getDepartmentLeaderId());
-        empSalaryAdjustSnapDTO.setDepartmentLeaderName(employeeDTO.getInCharge());
-        empSalaryAdjustSnapDTO.setPostId(employeeDTO.getEmployeePostId());
-        empSalaryAdjustSnapDTO.setPostName(employeeDTO.getEmployeePostName());
-        empSalaryAdjustSnapDTO.setOfficialRankSystemId(employeeDTO.getOfficialRankSystemId());
-        empSalaryAdjustSnapDTO.setOfficialRankSystemName(employeeDTO.getOfficialRankSystemName());
-        empSalaryAdjustSnapDTO.setOfficialRank(employeeDTO.getEmployeeRank());
-        empSalaryAdjustSnapDTO.setOfficialRankName(employeeDTO.getEmployeeRankName());
-        empSalaryAdjustSnapDTO.setEmployeeName(employeeDTO.getEmployeeName());
-        empSalaryAdjustSnapDTO.setBasicWage(employeeDTO.getEmployeeBasicWage());
-        empSalaryAdjustSnapService.insertEmpSalaryAdjustSnap(empSalaryAdjustSnapDTO);
-        // 近三次考核
-        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.performanceResult(employeeId);
-        if (StringUtils.isNotEmpty(performanceAppraisalObjectsDTOList)) {
-            List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDTOS = new ArrayList<>();
-            for (PerformanceAppraisalObjectsDTO objectsDTO : performanceAppraisalObjectsDTOList) {
-                setObjectFieldName(objectsDTO);
-                EmpSalaryAdjustPerformDTO empSalaryAdjustPerformDTO = new EmpSalaryAdjustPerformDTO();
-                empSalaryAdjustPerformDTO.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
-                empSalaryAdjustPerformDTO.setPerformanceAppraisalId(objectsDTO.getPerformanceAppraisalId());
-                empSalaryAdjustPerformDTO.setPerformAppraisalObjectsId(objectsDTO.getPerformAppraisalObjectsId());
-                empSalaryAdjustPerformDTO.setCycleType(objectsDTO.getCycleNumber());
-                empSalaryAdjustPerformDTO.setCycleNumber(objectsDTO.getCycleNumber());
-                empSalaryAdjustPerformDTO.setFilingDate(objectsDTO.getFilingDate());
-                empSalaryAdjustPerformDTO.setAppraisalResult(objectsDTO.getAppraisalResult());
-                empSalaryAdjustPerformDTOS.add(empSalaryAdjustPerformDTO);
-            }
-            empSalaryAdjustPerformService.insertEmpSalaryAdjustPerforms(empSalaryAdjustPerformDTOS);
-        }
-        return 1;
+        return empSalaryAdjustPlanDTOS;
     }
 
     /**
@@ -314,18 +315,18 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      * @param employeeId 员工ID
      * @return EmployeeDTO
      */
-    private EmployeeDTO getEmployee(Long employeeId) {
+    private EmployeeSalaryPlanVO getEmployee(Long employeeId) {
         EmployeeDTO employee = new EmployeeDTO();
         employee.setEmployeeId(employeeId);
-        R<EmployeeDTO> listR = employeeService.empSalaryAdjustPlan(employee, SecurityConstants.INNER);
-        EmployeeDTO employeeDTO = listR.getData();
+        R<EmployeeSalaryPlanVO> listR = employeeService.empSalaryAdjustPlan(employee, SecurityConstants.INNER);
+        EmployeeSalaryPlanVO employeeSalaryPlanVO = listR.getData();
         if (listR.getCode() != 200) {
             throw new ServiceException("远程人员信息失败 请联系管理员");
         }
-        if (StringUtils.isNull(employeeDTO)) {
+        if (StringUtils.isNull(employeeSalaryPlanVO)) {
             throw new ServiceException("当前员工已不存在 请查看员工配置");
         }
-        return employeeDTO;
+        return employeeSalaryPlanVO;
     }
 
     /**
@@ -335,13 +336,232 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateEmpSalaryAdjustPlan(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
-
-        EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
-        BeanUtils.copyProperties(empSalaryAdjustPlanDTO, empSalaryAdjustPlan);
+        if (StringUtils.isNull(empSalaryAdjustPlanDTO)) {
+            throw new ServiceException("请传入个人调薪计划表");
+        }
+        Long employeeId = empSalaryAdjustPlanDTO.getEmployeeId();
+        Integer isSubmit = empSalaryAdjustPlanDTO.getIsSubmit();
+        Date effectiveDate = empSalaryAdjustPlanDTO.getEffectiveDate();
+        List<Integer> adjustmentTypeList = empSalaryAdjustPlanDTO.getAdjustmentTypeList();
+        if (StringUtils.isNull(empSalaryAdjustPlanDTO.getEmpSalaryAdjustPlanId())) {
+            throw new ServiceException("调薪计划ID不可以为空");
+        }
+        planCheck(employeeId, isSubmit, effectiveDate, adjustmentTypeList);
+        // 调薪计划表
+        EmpSalaryAdjustPlan empSalaryAdjustPlan = operateEmpSalaryAdjustPlan(empSalaryAdjustPlanDTO, adjustmentTypeList);
+        Long empSalaryAdjustPlanId = empSalaryAdjustPlanDTO.getEmpSalaryAdjustPlanId();
+        List<EmpSalaryAdjustSnapDTO> empSalaryAdjustSnapDTOS = empSalaryAdjustSnapService.selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
+        if (StringUtils.isEmpty(empSalaryAdjustSnapDTOS)) {
+            throw new ServiceException("调薪快照数据异常 请联系管理员");
+        }
+        if (isSubmit == 1) {
+            empSalaryAdjustPlan.setStatus(1);
+        } else {
+            empSalaryAdjustPlan.setStatus(0);
+        }
+        empSalaryAdjustPlan.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
         empSalaryAdjustPlan.setUpdateTime(DateUtils.getNowDate());
         empSalaryAdjustPlan.setUpdateBy(SecurityUtils.getUserId());
         return empSalaryAdjustPlanMapper.updateEmpSalaryAdjustPlan(empSalaryAdjustPlan);
+    }
+
+    /**
+     * 新增个人调薪计划表
+     *
+     * @param empSalaryAdjustPlanDTO 个人调薪计划表
+     * @return 结果
+     */
+    @Override
+    @Transactional
+    public int insertEmpSalaryAdjustPlan(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
+        if (StringUtils.isNull(empSalaryAdjustPlanDTO)) {
+            throw new ServiceException("请传入个人调薪计划表");
+        }
+        Long employeeId = empSalaryAdjustPlanDTO.getEmployeeId();
+        Integer isSubmit = empSalaryAdjustPlanDTO.getIsSubmit();
+        Date effectiveDate = empSalaryAdjustPlanDTO.getEffectiveDate();
+        List<Integer> adjustmentTypeList = empSalaryAdjustPlanDTO.getAdjustmentTypeList();
+        planCheck(employeeId, isSubmit, effectiveDate, adjustmentTypeList);
+        EmployeeSalaryPlanVO employeeSalaryPlanVO = getEmployee(employeeId);
+        // 调薪计划表
+        EmpSalaryAdjustPlan empSalaryAdjustPlan = operateEmpSalaryAdjustPlan(empSalaryAdjustPlanDTO, adjustmentTypeList);
+        if (isSubmit == 1) {
+            empSalaryAdjustPlan.setStatus(1);
+        } else {
+            empSalaryAdjustPlan.setStatus(0);
+        }
+        addEmpSalaryAdjustPlan(empSalaryAdjustPlan);
+        Long empSalaryAdjustPlanId = empSalaryAdjustPlan.getEmpSalaryAdjustPlanId();
+        List<EmpSalaryAdjustSnapDTO> empSalaryAdjustSnapDTOS = empSalaryAdjustSnapService.selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
+        if (StringUtils.isNotEmpty(empSalaryAdjustSnapDTOS)) {
+            throw new ServiceException("调薪快照数据异常 请联系管理员");
+        }
+        // 调薪快照表
+        operateEmpSalaryAdjustSnap(employeeSalaryPlanVO, empSalaryAdjustPlanId);
+        // 近三次考核
+        operateEmpSalaryPerformance(employeeId, empSalaryAdjustPlanId);
+        return 1;
+    }
+
+    /**
+     * 近三次考核
+     *
+     * @param employeeId            员工ID
+     * @param empSalaryAdjustPlanId 调薪计划ID
+     */
+    private void operateEmpSalaryPerformance(Long employeeId, Long empSalaryAdjustPlanId) {
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalObjectsService.performanceResult(employeeId);
+        if (StringUtils.isNotEmpty(performanceAppraisalObjectsDTOList)) {
+            List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDTOS = new ArrayList<>();
+            for (PerformanceAppraisalObjectsDTO objectsDTO : performanceAppraisalObjectsDTOList) {
+                setObjectFieldName(objectsDTO);
+                EmpSalaryAdjustPerformDTO empSalaryAdjustPerformDTO = new EmpSalaryAdjustPerformDTO();
+                empSalaryAdjustPerformDTO.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
+                empSalaryAdjustPerformDTO.setPerformanceAppraisalId(objectsDTO.getPerformanceAppraisalId());
+                empSalaryAdjustPerformDTO.setPerformAppraisalObjectsId(objectsDTO.getPerformAppraisalObjectsId());
+                empSalaryAdjustPerformDTO.setCycleType(objectsDTO.getCycleNumber());
+                empSalaryAdjustPerformDTO.setCycleNumber(objectsDTO.getCycleNumber());
+                empSalaryAdjustPerformDTO.setFilingDate(objectsDTO.getFilingDate());
+                empSalaryAdjustPerformDTO.setAppraisalResult(objectsDTO.getAppraisalResult());
+                empSalaryAdjustPerformDTOS.add(empSalaryAdjustPerformDTO);
+            }
+            empSalaryAdjustPerformService.insertEmpSalaryAdjustPerforms(empSalaryAdjustPerformDTOS);
+        }
+    }
+
+    /**
+     * 处理调薪快照表
+     *
+     * @param employeeSalaryPlanVO  员工DTO
+     * @param empSalaryAdjustPlanId 调薪计划ID
+     */
+    private void operateEmpSalaryAdjustSnap(EmployeeSalaryPlanVO employeeSalaryPlanVO, Long empSalaryAdjustPlanId) {
+        EmpSalaryAdjustSnapDTO empSalaryAdjustSnapDTO = new EmpSalaryAdjustSnapDTO();
+        empSalaryAdjustSnapDTO.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
+        empSalaryAdjustSnapDTO.setEmployeeName(employeeSalaryPlanVO.getEmployeeName());
+        empSalaryAdjustSnapDTO.setEmployeeCode(employeeSalaryPlanVO.getEmployeeCode());
+        empSalaryAdjustSnapDTO.setEmploymentDate(employeeSalaryPlanVO.getEmploymentDate());
+        empSalaryAdjustSnapDTO.setSeniority(employeeSalaryPlanVO.getSeniority());
+        empSalaryAdjustSnapDTO.setDepartmentId(employeeSalaryPlanVO.getDepartmentId());
+        empSalaryAdjustSnapDTO.setDepartmentName(employeeSalaryPlanVO.getDepartmentName());
+        empSalaryAdjustSnapDTO.setDepartmentLeaderId(employeeSalaryPlanVO.getDepartmentLeaderId());
+        empSalaryAdjustSnapDTO.setDepartmentLeaderName(employeeSalaryPlanVO.getDepartmentLeaderName());
+        empSalaryAdjustSnapDTO.setPostId(employeeSalaryPlanVO.getPostId());
+        empSalaryAdjustSnapDTO.setPostName(employeeSalaryPlanVO.getPostName());
+        empSalaryAdjustSnapDTO.setOfficialRankSystemId(employeeSalaryPlanVO.getOfficialRankSystemId());
+        empSalaryAdjustSnapDTO.setOfficialRankSystemName(employeeSalaryPlanVO.getOfficialRankSystemName());
+        empSalaryAdjustSnapDTO.setOfficialRank(employeeSalaryPlanVO.getOfficialRank());
+        empSalaryAdjustSnapDTO.setOfficialRankName(employeeSalaryPlanVO.getOfficialRankName());
+        empSalaryAdjustSnapDTO.setEmployeeName(employeeSalaryPlanVO.getEmployeeName());
+        empSalaryAdjustSnapDTO.setBasicWage(employeeSalaryPlanVO.getBasicWage());
+        empSalaryAdjustSnapService.insertEmpSalaryAdjustSnap(empSalaryAdjustSnapDTO);
+    }
+
+    /**
+     * 处理计划表
+     *
+     * @param empSalaryAdjustPlanDTO 计划DTO
+     * @param adjustmentTypeList     调整选择列表
+     * @return EmpSalaryAdjustPlan
+     */
+    private EmpSalaryAdjustPlan operateEmpSalaryAdjustPlan(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO, List<Integer> adjustmentTypeList) {
+        EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
+        empSalaryAdjustPlan.setEmployeeId(empSalaryAdjustPlanDTO.getEmployeeId());
+        empSalaryAdjustPlan.setEffectiveDate(empSalaryAdjustPlanDTO.getEffectiveDate());
+        empSalaryAdjustPlan.setAdjustExplain(empSalaryAdjustPlanDTO.getAdjustExplain());
+        String rankPrefixCode = "";
+        // 1调岗;2调级;3调薪
+        if (StringUtils.isEmpty(adjustmentTypeList)) {
+            empSalaryAdjustPlan.setAdjustmentType(null);
+            empSalaryAdjustPlan.setAdjustDepartmentId(null);
+            empSalaryAdjustPlan.setAdjustDepartmentName(null);
+            empSalaryAdjustPlan.setAdjustPostId(null);
+            empSalaryAdjustPlan.setAdjustPostName(null);
+            empSalaryAdjustPlan.setAdjustOfficialRankSystemId(null);
+            empSalaryAdjustPlan.setAdjustOfficialRankSystemName(null);
+            empSalaryAdjustPlan.setAdjustOfficialRank(null);
+            empSalaryAdjustPlan.setAdjustOfficialRankName(null);
+            empSalaryAdjustPlan.setAdjustEmolument(null);
+            return empSalaryAdjustPlan;
+        }
+        if (adjustmentTypeList.contains(1)) {
+            Long adjustDepartmentId = empSalaryAdjustPlanDTO.getAdjustDepartmentId();
+            if (StringUtils.isNotNull(adjustDepartmentId)) {
+                empSalaryAdjustPlan.setAdjustDepartmentId(adjustDepartmentId);
+                DepartmentDTO departmentDTO = getDepartment(adjustDepartmentId);
+                empSalaryAdjustPlan.setAdjustDepartmentName(departmentDTO.getDepartmentName());
+            }
+            Long adjustPostId = empSalaryAdjustPlanDTO.getAdjustPostId();
+            if (StringUtils.isNotNull(adjustPostId)) {
+                PostDTO post = getPost(adjustPostId);
+                String adjustPostName = post.getPostName();
+                empSalaryAdjustPlan.setAdjustPostId(adjustPostId);
+                empSalaryAdjustPlan.setAdjustPostName(adjustPostName);
+                empSalaryAdjustPlan.setAdjustOfficialRankSystemId(post.getOfficialRankSystemId());
+                empSalaryAdjustPlan.setAdjustOfficialRankSystemName(post.getOfficialRankSystemName());
+                rankPrefixCode = post.getRankPrefixCode();
+            }
+        } else {
+            empSalaryAdjustPlan.setAdjustDepartmentId(null);
+            empSalaryAdjustPlan.setAdjustDepartmentName(null);
+            empSalaryAdjustPlan.setAdjustPostId(null);
+            empSalaryAdjustPlan.setAdjustPostName(null);
+            empSalaryAdjustPlan.setAdjustOfficialRankSystemId(null);
+            empSalaryAdjustPlan.setAdjustOfficialRankSystemName(null);
+            Long postId = empSalaryAdjustPlanDTO.getPostId();
+            PostDTO post = getPost(postId);
+            rankPrefixCode = post.getRankPrefixCode();
+        }
+        if (adjustmentTypeList.contains(2)) {
+            empSalaryAdjustPlan.setAdjustOfficialRank(empSalaryAdjustPlanDTO.getAdjustOfficialRank());// 职级
+            if (StringUtils.isNotNull(empSalaryAdjustPlanDTO.getAdjustOfficialRank())) {
+                empSalaryAdjustPlan.setAdjustOfficialRankName(rankPrefixCode + empSalaryAdjustPlanDTO.getAdjustOfficialRank());// 职级名称
+            } else {
+                empSalaryAdjustPlan.setAdjustOfficialRankName(null);
+            }
+        } else {
+            empSalaryAdjustPlan.setAdjustOfficialRank(null);
+            empSalaryAdjustPlan.setAdjustOfficialRankName(null);
+        }
+        if (adjustmentTypeList.contains(3)) {
+            empSalaryAdjustPlan.setAdjustEmolument(empSalaryAdjustPlanDTO.getAdjustEmolument());
+        } else {
+            empSalaryAdjustPlan.setAdjustEmolument(null);
+        }
+        StringBuilder adjustmentType = new StringBuilder();
+        for (Integer adjust : adjustmentTypeList) {
+            adjustmentType.append(adjust).append(",");
+        }
+        empSalaryAdjustPlan.setAdjustmentType(adjustmentType.toString().substring(0, adjustmentType.toString().length() - 1));
+
+        return empSalaryAdjustPlan;
+    }
+
+    /**
+     * 新增校验
+     *
+     * @param employeeId         员工ID
+     * @param isSubmit           是否提交
+     * @param effectiveDate      生效时间
+     * @param adjustmentTypeList 提交时是否选择了
+     */
+    private static void planCheck(Long employeeId, Integer isSubmit, Date effectiveDate, List<Integer> adjustmentTypeList) {
+        if (StringUtils.isNull(employeeId)) {
+            throw new ServiceException("请传入员工ID");
+        }
+        if (StringUtils.isNull(isSubmit)) {
+            throw new ServiceException("请提供是否提交标识");
+        }
+        if (isSubmit == 1) {
+            if (StringUtils.isEmpty(adjustmentTypeList)) {
+                throw new ServiceException("至少选择一个调岗/调薪/调级才可以提交");
+            }
+            if (StringUtils.isNull(effectiveDate)) {
+                throw new ServiceException("请提供生效日期");
+            }
+        }
     }
 
     /**
@@ -352,7 +572,25 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      */
     @Override
     public int logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanIds(List<Long> empSalaryAdjustPlanIds) {
-        return empSalaryAdjustPlanMapper.logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanIds(empSalaryAdjustPlanIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        if (StringUtils.isEmpty(empSalaryAdjustPlanIds)) {
+            throw new ServiceException("请传入个人调薪计划ID集合");
+        }
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanIds(empSalaryAdjustPlanIds);
+        if (empSalaryAdjustPlanDTOS.size() != empSalaryAdjustPlanIds.size()) {
+            throw new ServiceException("个人调薪计划部分数据已不存在 请刷新");
+        }
+        empSalaryAdjustPlanMapper.logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanIds(empSalaryAdjustPlanIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        List<EmpSalaryAdjustSnapDTO> empSalaryAdjustSnapDTOS = empSalaryAdjustSnapService.selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanIds(empSalaryAdjustPlanIds);
+        if (StringUtils.isNotEmpty(empSalaryAdjustSnapDTOS)) {
+            List<Long> empSnapIds = empSalaryAdjustSnapDTOS.stream().map(EmpSalaryAdjustSnapDTO::getEmpSalaryAdjustSnapId).collect(Collectors.toList());
+            empSalaryAdjustSnapService.logicDeleteEmpSalaryAdjustSnapByEmpSalaryAdjustSnapIds(empSnapIds);
+        }
+        List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDTOS = empSalaryAdjustPerformService.selectEmpSalaryAdjustPerformByPlanIds(empSalaryAdjustPlanIds);
+        if (StringUtils.isNotEmpty(empSalaryAdjustPerformDTOS)) {
+            List<Long> empPerformanceIds = empSalaryAdjustPerformDTOS.stream().map(EmpSalaryAdjustPerformDTO::getEmpSalaryAdjustPerformId).collect(Collectors.toList());
+            empSalaryAdjustPerformService.logicDeleteEmpSalaryAdjustPerformByEmpSalaryAdjustPerformIds(empPerformanceIds);
+        }
+        return 1;
     }
 
     /**
@@ -374,11 +612,30 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      */
     @Override
     public int logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
+        Long empSalaryAdjustPlanId = empSalaryAdjustPlanDTO.getEmpSalaryAdjustPlanId();
+        if (StringUtils.isNull(empSalaryAdjustPlanId)) {
+            throw new ServiceException("请传入个人调薪计划ID");
+        }
+        EmpSalaryAdjustPlanDTO salaryAdjustPlanDTO = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
+        if (StringUtils.isNull(salaryAdjustPlanDTO)) {
+            throw new ServiceException("当前个人调薪计划已不存在");
+        }
         EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
-        empSalaryAdjustPlan.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanDTO.getEmpSalaryAdjustPlanId());
+        empSalaryAdjustPlan.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
         empSalaryAdjustPlan.setUpdateTime(DateUtils.getNowDate());
         empSalaryAdjustPlan.setUpdateBy(SecurityUtils.getUserId());
-        return empSalaryAdjustPlanMapper.logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(empSalaryAdjustPlan);
+        empSalaryAdjustPlanMapper.logicDeleteEmpSalaryAdjustPlanByEmpSalaryAdjustPlanId(empSalaryAdjustPlan);
+        List<EmpSalaryAdjustSnapDTO> empSalaryAdjustSnapDTOS = empSalaryAdjustSnapService.selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
+        if (StringUtils.isNotEmpty(empSalaryAdjustSnapDTOS)) {
+            List<Long> empSnapIds = empSalaryAdjustSnapDTOS.stream().map(EmpSalaryAdjustSnapDTO::getEmpSalaryAdjustSnapId).collect(Collectors.toList());
+            empSalaryAdjustSnapService.logicDeleteEmpSalaryAdjustSnapByEmpSalaryAdjustSnapIds(empSnapIds);
+        }
+        List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDTOS = empSalaryAdjustPerformService.selectEmpSalaryAdjustPerformByPlanId(empSalaryAdjustPlanId);
+        if (StringUtils.isNotEmpty(empSalaryAdjustPerformDTOS)) {
+            List<Long> empPerformIds = empSalaryAdjustPerformDTOS.stream().map(EmpSalaryAdjustPerformDTO::getEmpSalaryAdjustPerformId).collect(Collectors.toList());
+            empSalaryAdjustPerformService.logicDeleteEmpSalaryAdjustPerformByEmpSalaryAdjustPerformIds(empPerformIds);
+        }
+        return 1;
     }
 
     /**

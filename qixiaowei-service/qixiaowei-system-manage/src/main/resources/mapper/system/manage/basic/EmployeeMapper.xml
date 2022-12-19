@@ -4,99 +4,99 @@
     <!--    查询员工表-->
     <select id="selectEmployeeByEmployeeId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT c.country_name                                                                                   as nationality_name,
-               n.nation_name,
-               p.post_name                                                                                      as employee_post_name,
-               d.department_name                                                                                as employee_department_name,
-               case
-                   when ors.rank_prefix_code is null then p.post_rank
-                   when ors.rank_prefix_code is not null
-                       then concat(ors.rank_prefix_code, p.post_rank) end                                       as post_rank_name,
-               ei.employee_info_id,
-               ei.employee_id,
-               ei.marital_status,
-               ei.nationality,
-               ei.nation,
-               ei.resident_city,
-               ei.insured_city,
-               ei.permanent_address,
-               ei.contact_address,
-               ei.contact_address_detail,
-               ei.wechat_code,
-               ei.emergency_contact,
-               ei.emergency_mobile,
-               case
-                   when ors.rank_prefix_code is null then e.employee_rank
-                   when ors.rank_prefix_code is not null
-                       then concat(ors.rank_prefix_code, e.employee_rank) end                                   as employee_rank_name,
-               e.employee_id,
-               e.employee_code,
-               e.employee_name,
-               e.employee_gender,
-               e.identity_type,
-               e.identity_card,
-               e.employee_birthday,
-               e.employee_mobile,
-               e.employee_email,
-               e.employee_department_id,
-               e.employee_post_id,
-               e.employee_rank,
-               e.employee_basic_wage,
-               e.employment_date,
-               e.departure_date,
-               e.employment_status,
-               e.status,
-               u.user_id,
-               u.user_name
+        SELECT c.country_name as nationality_name,
+        n.nation_name,
+        p.post_name as employee_post_name,
+        d.department_name as employee_department_name,
+        case
+        when ors.rank_prefix_code is null then p.post_rank
+        when ors.rank_prefix_code is not null
+        then concat(ors.rank_prefix_code, p.post_rank) end as post_rank_name,
+        ei.employee_info_id,
+        ei.employee_id,
+        ei.marital_status,
+        ei.nationality,
+        ei.nation,
+        ei.resident_city,
+        ei.insured_city,
+        ei.permanent_address,
+        ei.contact_address,
+        ei.contact_address_detail,
+        ei.wechat_code,
+        ei.emergency_contact,
+        ei.emergency_mobile,
+        case
+        when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is not null
+        then concat(ors.rank_prefix_code, e.employee_rank) end as employee_rank_name,
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        u.user_id,
+        u.user_name
         FROM employee e
-                 left join employee_info ei on e.employee_id = ei.employee_id
-                 left join post p
-                           on p.post_id = e.employee_post_id
-                               and p.delete_flag = 0
-                 left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
-            and ors.delete_flag = 0
-                 left join department d
-                           on d.department_id = e.employee_department_id
-                               and d.delete_flag = 0
-                 left join country c
-                           on REVERSE(SUBSTRING_INDEX(REVERSE(ei.nationality), ',', 1)) = c.country_id
-                               and c.delete_flag = 0
-                 left join nation n
-                           on ei.nation = n.nation_id
-                               and n.delete_flag = 0
+        left join employee_info ei on e.employee_id = ei.employee_id
+        left join post p
+        on p.post_id = e.employee_post_id
+        and p.delete_flag = 0
+        left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
+        and ors.delete_flag = 0
+        left join department d
+        on d.department_id = e.employee_department_id
+        and d.delete_flag = 0
+        left join country c
+        on REVERSE(SUBSTRING_INDEX(REVERSE(ei.nationality), ',', 1)) = c.country_id
+        and c.delete_flag = 0
+        left join nation n
+        on ei.nation = n.nation_id
+        and n.delete_flag = 0
         LEFT JOIN user u ON u.employee_id = e.employee_id AND u.delete_flag = 0
         WHERE e.employee_id = #{employeeId}
-          and e.delete_flag = 0
+        and e.delete_flag = 0
     </select>
 
     <!--    查询员工表-->
     <select id="selectEmployeeByEmployeeCode"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT employee_id,
-               employee_code,
-               employee_name,
-               employee_gender,
-               identity_type,
-               identity_card,
-               employee_birthday,
-               employee_mobile,
-               employee_email,
-               employee_department_id,
-               employee_post_id,
-               employee_rank,
-               employee_basic_wage,
-               employment_date,
-               departure_date,
-               employment_status,
-               status,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        employee_code,
+        employee_name,
+        employee_gender,
+        identity_type,
+        identity_card,
+        employee_birthday,
+        employee_mobile,
+        employee_email,
+        employee_department_id,
+        employee_post_id,
+        employee_rank,
+        employee_basic_wage,
+        employment_date,
+        departure_date,
+        employment_status,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM employee
         WHERE employee_code = #{employeeCode}
-          and delete_flag = 0
+        and delete_flag = 0
     </select>
     <!--    查询员工表列表-->
     <select id="selectEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
@@ -339,14 +339,14 @@
     <!--    通过部门，岗位，职级集合查询员工表-->
     <select id="selectEmployeeByPDRIds"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        SELECT c.country_name                                                                                   as nationality_name,
+        SELECT c.country_name as nationality_name,
         n.nation_name,
-        p.post_name                                                                                      as employee_post_name,
-        d.department_name                                                                                as employee_department_name,
+        p.post_name as employee_post_name,
+        d.department_name as employee_department_name,
         case
         when ors.rank_prefix_code is null then p.post_rank
         when ors.rank_prefix_code is not null
-        then concat(ors.rank_prefix_code, p.post_rank) end                                       as post_rank_name,
+        then concat(ors.rank_prefix_code, p.post_rank) end as post_rank_name,
         ei.employee_info_id,
         ei.employee_id,
         ei.marital_status,
@@ -363,7 +363,7 @@
         case
         when ors.rank_prefix_code is null then e.employee_rank
         when ors.rank_prefix_code is not null
-        then concat(ors.rank_prefix_code, e.employee_rank) end                                   as employee_rank_name,
+        then concat(ors.rank_prefix_code, e.employee_rank) end as employee_rank_name,
         e.employee_id,
         e.employee_code,
         e.employee_name,
@@ -413,7 +413,8 @@
         <if test="employeeRankNames != null and employeeRankNames.size() > 0">
             and case when ors.rank_prefix_code is null then p.post_rank
             when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank) end
-            in <foreach collection="employeeRankNames" item="item" index="index" separator="," open="(" close=")">
+            in
+            <foreach collection="employeeRankNames" item="item" index="index" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>
@@ -421,27 +422,27 @@
 
     <select id="unallocatedUserList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT e.employee_id,
-               e.employee_code,
-               e.employee_name,
-               e.employee_gender,
-               e.identity_type,
-               e.identity_card,
-               e.employee_birthday,
-               e.employee_mobile,
-               e.employee_email,
-               e.employee_department_id,
-               e.employee_post_id,
-               e.employee_rank,
-               e.employee_basic_wage,
-               e.employment_date,
-               e.departure_date,
-               e.employment_status,
-               e.status,
-               e.delete_flag
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag
         FROM employee e
-                 LEFT JOIN user u ON u.employee_id = e.employee_id AND u.delete_flag = 0
+        LEFT JOIN user u ON u.employee_id = e.employee_id AND u.delete_flag = 0
         WHERE e.delete_flag = 0
-          AND u.user_id is null
+        AND u.user_id is null
         <if test="userId != null">
             OR u.user_id = #{userId}
         </if>
@@ -554,29 +555,29 @@
     <!--    查询是否被引用-->
     <select id="selectEmployeePostId" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select p.post_name as employee_post_name,
-               ee.employee_id,
-               ee.employee_code,
-               ee.employee_name,
-               ee.employee_gender,
-               ee.identity_type,
-               ee.identity_card,
-               ee.employee_birthday,
-               ee.employee_mobile,
-               ee.employee_email,
-               ee.employee_department_id,
-               ee.employee_post_id,
-               ee.employee_rank,
-               ee.employee_basic_wage,
-               ee.employment_date,
-               ee.departure_date,
-               ee.employment_status,
-               ee.status
+        ee.employee_id,
+        ee.employee_code,
+        ee.employee_name,
+        ee.employee_gender,
+        ee.identity_type,
+        ee.identity_card,
+        ee.employee_birthday,
+        ee.employee_mobile,
+        ee.employee_email,
+        ee.employee_department_id,
+        ee.employee_post_id,
+        ee.employee_rank,
+        ee.employee_basic_wage,
+        ee.employment_date,
+        ee.departure_date,
+        ee.employment_status,
+        ee.status
         from employee ee
-                 left join post p
-                           on ee.employee_post_id = p.post_id
-                               and p.delete_flag = 0
+        left join post p
+        on ee.employee_post_id = p.post_id
+        and p.delete_flag = 0
         where ee.employee_post_id = #{employeePostId}
-          and ee.delete_flag = 0
+        and ee.delete_flag = 0
     </select>
     <!--    根据code批量查询人员休息-->
     <select id="selectEmployeeByEmployeeCodes"
@@ -640,10 +641,10 @@
         &gt; 0 then concat(TIMESTAMPDIFF(month,e.employment_date,NOW())%12,'月') end ) end as working_age,
         p.post_name as employee_post_name,
         p.post_code,
-        d.department_name as employee_department_name,
-        e2.employee_name as in_charge,
-        d.department_leader_id,
-        d.department_code,
+        e3.department_name as employee_department_name,
+        e3.in_charge_name as in_charge,
+        e3.department_leader_id,
+        e3.department_code,
         ors.official_rank_system_name,
         ors.official_rank_system_id,
         case when ors.rank_prefix_code is null then e.employee_rank
@@ -687,13 +688,24 @@
         left join post p
         on p.post_id =e.employee_post_id
         and p.delete_flag =0
-        left join department d
-        on d.department_id = e.employee_department_id
-        and d.delete_flag =0
-        inner join  employee e2
+        LEFT JOIN (
+        SELECT
+        d.department_id,
+        d.department_leader_id,
+        d.department_code,
+        d.department_name,
+        e2.employee_name AS in_charge_name
+        FROM
+        department d
+        LEFT JOIN employee e2 ON d.department_leader_id = e2.employee_id
+        AND e2.delete_flag = 0
+        WHERE
+        d.delete_flag = 0
+        ) e3 ON e3.department_id = e.employee_department_id
+        left join employee e2
         on e2.employee_id =e.employee_id
         and e2.delete_flag =0
-        and  d.department_leader_id = e2.employee_id
+        and e3.department_leader_id = e2.employee_id
         left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
         where
@@ -717,29 +729,29 @@
     <!--    新增人力预算上年期末数集合-->
     <select id="selecTamountLastYearList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT case
-                   when ors.rank_prefix_code is null then e.employee_rank
-                   when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
-                       as employeeRankName,
-               case
-                   when date_format(now(), '%Y') &lt; #{employee.planYear} then sum(employment_status = 1)
-                   when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 0 and
-                        date_format(now(), '%m') &lt; 7 then sum(case
-                                                                     when date_format(departure_date, '%Y') &lt; #{employee.planYear} - 1
-                                                                         then employment_status = 1 end)
-                   when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 6 and
-                        date_format(now(), '%m') &lt; 13 then sum(employment_status = 1)
-                   end as amountLastYear
+        when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
+        as employeeRankName,
+        case
+        when date_format(now(), '%Y') &lt; #{employee.planYear} then sum(employment_status = 1)
+        when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 0 and
+        date_format(now(), '%m') &lt; 7 then sum(case
+        when date_format(departure_date, '%Y') &lt; #{employee.planYear} - 1
+        then employment_status = 1 end)
+        when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 6 and
+        date_format(now(), '%m') &lt; 13 then sum(employment_status = 1)
+        end as amountLastYear
         FROM employee e
-                 left join post p
-                           on p.post_id = e.employee_post_id
-                               and p.delete_flag = 0
-                 left join official_rank_system ors
-                           on p.official_rank_system_id = ors.official_rank_system_id
-                               and ors.delete_flag = 0
-                               and p.official_rank_system_id = #{employee.officialRankSystemId}
+        left join post p
+        on p.post_id = e.employee_post_id
+        and p.delete_flag = 0
+        left join official_rank_system ors
+        on p.official_rank_system_id = ors.official_rank_system_id
+        and ors.delete_flag = 0
+        and p.official_rank_system_id = #{employee.officialRankSystemId}
         where e.employee_department_id = #{employee.employeeDepartmentId}
-          and p.official_rank_system_id = #{employee.officialRankSystemId}
-          and e.delete_flag = 0
+        and p.official_rank_system_id = #{employee.officialRankSystemId}
+        and e.delete_flag = 0
         group by employeeRankName
     </select>
     <!--    根据部门 职级 获取人员信息集合-->
@@ -795,35 +807,35 @@
     <!--    查询在职的所有员工-->
     <select id="selectDropDownEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT d.department_name as employee_department_name,
-               e.employee_id,
-               e.employee_code,
-               e.employee_name,
-               e.employee_gender,
-               e.identity_type,
-               e.identity_card,
-               e.employee_birthday,
-               e.employee_mobile,
-               e.employee_email,
-               e.employee_department_id,
-               e.employee_post_id,
-               e.employee_rank,
-               e.employee_basic_wage,
-               e.employment_date,
-               e.departure_date,
-               e.employment_status,
-               e.status,
-               e.delete_flag,
-               e.create_by,
-               e.create_time,
-               e.update_by,
-               e.update_time
+        e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.employee_gender,
+        e.identity_type,
+        e.identity_card,
+        e.employee_birthday,
+        e.employee_mobile,
+        e.employee_email,
+        e.employee_department_id,
+        e.employee_post_id,
+        e.employee_rank,
+        e.employee_basic_wage,
+        e.employment_date,
+        e.departure_date,
+        e.employment_status,
+        e.status,
+        e.delete_flag,
+        e.create_by,
+        e.create_time,
+        e.update_by,
+        e.update_time
         FROM employee e
-                 left join department d
-                           on e.employee_department_id = d.department_id
-                               and d.delete_flag = 0
+        left join department d
+        on e.employee_department_id = d.department_id
+        and d.delete_flag = 0
         where e.delete_flag = 0
-          and e.employment_status = 1
-          and e.status = 1
+        and e.employment_status = 1
+        and e.status = 1
     </select>
     <select id="selectByCodes" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT
@@ -897,7 +909,7 @@
         </foreach>
         group by employeeRankName
     </select>
-<!--    查询部门下所有人员-->
+    <!--    查询部门下所有人员-->
     <select id="selectEmployeeByDepts" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
         DISTINCT
@@ -951,39 +963,39 @@
             and find_in_set(#{departmentId}, d.ancestors) or d.department_id=#{departmentId}
         </if>
     </select>
-<!--    根据部门id查询员工表列表-->
+    <!--    根据部门id查询员工表列表-->
     <select id="queryEmployeeByDept" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT employee_id,
-               employee_code,
-               employee_name,
-               employee_gender,
-               identity_type,
-               identity_card,
-               employee_birthday,
-               employee_mobile,
-               employee_email,
-               employee_department_id,
-               employee_post_id,
-               employee_rank,
-               employee_basic_wage,
-               employment_date,
-               departure_date,
-               employment_status,
-               status,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time,
-               tenant_id
+        employee_code,
+        employee_name,
+        employee_gender,
+        identity_type,
+        identity_card,
+        employee_birthday,
+        employee_mobile,
+        employee_email,
+        employee_department_id,
+        employee_post_id,
+        employee_rank,
+        employee_basic_wage,
+        employment_date,
+        departure_date,
+        employment_status,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        tenant_id
         FROM employee
         where delete_flag= 0
         and employment_status=1
         <if test="employeeDepartmentId != null">
-           and  employee_department_id=#{employeeDepartmentId}
+            and employee_department_id=#{employeeDepartmentId}
         </if>
     </select>
-<!--    查询员工表列表(下拉框)-->
+    <!--    查询员工表列表(下拉框)-->
     <select id="selectDropEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
         DISTINCT
@@ -1221,7 +1233,7 @@
             and ei.emergency_mobile=#{employee.emergencyMobile}
         </if>
     </select>
-<!--    远程 查询一级部门下所有的人员 返回部门id和职级体系id-->
+    <!--    远程 查询一级部门下所有的人员 返回部门id和职级体系id-->
     <select id="selectParentDepartmentIdAndOfficialRankSystem"
             resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
@@ -1284,7 +1296,7 @@
         left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
         where e.delete_flag =0
-        and   e.employment_status =1
+        and e.employment_status =1
         and d.department_id IN
         <foreach item="item"
                  collection="departmentIdAll"
@@ -1292,31 +1304,31 @@
             #{item}
         </foreach>
     </select>
-<!--    远程查询在职所有人员-->
+    <!--    远程查询在职所有人员-->
     <select id="getAll" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT employee_id,
-               employee_code,
-               employee_name,
-               employee_gender,
-               identity_type,
-               identity_card,
-               employee_birthday,
-               employee_mobile,
-               employee_email,
-               employee_department_id,
-               employee_post_id,
-               employee_rank,
-               employee_basic_wage,
-               employment_date,
-               departure_date,
-               employment_status,
-               status,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time,
-               tenant_id
+        employee_code,
+        employee_name,
+        employee_gender,
+        identity_type,
+        identity_card,
+        employee_birthday,
+        employee_mobile,
+        employee_email,
+        employee_department_id,
+        employee_post_id,
+        employee_rank,
+        employee_basic_wage,
+        employment_date,
+        departure_date,
+        employment_status,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        tenant_id
         FROM employee
         where delete_flag=0
         and employment_status=1
@@ -1359,16 +1371,16 @@
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">
         INSERT INTO employee (employee_code, employee_name, employee_gender, identity_type, identity_card,
-                              employee_birthday, employee_mobile, employee_email, employee_department_id,
-                              employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date,
-                              employment_status, status, delete_flag, create_by, create_time, update_by, update_time)
+        employee_birthday, employee_mobile, employee_email, employee_department_id,
+        employee_post_id, employee_rank, employee_basic_wage, employment_date, departure_date,
+        employment_status, status, delete_flag, create_by, create_time, update_by, update_time)
         VALUES (#{employee.employeeCode}, #{employee.employeeName}, #{employee.employeeGender},
-                #{employee.identityType}, #{employee.identityCard}, #{employee.employeeBirthday},
-                #{employee.employeeMobile}, #{employee.employeeEmail}, #{employee.employeeDepartmentId},
-                #{employee.employeePostId}, #{employee.employeeRank}, #{employee.employeeBasicWage},
-                #{employee.employmentDate}, #{employee.departureDate}, #{employee.employmentStatus}, #{employee.status},
-                #{employee.deleteFlag}, #{employee.createBy}, #{employee.createTime}, #{employee.updateBy},
-                #{employee.updateTime})
+        #{employee.identityType}, #{employee.identityCard}, #{employee.employeeBirthday},
+        #{employee.employeeMobile}, #{employee.employeeEmail}, #{employee.employeeDepartmentId},
+        #{employee.employeePostId}, #{employee.employeeRank}, #{employee.employeeBasicWage},
+        #{employee.employmentDate}, #{employee.departureDate}, #{employee.employmentStatus}, #{employee.status},
+        #{employee.deleteFlag}, #{employee.createBy}, #{employee.createTime}, #{employee.updateBy},
+        #{employee.updateTime})
     </insert>
     <!--修改员工表-->
     <update id="updateEmployee">
@@ -1444,8 +1456,8 @@
     <update id="logicDeleteEmployeeByEmployeeId">
         UPDATE employee
         SET delete_flag= 1,
-            update_by=#{employee.updateBy},
-            update_time=#{employee.updateTime}
+        update_by=#{employee.updateBy},
+        update_time=#{employee.updateTime}
         WHERE employee_id = #{employee.employeeId}
     </update>
     <!--逻辑批量删除员工表-->
