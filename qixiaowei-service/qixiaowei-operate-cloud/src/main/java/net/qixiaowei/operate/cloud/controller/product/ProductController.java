@@ -1,12 +1,5 @@
 package net.qixiaowei.operate.cloud.controller.product;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.WriteCellData;
@@ -22,29 +15,28 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.CustomVerticalCellStyleStrategy;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
+import net.qixiaowei.integration.common.web.controller.BaseController;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductImportListener;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.operate.cloud.service.product.IProductService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
-import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
-import net.qixiaowei.operate.cloud.service.product.IProductService;
-import net.qixiaowei.integration.common.web.controller.BaseController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
