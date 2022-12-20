@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import cn.hutool.core.util.PageUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.HttpStatus;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
  * @since 2022-11-17
  */
 @Service
+@Slf4j
 public class SalaryPayServiceImpl implements ISalaryPayService {
     @Autowired
     private SalaryPayMapper salaryPayMapper;
@@ -612,6 +614,13 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             //发薪年月校验
             List<String> yearAndMonth = StrUtil.splitTrim(salaryYearAndMonth, StrUtil.SLASH, -1);
             if (StringUtils.isEmpty(yearAndMonth) || 2 != yearAndMonth.size()) {
+                throw new ServiceException("员工编码(" + employeeCode + ")的发薪年月格式错误 请检查");
+            }
+            try {
+                int year = Integer.parseInt(yearAndMonth.get(0));
+                int month = Integer.parseInt(yearAndMonth.get(1));
+            } catch (Exception e) {
+                log.error("导入员工薪酬报错，发薪年月格式错误:{}", e.getMessage());
                 throw new ServiceException("员工编码(" + employeeCode + ")的发薪年月格式错误 请检查");
             }
             String salary = employeeCode + salaryYearAndMonth;
