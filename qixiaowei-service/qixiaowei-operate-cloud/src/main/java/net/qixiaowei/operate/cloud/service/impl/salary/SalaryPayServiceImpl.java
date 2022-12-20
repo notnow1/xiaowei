@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import cn.hutool.core.util.PageUtil;
+import cn.hutool.core.util.StrUtil;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.HttpStatus;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
@@ -594,38 +595,32 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         }
         Set<String> employeeCodes = new HashSet<>();
         Map<String, String> employeeMap = new HashMap<>();
-        List<String> dateList = new ArrayList<>();
         List<String> salaryList = new ArrayList<>();
         for (Map<Integer, String> map : list) {
             String employeeCode = map.get(0);
             String employeeName = map.get(1);
-            String salaryMonth = map.get(2);
+            String salaryYearAndMonth = map.get(2);
             if (StringUtils.isEmpty(employeeCode)) {
                 throw new ServiceException("员工编码为空 请输入员工编码");
             }
             if (StringUtils.isEmpty(employeeName)) {
                 throw new ServiceException("员工姓名为空 请输入员工姓名");
             }
-            if (StringUtils.isEmpty(salaryMonth)) {
+            if (StringUtils.isEmpty(salaryYearAndMonth)) {
                 throw new ServiceException("请输入 " + employeeCode + " 员工工号发薪年月");
             }
-            String salary = employeeCode + salaryMonth;
+            //发薪年月校验
+            List<String> yearAndMonth = StrUtil.splitTrim(salaryYearAndMonth, StrUtil.SLASH, -1);
+            if (StringUtils.isEmpty(yearAndMonth) || 2 != yearAndMonth.size()) {
+                throw new ServiceException("员工编码(" + employeeCode + ")的发薪年月格式错误 请检查");
+            }
+            String salary = employeeCode + salaryYearAndMonth;
             if (salaryList.contains(salary)) {
                 throw new ServiceException("员工编码(" + employeeCode + ")存在重复工资项 请检查");
             }
             salaryList.add(salary);
             employeeCodes.add(employeeCode);// 员工编码
             employeeMap.put(employeeCode, employeeName);
-            dateList.add(salaryMonth);// 发薪年月
-            map.remove(0);
-            map.remove(1);
-            map.remove(2);
-        }
-        List<Integer> monthList = new ArrayList<>();
-        List<Integer> yearList = new ArrayList<>();
-        for (String date : dateList) {
-            monthList.add(DateUtils.getMonth(DateUtils.YYYY_MM_DIAGONAL, date));
-            yearList.add(DateUtils.getYear(DateUtils.YYYY_MM_DIAGONAL, date));
         }
         if (StringUtils.isEmpty(employeeCodes)) {
             throw new ServiceException("当前员工编码未存在 请检查员工配置");
@@ -650,8 +645,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         if (StringUtils.isEmpty(salaryItemDTOS)) {
             throw new ServiceException("当前工资项未进行任何配置，请联系管理员");
         }
-        for (int j = 0; j < list.size(); j++) {
-            Map<Integer, String> map = list.get(j);
+        for (Map<Integer, String> map : list) {
             SalaryPay salaryPay = new SalaryPay();
             BigDecimal salaryAmount = BigDecimal.ZERO;//工资金额
             BigDecimal allowanceAmount = BigDecimal.ZERO;//津贴金额
@@ -665,7 +659,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
                     if (head.get(i).equals(salaryItemDTO.getThirdLevelItem())) {
                         BigDecimal amount;
-                        if (StringUtils.isNull(map.get(i))) {
+                        if (StringUtils.isEmpty(map.get(i))) {
                             amount = BigDecimal.ZERO;
                         } else {
                             amount = new BigDecimal(map.get(i));
@@ -700,7 +694,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             }
             // 赋值
             List<SalaryPayDetailsDTO> salaryPayDetailsDTOBefore = getSalaryPayDetailsDTOBeforeList
-                    (employeeCodeList, monthList, yearList, employeeDTOS, j, salaryPay, salaryAmount, allowanceAmount,
+                    (map, employeeDTOS, salaryPay, salaryAmount, allowanceAmount,
                             welfareAmount, bonusAmount, withholdRemitTax, otherDeductions, salaryPayDetailsDTOAfter);
             operateSalaryPayDetail(salaryPayDetailsDTOAfter, salaryPayDetailsDTOBefore);
 
@@ -756,11 +750,13 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     }
 
 
-    private List<SalaryPayDetailsDTO> getSalaryPayDetailsDTOBeforeList(List<String> employeeCodes, List<Integer> monthList, List<Integer> yearList, List<EmployeeDTO> employeeDTOS, int j, SalaryPay salaryPay, BigDecimal salaryAmount, BigDecimal allowanceAmount, BigDecimal welfareAmount, BigDecimal bonusAmount, BigDecimal withholdRemitTax, BigDecimal otherDeductions, List<SalaryPayDetailsDTO> salaryPayDetailsDTOAfter) {
+    private List<SalaryPayDetailsDTO> getSalaryPayDetailsDTOBeforeList(Map<Integer, String> map, List<EmployeeDTO> employeeDTOS, SalaryPay salaryPay, BigDecimal salaryAmount, BigDecimal allowanceAmount, BigDecimal welfareAmount, BigDecimal bonusAmount, BigDecimal withholdRemitTax, BigDecimal otherDeductions, List<SalaryPayDetailsDTO> salaryPayDetailsDTOAfter) {
         BigDecimal payAmount;
-        int month = monthList.get(j);
-        int year = yearList.get(j);
-        String employeeCode = employeeCodes.get(j);
+        String employeeCode = map.get(0);
+        String salaryYearAndMonth = map.get(1);
+        List<String> yearAndMonth = StrUtil.splitTrim(salaryYearAndMonth, StrUtil.SLASH, -1);
+        int year = Integer.parseInt(yearAndMonth.get(0));
+        int month = Integer.parseInt(yearAndMonth.get(1));
         Long employeeId = null;
         for (EmployeeDTO employeeDTO : employeeDTOS) {
             if (employeeCode.equals(employeeDTO.getEmployeeCode())) {
