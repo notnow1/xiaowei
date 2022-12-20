@@ -110,6 +110,22 @@ steps:
   depends_on:
     - compile
 
+- name: build-qixiaowei-job
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    registry: hub.qixiaowei.net:32766
+    username: deploy
+    password:
+      from_secret: deploy-pwd
+    insecure: true
+    repo: hub.qixiaowei.net:32766/qixiaowei-cloud/qixiaowei-job
+    dockerfile: qixiaowei-service/qixiaowei-job/Dockerfile
+    tags:
+      - v1.0.${DRONE_BUILD_NUMBER}
+  depends_on:
+    - compile
+
 - name: scp
   pull: if-not-exists
   image: appleboy/drone-scp
@@ -133,6 +149,7 @@ steps:
     - build-qixiaowei-operate-cloud
     - build-qixiaowei-file
     - build-qixiaowei-message
+    - build-qixiaowei-job
 
 - name: deploy
   pull: if-not-exists
@@ -153,6 +170,7 @@ steps:
       - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-operate-cloud.yaml | kubectl apply -f -
       - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-file.yaml | kubectl apply -f -
       - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-message.yaml | kubectl apply -f -
+      - envsubst '$imagetag' < k8s/qxw/deploy/prd/qixiaowei-job.yaml | kubectl apply -f -
   depends_on:
     - scp
 
