@@ -10,8 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 
 /**
  * ProductImportListener
@@ -40,9 +44,12 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
      * excel头
      *
      * @param selectMap
+     * @param dictionaryTypeDTO
+     * @param dictionaryLabels
+     * @param productUnitDTOS
      * @return
      */
-    public static List<List<String>> head(Map<Integer, List<String>> selectMap) {
+    public static List<List<String>> head(Map<Integer, List<String>> selectMap, DictionaryTypeDTO dictionaryTypeDTO, List<String> dictionaryLabels, List<ProductUnitDTO> productUnitDTOS) {
         List<List<String>> list = new ArrayList<List<String>>();
         // 第一列
         List<String> head0 = new ArrayList<String>();
@@ -87,7 +94,6 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                 "9、产品量纲、产品类别、是否上下架为下拉选择。");
         head2.add("产品基本信息");
         head2.add("上级产品编码*");
-        selectMap.put(2, Arrays.asList("在职", "离职"));
 
         // 第四列
         List<String> head3 = new ArrayList<String>();
@@ -103,6 +109,10 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                 "9、产品量纲、产品类别、是否上下架为下拉选择。");
         head3.add("产品基本信息");
         head3.add("产品量纲*");
+        if (StringUtils.isNotEmpty(productUnitDTOS)){
+            selectMap.put(3, productUnitDTOS.stream().map(ProductUnitDTO::getProductUnitName).collect(Collectors.toList()));
+        }
+
         // 第五列
         List<String> head4 = new ArrayList<String>();
         head4.add("填写说明：\n" +
@@ -116,7 +126,8 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                 "8、编辑导入模板时，若涉及到需要填充数字的字段，请注意单元格格式，避免以“0”作为开头的数字被省略掉“0”；\n" +
                 "9、产品量纲、产品类别、是否上下架为下拉选择。");
         head4.add("产品基本信息");
-        head4.add("产品类别");
+        head4.add(dictionaryTypeDTO.getDictionaryName());
+        selectMap.put(4, dictionaryLabels);
         // 第六列
         List<String> head5 = new ArrayList<String>();
         head5.add("填写说明：\n" +

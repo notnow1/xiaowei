@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.mapper.basic;
 import java.util.List;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 
@@ -108,4 +109,18 @@ public interface DictionaryDataMapper{
      * @return
      */
     int selectDictionaryTypeId( @Param("dictionaryTypeId")Long dictionaryTypeId);
+
+    /**
+     * 根据枚举查询产品应用字典名称数据
+     * @param productCategory
+     * @return
+     */
+    DictionaryTypeDTO selectDictionaryTypeByProduct(@Param("productCategory")String productCategory);
+
+    /**
+     * 根据typeId查询字典数据
+     * @param dictionaryTypeId
+     * @return
+     */
+    List<DictionaryDataDTO> selectDictionaryDataByProduct(@Param("dictionaryTypeId")Long dictionaryTypeId);
 }

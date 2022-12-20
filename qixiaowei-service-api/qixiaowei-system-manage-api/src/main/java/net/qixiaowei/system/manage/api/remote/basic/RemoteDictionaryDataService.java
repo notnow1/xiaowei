@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteDictionaryDataFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -32,5 +33,11 @@ public interface RemoteDictionaryDataService {
      * 根据枚举查询产品应用字典名称数据
      */
     @GetMapping(API_PREFIX_DICTIONARYDATA+"/selectDictionaryTypeByProduct")
-    public R<List<DictionaryDataDTO>> selectDictionaryTypeByProduct(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    public R<DictionaryTypeDTO> selectDictionaryTypeByProduct(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据typeId查询字典数据
+     */
+    @GetMapping(API_PREFIX_DICTIONARYDATA+"/selectDictionaryDataByProduct")
+    public R<List<DictionaryDataDTO>> selectDictionaryDataByProduct(@RequestParam("dictionaryTypeId") Long dictionaryTypeId,@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

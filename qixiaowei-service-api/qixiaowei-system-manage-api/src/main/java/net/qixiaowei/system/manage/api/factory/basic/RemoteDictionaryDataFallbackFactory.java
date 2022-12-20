@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.api.factory.basic;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,13 @@ public class RemoteDictionaryDataFallbackFactory implements FallbackFactory<Remo
             }
 
             @Override
-            public R<List<DictionaryDataDTO>> selectDictionaryTypeByProduct(String source) {
+            public R<DictionaryTypeDTO> selectDictionaryTypeByProduct(String source) {
                 return R.fail("根据枚举查询产品应用字典名称数据失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<DictionaryDataDTO>> selectDictionaryDataByProduct(Long dictionaryTypeId, String source) {
+                return R.fail("根据typeId查询字典数据失败:" + throwable.getMessage());
             }
         };
     }
