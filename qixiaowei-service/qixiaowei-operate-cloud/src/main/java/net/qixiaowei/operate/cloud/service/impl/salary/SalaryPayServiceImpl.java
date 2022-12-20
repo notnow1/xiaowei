@@ -646,7 +646,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         employeeMap.forEach((employeeCode, employeeName) -> {
             for (EmployeeDTO employeeDTO : employeeDTOS) {
                 if (employeeDTO.getEmployeeCode().equals(employeeCode) && !employeeDTO.getEmployeeName().equals(employeeName)) {
-                    throw new ServiceException("员工编码与员工姓名不匹配");
+                    throw new ServiceException("员工编码与员工姓名不匹配:" + employeeCode + ":表格姓名为:" + employeeName + ",系统姓名为：" + employeeDTO.getEmployeeName());
                 }
             }
         });
