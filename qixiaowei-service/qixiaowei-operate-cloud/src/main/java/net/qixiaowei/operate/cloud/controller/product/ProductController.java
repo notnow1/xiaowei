@@ -10,6 +10,8 @@ import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.CustomVerticalCellStyleStrategy;
@@ -21,9 +23,13 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductImportListener;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
+import net.qixiaowei.operate.cloud.service.product.IProductUnitService;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -37,6 +43,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -52,6 +59,8 @@ public class ProductController extends BaseController {
     private IProductService productService;
     @Autowired
     private RemoteDictionaryDataService remoteDictionaryDataService;
+    @Autowired
+    private IProductUnitService productUnitService;
 
 
     /**
@@ -147,9 +156,27 @@ public class ProductController extends BaseController {
 //    @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
     public void exportUser(HttpServletResponse response) {
+        List<String> dictionaryLabels = new ArrayList<>();
+
+        //字典名称
+        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByProduct(SecurityConstants.INNER);
+        DictionaryTypeDTO data = dictionaryTypeDTOR.getData();
+        if (StringUtils.isNotNull(data)){
+            //字典值
+            R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByProduct(data.getDictionaryTypeId(), SecurityConstants.INNER);
+            List<DictionaryDataDTO> dictionaryDataDTOList = listR.getData();
+            if (StringUtils.isNotEmpty(dictionaryDataDTOList)){
+                dictionaryLabels = dictionaryDataDTOList.stream().map(DictionaryDataDTO::getDictionaryLabel).collect(Collectors.toList());
+            }
+        }
+        // 产品单位
+        ProductUnitDTO productUnitDTO = new ProductUnitDTO();
+        List<ProductUnitDTO> productUnitDTOS = productUnitService.selectProductUnitList(productUnitDTO);
+
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = ProductImportListener.head(selectMap);
+        List<List<String>> head = ProductImportListener.head(selectMap,data,dictionaryLabels,productUnitDTOS);
+
 
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);

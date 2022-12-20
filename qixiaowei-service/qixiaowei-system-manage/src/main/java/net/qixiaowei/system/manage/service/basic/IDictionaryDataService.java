@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 
 
 /**
@@ -104,4 +105,17 @@ public interface IDictionaryDataService{
     * @return 结果
     */
     int deleteDictionaryDataByDictionaryDataId(Long dictionaryDataId);
+
+    /**
+     * 根据枚举查询产品应用字典名称数据
+     * @return
+     */
+    DictionaryTypeDTO selectDictionaryTypeByProduct();
+
+    /**
+     * 根据typeId查询字典数据
+     * @return
+     * @param dictionaryTypeId
+     */
+    List<DictionaryDataDTO> selectDictionaryDataByProduct(Long dictionaryTypeId);
 }

@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.remote.basic;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.service.basic.IDictionaryDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +51,21 @@ public class RemoteDictionaryData implements RemoteDictionaryDataService {
     @Override
     @InnerAuth
     @GetMapping("/selectDictionaryTypeByProduct")
-    public R<List<DictionaryDataDTO>> selectDictionaryTypeByProduct(String source) {
-        return null;
+    public R<DictionaryTypeDTO> selectDictionaryTypeByProduct(String source) {
+        return R.ok(dictionaryDataService.selectDictionaryTypeByProduct());
+    }
+
+    /**
+     * 根据typeId查询字典数据
+     * @param dictionaryTypeId
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/selectDictionaryDataByProduct")
+    public R<List<DictionaryDataDTO>> selectDictionaryDataByProduct(@RequestParam("dictionaryTypeId") Long dictionaryTypeId, String source) {
+        return R.ok(dictionaryDataService.selectDictionaryDataByProduct(dictionaryTypeId));
     }
 
 }

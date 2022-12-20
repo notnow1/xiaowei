@@ -13,6 +13,7 @@ import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
+import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
 import net.qixiaowei.system.manage.service.basic.IDictionaryDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +143,25 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     @Override
     public int deleteDictionaryDataByDictionaryDataId(Long dictionaryDataId) {
         return dictionaryDataMapper.deleteDictionaryDataByDictionaryDataId(dictionaryDataId);
+    }
+
+    /**
+     * 根据枚举查询产品应用字典名称数据
+     * @return
+     */
+    @Override
+    public DictionaryTypeDTO selectDictionaryTypeByProduct() {
+        return dictionaryDataMapper.selectDictionaryTypeByProduct("PRODUCT_CATEGORY");
+    }
+
+    /**
+     * 根据typeId查询字典数据
+     * @param dictionaryTypeId
+     * @return
+     */
+    @Override
+    public List<DictionaryDataDTO> selectDictionaryDataByProduct(Long dictionaryTypeId) {
+        return dictionaryDataMapper.selectDictionaryDataByProduct(dictionaryTypeId);
     }
 
     /**
