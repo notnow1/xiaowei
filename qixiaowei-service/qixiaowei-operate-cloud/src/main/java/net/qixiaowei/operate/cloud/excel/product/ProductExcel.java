@@ -31,9 +31,6 @@ import net.qixiaowei.operate.cloud.api.dto.product.ProductSpecificationParamDTO;
 @ContentRowHeight(18)
 public class ProductExcel {
 
-    private static final long serialVersionUID = 1L;
-
-
     /**
      * 产品编码
      */

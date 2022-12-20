@@ -24,6 +24,7 @@ import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductImportListener;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
@@ -225,9 +226,8 @@ public class ProductController extends BaseController {
         ExcelReaderSheetBuilder sheet = read.sheet(0);
         List<Map<Integer, String>> listMap = sheet.doReadSync();
 
-
-        ProductExcel productExcel = new ProductExcel();
-        ExcelUtils.mapToListModel(2, 0, listMap, productExcel, list);
+        //产品
+        ProductImportListener.mapToListModel(2, 0, listMap, list);
         // 调用importer方法
         productService.importProduct(list);
 

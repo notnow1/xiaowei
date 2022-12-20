@@ -889,7 +889,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             List<EmployeeDTO> data = listR.getData();
             if (StringUtils.isNotEmpty(data) && StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
                 for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
-                    //r人员id集合
+                    //人员id集合
                     List<Long> employeeIds = new ArrayList<>();
                     for (EmployeeDTO datum : data) {
                         //部门id 和个人职级相等
@@ -900,7 +900,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
 
                         }//取职级确定薪酬中位数
                         else {
-                            if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() ){
+                            if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() && employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
                                 OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(datum.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                                 if (StringUtils.isNotNull(officialRankEmolumentDTO)){
                                     employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10,BigDecimal.ROUND_HALF_UP));
