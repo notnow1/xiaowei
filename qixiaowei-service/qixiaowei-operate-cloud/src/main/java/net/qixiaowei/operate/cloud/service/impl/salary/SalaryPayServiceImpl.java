@@ -753,7 +753,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     private List<SalaryPayDetailsDTO> getSalaryPayDetailsDTOBeforeList(Map<Integer, String> map, List<EmployeeDTO> employeeDTOS, SalaryPay salaryPay, BigDecimal salaryAmount, BigDecimal allowanceAmount, BigDecimal welfareAmount, BigDecimal bonusAmount, BigDecimal withholdRemitTax, BigDecimal otherDeductions, List<SalaryPayDetailsDTO> salaryPayDetailsDTOAfter) {
         BigDecimal payAmount;
         String employeeCode = map.get(0);
-        String salaryYearAndMonth = map.get(1);
+        String salaryYearAndMonth = map.get(2);
         List<String> yearAndMonth = StrUtil.splitTrim(salaryYearAndMonth, StrUtil.SLASH, -1);
         int year = Integer.parseInt(yearAndMonth.get(0));
         int month = Integer.parseInt(yearAndMonth.get(1));
