@@ -595,7 +595,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         Set<String> employeeCodes = new HashSet<>();
         Map<String, String> employeeMap = new HashMap<>();
         List<String> dateList = new ArrayList<>();
-        List<String> employeeCodeList = new ArrayList<>();
         List<String> salaryList = new ArrayList<>();
         for (Map<Integer, String> map : list) {
             String salary = map.get(0) + map.get(2);
@@ -607,7 +606,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 throw new ServiceException("员工编码为空 请输入员工编码");
             }
             employeeCodes.add(map.get(0));// 员工编码
-            employeeCodeList.add(map.get(0));// 员工编码
             if (StringUtils.isNull(map.get(1))) {
                 throw new ServiceException("员工姓名为空 请输入员工姓名");
             }
@@ -629,10 +627,11 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         if (StringUtils.isEmpty(employeeCodes)) {
             throw new ServiceException("当前员工编码未存在 请检查员工配置");
         }
-        R<List<EmployeeDTO>> employeeR = employeeService.selectByCodes(new ArrayList<String>(employeeCodes), SecurityConstants.INNER);
+        List<String> employeeCodeList = new ArrayList<>(employeeCodes);
+        R<List<EmployeeDTO>> employeeR = employeeService.selectByCodes(employeeCodeList, SecurityConstants.INNER);
         List<EmployeeDTO> employeeDTOS = employeeR.getData();
         if (employeeR.getCode() != 200) {
-            throw new ServiceException("远程调用失败 请联系管理员");
+            throw new ServiceException("未知错误，请联系管理员");
         }
         if (employeeCodes.size() != employeeDTOS.size()) {
             throw new ServiceException("员工编码有误 请检查");
