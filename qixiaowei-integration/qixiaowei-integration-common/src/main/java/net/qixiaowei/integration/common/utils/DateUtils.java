@@ -21,7 +21,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     public static String YYYY_MM_DD = "yyyy-MM-dd";
 
-    public static String YYYY_MM_DD_TWO = "yyyy/MM/dd";
+
+    public static String YYYY_MM_DIAGONAL = "yyyy/MM";
+
+    public static String YYYY_MM_DD_DIAGONAL = "yyyy/MM/dd";
 
     public static String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
@@ -204,7 +207,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * 格式化时间
      */
     public static String format(Date date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(YYYY_MM_DD_TWO);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(YYYY_MM_DD_DIAGONAL);
         return simpleDateFormat.format(date);
     }
 

@@ -597,23 +597,26 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         List<String> dateList = new ArrayList<>();
         List<String> salaryList = new ArrayList<>();
         for (Map<Integer, String> map : list) {
-            String salary = map.get(0) + map.get(2);
-            if (salaryList.contains(salary)) {
-                throw new ServiceException("员工编码(" + map.get(0) + ")存在重复工资项 请检查");
-            }
-            salaryList.add(salary);
-            if (StringUtils.isNull(map.get(0))) {
+            String employeeCode = map.get(0);
+            String employeeName = map.get(1);
+            String salaryMonth = map.get(2);
+            if (StringUtils.isEmpty(employeeCode)) {
                 throw new ServiceException("员工编码为空 请输入员工编码");
             }
-            employeeCodes.add(map.get(0));// 员工编码
-            if (StringUtils.isNull(map.get(1))) {
+            if (StringUtils.isEmpty(employeeName)) {
                 throw new ServiceException("员工姓名为空 请输入员工姓名");
             }
-            employeeMap.put(map.get(0), map.get(1));
-            if (StringUtils.isNull(map.get(2))) {
-                throw new ServiceException("请输入 " + map.get(0) + " 员工工号发薪年月");
+            if (StringUtils.isEmpty(salaryMonth)) {
+                throw new ServiceException("请输入 " + employeeCode + " 员工工号发薪年月");
             }
-            dateList.add(map.get(2));// 发薪年月
+            String salary = employeeCode + salaryMonth;
+            if (salaryList.contains(salary)) {
+                throw new ServiceException("员工编码(" + employeeCode + ")存在重复工资项 请检查");
+            }
+            salaryList.add(salary);
+            employeeCodes.add(employeeCode);// 员工编码
+            employeeMap.put(employeeCode, employeeName);
+            dateList.add(salaryMonth);// 发薪年月
             map.remove(0);
             map.remove(1);
             map.remove(2);
@@ -621,8 +624,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         List<Integer> monthList = new ArrayList<>();
         List<Integer> yearList = new ArrayList<>();
         for (String date : dateList) {
-            monthList.add(DateUtils.getMonth("yyyy/MM", date));
-            yearList.add(DateUtils.getYear("yyyy/MM", date));
+            monthList.add(DateUtils.getMonth(DateUtils.YYYY_MM_DIAGONAL, date));
+            yearList.add(DateUtils.getYear(DateUtils.YYYY_MM_DIAGONAL, date));
         }
         if (StringUtils.isEmpty(employeeCodes)) {
             throw new ServiceException("当前员工编码未存在 请检查员工配置");
@@ -630,7 +633,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         List<String> employeeCodeList = new ArrayList<>(employeeCodes);
         R<List<EmployeeDTO>> employeeR = employeeService.selectByCodes(employeeCodeList, SecurityConstants.INNER);
         List<EmployeeDTO> employeeDTOS = employeeR.getData();
-        if (employeeR.getCode() != 200) {
+        if (R.SUCCESS != employeeR.getCode()) {
             throw new ServiceException("未知错误，请联系管理员");
         }
         if (employeeCodes.size() != employeeDTOS.size()) {
