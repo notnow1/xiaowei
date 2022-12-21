@@ -86,7 +86,7 @@ public class DeptAnnualBonusController extends BaseController {
     /**
      * 部门年终奖预制数据
      */
-    @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:add", "operate:cloud:deptAnnualBonus:edit"}, logical = Logical.OR)
+   @RequiresPermissions(value = {"operate:cloud:deptAnnualBonus:add", "operate:cloud:deptAnnualBonus:edit"}, logical = Logical.OR)
     @GetMapping("/addPrefabricate/{annualBonusYear}")
     public AjaxResult addPrefabricate(@PathVariable int annualBonusYear) {
         DeptAnnualBonusDTO deptAnnualBonusDTO = deptAnnualBonusService.addPrefabricate(annualBonusYear);

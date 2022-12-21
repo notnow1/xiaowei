@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.api.dto.bonus;
 
 import java.util.Date;
+
+import com.alibaba.excel.annotation.format.DateTimeFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -100,7 +102,8 @@ public class DeptAnnualBonusDTO {
     /**
     * 创建时间
     */
-    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
+    @DateTimeFormat(value = "yyyy/MM/dd")
     private  Date  createTime;
 
     /**

@@ -130,27 +130,30 @@
     <select id="selectTargetDecomposeUniteId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
         SELECT target_decompose_id,
-               target_decompose_type,
-               indicator_id,
-               target_year,
-               target_decompose_dimension_id,
-               decomposition_dimension,
-               time_dimension,
-               decompose_target,
-               forecast_year,
-               actual_total,
-               status,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        target_decompose_type,
+        indicator_id,
+        target_year,
+        target_decompose_dimension_id,
+        decomposition_dimension,
+        time_dimension,
+        decompose_target,
+        forecast_year,
+        actual_total,
+        status,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM target_decompose
         WHERE target_year = #{targetDecompose.targetYear}
-          and target_decompose_dimension_id = #{targetDecompose.targetDecomposeDimensionId}
-          and time_dimension = #{targetDecompose.timeDimension}
-          and target_decompose_type = #{targetDecompose.targetDecomposeType}
-          and delete_flag = 0
+        and target_decompose_dimension_id = #{targetDecompose.targetDecomposeDimensionId}
+        and time_dimension = #{targetDecompose.timeDimension}
+        <if test="targetDecompose.indicatorId != null">
+            and indicator_id=#{targetDecompose.indicatorId}
+        </if>
+        and target_decompose_type = #{targetDecompose.targetDecomposeType}
+        and delete_flag = 0
     </select>
     <!--    查询滚动预测列表-->
     <select id="selectRollPageList"
@@ -260,13 +263,17 @@
         td.decomposition_dimension,
         td.time_dimension,
         IFNULL(ts.target_value,0) as target_value,
-        IFNULL(td.decompose_target,0) as decompose_target,
+        IFNULL((select sum(cycle_forecast) from target_decompose_details tdd left join decompose_detail_cycles ddc on
+        ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 where
+        td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 ),0) as decompose_target,
         td.target_decompose_id,
         td.target_decompose_type,
         td.indicator_id,
         td.target_decompose_dimension_id,
         IFNULL(td.forecast_year,0) as forecast_year,
-        IFNULL((select sum(cycle_actual) from target_decompose_details tdd left join decompose_detail_cycles ddc on ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 where td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 ),0) as actual_total,
+        IFNULL((select sum(cycle_actual) from target_decompose_details tdd left join decompose_detail_cycles ddc on
+        ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 where
+        td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 ),0) as actual_total,
         td.status
         FROM target_decompose td
         left join target_setting ts
@@ -377,7 +384,10 @@
         FROM target_setting
         where target_setting_type=#{targetDecompose.targetDecomposeType}
         <if test="targetDecompose.targetYear != null">
-         and  target_year=#{targetDecompose.targetYear}
+            and target_year=#{targetDecompose.targetYear}
+        </if>
+        <if test="targetDecompose.indicatorId != null">
+            and indicator_id=#{targetDecompose.indicatorId}
         </if>
         and delete_flag = 0
     </select>

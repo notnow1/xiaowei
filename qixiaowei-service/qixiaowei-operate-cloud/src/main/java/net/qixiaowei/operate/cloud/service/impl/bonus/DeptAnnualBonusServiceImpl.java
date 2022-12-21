@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,12 +108,12 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal actualValue = deptAnnualBonusOperateDTO.getActualValue();
                 //奖金权重(%)
                 BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
-                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
-                        null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
+                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
+                        null != actualValue && actualValue.compareTo(new BigDecimal("0")) != 0) {
                     targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
                 }
-                if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
-                        targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
+                if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0"))!= 0 &&
+                        targetExcessPerComp.compareTo(new BigDecimal("0")) != 0) {
                     actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_HALF_UP);
                 }
                 deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
@@ -190,6 +191,15 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
     @Override
     public List<DeptAnnualBonusDTO> selectDeptAnnualBonusList(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();
+        if (StringUtils.isNotNull(deptAnnualBonusDTO)){
+            Date createTime = deptAnnualBonusDTO.getCreateTime();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            if (StringUtils.isNotNull(createTime)){
+                String createTimeFormat = simpleDateFormat.format(createTime);
+                deptAnnualBonus.setCreateTimeFormat(createTimeFormat);
+            }
+
+        }
         BeanUtils.copyProperties(deptAnnualBonusDTO, deptAnnualBonus);
         return deptAnnualBonusMapper.selectDeptAnnualBonusList(deptAnnualBonus);
     }
@@ -656,12 +666,12 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal actualValue = deptAnnualBonusOperateDTO.getActualValue();
                 //奖金权重(%)
                 BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
-                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
-                        null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
+                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
+                        null != actualValue && actualValue.compareTo(new BigDecimal("0")) != 0) {
                     targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
                 }
-                if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
-                        targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
+                if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0 &&
+                        targetExcessPerComp.compareTo(new BigDecimal("0")) != 0) {
                     actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_HALF_UP);
                 }
                 deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
@@ -756,6 +766,8 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                     this.packDeptPerformanceRank(datum, deptAnnualBonusFactorDTO);
 
                     deptAnnualBonusFactorDTOs.add(deptAnnualBonusFactorDTO);
+                    //每次循环赋0
+                    weight=new BigDecimal("0");
                 }
             }
         }

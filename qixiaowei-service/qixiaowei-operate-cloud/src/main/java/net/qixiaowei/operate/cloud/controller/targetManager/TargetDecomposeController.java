@@ -415,7 +415,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 查询目标分解预制数据年份
      */
-//    @RequiresPermissions("operate:cloud:targetSetting:list")
+    @RequiresPermissions("operate:cloud:targetSetting:list")
     @PostMapping("/getYear")
     public AjaxResult listOrder(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.selectMaxYear(targetDecomposeDTO));

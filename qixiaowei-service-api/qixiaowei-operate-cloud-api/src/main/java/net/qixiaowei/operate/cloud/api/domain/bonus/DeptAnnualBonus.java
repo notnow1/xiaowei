@@ -53,6 +53,9 @@ public class DeptAnnualBonus extends TenantEntity {
      * 评议年度
      */
     private  String  createTimeYear;
-
+    /**
+     * 创建时间
+     */
+    private String createTimeFormat;
 }
 
