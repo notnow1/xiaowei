@@ -900,15 +900,11 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
 
                         }//取职级确定薪酬中位数
                         else {
-                            if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() && employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()){
-                                OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(datum.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
+                                OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                                 if (StringUtils.isNotNull(officialRankEmolumentDTO)){
                                     employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10,BigDecimal.ROUND_HALF_UP));
                                     employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
                                 }
-                            }
-
-
                         }
                     }
                     if (StringUtils.isNotEmpty(employeeIds)) {

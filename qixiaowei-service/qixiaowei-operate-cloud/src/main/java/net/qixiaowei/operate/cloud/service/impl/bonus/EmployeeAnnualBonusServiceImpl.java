@@ -79,6 +79,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     public EmployeeAnnualBonusDTO selectEmployeeAnnualBonusByEmployeeAnnualBonusId(Long employeeAnnualBonusId, Integer inChargeTeamFlag) {
         EmployeeAnnualBonusDTO employeeAnnualBonusDTO = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusId);
         List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsAndSnapshot(employeeAnnualBonusId,inChargeTeamFlag);
+        this.packperformanceDetails(empAnnualBonusSnapshotDTOList);
         employeeAnnualBonusDTO.setEmpAnnualBonusSnapshotDTOs(empAnnualBonusSnapshotDTOList);
         return employeeAnnualBonusDTO;
     }
@@ -590,7 +591,12 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 if (null != performanceRankId) {
                     List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
                     if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
+                        Map<String,BigDecimal> map = new HashMap<>();
                         empAnnualBonusSnapshotDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
+                        for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
+                            map.put(rankFactorDTO.getPerformanceRankName(),rankFactorDTO.getBonusFactor());
+                        }
+                        empAnnualBonusSnapshotDTO.setPerformanceRankMap(map);
                     }
                 }
                 //绩效等级系数ID
@@ -600,6 +606,34 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 empAnnualBonusSnapshotDTO.setPerformanceBonusFactor(performanceRankFactorDTO.getBonusFactor());
                 //最近绩效结果
                 empAnnualBonusSnapshotDTO.setLastPerformanceResulted(performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(StringUtils::isNotBlank).collect(Collectors.toList()).toString());
+            }
+        }
+    }
+
+    /**
+     * 封装查询绩效详情
+     *
+     * @param empAnnualBonusSnapshotDTOList
+     */
+    private void packperformanceDetails(List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList) {
+        for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
+            //绩效
+            List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByEmployeeId(empAnnualBonusSnapshotDTO.getEmployeeId());
+            if (StringUtils.isNotEmpty(performanceRankFactorDTOS)) {
+                PerformanceRankFactorDTO performanceRankFactorDTO = performanceRankFactorDTOS.get(0);
+                Long performanceRankId = performanceRankFactorDTO.getPerformanceRankId();
+                //绩效等级下拉框集合
+                if (null != performanceRankId) {
+                    List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
+                    if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
+                        Map<String,BigDecimal> map = new HashMap<>();
+                        empAnnualBonusSnapshotDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
+                        for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
+                            map.put(rankFactorDTO.getPerformanceRankName(),rankFactorDTO.getBonusFactor());
+                        }
+                        empAnnualBonusSnapshotDTO.setPerformanceRankMap(map);
+                    }
+                }
             }
         }
     }

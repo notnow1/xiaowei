@@ -793,12 +793,40 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                     //奖金包占比终值（%)
                     deptAnnualBonusFactorDTO.setBonusPercentage(deptBonusPercentageReference);
                 }
-
+                //封装详情组织绩效
+                this.packDeptPerformanceRankDetails(deptAnnualBonusFactorDTO.getDepartmentId(), deptAnnualBonusFactorDTO);
             }
 
         }
     }
 
+    /**
+     * 封装详情组织绩效
+     *
+     * @param departmentId
+     * @param deptAnnualBonusFactorDTO
+     */
+    private void packDeptPerformanceRankDetails(Long departmentId, DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO) {
+        //绩效
+        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByDeptId(departmentId);
+        if (StringUtils.isNotEmpty(performanceRankFactorDTOS)) {
+            PerformanceRankFactorDTO performanceRankFactorDTO = performanceRankFactorDTOS.get(0);
+            Long performanceRankId = performanceRankFactorDTO.getPerformanceRankId();
+            //绩效等级下拉框集合
+            if (null != performanceRankId) {
+                Map<String,BigDecimal> map = new HashMap<>();
+                List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
+                if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
+                    deptAnnualBonusFactorDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
+                }
+                for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
+                    map.put(rankFactorDTO.getPerformanceRankName(),rankFactorDTO.getBonusFactor());
+                }
+                deptAnnualBonusFactorDTO.setPerformanceRankMap(map);
+            }
+
+        }
+    }
     /**
      * 封装组织绩效
      *
@@ -817,10 +845,15 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             deptAnnualBonusFactorDTO.setPerformanceRankId(performanceRankId);
             //绩效等级下拉框集合
             if (null != performanceRankId) {
+                Map<String,BigDecimal> map = new HashMap<>();
                 List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
                 if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
                     deptAnnualBonusFactorDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
                 }
+                for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
+                    map.put(rankFactorDTO.getPerformanceRankName(),rankFactorDTO.getBonusFactor());
+                }
+                deptAnnualBonusFactorDTO.setPerformanceRankMap(map);
             }
             //绩效等级系数ID
             deptAnnualBonusFactorDTO.setPerformanceRankFactorId(performanceRankFactorDTO.getPerformanceRankFactorId());

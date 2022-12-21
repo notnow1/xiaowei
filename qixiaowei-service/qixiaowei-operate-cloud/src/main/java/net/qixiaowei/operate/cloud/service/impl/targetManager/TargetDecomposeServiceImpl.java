@@ -142,7 +142,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 //预测与目标偏差率平均值
                 BigDecimal forecastDeviationRateAve = new BigDecimal("0");
                 //分解目标值
-                BigDecimal decomposeTarget = targetDecomposeDetailsDTO.getDecomposeTarget();
+                BigDecimal amountTarget = targetDecomposeDetailsDTO.getAmountTarget();
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();
                 decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                 for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
@@ -193,19 +193,19 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                 }
 
-                if (null != actualTotal && actualTotal.compareTo(BigDecimal.ZERO) != 0) {
+                if (actualTotal.compareTo(BigDecimal.ZERO) != 0) {
                     //被除数 不能为0和空
-                    if (null != decomposeTarget && decomposeTarget.compareTo(BigDecimal.ZERO) != 0) {
+                    if (null != amountTarget && amountTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
                         targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(), BigDecimal.ROUND_HALF_UP);
                     }
                 }
                 //预测平均数
-                if (null != forecastDeviationRateSum && forecastDeviationRateSum.compareTo(BigDecimal.ZERO) != 0) {
+                if (forecastDeviationRateSum.compareTo(BigDecimal.ZERO) != 0) {
                     forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), BigDecimal.ROUND_HALF_UP);
                 }
                 //目标完成平均数
-                if (null != targetPercentageCompleteAve && targetPercentageCompleteAve.compareTo(BigDecimal.ZERO) != 0) {
+                if (targetPercentageCompleteAve.compareTo(BigDecimal.ZERO) != 0) {
                     targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), BigDecimal.ROUND_HALF_UP);
                 }
                 targetDecomposeDetailsDTO.setForecastDeviationRateAve(forecastDeviationRateAve);

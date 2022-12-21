@@ -1485,7 +1485,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             List<EmployeeDTO> data = listR.getData();
             if (StringUtils.isNotEmpty(data) && StringUtils.isNotEmpty(employeeBudgetDetailsDTOS)) {
                 for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
-                    //r人员id集合
+                    //人员id集合
                     List<Long> employeeIds = new ArrayList<>();
                     for (EmployeeDTO datum : data) {
                         //部门id 和个人职级相等
@@ -1496,13 +1496,11 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
                         }//取职级确定薪酬中位数
                         else {
-                            OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(datum.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
+                            OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
                             if (StringUtils.isNotNull(officialRankEmolumentDTO)){
-                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(2,BigDecimal.ROUND_HALF_UP));
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10,BigDecimal.ROUND_HALF_UP));
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
-
                             }
-
                         }
                     }
                     if (StringUtils.isNotEmpty(employeeIds)) {
@@ -1518,7 +1516,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                         }
 
                         if (payAmountSum.compareTo(new BigDecimal("0")) != 0 && size > 0) {
-                            BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),4,BigDecimal.ROUND_HALF_UP);
+                            BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),10,BigDecimal.ROUND_HALF_UP);
                             //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
                             employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
                             employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(0);
