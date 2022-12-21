@@ -85,7 +85,7 @@
                             and  bpa.award_code=#{bonusPayApplication.awardCode}
                         </if>
                         <if test="bonusPayApplication.awardName != null and bonusPayApplication.awardName != ''">
-                            and  bpa.award_name=#{bonusPayApplication.awardName}
+                            and  bpa.award_name like '%${bonusPayApplication.awardName}%'
                         </if>
                         <if test="bonusPayApplication.awardYear != null">
                             and  bpa.award_year=#{bonusPayApplication.awardYear}

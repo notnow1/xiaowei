@@ -60,7 +60,7 @@
                     and department_id=#{employeeAnnualBonus.departmentId}
                 </if>
                 <if test="employeeAnnualBonus.departmentName != null and employeeAnnualBonus.departmentName != ''">
-                    and department_name=#{employeeAnnualBonus.departmentName}
+                    and department_name like '%${employeeAnnualBonus.departmentName}%'
                 </if>
                 <if test="employeeAnnualBonus.applyDepartmentId != null">
                     and apply_department_id=#{employeeAnnualBonus.applyDepartmentId}
@@ -72,10 +72,10 @@
                     and apply_employee_id=#{employeeAnnualBonus.applyEmployeeId}
                 </if>
                 <if test="employeeAnnualBonus.applyEmployeeName != null and employeeAnnualBonus.applyEmployeeName != ''">
-                    and apply_employee_name=#{employeeAnnualBonus.applyEmployeeName}
+                    and apply_employee_name like '%${employeeAnnualBonus.applyEmployeeName}%'
                 </if>
                 <if test="employeeAnnualBonus.distributeBonusAmount != null">
-                    and distribute_bonus_amount=#{employeeAnnualBonus.distributeBonusAmount}
+                    and distribute_bonus_amount like '%${employeeAnnualBonus.distributeBonusAmount}%'
                 </if>
                 <if test="employeeAnnualBonus.commentFlag != null">
                     and comment_flag=#{employeeAnnualBonus.commentFlag}
