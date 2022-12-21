@@ -109,7 +109,7 @@ public class EmployeeBudgetController extends BaseController {
     /**
      * 查询增人/减人工资包列表
      */
-    //@RequiresPermissions("operate:cloud:employeeBudget:salaryPackageList")
+    @RequiresPermissions("operate:cloud:employeeBudget:salaryPackageList")
     @GetMapping("/salaryPackageList")
     public AjaxResult salaryPackageList(EmployeeBudgetDTO employeeBudgetDTO) {
         List<EmployeeBudgetDetailsDTO> list = employeeBudgetService.salaryPackageList(employeeBudgetDTO);
