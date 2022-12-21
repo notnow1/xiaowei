@@ -266,7 +266,7 @@
         td.indicator_id,
         td.target_decompose_dimension_id,
         IFNULL(td.forecast_year,0) as forecast_year,
-        IFNULL(td.actual_total,0) as actual_total,
+        IFNULL((select sum(cycle_actual) from target_decompose_details tdd left join decompose_detail_cycles ddc on ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 where td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 ),0) as actual_total,
         td.status
         FROM target_decompose td
         left join target_setting ts

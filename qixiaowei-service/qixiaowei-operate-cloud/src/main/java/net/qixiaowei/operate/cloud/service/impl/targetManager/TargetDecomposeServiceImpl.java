@@ -168,7 +168,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                     if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0 &&
                             cycleForecast != null && cycleForecast.compareTo(new BigDecimal("0")) != 0) {
-                        cycleForecastDeviationRate = cycleActual.subtract(cycleForecast).setScale(10, BigDecimal.ROUND_HALF_UP).divide(cycleActual, 10, BigDecimal.ROUND_HALF_UP);
+                        cycleForecastDeviationRate = cycleActual.subtract(cycleForecast).setScale(10, BigDecimal.ROUND_HALF_UP).divide(cycleActual, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
 
 
@@ -197,7 +197,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //被除数 不能为0和空
                     if (null != amountTarget && amountTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(), BigDecimal.ROUND_HALF_UP);
+                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(), BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 //预测平均数
@@ -475,7 +475,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         String forecastCycle = null;
         if (targetDecomposeDTO.getTimeDimension() == 1) {
             int year = DateUtils.getYear();
-            forecastCycle = year + "年";
+            forecastCycle = "年度";
         } else if (targetDecomposeDTO.getTimeDimension() == 2) {
             if (DateUtils.getMonth() <= 6) {
                 forecastCycle = "上半年";
