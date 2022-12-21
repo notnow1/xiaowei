@@ -177,7 +177,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                     if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0) {
                         if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
-                            cyclePercentageComplete = cycleActual.divide(cycleTarget, BigDecimal.ROUND_HALF_UP);
+                            cyclePercentageComplete = cycleActual.divide(cycleTarget, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("0"));
                         }
                     }
                     //目标完成率
