@@ -289,15 +289,15 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                         if (StringUtils.isBlank(s)) {
                             list2.add("");
                         } else {
-                            list2.add(s);
+                            list2.add(s.trim());
                         }
                     }
                     if (key >= 7) {
                         if (key == 7) {
-                            productDataDTO.setSpecificationName(value);
+                            productDataDTO.setSpecificationName(value.trim());
                         }
                         if (key == 8) {
-                            productDataDTO.setListPrice(new BigDecimal(value));
+                            productDataDTO.setListPrice(new BigDecimal(value.trim()));
                         }
                         if (key >= 9) {
 
@@ -305,13 +305,13 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                                 //产品规格数据表
                                 ProductSpecificationDataDTO productSpecificationDataDTO = new ProductSpecificationDataDTO();
                                 //参数值
-                                productSpecificationDataDTO.setValue(value);
+                                productSpecificationDataDTO.setValue(value.trim());
                                 productSpecificationDataDTOList.add(productSpecificationDataDTO);
                                 productDataDTO.setProductSpecificationDataDTOList(productSpecificationDataDTOList);
                             } else {
                                 //产品规格参数
                                 ProductSpecificationParamDTO productSpecificationParamDTO = new ProductSpecificationParamDTO();
-                                productSpecificationParamDTO.setSpecificationParamName(value);
+                                productSpecificationParamDTO.setSpecificationParamName(value.trim());
                                 productSpecificationParamDTOList.add(productSpecificationParamDTO);
                             }
                         }

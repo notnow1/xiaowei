@@ -49,6 +49,7 @@
         bpa.bonus_pay_application_id,
         bpa.salary_item_id,
         si.third_level_item ,
+        bpbd.department_id ,
         bpa.award_code,
         bpa.award_name,
         bpa.award_year,
@@ -67,6 +68,9 @@
         left join salary_item si
         on si.salary_item_id = bpa.salary_item_id
         and si.delete_flag =0
+        left join bonus_pay_budget_dept bpbd
+        on bpa.bonus_pay_application_id = bpbd.bonus_pay_application_id
+        and bpbd.delete_flag =0
         WHERE  bpa.delete_flag=0
         <if test="bonusPayApplication.awardYearMonth != null and bonusPayApplication.awardYearMonth != ''">
             and CONCAT(award_year,"/",award_month) = #{bonusPayApplication.awardYearMonth}
@@ -97,7 +101,7 @@
                             and  bpa.apply_department_id=#{bonusPayApplication.applyDepartmentId}
                         </if>
                         <if test="bonusPayApplication.awardTotalAmount != null">
-                            and  bpa.award_total_amount=#{bonusPayApplication.awardTotalAmount}
+                            and  bpa.award_total_amount like '%${bonusPayApplication.awardTotalAmount}%'
                         </if>
                         <if test="bonusPayApplication.bonusPayObject != null">
                             and  bpa.bonus_pay_object=#{bonusPayApplication.bonusPayObject}

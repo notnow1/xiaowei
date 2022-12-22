@@ -11,10 +11,8 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayApplication;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayBudgetDept;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayBudgetDeptDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.*;
+import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper;
@@ -35,6 +33,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -220,6 +220,15 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      */
     @Override
     public List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO) {
+        String awardYearMonth = bonusPayApplicationDTO.getAwardYearMonth();
+        if (StringUtils.isNotBlank(awardYearMonth)){
+            String year = awardYearMonth.substring(0, 4);
+            String month = awardYearMonth.substring(4, 6);
+            if (Integer.parseInt(month)<10){
+                String month2 = month.replaceAll("0", "");
+                bonusPayApplicationDTO.setAwardYearMonth(year+month2);
+            }
+        }
         BonusPayApplication bonusPayApplication = new BonusPayApplication();
         BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
         List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationList(bonusPayApplication);
@@ -286,10 +295,90 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
 
             }
         }
-
-        return bonusPayApplicationDTOS;
+        return this.packQueryBonusBudget(bonusPayApplicationDTO,bonusPayApplicationDTOS);
     }
 
+    /**
+     * 封装模糊查询
+     *
+     * @param bonusPayApplicationDTO
+     * @param bonusPayApplicationDTOS
+     * @return
+     */
+    private List<BonusPayApplicationDTO> packQueryBonusBudget(BonusPayApplicationDTO bonusPayApplicationDTO, List<BonusPayApplicationDTO> bonusPayApplicationDTOS) {
+        List<BonusPayApplicationDTO> bonusPayApplicationDTOList = new ArrayList<>();
+        //申请部门名称
+        String applyDepartmentName = bonusPayApplicationDTO.getApplyDepartmentName();
+        //预算部门名称
+        String budgetDepartmentNames = bonusPayApplicationDTO.getBudgetDepartmentNames();
+        //奖金发放对象名称
+        String bonusPayObjectName = bonusPayApplicationDTO.getBonusPayObjectName();
+
+
+        if (StringUtils.isNotNull(bonusPayApplicationDTO)) {
+            Pattern pattern = null;
+            Pattern pattern1 = null;
+            Pattern pattern2 = null;
+            if (StringUtils.isNotBlank(applyDepartmentName)) {
+                //申请部门名称
+                pattern = Pattern.compile(applyDepartmentName);
+            }
+
+            if (StringUtils.isNotBlank(budgetDepartmentNames)) {
+                //预算部门名称
+                pattern1 = Pattern.compile(budgetDepartmentNames);
+            }
+            if (StringUtils.isNotBlank(bonusPayObjectName)) {
+                //奖金发放对象名称
+                pattern2 = Pattern.compile(bonusPayObjectName);
+            }
+            for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
+                //申请部门名称
+                Matcher applyDepartmentName1 = null;
+                //预算部门名称
+                Matcher budgetDepartmentNames1 = null;
+                //奖金发放对象名称
+                Matcher bonusPayObjectName1 = null;
+                if (StringUtils.isNotBlank(applyDepartmentName)) {
+                    //申请部门名称
+                    applyDepartmentName1 = pattern.matcher(bonusPayApplicationDTO.getApplyDepartmentName());
+                }
+                if (StringUtils.isNotBlank(budgetDepartmentNames)) {
+                    //预算部门名称
+                    budgetDepartmentNames1 = pattern1.matcher(bonusPayApplicationDTO.getBudgetDepartmentNames());
+                }
+                if (StringUtils.isNotBlank(bonusPayObjectName)) {
+                    //奖金发放对象名称
+                    bonusPayObjectName1 = pattern2.matcher(bonusPayApplicationDTO.getBonusPayObjectName());
+                }
+                if (StringUtils.isNotBlank(applyDepartmentName) && StringUtils.isNotBlank(budgetDepartmentNames) && StringUtils.isNotBlank(bonusPayObjectName)) {
+                    if (applyDepartmentName1.find() || budgetDepartmentNames1.find() || bonusPayObjectName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        bonusPayApplicationDTOList.add(payApplicationDTO);
+                    }
+                }
+                if (StringUtils.isNotBlank(applyDepartmentName)) {
+                    if (applyDepartmentName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        bonusPayApplicationDTOList.add(payApplicationDTO);
+                    }
+                }
+                if (StringUtils.isNotBlank(budgetDepartmentNames)) {
+                    if (budgetDepartmentNames1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        bonusPayApplicationDTOList.add(payApplicationDTO);
+                    }
+                }
+                if (StringUtils.isNotBlank(bonusPayObjectName)) {
+                    if (bonusPayObjectName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        bonusPayApplicationDTOList.add(payApplicationDTO);
+                    }
+                }
+            }
+
+            if (StringUtils.isNotNull(applyDepartmentName) || StringUtils.isNotNull(budgetDepartmentNames) || StringUtils.isNotNull(bonusPayObjectName)) {
+                return bonusPayApplicationDTOList;
+            }
+        }
+        return StringUtils.isNotEmpty(bonusPayApplicationDTOList) ? bonusPayApplicationDTOList : bonusPayApplicationDTOS;
+    }
     /**
      * 新增奖金发放申请表
      *

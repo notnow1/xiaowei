@@ -637,7 +637,7 @@
         concat(TIMESTAMPDIFF(month,e.employment_date,NOW()),'月')
         when TIMESTAMPDIFF(month,e.employment_date,NOW()) &gt; 12 then
         concat(FLOOR(TIMESTAMPDIFF(month,e.employment_date,NOW())/12),'年', case when
-        TIMESTAMPDIFF(month,e.employment_date,NOW())%12=0 then '月' when TIMESTAMPDIFF(month,e.employment_date,NOW())%12
+        TIMESTAMPDIFF(month,e.employment_date,NOW())%12=0 then '' when TIMESTAMPDIFF(month,e.employment_date,NOW())%12
         &gt; 0 then concat(TIMESTAMPDIFF(month,e.employment_date,NOW())%12,'月') end ) end as working_age,
         p.post_name as employee_post_name,
         p.post_code,

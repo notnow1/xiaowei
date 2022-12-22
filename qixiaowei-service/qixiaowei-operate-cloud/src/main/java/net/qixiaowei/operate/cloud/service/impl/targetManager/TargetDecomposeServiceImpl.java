@@ -30,6 +30,7 @@ import net.qixiaowei.operate.cloud.api.domain.targetManager.*;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.*;
@@ -369,6 +370,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 targetDecomposeDTO.setIndicatorName(data.getIndicatorName());
             }
         }
+        this.packDecompositionDimension(targetDecomposeDTO);
         return targetDecomposeDTO;
     }
 
@@ -1007,7 +1009,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.CUSTOM.getCode());
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectTargetDecomposeUniteId(targetDecompose);
         if (StringUtils.isNotNull(targetDecomposeDTO1)) {
-            throw new ServiceException( targetDecomposeDTO.getTargetYear()+ "年已创建该维度目标分解，无需重复创建。");
+            throw new ServiceException(targetDecomposeDTO.getTargetYear() + "年已创建该维度目标分解，无需重复创建。");
         }
         targetDecompose.setCreateBy(SecurityUtils.getUserId());
         targetDecompose.setCreateTime(DateUtils.getNowDate());
@@ -2134,6 +2136,96 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
 
 
+    }
+
+    /**
+     * 目标分解操作列导出详情数据
+     *
+     * @param targetDecomposeId
+     * @return
+     */
+    @Override
+    public List<TargetDecomposeDetailsExcel> exportTargetDecomposeDetails(Long targetDecomposeId) {
+        List<TargetDecomposeDetailsExcel> targetDecomposeDetailsExcelList = new ArrayList<>();
+        //详情表
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+            this.packRemote(targetDecomposeDetailsDTOList);
+            List<Long> targetDecomposeDetailsIds = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getTargetDecomposeDetailsId).collect(Collectors.toList());
+            //周期表
+            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsIds(targetDecomposeDetailsIds);
+            //根据周期数分组
+            Map<Integer, List<DecomposeDetailCyclesDTO>> cycleNumberMap = decomposeDetailCyclesDTOList.parallelStream().collect(Collectors.groupingBy(DecomposeDetailCyclesDTO::getCycleNumber));
+            //根据目标详情id分组
+            Map<Long, List<DecomposeDetailCyclesDTO>> decomposeDetailCyclesMap = decomposeDetailCyclesDTOList.parallelStream().collect(Collectors.groupingBy(DecomposeDetailCyclesDTO::getTargetDecomposeDetailsId));
+
+            for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+                //产品名称
+                String productName = targetDecomposeDetailsDTO.getProductName();
+                //区域名称
+                String areaName = targetDecomposeDetailsDTO.getAreaName();
+                //员工名称
+                String employeeName = targetDecomposeDetailsDTO.getEmployeeName();
+                //省份名称
+                String regionName = targetDecomposeDetailsDTO.getRegionName();
+                //行业名称
+                String industryName = targetDecomposeDetailsDTO.getIndustryName();
+                //部门名称
+                String departmentName = targetDecomposeDetailsDTO.getDepartmentName();
+
+
+                TargetDecomposeDetailsExcel targetDecomposeDetailsExcel = new TargetDecomposeDetailsExcel();
+                //分解维度数据集合
+                List<String> decompositionDimensions = new ArrayList<>();
+                if (StringUtils.isNotBlank(employeeName)) {
+                    decompositionDimensions.add(employeeName);
+                }
+                if (StringUtils.isNotBlank(areaName)) {
+                    decompositionDimensions.add(areaName);
+                }
+                if (StringUtils.isNotBlank(departmentName)) {
+                    decompositionDimensions.add(departmentName);
+                }
+                if (StringUtils.isNotBlank(productName)) {
+                    decompositionDimensions.add(productName);
+                }
+                if (StringUtils.isNotBlank(regionName)) {
+                    decompositionDimensions.add(regionName);
+                }
+                if (StringUtils.isNotBlank(industryName)) {
+                    decompositionDimensions.add(industryName);
+                }
+                //汇总金额
+                targetDecomposeDetailsExcel.setDecompositionDimensions(decompositionDimensions);
+                //汇总金额
+                targetDecomposeDetailsExcel.setAmountTarget(targetDecomposeDetailsDTO.getAmountTarget().toString());
+                //负责人名称
+                targetDecomposeDetailsExcel.setPrincipalEmployeeName(targetDecomposeDetailsDTO.getPrincipalEmployeeName());
+                if (StringUtils.isNotEmpty(decomposeDetailCyclesMap)) {
+                    List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList1 = decomposeDetailCyclesMap.get(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                    if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList1)){
+                        //周期目标值集合
+                        List<String> cycleTargets = new ArrayList<>();
+                        //周期目标值总值集合
+                        List<String> cycleTargetSum = new ArrayList<>();
+                        for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList1) {
+                            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList2 = cycleNumberMap.get(decomposeDetailCyclesDTO.getCycleNumber());
+                            if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList2)){
+                                cycleTargetSum.add(decomposeDetailCyclesDTOList2.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+                            }
+                            cycleTargets.add(decomposeDetailCyclesDTO.getCycleTarget().toString());
+                        }
+                        targetDecomposeDetailsExcel.setCycleTargets(cycleTargets);
+                        targetDecomposeDetailsExcel.setCycleTargetSum(cycleTargetSum);
+                    }
+                }
+                //汇总金额合计
+                targetDecomposeDetailsExcel.setAmountTargetSum(targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+                targetDecomposeDetailsExcelList.add(targetDecomposeDetailsExcel);
+            }
+
+        }
+        return targetDecomposeDetailsExcelList;
     }
 
     /**

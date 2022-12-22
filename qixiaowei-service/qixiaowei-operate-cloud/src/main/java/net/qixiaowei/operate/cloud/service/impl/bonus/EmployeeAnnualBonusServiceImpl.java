@@ -38,6 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -99,6 +101,23 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         if (StringUtils.isNotEmpty(employeeAnnualBonusDTOS)) {
             //申请年终奖总额
             packApplyBonusAmount(employeeAnnualBonusDTOS);
+        }
+        //模糊查询申请年终奖金额
+        BigDecimal applyBonusAmount = employeeAnnualBonusDTO.getApplyBonusAmount();
+        if (StringUtils.isNotNull(applyBonusAmount)){
+            List<EmployeeAnnualBonusDTO> emolumentPlanDTOList = new ArrayList<>();
+            //模糊查询
+            Pattern pattern = Pattern.compile(String.valueOf(employeeAnnualBonusDTO.getApplyBonusAmount()));
+            for (EmployeeAnnualBonusDTO annualBonusDTO : employeeAnnualBonusDTOS) {
+                BigDecimal applyBonusAmount1 = annualBonusDTO.getApplyBonusAmount();
+                if (StringUtils.isNotNull(applyBonusAmount1)){
+                    Matcher matcher = pattern.matcher(String.valueOf(applyBonusAmount1));
+                    if(matcher.find()){  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        emolumentPlanDTOList.add(annualBonusDTO);
+                    }
+                }
+            }
+            return emolumentPlanDTOList;
         }
         return employeeAnnualBonusDTOS;
     }

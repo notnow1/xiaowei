@@ -93,7 +93,7 @@ public class BonusPayApplicationDTO {
     private List<Long> budgetDepartmentIds;
 
     /**
-     * 预算部门名称集合
+     * 预算部门名称
      */
     private String budgetDepartmentNames;
     /**
@@ -112,6 +112,10 @@ public class BonusPayApplicationDTO {
     * 奖金发放对象:1部门;2员工;3部门+员工
     */
     private  Integer bonusPayObject;
+    /**
+     * 奖金发放对象名称
+     */
+    private  String bonusPayObjectName;
     /**
     * 奖项事迹描述
     */

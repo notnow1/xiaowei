@@ -168,9 +168,12 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             //模糊查询
             Pattern pattern = Pattern.compile(emolumentPlanDTO.getCreateName());
             for (EmolumentPlanDTO planDTO : emolumentPlanDTOS) {
-                Matcher matcher = pattern.matcher(planDTO.getCreateName());
-                if(matcher.find()){  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                    emolumentPlanDTOList.add(planDTO);
+                String createName1 = planDTO.getCreateName();
+                if (StringUtils.isNotNull(createName1)){
+                    Matcher matcher = pattern.matcher(createName1);
+                    if(matcher.find()){  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        emolumentPlanDTOList.add(planDTO);
+                    }
                 }
             }
             return emolumentPlanDTOList;

@@ -196,7 +196,7 @@
             and td.target_decompose_dimension_id=#{targetDecompose.targetDecomposeDimensionId}
         </if>
         <if test="targetDecompose.decompositionDimension != null and targetDecompose.decompositionDimension != ''">
-            and td.decomposition_dimension like '%$#{targetDecompose.decompositionDimension}%'
+            and td.decomposition_dimension like '%${targetDecompose.decompositionDimension}%'
         </if>
         <if test="targetDecompose.timeDimension != null">
             and td.time_dimension like '%${targetDecompose.timeDimension}%'

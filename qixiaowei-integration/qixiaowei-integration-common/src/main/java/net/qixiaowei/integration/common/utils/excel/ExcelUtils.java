@@ -63,7 +63,7 @@ public class ExcelUtils {
                         if (StringUtils.isBlank(s)) {
                             list2.add("");
                         } else {
-                            list2.add(s);
+                            list2.add(s.trim());
                         }
 
                     }

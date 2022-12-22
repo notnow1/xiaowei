@@ -5,6 +5,7 @@ import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
+import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -365,4 +366,11 @@ public interface ITargetDecomposeService {
      * @return
      */
     TargetDecomposeDTO selectMaxYear(TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
+     * 目标分解操作列导出详情数据
+     * @return
+     * @param targetDecomposeId
+     */
+    List<TargetDecomposeDetailsExcel> exportTargetDecomposeDetails(Long targetDecomposeId);
 }
