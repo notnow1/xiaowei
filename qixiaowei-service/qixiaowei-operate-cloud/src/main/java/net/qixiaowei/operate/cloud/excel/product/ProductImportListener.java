@@ -10,12 +10,10 @@ import lombok.RequiredArgsConstructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -237,6 +235,62 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
         list.add(head8);
         list.add(head9);
         list.add(head10);
+        return list;
+    }
+
+    @SneakyThrows
+    public static List<List<Object>> dataList(List<ProductExportExcel> productExportExcelList) {
+        List<List<Object>> list = new ArrayList<List<Object>>();
+        ProductExportExcel productExportExcel = new ProductExportExcel();
+        ProductExportExcel productExportExcel1 = productExportExcel.getClass().newInstance();
+        Field[] fields = productExportExcel1.getClass().getDeclaredFields();
+
+        if (StringUtils.isNotEmpty(productExportExcelList)){
+            for (int i = 0; i < fields.length; i++) {
+                for (ProductExportExcel exportExcel : productExportExcelList) {
+                    List<Object> data = new ArrayList<Object>();
+                    //产品规格参数集合
+                    List<String> productSpecificationParamList = exportExcel.getProductSpecificationParamList();
+                    //产品规格数据集合
+                    List<String> productDataList = exportExcel.getProductDataList();
+
+                    if (i==0){
+                        data.add(exportExcel.getProductCode());
+                    }else if (i==1){
+                        data.add(exportExcel.getProductName());
+                    }else if (i==2){
+                        data.add(exportExcel.getParentProductCode());
+                    }else if (i==3){
+                        data.add(exportExcel.getProductUnitName());
+                    }else if (i==4){
+                        data.add(exportExcel.getProductCategoryName());
+                    }else if (i==5){
+                        data.add(exportExcel.getListingFlag());
+                    }else if (i==6){
+                        data.add(exportExcel.getSpecificationName());
+                    }else if (i==7){
+                        data.add(exportExcel.getListPrice());
+                    }
+                    if (i>8){
+                        if (i %2 == 0){
+                            if (StringUtils.isNotEmpty(productDataList)){
+                                for (int i1 = 0; i1 < productDataList.size(); i1++) {
+                                    data.add(productDataList.get(1));
+                                }
+                            }
+                        }else {
+                            if (StringUtils.isNotEmpty(productSpecificationParamList)){
+
+                            }
+                        }
+
+                    }
+                    list.add(data);
+                }
+
+            }
+
+        }
         return list;
     }
 

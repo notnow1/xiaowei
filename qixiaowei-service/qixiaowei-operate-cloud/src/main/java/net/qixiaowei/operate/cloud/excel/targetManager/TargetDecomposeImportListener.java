@@ -336,6 +336,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             List<String> cycleTargetSum = targetDecomposeDetailsExcelList.get(0).getCycleTargetSum();
             //分解维度数据集合
             List<String> decompositionDimensions1 = targetDecomposeDetailsExcelList.get(0).getDecompositionDimensions();
+            //周期目标值集合
+            List<String> cycleTargets1 = targetDecomposeDetailsExcelList.get(0).getCycleTargets();
             for (int i = 0; i < Math.max(targetDecomposeDetailsExcelList.size(),8); i++) {
                 //每一行的数据集合
                 List<Object> data = new ArrayList<Object>();
@@ -352,14 +354,14 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 if (i == 0){
                     data.add("分解维度：" + StringUtils.strip(decompositionDimensions.toString(),"[]").replaceAll(",","+"));
                 }else if (i ==1){
-                    if (StringUtils.isNotEmpty(cycleTargets)){
-                        if (cycleTargets.size()==1){
+                    if (StringUtils.isNotEmpty(cycleTargets1)){
+                        if (cycleTargets1.size()==1){
                             data.add("时间维度：年度");
-                        }else if (cycleTargets.size()==4){
+                        }else if (cycleTargets1.size()==4){
                             data.add("时间维度：季度");
-                        }else if (cycleTargets.size()==12){
+                        }else if (cycleTargets1.size()==12){
                             data.add("时间维度：月度");
-                        }else if (cycleTargets.size()==52){
+                        }else if (cycleTargets1.size()==52){
                             data.add("时间维度：周");
                         }
                     }
@@ -377,13 +379,17 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                     data.add("未分解：" + targetDecomposeDTO.getDecomposeTarget().subtract(new BigDecimal(amountTargetSum)));
                 }
                 if (StringUtils.isNotEmpty(decompositionDimensions)){
-                    for (String decompositionDimension : decompositionDimensions) {
-                        data.add(decompositionDimension);
+                    List<Map<String, String>> fileNameList = targetDecomposeDTO.getFileNameList();
+                    for (int i1 = 0; i1 < fileNameList.size(); i1++) {
+                        data.add(decompositionDimensions.get(i1));
                     }
                 }
+
                 if (targetDecomposeDetailsExcelList.size()<8){
                     if (targetDecomposeDetailsExcelList.size() == i){
-                        data.add("");
+                        for (int i1 = 0; i1 < decompositionDimensions1.size(); i1++) {
+                            data.add("");
+                        }
                         data.add("合计");
                         data.add(amountTargetSum);
                         if (StringUtils.isNotEmpty(cycleTargetSum)) {

@@ -2,20 +2,24 @@ package net.qixiaowei.operate.cloud.controller.product;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.metadata.Head;
+import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.handler.CellWriteHandler;
+import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.text.CharsetKit;
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.CustomVerticalCellStyleStrategy;
-import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
@@ -24,7 +28,7 @@ import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductUnitDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductImportListener;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
@@ -156,7 +160,7 @@ public class ProductController extends BaseController {
     @SneakyThrows
 //    @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
-    public void exportUser(HttpServletResponse response) {
+    public void exportProductTemplate(HttpServletResponse response) {
         List<String> dictionaryLabels = new ArrayList<>();
 
         //字典名称
@@ -210,7 +214,7 @@ public class ProductController extends BaseController {
      */
 //    @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
-    public AjaxResult importEmployee(MultipartFile file) throws IOException {
+    public AjaxResult importProduct(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -232,5 +236,85 @@ public class ProductController extends BaseController {
         productService.importProduct(list);
 
         return AjaxResult.success();
+    }
+
+    /**
+     * 导出产品
+     */
+    @SneakyThrows
+//    @RequiresPermissions("system:manage:employee:export")
+    @GetMapping("export")
+    public void exportProduct(ProductDTO productDTO,HttpServletResponse response) {
+        List<String> dictionaryLabels = new ArrayList<>();
+
+        //字典名称
+        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByProduct(SecurityConstants.INNER);
+        DictionaryTypeDTO data = dictionaryTypeDTOR.getData();
+        if (StringUtils.isNotNull(data)){
+            //字典值
+            R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByProduct(data.getDictionaryTypeId(), SecurityConstants.INNER);
+            List<DictionaryDataDTO> dictionaryDataDTOList = listR.getData();
+            if (StringUtils.isNotEmpty(dictionaryDataDTOList)){
+                dictionaryLabels = dictionaryDataDTOList.stream().map(DictionaryDataDTO::getDictionaryLabel).collect(Collectors.toList());
+            }
+        }
+        // 产品单位
+        ProductUnitDTO productUnitDTO = new ProductUnitDTO();
+        List<ProductUnitDTO> productUnitDTOS = productUnitService.selectProductUnitList(productUnitDTO);
+
+        Map<Integer, List<String>> selectMap = new HashMap<>();
+        //自定义表头
+        List<List<String>> head = ProductImportListener.head(selectMap,data,dictionaryLabels,productUnitDTOS);
+        List<Long> productIds = new ArrayList<>();
+        if (!CheckObjectIsNullUtils.isNull(productDTO)){
+            if (StringUtils.isNotEmpty(productDTO.getProductIds())){
+                //打平的树结构
+                productIds.addAll(productDTO.getProductIds());
+            }
+        }else {
+            //打平的树结构
+            productIds = productService.treeToList();
+        }
+
+        //导出产品列表
+        List<ProductExportExcel> productExportExcelList = productService.exportProduct(productIds);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("产品配置" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        CustomVerticalCellStyleStrategy levelStrategy = new CustomVerticalCellStyleStrategy(head);
+
+        EasyExcel.write(response.getOutputStream())
+                .excelType(ExcelTypeEnum.XLSX)
+                .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
+                .head(head)
+                .registerWriteHandler(levelStrategy)
+                .registerWriteHandler(new SimpleColumnWidthStyleStrategy(21))
+                // 重写AbstractColumnWidthStyleStrategy策略的setColumnWidth方法
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> list, Cell cell, Head head, Integer integer, Boolean aBoolean) {
+                        if (integer == 0) {
+                            Row row = cell.getRow();
+                            row.setHeightInPoints(144);
+                        }
+                    }
+                })
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                    }
+                })
+                .sheet("产品配置")// 设置 sheet 的名字
+                .doWrite(ProductImportListener.dataList(productExportExcelList));
+
     }
 }

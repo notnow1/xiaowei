@@ -363,6 +363,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         StringBuffer depterreo = new StringBuffer();
         StringBuffer decomposesErreo = new StringBuffer();
         int i = 0;
+
         List<DepartmentDTO> departmentDTOList1 = departmentMapper.selectDepartmentByDepartmentIds(departmentIds);
 
         for (DepartmentDTO dto : departmentDTOList1) {

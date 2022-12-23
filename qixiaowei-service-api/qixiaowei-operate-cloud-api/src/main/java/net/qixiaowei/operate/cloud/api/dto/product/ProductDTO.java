@@ -44,6 +44,10 @@ public class ProductDTO {
     @NotNull(message = "产品ID不能为空",groups = {ProductDTO.DeleteProductDTO.class,ProductDTO.UpdateProductDTO.class})
     private  Long productId;
     /**
+     * 产品id集合
+     */
+    private  List<Long> productIds;
+    /**
     * 父级产品ID
     */
     private  Long parentProductId;

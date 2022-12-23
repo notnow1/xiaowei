@@ -210,7 +210,7 @@ public class EmployeeController extends BaseController {
     @SneakyThrows
     @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
-    public void exportUser(HttpServletResponse response) {
+    public void exportEmployeeTemplate(HttpServletResponse response) {
         //部门名称集合
         List<String> parentDepartmentExcelNames = departmentService.selectDepartmentListName();
         //岗位名称

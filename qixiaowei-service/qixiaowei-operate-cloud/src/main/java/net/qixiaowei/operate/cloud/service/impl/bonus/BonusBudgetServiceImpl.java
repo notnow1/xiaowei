@@ -247,9 +247,12 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 Matcher amountBonusBudget1 = null;
                 //涨薪包预算
                 Matcher raiseSalaryBonusBudget1 = null;
-                if (StringUtils.isNotNull(createByName)) {
-                    //创建人名称
-                    createByName1 = pattern.matcher(budgetDTO.getCreateByName());
+                if (StringUtils.isNotBlank(createByName)) {
+                    String createByName2 = budgetDTO.getCreateByName();
+                    if (StringUtils.isNotBlank(createByName2)){
+                        //创建人名称
+                        createByName1 = pattern.matcher(createByName2);
+                    }
                 }
                 if (StringUtils.isNotNull(amountBonusBudget)) {
                     //总奖金包预算
@@ -259,12 +262,12 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //涨薪包预算
                     raiseSalaryBonusBudget1 = pattern2.matcher(String.valueOf(budgetDTO.getRaiseSalaryBonusBudget()));
                 }
-                if (StringUtils.isNotNull(createByName) && StringUtils.isNotNull(amountBonusBudget) && StringUtils.isNotNull(raiseSalaryBonusBudget)) {
+                if ((StringUtils.isNotNull(createByName)&&StringUtils.isNotBlank(budgetDTO.getCreateByName())) && StringUtils.isNotNull(amountBonusBudget) && StringUtils.isNotNull(raiseSalaryBonusBudget)) {
                     if (createByName1.find() || amountBonusBudget1.find() || raiseSalaryBonusBudget1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         bonusBudgetDTOList.add(budgetDTO);
                     }
                 }
-                if (StringUtils.isNotNull(createByName)) {
+                if (StringUtils.isNotBlank(createByName) && StringUtils.isNotBlank(budgetDTO.getCreateByName())) {
                     if (createByName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         bonusBudgetDTOList.add(budgetDTO);
                     }
@@ -281,7 +284,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 }
 
             }
-            if (StringUtils.isNotNull(createByName) || StringUtils.isNotNull(amountBonusBudget) || StringUtils.isNotNull(raiseSalaryBonusBudget)) {
+            if (StringUtils.isNotBlank(createByName) || StringUtils.isNotNull(amountBonusBudget) || StringUtils.isNotNull(raiseSalaryBonusBudget)) {
                 return bonusBudgetDTOList;
             }
         }

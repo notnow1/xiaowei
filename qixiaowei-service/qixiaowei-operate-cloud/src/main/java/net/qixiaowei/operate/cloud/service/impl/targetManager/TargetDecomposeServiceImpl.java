@@ -2574,16 +2574,19 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //详情周期数据
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
-                int dime = this.packDecomposeDetailCycles(targetDecomposeDTO);
+                int dime = 0;
+                if (targetDecomposeDTO.getTargetYear()<= DateUtils.getYear()){
+                    dime = this.packDecomposeDetailCycles(targetDecomposeDTO);
+                }
                 List<String> list = cyclesExcelData.get(i);
                 for (int i1 = 0; i1 < list.size(); i1++) {
-                    if (i1 >= dime) {
+                    if (i1 >= dime-1) {
                         DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
                         //周期
                         decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
                         if (StringUtils.isNotBlank(list.get(i1))) {
-                            //预测值
-                            decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal(list.get(i1)));
+                            //周期目标值
+                            decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal(list.get(i1)));
                         }
                         decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
                     } else {
@@ -2591,8 +2594,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                         //周期
                         decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);
                         if (StringUtils.isNotBlank(list.get(i1))) {
-                            //预测值
-                            decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal("0"));
+                            //周期目标值
+                            decomposeDetailCyclesDTO.setCycleTarget(new BigDecimal("0"));
                         }
                         decomposeDetailCyclesDTOS.add(decomposeDetailCyclesDTO);
                     }
@@ -2609,7 +2612,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 boolean flag = this.packDeleteExcelNullData(targetDecomposeDetailsDTOS.get(i));
                 if (flag) {
                     //周期数据必须全部为空
-                    List<BigDecimal> collect = decomposeDetailCyclesDTOS.stream().map(DecomposeDetailCyclesDTO::getCycleForecast).filter(cycleForecast -> cycleForecast != null).collect(Collectors.toList());
+                    List<BigDecimal> collect = decomposeDetailCyclesDTOS.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(getCycleTarget -> getCycleTarget != null).collect(Collectors.toList());
                     if (StringUtils.isEmpty(collect)) {
                         deleteTargetExcelNullData.add(targetDecomposeDetailsDTOS.get(i));
                     }

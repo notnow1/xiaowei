@@ -251,10 +251,14 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             //模糊查询
             Pattern pattern = Pattern.compile(deptBonusBudgetDTO.getCreateByName());
             for (DeptBonusBudgetDTO bonusBudgetDTO : deptBonusBudgetDTOS) {
-                Matcher matcher = pattern.matcher(bonusBudgetDTO.getCreateByName());
-                if (matcher.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                    deptBonusBudgetDTOList.add(bonusBudgetDTO);
+                String createByName1 = bonusBudgetDTO.getCreateByName();
+                if (StringUtils.isNotBlank(createByName1)){
+                    Matcher matcher = pattern.matcher(createByName1);
+                    if (matcher.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        deptBonusBudgetDTOList.add(bonusBudgetDTO);
+                    }
                 }
+
             }
             return deptBonusBudgetDTOList;
         }

@@ -3,7 +3,7 @@ package net.qixiaowei.operate.cloud.service.product;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
-import net.qixiaowei.operate.cloud.api.dto.product.ProductDataDTO;
+import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 
 
@@ -146,4 +146,17 @@ public interface IProductService {
      * @param list
      */
     void importProduct(List<ProductExcel> list);
+
+    /**
+     * 将树按顺序打平(导出产品用)
+     * @return
+     */
+    List<Long> treeToList();
+
+    /**
+     * 导出产品列表
+     * @return
+     * @param productIds
+     */
+    List<ProductExportExcel> exportProduct(List<Long> productIds);
 }
