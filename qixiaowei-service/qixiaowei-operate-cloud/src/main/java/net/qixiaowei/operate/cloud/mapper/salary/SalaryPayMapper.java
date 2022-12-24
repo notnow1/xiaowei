@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -122,7 +123,7 @@ public interface SalaryPayMapper {
      * @param employeeIds
      * @return
      */
-    List<SalaryPayDTO> selectSalaryPayByEmployeeIdsAndPayYear(@Param("employeeIds") List<Long> employeeIds,@Param("payYear")Integer payYear);
+    List<SalaryPayDTO> selectSalaryPayByEmployeeIdsAndPayYear(@Param("employeeIds") List<Long> employeeIds, @Param("payYear") Integer payYear);
 
     /**
      * 根据人员ID和年份查找工资发薪信息
@@ -130,7 +131,7 @@ public interface SalaryPayMapper {
      * @param employeeId
      * @return
      */
-    List<SalaryPayDTO> selectSalaryPayByEmployeeIdAndPayYear(@Param("employeeId") Long employeeId,@Param("payYear")Integer payYear);
+    List<SalaryPayDTO> selectSalaryPayByEmployeeIdAndPayYear(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear);
 
     /**
      * 根据人员ID集合和年份查找工资发薪信息
@@ -202,6 +203,25 @@ public interface SalaryPayMapper {
      * @return
      */
     List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear);
+
+    /**
+     * 根据员工ID和发薪年份查找员工发薪记录
+     *
+     * @param employeeId 员工ID
+     * @param payYears   发薪年份集合
+     * @return
+     */
+    List<SalaryPayDTO> selectSalaryPayOfEmployeeIdAndPayYears(@Param("employeeId") Long employeeId, @Param("payYears") Set<Integer> payYears);
+
+
+    /**
+     * 根据员工ID和发薪年份查找员工发薪记录
+     *
+     * @param employeeIds 员工ID集合
+     * @param payYears    发薪年份集合
+     * @return
+     */
+    List<SalaryPayDTO> selectSalaryPayOfEmployeeIdsAndPayYears(@Param("employeeIds") Set<Long> employeeIds, @Param("payYears") Set<Integer> payYears);
 
     /**
      * 根据年份 月份 员工ID查询发薪表

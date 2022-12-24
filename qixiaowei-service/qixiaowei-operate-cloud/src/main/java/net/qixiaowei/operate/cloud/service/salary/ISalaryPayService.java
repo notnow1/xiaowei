@@ -5,6 +5,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryStructureDTO;
+import net.qixiaowei.operate.cloud.api.vo.salary.SalaryPayImportTempDataVO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryPayExcel;
 
 import java.util.List;
@@ -112,7 +113,7 @@ public interface ISalaryPayService {
      *
      * @param list
      */
-    void importSalaryPay(List<Map<Integer, String>> list);
+    void importSalaryPay(SalaryPayImportTempDataVO salaryPayImportTempDataVO, List<Map<Integer, String>> list);
 
     /**
      * 导出Excel

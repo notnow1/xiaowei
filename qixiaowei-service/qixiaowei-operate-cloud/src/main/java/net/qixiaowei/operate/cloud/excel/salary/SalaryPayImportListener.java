@@ -1,5 +1,7 @@
 package net.qixiaowei.operate.cloud.excel.salary;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import lombok.Data;
@@ -10,6 +12,7 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
+import net.qixiaowei.operate.cloud.api.vo.salary.SalaryPayImportTempDataVO;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
@@ -17,10 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * SalaryPayImportListener
@@ -43,6 +43,10 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
     private int batchCount = 3000;
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
+     * 工资项导入临时数据VO
+     */
+    private SalaryPayImportTempDataVO salaryPayImportTempDataVO;
+    /**
      * 缓存的数据列表
      */
     List<Map<Integer, String>> list = new ArrayList<>();
@@ -50,34 +54,65 @@ public class SalaryPayImportListener extends AnalysisEventListener<Map<Integer, 
      * 工资发薪服务
      */
     private final ISalaryPayService salaryPayService;
+    /**
+     * 工资项服务
+     */
+    private final ISalaryItemService salaryItemService;
 
     @Override
     public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {
-        list.add(headMap);
+        List<SalaryItemDTO> salaryItemDTOS = salaryItemService.selectSalaryItemList(new SalaryItemDTO());
+        if (StringUtils.isEmpty(salaryItemDTOS)) {
+            throw new ServiceException("当前工资项未进行任何配置，请联系管理员");
+        }
+        if (headMap.size() > (salaryItemDTOS.size() + 3)) {
+            throw new ServiceException("当前系统配置的薪酬类别与导入的薪酬类别不匹配，请检查.");
+        }
+        Map<String, SalaryItemDTO> salaryItemOfThirdLevelItemMap = new HashMap<>();
+        Map<Long, SalaryItemDTO> salaryItemMap = new HashMap<>();
+        Set<String> salaryItemSet = new HashSet<>();
+        //目前导入的工资项未与配置项目作比较，如果做比较，导入的项目如果比配置的项目多，看后续产品意思要不要报错或者略过不处理
+        for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+            String thirdLevelItem = salaryItemDTO.getThirdLevelItem();
+            Long salaryItemId = salaryItemDTO.getSalaryItemId();
+            salaryItemOfThirdLevelItemMap.put(thirdLevelItem, salaryItemDTO);
+            salaryItemMap.put(salaryItemId, salaryItemDTO);
+            salaryItemSet.add(thirdLevelItem);
+        }
+        List<String> errorThirdLevelItemOfImport = new ArrayList<>();
+        for (int i = 3; i < headMap.size(); i++) {
+            String thirdLevelItemOfImport = headMap.get(i);
+            if (!salaryItemSet.contains(thirdLevelItemOfImport)) {
+                errorThirdLevelItemOfImport.add(thirdLevelItemOfImport);
+            }
+        }
+        if (StringUtils.isNotEmpty(errorThirdLevelItemOfImport)) {
+            throw new ServiceException("当前系统配置的薪酬类别与导入的薪酬类别不匹配，请确认是否是最新的导入模版，有问题的列为:" + CollUtil.join(errorThirdLevelItemOfImport, StrUtil.COMMA));
+        }
+        salaryPayImportTempDataVO = new SalaryPayImportTempDataVO();
+        salaryPayImportTempDataVO.setSalaryItemOfThirdLevelItemMap(salaryItemOfThirdLevelItemMap);
+        salaryPayImportTempDataVO.setSalaryItemMap(salaryItemMap);
+        salaryPayImportTempDataVO.setHeadMap(headMap);
     }
 
     @Override
     public void invoke(Map<Integer, String> map, AnalysisContext context) {
         list.add(map);
+        // 达到BATCH_COUNT，则调用importer方法入库，防止数据几万条数据在内存，容易OOM
+        if (list.size() >= batchCount) {
+            // 调用importer方法
+            salaryPayService.importSalaryPay(salaryPayImportTempDataVO, list);
+            // 存储完成清理list
+            list.clear();
+        }
     }
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext analysisContext) {
         logger.info("Excel解析完成");
-        // 达到BATCH_COUNT，则调用importer方法入库，防止数据几万条数据在内存，容易OOM
-        if (list.size() >= batchCount) {
-            // 调用importer方法
-            salaryPayService.importSalaryPay(list);
-            // 存储完成清理list
-            list.clear();
-        }
-        //防止重复执行
-        if (StringUtils.isNotEmpty(list)) {
-            // 调用importer方法
-            salaryPayService.importSalaryPay(list);
-            // 存储完成清理list
-            list.clear();
-        }
+        salaryPayService.importSalaryPay(salaryPayImportTempDataVO, list);
+        // 存储完成清理list
+        list.clear();
     }
 
     /**

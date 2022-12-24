@@ -30,7 +30,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -126,11 +128,13 @@ public class SalaryPayController extends BaseController {
         if ((!StringUtils.endsWithIgnoreCase(filename, ".xls") && !StringUtils.endsWithIgnoreCase(filename, ".xlsx"))) {
             throw new RuntimeException("请上传正确的excel文件!");
         }
+        InputStream inputStream;
         try {
             //构建读取器
-            ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
-            read.sheet()
-                    .registerReadListener(new SalaryPayImportListener(salaryPayService)).doRead();
+            SalaryPayImportListener salaryPayImportListener = new SalaryPayImportListener(salaryPayService, salaryItemService);
+            inputStream = new BufferedInputStream(file.getInputStream());
+            ExcelReaderBuilder builder = EasyExcel.read(inputStream, salaryPayImportListener).headRowNumber(1);
+            builder.sheet().doRead();
         } catch (IOException e) {
             throw new ServiceException("导入人员信息配置Excel失败");
         }
