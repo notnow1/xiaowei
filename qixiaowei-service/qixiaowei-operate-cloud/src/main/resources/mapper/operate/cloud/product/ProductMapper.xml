@@ -232,6 +232,81 @@
         </foreach>
         and p.delete_flag = 0
     </select>
+<!--    根据id查询所有子级数据-->
+    <select id="selectAncestors" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
+        SELECT
+        product_id,
+        parent_product_id,
+        ancestors,
+        product_code,
+        product_name,
+        `level`,
+        product_unit_id,
+        product_category,
+        product_description,
+        list_price,
+        listing_flag,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        tenant_id
+        FROM (
+        select
+        product_id,
+        parent_product_id,
+        ancestors,
+        product_code,
+        product_name,
+        `level`,
+        product_unit_id,
+        product_category,
+        product_description,
+        list_price,
+        listing_flag,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        tenant_id
+        from
+        product
+        WHERE
+        delete_flag=0
+        <if test="productId != null">
+            and product_id=#{productId}
+        </if>
+        union
+        select
+        product_id,
+        parent_product_id,
+        ancestors,
+        product_code,
+        product_name,
+        `level`,
+        product_unit_id,
+        product_category,
+        product_description,
+        list_price,
+        listing_flag,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time,
+        tenant_id
+        from
+        product
+        WHERE
+        delete_flag=0
+        <if test="productId != null">
+            and find_in_set(#{productId}, ancestors)
+        </if>
+        and delete_flag = 0
+        ) AS ancestors
+    </select>
     <!--新增产品表-->
     <insert id="insertProduct" useGeneratedKeys="true" keyProperty="productId">
         INSERT INTO product

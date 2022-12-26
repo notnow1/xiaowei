@@ -5,6 +5,7 @@ import java.util.List;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
+import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -159,4 +160,11 @@ public interface IProductService {
      * @param productIds
      */
     List<ProductExportExcel> exportProduct(List<Long> productIds);
+
+    /**
+     * 根据id查询所有子级数据
+     * @param productId
+     * @return
+     */
+    List<ProductDTO> selectAncestors(Long productId);
 }

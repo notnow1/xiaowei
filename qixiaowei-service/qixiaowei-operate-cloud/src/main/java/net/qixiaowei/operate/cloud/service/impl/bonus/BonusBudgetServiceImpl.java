@@ -196,7 +196,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 for (BonusBudgetDTO budgetDTO : bonusBudgetDTOS) {
                     for (UserDTO datum : data) {
                         if (budgetDTO.getCreateBy() == datum.getUserId()) {
-                            budgetDTO.setCreateByName(datum.getEmployeeName());
+                            budgetDTO.setCreateName(datum.getEmployeeName());
                         }
                     }
                 }
@@ -217,7 +217,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
     private List<BonusBudgetDTO> packQueryBonusBudget(BonusBudgetDTO bonusBudgetDTO, List<BonusBudgetDTO> bonusBudgetDTOS) {
         List<BonusBudgetDTO> bonusBudgetDTOList = new ArrayList<>();
         //创建人名称
-        String createByName = bonusBudgetDTO.getCreateByName();
+        String createName = bonusBudgetDTO.getCreateName();
         //总奖金包预算
         BigDecimal amountBonusBudget = bonusBudgetDTO.getAmountBonusBudget();
         //涨薪包预算
@@ -227,9 +227,9 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             Pattern pattern = null;
             Pattern pattern1 = null;
             Pattern pattern2 = null;
-            if (StringUtils.isNotBlank(createByName)) {
+            if (StringUtils.isNotBlank(createName)) {
                 //创建人名称
-                pattern = Pattern.compile(createByName);
+                pattern = Pattern.compile(createName);
             }
 
             if (StringUtils.isNotNull(amountBonusBudget)) {
@@ -247,11 +247,13 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 Matcher amountBonusBudget1 = null;
                 //涨薪包预算
                 Matcher raiseSalaryBonusBudget1 = null;
-                if (StringUtils.isNotBlank(createByName)) {
-                    String createByName2 = budgetDTO.getCreateByName();
-                    if (StringUtils.isNotBlank(createByName2)){
+                if (StringUtils.isNotBlank(createName)) {
+                    String createName2 = budgetDTO.getCreateName();
+                    if (StringUtils.isNotBlank(createName2)){
                         //创建人名称
-                        createByName1 = pattern.matcher(createByName2);
+                        createByName1 = pattern.matcher(createName2);
+                    }else {
+                        return new ArrayList<>();
                     }
                 }
                 if (StringUtils.isNotNull(amountBonusBudget)) {
@@ -262,12 +264,12 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //涨薪包预算
                     raiseSalaryBonusBudget1 = pattern2.matcher(String.valueOf(budgetDTO.getRaiseSalaryBonusBudget()));
                 }
-                if ((StringUtils.isNotNull(createByName)&&StringUtils.isNotBlank(budgetDTO.getCreateByName())) && StringUtils.isNotNull(amountBonusBudget) && StringUtils.isNotNull(raiseSalaryBonusBudget)) {
+                if ((StringUtils.isNotNull(createName)&&StringUtils.isNotBlank(budgetDTO.getCreateName())) && StringUtils.isNotNull(amountBonusBudget) && StringUtils.isNotNull(raiseSalaryBonusBudget)) {
                     if (createByName1.find() || amountBonusBudget1.find() || raiseSalaryBonusBudget1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         bonusBudgetDTOList.add(budgetDTO);
                     }
                 }
-                if (StringUtils.isNotBlank(createByName) && StringUtils.isNotBlank(budgetDTO.getCreateByName())) {
+                if (StringUtils.isNotBlank(createName) && StringUtils.isNotBlank(budgetDTO.getCreateName())) {
                     if (createByName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         bonusBudgetDTOList.add(budgetDTO);
                     }
@@ -284,7 +286,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 }
 
             }
-            if (StringUtils.isNotBlank(createByName) || StringUtils.isNotNull(amountBonusBudget) || StringUtils.isNotNull(raiseSalaryBonusBudget)) {
+            if (StringUtils.isNotBlank(createName) || StringUtils.isNotNull(amountBonusBudget) || StringUtils.isNotNull(raiseSalaryBonusBudget)) {
                 return bonusBudgetDTOList;
             }
         }

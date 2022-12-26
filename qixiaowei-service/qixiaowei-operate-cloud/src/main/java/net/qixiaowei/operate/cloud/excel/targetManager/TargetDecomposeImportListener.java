@@ -379,9 +379,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                     data.add("未分解：" + targetDecomposeDTO.getDecomposeTarget().subtract(new BigDecimal(amountTargetSum)));
                 }
                 if (StringUtils.isNotEmpty(decompositionDimensions)){
-                    List<Map<String, String>> fileNameList = targetDecomposeDTO.getFileNameList();
-                    for (int i1 = 0; i1 < fileNameList.size(); i1++) {
-                        data.add(decompositionDimensions.get(i1));
+                    for (String decompositionDimension : decompositionDimensions) {
+                        data.add(decompositionDimension);
                     }
                 }
 

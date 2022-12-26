@@ -257,8 +257,9 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                     if (matcher.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         deptBonusBudgetDTOList.add(bonusBudgetDTO);
                     }
+                }else {
+                    return new ArrayList<>();
                 }
-
             }
             return deptBonusBudgetDTOList;
         }

@@ -537,7 +537,7 @@ public class TargetDecomposeController extends BaseController {
             throw new ServiceException("数据不存在！ 请刷新重试！");
         }
         //目标分解操作列导出详情数据
-       List<TargetDecomposeDetailsExcel> targetDecomposeDetailsExcels = targetDecomposeService.exportTargetDecomposeDetails(targetDecomposeId);
+       List<TargetDecomposeDetailsExcel> targetDecomposeDetailsExcels = targetDecomposeService.exportTargetDecomposeDetails(targetDecomposeId,targetDecomposeDTO);
         //自定义表头
         List<List<String>> head = TargetDecomposeImportListener.headDetails(targetDecomposeDTO);
         response.setContentType("application/vnd.ms-excel");
