@@ -287,8 +287,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         List<SalaryItemExcel> salaryItemExcelList = new ArrayList<>();
         for (SalaryItemDTO dto : salaryItemDTOList) {
             SalaryItemExcel salaryItemExcel = new SalaryItemExcel();
-            BeanUtils.copyProperties(dto, salaryItemExcel);
             salarySetName(dto);
+            BeanUtils.copyProperties(dto, salaryItemExcel);
             if (dto.getScope() == 1) {
                 salaryItemExcel.setScope("部门");
             } else {
