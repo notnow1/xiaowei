@@ -343,6 +343,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 return DateUtils.getMonth();
             } else if (timeDimension == 5) {
                 return DateUtils.getDayOfWeek();
+            }else if (timeDimension == 1) {
+                return 53;
             } else {
                 throw new ServiceException("不正确的时间维度 请配置正确的数据！");
             }
