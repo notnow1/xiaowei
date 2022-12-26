@@ -1044,8 +1044,21 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
         targetDecompose.setUpdateBy(SecurityUtils.getUserId());
+        BigDecimal forecastYear = new BigDecimal("0");
+        //传入数据
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+            for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+                BigDecimal forecastYear1 = targetDecomposeDetailsDTO.getForecastYear();
+                if (forecastYear1 != null) {
+                    forecastYear = forecastYear.add(forecastYear1);
+                }
+
+            }
+        }
         //已录入
         targetDecompose.setStatus(Constants.ONE);
+        targetDecompose.setForecastYear(forecastYear);
         //修改周期表和详细信息表
         this.packUpdateTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         try {
