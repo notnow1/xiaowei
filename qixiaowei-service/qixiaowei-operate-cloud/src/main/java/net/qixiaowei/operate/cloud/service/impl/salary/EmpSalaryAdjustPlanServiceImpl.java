@@ -20,6 +20,7 @@ import net.qixiaowei.operate.cloud.service.performance.IPerformanceAppraisalObje
 import net.qixiaowei.operate.cloud.service.salary.IEmpSalaryAdjustPerformService;
 import net.qixiaowei.operate.cloud.service.salary.IEmpSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.service.salary.IEmpSalaryAdjustSnapService;
+import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
@@ -33,10 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -74,6 +72,9 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
 
     @Autowired
     private IPerformanceAppraisalObjectsService performanceAppraisalObjectsService;
+
+    @Autowired
+    private IOfficialRankEmolumentService officialRankEmolumentService;
 
 
     /**
@@ -758,6 +759,29 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
     @Override
     public List<EmpSalaryAdjustPlanDTO> selectByEmployeeId(Long employeeId) {
         return empSalaryAdjustPlanMapper.selectByEmployeeId(employeeId);
+    }
+
+    /**
+     * 职级确定薪酬详情
+     *
+     * @param postId       岗位ID
+     * @param officialRank 职级
+     * @return String
+     */
+    @Override
+    public String officialRankInfo(Long postId, Integer officialRank) {
+        if (StringUtils.isNull(postId)) {
+            return null;
+        }
+        if (StringUtils.isNull(officialRank)) {
+            return null;
+        }
+        PostDTO postDTO = getPost(postId);
+        Long officialRankSystemId = postDTO.getOfficialRankSystemId();
+        if (StringUtils.isNull(officialRankSystemId)) {
+            return null;
+        }
+        return officialRankEmolumentService.officialRankInfo(officialRankSystemId, officialRank);
     }
 }
 

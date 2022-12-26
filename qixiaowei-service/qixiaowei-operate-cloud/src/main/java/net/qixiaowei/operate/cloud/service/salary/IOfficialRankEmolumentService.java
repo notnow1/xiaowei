@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
 import java.util.List;
+import java.util.Map;
 
 import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
 import net.qixiaowei.operate.cloud.excel.salary.OfficialRankEmolumentExcel;
@@ -133,4 +134,13 @@ public interface IOfficialRankEmolumentService {
      * @return String
      */
     String selectByPostId(Long postId);
+
+    /**
+     * 职级确定薪酬详情
+     *
+     * @param officialRankSystemId 职级体系ID
+     * @param officialRank         职级
+     * @return
+     */
+    String officialRankInfo(Long officialRankSystemId, Integer officialRank);
 }

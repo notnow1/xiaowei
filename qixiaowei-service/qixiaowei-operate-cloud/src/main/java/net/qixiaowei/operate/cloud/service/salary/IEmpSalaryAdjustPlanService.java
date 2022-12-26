@@ -4,6 +4,7 @@ import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.EmpSalaryAdjustPlanExcel;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -124,4 +125,13 @@ public interface IEmpSalaryAdjustPlanService {
      * @return List
      */
     List<EmpSalaryAdjustPlanDTO> selectByEmployeeId(Long employeeId);
+
+    /**
+     * 职级确定薪酬详情
+     *
+     * @param postId       岗位ID
+     * @param officialRank 职级
+     * @return String
+     */
+    String officialRankInfo(Long postId, Integer officialRank);
 }

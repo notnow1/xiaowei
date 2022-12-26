@@ -519,5 +519,27 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
         }
         return null;
     }
+
+    /**
+     * 职级确定薪酬详情
+     *
+     * @param officialRankSystemId 职级体系ID
+     * @param officialRank         职级
+     * @return String
+     */
+    @Override
+    public String officialRankInfo(Long officialRankSystemId, Integer officialRank) {
+        OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(officialRankSystemId, officialRank);
+        if (StringUtils.isNull(emolumentDTO)){
+            throw new ServiceException("");
+        }
+        BigDecimal salaryMedian = emolumentDTO.getSalaryMedian();// 中位数
+        BigDecimal salaryCap = emolumentDTO.getSalaryCap();// 上限
+        BigDecimal salaryFloor = emolumentDTO.getSalaryFloor();// 下限
+        StringBuilder sb = new StringBuilder("职级薪酬");
+        sb.append(salaryFloor).append("-").append(salaryCap).append(",中位值").append(salaryMedian);
+        return sb.toString();
+    }
+
 }
 

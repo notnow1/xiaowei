@@ -110,6 +110,16 @@ public class EmpSalaryAdjustPlanController extends BaseController {
     }
 
     /**
+     * 职级确定薪酬详情
+     */
+    @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:info")
+    @GetMapping("/officialRank/info")
+    public AjaxResult officialRankInfo(Long postId, Integer officialRank) {
+        String officialRankInfo = empSalaryAdjustPlanService.officialRankInfo(postId, officialRank);
+        return AjaxResult.success(officialRankInfo);
+    }
+
+    /**
      * 导入个人调薪计划表
      */
     @PostMapping("import")
