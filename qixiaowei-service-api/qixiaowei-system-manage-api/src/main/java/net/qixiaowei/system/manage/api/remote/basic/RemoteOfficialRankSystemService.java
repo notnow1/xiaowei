@@ -62,4 +62,24 @@ public interface RemoteOfficialRankSystemService {
     R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeBySystemId(@RequestParam("officialRankSystemId") Long officialRankSystemId,
                                                                         @RequestParam("rankDecomposeDimension") Integer rankDecomposeDimension,
                                                                         @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据职级体系ID和职级分解维度查找分解表
+     *
+     * @return 结果
+     */
+    @GetMapping(API_PREFIX_OFFICIAL + "/selectByDimension")
+    R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeByDimension(@RequestParam("decomposeDimension") Long decomposeDimension,
+                                                                         @RequestParam("rankDecomposeDimension") Integer rankDecomposeDimension,
+                                                                         @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据职级体系ID集合和职级分解维度查找分解表
+     *
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_OFFICIAL + "/selectByDimensions")
+    R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeByDimensions(@RequestBody List<Long> decomposeDimensions,
+                                                                          @RequestParam("rankDecomposeDimension") Integer rankDecomposeDimension,
+                                                                          @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

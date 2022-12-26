@@ -42,6 +42,11 @@ public class RemoteOfficialRankSystemFallbackFactory implements FallbackFactory<
             public R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeBySystemId(Long officialRankSystemId, Integer rankDecomposeDimension, String source) {
                 return R.fail("根据ID集合获取职级信息失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeByDimension(Long decomposeDimension, Integer rankDecomposeDimension, String source) {
+                return R.fail("根据职级体系ID和职级分解维度查找分解表失败:" + throwable.getMessage());
+            }
         };
     }
 }

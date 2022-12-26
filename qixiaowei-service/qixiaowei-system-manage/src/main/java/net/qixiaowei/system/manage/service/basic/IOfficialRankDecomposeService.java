@@ -153,4 +153,22 @@ public interface IOfficialRankDecomposeService {
      * @return
      */
     int logicDeleteOfficialRankDecomposeByOfficialRankSystemId(Long officialRankSystemId);
+
+    /**
+     * 根据职级体系ID和职级分解维度查找分解表
+     *
+     * @param decomposeDimension     具体分解ID
+     * @param rankDecomposeDimension 分解类型
+     * @return List
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialDecomposeByDimension(Long decomposeDimension, Integer rankDecomposeDimension);
+
+    /**
+     * 根据职级体系ID集合和职级分解维度查找分解表
+     *
+     * @param decomposeDimensions    具体分解ID集合
+     * @param rankDecomposeDimension 分解类型
+     * @return R
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialDecomposeByDimensions(List<Long> decomposeDimensions, Integer rankDecomposeDimension);
 }

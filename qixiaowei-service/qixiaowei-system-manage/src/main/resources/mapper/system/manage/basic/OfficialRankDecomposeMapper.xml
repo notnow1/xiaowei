@@ -79,6 +79,31 @@
         </foreach>
         and delete_flag=0
     </select>
+    <!--根据职级体系ID和职级分解维度查找分解表-->
+    <select id="selectOfficialDecomposeByDimension"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO">
+        SELECT
+        official_rank_decompose_id, official_rank_system_id, rank_decompose_dimension, decompose_dimension,
+        salary_factor, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_decompose
+        WHERE decompose_dimension = #{decomposeDimension}
+        AND rank_decompose_dimension = #{rankDecomposeDimension}
+        AND delete_flag=0
+    </select>
+    <!--根据职级体系ID集合和职级分解维度查找分解表-->
+    <select id="selectOfficialDecomposeByDimensions"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO">
+        SELECT
+        official_rank_decompose_id, official_rank_system_id, rank_decompose_dimension, decompose_dimension,
+        salary_factor, delete_flag, create_by, create_time, update_by, update_time
+        FROM official_rank_decompose
+        WHERE rank_decompose_dimension = #{rankDecomposeDimension}
+        AND delete_flag=0
+        AND decompose_dimension IN
+        <foreach collection="decomposeDimensions" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--新增职级分解表-->
     <insert id="insertOfficialRankDecompose" useGeneratedKeys="true" keyProperty="officialRankDecomposeId">
         INSERT INTO official_rank_decompose

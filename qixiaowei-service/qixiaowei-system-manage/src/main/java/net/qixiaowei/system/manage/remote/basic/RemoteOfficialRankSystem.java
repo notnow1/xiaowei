@@ -88,4 +88,38 @@ public class RemoteOfficialRankSystem implements RemoteOfficialRankSystemService
         return R.ok(officialRankDecomposeService.selectOfficialRankDecomposeAndNameByOfficialRankSystemId(officialRankSystemId, rankDecomposeDimension));
     }
 
+    /**
+     * 根据职级体系ID和职级分解维度查找分解表
+     *
+     * @param decomposeDimension     具体分解ID
+     * @param rankDecomposeDimension 分解类型
+     * @param source                 根源
+     * @return R
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/selectDecomposeById")
+    public R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeByDimension(@RequestParam("decomposeDimension") Long decomposeDimension,
+                                                                                @RequestParam("rankDecomposeDimension") Integer rankDecomposeDimension,
+                                                                                String source) {
+        return R.ok(officialRankDecomposeService.selectOfficialDecomposeByDimension(decomposeDimension, rankDecomposeDimension));
+    }
+
+    /**
+     * 根据职级体系ID集合和职级分解维度查找分解表
+     *
+     * @param decomposeDimensions    具体分解ID集合
+     * @param rankDecomposeDimension 分解类型
+     * @param source                 根源
+     * @return R
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectByDimensions")
+    public R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeByDimensions(@RequestBody List<Long> decomposeDimensions,
+                                                                                 @RequestParam("rankDecomposeDimension") Integer rankDecomposeDimension,
+                                                                                 String source) {
+        return R.ok(officialRankDecomposeService.selectOfficialDecomposeByDimensions(decomposeDimensions, rankDecomposeDimension));
+    }
+
 }

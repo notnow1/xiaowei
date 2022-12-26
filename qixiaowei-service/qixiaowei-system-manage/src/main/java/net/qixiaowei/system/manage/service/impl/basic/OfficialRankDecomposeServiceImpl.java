@@ -297,6 +297,30 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
     }
 
     /**
+     * 根据职级体系ID和职级分解维度查找分解表
+     *
+     * @param decomposeDimension     具体分解ID
+     * @param rankDecomposeDimension 分解类型
+     * @return R
+     */
+    @Override
+    public List<OfficialRankDecomposeDTO> selectOfficialDecomposeByDimension(Long decomposeDimension, Integer rankDecomposeDimension) {
+        return officialRankDecomposeMapper.selectOfficialDecomposeByDimension(decomposeDimension, rankDecomposeDimension);
+    }
+
+    /**
+     * 根据职级体系ID集合和职级分解维度查找分解表
+     *
+     * @param decomposeDimensions    具体分解ID集合
+     * @param rankDecomposeDimension 分解类型
+     * @return R
+     */
+    @Override
+    public List<OfficialRankDecomposeDTO> selectOfficialDecomposeByDimensions(List<Long> decomposeDimensions, Integer rankDecomposeDimension) {
+        return officialRankDecomposeMapper.selectOfficialDecomposeByDimensions(decomposeDimensions, rankDecomposeDimension);
+    }
+
+    /**
      * 逻辑删除职级分解表信息
      *
      * @param officialRankDecomposeDTO 职级分解表

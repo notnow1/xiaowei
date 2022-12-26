@@ -1,12 +1,11 @@
 package net.qixiaowei.system.manage.mapper.basic;
 
-import java.util.List;
-
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -139,4 +138,22 @@ public interface OfficialRankDecomposeMapper {
      * @return
      */
     int logicDeleteOfficialRankDecomposeByOfficialSystemId(@Param("officialRankSystemId") Long officialRankSystemId, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
+
+    /**
+     * 根据职级体系ID和职级分解维度查找分解表
+     *
+     * @param decomposeDimension     具体分解ID
+     * @param rankDecomposeDimension 分解类型
+     * @return R
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialDecomposeByDimension(@Param("decomposeDimension") Long decomposeDimension, @Param("rankDecomposeDimension") Integer rankDecomposeDimension);
+
+    /**
+     * 根据职级体系ID集合和职级分解维度查找分解表
+     *
+     * @param decomposeDimensions    具体分解ID集合
+     * @param rankDecomposeDimension 分解类型
+     * @return R
+     */
+    List<OfficialRankDecomposeDTO> selectOfficialDecomposeByDimensions(List<Long> decomposeDimensions, Integer rankDecomposeDimension);
 }
