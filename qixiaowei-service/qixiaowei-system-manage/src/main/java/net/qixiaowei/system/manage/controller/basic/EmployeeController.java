@@ -173,7 +173,7 @@ public class EmployeeController extends BaseController {
         }
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = EmployeeImportListener.head(selectMap, parentDepartmentExcelNames, postNames);
+        List<List<String>> head = EmployeeImportListener.exportHead(selectMap, parentDepartmentExcelNames, postNames);
         List<EmployeeExcel> employeeExcelList = employeeService.exportEmployee(employeeDTO);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
@@ -223,7 +223,7 @@ public class EmployeeController extends BaseController {
         }
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = EmployeeImportListener.head(selectMap, parentDepartmentExcelNames, postNames);
+        List<List<String>> head = EmployeeImportListener.importHead(selectMap, parentDepartmentExcelNames, postNames);
 
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);

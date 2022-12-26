@@ -180,7 +180,7 @@ public class ProductController extends BaseController {
 
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = ProductImportListener.head(selectMap,data,dictionaryLabels,productUnitDTOS);
+        List<List<String>> head = ProductImportListener.importHead(selectMap,data,dictionaryLabels,productUnitDTOS);
 
 
         response.setContentType("application/vnd.ms-excel");
@@ -264,12 +264,17 @@ public class ProductController extends BaseController {
 
         Map<Integer, List<String>> selectMap = new HashMap<>();
         //自定义表头
-        List<List<String>> head = ProductImportListener.head(selectMap,data,dictionaryLabels,productUnitDTOS);
+        List<List<String>> head = ProductImportListener.exportHead(selectMap,data,dictionaryLabels,productUnitDTOS);
         List<Long> productIds = new ArrayList<>();
         if (!CheckObjectIsNullUtils.isNull(productDTO)){
-            if (StringUtils.isNotEmpty(productDTO.getProductIds())){
-                //打平的树结构
-                productIds.addAll(productDTO.getProductIds());
+            List<Long> productIds1 = productDTO.getProductIds();
+            if (StringUtils.isNotEmpty(productIds1)){
+                for (Long productId : productIds1) {
+                    List<ProductDTO> productDTOS = productService.selectAncestors(productId);
+                    if (StringUtils.isNotEmpty(productDTOS) ) {
+                        productIds.addAll(productDTOS.stream().map(ProductDTO::getProductId).distinct().collect(Collectors.toList()));
+                    }
+                }
             }
         }else {
             //打平的树结构
@@ -289,18 +294,6 @@ public class ProductController extends BaseController {
                 .excelType(ExcelTypeEnum.XLSX)
                 .registerWriteHandler(new SelectSheetWriteHandler(selectMap))
                 .head(head)
-                .registerWriteHandler(levelStrategy)
-                .registerWriteHandler(new SimpleColumnWidthStyleStrategy(21))
-                // 重写AbstractColumnWidthStyleStrategy策略的setColumnWidth方法
-                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
-                    @Override
-                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> list, Cell cell, Head head, Integer integer, Boolean aBoolean) {
-                        if (integer == 0) {
-                            Row row = cell.getRow();
-                            row.setHeightInPoints(144);
-                        }
-                    }
-                })
                 //设置文本
                 .registerWriteHandler(new CellWriteHandler() {
                     @Override
@@ -313,6 +306,8 @@ public class ProductController extends BaseController {
                         writeCellStyle.setDataFormatData(dataFormatData);
                     }
                 })
+                .registerWriteHandler(levelStrategy)
+                .registerWriteHandler(new SimpleColumnWidthStyleStrategy(21))
                 .sheet("产品配置")// 设置 sheet 的名字
                 .doWrite(ProductImportListener.dataList(productExportExcelList));
 

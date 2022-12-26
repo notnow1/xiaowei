@@ -371,6 +371,7 @@ public interface ITargetDecomposeService {
      * 目标分解操作列导出详情数据
      * @return
      * @param targetDecomposeId
+     * @param targetDecomposeDTO
      */
-    List<TargetDecomposeDetailsExcel> exportTargetDecomposeDetails(Long targetDecomposeId);
+    List<TargetDecomposeDetailsExcel> exportTargetDecomposeDetails(Long targetDecomposeId, TargetDecomposeDTO targetDecomposeDTO);
 }

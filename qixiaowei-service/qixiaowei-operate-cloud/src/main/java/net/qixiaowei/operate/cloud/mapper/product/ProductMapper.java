@@ -167,4 +167,11 @@ public interface ProductMapper {
      * @return
      */
     List<ProductDTO> selectProductByProductCodes(@Param("productCodes")List<String> productCodes);
+
+    /**
+     * 根据id查询所有子级数据
+     * @param productId
+     * @return
+     */
+    List<ProductDTO> selectAncestors(@Param("productId") Long productId);
 }

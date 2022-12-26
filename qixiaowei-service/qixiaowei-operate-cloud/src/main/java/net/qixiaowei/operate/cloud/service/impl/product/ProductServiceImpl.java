@@ -18,6 +18,7 @@ import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
 import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -70,18 +71,7 @@ public class ProductServiceImpl implements IProductService {
         List<ProductDataDTO> productDataDTOList = new ArrayList<>();
         //产品表
         ProductDTO productDTO = productMapper.selectProductByProductId(productId);
-        if (StringUtils.isNotNull(productDTO)) {
-            String productCategory = productDTO.getProductCategory();
-            if (StringUtils.isNotBlank(productCategory)) {
-                //远程调用查询字典数据
-                R<DictionaryDataDTO> info = remoteDictionaryDataService.info(Long.valueOf(productCategory), SecurityConstants.INNER);
-                DictionaryDataDTO data = info.getData();
-                if (StringUtils.isNotNull(data)) {
-                    productDTO.setProductCategoryName(data.getDictionaryLabel());
-                }
-            }
-
-        }
+        this.packProductCategoryName(productDTO);
         //产品文件表
         List<ProductFileDTO> productFileDTOS = productFileMapper.selectProductFileByProductId(productId);
         //拼接文件路径
@@ -110,6 +100,25 @@ public class ProductServiceImpl implements IProductService {
         productDTO.setProductDataDTOList(productDataDTOList);
         productDTO.setProductFileDTOList(productFileDTOS);
         return productDTO;
+    }
+
+    /**
+     * 封装产品类别名称
+     * @param productDTO
+     */
+    private void packProductCategoryName(ProductDTO productDTO) {
+        if (StringUtils.isNotNull(productDTO)) {
+            String productCategory = productDTO.getProductCategory();
+            if (StringUtils.isNotBlank(productCategory)) {
+                //远程调用查询字典数据
+                R<DictionaryDataDTO> info = remoteDictionaryDataService.info(Long.valueOf(productCategory), SecurityConstants.INNER);
+                DictionaryDataDTO data = info.getData();
+                if (StringUtils.isNotNull(data)) {
+                    productDTO.setProductCategoryName(data.getDictionaryLabel());
+                }
+            }
+
+        }
     }
 
     /**
@@ -190,24 +199,22 @@ public class ProductServiceImpl implements IProductService {
     }
 
     /**
-     * 树形结构转list
-     *
-     * @param
+     * 树形数据转list
+     * @param ProductDTOList
      * @return
      */
-    private List<ProductDTO> treeToList(List<ProductDTO> lists) {
-        List<ProductDTO> resultList = new ArrayList<>();
-        for (ProductDTO productDTO : lists) {
-            if (productDTO.getChildren() != null && productDTO.getChildren().size() > 0) {
-                resultList.add(productDTO);
-                treeToList(productDTO.getChildren());
-            } else {
-                resultList.add(productDTO);
+    private List<ProductDTO> treeToList(List<ProductDTO> ProductDTOList) {
+        List<ProductDTO> allSysMenuDto = new ArrayList<>();
+        for (ProductDTO productdto : ProductDTOList) {
+            List<ProductDTO> children = productdto.getChildren();
+            allSysMenuDto.add(productdto);
+            if (children != null && children.size() > 0) {
+                allSysMenuDto.addAll(treeToList(children));
+                productdto.setChildren(null);
             }
         }
-        return resultList;
+        return allSysMenuDto;
     }
-
     /**
      * 新增产品表
      *
@@ -857,24 +864,30 @@ public class ProductServiceImpl implements IProductService {
         //分解引用
         StringBuffer decomposeErreo = new StringBuffer();
         int i = 0;
+        List<ProductDTO> productDTOS = new ArrayList<>();
         for (Long productId : productIds) {
-            // todo 是否被引用
-            List<ProductDTO> productDTOList = productMapper.selectProductQuote(productId);
-            //指标名称 远程调用
-            if (StringUtils.isNotEmpty(productDTOList)) {
-                List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
+            productDTOS.addAll(productMapper.selectAncestors(productId));
+        }
+        if (StringUtils.isNotEmpty(productDTOS) && productDTOS.get(0) != null) {
+            List<Long> productList = productDTOS.stream().map(ProductDTO::getProductId).distinct().collect(Collectors.toList());
+            for (Long productId : productList) {
+                // todo 是否被引用
+                List<ProductDTO> productDTOList = productMapper.selectProductQuote(productId);
+                //指标名称 远程调用
+                if (StringUtils.isNotEmpty(productDTOList)) {
+                    List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
 
-                R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
-                List<IndicatorDTO> data = listR.getData();
-                if (StringUtils.isNotEmpty(data)) {
-                    String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
-                    String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
-                    if (StringUtils.isNotBlank(indicatorName)) {
-                        decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
+                    R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                    List<IndicatorDTO> data = listR.getData();
+                    if (StringUtils.isNotEmpty(data)) {
+                        String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
+                        String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
+                        if (StringUtils.isNotBlank(indicatorName)) {
+                            decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
+                        }
                     }
                 }
             }
-
         }
         productErreo.append(decomposeErreo);
         if (productErreo.length() > 0) {
@@ -1006,7 +1019,7 @@ public class ProductServiceImpl implements IProductService {
             //返回报错信息
             StringBuffer productErreo = new StringBuffer();
             //根据产品code进行分组
-            Map<String, List<ProductExcel>> collect = list.parallelStream().collect(Collectors.groupingBy(ProductExcel::getProductCode,LinkedHashMap::new,Collectors.toList()));
+            Map<String, List<ProductExcel>> collect = list.parallelStream().collect(Collectors.groupingBy(ProductExcel::getProductCode, LinkedHashMap::new, Collectors.toList()));
 
             for (String key : collect.keySet()) {
                 Product product = new Product();
@@ -1230,7 +1243,7 @@ public class ProductServiceImpl implements IProductService {
         //树结构
         List<ProductDTO> tree = this.createTree(productDTOList, 0);
         //打平顺序返回
-        List<ProductDTO> productDTOS = this.treeToList(productDTOList);
+        List<ProductDTO> productDTOS = this.treeToList(tree);
 
         return StringUtils.isEmpty(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList())) ? new ArrayList<>() : productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList());
     }
@@ -1244,9 +1257,10 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductExportExcel> exportProduct(List<Long> productIds) {
         List<ProductExportExcel> productExportExcelList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(productIds)) {
+        if (StringUtils.isNotEmpty(productIds) && productIds.get(0) != null) {
             for (Long productId : productIds) {
                 ProductDTO productDTO = productMapper.selectProductByProductId(productId);
+                this.packProductCategoryName(productDTO);
                 //取父级产品编码
                 ProductDTO productDTO1 = new ProductDTO();
                 if (StringUtils.isNull(productDTO)) {
@@ -1261,7 +1275,7 @@ public class ProductServiceImpl implements IProductService {
                 List<ProductSpecificationDataDTO> productSpecificationDataDTOList = productSpecificationDataMapper.selectProductId(productId);
                 if (StringUtils.isNotEmpty(productSpecificationDataDTOList)) {
                     //根据产品规格id分组
-                    productSpecificationDataDTOMap = productSpecificationDataDTOList.parallelStream().collect(Collectors.groupingBy(ProductSpecificationDataDTO::getProductSpecificationId));
+                    productSpecificationDataDTOMap = productSpecificationDataDTOList.parallelStream().collect(Collectors.groupingBy(ProductSpecificationDataDTO::getProductSpecificationId, LinkedHashMap::new, Collectors.toList()));
                 }
                 //产品规格表
                 List<ProductSpecificationDTO> productSpecificationDTOS = productSpecificationMapper.selectProductId(productId);
@@ -1275,14 +1289,16 @@ public class ProductServiceImpl implements IProductService {
                         List<String> productSpecificationParamList = new ArrayList<>();
                         if (StringUtils.isNotEmpty(productSpecificationParamDTOS)) {
                             productSpecificationParamList.addAll(productSpecificationParamDTOS.stream().map(ProductSpecificationParamDTO::getSpecificationParamName).collect(Collectors.toList()));
+                            productExportExcel.setProductSpecificationParamList(productSpecificationParamList);
                         }
 
                         //产品规格数据集合
                         List<String> productDataList = new ArrayList<>();
-                        if (StringUtils.isNotEmpty(productSpecificationDataDTOMap)){
+                        if (StringUtils.isNotEmpty(productSpecificationDataDTOMap)) {
                             List<ProductSpecificationDataDTO> productSpecificationDataDTOList1 = productSpecificationDataDTOMap.get(productSpecificationDTOS.get(i).getProductSpecificationId());
-                            if (StringUtils.isNotEmpty(productSpecificationDataDTOList1)){
+                            if (StringUtils.isNotEmpty(productSpecificationDataDTOList1)) {
                                 productDataList.addAll(productSpecificationDataDTOList1.stream().map(ProductSpecificationDataDTO::getValue).collect(Collectors.toList()));
+                                productExportExcel.setProductDataList(productDataList);
                             }
                         }
                         //目录价,单位元
@@ -1354,6 +1370,11 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         return productExportExcelList;
+    }
+
+    @Override
+    public List<ProductDTO> selectAncestors(Long productId) {
+        return productMapper.selectAncestors(productId);
     }
 
     private void packProductSpecificationData(Product product, List<ProductSpecificationParam> productSpecificationParamList, List<ProductSpecificationData> productSpecificationDataList, List<ProductSpecification> productSpecificationList, int i1, List<ProductSpecificationDataDTO> productSpecificationDataDTOList) {
@@ -1455,61 +1476,59 @@ public class ProductServiceImpl implements IProductService {
         //分解引用
         StringBuffer decomposeErreo = new StringBuffer();
         int i = 0;
-        Product product = new Product();
-        product.setProductId(productDTO.getProductId());
-        product.setUpdateTime(DateUtils.getNowDate());
-        product.setUpdateBy(SecurityUtils.getUserId());
 
-
-        //todo 是否被引用
-        List<ProductDTO> productDTOList = productMapper.selectProductQuote(product.getProductId());
-        //指标名称远程调用
-        if (StringUtils.isNotEmpty(productDTOList)) {
-            List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
-            R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
-            List<IndicatorDTO> data = listR.getData();
-            if (StringUtils.isNotEmpty(data)) {
-                String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
-                String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
-                if (StringUtils.isNotBlank(indicatorName)) {
-                    decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
+        List<ProductDTO> productDTOS = productMapper.selectAncestors(productDTO.getProductId());
+        if (StringUtils.isEmpty(productDTOS)) {
+            throw new ServiceException("数据不存在！ 请刷新页面重试!");
+        }
+        for (ProductDTO dto : productDTOS) {
+            //todo 是否被引用
+            List<ProductDTO> productDTOList = productMapper.selectProductQuote(dto.getProductId());
+            //指标名称远程调用
+            if (StringUtils.isNotEmpty(productDTOList)) {
+                List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
+                R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                List<IndicatorDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)) {
+                    String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
+                    String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
+                    if (StringUtils.isNotBlank(indicatorName)) {
+                        decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
+                    }
                 }
             }
-        }
-        productErreo.append(decomposeErreo);
-        if (productErreo.length() > 0) {
-            throw new ServiceException(productErreo.toString());
-        }
-        i = productMapper.logicDeleteProductByProductId(product, SecurityUtils.getUserId(), DateUtils.getNowDate());
-        //产品id
-        Long productId = product.getProductId();
-        List<Long> productIds = new ArrayList<>();
-        productIds.add(productId);
-        //规格表
-        try {
-            productSpecificationMapper.logicDeleteProductSpecificationByProductIds(productIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
-        } catch (Exception e) {
-            throw new ServiceException("删除规格表失败");
-        }
-        //参数表
-        try {
-            productSpecificationParamMapper.logicDeleteProductSpecificationParamByProductIds(productIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
-        } catch (Exception e) {
-            throw new ServiceException("删除规格参数失败");
+            productErreo.append(decomposeErreo);
+            if (productErreo.length() > 0) {
+                throw new ServiceException(productErreo.toString());
+            }
+            i = productMapper.logicDeleteProductByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+            //规格表
+            try {
+                productSpecificationMapper.logicDeleteProductSpecificationByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除规格表失败");
+            }
+            //参数表
+            try {
+                productSpecificationParamMapper.logicDeleteProductSpecificationParamByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除规格参数失败");
+            }
+
+            //数据表
+            try {
+                productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除产品数据失败");
+            }
+            //删除文件
+            try {
+                productFileMapper.logicDeleteProductFileByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("删除产品文件表失败");
+            }
         }
 
-        //数据表
-        try {
-            productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductIds(productIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
-        } catch (Exception e) {
-            throw new ServiceException("删除产品数据失败");
-        }
-        //删除文件
-        try {
-            productFileMapper.logicDeleteProductFileByProductIds(productIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
-        } catch (Exception e) {
-            throw new ServiceException("删除产品文件表失败");
-        }
         return i;
     }
 

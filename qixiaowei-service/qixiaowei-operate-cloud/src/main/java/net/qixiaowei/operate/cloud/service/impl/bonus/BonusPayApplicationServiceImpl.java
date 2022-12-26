@@ -763,7 +763,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             } else if (departmentType == 1) {
                 this.bonusGrantStandingBudgetList(salaryItemDTOS, data, bonusPayStandingDTOList,bonusPayApplicationDTO);
             } else {
-                this.bonusGrantStandingBenefitList(salaryItemDTOS, data, bonusPayStandingDTOList,bonusPayApplicationDTO);
+                this.bonusGrantStandingBenefitList(salaryItemDTOS1, data, bonusPayStandingDTOList,bonusPayApplicationDTO);
             }
         }
         return bonusPayStandingDTOList;
