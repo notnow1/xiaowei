@@ -103,7 +103,22 @@ public class ProductServiceImpl implements IProductService {
     }
 
     /**
+     * 查询产品表列表-列表结构
+     *
+     * @param productDTO 产品表
+     * @return 产品表集合
+     */
+    @Override
+    public List<ProductDTO> selectProduct(ProductDTO productDTO) {
+        Product product = new Product();
+        BeanUtils.copyProperties(productDTO, product);
+        //查询数据
+        return productMapper.selectProductList(product);
+    }
+
+    /**
      * 封装产品类别名称
+     *
      * @param productDTO
      */
     private void packProductCategoryName(ProductDTO productDTO) {
@@ -200,6 +215,7 @@ public class ProductServiceImpl implements IProductService {
 
     /**
      * 树形数据转list
+     *
      * @param ProductDTOList
      * @return
      */
@@ -215,6 +231,7 @@ public class ProductServiceImpl implements IProductService {
         }
         return allSysMenuDto;
     }
+
     /**
      * 新增产品表
      *

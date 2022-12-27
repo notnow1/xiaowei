@@ -36,7 +36,7 @@ public class RemoteProduct implements RemoteProductService {
     @InnerAuth
     @PostMapping("/dropList")
     public R<List<ProductDTO>> dropList(@RequestBody ProductDTO productDTO, String source) {
-        return R.ok(productService.selectProductList(productDTO));
+        return R.ok(productService.selectProduct(productDTO));
     }
 
     @Override
