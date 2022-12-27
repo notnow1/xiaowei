@@ -98,7 +98,7 @@ public class RemoteOfficialRankSystem implements RemoteOfficialRankSystemService
      */
     @Override
     @InnerAuth
-    @GetMapping("/selectDecomposeById")
+    @GetMapping("/selectByDimension")
     public R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeByDimension(@RequestParam("decomposeDimension") Long decomposeDimension,
                                                                                 @RequestParam("rankDecomposeDimension") Integer rankDecomposeDimension,
                                                                                 String source) {
