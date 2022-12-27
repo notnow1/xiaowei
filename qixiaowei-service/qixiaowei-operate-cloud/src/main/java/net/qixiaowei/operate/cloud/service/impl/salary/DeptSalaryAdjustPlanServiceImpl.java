@@ -425,6 +425,8 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
                 lastSalary = lastSalary.add(payDetailsDTO.getAmount());
             }
         }
+        // 单位时万元 此处除以10000
+        lastSalary = lastSalary.divide(new BigDecimal(10000), 2, RoundingMode.HALF_UP);
         return lastSalary;
     }
 
