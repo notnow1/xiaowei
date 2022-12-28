@@ -750,14 +750,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
                             if (StringUtils.isNotEmpty(postDTOS)) {
                                 List<PostDTO> postNames = postDTOS.stream().filter(f -> StringUtils.equals(f.getPostName(), postName)).collect(Collectors.toList());
                                 Long postId = postNames.get(0).getPostId();
-                                List<DepartmentPostDTO> excelPostId = departmentPostDTOList.stream().filter(f -> f.getPostId() == postId).collect(Collectors.toList());
+                                List<DepartmentPostDTO> excelPostId = departmentPostDTOList.stream().filter(f -> Objects.equals(f.getPostId(), postId)).collect(Collectors.toList());
                                 if (StringUtils.isEmpty(excelPostId)) {
                                     validEmployeeErreo.append(postName + "不属于" + departmentName + "部门");
                                 }
 
                                 //个人职级名称
                                 if (StringUtils.isNotEmpty(employeeRankName)) {
-                                    List<PostDTO> postIds = postDTOS.stream().filter(f -> f.getPostId() == postId).collect(Collectors.toList());
+                                    List<PostDTO> postIds = postDTOS.stream().filter(f -> Objects.equals(f.getPostId(), postId)).collect(Collectors.toList());
                                     if (StringUtils.isNotEmpty(postIds)) {
                                         String rankPrefixCode = postIds.get(0).getRankPrefixCode();
                                         if (StringUtils.isNotBlank(rankPrefixCode)) {
