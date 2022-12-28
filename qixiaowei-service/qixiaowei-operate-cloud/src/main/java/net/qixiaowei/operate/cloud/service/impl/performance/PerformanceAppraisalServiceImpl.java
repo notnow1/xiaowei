@@ -758,9 +758,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         Integer appraisalFlow = performanceAppraisalDTO.getAppraisalFlow();
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
-        if (appraisalFlow == 1) {// 系统流程
-            performanceAppraisal.setAppraisalStatus(1);
-        } else {// 仅导入
+        if (appraisalFlow == 2) {// 仅导入
             performanceAppraisal.setAppraisalStatus(4);
         }
         performanceAppraisal.setSelfDefinedColumnsFlag(0);
@@ -790,8 +788,24 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     performanceAppraisalObjectsDTO.setAppraisalObjectName(departmentDTO.getDepartmentName());
                     performanceAppraisalObjectsDTO.setAppraisalObjectCode(departmentDTO.getDepartmentCode());
                     j = false;
+                    Integer appraisalObject = performanceAppraisal.getAppraisalObject();
                     if (appraisalFlow == 1) {// 系统流程
-                        performanceAppraisalObjectsDTO.setAppraisalObjectStatus(1);
+                        if (StringUtils.isNotNull(appraisalObject)) {
+                            switch (appraisalObject) {
+                                case 1:
+                                    performanceAppraisalObjectsDTO.setAppraisalObjectStatus(1);
+                                    break;
+                                case 2:
+                                    performanceAppraisalObjectsDTO.setAppraisalObjectStatus(3);
+                                    break;
+                                case 3:
+                                    performanceAppraisalObjectsDTO.setAppraisalObjectStatus(5);
+                                    break;
+                                case 4:
+                                    performanceAppraisalObjectsDTO.setAppraisalObjectStatus(0);
+                                    break;
+                            }
+                        }
                     } else {
                         performanceAppraisalObjectsDTO.setAppraisalObjectStatus(0);
                     }
@@ -855,8 +869,24 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     performanceAppraisalObjectsDTO.setOfficialRank(employeeDTO.getEmployeeRank());
                     performanceAppraisalObjectsDTO.setOfficialRankName(employeeDTO.getEmployeeRankName());
                     j = false;
+                    Integer appraisalObject = performanceAppraisal.getAppraisalObject();
                     if (appraisalFlow == 1) {// 系统流程
-                        performanceAppraisalObjectsDTO.setAppraisalObjectStatus(1);
+                        if (StringUtils.isNotNull(appraisalObject)) {
+                            switch (appraisalObject) {
+                                case 1:
+                                    performanceAppraisalObjectsDTO.setAppraisalObjectStatus(1);
+                                    break;
+                                case 2:
+                                    performanceAppraisalObjectsDTO.setAppraisalObjectStatus(3);
+                                    break;
+                                case 3:
+                                    performanceAppraisalObjectsDTO.setAppraisalObjectStatus(5);
+                                    break;
+                                case 4:
+                                    performanceAppraisalObjectsDTO.setAppraisalObjectStatus(0);
+                                    break;
+                            }
+                        }
                     } else {
                         performanceAppraisalObjectsDTO.setAppraisalObjectStatus(0);
                     }
