@@ -341,13 +341,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
                 startCalendar.set(Calendar.MONTH, Calendar.JANUARY);
                 break;
             case 2:
-                startCalendar.set(Calendar.MONTH, Calendar.APRIL);
-                break;
-            case 3:
                 startCalendar.set(Calendar.MONTH, Calendar.JULY);
-                break;
-            case 4:
-                startCalendar.set(Calendar.MONTH, Calendar.OCTOBER);
                 break;
         }
         //获取目标月和目标年份的当月第一天时间

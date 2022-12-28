@@ -537,7 +537,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             int quarterNow;
             int yearNow = DateUtils.getYear();
             if (appraisalYear < yearNow) {
-                throw new ServiceException("过去的年份无法");
+                throw new ServiceException("过去的年份无法创建考核任务");
             } else if (appraisalYear > yearNow) {
                 monthNow = 1;
                 quarterNow = 1;
