@@ -224,8 +224,8 @@
     <update id="logicDeleteSalaryItemBySalaryItemId">
         UPDATE salary_item
         SET delete_flag= 1,
-        update_by=#{salaryItem.updateBy},
-        update_time=#{salaryItem.updateTime}
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
         salary_item_id=#{salaryItem.salaryItemId}
     </update>
