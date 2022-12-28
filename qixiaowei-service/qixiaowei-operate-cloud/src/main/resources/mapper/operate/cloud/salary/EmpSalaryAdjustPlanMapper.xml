@@ -106,8 +106,9 @@
         <if test="empSalaryAdjustPlan.employeeId != null">
             and esa.employee_id=#{empSalaryAdjustPlan.employeeId}
         </if>
-        <if test="empSalaryAdjustPlan.effectiveDate != null">
-            and esa.effective_date=#{empSalaryAdjustPlan.effectiveDate}
+        <if test="empSalaryAdjustPlan.effectiveDateStart != null and empSalaryAdjustPlan.effectiveDateEnd != null">
+            and esa.effective_date &gt; #{empSalaryAdjustPlan.effectiveDateStart}
+            and esa.effective_date &lt; #{empSalaryAdjustPlan.effectiveDateEnd}
         </if>
         <if test="empSalaryAdjustPlan.adjustDepartmentId != null">
             and esa.adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId}
@@ -119,68 +120,69 @@
             and esa.adjust_post_id=#{empSalaryAdjustPlan.adjustPostId}
         </if>
         <if test="empSalaryAdjustPlan.adjustPostName != null and empSalaryAdjustPlan.adjustPostName != ''">
-            and esa.adjust_post_name=#{empSalaryAdjustPlan.adjustPostName}
+            and esa.adjust_post_name like '%${empSalaryAdjustPlan.adjustPostName}%'
         </if>
         <if test="empSalaryAdjustPlan.adjustOfficialRankSystemId != null">
             and esa.adjust_official_rank_system_id=#{empSalaryAdjustPlan.adjustOfficialRankSystemId}
         </if>
         <if test="empSalaryAdjustPlan.adjustOfficialRankSystemName != null and empSalaryAdjustPlan.adjustOfficialRankSystemName != ''">
-            and esa.adjust_official_rank_system_name=#{empSalaryAdjustPlan.adjustOfficialRankSystemName}
+            and esa.adjust_official_rank_system_name like '%${empSalaryAdjustPlan.adjustOfficialRankSystemName}%'
         </if>
         <if test="empSalaryAdjustPlan.adjustOfficialRank != null">
             and esa.adjust_official_rank=#{empSalaryAdjustPlan.adjustOfficialRank}
         </if>
         <if test="empSalaryAdjustPlan.adjustOfficialRankName != null and empSalaryAdjustPlan.adjustOfficialRankName != ''">
-            and esa.adjust_official_rank_name=#{empSalaryAdjustPlan.adjustOfficialRankName}
+            and esa.adjust_official_rank_name like '%${empSalaryAdjustPlan.adjustOfficialRankName}%'
         </if>
         <if test="empSalaryAdjustPlan.adjustEmolument != null">
             and esa.adjust_emolument=#{empSalaryAdjustPlan.adjustEmolument}
         </if>
-        <!--        <if test="empSalaryAdjustPlan.employeeName != null and empSalaryAdjustPlan.employeeName != ''">-->
-        <!--            and ess.employee_name=#{empSalaryAdjustPlan.employeeName}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.employeeCode != null and empSalaryAdjustPlan.employeeCode != ''">-->
-        <!--            and ess.employee_code=#{empSalaryAdjustPlan.employeeCode}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.employmentDate != null">-->
-        <!--            and ess.employment_date=#{empSalaryAdjustPlan.employmentDate}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.seniority != null and empSalaryAdjustPlan.seniority != ''">-->
-        <!--            and ess.seniority=#{empSalaryAdjustPlan.seniority}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.departmentId != null">-->
-        <!--            and ess.department_id=#{empSalaryAdjustPlan.departmentId}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.departmentName != null and empSalaryAdjustPlan.departmentName != ''">-->
-        <!--            and ess.department_name=#{empSalaryAdjustPlan.departmentName}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.departmentLeaderId != null">-->
-        <!--            and ess.department_leader_id=#{empSalaryAdjustPlan.departmentLeaderId}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.departmentLeaderName != null and empSalaryAdjustPlan.departmentLeaderName != ''">-->
-        <!--            and ess.department_leader_name=#{empSalaryAdjustPlan.departmentLeaderName}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.postId != null">-->
-        <!--            and ess.post_id=#{empSalaryAdjustPlan.postId}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.postName != null and empSalaryAdjustPlan.postName != ''">-->
-        <!--            and ess.post_name=#{empSalaryAdjustPlan.postName}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.officialRankSystemId != null">-->
-        <!--            and ess.official_rank_system_id=#{empSalaryAdjustPlan.officialRankSystemId}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.officialRankSystemName != null and empSalaryAdjustPlan.officialRankSystemName != ''">-->
-        <!--            and ess.official_rank_system_name=#{empSalaryAdjustPlan.officialRankSystemName}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.officialRank != null">-->
-        <!--            and ess.official_rank=#{empSalaryAdjustPlan.officialRank}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.officialRankName != null and empSalaryAdjustPlan.officialRankName != ''">-->
-        <!--            and ess.official_rank_name=#{empSalaryAdjustPlan.officialRankName}-->
-        <!--        </if>-->
-        <!--        <if test="empSalaryAdjustPlan.basicWage != null">-->
-        <!--            and ess.basic_wage=#{empSalaryAdjustPlan.basicWage}-->
-        <!--        </if>-->
+        <if test="empSalaryAdjustPlan.employeeName != null and empSalaryAdjustPlan.employeeName != ''">
+            and ess.employee_name like '%${empSalaryAdjustPlan.employeeName}%'
+        </if>
+        <if test="empSalaryAdjustPlan.employeeCode != null and empSalaryAdjustPlan.employeeCode != ''">
+            and ess.employee_code like '%${empSalaryAdjustPlan.employeeCode}%'
+        </if>
+        <if test="empSalaryAdjustPlan.employmentDateStart != null and empSalaryAdjustPlan.employmentDateEnd != null">
+            and ess.employment_date &gt; #{empSalaryAdjustPlan.employmentDateStart}
+            and ess.employment_date &lt; #{empSalaryAdjustPlan.employmentDateEnd}
+        </if>
+        <if test="empSalaryAdjustPlan.seniority != null and empSalaryAdjustPlan.seniority != ''">
+            and ess.seniority like '%${empSalaryAdjustPlan.seniority}%'
+        </if>
+        <if test="empSalaryAdjustPlan.departmentId != null">
+            and ess.department_id=#{empSalaryAdjustPlan.departmentId}
+        </if>
+        <if test="empSalaryAdjustPlan.departmentName != null and empSalaryAdjustPlan.departmentName != ''">
+            and ess.department_name like '%${empSalaryAdjustPlan.departmentName}%'
+        </if>
+        <if test="empSalaryAdjustPlan.departmentLeaderId != null">
+            and ess.department_leader_id=#{empSalaryAdjustPlan.departmentLeaderId}
+        </if>
+        <if test="empSalaryAdjustPlan.departmentLeaderName != null and empSalaryAdjustPlan.departmentLeaderName != ''">
+            and ess.department_leader_name like '%${empSalaryAdjustPlan.departmentLeaderName}%'
+        </if>
+        <if test="empSalaryAdjustPlan.postId != null">
+            and ess.post_id=#{empSalaryAdjustPlan.postId}
+        </if>
+        <if test="empSalaryAdjustPlan.postName != null and empSalaryAdjustPlan.postName != ''">
+            and ess.post_name=#{empSalaryAdjustPlan.postName}
+        </if>
+        <if test="empSalaryAdjustPlan.officialRankSystemId != null">
+            and ess.official_rank_system_id=#{empSalaryAdjustPlan.officialRankSystemId}
+        </if>
+        <if test="empSalaryAdjustPlan.officialRankSystemName != null and empSalaryAdjustPlan.officialRankSystemName != ''">
+            and ess.official_rank_system_name=#{empSalaryAdjustPlan.officialRankSystemName}
+        </if>
+        <if test="empSalaryAdjustPlan.officialRank != null">
+            and ess.official_rank=#{empSalaryAdjustPlan.officialRank}
+        </if>
+        <if test="empSalaryAdjustPlan.officialRankName != null and empSalaryAdjustPlan.officialRankName != ''">
+            and ess.official_rank_name=#{empSalaryAdjustPlan.officialRankName}
+        </if>
+        <if test="empSalaryAdjustPlan.basicWage != null">
+            and ess.basic_wage=#{empSalaryAdjustPlan.basicWage}
+        </if>
     </select>
     <!--根据员工ID获取个人调薪计划表-->
     <select id="selectByEmployeeId"

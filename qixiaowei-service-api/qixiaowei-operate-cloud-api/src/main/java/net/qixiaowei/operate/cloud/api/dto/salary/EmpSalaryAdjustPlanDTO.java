@@ -61,6 +61,16 @@ public class EmpSalaryAdjustPlanDTO {
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date effectiveDate;
     /**
+     * 生效开始日期
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date effectiveDateStart;
+    /**
+     * 生效结束日期
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date effectiveDateEnd;
+    /**
      * 调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开
      */
     private String adjustmentType;
@@ -140,6 +150,16 @@ public class EmpSalaryAdjustPlanDTO {
      */
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private LocalDate employmentDate;
+    /**
+     * 入职开始日期
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date employmentDateStart;
+    /**
+     * 入职结束日期
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date employmentDateEnd;
     /**
      * 司龄
      */
