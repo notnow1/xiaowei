@@ -107,8 +107,8 @@
             and esa.employee_id=#{empSalaryAdjustPlan.employeeId}
         </if>
         <if test="empSalaryAdjustPlan.effectiveDateStart != null and empSalaryAdjustPlan.effectiveDateEnd != null">
-            and esa.effective_date &gt; #{empSalaryAdjustPlan.effectiveDateStart}
-            and esa.effective_date &lt; #{empSalaryAdjustPlan.effectiveDateEnd}
+            and esa.effective_date &gt;= #{empSalaryAdjustPlan.effectiveDateStart}
+            and esa.effective_date &lt;= #{empSalaryAdjustPlan.effectiveDateEnd}
         </if>
         <if test="empSalaryAdjustPlan.adjustDepartmentId != null">
             and esa.adjust_department_id=#{empSalaryAdjustPlan.adjustDepartmentId}
@@ -144,8 +144,8 @@
             and ess.employee_code like '%${empSalaryAdjustPlan.employeeCode}%'
         </if>
         <if test="empSalaryAdjustPlan.employmentDateStart != null and empSalaryAdjustPlan.employmentDateEnd != null">
-            and ess.employment_date &gt; #{empSalaryAdjustPlan.employmentDateStart}
-            and ess.employment_date &lt; #{empSalaryAdjustPlan.employmentDateEnd}
+            and ess.employment_date &gt;= #{empSalaryAdjustPlan.employmentDateStart}
+            and ess.employment_date &lt;= #{empSalaryAdjustPlan.employmentDateEnd}
         </if>
         <if test="empSalaryAdjustPlan.seniority != null and empSalaryAdjustPlan.seniority != ''">
             and ess.seniority like '%${empSalaryAdjustPlan.seniority}%'
