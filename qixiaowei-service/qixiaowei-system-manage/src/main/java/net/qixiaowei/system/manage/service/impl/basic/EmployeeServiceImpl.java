@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
+import cn.hutool.core.util.StrUtil;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -377,6 +378,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //查询部门名称附加父级名称
         DepartmentDTO departmentDTO = new DepartmentDTO();
         List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(departmentDTO);
+        Map<String, Long> parentDepartmentNameMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(departmentDTOList)) {
+            for (DepartmentDTO department : departmentDTOList) {
+                String parentDepartmentExcelName = department.getParentDepartmentExcelName();
+                Long departmentId = department.getDepartmentId();
+                if (StringUtils.isNotEmpty(parentDepartmentExcelName)) {
+                    parentDepartmentNameMap.put(parentDepartmentExcelName, departmentId);
+                }
+            }
+        }
         //部门岗位关联表
         DepartmentPost departmentPost = new DepartmentPost();
         List<DepartmentPostDTO> departmentPostDTOList = departmentPostMapper.selectDepartmentPostList(departmentPost);
@@ -397,17 +408,16 @@ public class EmployeeServiceImpl implements IEmployeeService {
             //身份证集合检验唯一性
             List<String> excelIdentityCards = list.stream().map(EmployeeExcel::getIdentityCard).collect(Collectors.toList());
             //返回报错信息
-            StringBuffer employeeErreo = new StringBuffer();
+            StringBuffer employeeError = new StringBuffer();
             for (EmployeeExcel employeeExcel : list) {
                 //新增所有员工
                 Employee employee2 = new Employee();
                 //员工详细详细
                 EmployeeInfo employeeInfo = new EmployeeInfo();
-                StringBuffer stringBuffer = new StringBuffer();
-                stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, departmentDTOList);
+                StringBuffer stringBuffer = this.validEmployee(employeeCodes, employeeExcel, employeeExcelCodes, excelIdentityCards, postDTOS, departmentPostMap, parentDepartmentNameMap);
                 if (stringBuffer.length() > 1) {
                     errorExcelList.add(employeeExcel);
-                    employeeErreo.append(stringBuffer);
+                    employeeError.append(stringBuffer);
                     continue;
                 }
 
@@ -627,8 +637,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 employeeInfoList.add(employeeInfo);
             }
             //后续优化导入
-            if (employeeErreo.length() > 1) {
-                throw new ServiceException(employeeErreo.toString());
+            if (employeeError.length() > 1) {
+                throw new ServiceException(employeeError.toString());
 //                throw new ServiceException("人员导入失败，请检查Excel：\n" +
 //                        "1、*为必填字段；\n" +
 //                        "2、若某一数据有误导致导入失败，所有数据将会导入失败；\n" +
@@ -665,11 +675,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @param excelIdentityCards
      * @param postDTOS
      * @param departmentPostMap
-     * @param departmentDTOList
+     * @param parentDepartmentNameMap
      */
-    private StringBuffer validEmployee(List<String> employeeCodes, EmployeeExcel employeeExcel, List<String> employeeExcelCodes, List<String> excelIdentityCards, List<PostDTO> postDTOS, Map<Long, List<DepartmentPostDTO>> departmentPostMap, List<DepartmentDTO> departmentDTOList) {
+    private StringBuffer validEmployee(List<String> employeeCodes, EmployeeExcel employeeExcel, List<String> employeeExcelCodes, List<String> excelIdentityCards, List<PostDTO> postDTOS, Map<Long, List<DepartmentPostDTO>> departmentPostMap, Map<String, Long> parentDepartmentNameMap) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        StringBuffer validEmployeeErreo = new StringBuffer();
+        StringBuffer validEmployeeError = new StringBuffer();
         if (StringUtils.isNotNull(employeeExcel)) {
             String employmentDate = employeeExcel.getEmploymentDate();
             //部门
@@ -679,46 +689,46 @@ public class EmployeeServiceImpl implements IEmployeeService {
             //个人职级名称
             String employeeRankName = employeeExcel.getEmployeeRankName();
             if (StringUtils.isBlank(employeeExcel.getEmployeeCode())) {
-                validEmployeeErreo.append("员工工号为必填项");
+                validEmployeeError.append("员工工号为必填项");
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeName())) {
-                validEmployeeErreo.append("员工姓名为必填项");
+                validEmployeeError.append("员工姓名为必填项");
             }
             if (StringUtils.isBlank(employeeExcel.getEmploymentStatus())) {
-                validEmployeeErreo.append("用工关系状态为必填项");
+                validEmployeeError.append("用工关系状态为必填项");
             }
             if (StringUtils.isBlank(employeeExcel.getIdentityCard())) {
-                validEmployeeErreo.append("证件号码为必填项");
+                validEmployeeError.append("证件号码为必填项");
             }
             if (StringUtils.isBlank(employmentDate)) {
-                validEmployeeErreo.append("入职日期为必填项");
+                validEmployeeError.append("入职日期为必填项");
             } else {
                 try {
                     Date parse = simpleDateFormat.parse(employmentDate);
                 } catch (ParseException e) {
-                    validEmployeeErreo.append("入职日期公式必须为yyyy/MM/dd");
+                    validEmployeeError.append("入职日期公式必须为yyyy/MM/dd");
                 }
             }
             if (StringUtils.isBlank(departmentName)) {
-                validEmployeeErreo.append("部门为必填项");
+                validEmployeeError.append("部门为必填项");
             }
             if (StringUtils.isBlank(postName)) {
-                validEmployeeErreo.append("岗位为必填项");
+                validEmployeeError.append("岗位为必填项");
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeRankName())) {
-                validEmployeeErreo.append("个人职级为必填项");
+                validEmployeeError.append("个人职级为必填项");
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
-                validEmployeeErreo.append("员工手机号为必填项");
+                validEmployeeError.append("员工手机号为必填项");
             }
             if (StringUtils.isBlank(employeeExcel.getEmployeeMobile())) {
-                validEmployeeErreo.append("紧急联系人电话为必填项");
+                validEmployeeError.append("紧急联系人电话为必填项");
             }
             //工号
             if (StringUtils.isNotBlank(employeeExcel.getEmployeeCode())) {
                 if (StringUtils.isNotEmpty(employeeExcel.getEmployeeCode())) {
                     if (employeeCodes.contains(employeeExcel.getEmployeeCode())) {
-                        validEmployeeErreo.append("已存在该员工!");
+                        validEmployeeError.append("已存在该员工!");
                     }
                 }
             }
@@ -726,53 +736,63 @@ public class EmployeeServiceImpl implements IEmployeeService {
             //员工工号
             List<String> employeeCodeList = employeeExcelCodes.stream().filter(f -> f.equals(employeeExcel.getEmployeeCode())).collect(Collectors.toList());
             if (employeeCodeList.size() > 1) {
-                validEmployeeErreo.append("excle列表中员工工号重复");
+                validEmployeeError.append("excel列表中员工工号重复");
             }
             //身份证号码
             List<String> identityCards = excelIdentityCards.stream().filter(f -> f.equals(employeeExcel.getIdentityCard())).collect(Collectors.toList());
             if (identityCards.size() > 1) {
-                validEmployeeErreo.append("excle列表中身份证号码重复");
+                validEmployeeError.append("excel列表中身份证号码重复");
             }
 
             Pattern pt = Pattern.compile("(^[1-9]\\d{5}(19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$)|(^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{2}[0-9Xx]$)");
             Matcher matcher = pt.matcher(employeeExcel.getIdentityCard());
             if (!matcher.find()) {
-                validEmployeeErreo.append("身份证号格式不对");
+                validEmployeeError.append("身份证号格式不对");
             }
             //岗位是否属于这个部门
-            if (StringUtils.isNotBlank(postName) && StringUtils.isNotBlank(departmentName)) {
-                if (StringUtils.isNotEmpty(departmentDTOList)) {
-                    List<DepartmentDTO> parentDepartmentExcelName = departmentDTOList.stream().filter(f -> StringUtils.equals(f.getParentDepartmentExcelName(), departmentName)).collect(Collectors.toList());
-                    if (StringUtils.isNotEmpty(parentDepartmentExcelName)) {
-                        Long departmentId = parentDepartmentExcelName.get(0).getDepartmentId();
+            if (StringUtils.isNotEmpty(postName) && StringUtils.isNotEmpty(departmentName)) {
+                if (StringUtils.isNotEmpty(parentDepartmentNameMap)) {
+                    if (parentDepartmentNameMap.containsKey(departmentName)) {
+                        Long departmentId = parentDepartmentNameMap.get(departmentName);
                         List<DepartmentPostDTO> departmentPostDTOList = departmentPostMap.get(departmentId);
                         if (StringUtils.isNotEmpty(departmentPostDTOList)) {
                             if (StringUtils.isNotEmpty(postDTOS)) {
                                 List<PostDTO> postNames = postDTOS.stream().filter(f -> StringUtils.equals(f.getPostName(), postName)).collect(Collectors.toList());
                                 Long postId = postNames.get(0).getPostId();
-                                List<DepartmentPostDTO> excelPostId = departmentPostDTOList.stream().filter(f -> Objects.equals(f.getPostId(), postId)).collect(Collectors.toList());
+                                List<DepartmentPostDTO> excelPostId = departmentPostDTOList.stream().filter(f -> postId.equals(f.getPostId())).collect(Collectors.toList());
                                 if (StringUtils.isEmpty(excelPostId)) {
-                                    validEmployeeErreo.append(postName + "不属于" + departmentName + "部门");
+                                    validEmployeeError.append(StrUtil.BRACKET_START)
+                                            .append(postName)
+                                            .append("不属于")
+                                            .append(departmentName)
+                                            .append("部门")
+                                            .append(StrUtil.BRACKET_END);
                                 }
 
                                 //个人职级名称
                                 if (StringUtils.isNotEmpty(employeeRankName)) {
-                                    List<PostDTO> postIds = postDTOS.stream().filter(f -> Objects.equals(f.getPostId(), postId)).collect(Collectors.toList());
+                                    List<PostDTO> postIds = postDTOS.stream().filter(f -> postId.equals(f.getPostId())).collect(Collectors.toList());
                                     if (StringUtils.isNotEmpty(postIds)) {
-                                        String rankPrefixCode = postIds.get(0).getRankPrefixCode();
+                                        PostDTO postDTO = postIds.get(0);
+                                        String rankPrefixCode = postDTO.getRankPrefixCode();
                                         if (StringUtils.isNotBlank(rankPrefixCode)) {
                                             if (employeeRankName.contains(rankPrefixCode)) {
                                                 //下限
-                                                Integer postRankLower = postIds.get(0).getPostRankLower();
+                                                Integer postRankLower = postDTO.getPostRankLower();
                                                 //上限
-                                                Integer postRankUpper = postIds.get(0).getPostRankUpper();
-                                                String replace = employeeRankName.replace(postIds.get(0).getRankPrefixCode(), "");
+                                                Integer postRankUpper = postDTO.getPostRankUpper();
+                                                String replace = employeeRankName.replace(rankPrefixCode, "");
                                                 int i = Integer.parseInt(replace);
                                                 if (i > postRankUpper || i < postRankLower) {
-                                                    validEmployeeErreo.append("个人职级需在岗位职级上下限范围内");
+                                                    validEmployeeError.append("个人职级需在岗位职级上下限范围内");
                                                 }
                                             } else {
-                                                validEmployeeErreo.append("职级与岗位不匹配");
+                                                validEmployeeError.append(StrUtil.BRACKET_START + "个人职级:")
+                                                        .append(employeeRankName)
+                                                        .append("与系统岗位职级:")
+                                                        .append(postDTO.getPostRankName())
+                                                        .append("不匹配")
+                                                        .append(StrUtil.BRACKET_END);
                                             }
                                         } else {
                                             //下限
@@ -781,7 +801,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                             Integer postRankUpper = postIds.get(0).getPostRankUpper();
                                             int i = Integer.parseInt(employeeRankName);
                                             if (i > postRankUpper || i < postRankLower) {
-                                                validEmployeeErreo.append("个人职级需在岗位职级上下限范围内");
+                                                validEmployeeError.append("个人职级需在岗位职级上下限范围内");
                                             }
                                         }
 
@@ -800,7 +820,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
 
         }
-        return validEmployeeErreo;
+        return validEmployeeError;
     }
 
     /**
