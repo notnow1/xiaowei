@@ -1670,8 +1670,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<List<String>> objects = new ArrayList<>();
         for (int i = 0; i < performanceAppraisalObjectsDTOList.size(); i++) {
             List<String> columns = new ArrayList<>();
-            for (int j = 0; j < performanceAppraisalColumnsDTOList.size(); j++) {
-                PerformanceAppraisalColumnsDTO performanceAppraisalColumnsDTO = performanceAppraisalColumnsDTOList.get(j);
+            for (PerformanceAppraisalColumnsDTO performanceAppraisalColumnsDTO : performanceAppraisalColumnsDTOList) {
                 String columnValue = performanceAppraisalColumnsDTO.getColumnValue();
                 Map<String, String> valueMap = JSON.parseObject(columnValue, new TypeReference<HashMap<String, String>>() {
                 });
@@ -1683,14 +1682,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (int i = 0; i < performanceAppraisalObjectsDTOList.size(); i++) {
             List<Object> data = new ArrayList<>();
             PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = performanceAppraisalObjectsDTOList.get(i);
-            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());//考核对象
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());//考核编码
-            for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-                if (performanceRankFactorDTO.getPerformanceRankFactorId().equals(performanceAppraisalObjectsDTO.getAppraisalResultId())) {
-                    data.add(performanceRankFactorDTO.getPerformanceRankName());//结果
-                    break;
-                }
-            }
+            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());//考核对象
+            addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
             data.addAll(objects.get(i));//自定义的值
             list.add(data);
         }
@@ -1718,12 +1712,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());//考核对象
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());//考核对象
             data.add(performanceAppraisalObjectsDTO.getEvaluationScore());//分数
-            for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-                if (performanceRankFactorDTO.getPerformanceRankFactorId().equals(performanceAppraisalObjectsDTO.getAppraisalResultId())) {
-                    data.add(performanceRankFactorDTO.getPerformanceRankName());//结果
-                    break;
-                }
-            }
+            addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
             for (EmployeeDTO employeeDTO : employeeDTOS) {
                 if (employeeDTO.getEmployeeId().equals(performanceAppraisalObjectsDTO.getAppraisalPrincipalId())) {
                     data.add(employeeDTO.getEmployeeCode());//考核责任人工号
@@ -1795,16 +1784,41 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             data.add(performanceAppraisalObjectsDTO.getPostName());//岗位
             data.add(performanceAppraisalObjectsDTO.getDepartmentName());//部门
             data.add(performanceAppraisalObjectsDTO.getOfficialRankName());//个人职级
-            for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-                if (performanceRankFactorDTO.getPerformanceRankFactorId().equals(performanceAppraisalObjectsDTO.getAppraisalResultId())) {
-                    data.add(performanceRankFactorDTO.getPerformanceRankName());//结果
-                    break;
-                }
-            }
+            addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
             data.addAll(objects.get(i));//自定义的值
             list.add(data);
         }
         return list;
+    }
+
+    /**
+     * 导出给结果赋值
+     *
+     * @param performanceRankFactorDTOS      绩效比例
+     * @param data                           excel数据
+     * @param performanceAppraisalObjectsDTO 对象DTO
+     */
+    private static void addResult(List<PerformanceRankFactorDTO> performanceRankFactorDTOS, List<Object> data, PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
+        Long appraisalResultId = performanceAppraisalObjectsDTO.getAppraisalResultId();
+        if (StringUtils.isNotNull(appraisalResultId)) {
+            boolean isResult = true;
+            for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
+                if (performanceRankFactorDTO.getPerformanceRankFactorId().equals(appraisalResultId)) {
+                    data.add(performanceRankFactorDTO.getPerformanceRankName());//结果
+                    isResult = false;
+                    break;
+                }
+            }
+            if (isResult) {
+                if (appraisalResultId == 0L) {
+                    data.add("不考核");
+                } else {
+                    data.add(null);
+                }
+            }
+        } else {
+            data.add(null);
+        }
     }
 
     /**
@@ -1834,12 +1848,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             data.add(performanceAppraisalObjectsDTO.getDepartmentName());//部门
             data.add(performanceAppraisalObjectsDTO.getOfficialRankName());//个人职级
             data.add(performanceAppraisalObjectsDTO.getEvaluationScore());//分数
-            for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
-                if (performanceRankFactorDTO.getPerformanceRankFactorId().equals(performanceAppraisalObjectsDTO.getAppraisalResultId())) {
-                    data.add(performanceRankFactorDTO.getPerformanceRankName());//结果
-                    break;
-                }
-            }
+            addResult(performanceRankFactorDTOS, data, performanceAppraisalObjectsDTO);
             if (StringUtils.isNotEmpty(employeeDTOS)) {
                 for (EmployeeDTO employeeDTO : employeeDTOS) {
                     if (employeeDTO.getEmployeeId().equals(performanceAppraisalObjectsDTO.getAppraisalPrincipalId())) {
