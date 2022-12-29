@@ -422,7 +422,6 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 查询目标分解预制数据年份
      */
-    @RequiresPermissions("operate:cloud:targetSetting:list")
     @PostMapping("/getYear")
     public AjaxResult listOrder(@RequestBody TargetDecomposeDTO targetDecomposeDTO) {
         return AjaxResult.success(targetDecomposeService.selectMaxYear(targetDecomposeDTO));
@@ -431,7 +430,6 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 查询经营结果分析报表详情
      */
-    @RequiresPermissions("operate:cloud:targetDecompose:info")
     @GetMapping("/result/info/{targetDecomposeId}")
     public AjaxResult resultInfo(@PathVariable Long targetDecomposeId) {
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectResultTargetDecomposeByTargetDecomposeId(targetDecomposeId);
@@ -441,8 +439,6 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 修改经营结果分析报表详情
      */
-    //@RequiresPermissions("operate:cloud:targetDecompose:edit")
-    //@Log(title = "修改目标分解(销售订单)表", businessType = BusinessType.UPDATE)
     @PostMapping("/result/edit")
     public AjaxResult resultEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
         return toAjax(targetDecomposeService.updateResultTargetDecompose(targetDecomposeDTO));
@@ -451,7 +447,6 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 查询目标分解(销售订单)表列表
      */
-    //@RequiresPermissions("operate:cloud:targetDecompose:list")
     @GetMapping("/order/list")
     public AjaxResult orderList(TargetDecomposeDTO targetDecomposeDTO) {
         List<TargetDecomposeDTO> list = targetDecomposeService.selectOrderList(targetDecomposeDTO);
@@ -461,7 +456,6 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 查询目标分解(销售收入)表列表
      */
-    //@RequiresPermissions("operate:cloud:targetDecompose:list")
     @GetMapping("/income/list")
     public AjaxResult incomeList(TargetDecomposeDTO targetDecomposeDTO) {
         List<TargetDecomposeDTO> list = targetDecomposeService.selectIncomeList(targetDecomposeDTO);
