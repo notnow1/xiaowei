@@ -788,10 +788,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     performanceAppraisalObjectsDTO.setAppraisalObjectName(departmentDTO.getDepartmentName());
                     performanceAppraisalObjectsDTO.setAppraisalObjectCode(departmentDTO.getDepartmentCode());
                     j = false;
-                    Integer appraisalObject = performanceAppraisal.getAppraisalObject();
+                    Integer appraisalStatus = performanceAppraisal.getAppraisalStatus();
                     if (appraisalFlow == 1) {// 系统流程
-                        if (StringUtils.isNotNull(appraisalObject)) {
-                            switch (appraisalObject) {
+                        if (StringUtils.isNotNull(appraisalStatus)) {
+                            switch (appraisalStatus) {
                                 case 1:
                                     performanceAppraisalObjectsDTO.setAppraisalObjectStatus(1);
                                     break;
