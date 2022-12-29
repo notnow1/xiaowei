@@ -1779,8 +1779,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (int i = 0; i < performanceAppraisalObjectsDTOList.size(); i++) {
             List<Object> data = new ArrayList<>();
             PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = performanceAppraisalObjectsDTOList.get(i);
-            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());//考核对象
             data.add(performanceAppraisalObjectsDTO.getAppraisalObjectCode());//考核编码
+            data.add(performanceAppraisalObjectsDTO.getAppraisalObjectName());//考核对象
             data.add(performanceAppraisalObjectsDTO.getPostName());//岗位
             data.add(performanceAppraisalObjectsDTO.getDepartmentName());//部门
             data.add(performanceAppraisalObjectsDTO.getOfficialRankName());//个人职级
