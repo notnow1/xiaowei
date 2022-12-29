@@ -1,6 +1,5 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
-import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.enums.salary.ThirdLevelSalaryCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -13,7 +12,6 @@ import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
-import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -228,7 +226,13 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         if (isQuote(salaryItemIds)) {
             throw new ServiceException("存在被引用的工资条配置");
         }
-        return salaryItemMapper.logicDeleteSalaryItemBySalaryItemIds(salaryItemIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        salaryItemMapper.logicDeleteSalaryItemBySalaryItemIds(salaryItemIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return 1;
     }
 
     private boolean isQuote(List<Long> salaryItemIds) {

@@ -94,15 +94,45 @@ public class PerformanceAppraisalDTO {
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private LocalDate appraisalStartDate;
     /**
+     * 考核开始日期开始
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date appraisalStartDateStart;
+    /**
+     * 考核开始日期结束
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date appraisalStartDateEnd;
+    /**
      * 考核结束日期
      */
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private LocalDate appraisalEndDate;
     /**
+     * 考核结束日期开始
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date appraisalEndDateStart;
+    /**
+     * 考核结束日期结束
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date appraisalEndDateEnd;
+    /**
      * 归档日期
      */
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private LocalDate filingDate;
+    /**
+     * 归档日期
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date filingDateStart;
+    /**
+     * 归档日期
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date filingDateEnd;
     /**
      * 是否归档(0-未归档，1-归档)
      */

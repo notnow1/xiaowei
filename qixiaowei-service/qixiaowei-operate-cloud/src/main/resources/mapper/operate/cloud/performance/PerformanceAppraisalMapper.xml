@@ -82,14 +82,17 @@
         <if test="performanceAppraisal.cycleNumber != null">
             and pa.cycle_number=#{performanceAppraisal.cycleNumber}
         </if>
-        <if test="performanceAppraisal.appraisalStartDate != null">
-            and pa.appraisal_start_date=#{performanceAppraisal.appraisalStartDate}
+        <if test="performanceAppraisal.appraisalStartDateStart != null and performanceAppraisal.appraisalStartDateEnd != null ">
+            and pa.appraisal_start_date &gt; #{performanceAppraisal.appraisalStartDateStart}
+            and pa.appraisal_start_date &lt; #{performanceAppraisal.appraisalStartDateEnd}
         </if>
-        <if test="performanceAppraisal.appraisalEndDate != null">
-            and pa.appraisal_end_date=#{performanceAppraisal.appraisalEndDate}
+        <if test="performanceAppraisal.appraisalEndDateStart != null and performanceAppraisal.appraisalEndDateEnd != null ">
+            and pa.appraisal_end_date &gt; #{performanceAppraisal.appraisalEndDateStart}
+            and pa.appraisal_end_date &lt; #{performanceAppraisal.appraisalEndDateEnd}
         </if>
-        <if test="performanceAppraisal.filingDate != null">
-            and pa.filing_date=#{performanceAppraisal.filingDate}
+        <if test="performanceAppraisal.filingDateStart != null and performanceAppraisal.filingDateEnd != null ">
+            and pa.filing_date &gt; #{performanceAppraisal.filingDateStart}
+            and pa.filing_date &lt; #{performanceAppraisal.filingDateEnd}
         </if>
         <if test="performanceAppraisal.appraisalFlow != null">
             and pa.appraisal_flow=#{performanceAppraisal.appraisalFlow}
@@ -205,6 +208,15 @@
         </if>
         <if test="performanceAppraisalObjectsDTO.cycleNumber!=null">
             and pa.cycle_number=#{performanceAppraisalObjectsDTO.cycleNumber}
+        </if>
+        <if test="performanceAppraisalObjectsDTO.appraisalObjectName!=null and ''!= performanceAppraisalObjectsDTO.appraisalObjectName">
+            and pas.appraisal_object_name like concat('%', #{performanceAppraisalObjectsDTO.appraisalObjectName}, '%')
+        </if>
+        <if test="performanceAppraisalObjectsDTO.appraisalObjectCode!=null and ''!= performanceAppraisalObjectsDTO.appraisalObjectCode">
+            and pas.appraisal_object_code like concat('%', #{performanceAppraisalObjectsDTO.appraisalObjectCode}, '%')
+        </if>
+        <if test="performanceAppraisalObjectsDTO.postName!=null and ''!= performanceAppraisalObjectsDTO.postName">
+            and pas.post_name like concat('%', #{performanceAppraisalObjectsDTO.postName}, '%')
         </if>
         <if test="performanceAppraisalObjectsDTO.departmentName!=null and ''!= performanceAppraisalObjectsDTO.departmentName">
             and pas.department_name like concat('%', #{performanceAppraisalObjectsDTO.departmentName}, '%')
