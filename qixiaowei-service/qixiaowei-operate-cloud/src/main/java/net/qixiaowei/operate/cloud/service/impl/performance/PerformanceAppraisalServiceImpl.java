@@ -1399,14 +1399,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = new PerformanceAppraisalObjectsDTO();
                 Long performanceObjectId = orgObjectMap.get(valueMap.get(0));
                 Long performAppraisalObjectsId = idMap.get(valueMap.get(0));
-                if (valueMap.get(2).equals("不考核") || StringUtils.isNull(valueMap.get(2))) {
+                if (valueMap.get(2).equals("不考核")) {
                     performanceAppraisalObjectsDTO.setAppraisalResultId(0L);
-                    performanceAppraisalObjectsDTO.setAppraisalResult(null);
                 } else {
                     Long factorResultId = factorObjectMap.get(valueMap.get(2));
                     performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
-                    performanceAppraisalObjectsDTO.setAppraisalResult(valueMap.get(2));
                 }
+                performanceAppraisalObjectsDTO.setAppraisalResult(valueMap.get(2));
                 performanceAppraisalObjectsDTO.setAppraisalObjectId(performanceObjectId);
                 performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
                 performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
@@ -1561,13 +1560,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO = new PerformanceAppraisalObjectsDTO();
                 Long performanceObjectId = orgObjectMap.get(valueMap.get(0));
                 Long performAppraisalObjectsId = idMap.get(valueMap.get(0));
-                if (valueMap.get(5).equals("不考核") || StringUtils.isNull(valueMap.get(5))) {
+                if (valueMap.get(5).equals("不考核")) {
                     performanceAppraisalObjectsDTO.setAppraisalResultId(0L);
                 } else {
                     Long factorResultId = factorObjectMap.get(valueMap.get(5));
                     performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
-                    performanceAppraisalObjectsDTO.setAppraisalResult(valueMap.get(5));
                 }
+                performanceAppraisalObjectsDTO.setAppraisalResult(valueMap.get(5));
                 performanceAppraisalObjectsDTO.setAppraisalObjectId(performanceObjectId);
 
                 performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);

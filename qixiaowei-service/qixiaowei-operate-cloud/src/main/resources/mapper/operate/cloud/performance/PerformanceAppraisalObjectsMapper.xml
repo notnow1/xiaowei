@@ -269,7 +269,7 @@
         update_time
         FROM performance_rank_factor
         where delete_flag=0
-            and performance_rank_id=#{performanceRankId}
+        and performance_rank_id=#{performanceRankId}
     </select>
     <!--    查询部门的最近三次绩效和奖金系数-->
     <select id="selectPerformanceRankFactorByDeptId"
@@ -470,17 +470,13 @@
             </trim>
             <trim prefix="appraisal_result_id=case" suffix="end,">
                 <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                    <if test="item.appraisalResultId != null">
-                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
-                        #{item.appraisalResultId}
-                    </if>
+                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                    #{item.appraisalResultId}
                 </foreach>
             </trim>
             <trim prefix="appraisal_result=case" suffix="end,">
                 <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                    <if test="item.appraisalResult != null and item.appraisalResult != ''">
-                        when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.appraisalResult}
-                    </if>
+                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.appraisalResult}
                 </foreach>
             </trim>
             <trim prefix="appraisal_object_status=case" suffix="end,">
