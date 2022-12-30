@@ -155,5 +155,5 @@ public interface OfficialRankDecomposeMapper {
      * @param rankDecomposeDimension 分解类型
      * @return R
      */
-    List<OfficialRankDecomposeDTO> selectOfficialDecomposeByDimensions(List<Long> decomposeDimensions, Integer rankDecomposeDimension);
+    List<OfficialRankDecomposeDTO> selectOfficialDecomposeByDimensions(@Param("decomposeDimensions") List<Long> decomposeDimensions, @Param("rankDecomposeDimension") Integer rankDecomposeDimension);
 }

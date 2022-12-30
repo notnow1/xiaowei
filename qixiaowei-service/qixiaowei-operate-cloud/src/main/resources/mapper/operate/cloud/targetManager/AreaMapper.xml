@@ -136,8 +136,8 @@
     <update id="logicDeleteAreaByAreaId">
         UPDATE area
         SET delete_flag= 1,
-        update_by=#{area.updateBy},
-        update_time=#{area.updateTime}
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
         area_id=#{area.areaId}
     </update>
