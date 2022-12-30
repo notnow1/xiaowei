@@ -1465,8 +1465,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 //浮动占比（%）
                 BigDecimal floatProportion;
                 if (paymentBonus.compareTo(BigDecimal.ZERO) != 0) {
-                    fixedProportion = fixedValue.divide(paymentBonus, 2, RoundingMode.HALF_UP);
-                    floatProportion = bonusAmountValue.divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                    fixedProportion = fixedValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                    floatProportion = bonusAmountValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
                 } else {
                     fixedProportion = BigDecimal.ZERO;
                     floatProportion = BigDecimal.ZERO;
