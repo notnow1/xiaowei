@@ -1188,11 +1188,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
             performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
             performanceAppraisalObjectsDTO.setAppraisalResult(map.get(3));
-            for (EmployeeDTO employeeDTO : employeeDTOS) {
-                if (employeeDTO.getEmployeeCode().equals(map.get(4))) {
-                    performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeDTO.getEmployeeId());
-                    performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
-                    break;
+            if (StringUtils.isNotEmpty(employeeDTOS)) {
+                for (EmployeeDTO employeeDTO : employeeDTOS) {
+                    if (employeeDTO.getEmployeeCode().equals(map.get(4))) {
+                        performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeDTO.getEmployeeId());
+                        performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
+                        break;
+                    }
                 }
             }
             performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
@@ -1279,11 +1281,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
             performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
             performanceAppraisalObjectsDTO.setAppraisalResult(map.get(6));
-            for (EmployeeDTO employeeDTO : employeeListByCode) {
-                if (employeeDTO.getEmployeeCode().equals(map.get(7))) {
-                    performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeDTO.getEmployeeId());
-                    performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
-                    break;
+            if (StringUtils.isNotEmpty(employeeListByCode)) {
+                for (EmployeeDTO employeeDTO : employeeListByCode) {
+                    if (employeeDTO.getEmployeeCode().equals(map.get(7))) {
+                        performanceAppraisalObjectsDTO.setAppraisalPrincipalId(employeeDTO.getEmployeeId());
+                        performanceAppraisalObjectsDTO.setAppraisalPrincipalName(employeeDTO.getEmployeeName());
+                        break;
+                    }
                 }
             }
             performanceAppraisalObjectsDTOS.add(performanceAppraisalObjectsDTO);
@@ -1305,6 +1309,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 break;
             }
             assessmentList.add(map.get(key));
+        }
+        if (StringUtils.isEmpty(assessmentList)) {
+            return new ArrayList<>();
         }
         R<List<EmployeeDTO>> listR = employeeService.selectByCodes(assessmentList, SecurityConstants.INNER);
         List<EmployeeDTO> employeeListByCode = listR.getData();
