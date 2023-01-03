@@ -5,15 +5,15 @@
     <select id="selectTargetOutcomeByTargetOutcomeId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
         SELECT target_outcome_id,
-               target_year,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        target_year,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM target_outcome
         WHERE target_outcome_id = #{targetOutcomeId}
-          and delete_flag = 0
+        and delete_flag = 0
     </select>
 
     <!--    批量查询目标结果表-->
@@ -44,35 +44,30 @@
         <if test="targetOutcome.targetYear != null">
             and target_year=#{targetOutcome.targetYear}
         </if>
-        <if test="targetOutcome.deleteFlag != null">
-            and delete_flag=#{targetOutcome.deleteFlag}
-        </if>
-        <if test="targetOutcome.createBy != null">
-            and create_by=#{targetOutcome.createBy}
-        </if>
-        <if test="targetOutcome.createTime != null">
-            and create_time=#{targetOutcome.createTime}
-        </if>
         <if test="targetOutcome.updateBy != null">
             and update_by=#{targetOutcome.updateBy}
         </if>
         <if test="targetOutcome.updateTime != null">
             and update_time=#{targetOutcome.updateTime}
         </if>
+        <if test="targetOutcome.createTimeStart != null and targetOutcome.createTimeEnd != null ">
+            and create_time &gt; #{targetOutcome.createTimeStart}
+            and create_time &lt; #{targetOutcome.createTimeEnd}
+        </if>
     </select>
     <!--通过targetYear查找Target Outcome DTO-->
     <select id="selectTargetOutcomeByTargetYear"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
         SELECT target_outcome_id,
-               target_year,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        target_year,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM target_outcome
         WHERE delete_flag = 0
-          AND target_year = #{targetYear}
+        AND target_year = #{targetYear}
     </select>
     <!--通过targetYear列表查找Target Outcome DTO-->
     <select id="selectTargetOutcomeByTargetYears"
@@ -149,7 +144,7 @@
     <insert id="insertTargetOutcome" useGeneratedKeys="true" keyProperty="targetOutcomeId">
         INSERT INTO target_outcome (target_year, delete_flag, create_by, create_time, update_by, update_time)
         VALUES (#{targetOutcome.targetYear}, #{targetOutcome.deleteFlag}, #{targetOutcome.createBy},
-                #{targetOutcome.createTime}, #{targetOutcome.updateBy}, #{targetOutcome.updateTime})
+        #{targetOutcome.createTime}, #{targetOutcome.updateBy}, #{targetOutcome.updateTime})
     </insert>
     <!--修改目标结果表-->
     <update id="updateTargetOutcome">
@@ -180,8 +175,8 @@
     <update id="logicDeleteTargetOutcomeByTargetOutcomeId">
         UPDATE target_outcome
         SET delete_flag= 1,
-            update_by=#{targetOutcome.updateBy},
-            update_time=#{targetOutcome.updateTime}
+        update_by=#{targetOutcome.updateBy},
+        update_time=#{targetOutcome.updateTime}
         WHERE target_outcome_id = #{targetOutcome.targetOutcomeId}
     </update>
     <!--逻辑批量删除目标结果表-->

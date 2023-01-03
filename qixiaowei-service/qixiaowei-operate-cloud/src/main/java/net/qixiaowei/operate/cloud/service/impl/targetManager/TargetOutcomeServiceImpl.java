@@ -273,10 +273,12 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      */
     @Override
     public List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO) {
-        TargetOutcome targetOutcome = new TargetOutcome();
-        BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
+        String createByName = targetOutcomeDTO.getCreateByName();
+        if (StringUtils.isNotNull(createByName)) {
+
+        }
         Set<Long> createBys = new HashSet<>();
-        List<TargetOutcomeDTO> targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeList(targetOutcome);
+        List<TargetOutcomeDTO> targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeList(targetOutcomeDTO);
         if (StringUtils.isEmpty(targetOutcomeDTOS)) {
             return targetOutcomeDTOS;
         }

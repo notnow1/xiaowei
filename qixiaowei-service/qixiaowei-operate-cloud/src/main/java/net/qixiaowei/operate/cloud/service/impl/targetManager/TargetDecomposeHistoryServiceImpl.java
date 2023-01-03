@@ -26,12 +26,13 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
-import net.qixiaowei.system.manage.api.remote.tenant.RemoteTenantService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,6 +76,8 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     private RemoteRegionService remoteRegionService;
     @Autowired
     private RemoteBacklogService remoteBacklogService;
+    @Autowired
+    private RemoteUserService userService;
 
     /**
      * 查询目标分解历史版本表
@@ -440,9 +443,9 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             List<Long> collect = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
             List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeIds(collect);
             if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
-                for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                     //插入历史目标分解详情周期集合
-                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList.get(i), detailCyclesSnapshots, decomposeDetailsSnapshots);
+                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTO, detailCyclesSnapshots, decomposeDetailsSnapshots);
                 }
             }
             if (StringUtils.isNotEmpty(detailCyclesSnapshots)) {
@@ -452,21 +455,52 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     throw new ServiceException("插入历史目标详情周期表失败");
                 }
             }
+            if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+                UserDTO userDTO = getUserDTO();
+                for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+                    sendMessage(targetDecomposeDetailsDTO, userDTO);
+                }
+            }
         }
-        // 发送消息
-//        BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
-//        backlogSendDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
-//        backlogSendDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
-//        backlogSendDTO.setBusinessId(tenantDomainApprovalId);
-//        backlogSendDTO.setUserId(userId);
-//        backlogSendDTO.setBacklogName("二级域名申请");
-//        backlogSendDTO.setBacklogInitiator(tenantDTO.getTenantId());
-//        backlogSendDTO.setBacklogInitiatorName(tenantDTO.getTenantName());
-//        R<?> insertBacklog = remoteBacklogService.add(backlogSendDTO, SecurityConstants.INNER);
-//        if (R.SUCCESS != insertBacklog.getCode()) {
-//            throw new ServiceException("申请域名通知失败");
-//        }
+    }
 
+    /**
+     * 获取用户信息
+     *
+     * @return userDTO
+     */
+    private UserDTO getUserDTO() {
+        R<UserDTO> userInfoByUserId = userService.getUserInfoByUserId(SecurityUtils.getUserId(), SecurityConstants.INNER);
+        UserDTO userDTO = userInfoByUserId.getData();
+        if (userInfoByUserId.getCode() != 200) {
+            throw new ServiceException("远程访问用户信息失败");
+        }
+        if (StringUtils.isNull(userDTO)) {
+            throw new ServiceException("当前用户未设置用户名称 请检查用户信息");
+        }
+        return userDTO;
+    }
+
+
+    /**
+     * 发送消息
+     *
+     * @param targetDecomposeDetailsDTO 目标分解详情
+     */
+    private void sendMessage(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, UserDTO userDTO) {
+        // 发送消息
+        BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
+        backlogSendDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
+        backlogSendDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
+        backlogSendDTO.setBusinessId(targetDecomposeDetailsDTO.getPrincipalEmployeeId());
+        backlogSendDTO.setUserId(SecurityUtils.getUserId());
+        backlogSendDTO.setBacklogName("二级域名申请");
+        backlogSendDTO.setBacklogInitiator(userDTO.getUserId());
+        backlogSendDTO.setBacklogInitiatorName(userDTO.getUserName());
+        R<?> insertBacklog = remoteBacklogService.add(backlogSendDTO, SecurityConstants.INNER);
+        if (R.SUCCESS != insertBacklog.getCode()) {
+            throw new ServiceException("申请域名通知失败");
+        }
     }
 
     /**

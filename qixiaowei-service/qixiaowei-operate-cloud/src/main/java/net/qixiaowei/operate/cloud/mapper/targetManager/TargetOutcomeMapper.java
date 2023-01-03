@@ -39,7 +39,7 @@ public interface TargetOutcomeMapper {
      * @param targetOutcome 目标结果表
      * @return 目标结果表集合
      */
-    List<TargetOutcomeDTO> selectTargetOutcomeList(@Param("targetOutcome") TargetOutcome targetOutcome);
+    List<TargetOutcomeDTO> selectTargetOutcomeList(@Param("targetOutcome") TargetOutcomeDTO targetOutcome);
 
     /**
      * 新增目标结果表
