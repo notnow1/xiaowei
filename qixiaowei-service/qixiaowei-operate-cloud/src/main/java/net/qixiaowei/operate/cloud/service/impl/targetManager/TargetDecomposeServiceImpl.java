@@ -2189,6 +2189,29 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         TargetDecomposeDTO targetDecomposeDTO2 = new TargetDecomposeDTO();
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        Integer targetDecomposeType = targetDecomposeDTO.getTargetDecomposeType();
+        if (StringUtils.isNotNull(targetDecomposeType)){
+            if (targetDecomposeType==1){
+                R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode(), SecurityConstants.INNER);
+                IndicatorDTO data = indicatorDTOR.getData();
+                if (StringUtils.isNotNull(data)){
+                    targetDecomposeDTO.setIndicatorId(data.getIndicatorId());
+                }
+            }else if (targetDecomposeType==2){
+                R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode(), SecurityConstants.INNER);
+                IndicatorDTO data = indicatorDTOR.getData();
+                if (StringUtils.isNotNull(data)){
+                    targetDecomposeDTO.setIndicatorId(data.getIndicatorId());
+                }
+            }else if (targetDecomposeType==3){
+                R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.RECEIVABLE.getCode(), SecurityConstants.INNER);
+                IndicatorDTO data = indicatorDTOR.getData();
+                if (StringUtils.isNotNull(data)){
+                    targetDecomposeDTO.setIndicatorId(data.getIndicatorId());
+                }
+            }
+
+        }
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeMapper.selectMaxYear(targetDecompose);
         if (StringUtils.isNull(targetDecomposeDTO1)) {
             targetDecomposeDTO2.setDecommpFlag(false);
