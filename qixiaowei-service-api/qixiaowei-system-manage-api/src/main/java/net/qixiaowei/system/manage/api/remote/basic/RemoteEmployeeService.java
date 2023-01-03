@@ -40,6 +40,16 @@ public interface RemoteEmployeeService {
     R<List<EmployeeDTO>> selectRemoteList(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
+     * 远程查询用户数据
+     *
+     * @param employeeDTO
+     * @param source
+     * @return
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/selectUserByEmployeeName")
+    R<List<EmployeeDTO>> selectUserByEmployeeName(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
      * 通过id查找人员
      *
      * @param employeeId

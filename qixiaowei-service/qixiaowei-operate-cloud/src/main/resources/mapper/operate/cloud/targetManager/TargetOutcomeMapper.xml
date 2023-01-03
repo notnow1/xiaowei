@@ -50,7 +50,7 @@
         <if test="targetOutcome.updateTime != null">
             and update_time=#{targetOutcome.updateTime}
         </if>
-        <if test="targetOutcome.createTimeStart != null and targetOutcome.createTimeEnd != null ">
+        <if test="targetOutcome.params.createTimeStart != null and targetOutcome.params.createTimeEnd != null ">
             and create_time &gt; #{targetOutcome.createTimeStart}
             and create_time &lt; #{targetOutcome.createTimeEnd}
         </if>
@@ -139,6 +139,41 @@
         WHERE tod.indicator_id = #{indicatorId}
         AND t.target_year = #{targetYear}
         AND tod.delete_flag = 0
+    </select>
+    <select id="selectTargetOutcomeByCreateBys"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
+        SELECT to.target_outcome_id,
+        to.target_year,
+        to.delete_flag,
+        to.create_by,
+        to.create_time,
+        to.update_by,
+        to.update_time
+        FROM target_outcome to
+        WHERE to.delete_flag = 0
+        <if test="targetOutcome.targetOutcomeId != null">
+            and target_outcome_id=#{targetOutcome.targetOutcomeId}
+        </if>
+        <if test="targetOutcome.targetYear != null">
+            and target_year=#{targetOutcome.targetYear}
+        </if>
+        <if test="targetOutcome.updateBy != null">
+            and update_by=#{targetOutcome.updateBy}
+        </if>
+        <if test="targetOutcome.updateTime != null">
+            and update_time=#{targetOutcome.updateTime}
+        </if>
+        <if test="targetOutcome.params.createTimeStart != null and targetOutcome.params.createTimeEnd != null ">
+            and create_time &gt; #{targetOutcome.params.createTimeStart}
+            and create_time &lt; #{targetOutcome.params.createTimeEnd}
+        </if>
+        <if test="targetOutcome.params.createBys.size > 0">
+            AND to.create_by IN
+            <foreach collection="targetOutcome.params.createBys" index="index" item="item" separator="," open="("
+                     close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <!--新增目标结果表-->
     <insert id="insertTargetOutcome" useGeneratedKeys="true" keyProperty="targetOutcomeId">

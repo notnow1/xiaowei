@@ -35,6 +35,11 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             }
 
             @Override
+            public R<List<EmployeeDTO>> selectUserByEmployeeName(EmployeeDTO employeeDTO, String source) {
+                return R.fail("根据员工名称获取用户信息:" + throwable.getMessage());
+            }
+
+            @Override
             public R<EmployeeDTO> selectByEmployeeId(Long employeeId, String source) {
                 return R.fail("根据id获取人员信息失败:" + throwable.getMessage());
             }

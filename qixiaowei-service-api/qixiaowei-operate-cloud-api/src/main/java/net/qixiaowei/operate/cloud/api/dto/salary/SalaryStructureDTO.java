@@ -8,6 +8,7 @@ import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 薪酬架构表
@@ -18,7 +19,6 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 public class SalaryStructureDTO {
-
     //查询检验
     public interface QuerySalaryPayDTO extends Default {
 
@@ -98,5 +98,9 @@ public class SalaryStructureDTO {
      */
     private Integer pageSize;
 
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }
 

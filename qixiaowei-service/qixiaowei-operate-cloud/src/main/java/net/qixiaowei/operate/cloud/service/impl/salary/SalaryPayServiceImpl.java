@@ -1354,7 +1354,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         } else {
             List<Long> employeeIds = new ArrayList<>();
             for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
-                employeeIds.add(salaryPayDTO.getEmployeeId());
+                if (!employeeIds.contains(salaryPayDTO.getEmployeeId())) {
+                    employeeIds.add(salaryPayDTO.getEmployeeId());
+                }
             }
             employeeDTOR = employeeService.selectByEmployeeIds(employeeIds, SecurityConstants.INNER);
         }
@@ -1386,8 +1388,13 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      */
     private List<SalaryPayDTO> getSalaryPayList(SalaryStructureDTO salaryStructureDTO) {
         List<SalaryPayDTO> salaryPayDTOList;
-        Date timeStart = salaryStructureDTO.getTimeStart();
-        Date timeEnd = salaryStructureDTO.getTimeEnd();
+        Map<String, Object> params = salaryStructureDTO.getParams();
+        Date timeStart = null;
+        Date timeEnd = null;
+        if (StringUtils.isNotNull(params)) {
+            timeStart = DateUtils.parseDate(salaryStructureDTO.getParams().get("timeStart"));
+            timeEnd = DateUtils.parseDate(salaryStructureDTO.getParams().get("timeEnd"));
+        }
         if (StringUtils.isNull(timeStart) || StringUtils.isNull(timeEnd)) {
             int month = DateUtils.getMonth();
             int year = DateUtils.getYear();

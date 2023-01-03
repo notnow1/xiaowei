@@ -39,7 +39,7 @@ public interface TargetOutcomeMapper {
      * @param targetOutcome 目标结果表
      * @return 目标结果表集合
      */
-    List<TargetOutcomeDTO> selectTargetOutcomeList(@Param("targetOutcome") TargetOutcomeDTO targetOutcome);
+    List<TargetOutcomeDTO> selectTargetOutcomeList(@Param("targetOutcome") TargetOutcome targetOutcome);
 
     /**
      * 新增目标结果表
@@ -139,4 +139,12 @@ public interface TargetOutcomeMapper {
      * @return TargetOutcomeDetailsDTO
      */
     TargetOutcomeDetailsDTO selectTargetOutcomeValue(@Param("targetYear") Integer targetYear, @Param("indicatorId") Long indicatorId);
+
+    /**
+     * 根据id集合查询关键结果表
+     *
+     * @param targetOutcome 员工ID集合
+     * @return List
+     */
+    List<TargetOutcomeDTO> selectTargetOutcomeByCreateBys(@Param("targetOutcome") TargetOutcome targetOutcome);
 }

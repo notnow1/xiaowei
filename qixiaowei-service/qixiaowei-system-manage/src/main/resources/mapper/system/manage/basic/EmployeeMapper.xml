@@ -736,9 +736,9 @@
         when date_format(now(), '%Y') &lt; #{employee.planYear} then ifnull(sum(employment_status = 1),0)
         when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 0 and
         date_format(now(), '%m') &lt; 7 then
-            ifnull(sum(case
-                           when date_format(departure_date, '%Y') &lt; #{employee.planYear} - 1
-                               then employment_status = 1 end),0)
+        ifnull(sum(case
+        when date_format(departure_date, '%Y') &lt; #{employee.planYear} - 1
+        then employment_status = 1 end),0)
         when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 6 and
         date_format(now(), '%m') &lt; 13 then ifnull(sum(employment_status = 1),0)
         end as amountLastYear
@@ -1367,6 +1367,20 @@
         <foreach collection="departmentIds" open="(" close=")" separator="," index="index" item="item">
             #{item}
         </foreach>
+    </select>
+    <select id="selectUserList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
+        SELECT e.employee_id,
+        e.employee_code,
+        e.employee_name,
+        e.tenant_id,
+        u.user_id,
+        u.user_name
+        FROM employee e
+        LEFT JOIN user u ON u.employee_id = e.employee_id AND u.delete_flag = 0
+        WHERE e.delete_flag = 0
+        <if test="employee.employeeName != null and employee.employeeName != ''">
+            and e.employee_name LIKE concat('%', #{employee.employeeName}, '%')
+        </if>
     </select>
     <!--新增员工表-->
     <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="employeeId">

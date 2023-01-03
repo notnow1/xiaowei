@@ -1341,6 +1341,19 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     /**
+     * 远程查询用户数据
+     *
+     * @param employeeDTO 员工DTO
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> selectUserList(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        return employeeMapper.selectUserList(employee);
+    }
+
+    /**
      * 给岗位类型赋值
      *
      * @param empSalaryAdjustPlanDTO 个人调薪计划DTO

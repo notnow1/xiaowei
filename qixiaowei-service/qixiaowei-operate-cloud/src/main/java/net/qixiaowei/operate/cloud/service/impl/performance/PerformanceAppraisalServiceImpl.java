@@ -306,7 +306,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceRankMap.remove(null);
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = selectPerformanceRankFactor(performanceAppraisalId);
         if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
-            throw new ServiceException("绩效等级为空 请检查");
+            appraisal.setPerformanceAppraisalRankDTOS(new ArrayList<>());
+            return null;
         }
         List<Map<String, Object>> performanceAppraisalRankList = new ArrayList<>();
         for (PerformanceRankFactorDTO performanceRankFactorDTO : performanceRankFactorDTOS) {
@@ -377,8 +378,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public List<PerformanceAppraisalDTO> selectPerformanceAppraisalList(PerformanceAppraisalDTO performanceAppraisalDTO) {
-        PerformanceAppraisalDTO performanceAppraisal = new PerformanceAppraisalDTO();
+        PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
+        Map<String, Object> params = performanceAppraisal.getParams();
+        performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
             return performanceAppraisalDTOS;
@@ -395,10 +398,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public List<PerformanceAppraisalDTO> selectPerAppraisalArchiveList(PerformanceAppraisalDTO performanceAppraisalDTO) {
-        PerformanceAppraisalDTO performanceAppraisal = new PerformanceAppraisalDTO();
+        PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         performanceAppraisal.setAppraisalObject(2);
         performanceAppraisal.setAppraisalStatus(4);
+        Map<String, Object> params = performanceAppraisal.getParams();
+        performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
         performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
         for (PerformanceAppraisalDTO appraisalDTO : performanceAppraisalDTOS) {
@@ -419,10 +424,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public List<PerformanceAppraisalDTO> selectOrgAppraisalArchiveList(PerformanceAppraisalDTO performanceAppraisalDTO) {
-        PerformanceAppraisalDTO performanceAppraisal = new PerformanceAppraisalDTO();
+        PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         performanceAppraisal.setAppraisalObject(1);
         performanceAppraisal.setAppraisalStatus(4);
+        Map<String, Object> params = performanceAppraisal.getParams();
+        performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
         performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
         for (PerformanceAppraisalDTO appraisalDTO : performanceAppraisalDTOS) {
@@ -870,10 +877,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     performanceAppraisalObjectsDTO.setOfficialRank(employeeDTO.getEmployeeRank());
                     performanceAppraisalObjectsDTO.setOfficialRankName(employeeDTO.getEmployeeRankName());
                     j = false;
-                    Integer appraisalObject = performanceAppraisal.getAppraisalObject();
+                    Integer appraisalStatus = performanceAppraisal.getAppraisalStatus();
                     if (appraisalFlow == 1) {// 系统流程
-                        if (StringUtils.isNotNull(appraisalObject)) {
-                            switch (appraisalObject) {
+                        if (StringUtils.isNotNull(appraisalStatus)) {
+                            switch (appraisalStatus) {
                                 case 1:
                                     performanceAppraisalObjectsDTO.setAppraisalObjectStatus(1);
                                     break;
@@ -1649,7 +1656,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Override
     public List<PerformanceAppraisalExcel> exportPerformanceAppraisal(PerformanceAppraisalDTO
                                                                               performanceAppraisalDTO) {
-        List<PerformanceAppraisalDTO> performanceAppraisalDTOList = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisalDTO);
+        PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
+        BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
+        List<PerformanceAppraisalDTO> performanceAppraisalDTOList = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
         return new ArrayList<>();
     }
 
@@ -1987,8 +1996,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         List<Long> performanceAppraisalIds = new ArrayList<>();
-        PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
+        PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(1);
+        appraisalDTO.setAppraisalStatus(1);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
             return new ArrayList<>();
@@ -2020,11 +2030,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectPerAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         List<Long> performanceAppraisalIds = new ArrayList<>();
-        PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
+        PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(2);
+        appraisalDTO.setAppraisalStatus(1);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
-
+            return new ArrayList<>();
         }
         for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
             performanceAppraisalIds.add(performanceAppraisalDTO.getPerformanceAppraisalId());
@@ -2050,10 +2061,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceAppraisalObjectsDTO 对象DTO
      * @param performanceAppraisalIds        绩效任务id集合
      * @param objectType                     类型
-     * @return
+     * @return Integer
      */
     private Integer getStatus(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO, List<Long> performanceAppraisalIds, Integer objectType) {
-        PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
+        PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(objectType);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
@@ -2264,7 +2275,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         List<Long> performanceAppraisalIds = new ArrayList<>();
-        PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
+        PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(1);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
@@ -2297,7 +2308,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectPerAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
         List<Long> performanceAppraisalIds = new ArrayList<>();
-        PerformanceAppraisalDTO appraisalDTO = new PerformanceAppraisalDTO();
+        PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(2);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
@@ -2599,7 +2610,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public List<PerformanceAppraisalDTO> selectOrgAppraisalRankingList(PerformanceAppraisalDTO performanceAppraisalDTO) {
-        PerformanceAppraisalDTO performanceAppraisal = new PerformanceAppraisalDTO();
+        PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         performanceAppraisal.setAppraisalObject(1);
         performanceAppraisal.setAppraisalStatus(3);
@@ -2623,7 +2634,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public List<PerformanceAppraisalDTO> selectPerAppraisalRankingList(PerformanceAppraisalDTO performanceAppraisalDTO) {
-        PerformanceAppraisalDTO performanceAppraisal = new PerformanceAppraisalDTO();
+        PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         performanceAppraisal.setAppraisalObject(2);
         performanceAppraisal.setAppraisalStatus(3);

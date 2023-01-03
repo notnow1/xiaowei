@@ -82,17 +82,17 @@
         <if test="performanceAppraisal.cycleNumber != null">
             and pa.cycle_number=#{performanceAppraisal.cycleNumber}
         </if>
-        <if test="performanceAppraisal.appraisalStartDateStart != null and performanceAppraisal.appraisalStartDateEnd != null ">
-            and pa.appraisal_start_date &gt; #{performanceAppraisal.appraisalStartDateStart}
-            and pa.appraisal_start_date &lt; #{performanceAppraisal.appraisalStartDateEnd}
+        <if test="performanceAppraisal.params.appraisalStartDateStart != null and performanceAppraisal.params.appraisalStartDateEnd != null ">
+            and pa.appraisal_start_date &gt; #{performanceAppraisal.params.appraisalStartDateStart}
+            and pa.appraisal_start_date &lt; #{performanceAppraisal.params.appraisalStartDateEnd}
         </if>
-        <if test="performanceAppraisal.appraisalEndDateStart != null and performanceAppraisal.appraisalEndDateEnd != null ">
-            and pa.appraisal_end_date &gt; #{performanceAppraisal.appraisalEndDateStart}
-            and pa.appraisal_end_date &lt; #{performanceAppraisal.appraisalEndDateEnd}
+        <if test="performanceAppraisal.params.appraisalEndDateStart != null and performanceAppraisal.params.appraisalEndDateEnd != null ">
+            and pa.appraisal_end_date &gt; #{performanceAppraisal.params.appraisalEndDateStart}
+            and pa.appraisal_end_date &lt; #{performanceAppraisal.params.appraisalEndDateEnd}
         </if>
-        <if test="performanceAppraisal.filingDateStart != null and performanceAppraisal.filingDateEnd != null ">
-            and pa.filing_date &gt; #{performanceAppraisal.filingDateStart}
-            and pa.filing_date &lt; #{performanceAppraisal.filingDateEnd}
+        <if test="performanceAppraisal.params.filingDateStart != null and performanceAppraisal.params.filingDateEnd != null ">
+            and pa.filing_date &gt; #{performanceAppraisal.params.filingDateStart}
+            and pa.filing_date &lt; #{performanceAppraisal.params.filingDateEnd}
         </if>
         <if test="performanceAppraisal.appraisalFlow != null">
             and pa.appraisal_flow=#{performanceAppraisal.appraisalFlow}

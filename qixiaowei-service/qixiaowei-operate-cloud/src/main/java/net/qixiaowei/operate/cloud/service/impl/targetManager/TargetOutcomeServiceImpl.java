@@ -17,8 +17,10 @@ import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeService;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,9 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
 
     @Autowired
     private RemoteUserService userService;
+
+    @Autowired
+    private RemoteEmployeeService employeeService;
 
     /**
      * 查询目标结果表
@@ -274,11 +279,32 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Override
     public List<TargetOutcomeDTO> selectTargetOutcomeList(TargetOutcomeDTO targetOutcomeDTO) {
         String createByName = targetOutcomeDTO.getCreateByName();
-        if (StringUtils.isNotNull(createByName)) {
-
-        }
         Set<Long> createBys = new HashSet<>();
-        List<TargetOutcomeDTO> targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeList(targetOutcomeDTO);
+        List<TargetOutcomeDTO> targetOutcomeDTOS;
+        if (StringUtils.isNull(createByName)) {
+            TargetOutcome targetOutcome = new TargetOutcome();
+            BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
+            Map<String, Object> params = targetOutcome.getParams();
+            targetOutcome.setParams(params);
+            targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeList(targetOutcome);
+        } else {
+            List<EmployeeDTO> employeeDTOS = getEmployee(createByName);
+            List<Long> createByList = new ArrayList<>();
+            for (EmployeeDTO employeeDTO : employeeDTOS) {
+                if (!createByList.contains(employeeDTO.getEmployeeId())) {
+                    createByList.add(employeeDTO.getUserId());
+                }
+            }
+            targetOutcomeDTO.setCreateBys(createByList);
+            TargetOutcome targetOutcome = new TargetOutcome();
+            BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
+            Map<String, Object> params = targetOutcome.getParams();
+            if (StringUtils.isNotEmpty(targetOutcomeDTO.getCreateBys())) {
+                params.put("createBys", targetOutcomeDTO.getCreateBys());
+            }
+            targetOutcome.setParams(params);
+            targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeByCreateBys(targetOutcome);
+        }
         if (StringUtils.isEmpty(targetOutcomeDTOS)) {
             return targetOutcomeDTOS;
         }
@@ -286,22 +312,47 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             createBys.add(outcomeDTO.getCreateBy());
         }
         // todo 根据createBys获取创建人名称  setCreateByName
-        R<List<UserDTO>> usersByUserIds = userService.getUsersByUserIds(createBys, SecurityConstants.INNER);
-        List<UserDTO> userDTOS = usersByUserIds.getData();
-        if (usersByUserIds.getCode() != 200) {
-            throw new ServiceException("远程获取用户信息失败");
-        }
+        List<UserDTO> userDTOS = getUserDTOS(createBys);
         for (TargetOutcomeDTO outcomeDTO : targetOutcomeDTOS) {
             if (StringUtils.isNotEmpty(userDTOS)) {
                 for (UserDTO userDTO : userDTOS) {
                     if (userDTO.getUserId().equals(outcomeDTO.getCreateBy())) {
-                        outcomeDTO.setCreateByName(userDTO.getUserName());
+                        outcomeDTO.setCreateByName(userDTO.getEmployeeName());
                         break;
                     }
                 }
             }
         }
         return targetOutcomeDTOS;
+    }
+
+    /**
+     * 获取用户信息
+     */
+    private List<EmployeeDTO> getEmployee(String createByName) {
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setEmployeeName(createByName);
+        R<List<EmployeeDTO>> listR = employeeService.selectUserByEmployeeName(employeeDTO, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程获取用户信息失败");
+        }
+        return employeeDTOS;
+    }
+
+    /**
+     * 根据ID集合获取用户用户信息
+     *
+     * @param createBys 创建人ID集合
+     * @return
+     */
+    private List<UserDTO> getUserDTOS(Set<Long> createBys) {
+        R<List<UserDTO>> usersByUserIds = userService.getUsersByUserIds(createBys, SecurityConstants.INNER);
+        List<UserDTO> userDTOS = usersByUserIds.getData();
+        if (usersByUserIds.getCode() != 200) {
+            throw new ServiceException("远程获取用户信息失败");
+        }
+        return userDTOS;
     }
 
     /**

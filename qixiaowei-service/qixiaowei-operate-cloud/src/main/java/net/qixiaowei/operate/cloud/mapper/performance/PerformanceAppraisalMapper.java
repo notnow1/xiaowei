@@ -40,7 +40,7 @@ public interface PerformanceAppraisalMapper {
      * @param performanceAppraisal 绩效考核表
      * @return 绩效考核表集合
      */
-    List<PerformanceAppraisalDTO> selectPerformanceAppraisalList(@Param("performanceAppraisal") PerformanceAppraisalDTO performanceAppraisal);
+    List<PerformanceAppraisalDTO> selectPerformanceAppraisalList(@Param("performanceAppraisal") PerformanceAppraisal performanceAppraisal);
 
     /**
      * 新增绩效考核表

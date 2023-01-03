@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 目标结果表
@@ -86,6 +87,12 @@ public class TargetOutcomeDTO {
      * 目标结果列表
      */
     private List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList;
+    /**
+     * 员工ID集合
+     */
+    private List<Long> createBys;
+
+    Map<String, Object> params;
 
 }
 

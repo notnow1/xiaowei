@@ -63,7 +63,7 @@ public interface EmployeeMapper {
      *
      * @return 员工表集合
      */
-    List<EmployeeDTO> unallocatedUserList(@Param("userId")Long userId);
+    List<EmployeeDTO> unallocatedUserList(@Param("userId") Long userId);
 
     /**
      * 新增员工表
@@ -272,4 +272,12 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectEmployeeByDepartmentIds(@Param("departmentIds") List<Long> departmentIds);
+
+    /**
+     * 远程查询用户数据
+     *
+     * @param employee 员工DTO
+     * @return
+     */
+    List<EmployeeDTO> selectUserList(@Param("employee") Employee employee);
 }

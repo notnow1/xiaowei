@@ -254,4 +254,12 @@ public interface IEmployeeService {
      * @return R
      */
     EmployeeSalaryPlanVO empSalaryAdjustPlan(EmployeeDTO employeeDTO);
+
+    /**
+     * 远程查询用户数据
+     *
+     * @param employeeDTO
+     * @return
+     */
+    List<EmployeeDTO> selectUserList(EmployeeDTO employeeDTO);
 }

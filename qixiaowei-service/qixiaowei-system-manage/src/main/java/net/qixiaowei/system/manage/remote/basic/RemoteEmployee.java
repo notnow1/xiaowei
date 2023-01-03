@@ -47,6 +47,20 @@ public class RemoteEmployee implements RemoteEmployeeService {
     }
 
     /**
+     * 远程查询用户数据
+     *
+     * @param employeeDTO 员工DTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectUserByEmployeeName")
+    public R<List<EmployeeDTO>> selectUserByEmployeeName(@RequestBody EmployeeDTO employeeDTO, String source) {
+        return R.ok(employeeService.selectUserList(employeeDTO));
+    }
+
+    /**
      * 通过id查找人员
      *
      * @param employeeId
