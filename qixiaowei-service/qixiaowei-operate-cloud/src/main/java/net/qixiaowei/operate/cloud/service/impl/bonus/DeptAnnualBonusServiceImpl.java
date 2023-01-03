@@ -96,7 +96,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         BigDecimal allActualPerformanceBonusFactorSum = new BigDecimal("0");
         //奖金预算表
         BonusBudgetDTO bonusBudgetDTO = new BonusBudgetDTO();
-        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)){
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)) {
             for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOList) {
                 //目标超额完成率（%） 公式=（实际值÷目标值）-1。
                 BigDecimal targetExcessPerComp = new BigDecimal("0");
@@ -110,11 +110,11 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
                         null != actualValue && actualValue.compareTo(new BigDecimal("0")) != 0) {
-                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
-                if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0"))!= 0 &&
+                if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0 &&
                         targetExcessPerComp.compareTo(new BigDecimal("0")) != 0) {
-                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
                 deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
                 deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
@@ -132,16 +132,16 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
 
         //部门年终奖系数表集合
         List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOS = deptAnnualBonusFactorMapper.selectDeptAnnualBonusFactorByDeptAnnualBonusId(deptAnnualBonusId);
-        if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOS)){
+        if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOS)) {
             //远程调用部门赋值名称
             List<Long> collect = deptAnnualBonusFactorDTOS.stream().map(DeptAnnualBonusFactorDTO::getDepartmentId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(collect)){
+            if (StringUtils.isNotEmpty(collect)) {
                 R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(collect, SecurityConstants.INNER);
                 List<DepartmentDTO> data = listR.getData();
-                if (StringUtils.isNotEmpty(data)){
+                if (StringUtils.isNotEmpty(data)) {
                     for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOS) {
                         for (DepartmentDTO datum : data) {
-                            if (datum.getDepartmentId() == deptAnnualBonusFactorDTO.getDepartmentId()){
+                            if (datum.getDepartmentId() == deptAnnualBonusFactorDTO.getDepartmentId()) {
                                 deptAnnualBonusFactorDTO.setDepartmentName(datum.getDepartmentName());
                             }
                         }
@@ -172,9 +172,8 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         packDeptAnnualBonusFactor(deptAnnualBonusDTO.getAnnualBonusYear(), deptAnnualBonusFactorDTOS, deptPaymentBonusSum, weight);
 
 
-
         //4 部门可发年终奖
-        packDeptAnnualBonusCanGrantDTO(deptAnnualBonusDTO.getAnnualBonusYear(), deptAnnualBonusCanGrantDTOs, deptAnnualBonusFactorDTOS, deptAnnualBonusDTO.getDepartmentAnnualBonus());
+        packQueryDeptAnnualBonusCanGrantDTO(deptAnnualBonusDTO.getAnnualBonusYear(), deptAnnualBonusCanGrantDTOs, deptAnnualBonusFactorDTOS, deptAnnualBonusDTO.getDepartmentAnnualBonus());
         //部门年终奖经营绩效结果表集合
         deptAnnualBonusDTO.setDeptAnnualBonusOperateDTOs(deptAnnualBonusOperateDTOList);
         deptAnnualBonusDTO.setDeptAnnualBonusFactorDTOs(deptAnnualBonusFactorDTOS);
@@ -191,10 +190,10 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
     @Override
     public List<DeptAnnualBonusDTO> selectDeptAnnualBonusList(DeptAnnualBonusDTO deptAnnualBonusDTO) {
         DeptAnnualBonus deptAnnualBonus = new DeptAnnualBonus();
-        if (StringUtils.isNotNull(deptAnnualBonusDTO)){
+        if (StringUtils.isNotNull(deptAnnualBonusDTO)) {
             Date createTime = deptAnnualBonusDTO.getCreateTime();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-            if (StringUtils.isNotNull(createTime)){
+            if (StringUtils.isNotNull(createTime)) {
                 String createTimeFormat = simpleDateFormat.format(createTime);
                 deptAnnualBonus.setCreateTimeFormat(createTimeFormat);
             }
@@ -455,7 +454,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         packDeptAnnualBonusFactor(annualBonusYear, deptAnnualBonusFactorDTOs, deptPaymentBonusSum, weight);
 
         //4 部门可发年终奖
-        packDeptAnnualBonusCanGrantDTO(annualBonusYear, deptAnnualBonusCanGrantDTOs, deptAnnualBonusFactorDTOs, deptAnnualBonusDTO.getDepartmentAnnualBonus());
+        packAddDeptAnnualBonusCanGrantDTO(annualBonusYear, deptAnnualBonusCanGrantDTOs, deptAnnualBonusFactorDTOs, deptAnnualBonusDTO.getDepartmentAnnualBonus());
 
         deptAnnualBonusDTO.setDeptAnnualBonusOperateDTOs(deptAnnualBonusOperateDTOs);
         deptAnnualBonusDTO.setDeptAnnualBonusFactorDTOs(deptAnnualBonusFactorDTOs);
@@ -465,14 +464,14 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
     }
 
     /**
-     * 封装部门可发年终奖
+     * 预制数据封装部门可发年终奖
      *
      * @param annualBonusYear
      * @param deptAnnualBonusCanGrantDTOs
      * @param deptAnnualBonusFactorDTOs
      * @param departmentAnnualBonus
      */
-    private void packDeptAnnualBonusCanGrantDTO(int annualBonusYear, List<DeptAnnualBonusCanGrantDTO> deptAnnualBonusCanGrantDTOs, List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs, BigDecimal departmentAnnualBonus) {
+    private void packAddDeptAnnualBonusCanGrantDTO(int annualBonusYear, List<DeptAnnualBonusCanGrantDTO> deptAnnualBonusCanGrantDTOs, List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs, BigDecimal departmentAnnualBonus) {
         //总奖金包预算
         BigDecimal amountBonusBudget = new BigDecimal("0");
 
@@ -520,10 +519,10 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             BigDecimal strategyAwardPercentage = deptBonusBudgetDetailsDTO.getStrategyAwardPercentage();
 
                             if (amountBonusBudget.compareTo(new BigDecimal("0")) != 0 && strategyAwardPercentage.compareTo(new BigDecimal("0")) != 0) {
-                                    deptAmountBonus = amountBonusBudget.subtract(amountBonusBudget.multiply(strategyAwardPercentage.divide(new BigDecimal("100")))).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                deptAmountBonus = amountBonusBudget.subtract(amountBonusBudget.multiply(strategyAwardPercentage.divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP);
                             }
                             if (deptAmountBonus.compareTo(new BigDecimal("0")) != 0 && deptBonusPercentage.compareTo(new BigDecimal("0")) != 0) {
-                                beYearCanGrantBonusBudgetAmount = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_HALF_UP);
+                                beYearCanGrantBonusBudgetAmount = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
                             }
                         }
 
@@ -560,7 +559,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                                 for (Long key : bonusPayMap.keySet()) {
                                     List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS1 = bonusPayMap.get(key);
                                     for (BonusPayBudgetDeptDTO bonusPayBudgetDeptDTO : bonusPayBudgetDeptDTOS1) {
-                                        if (salaryItemDTO.getSalaryItemId() == bonusPayBudgetDeptDTO.getSalaryItemId()){
+                                        if (salaryItemDTO.getSalaryItemId() == bonusPayBudgetDeptDTO.getSalaryItemId()) {
                                             //奖项总金额
                                             BigDecimal awardTotalAmount = bonusPayBudgetDeptDTO.getAwardTotalAmount();
                                             //奖金比例
@@ -597,7 +596,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 //可发经营奖总包-奖金占比
                 BigDecimal beYearCanGrantManagePro = deptAnnualBonusCanGrantDTO.getBeYearCanGrantManagePro();
                 if (departmentAnnualBonus.compareTo(new BigDecimal("0")) != 0 && beYearCanGrantManagePro.compareTo(new BigDecimal("0")) != 0) {
-                    beYearCanGrantManageAmount = departmentAnnualBonus.multiply(beYearCanGrantManagePro.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    beYearCanGrantManageAmount = departmentAnnualBonus.multiply(beYearCanGrantManagePro.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
                 deptAnnualBonusCanGrantDTO.setBeYearCanGrantManageAmount(beYearCanGrantManageAmount);
             }
@@ -608,17 +607,186 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 //已发放年终奖
                 BigDecimal bonusAmountSum = new BigDecimal("0");
                 List<DeptAnnualBonusItemDTO> deptAnnualBonusItemDTOS = deptAnnualBonusCanGrantDTOs.get(i).getDeptAnnualBonusItemDTOS();
-                if (StringUtils.isNotEmpty(deptAnnualBonusItemDTOS)){
-                    bonusAmountSum=  bonusAmountSum.add(deptAnnualBonusItemDTOS.stream().map(DeptAnnualBonusItemDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
+                if (StringUtils.isNotEmpty(deptAnnualBonusItemDTOS)) {
+                    bonusAmountSum = bonusAmountSum.add(deptAnnualBonusItemDTOS.stream().map(DeptAnnualBonusItemDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
                 }
                 //可发经营奖总包-金额
                 BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTOs.get(i).getBeYearCanGrantManageAmount().divide(new BigDecimal("10000"));
                 if (null != beYearCanGrantManageAmount) {
                     distributeBonus = beYearCanGrantManageAmount.subtract(bonusAmountSum);
                 }
-                if (null == deptAnnualBonusFactorDTOs.get(i).getDistributeBonus()){
+                if (null == deptAnnualBonusFactorDTOs.get(i).getDistributeBonus()) {
                     deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonus(distributeBonus);
-                }else {
+                } else {
+                    deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonus(deptAnnualBonusFactorDTOs.get(i).getDistributeBonus());
+                }
+                deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonusReference(distributeBonus);
+            }
+
+        }
+
+
+    }
+
+    /**
+     * 查询详情数据封装部门可发年终奖
+     *
+     * @param annualBonusYear
+     * @param deptAnnualBonusCanGrantDTOs
+     * @param deptAnnualBonusFactorDTOs
+     * @param departmentAnnualBonus
+     */
+    private void packQueryDeptAnnualBonusCanGrantDTO(int annualBonusYear, List<DeptAnnualBonusCanGrantDTO> deptAnnualBonusCanGrantDTOs, List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs, BigDecimal departmentAnnualBonus) {
+        //总奖金包预算
+        BigDecimal amountBonusBudget = new BigDecimal("0");
+
+        BonusBudgetDTO bonusBudgetDTO = bonusBudgetMapper.selectBonusBudgetByBudgetYear(annualBonusYear);
+        if (StringUtils.isNotNull(bonusBudgetDTO)) {
+            amountBonusBudget = bonusBudgetDTO.getAmountBonusBudget();
+        }
+
+
+        //部门奖金预算 根据部门id分组
+        Map<Long, List<DeptBonusBudgetDetailsDTO>> deptMap = new HashMap<>();
+        //远程调用查看所有一级部门
+        R<List<DepartmentDTO>> listR = remoteDepartmentService.getParentAll(SecurityConstants.INNER);
+        List<DepartmentDTO> data = listR.getData();
+        if (StringUtils.isNotEmpty(data)) {
+            List<Long> collect = data.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)) {
+                //部门奖金预算
+                List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOList = deptBonusBudgetDetailsMapper.selectDeptBonusBudgetBybudgetYearAnnua(annualBonusYear, collect);
+                //根据部门id分组
+                deptMap = deptBonusBudgetDetailsDTOList.parallelStream().collect(Collectors.groupingBy(DeptBonusBudgetDetailsDTO::getDepartmentId));
+
+            }
+            for (DepartmentDTO datum : data) {
+                for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOs) {
+                    if (datum.getDepartmentId() == deptAnnualBonusFactorDTO.getDepartmentId()) {
+                        //部门奖金包发放奖金项目
+                        List<DeptAnnualBonusItemDTO> deptAnnualBonusItemDTOS = new ArrayList<>();
+                        //部门奖金占比
+                        BigDecimal deptBonusPercentage = new BigDecimal("0");
+                        //年初奖金预算-金额
+                        BigDecimal beYearCanGrantBonusBudgetAmount = new BigDecimal("0");
+                        DeptAnnualBonusCanGrantDTO deptAnnualBonusCanGrantDTO = new DeptAnnualBonusCanGrantDTO();
+                        deptAnnualBonusCanGrantDTO.setDepartmentId(datum.getDepartmentId());
+                        deptAnnualBonusCanGrantDTO.setDepartmentName(datum.getDepartmentName());
+
+                        if (StringUtils.isNotEmpty(deptMap)) {
+                            List<DeptBonusBudgetDetailsDTO> deptBonusBudgetDetailsDTOList = deptMap.get(datum.getDepartmentId());
+                            if (StringUtils.isNotEmpty(deptBonusBudgetDetailsDTOList)) {
+                                for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOList) {
+                                    //部门总奖金包
+                                    BigDecimal deptAmountBonus = new BigDecimal("0");
+                                    //部门奖金占比
+                                    deptBonusPercentage = deptBonusBudgetDetailsDTO.getDeptBonusPercentage();
+                                    //战略奖比例
+                                    BigDecimal strategyAwardPercentage = deptBonusBudgetDetailsDTO.getStrategyAwardPercentage();
+
+                                    if (amountBonusBudget.compareTo(new BigDecimal("0")) != 0 && strategyAwardPercentage.compareTo(new BigDecimal("0")) != 0) {
+                                        deptAmountBonus = amountBonusBudget.subtract(amountBonusBudget.multiply(strategyAwardPercentage.divide(new BigDecimal("100")))).setScale(2, BigDecimal.ROUND_HALF_UP);
+                                    }
+                                    if (deptAmountBonus.compareTo(new BigDecimal("0")) != 0 && deptBonusPercentage.compareTo(new BigDecimal("0")) != 0) {
+                                        beYearCanGrantBonusBudgetAmount = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
+                                    }
+                                }
+
+                            }
+                        }
+                        //年初奖金预算-奖金占比
+                        deptAnnualBonusCanGrantDTO.setBeYearCanGrantBonusBudgetPro(deptBonusPercentage);
+                        //年初奖金预算-金额
+                        deptAnnualBonusCanGrantDTO.setBeYearCanGrantBonusBudgetAmount(beYearCanGrantBonusBudgetAmount);
+                        //所有二级工资项目为奖金且级别为部门级的三级工资项目
+                        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemByBonus();
+                        if (StringUtils.isNotEmpty(salaryItemDTOS)) {
+                            for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+                                //奖金金额
+                                BigDecimal bonusAmount = new BigDecimal("0");
+                                //部门可发工资项目年终奖
+                                DeptAnnualBonusItemDTO deptAnnualBonusItemDTO = new DeptAnnualBonusItemDTO();
+                                //工资项名称
+                                deptAnnualBonusItemDTO.setSalaryItemName(salaryItemDTO.getThirdLevelItem());
+                                //工资项ID
+                                deptAnnualBonusItemDTO.setSalaryItemId(salaryItemDTO.getSalaryItemId());
+                                //部门ID
+                                deptAnnualBonusItemDTO.setDepartmentId(datum.getDepartmentId());
+                                //查询一级部门及子级部门
+                                R<List<DepartmentDTO>> sublevelDepartmentList = remoteDepartmentService.selectSublevelDepartment(datum.getDepartmentId(), SecurityConstants.INNER);
+                                List<DepartmentDTO> sublevelDepartmentListData = sublevelDepartmentList.getData();
+                                if (StringUtils.isNotEmpty(sublevelDepartmentListData)) {
+                                    List<Long> departmentIdAll = sublevelDepartmentListData.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                                    if (StringUtils.isNotEmpty(departmentIdAll)) {
+                                        //对应一级部门以及其下属部门作为预算部门的奖金发放申请单据中的奖项总金额和奖金比例
+                                        List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS = bonusPayBudgetDeptMapper.selectBonusPayBudgetDeptByBonusAnnual(departmentIdAll);
+                                        //根据部门id分组
+                                        Map<Long, List<BonusPayBudgetDeptDTO>> bonusPayMap = bonusPayBudgetDeptDTOS.parallelStream().collect(Collectors.groupingBy(BonusPayBudgetDeptDTO::getDepartmentId));
+                                        for (Long key : bonusPayMap.keySet()) {
+                                            List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS1 = bonusPayMap.get(key);
+                                            for (BonusPayBudgetDeptDTO bonusPayBudgetDeptDTO : bonusPayBudgetDeptDTOS1) {
+                                                if (salaryItemDTO.getSalaryItemId() == bonusPayBudgetDeptDTO.getSalaryItemId()) {
+                                                    //奖项总金额
+                                                    BigDecimal awardTotalAmount = bonusPayBudgetDeptDTO.getAwardTotalAmount();
+                                                    //奖金比例
+                                                    BigDecimal bonusPercentage = bonusPayBudgetDeptDTO.getBonusPercentage();
+                                                    if (awardTotalAmount.compareTo(new BigDecimal("0")) != 0 && bonusPercentage.compareTo(new BigDecimal("0")) != 0) {
+                                                        bonusAmount = bonusAmount.add(awardTotalAmount.multiply(bonusPercentage.divide(new BigDecimal("100"))).divide(new BigDecimal("10000")));
+                                                    }
+                                                }
+                                            }
+                                        }
+
+
+                                    }
+
+                                }
+                                //奖金金额
+                                deptAnnualBonusItemDTO.setBonusAmount(bonusAmount);
+                                deptAnnualBonusItemDTOS.add(deptAnnualBonusItemDTO);
+                            }
+                        }
+                        deptAnnualBonusCanGrantDTO.setDeptAnnualBonusItemDTOS(deptAnnualBonusItemDTOS);
+                        deptAnnualBonusCanGrantDTOs.add(deptAnnualBonusCanGrantDTO);
+                    }
+                }
+
+            }
+        }
+        if (StringUtils.isNotEmpty(deptAnnualBonusCanGrantDTOs)) {
+            for (int i = 0; i < deptAnnualBonusCanGrantDTOs.size(); i++) {
+                if (StringUtils.isNotEmpty(deptAnnualBonusFactorDTOs)) {
+                    //奖金包占比终值（%)
+                    deptAnnualBonusCanGrantDTOs.get(i).setBeYearCanGrantManagePro(deptAnnualBonusFactorDTOs.get(i).getBonusPercentage());
+                }
+            }
+            for (DeptAnnualBonusCanGrantDTO deptAnnualBonusCanGrantDTO : deptAnnualBonusCanGrantDTOs) {
+                BigDecimal beYearCanGrantManageAmount = new BigDecimal("0");
+                //可发经营奖总包-奖金占比
+                BigDecimal beYearCanGrantManagePro = deptAnnualBonusCanGrantDTO.getBeYearCanGrantManagePro();
+                if (departmentAnnualBonus.compareTo(new BigDecimal("0")) != 0 && beYearCanGrantManagePro.compareTo(new BigDecimal("0")) != 0) {
+                    beYearCanGrantManageAmount = departmentAnnualBonus.multiply(beYearCanGrantManagePro.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
+                }
+                deptAnnualBonusCanGrantDTO.setBeYearCanGrantManageAmount(beYearCanGrantManageAmount);
+            }
+            for (int i = 0; i < deptAnnualBonusCanGrantDTOs.size(); i++) {
+                //可分配年终奖
+                BigDecimal distributeBonus = new BigDecimal("0");
+
+                //已发放年终奖
+                BigDecimal bonusAmountSum = new BigDecimal("0");
+                List<DeptAnnualBonusItemDTO> deptAnnualBonusItemDTOS = deptAnnualBonusCanGrantDTOs.get(i).getDeptAnnualBonusItemDTOS();
+                if (StringUtils.isNotEmpty(deptAnnualBonusItemDTOS)) {
+                    bonusAmountSum = bonusAmountSum.add(deptAnnualBonusItemDTOS.stream().map(DeptAnnualBonusItemDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
+                }
+                //可发经营奖总包-金额
+                BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTOs.get(i).getBeYearCanGrantManageAmount().divide(new BigDecimal("10000"));
+                if (null != beYearCanGrantManageAmount) {
+                    distributeBonus = beYearCanGrantManageAmount.subtract(bonusAmountSum);
+                }
+                if (null == deptAnnualBonusFactorDTOs.get(i).getDistributeBonus()) {
+                    deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonus(distributeBonus);
+                } else {
                     deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonus(deptAnnualBonusFactorDTOs.get(i).getDistributeBonus());
                 }
                 deptAnnualBonusCanGrantDTOs.get(i).setDistributeBonusReference(distributeBonus);
@@ -639,7 +807,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         //查询总奖金预算赋值经营绩效结果
         List<DeptAnnualBonusOperateDTO> deptAnnualBonusOperateDTOList = bonusBudgetMapper.selectDeptAnnualBonusOperate(annualBonusYear);
         if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)) {
-            List<Long> collect = deptAnnualBonusOperateDTOList.stream().filter(f -> f.getIndicatorId()!=null).map(DeptAnnualBonusOperateDTO::getIndicatorId).collect(Collectors.toList());
+            List<Long> collect = deptAnnualBonusOperateDTOList.stream().filter(f -> f.getIndicatorId() != null).map(DeptAnnualBonusOperateDTO::getIndicatorId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect)) {
                 //远程获取指标名称
                 R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
@@ -668,11 +836,11 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal bonusWeight = deptAnnualBonusOperateDTO.getBonusWeight();
                 if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) != 0 &&
                         null != actualValue && actualValue.compareTo(new BigDecimal("0")) != 0) {
-                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
                 if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) != 0 &&
                         targetExcessPerComp.compareTo(new BigDecimal("0")) != 0) {
-                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
                 deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
                 deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
@@ -719,7 +887,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             }
 
         }
-        if (StringUtils.isEmpty(deptAnnualBonusFactorDTOs)){
+        if (StringUtils.isEmpty(deptAnnualBonusFactorDTOs)) {
             //远程调用查看所有一级部门
             R<List<DepartmentDTO>> listR = remoteDepartmentService.getParentAll(SecurityConstants.INNER);
             List<DepartmentDTO> data = listR.getData();
@@ -755,7 +923,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             }
                         }
                         if (deptPaymentBonus.compareTo(new BigDecimal("0")) > 0 && deptPaymentBonusSum.compareTo(new BigDecimal("0")) > 0) {
-                            weight = deptPaymentBonus.divide(deptPaymentBonusSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                            weight = deptPaymentBonus.divide(deptPaymentBonusSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
                         }
 
                     }
@@ -767,7 +935,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
 
                     deptAnnualBonusFactorDTOs.add(deptAnnualBonusFactorDTO);
                     //每次循环赋0
-                    weight=new BigDecimal("0");
+                    weight = new BigDecimal("0");
                 }
             }
         }
@@ -797,11 +965,11 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 BigDecimal deptBonusPercentageReference = new BigDecimal("0");
                 if (syntheticalBonusFactorSum.compareTo(new BigDecimal("0")) > 0 &&
                         null != syntheticalBonusFactor && syntheticalBonusFactor.compareTo(new BigDecimal("0")) > 0) {
-                    deptBonusPercentageReference = syntheticalBonusFactor.divide(syntheticalBonusFactorSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    deptBonusPercentageReference = syntheticalBonusFactor.divide(syntheticalBonusFactorSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
                 //部门奖金包占比参考值
                 deptAnnualBonusFactorDTO.setDeptBonusPercentageReference(deptBonusPercentageReference);
-                if (null == deptAnnualBonusFactorDTO.getBonusPercentage()){
+                if (null == deptAnnualBonusFactorDTO.getBonusPercentage()) {
                     //奖金包占比终值（%)
                     deptAnnualBonusFactorDTO.setBonusPercentage(deptBonusPercentageReference);
                 }
@@ -826,19 +994,20 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             Long performanceRankId = performanceRankFactorDTO.getPerformanceRankId();
             //绩效等级下拉框集合
             if (null != performanceRankId) {
-                Map<String,BigDecimal> map = new HashMap<>();
+                Map<String, BigDecimal> map = new HashMap<>();
                 List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
                 if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
                     deptAnnualBonusFactorDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
                 }
                 for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
-                    map.put(rankFactorDTO.getPerformanceRankName(),rankFactorDTO.getBonusFactor());
+                    map.put(rankFactorDTO.getPerformanceRankName(), rankFactorDTO.getBonusFactor());
                 }
                 deptAnnualBonusFactorDTO.setPerformanceRankMap(map);
             }
 
         }
     }
+
     /**
      * 封装组织绩效
      *
@@ -857,13 +1026,13 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             deptAnnualBonusFactorDTO.setPerformanceRankId(performanceRankId);
             //绩效等级下拉框集合
             if (null != performanceRankId) {
-                Map<String,BigDecimal> map = new HashMap<>();
+                Map<String, BigDecimal> map = new HashMap<>();
                 List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
                 if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
                     deptAnnualBonusFactorDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
                 }
                 for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
-                    map.put(rankFactorDTO.getPerformanceRankName(),rankFactorDTO.getBonusFactor());
+                    map.put(rankFactorDTO.getPerformanceRankName(), rankFactorDTO.getBonusFactor());
                 }
                 deptAnnualBonusFactorDTO.setPerformanceRankMap(map);
             }
@@ -905,7 +1074,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         deptAnnualBonusDTO.setBeYearAmountBonusBudget(beYearAmountBonusBudget);
         //年底应发总奖金包（根据实际业绩测算) 总奖金包预算×（1+∑各驱动因素的奖金系数）
         deptAnnualBonusDTO.setEndYearSalaryAmountBonus(endYearSalaryAmountBonus);
-        if (null == deptAnnualBonusDTO.getCompanyAnnualBonus()){
+        if (null == deptAnnualBonusDTO.getCompanyAnnualBonus()) {
             //最终可发总奖金包 旧：公司年终奖总包 默认等于总奖金包实际
             deptAnnualBonusDTO.setCompanyAnnualBonus(endYearSalaryAmountBonus);
         }
@@ -919,7 +1088,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
 
         //战略奖实发 公式 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
         deptAnnualBonusDTO.setStrategyDeveAward(strategyDeveAward);
-        if (null != strategyDeveAward ) {
+        if (null != strategyDeveAward) {
             departmentAnnualBonus = endYearSalaryAmountBonus.subtract(strategyDeveAward);
         }
         //可发经营奖总包 旧：部门年终奖总包 公式=公司年终奖总包-战略奖实发。
@@ -955,44 +1124,44 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 }
             }
         }
-            //赋值部门年终奖经营绩效结果表集合
-            for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
-                DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO = new DeptAnnualBonusOperateDTO();
-                //目标超额完成率（%） 公式=（实际值÷目标值）-1
-                BigDecimal targetExcessPerComp = new BigDecimal("0");
-                //奖金系数（实际）公式=权重×目标超额完成率
-                BigDecimal actualPerformanceBonusFactor = new BigDecimal("0");
-                //目标值
-                BigDecimal targetValue = bonusBudgetParametersDTO.getTargetValue();
-                //(部门年终奖用)实际值
-                BigDecimal actualValue = bonusBudgetParametersDTO.getActualValue();
-                //奖金权重(%)
-                BigDecimal bonusWeight = bonusBudgetParametersDTO.getBonusWeight();
+        //赋值部门年终奖经营绩效结果表集合
+        for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+            DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO = new DeptAnnualBonusOperateDTO();
+            //目标超额完成率（%） 公式=（实际值÷目标值）-1
+            BigDecimal targetExcessPerComp = new BigDecimal("0");
+            //奖金系数（实际）公式=权重×目标超额完成率
+            BigDecimal actualPerformanceBonusFactor = new BigDecimal("0");
+            //目标值
+            BigDecimal targetValue = bonusBudgetParametersDTO.getTargetValue();
+            //(部门年终奖用)实际值
+            BigDecimal actualValue = bonusBudgetParametersDTO.getActualValue();
+            //奖金权重(%)
+            BigDecimal bonusWeight = bonusBudgetParametersDTO.getBonusWeight();
 
-                BeanUtils.copyProperties(bonusBudgetParametersDTO, deptAnnualBonusOperateDTO);
-                if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
-                        null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
-                    targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2,BigDecimal.ROUND_HALF_UP);
-                }
-                if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
-                        targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
-                    actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2,BigDecimal.ROUND_HALF_UP);
-                }
-                //目标超额完成率（%） 公式=（实际值÷目标值）-1
-                deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
-                //奖金系数（实际）公式=权重×目标超额完成率
-                deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
-                deptAnnualBonusOperateDTOList.add(deptAnnualBonusOperateDTO);
+            BeanUtils.copyProperties(bonusBudgetParametersDTO, deptAnnualBonusOperateDTO);
+            if (null != targetValue && targetValue.compareTo(new BigDecimal("0")) > 0 &&
+                    null != actualValue && actualValue.compareTo(new BigDecimal("0")) > 0) {
+                targetExcessPerComp = actualValue.divide(targetValue, 10, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("1")).multiply(new BigDecimal("100")).setScale(2, BigDecimal.ROUND_HALF_UP);
             }
-            if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)) {
-                for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOList) {
-                    //奖金系数（实际）
-                    BigDecimal actualPerformanceBonusFactor = deptAnnualBonusOperateDTO.getActualPerformanceBonusFactor();
-                    if (null != actualPerformanceBonusFactor && actualPerformanceBonusFactor.compareTo(new BigDecimal("0")) != 0) {
-                        allActualPerformanceBonusFactorSum = allActualPerformanceBonusFactorSum.add(actualPerformanceBonusFactor);
-                    }
+            if (null != bonusWeight && bonusWeight.compareTo(new BigDecimal("0")) > 0 &&
+                    targetExcessPerComp.compareTo(new BigDecimal("0")) > 0) {
+                actualPerformanceBonusFactor = bonusWeight.divide(new BigDecimal("100")).multiply(targetExcessPerComp.divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
+            }
+            //目标超额完成率（%） 公式=（实际值÷目标值）-1
+            deptAnnualBonusOperateDTO.setTargetExcessPerComp(targetExcessPerComp);
+            //奖金系数（实际）公式=权重×目标超额完成率
+            deptAnnualBonusOperateDTO.setActualPerformanceBonusFactor(actualPerformanceBonusFactor);
+            deptAnnualBonusOperateDTOList.add(deptAnnualBonusOperateDTO);
+        }
+        if (StringUtils.isNotEmpty(deptAnnualBonusOperateDTOList)) {
+            for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOList) {
+                //奖金系数（实际）
+                BigDecimal actualPerformanceBonusFactor = deptAnnualBonusOperateDTO.getActualPerformanceBonusFactor();
+                if (null != actualPerformanceBonusFactor && actualPerformanceBonusFactor.compareTo(new BigDecimal("0")) != 0) {
+                    allActualPerformanceBonusFactorSum = allActualPerformanceBonusFactorSum.add(actualPerformanceBonusFactor);
                 }
             }
+        }
 
 
     }
