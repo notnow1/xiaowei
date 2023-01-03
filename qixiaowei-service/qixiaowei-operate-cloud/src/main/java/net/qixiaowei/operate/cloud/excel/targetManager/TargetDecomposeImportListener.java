@@ -352,7 +352,15 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 //周期目标值集合
                 List<String> cycleTargets = targetDecomposeDetailsExcel.getCycleTargets();
                 if (i == 0){
-                    data.add("分解维度：" + StringUtils.strip(decompositionDimensions.toString(),"[]").replaceAll(",","+"));
+                    StringBuffer stringBuffer = new StringBuffer();
+                    for (int i1 = 0; i1 < targetDecomposeDTO.getFileNameList().size(); i1++) {
+                        if (i1 !=0){
+                            stringBuffer.append("+").append(targetDecomposeDTO.getFileNameList().get(i1).get("label"));
+                        }else {
+                            stringBuffer.append(targetDecomposeDTO.getFileNameList().get(i1).get("label"));
+                        }
+                    }
+                    data.add("分解维度：" + stringBuffer);
                 }else if (i ==1){
                     if (StringUtils.isNotEmpty(cycleTargets1)){
                         if (cycleTargets1.size()==1){
