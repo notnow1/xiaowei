@@ -200,7 +200,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                     if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0 &&
                             cycleForecast != null && cycleForecast.compareTo(new BigDecimal("0")) != 0) {
-                        cycleForecastDeviationRate = cycleActual.subtract(cycleForecast).setScale(10, BigDecimal.ROUND_HALF_UP).divide(cycleActual, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        cycleForecastDeviationRate = cycleActual.subtract(cycleForecast).setScale(10, BigDecimal.ROUND_HALF_UP).divide(cycleActual, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(10, BigDecimal.ROUND_HALF_UP);
                     }
 
 
