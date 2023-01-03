@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.bonus;
 
+import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -56,6 +57,7 @@ import java.util.stream.Collectors;
  * @since 2022-11-26
  */
 @Service
+@Slf4j
 public class BonusBudgetServiceImpl implements IBonusBudgetService {
     @Autowired
     private BonusBudgetMapper bonusBudgetMapper;
@@ -106,7 +108,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         //封装总奖金包预算生成
         this.packPaymentBonusBudget(bonusBudgetDTO.getBudgetYear(),bonusBudgetDTO);
         BigDecimal basicWageBonusBudget = bonusBudgetDTO.getBasicWageBonusBudget();
-        System.out.println("再次打印总工资预算=============================="+basicWageBonusBudget);
+        log.info("再次打印总工资预算=============================="+basicWageBonusBudget);
         //未来三年奖金趋势集合
         List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS = new ArrayList<>();
         //查询详情未来三年奖金趋势集合
@@ -115,7 +117,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
         bonusBudgetDTO.setBonusBudgetLaddertersDTOS(bonusBudgetLaddertersDTOS);
         bonusBudgetDTO.setFutureBonusBudgetLaddertersDTOS(futureBonusBudgetLaddertersDTOS);
-        System.out.println("再次打印所有数据======================="+bonusBudgetDTO);
+        log.info("再次打印所有数据======================="+bonusBudgetDTO);
         return bonusBudgetDTO;
     }
 
@@ -624,7 +626,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             EmployeeBudgetDTO employeeBudgetDTO = new EmployeeBudgetDTO();
             employeeBudgetDTO.setBudgetYear(budgetYear);
             BigDecimal increaseAndDecreasePaySum = this.salaryPackageList(employeeBudgetDTO);
-            System.out.println("增人/减人工资包值===================================="+increaseAndDecreasePaySum);
+            log.info("增人/减人工资包值===================================="+increaseAndDecreasePaySum);
             if (null != increaseAndDecreasePaySum){
                 basicWageBonusBudget=increaseAndDecreasePaySum;
             }
@@ -636,7 +638,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
             //总工资包预算
             bonusBudgetDTO.setBasicWageBonusBudget(basicWageBonusBudget.divide(new BigDecimal("10000"),10,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP));
-            System.out.println("总工资包预算===================================="+basicWageBonusBudget.divide(new BigDecimal("10000"),10,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP));
+            log.info("总工资包预算===================================="+basicWageBonusBudget.divide(new BigDecimal("10000"),10,BigDecimal.ROUND_HALF_UP).setScale(2,BigDecimal.ROUND_HALF_UP));
             if (null != emolumentPackage && emolumentPackage.compareTo(new BigDecimal("0")) != 0) {
                 elasticityBonusBudget = emolumentPackage.subtract(basicWageBonusBudget.divide(new BigDecimal("10000"),10,BigDecimal.ROUND_HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
                 //弹性薪酬包  公式=总薪酬包预算-总工资包预算
