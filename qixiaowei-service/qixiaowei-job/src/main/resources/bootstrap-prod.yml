@@ -1,8 +1,8 @@
 #nacos 配置，为了统一使用
 nacos:
   username: nacos
-  password: qixiaowei@nacos
-  server-addr: 192.168.0.201:8850
+  password: J7CC2bxd
+  server-addr: nacos-headless.qxw-middleware:8848
 
 # Spring cloud nacos
 spring:
