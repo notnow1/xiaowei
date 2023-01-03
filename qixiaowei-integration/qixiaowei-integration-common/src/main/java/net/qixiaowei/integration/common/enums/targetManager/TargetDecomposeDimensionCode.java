@@ -8,7 +8,7 @@ public enum TargetDecomposeDimensionCode {
 
     DEPARTMENT("department", "部门", "departmentId","departmentName"),
 
-    PRODUCT("product", "产品", "productId","departmentName"),
+    PRODUCT("product", "产品", "productId","productName"),
 
     PROVINCE("province", "省份", "regionId","regionName"),
 

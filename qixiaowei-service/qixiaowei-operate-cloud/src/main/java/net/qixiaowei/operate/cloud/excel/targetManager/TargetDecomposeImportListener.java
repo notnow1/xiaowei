@@ -365,6 +365,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                     if (StringUtils.isNotEmpty(cycleTargets1)){
                         if (cycleTargets1.size()==1){
                             data.add("时间维度：年度");
+                        }else if (cycleTargets1.size()==2){
+                            data.add("时间维度：半年度");
                         }else if (cycleTargets1.size()==4){
                             data.add("时间维度：季度");
                         }else if (cycleTargets1.size()==12){
