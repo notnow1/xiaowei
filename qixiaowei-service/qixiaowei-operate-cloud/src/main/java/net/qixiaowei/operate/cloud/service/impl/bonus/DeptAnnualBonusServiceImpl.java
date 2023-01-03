@@ -566,7 +566,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                                             //奖金比例
                                             BigDecimal bonusPercentage = bonusPayBudgetDeptDTO.getBonusPercentage();
                                             if (awardTotalAmount.compareTo(new BigDecimal("0")) != 0 && bonusPercentage.compareTo(new BigDecimal("0")) != 0) {
-                                                bonusAmount = bonusAmount.add(awardTotalAmount.multiply(bonusPercentage));
+                                                bonusAmount = bonusAmount.add(awardTotalAmount.multiply(bonusPercentage.divide(new BigDecimal("100"))).divide(new BigDecimal("10000")));
                                             }
                                         }
                                     }
@@ -612,7 +612,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                     bonusAmountSum=  bonusAmountSum.add(deptAnnualBonusItemDTOS.stream().map(DeptAnnualBonusItemDTO::getBonusAmount).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
                 }
                 //可发经营奖总包-金额
-                BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTOs.get(i).getBeYearCanGrantManageAmount();
+                BigDecimal beYearCanGrantManageAmount = deptAnnualBonusCanGrantDTOs.get(i).getBeYearCanGrantManageAmount().divide(new BigDecimal("10000"));
                 if (null != beYearCanGrantManageAmount) {
                     distributeBonus = beYearCanGrantManageAmount.subtract(bonusAmountSum);
                 }
