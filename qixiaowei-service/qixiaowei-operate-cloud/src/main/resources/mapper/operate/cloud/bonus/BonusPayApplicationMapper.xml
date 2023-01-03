@@ -46,6 +46,7 @@
     <!--    查询奖金发放申请表列表-->
     <select id="selectBonusPayApplicationList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
         SELECT
+        distinct
         bpa.bonus_pay_application_id,
         bpa.salary_item_id,
         si.third_level_item ,
@@ -180,7 +181,7 @@
         select distinct
             bpa.salary_item_id ,
             bpa.award_month,
-            bpo.award_amount
+            bpo.award_amount as awardTotalAmount
         FROM  bonus_pay_objects bpo
                   left join bonus_pay_application bpa
                             on bpa.bonus_pay_application_id = bpo .bonus_pay_application_id
