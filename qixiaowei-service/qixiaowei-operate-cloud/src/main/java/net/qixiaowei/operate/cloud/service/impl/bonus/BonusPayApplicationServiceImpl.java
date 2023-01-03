@@ -387,6 +387,16 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      */
     @Override
     public BonusPayApplicationDTO insertBonusPayApplication(BonusPayApplicationDTO bonusPayApplicationDTO) {
+        BonusPayApplicationDTO bonusPayApplicationDTO1 = bonusPayApplicationMapper.selectBonusPayApplicationByAwardCode(bonusPayApplicationDTO.getAwardCode());
+        if (StringUtils.isNotNull(bonusPayApplicationDTO1)){
+            throw new ServiceException("编码已存在");
+        }
+        BonusPayApplication bonusPayApplication = new BonusPayApplication();
+        BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
+        List<BonusPayApplicationDTO> bonusPayApplicationDTOList = bonusPayApplicationMapper.selectBonusPayApplicationRepeat(bonusPayApplication);
+        if (StringUtils.isNotEmpty(bonusPayApplicationDTOList)){
+            throw new ServiceException("该奖项类别已有申请部门在相同年月申请过 请修改数据！");
+        }
         //奖金发放预算部门比例集合
         List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOs = bonusPayApplicationDTO.getBonusPayBudgetDeptDTOs();
         //奖金发放预算部门比例集合
@@ -399,8 +409,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         //奖金发放对象所有集合
         List<BonusPayObjects> bonusPayObjectsAllList = new ArrayList<>();
 
-        BonusPayApplication bonusPayApplication = new BonusPayApplication();
-        BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
+
         bonusPayApplication.setCreateBy(SecurityUtils.getUserId());
         bonusPayApplication.setCreateTime(DateUtils.getNowDate());
         bonusPayApplication.setUpdateTime(DateUtils.getNowDate());
