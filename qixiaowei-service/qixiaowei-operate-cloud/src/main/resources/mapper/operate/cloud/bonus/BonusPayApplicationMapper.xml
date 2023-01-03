@@ -50,7 +50,6 @@
         bpa.bonus_pay_application_id,
         bpa.salary_item_id,
         si.third_level_item ,
-        bpbd.department_id ,
         bpa.award_code,
         bpa.award_name,
         bpa.award_year,
@@ -69,9 +68,6 @@
         left join salary_item si
         on si.salary_item_id = bpa.salary_item_id
         and si.delete_flag =0
-        left join bonus_pay_budget_dept bpbd
-        on bpa.bonus_pay_application_id = bpbd.bonus_pay_application_id
-        and bpbd.delete_flag =0
         WHERE  bpa.delete_flag=0
         <if test="bonusPayApplication.awardYearMonth != null and bonusPayApplication.awardYearMonth != ''">
             and CONCAT(award_year,"/",award_month) = #{bonusPayApplication.awardYearMonth}
@@ -196,6 +192,70 @@
             #{item}
         </foreach>
         order by bpa.award_month
+    </select>
+<!--    根据code查询奖金发放申请表-->
+    <select id="selectBonusPayApplicationByAwardCode"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
+        SELECT bpa.bonus_pay_application_id,
+               bpa.salary_item_id,
+               si.third_level_item ,
+               bpa.award_code,
+               bpa.award_name,
+               bpa.award_year,
+               bpa.award_month,
+               bpa.apply_department_id,
+               bpa.award_total_amount,
+               bpa.bonus_pay_object,
+               bpa.award_description,
+               bpa.delete_flag,
+               bpa.create_by,
+               bpa.create_time,
+               bpa.update_by,
+               bpa.update_time
+        FROM bonus_pay_application bpa
+                 left join salary_item si
+                           on si.salary_item_id  = bpa.salary_item_id
+                               and si.delete_flag =0
+        WHERE bpa.award_code = #{awardCode}
+          and bpa.delete_flag = 0
+    </select>
+<!--    根据奖项类别 申请部门 和获奖时间取唯一数据-->
+    <select id="selectBonusPayApplicationRepeat"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
+        SELECT bpa.bonus_pay_application_id,
+               bpa.salary_item_id,
+               si.third_level_item ,
+               bpa.award_code,
+               bpa.award_name,
+               bpa.award_year,
+               bpa.award_month,
+               bpa.apply_department_id,
+               bpa.award_total_amount,
+               bpa.bonus_pay_object,
+               bpa.award_description,
+               bpa.delete_flag,
+               bpa.create_by,
+               bpa.create_time,
+               bpa.update_by,
+               bpa.update_time
+        FROM bonus_pay_application bpa
+                 left join salary_item si
+                           on si.salary_item_id  = bpa.salary_item_id
+                               and si.delete_flag =0
+        WHERE bpa.award_code = #{awardCode}
+        <if test="bonusPayApplication.salaryItemId != null">
+            and salary_item_id = #{bonusPayApplication.salaryItemId}
+        </if>
+        <if test="bonusPayApplication.applyDepartmentId != null">
+            and apply_department_id = #{bonusPayApplication.applyDepartmentId}
+        </if>
+        <if test="bonusPayApplication.awardYear != null">
+            and award_year = #{bonusPayApplication.awardYear}
+        </if>
+        <if test="bonusPayApplication.awardMonth != null">
+            and award_month = #{bonusPayApplication.awardMonth}
+        </if>
+          and bpa.delete_flag = 0
     </select>
     <!--新增奖金发放申请表-->
     <insert id="insertBonusPayApplication" useGeneratedKeys="true" keyProperty="bonusPayApplicationId">

@@ -23,7 +23,13 @@ public interface BonusPayApplicationMapper{
     */
     BonusPayApplicationDTO selectBonusPayApplicationByBonusPayApplicationId(@Param("bonusPayApplicationId")Long bonusPayApplicationId);
 
-
+    /**
+     * 根据code查询奖金发放申请表
+     *
+     * @param awardCode 奖金发放申请表编码
+     * @return 奖金发放申请表
+     */
+    BonusPayApplicationDTO selectBonusPayApplicationByAwardCode(@Param("awardCode")String awardCode);
     /**
     * 批量查询奖金发放申请表
     *
@@ -130,4 +136,11 @@ public interface BonusPayApplicationMapper{
      * @return
      */
     List<BonusPayApplicationDTO> bonusGrantStandingBudgetList(@Param("bonusPayApplicationDTO") BonusPayApplicationDTO bonusPayApplicationDTO);
+
+    /**
+     * 根据奖项类别 申请部门 和获奖时间取唯一数据
+     * @param bonusPayApplication
+     * @return
+     */
+    List<BonusPayApplicationDTO> selectBonusPayApplicationRepeat(@Param("bonusPayApplication") BonusPayApplication bonusPayApplication);
 }
