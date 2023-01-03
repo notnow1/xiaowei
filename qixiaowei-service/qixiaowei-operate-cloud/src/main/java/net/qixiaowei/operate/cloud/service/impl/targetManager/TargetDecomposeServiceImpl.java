@@ -27,6 +27,7 @@ import net.qixiaowei.message.api.dto.message.MessageSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.message.api.remote.message.RemoteMessageService;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.*;
+import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
@@ -54,6 +55,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -177,7 +180,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
                     if (cycleActual != null && cycleActual.compareTo(new BigDecimal("0")) != 0) {
                         if (cycleTarget != null && cycleTarget.compareTo(new BigDecimal("0")) != 0) {
-                            cyclePercentageComplete = cycleActual.divide(cycleTarget, 10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                            cyclePercentageComplete = cycleActual.divide(cycleTarget, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                         }
                     }
                     //目标完成率
@@ -197,16 +200,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //被除数 不能为0和空
                     if (null != amountTarget && amountTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(), 10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 //预测平均数
                 if (forecastDeviationRateSum.compareTo(BigDecimal.ZERO) != 0) {
-                    forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), 10,BigDecimal.ROUND_HALF_UP);
+                    forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), 10, BigDecimal.ROUND_HALF_UP);
                 }
                 //目标完成平均数
                 if (targetPercentageCompleteAve.compareTo(BigDecimal.ZERO) != 0) {
-                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), 10,BigDecimal.ROUND_HALF_UP);
+                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), 10, BigDecimal.ROUND_HALF_UP);
                 }
                 targetDecomposeDetailsDTO.setForecastDeviationRateAve(forecastDeviationRateAve);
                 targetDecomposeDetailsDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
@@ -343,7 +346,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 return DateUtils.getMonth();
             } else if (timeDimension == 5) {
                 return DateUtils.getDayOfWeek();
-            }else if (timeDimension == 1) {
+            } else if (timeDimension == 1) {
                 return 53;
             } else {
                 throw new ServiceException("不正确的时间维度 请配置正确的数据！");
@@ -603,14 +606,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 decomposeDTO.setForecastDeviation(forecastDeviation);
                 if (forecastDeviation != null && forecastDeviation.compareTo(new BigDecimal("0")) != 0) {
                     if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
-                        forecastDeviationRate = forecastDeviation.divide(decomposeTarget, 10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        forecastDeviationRate = forecastDeviation.divide(decomposeTarget, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 //预测与目标偏差率
                 decomposeDTO.setForecastDeviationRate(forecastDeviationRate);
                 if (actualTotal != null && actualTotal.compareTo(new BigDecimal("0")) != 0) {
                     if (decomposeTarget != null && decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
-                        targetPercentageComplete = actualTotal.divide(decomposeTarget, 10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(decomposeTarget, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 //目标完成率
@@ -631,7 +634,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 .map(TargetDecomposeDTO::getTargetPercentageComplete).filter(Objects::nonNull)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
                         if (StringUtils.isNotEmpty(targetDecomposeDTOS1) && targetDecomposeDTOS1.size() - 1 != 0) {
-                            targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1)), 10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                            targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size() - 1)), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                         }
 
                         //目标完成率平均值
@@ -769,6 +772,23 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 decomposeDTO.setForecastCycle(forecastCycle);
                 this.packDecompositionDimension(decomposeDTO);
             }
+        }
+        //模糊指标名称
+        String indicatorName = targetDecomposeDTO.getIndicatorName();
+        if (StringUtils.isNotBlank(indicatorName)) {
+            List<TargetDecomposeDTO> targetDecomposeDTOList = new ArrayList<>();
+            //模糊查询
+            Pattern pattern = Pattern.compile(indicatorName);
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                String indicatorName1 = targetDecomposeDTO.getIndicatorName();
+                if (StringUtils.isNotBlank(indicatorName1)) {
+                    Matcher matcher = pattern.matcher(indicatorName1);
+                    if (matcher.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                        targetDecomposeDTOList.add(decomposeDTO);
+                    }
+                }
+            }
+            return targetDecomposeDTOList;
         }
         return targetDecomposeDTOS;
     }
@@ -2179,7 +2199,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 TargetDecomposeDetailsExcel targetDecomposeDetailsExcel = new TargetDecomposeDetailsExcel();
                 //分解维度数据集合
                 List<String> decompositionDimensions = new ArrayList<>();
-                if (StringUtils.isNotEmpty(fileNameList)){
+                if (StringUtils.isNotEmpty(fileNameList)) {
                     //产品名称
                     String productName = targetDecomposeDetailsDTO.getProductName();
                     //区域名称
@@ -2193,23 +2213,23 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //部门名称
                     String departmentName = targetDecomposeDetailsDTO.getDepartmentName();
                     for (Map<String, String> stringStringMap : fileNameList) {
-                        if (StringUtils.isNotBlank(stringStringMap.get("value"))&&StringUtils.equals("employeeId",stringStringMap.get("value"))) {
+                        if (StringUtils.isNotBlank(stringStringMap.get("value")) && StringUtils.equals("employeeId", stringStringMap.get("value"))) {
 
                             decompositionDimensions.add(employeeName);
                         }
-                        if (StringUtils.isNotBlank(stringStringMap.get("value"))&&StringUtils.equals("areaId",stringStringMap.get("value"))) {
+                        if (StringUtils.isNotBlank(stringStringMap.get("value")) && StringUtils.equals("areaId", stringStringMap.get("value"))) {
                             decompositionDimensions.add(areaName);
                         }
-                        if (StringUtils.isNotBlank(stringStringMap.get("value"))&&StringUtils.equals("departmentId",stringStringMap.get("value"))) {
+                        if (StringUtils.isNotBlank(stringStringMap.get("value")) && StringUtils.equals("departmentId", stringStringMap.get("value"))) {
                             decompositionDimensions.add(departmentName);
                         }
-                        if (StringUtils.isNotBlank(stringStringMap.get("value"))&&StringUtils.equals("productId",stringStringMap.get("value"))) {
+                        if (StringUtils.isNotBlank(stringStringMap.get("value")) && StringUtils.equals("productId", stringStringMap.get("value"))) {
                             decompositionDimensions.add(productName);
                         }
-                        if (StringUtils.isNotBlank(stringStringMap.get("value"))&&StringUtils.equals("regionId",stringStringMap.get("value"))) {
+                        if (StringUtils.isNotBlank(stringStringMap.get("value")) && StringUtils.equals("regionId", stringStringMap.get("value"))) {
                             decompositionDimensions.add(regionName);
                         }
-                        if (StringUtils.isNotBlank(stringStringMap.get("value"))&&StringUtils.equals("industryId",stringStringMap.get("value"))) {
+                        if (StringUtils.isNotBlank(stringStringMap.get("value")) && StringUtils.equals("industryId", stringStringMap.get("value"))) {
                             decompositionDimensions.add(industryName);
                         }
                     }
@@ -2224,14 +2244,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 targetDecomposeDetailsExcel.setPrincipalEmployeeName(targetDecomposeDetailsDTO.getPrincipalEmployeeName());
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesMap)) {
                     List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList1 = decomposeDetailCyclesMap.get(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
-                    if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList1)){
+                    if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList1)) {
                         //周期目标值集合
                         List<String> cycleTargets = new ArrayList<>();
                         //周期目标值总值集合
                         List<String> cycleTargetSum = new ArrayList<>();
                         for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList1) {
                             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList2 = cycleNumberMap.get(decomposeDetailCyclesDTO.getCycleNumber());
-                            if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList2)){
+                            if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList2)) {
                                 cycleTargetSum.add(decomposeDetailCyclesDTOList2.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
                             }
                             cycleTargets.add(decomposeDetailCyclesDTO.getCycleTarget().toString());
@@ -2596,12 +2616,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = new ArrayList<>();
                 int dime = 0;
-                if (targetDecomposeDTO.getTargetYear()<= DateUtils.getYear()){
+                if (targetDecomposeDTO.getTargetYear() <= DateUtils.getYear()) {
                     dime = this.packDecomposeDetailCycles(targetDecomposeDTO);
                 }
                 List<String> list = cyclesExcelData.get(i);
                 for (int i1 = 0; i1 < list.size(); i1++) {
-                    if (i1 >= dime-1) {
+                    if (i1 >= dime - 1) {
                         DecomposeDetailCyclesDTO decomposeDetailCyclesDTO = new DecomposeDetailCyclesDTO();
                         //周期
                         decomposeDetailCyclesDTO.setCycleNumber(i1 + 1);

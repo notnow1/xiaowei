@@ -201,9 +201,6 @@
         <if test="targetDecompose.timeDimension != null">
             and td.time_dimension like '%${targetDecompose.timeDimension}%'
         </if>
-        <if test="targetDecompose.indicatorName != null and targetDecompose.indicatorName != ''">
-            and i.indicator_name like '%${targetDecompose.indicatorName}%'
-        </if>
         <if test="targetDecompose.decomposeTarget != null">
             and td.decompose_target=#{targetDecompose.decomposeTarget}
         </if>
