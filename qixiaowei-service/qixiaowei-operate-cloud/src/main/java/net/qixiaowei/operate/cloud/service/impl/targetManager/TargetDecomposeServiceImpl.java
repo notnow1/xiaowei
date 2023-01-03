@@ -200,16 +200,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     //被除数 不能为0和空
                     if (null != amountTarget && amountTarget.compareTo(BigDecimal.ZERO) != 0) {
                         //保留一位小数
-                        targetPercentageComplete = actualTotal.divide(targetDecomposeDetailsDTO.getDecomposeTarget(), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        targetPercentageComplete = actualTotal.divide(amountTarget, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                 }
                 //预测平均数
                 if (forecastDeviationRateSum.compareTo(BigDecimal.ZERO) != 0) {
-                    forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), 10, BigDecimal.ROUND_HALF_UP);
+                    forecastDeviationRateAve = forecastDeviationRateSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size())), 10, BigDecimal.ROUND_HALF_UP);
                 }
                 //目标完成平均数
-                if (targetPercentageCompleteAve.compareTo(BigDecimal.ZERO) != 0) {
-                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size() - 1)), 10, BigDecimal.ROUND_HALF_UP);
+                if (targetPercentageCompleteSum.compareTo(BigDecimal.ZERO) != 0) {
+                    targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOList.size())), 10, BigDecimal.ROUND_HALF_UP);
                 }
                 targetDecomposeDetailsDTO.setForecastDeviationRateAve(forecastDeviationRateAve);
                 targetDecomposeDetailsDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
@@ -780,7 +780,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             //模糊查询
             Pattern pattern = Pattern.compile(indicatorName);
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
-                String indicatorName1 = targetDecomposeDTO.getIndicatorName();
+                String indicatorName1 = decomposeDTO.getIndicatorName();
                 if (StringUtils.isNotBlank(indicatorName1)) {
                     Matcher matcher = pattern.matcher(indicatorName1);
                     if (matcher.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询

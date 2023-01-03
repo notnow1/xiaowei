@@ -1506,6 +1506,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10,BigDecimal.ROUND_HALF_UP));
                                 employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
                             }
+
                         }
                     }
                     if (StringUtils.isNotEmpty(employeeIds)) {
