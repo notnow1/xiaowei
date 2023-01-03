@@ -184,6 +184,7 @@ steps:
         "msgtype": "markdown",
         "markdown": {
             "content": "{{#success build.status}}✅{{else}}❌{{/success}}**{{ repo.owner }}/{{ repo.name }}** (Build #{{build.number}})\n
+                        >**构建环境**: 测试环境
                         >**构建结果**: {{ build.status }}
                         >**代码分支**: {{ build.branch }}
                         >**提交标识**: {{ build.commit }}
