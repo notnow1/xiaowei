@@ -733,13 +733,14 @@
         when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
         as employeeRankName,
         case
-        when date_format(now(), '%Y') &lt; #{employee.planYear} then sum(employment_status = 1)
+        when date_format(now(), '%Y') &lt; #{employee.planYear} then ifnull(sum(employment_status = 1),0)
         when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 0 and
-        date_format(now(), '%m') &lt; 7 then sum(case
-        when date_format(departure_date, '%Y') &lt; #{employee.planYear} - 1
-        then employment_status = 1 end)
+        date_format(now(), '%m') &lt; 7 then
+            ifnull(sum(case
+                           when date_format(departure_date, '%Y') &lt; #{employee.planYear} - 1
+                               then employment_status = 1 end),0)
         when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 6 and
-        date_format(now(), '%m') &lt; 13 then sum(employment_status = 1)
+        date_format(now(), '%m') &lt; 13 then ifnull(sum(employment_status = 1),0)
         end as amountLastYear
         FROM employee e
         left join post p
