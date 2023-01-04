@@ -216,7 +216,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     decomposeDetailCyclesDTO.setCyclePercentageComplete(cyclePercentageComplete);
                     //预测总和
                     if (cyclePercentageComplete.compareTo(new BigDecimal("0")) != 0) {
-                        forecastDeviationRateSum = forecastDeviationRateSum.add(cyclePercentageComplete);
+                        forecastDeviationRateSum = forecastDeviationRateSum.add(cyclePercentageComplete.abs());
                     }
                     //目标总和
                     if (decomposeDetailCyclesDTO.getCyclePercentageComplete() != null && decomposeDetailCyclesDTO.getCyclePercentageComplete().compareTo(new BigDecimal("0")) != 0) {
