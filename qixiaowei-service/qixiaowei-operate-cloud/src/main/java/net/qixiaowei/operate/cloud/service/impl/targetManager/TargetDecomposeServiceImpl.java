@@ -596,6 +596,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             List<Long> collect = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             targetDecompose.setIndicatorIds(collect);
         }
+        targetDecompose.setTenantId(SecurityUtils.getTenantId());
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectResultList(targetDecompose);
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             List<Long> indicatorIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).collect(Collectors.toList());

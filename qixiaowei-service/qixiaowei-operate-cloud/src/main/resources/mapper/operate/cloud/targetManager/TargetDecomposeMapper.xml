@@ -261,16 +261,16 @@
         td.time_dimension,
         IFNULL(ts.target_value,0) as target_value,
         IFNULL((select sum(cycle_forecast) from target_decompose_details tdd left join decompose_detail_cycles ddc on
-        ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 where
-        td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 ),0) as decompose_target,
+        ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 and ddc.tenant_id =#{targetDecompose.tenantId} where
+        td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 and tdd.tenant_id =#{targetDecompose.tenantId}),0) as decompose_target,
         td.target_decompose_id,
         td.target_decompose_type,
         td.indicator_id,
         td.target_decompose_dimension_id,
         IFNULL(td.forecast_year,0) as forecast_year,
         IFNULL((select sum(cycle_actual) from target_decompose_details tdd left join decompose_detail_cycles ddc on
-        ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 where
-        td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 ),0) as actual_total,
+        ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 and ddc.tenant_id =#{targetDecompose.tenantId} where
+        td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 and tdd.tenant_id =#{targetDecompose.tenantId}),0) as actual_total,
         td.status
         FROM target_decompose td
         left join target_setting ts
