@@ -1199,7 +1199,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
             }
             if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
-                if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOS)) {
+                if (StringUtils.isNotEmpty(targetSettingDTOS)) {
                     //根据指标id分组
                     Map<Long, List<TargetSettingDTO>> indicatorIdMap = targetSettingDTOS.parallelStream().collect(Collectors.groupingBy(TargetSettingDTO::getIndicatorId));
                     for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
