@@ -339,6 +339,23 @@
             #{item}
         </foreach>
     </select>
+<!--    根据年份指标id查询数据-->
+    <select id="selectSetDrivingFactor"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        select
+            IFNULL(ts.challenge_value,0) as challenge_value,
+            IFNULL(ts.target_value,0) as target_value,
+            IFNULL(ts.guaranteed_value,0) as guaranteed_value
+        from target_setting ts
+        where ts.target_year =#{targetSetting.targetYear}
+          and ts.indicator_id in
+        <foreach item="item"
+                 collection="targetSetting.indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          and ts.delete_flag =0
+    </select>
     <!--新增目标制定-->
     <insert id="insertTargetSetting" useGeneratedKeys="true" keyProperty="targetSettingId">
         INSERT INTO target_setting

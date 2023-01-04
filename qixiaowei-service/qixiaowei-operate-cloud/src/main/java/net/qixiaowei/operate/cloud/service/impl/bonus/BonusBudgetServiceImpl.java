@@ -13,6 +13,7 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusBudget;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusBudgetParameters;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
+import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetSetting;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetLaddertersDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
@@ -21,6 +22,7 @@ import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusBudgetMapper;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusBudgetParametersMapper;
@@ -28,6 +30,7 @@ import net.qixiaowei.operate.cloud.mapper.salary.EmolumentPlanMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.OfficialRankEmolumentMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
+import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusBudgetService;
 import net.qixiaowei.operate.cloud.service.impl.salary.EmolumentPlanServiceImpl;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -71,6 +74,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
     @Autowired
     private TargetOutcomeMapper targetOutcomeMapper;
+    @Autowired
+    private TargetSettingMapper targetSettingMapper;
     @Autowired
     private EmolumentPlanMapper emolumentPlanMapper;
     @Autowired
@@ -1180,8 +1185,14 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 targetOutcome.setLimitYear(collect.size() * 2);
             }
 
-            //查询总奖金包预算参数的指标目标 挑战 保底 和奖金驱动因素实际数：从关键经营结果取值，当前月份倒推12个月的合计
+            //查询总奖金包预算参数的奖金驱动因素实际数：从关键经营结果取值，当前月份倒推12个月的合计
             List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS = targetOutcomeMapper.selectDrivingFactor(targetOutcome);
+            TargetSetting targetSetting = new TargetSetting();
+            targetSetting.setTargetYear(targetOutcome.getTargetYear());
+            targetSetting.setIndicatorIds(targetOutcome.getIndicatorIds());
+            //指标目标 挑战 保底
+            List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectSetDrivingFactor(targetSetting);
+
             if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOS)) {
                 //封装奖金驱动因素实际数
                 indicatorIdBonusMap = packMonth(targetOutcomeDetailsDTOS, month);
@@ -1190,9 +1201,9 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
                 if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOS)) {
                     //根据指标id分组
-                    Map<Long, List<TargetOutcomeDetailsDTO>> indicatorIdMap = targetOutcomeDetailsDTOS.parallelStream().collect(Collectors.groupingBy(TargetOutcomeDetailsDTO::getIndicatorId));
+                    Map<Long, List<TargetSettingDTO>> indicatorIdMap = targetSettingDTOS.parallelStream().collect(Collectors.groupingBy(TargetSettingDTO::getIndicatorId));
                     for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
-                        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOS1 = indicatorIdMap.get(bonusBudgetParametersDTO.getIndicatorId());
+                        List<TargetSettingDTO> targetOutcomeDetailsDTOS1 = indicatorIdMap.get(bonusBudgetParametersDTO.getIndicatorId());
                         if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOS1)) {
                             for (int i = 0; i < targetOutcomeDetailsDTOS1.size(); i++) {
                                 if (i == 0) {

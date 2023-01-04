@@ -150,4 +150,11 @@ public interface TargetSettingMapper {
      * @return
      */
     List<TargetSettingDTO> selectTargetSettingByIndicators(@Param("indicatorIds") List<Long> indicatorIds, @Param("targetYear") Integer targetYear);
+
+    /**
+     * 根据年份指标id查询数据
+     * @param targetSetting
+     * @return
+     */
+    List<TargetSettingDTO> selectSetDrivingFactor(@Param("targetSetting") TargetSetting targetSetting);
 }

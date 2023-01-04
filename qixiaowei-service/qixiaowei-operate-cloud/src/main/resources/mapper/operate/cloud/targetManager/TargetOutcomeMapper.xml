@@ -93,9 +93,6 @@
         SELECT
         to2.target_year,
         tod.indicator_id,
-        IFNULL(ts.challenge_value,0) as challenge_value,
-        IFNULL(ts.target_value,0) as target_value,
-        IFNULL(ts.guaranteed_value,0) as guaranteed_value,
         IFNULL(tod.actual_january,0) as actual_january,
         IFNULL(tod.actual_february,0) as actual_february,
         IFNULL(tod.actual_march,0) as actual_march,
@@ -112,10 +109,6 @@
         left join target_outcome_details tod
         on to2.target_outcome_id = tod.target_outcome_id
         and tod.delete_flag =0
-        left join target_setting ts
-        on to2.target_year = ts.target_year
-        and tod.indicator_id = ts.indicator_id
-        and ts.delete_flag = 0
         WHERE to2.delete_flag = 0
         and tod.indicator_id in
         <foreach item="item"
@@ -124,7 +117,6 @@
             #{item}
         </foreach>
         and to2.target_year &lt;= #{targetOutcome.targetYear}
-        and ts.target_year =#{targetOutcome.targetYear}
         order by to2.target_year desc
         LIMIT #{targetOutcome.limitYear}
     </select>
