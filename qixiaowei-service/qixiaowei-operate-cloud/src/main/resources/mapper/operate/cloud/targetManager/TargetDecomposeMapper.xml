@@ -384,7 +384,7 @@
             and indicator_id=#{targetDecompose.indicatorId}
         </if>
         <if test="targetDecompose.targetYear == null">
-            and target_year = max(target_year)
+            HAVING target_year = max(target_year)
         </if>
         and delete_flag = 0
     </select>
