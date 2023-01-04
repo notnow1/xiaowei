@@ -83,20 +83,20 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             BigDecimal erImproveAfterTwo = emolumentPlanDTO.getErImproveAfterTwo();
 
 
-            if (null !=erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0"))!=0 && null !=emolumentRevenueImprove && emolumentRevenueImprove.compareTo(new BigDecimal("0"))!=0){
+            if (null !=erBeforeOne  && null !=emolumentRevenueImprove){
                 //er值 公式=上年E/R值×（1-本年E/R值改进率）
                 BigDecimal subtract = new BigDecimal("100").subtract(emolumentRevenueImprove);
                 //er值
                 BigDecimal multiply = erBeforeOne.multiply(subtract).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEr(multiply);
-                if (null != erImproveAfterOne && erImproveAfterOne.compareTo(new BigDecimal("0"))!= 0){
+                if (null != erImproveAfterOne ){
                     //er值
                     BigDecimal er = emolumentPlanDTO.getEr();
                     BigDecimal subtract1 = new BigDecimal("100").subtract(erImproveAfterOne);
                     //预算年后一年E/R值(%)
                     BigDecimal multiply1 = er.multiply(subtract1).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                     emolumentPlanDTO.setErAfterOne(multiply1);
-                    if (null != erImproveAfterTwo && erImproveAfterTwo.compareTo(new BigDecimal("0"))!= 0){
+                    if (null != erImproveAfterTwo ){
                         //预算年后一年E/R值(%)
                         BigDecimal erAfterOne = emolumentPlanDTO.getErAfterOne();
                         BigDecimal subtract2 = new BigDecimal("100").subtract(erImproveAfterTwo);
@@ -115,17 +115,17 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             BigDecimal erAfterOne = emolumentPlanDTO.getErAfterOne();
             //预算年后二年E/R值(%)
             BigDecimal erAfterTwo = emolumentPlanDTO.getErAfterTwo();
-            if (null !=revenue && revenue.compareTo(new BigDecimal("0"))>0 && null !=er && er.compareTo(new BigDecimal("0"))>0){
+            if (null !=revenue   && null !=er ){
                 //预算年总薪酬包
                 BigDecimal multiply = revenue.multiply(er).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEmolumentPackage(multiply);
             }
-            if (null !=revenueAfterOne && revenueAfterOne.compareTo(new BigDecimal("0"))>0 && null !=erAfterOne && erAfterOne.compareTo(new BigDecimal("0"))>0){
+            if (null !=revenueAfterOne  && null !=erAfterOne ){
                 //预算年后一年总薪酬包
                 BigDecimal multiply1 = revenueAfterOne.multiply(erAfterOne).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEmolumentPackageAfterOne(multiply1);
             }
-            if (null !=revenueAfterTwo && revenueAfterTwo.compareTo(new BigDecimal("0"))>0 && null !=erAfterTwo && erAfterTwo.compareTo(new BigDecimal("0"))>0){
+            if (null !=revenueAfterTwo  && null !=erAfterTwo ){
                 //预算年后二年总薪酬包
                 BigDecimal multiply2 = revenueAfterTwo.multiply(erAfterTwo).divide(new BigDecimal("100"),BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTO.setEmolumentPackageAfterTwo(multiply2);
