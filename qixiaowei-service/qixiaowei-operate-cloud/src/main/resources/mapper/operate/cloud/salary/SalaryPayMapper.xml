@@ -167,6 +167,7 @@
         AND pay_month
         BETWEEN #{startMonth}
         AND #{endMonth}
+        AND delete_flag = 0
     </select>
     <!--多个年份的所有-->
     <select id="selectSalaryPayBySomeYear"
@@ -191,6 +192,7 @@
         WHERE pay_year
         BETWEEN #{startYear}
         AND #{endYear}
+        AND delete_flag = 0
     </select>
     <!--    根据人员ID集合和年份查找工资发薪信息-->
     <select id="selectSalaryPayByBudggetEmployeeId"
