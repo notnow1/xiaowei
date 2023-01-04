@@ -289,21 +289,26 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
             targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeList(targetOutcome);
         } else {
             List<EmployeeDTO> employeeDTOS = getEmployee(createByName);
-            List<Long> createByList = new ArrayList<>();
-            for (EmployeeDTO employeeDTO : employeeDTOS) {
-                if (!createByList.contains(employeeDTO.getEmployeeId())) {
-                    createByList.add(employeeDTO.getUserId());
+            Set<Long> createBySet = new HashSet<>();
+            if (StringUtils.isEmpty(employeeDTOS)) {
+                targetOutcomeDTOS = new ArrayList<>();
+            } else {
+                for (EmployeeDTO employeeDTO : employeeDTOS) {
+                    Long userId = employeeDTO.getUserId();
+                    if (StringUtils.isNotNull(userId)) {
+                        createBySet.add(userId);
+                    }
                 }
+                targetOutcomeDTO.setCreateBys(createBySet);
+                TargetOutcome targetOutcome = new TargetOutcome();
+                BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
+                Map<String, Object> params = targetOutcome.getParams();
+                if (StringUtils.isNotEmpty(targetOutcomeDTO.getCreateBys())) {
+                    params.put("createBys", targetOutcomeDTO.getCreateBys());
+                }
+                targetOutcome.setParams(params);
+                targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeByCreateBys(targetOutcome);
             }
-            targetOutcomeDTO.setCreateBys(createByList);
-            TargetOutcome targetOutcome = new TargetOutcome();
-            BeanUtils.copyProperties(targetOutcomeDTO, targetOutcome);
-            Map<String, Object> params = targetOutcome.getParams();
-            if (StringUtils.isNotEmpty(targetOutcomeDTO.getCreateBys())) {
-                params.put("createBys", targetOutcomeDTO.getCreateBys());
-            }
-            targetOutcome.setParams(params);
-            targetOutcomeDTOS = targetOutcomeMapper.selectTargetOutcomeByCreateBys(targetOutcome);
         }
         if (StringUtils.isEmpty(targetOutcomeDTOS)) {
             return targetOutcomeDTOS;
