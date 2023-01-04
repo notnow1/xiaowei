@@ -260,7 +260,7 @@
         td.decomposition_dimension,
         td.time_dimension,
         IFNULL(ts.target_value,0) as target_value,
-        IFNULL((select sum(cycle_forecast) from target_decompose_details tdd left join decompose_detail_cycles ddc on
+        IFNULL((select sum(cycle_target) from target_decompose_details tdd left join decompose_detail_cycles ddc on
         ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 and ddc.tenant_id =#{targetDecompose.tenantId} where
         td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 and tdd.tenant_id =#{targetDecompose.tenantId}),0) as decompose_target,
         td.target_decompose_id,
