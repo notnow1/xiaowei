@@ -8,6 +8,7 @@ import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 目标结果表
@@ -90,7 +91,7 @@ public class TargetOutcomeDTO {
     /**
      * 员工ID集合
      */
-    private List<Long> createBys;
+    private Set<Long> createBys;
 
     Map<String, Object> params;
 
