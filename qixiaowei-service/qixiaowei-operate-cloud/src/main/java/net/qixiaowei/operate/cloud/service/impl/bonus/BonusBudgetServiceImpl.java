@@ -676,10 +676,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
     public void packPaymentBonusBudgetList(List<BonusBudgetDTO> bonusBudgetDTOS) {
 
         if (StringUtils.isNotEmpty(bonusBudgetDTOS)) {
-            List<Integer> collect = bonusBudgetDTOS.stream().map(BonusBudgetDTO::getBudgetYear).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(collect)) {
-                List<EmolumentPlanDTO> emolumentPlanDTOList = emolumentPlanMapper.selectEmolumentPlanByPlanYears(collect);
                 for (int i = 0; i < bonusBudgetDTOS.size(); i++) {
+                    EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.selectEmolumentPlanByPlanYear(bonusBudgetDTOS.get(i).getBudgetYear());
                     //总薪酬包预算
                     BigDecimal emolumentPackage = new BigDecimal("0");
                     //总工资包预算
@@ -691,11 +689,11 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //总奖金包预算
                     BigDecimal amountBonusBudget = bonusBudgetDTOS.get(i).getAmountBonusBudget();
 
-                    if (StringUtils.isNotEmpty(emolumentPlanDTOList)) {
+                    if (StringUtils.isNotNull(emolumentPlanDTO)) {
                         //查询薪酬规划详情计算方法
-                        EmolumentPlanServiceImpl.queryCalculate(emolumentPlanDTOList.get(i));
+                        EmolumentPlanServiceImpl.queryCalculate(emolumentPlanDTO);
                         //薪酬规划总薪酬包
-                        emolumentPackage = emolumentPlanDTOList.get(i).getEmolumentPackage();
+                        emolumentPackage = emolumentPlanDTO.getEmolumentPackage();
                     }
                     //总薪酬包预算
                     bonusBudgetDTOS.get(i).setPaymentBonusBudget(emolumentPackage);
@@ -732,7 +730,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                         bonusBudgetDTOS.get(i).setRaiseSalaryBonusBudget(raiseSalaryBonusBudget);
                     }
                 }
-            }
+
 
         }
 
