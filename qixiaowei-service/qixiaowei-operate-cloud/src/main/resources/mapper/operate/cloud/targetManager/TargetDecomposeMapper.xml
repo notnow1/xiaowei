@@ -362,9 +362,6 @@
         target_setting_id,
         target_setting_type,
         indicator_id,
-        <if test="targetDecompose.targetYear == null">
-            max(target_year) as target_year,
-        </if>
         <if test="targetDecompose.targetYear != null">
             target_year,
         </if>
@@ -385,6 +382,9 @@
         </if>
         <if test="targetDecompose.indicatorId != null">
             and indicator_id=#{targetDecompose.indicatorId}
+        </if>
+        <if test="targetDecompose.targetYear == null">
+            and target_year = max(target_year)
         </if>
         and delete_flag = 0
     </select>
