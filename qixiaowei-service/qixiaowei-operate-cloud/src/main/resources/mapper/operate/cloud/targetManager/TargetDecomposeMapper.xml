@@ -362,9 +362,7 @@
         target_setting_id,
         target_setting_type,
         indicator_id,
-        <if test="targetDecompose.targetYear != null">
-            target_year,
-        </if>
+        target_year,
         percentage,
         challenge_value,
         target_value,
