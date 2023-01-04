@@ -209,6 +209,6 @@ public class PerformanceAppraisalDTO {
      */
     private Integer queryType;
 
-
+    private Map<String, Object> params;
 }
 

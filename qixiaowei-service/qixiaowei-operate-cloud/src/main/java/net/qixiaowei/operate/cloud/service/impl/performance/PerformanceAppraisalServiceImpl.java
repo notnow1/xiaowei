@@ -1190,7 +1190,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             } else {
                 factorResultId = factorObjectMap.get(map.get(3));
             }
-            performanceAppraisalObjectsDTO.setEvaluationScore(new BigDecimal(map.get(2)));
+            if (StringUtils.isNull(map.get(2))) {
+                performanceAppraisalObjectsDTO.setEvaluationScore(BigDecimal.ZERO);
+            } else {
+                performanceAppraisalObjectsDTO.setEvaluationScore(new BigDecimal(map.get(2)));
+            }
             performanceAppraisalObjectsDTO.setAppraisalObjectId(performanceObjectId);
             performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
             performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
@@ -1283,7 +1287,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             } else {
                 factorResultId = factorObjectMap.get(map.get(6));
             }
-            performanceAppraisalObjectsDTO.setEvaluationScore(new BigDecimal(map.get(5)));
+            if (StringUtils.isNull(map.get(5))) {
+                performanceAppraisalObjectsDTO.setEvaluationScore(BigDecimal.ZERO);
+            } else {
+                performanceAppraisalObjectsDTO.setEvaluationScore(new BigDecimal(map.get(5)));
+            }
             performanceAppraisalObjectsDTO.setAppraisalObjectId(performanceObjectId);
             performanceAppraisalObjectsDTO.setPerformAppraisalObjectsId(performAppraisalObjectsId);
             performanceAppraisalObjectsDTO.setAppraisalResultId(factorResultId);
