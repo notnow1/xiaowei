@@ -312,7 +312,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
         EmolumentPlan emolumentPlan = new EmolumentPlan();
         emolumentPlan.setPlanYear(planYear);
         emolumentPlan.setIndicatorId(data.getIndicatorId());
-
+        emolumentPlan.setTenantId(SecurityUtils.getTenantId());
         EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan);
         this.addCalculate(emolumentPlanDTO);
         return emolumentPlanDTO;
