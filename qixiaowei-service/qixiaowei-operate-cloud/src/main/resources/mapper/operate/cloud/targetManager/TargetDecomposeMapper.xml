@@ -383,10 +383,9 @@
         <if test="targetDecompose.indicatorId != null">
             and indicator_id=#{targetDecompose.indicatorId}
         </if>
-        <if test="targetDecompose.targetYear == null">
-            HAVING target_year = max(target_year)
-        </if>
         and delete_flag = 0
+        order by target_year
+        limit 1
     </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">
