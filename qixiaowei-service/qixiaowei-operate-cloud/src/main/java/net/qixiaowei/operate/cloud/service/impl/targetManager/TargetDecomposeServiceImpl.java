@@ -664,7 +664,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 .map(TargetDecomposeDTO::getTargetPercentageComplete).filter(Objects::nonNull)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
                         if (StringUtils.isNotEmpty(targetDecomposeDTOS1)) {
-                            targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size())), 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(10,BigDecimal.ROUND_HALF_UP);
+                            targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size())), 10, BigDecimal.ROUND_HALF_UP).setScale(10,BigDecimal.ROUND_HALF_UP);
                         }
 
                         //目标完成率平均值
