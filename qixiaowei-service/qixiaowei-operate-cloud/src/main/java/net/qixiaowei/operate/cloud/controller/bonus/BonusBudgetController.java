@@ -108,6 +108,18 @@ public class BonusBudgetController extends BaseController {
     }
 
     /**
+     * 新增奖金预算新增指标带出数据
+     */
+    //@RequiresPermissions(value = {"operate:cloud:bonusBudget:add", "operate:cloud:bonusBudget:edit"}, logical = Logical.OR)
+    @PostMapping("/add/indicatorTamount")
+    public AjaxResult addBonusBudgetIndicatorTamount(@RequestBody BonusBudgetDTO bonusBudgetDTO) {
+        BonusBudgetParametersDTO bonusBudgetParametersDTO = bonusBudgetService.addBonusBudgetIndicatorTamount(bonusBudgetDTO);
+        if (StringUtils.isNull(bonusBudgetParametersDTO)) {
+            return AjaxResult.success(new BonusBudgetParametersDTO());
+        }
+        return AjaxResult.success(bonusBudgetParametersDTO);
+    }
+    /**
      * 新增总奖金包预算阶梯预制数据
      */
     @RequiresPermissions(value = {"operate:cloud:bonusBudget:add", "operate:cloud:bonusBudget:edit"}, logical = Logical.OR)

@@ -130,4 +130,11 @@ public interface IBonusBudgetService{
      * @return
      */
     int queryBonusBudgetYear();
+
+    /**
+     * 新增奖金预算新增指标带出数据
+     * @param bonusBudgetDTO
+     * @return
+     */
+    BonusBudgetParametersDTO addBonusBudgetIndicatorTamount(BonusBudgetDTO bonusBudgetDTO);
 }
