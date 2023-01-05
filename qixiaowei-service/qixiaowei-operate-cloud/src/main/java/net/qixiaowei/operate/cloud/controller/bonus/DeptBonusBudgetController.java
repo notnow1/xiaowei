@@ -107,7 +107,7 @@ public class DeptBonusBudgetController extends BaseController {
     /**
      * 新增部门奖金包预算预制数据
      */
-    //@RequiresPermissions(value = {"operate:cloud:deptBonusBudget:add", "operate:cloud:deptBonusBudget:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"operate:cloud:deptBonusBudget:add", "operate:cloud:deptBonusBudget:edit"}, logical = Logical.OR)
     @GetMapping("/add/{budgetYear}")
     public AjaxResult addDeptBonusBudgetTamount(@PathVariable int budgetYear) {
         DeptBonusBudgetDTO deptBonusBudgetDTO = deptBonusBudgetService.addDeptBonusBudgetTamount(budgetYear);

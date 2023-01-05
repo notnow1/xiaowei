@@ -54,6 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -666,14 +667,26 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                             BigDecimal targetPercentageCompleteSum = new BigDecimal("0");
                             TargetDecomposeDTO targetDecomposeDTO1 = this.selectResultTargetDecomposeByTargetDecomposeId(decomposeDTO.getTargetDecomposeId());
                             if (StringUtils.isNotNull(targetDecomposeDTO1)){
+                                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();
                                 List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO1.getTargetDecomposeDetailsDTOS();
                                 if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
                                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
                                         List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
-                                        if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)){
-                                           //sterm流求和 目标完成率集合
-                                            BigDecimal cyclePercentageCompleteSum = decomposeDetailCyclesDTOS.stream().map(DecomposeDetailCyclesDTO::getCyclePercentageComplete).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                                            targetPercentageCompleteSum=targetPercentageCompleteSum.add(cyclePercentageCompleteSum);
+                                        decomposeDetailCyclesDTOList.addAll(decomposeDetailCyclesDTOS);
+
+                                    }
+                                    if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList) && decomposeDetailCyclesDTOList.get(0) != null){
+                                        //根据周期数分组
+                                        Map<Integer, List<DecomposeDetailCyclesDTO>> cycleNumberMap = decomposeDetailCyclesDTOList.parallelStream().collect(Collectors.groupingBy(DecomposeDetailCyclesDTO::getCycleNumber));
+                                        for (Integer key : cycleNumberMap.keySet()) {
+                                            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList1 = cycleNumberMap.get(key);
+                                            //sterm流求和 实际值合计
+                                            BigDecimal cycleActualSum = decomposeDetailCyclesDTOList1.stream().map(DecomposeDetailCyclesDTO::getCycleActual).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                            //sterm流求和 目标值合计
+                                            BigDecimal cycleTargetSum = decomposeDetailCyclesDTOList1.stream().map(DecomposeDetailCyclesDTO::getCycleTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                            if (cycleActualSum.compareTo(new BigDecimal("0")) != 0 && cycleTargetSum.compareTo(new BigDecimal("0")) != 0){
+                                                targetPercentageCompleteSum=targetPercentageCompleteSum.add(cycleActualSum.divide(cycleTargetSum, 10, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
+                                            }
                                         }
                                     }
                                     if (targetPercentageCompleteSum.compareTo(new BigDecimal("0")) !=0 && StringUtils.isNotEmpty(targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS())){
