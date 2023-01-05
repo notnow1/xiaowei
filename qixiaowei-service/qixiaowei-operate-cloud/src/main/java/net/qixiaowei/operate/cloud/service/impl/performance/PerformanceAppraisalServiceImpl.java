@@ -1355,7 +1355,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     }
 
     /**
-     * 获取人员信息
+     * 获取考核人员信息
      *
      * @param listMap listMap
      * @param key     值
@@ -1365,7 +1365,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         List<String> assessmentList = new ArrayList<>();//考核负责人Code集合
         for (Map<Integer, String> map : listMap) {
             if (StringUtils.isNull(map.get(0)) || StringUtils.isNull(map.get(key))) {
-                break;
+                continue;
+            }
+            if (assessmentList.contains(map.get(key))) {
+                continue;
             }
             assessmentList.add(map.get(key));
         }
@@ -1377,8 +1380,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (listR.getCode() != 200) {
             throw new ServiceException("远程调用失败 请联系管理员");
         }
-        if (StringUtils.isEmpty(employeeListByCode)) {
-            throw new ServiceException("当前人员信息为空 请检查");
+        if (StringUtils.isEmpty(employeeListByCode) && assessmentList.size() == employeeListByCode.size()) {
+            throw new ServiceException("部分考核人不存在 请核对考核人编码");
         }
         return employeeListByCode;
     }
@@ -1785,7 +1788,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             appraisalPrincipalIds.add(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
         }
         List<EmployeeDTO> employeeDTOS = new ArrayList<>();
-        if (StringUtils.isEmpty(appraisalPrincipalIds)) {
+        if (StringUtils.isNotEmpty(appraisalPrincipalIds)) {
             employeeDTOS = getEmployeeDTOSByIds(appraisalPrincipalIds);
         }
         List<List<Object>> list = new ArrayList<>();
@@ -1822,7 +1825,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             throw new ServiceException("远程调用失败 请联系管理员");
         }
         if (StringUtils.isEmpty(employeeDTOS)) {
-            throw new ServiceException("当前获取的考核人信息为空 请检查员工配置");
+            throw new ServiceException("获取的考核人信息为空 请检查员工配置");
         }
         return employeeDTOS;
     }
@@ -1918,14 +1921,15 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
             appraisalPrincipalIds.add(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
         }
-        List<EmployeeDTO> employeeDTOS = new ArrayList<>();
-        if (StringUtils.isEmpty(appraisalPrincipalIds)) {
+        List<EmployeeDTO> employeeDTOS;
+        if (StringUtils.isNotEmpty(appraisalPrincipalIds)) {
             employeeDTOS = getEmployeeDTOSByIds(appraisalPrincipalIds);
-        }
-        R<List<EmployeeDTO>> listR = employeeService.selectByEmployeeIds(appraisalPrincipalIds, SecurityConstants.INNER);
-        employeeDTOS = listR.getData();
-        if (listR.getCode() != 200) {
-            throw new ServiceException("远程调用失败 请联系管理员");
+        } else {
+            R<List<EmployeeDTO>> listR = employeeService.selectByEmployeeIds(appraisalPrincipalIds, SecurityConstants.INNER);
+            employeeDTOS = listR.getData();
+            if (listR.getCode() != 200) {
+                throw new ServiceException("远程调用失败 请联系管理员");
+            }
         }
         List<List<Object>> list = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {

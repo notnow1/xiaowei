@@ -26,4 +26,10 @@ public interface RemotePerformanceAppraisalService {
      */
     @GetMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryEmployeeResult")
     R<List<PerformanceAppraisalObjectsDTO>> performanceResult(@RequestParam("performanceObjectId") Long performanceObjectId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+//    /**
+//     * 根据员工ID查询绩效考核是否被引用
+//     */
+//    @GetMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryEmployeeResult")
+//    R<List<PerformanceAppraisalObjectsDTO>> performanceResult(@RequestParam("performanceObjectId") Long performanceObjectId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }
