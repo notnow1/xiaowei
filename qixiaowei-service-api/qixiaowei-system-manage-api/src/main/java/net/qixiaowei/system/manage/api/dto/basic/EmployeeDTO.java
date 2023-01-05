@@ -331,6 +331,17 @@ public class EmployeeDTO implements Serializable {
      * 部门负责人id
      */
     private Long departmentLeaderId;
-
+    /**
+     * 部门负责人名称
+     */
+    private  String departmentLeaderName;
+    /**
+     * 考核负责人ID
+     */
+    private  Long examinationLeaderId;
+    /**
+     * 考核负责人名称
+     */
+    private  String examinationLeaderName;
 }
 

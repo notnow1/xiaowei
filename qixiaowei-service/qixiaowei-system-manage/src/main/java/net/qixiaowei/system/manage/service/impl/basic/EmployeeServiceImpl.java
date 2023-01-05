@@ -260,75 +260,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public int logicDeleteEmployeeByEmployeeIds(List<Long> employeeIds) {
         int i = 0;
-        //组织引用
-        StringBuffer deptErreo = new StringBuffer();
-        //岗位引用
-        StringBuffer postErreo = new StringBuffer();
-        //用户引用
-        StringBuffer userErreo = new StringBuffer();
-        //目标分解引用
-        StringBuffer decomposeErreo = new StringBuffer();
-        StringBuffer erreoEmp = new StringBuffer();
         // todo 校检是否被引用 被引用无法删除
         for (Long employeeId : employeeIds) {
-            List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeId);
-            String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-            String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-            String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-            //远程调用目标分解数据
-            if (StringUtils.isNotEmpty(employeeDTOList)) {
-                List<Long> collect = employeeDTOList.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-                TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
-                targetDecomposeDetailsDTO.setEmployeeIds(collect);
-                //远程调用查看目标分解详情数据 获取目标分解主表id
-                R<List<TargetDecomposeDetailsDTO>> decomposeDetails = remoteDecomposeService.getDecomposeDetails(targetDecomposeDetailsDTO, SecurityConstants.INNER);
-                List<TargetDecomposeDetailsDTO> data = decomposeDetails.getData();
-                if (StringUtils.isNotEmpty(data)) {
-                    for (EmployeeDTO employeeDTO : employeeDTOList) {
-                        for (TargetDecomposeDetailsDTO datum : data) {
-                            if (employeeDTO.getEmployeeId() == datum.getEmployeeId()) {
-                                employeeDTO.setTargetDecomposeId(datum.getTargetDecomposeId());
-                            }
-                        }
-                    }
-                    List<Long> collect2 = employeeDTOList.stream().map(EmployeeDTO::getTargetDecomposeId).collect(Collectors.toList());
-
-                    //远程调用查看目标分解主表
-                    R<List<TargetDecomposeDTO>> listR = remoteDecomposeService.selectBytargetDecomposeIds(collect2, SecurityConstants.INNER);
-                    List<TargetDecomposeDTO> data1 = listR.getData();
-                    if (StringUtils.isNotEmpty(data1)) {
-                        for (EmployeeDTO employeeDTO : employeeDTOList) {
-                            for (TargetDecomposeDTO targetDecomposeDTO : data1) {
-                                if (employeeDTO.getTargetDecomposeId() == targetDecomposeDTO.getTargetDecomposeId()) {
-                                    employeeDTO.setIndicatorName(targetDecomposeDTO.getIndicatorName());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-
-            if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
-                userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
-            }
-/*            if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName, "[]")) {
-                deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
-            }
-            if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName, "[]")) {
-                postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
-            }*/
-            if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
-                decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
-            }
-
-
+            this.quoteEmployee(employeeId);
         }
 
-        erreoEmp.append(deptErreo).append(postErreo).append(userErreo).append(decomposeErreo);
-        if (erreoEmp.length() > 0) {
-            throw new ServiceException(erreoEmp.toString());
-        }
+
         return employeeMapper.logicDeleteEmployeeByEmployeeIds(employeeIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -1139,10 +1076,25 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public int logicDeleteEmployeeByEmployeeId(EmployeeDTO employeeDTO) {
         int i = 0;
+        //是否被引用
+        Employee employee = this.quoteEmployee(employeeDTO.getEmployeeId());
+        try {
+            i = employeeMapper.logicDeleteEmployeeByEmployeeId(employee, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除员工信息失败");
+        }
+        return i;
+    }
+
+    /**
+     * 单删是否被引用
+     * @param employeeId
+     * @return
+     */
+    private Employee quoteEmployee(Long employeeId) {
         //组织引用
         StringBuffer deptErreo = new StringBuffer();
-        //岗位引用
-        StringBuffer postErreo = new StringBuffer();
+
         //用户引用
         StringBuffer userErreo = new StringBuffer();
         //目标分解引用
@@ -1150,49 +1102,95 @@ public class EmployeeServiceImpl implements IEmployeeService {
         StringBuffer erreoEmp = new StringBuffer();
         //员工表
         Employee employee = new Employee();
-        employee.setEmployeeId(employeeDTO.getEmployeeId());
+        employee.setEmployeeId(employeeId);
         employee.setUpdateTime(DateUtils.getNowDate());
         employee.setUpdateBy(SecurityUtils.getUserId());
         //查询数据
-        EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeId(employeeDTO.getEmployeeId());
+        EmployeeDTO employeeDTO1 = employeeMapper.selectEmployeeByEmployeeId(employeeId);
         if (null == employeeDTO1) {
             throw new ServiceException("数据不存在无法删除！");
         }
-        //部门表
-        DepartmentDTO departmentDTO = new DepartmentDTO();
-        departmentDTO.setDepartmentLeaderId(employeeDTO1.getEmployeeId());
-        departmentDTO.setExaminationLeaderId(employeeDTO1.getEmployeeId());
         // todo 校检是否被引用 被引用无法删除
-        List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeDTO.getEmployeeId());
+        List<EmployeeDTO> employeeDTOList = departmentMapper.deleteFlagEmployee(employeeId);
+        List<EmployeeDTO> employeeDTOList2 = employeeDTOList;
+        //用户引用
         String username = employeeDTOList.stream().map(EmployeeDTO::getUserName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-        String employeeDepartmentName = employeeDTOList.stream().map(EmployeeDTO::getEmployeeDepartmentName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-        String employeePostName = employeeDTOList.stream().map(EmployeeDTO::getEmployeePostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        //组织负责人引用(这里字段是组织名称)
+        String departmentLeaderName = employeeDTOList.stream().map(EmployeeDTO::getDepartmentLeaderName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        //考核负责人引用(这里字段是组织名称)
+        String examinationLeaderName = employeeDTOList.stream().map(EmployeeDTO::getExaminationLeaderName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        //远程调用目标分解数据(分解维度是否有人员引用)
+        if (StringUtils.isNotEmpty(employeeDTOList)) {
+            List<Long> employeeIds = employeeDTOList.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+            TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
+            targetDecomposeDetailsDTO.setEmployeeIds(employeeIds);
+            this.quoteTargetDecompose(employeeDTOList, targetDecomposeDetailsDTO);
+        }
+        //远程调用目标分解数据(滚动预测负责人是否有人员引用)
+        if (StringUtils.isNotEmpty(employeeDTOList)) {
+            TargetDecomposeDetailsDTO targetDecomposeDetailsDTO = new TargetDecomposeDetailsDTO();
+            targetDecomposeDetailsDTO.setPrincipalEmployeeId(employeeId);
+            this.quoteTargetDecompose(employeeDTOList2, targetDecomposeDetailsDTO);
+        }
+        //目标分解指标名称(分解维度是否有人员引用)
         String indicatorName = employeeDTOList.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-
+        //目标分解指标名称(滚动预测负责人是否有人员引用)
+        String indicatorName2 = employeeDTOList2.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
+            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被"+indicatorName+"目标分解" + "引用  无法删除！\n");
+        }
+        if (StringUtils.isNotBlank(indicatorName2) && !StringUtils.equals(indicatorName2, "[]")) {
+            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被"+indicatorName2+"目标分解滚动预测负责人" + "引用  无法删除！\n");
+        }
         if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
             userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
         }
-/*        if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName, "[]")) {
-            deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
+        if (StringUtils.isNotBlank(departmentLeaderName) && !StringUtils.equals(departmentLeaderName, "[]")) {
+            deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "在该部门" + departmentLeaderName + "已引用组织负责人  无法删除！\n");
         }
-        if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName, "[]")) {
-            postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
-        }*/
-        if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
-            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
+        if (StringUtils.isNotBlank(examinationLeaderName) && !StringUtils.equals(examinationLeaderName, "[]")) {
+            deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "在该部门" + examinationLeaderName + "已引用考核负责人 无法删除！\n");
         }
 
-
-        erreoEmp.append(deptErreo).append(postErreo).append(userErreo).append(decomposeErreo);
+        erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo);
         if (erreoEmp.length() > 0) {
             throw new ServiceException(erreoEmp.toString());
         }
-        try {
-            i = employeeMapper.logicDeleteEmployeeByEmployeeId(employee, SecurityUtils.getUserId(), DateUtils.getNowDate());
-        } catch (Exception e) {
-            throw new ServiceException("删除员工信息失败");
+        return employee;
+    }
+
+    /**
+     * 是否引用目标分解
+     * @param employeeDTOList
+     * @param targetDecomposeDetailsDTO
+     */
+    private void quoteTargetDecompose(List<EmployeeDTO> employeeDTOList, TargetDecomposeDetailsDTO targetDecomposeDetailsDTO) {
+        //远程调用查看目标分解详情数据 获取目标分解主表id
+        R<List<TargetDecomposeDetailsDTO>> decomposeDetails = remoteDecomposeService.getDecomposeDetails(targetDecomposeDetailsDTO, SecurityConstants.INNER);
+        List<TargetDecomposeDetailsDTO> data = decomposeDetails.getData();
+        if (StringUtils.isNotEmpty(data)) {
+            for (EmployeeDTO employeeDTO : employeeDTOList) {
+                for (TargetDecomposeDetailsDTO datum : data) {
+                    if (employeeDTO.getEmployeeId() == datum.getEmployeeId()) {
+                        employeeDTO.setTargetDecomposeId(datum.getTargetDecomposeId());
+                    }
+                }
+            }
+            List<Long> targetDecomposeIds = employeeDTOList.stream().map(EmployeeDTO::getTargetDecomposeId).collect(Collectors.toList());
+
+            //远程调用查看目标分解主表
+            R<List<TargetDecomposeDTO>> listR = remoteDecomposeService.selectBytargetDecomposeIds(targetDecomposeIds, SecurityConstants.INNER);
+            List<TargetDecomposeDTO> data1 = listR.getData();
+            if (StringUtils.isNotEmpty(data1)) {
+                for (EmployeeDTO employeeDTO : employeeDTOList) {
+                    for (TargetDecomposeDTO targetDecomposeDTO : data1) {
+                        if (employeeDTO.getTargetDecomposeId() == targetDecomposeDTO.getTargetDecomposeId()) {
+                            employeeDTO.setIndicatorName(targetDecomposeDTO.getIndicatorName());
+                        }
+                    }
+                }
+            }
         }
-        return i;
     }
 
     /**
