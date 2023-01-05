@@ -14,7 +14,6 @@ import net.qixiaowei.operate.cloud.api.domain.bonus.DeptAnnualBonusOperate;
 import net.qixiaowei.operate.cloud.api.dto.bonus.*;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.*;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.*;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalObjectsMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
@@ -878,7 +877,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         if (StringUtils.isNotEmpty(data2)) {
             for (EmployeeDTO employeeDTO : data2) {
                 //部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
-                List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear);
+                List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptAnnualBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear,SecurityUtils.getTenantId());
                 if (StringUtils.isNotEmpty(salaryPayDTOS)) {
                     //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
                     BigDecimal paymentBonus = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -912,7 +911,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                             if (StringUtils.isNotEmpty(data1)) {
                                 for (EmployeeDTO employeeDTO : data1) {
                                     //部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）
-                                    List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear);
+                                    List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptAnnualBonusBudgetPay(employeeDTO.getEmployeeId(), annualBonusYear,SecurityUtils.getTenantId());
                                     if (StringUtils.isNotEmpty(salaryPayDTOS)) {
                                         //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
                                         BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);

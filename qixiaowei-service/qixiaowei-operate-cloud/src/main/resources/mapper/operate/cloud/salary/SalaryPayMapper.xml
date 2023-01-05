@@ -263,7 +263,7 @@
         AND pay_year = #{payYear}
     </select>
     <!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，取数范围为倒推12个月的数据（年工资）-->
-    <select id="selectDeptBonusBudgetPay" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
+    <select id="selectDeptAnnualBonusBudgetPay" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus,
         sp.salary_amount + sp.allowance_amount + sp.welfare_amount as salaryPackageBonus,
         bonus_amount as amountBonus,
@@ -294,6 +294,7 @@
         and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
         and sp.employee_id = #{employeeId}
         and sp.delete_flag = 0
+        and sp.tenant_id=#{tenantId}
         ORDER BY sp.pay_year DESC, sp.pay_month DESC
         limit 12)
         > sp.pay_amount
@@ -536,6 +537,49 @@
         FROM salary_pay
         WHERE pay_year = #{budgetYear} -1
         and delete_flag = 0
+    </select>
+<!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，对于当前及未来年份取数范围为倒推12个月的数据（年工资）  对于历史年份取一整年数据-->
+    <select id="selectDeptBonusBudgetPay" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
+        SELECT sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus,
+               sp.salary_amount + sp.allowance_amount + sp.welfare_amount as salaryPackageBonus,
+               bonus_amount as amountBonus,
+               sp.salary_pay_id,
+               sp.employee_id,
+               sp.pay_year,
+               sp.pay_month,
+               sp.salary_amount,
+               sp.allowance_amount,
+               sp.welfare_amount,
+               sp.bonus_amount,
+               sp.withhold_remit_tax,
+               sp.other_deductions,
+               sp.pay_amount,
+               sp.delete_flag,
+               sp.create_by,
+               sp.create_time,
+               sp.update_by,
+               sp.update_time
+        FROM salary_pay sp
+        where sp.pay_year &lt;= #{payYear}
+          and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
+          and sp.employee_id = #{employeeId}
+          and sp.delete_flag = 0
+          and (SELECT sum(sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus)
+               FROM salary_pay sp
+               where sp.pay_year &lt;= #{payYear}
+                 and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
+                 and sp.employee_id = #{employeeId}
+                 and sp.delete_flag = 0
+                 and sp.tenant_id=#{tenantId}
+               ORDER BY sp.pay_year DESC, sp.pay_month DESC
+            limit 12)
+            > sp.pay_amount
+        <if test="payYear &lt;  nowYear">
+            and sp.pay_year = #{payYear}
+        </if>
+        <if test="payYear >=  nowYear">
+            ORDER BY sp.pay_year DESC, sp.pay_month DESC limit 12
+        </if>
     </select>
     <!--新增工资发薪表-->
     <insert id="insertSalaryPay" useGeneratedKeys="true" keyProperty="salaryPayId">

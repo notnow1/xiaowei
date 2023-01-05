@@ -200,10 +200,20 @@ public interface SalaryPayMapper {
      *
      * @param employeeId 员工ID
      * @param payYear    发薪年份
+     * @param tenantId    租户id
      * @return
      */
-    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear);
+    List<SalaryPayDTO> selectDeptAnnualBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear, @Param("tenantId") Long tenantId);
 
+    /**
+     * 部门奖金预算 某职级的平均薪酬：从月度工资管理取数，对于当前及未来年份取数范围为倒推12个月的数据（年工资）  对于历史年份取一整年数据
+     *
+     * @param employeeId 员工ID
+     * @param payYear    发薪年份
+     * @param tenantId    租户id
+     * @return
+     */
+    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear,@Param("nowYear") Integer nowYear,@Param("tenantId") Long tenantId);
     /**
      * 根据员工ID和发薪年份查找员工发薪记录
      *
