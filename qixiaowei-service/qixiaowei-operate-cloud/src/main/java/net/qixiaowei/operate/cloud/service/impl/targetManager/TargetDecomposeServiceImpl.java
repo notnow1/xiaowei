@@ -29,6 +29,7 @@ import net.qixiaowei.message.api.remote.message.RemoteMessageService;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.*;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
@@ -649,6 +650,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 //目标完成率
                 decomposeDTO.setTargetPercentageComplete(targetPercentageComplete);
             }
+
             //指标id
             List<Long> collect1 = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).distinct().collect(Collectors.toList());
             //根据指标id分组
@@ -659,18 +661,23 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     BigDecimal targetPercentageCompleteAve = new BigDecimal("0");
                     List<TargetDecomposeDTO> targetDecomposeDTOS1 = listMap.get(aLong);
                     if (StringUtils.isNotEmpty(targetDecomposeDTOS1)) {
-                        BigDecimal sum = targetDecomposeDTOS1.stream()
-                                .filter(friend -> friend.getTargetPercentageComplete() != null)
-                                .map(TargetDecomposeDTO::getTargetPercentageComplete).filter(Objects::nonNull)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        if (StringUtils.isNotEmpty(targetDecomposeDTOS1)) {
-                            targetPercentageCompleteAve = sum.divide(new BigDecimal(String.valueOf(targetDecomposeDTOS1.size())), 10, BigDecimal.ROUND_HALF_UP).setScale(10,BigDecimal.ROUND_HALF_UP);
+                        ////目标完成率平均值
+                        for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS1) {
+                            TargetDecomposeDTO targetDecomposeDTO1 = this.selectResultTargetDecomposeByTargetDecomposeId(decomposeDTO.getTargetDecomposeId());
+                            if (StringUtils.isNotNull(targetDecomposeDTO1)){
+                                List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO1.getTargetDecomposeDetailsDTOS();
+                                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
+                                    //sterm流求和 目标完成率集合
+                                    BigDecimal targetPercentageCompleteSum = targetDecomposeDetailsDTOS.stream().map(TargetDecomposeDetailsDTO::getTargetPercentageComplete).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                    if (targetPercentageCompleteSum.compareTo(new BigDecimal("0")) !=0){
+                                        targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(targetDecomposeDetailsDTOS.size())),10,BigDecimal.ROUND_HALF_UP);
+                                    }
+                                    //目标完成率平均值
+                                    decomposeDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
+                                }
+                            }
                         }
 
-                        //目标完成率平均值
-                        for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS1) {
-                            decomposeDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
-                        }
                     }
                     targetDecomposeDTOS.addAll(targetDecomposeDTOS1);
                 }
