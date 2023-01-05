@@ -312,12 +312,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
                 userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
             }
-            if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName, "[]")) {
+/*            if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName, "[]")) {
                 deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
             }
             if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName, "[]")) {
                 postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
-            }
+            }*/
             if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
                 decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
             }
@@ -1172,12 +1172,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
             userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
         }
-        if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName, "[]")) {
+/*        if (StringUtils.isNotBlank(employeeDepartmentName) && !StringUtils.equals(employeeDepartmentName, "[]")) {
             deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被组织" + employeeDepartmentName + "引用  无法删除！\n");
         }
         if (StringUtils.isNotBlank(employeePostName) && !StringUtils.equals(employeePostName, "[]")) {
             postErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被岗位" + employeePostName + "引用  无法删除！\n");
-        }
+        }*/
         if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
             decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被目标分解" + indicatorName + "引用  无法删除！\n");
         }
