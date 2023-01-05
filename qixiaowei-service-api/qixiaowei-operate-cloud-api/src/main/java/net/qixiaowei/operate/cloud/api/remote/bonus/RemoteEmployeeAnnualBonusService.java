@@ -22,7 +22,7 @@ import java.util.List;
 public interface RemoteEmployeeAnnualBonusService {
     String API_PREFIX_PERFORMANCE_APPRAISAL = "/employeeAnnualBonus";
     /**
-     * 查询员工近三次考核成绩
+     * 根据人员id查询个人年终奖 申请人id
      */
     @GetMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryEmployeeAnnualBonus")
     R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByEmployeeId(@RequestParam("employeeId") Long employeeId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
