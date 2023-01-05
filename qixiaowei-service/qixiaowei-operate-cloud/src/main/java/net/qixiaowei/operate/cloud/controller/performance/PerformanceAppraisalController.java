@@ -267,7 +267,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 导出组织模板表
      */
     @SneakyThrows
-    @RequiresPermissions("operate:cloud:performanceAppraisal:orgImport")
+    @RequiresPermissions("operate:cloud:performanceAppraisal:orgArchive:info")
     @GetMapping("exportOrg")
     public void exportOrg(@RequestParam Long performanceAppraisalId, HttpServletResponse response) {
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
@@ -470,7 +470,7 @@ public class PerformanceAppraisalController extends BaseController {
      * 导出个人模板表
      */
     @SneakyThrows
-    @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:import")
+    @RequiresPermissions("operate:cloud:performanceAppraisal:perArchive:info")
     @GetMapping("exportPer")
     public void exportPer(@RequestParam Long performanceAppraisalId, HttpServletResponse response) {
         List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalService.selectPerformanceRankFactor(performanceAppraisalId);
