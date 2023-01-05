@@ -785,6 +785,11 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         return bonusBudgetMapper.queryBonusBudgetYear();
     }
 
+    /**
+     * 新增奖金预算新增指标带出数据
+     * @param bonusBudgetDTO
+     * @return
+     */
     @Override
     public BonusBudgetParametersDTO addBonusBudgetIndicatorTamount(BonusBudgetDTO bonusBudgetDTO) {
         BonusBudgetParametersDTO bonusBudgetParametersDTO = new BonusBudgetParametersDTO();
@@ -833,7 +838,6 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             indicatorIdBonusMap = packMonth(targetOutcomeDetailsDTOS, month);
 
         }
-        if (StringUtils.isNotNull(bonusBudgetParametersDTO)) {
             if (StringUtils.isNotEmpty(targetSettingDTOS)) {
                 for (int i = 0; i < targetSettingDTOS.size(); i++) {
                     if (i == 0) {
@@ -850,7 +854,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 }
             }
 
-        }
+
         BigDecimal bonusProportionStandard = new BigDecimal("0");
         //奖金驱动因素实际数
         BigDecimal bonusProportionDrivingFactor = indicatorIdBonusMap.get(bonusBudgetParametersDTO.getIndicatorId());
