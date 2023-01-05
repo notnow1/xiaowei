@@ -945,6 +945,16 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     }
 
     /**
+     * 根据人员id查询个人年终奖 申请人id
+     * @param employeeId
+     * @return
+     */
+    @Override
+    public List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByEmployeeId(Long employeeId) {
+        return employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeId(employeeId);
+    }
+
+    /**
      * 保存提交 修改数据
      *
      * @param empAnnualBonusSnapshotDTOs

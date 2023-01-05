@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.bonus;
 
 import java.util.List;
 
+import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusSnapshotDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 
@@ -136,4 +137,11 @@ public interface IEmployeeAnnualBonusService{
      * @return
      */
     List<EmpAnnualBonusSnapshotDTO> realTimeDetails(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
+
+    /**
+     * 根据人员id查询个人年终奖 申请人id
+     * @param employeeId
+     * @return
+     */
+    List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByEmployeeId(Long employeeId);
 }

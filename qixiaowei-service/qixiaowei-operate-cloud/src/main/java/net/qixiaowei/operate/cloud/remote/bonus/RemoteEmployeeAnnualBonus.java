@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.remote.bonus;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
@@ -25,7 +26,16 @@ public class RemoteEmployeeAnnualBonus implements RemoteEmployeeAnnualBonusServi
     @Autowired
     private IEmployeeAnnualBonusService employeeAnnualBonusService;
 
-
-
-
+    /**
+     * 根据人员id查询个人年终奖 申请人id
+     * @param employeeId
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/queryEmployeeAnnualBonus")
+    public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByEmployeeId(@RequestParam("employeeId")Long employeeId, String source) {
+        return R.ok(employeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeId(employeeId));
+    }
 }
