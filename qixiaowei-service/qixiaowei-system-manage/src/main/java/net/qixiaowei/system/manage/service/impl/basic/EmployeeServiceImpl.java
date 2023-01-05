@@ -1087,7 +1087,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     /**
-     * 单删是否被引用
+     * 是否被引用
      * @param employeeId
      * @return
      */

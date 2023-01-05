@@ -663,14 +663,21 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     if (StringUtils.isNotEmpty(targetDecomposeDTOS1)) {
                         ////目标完成率平均值
                         for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS1) {
+                            BigDecimal targetPercentageCompleteSum = new BigDecimal("0");
                             TargetDecomposeDTO targetDecomposeDTO1 = this.selectResultTargetDecomposeByTargetDecomposeId(decomposeDTO.getTargetDecomposeId());
                             if (StringUtils.isNotNull(targetDecomposeDTO1)){
                                 List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO1.getTargetDecomposeDetailsDTOS();
                                 if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
-                                    //sterm流求和 目标完成率集合
-                                    BigDecimal targetPercentageCompleteSum = targetDecomposeDetailsDTOS.stream().map(TargetDecomposeDetailsDTO::getTargetPercentageComplete).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                                    if (targetPercentageCompleteSum.compareTo(new BigDecimal("0")) !=0){
-                                        targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(targetDecomposeDetailsDTOS.size())),10,BigDecimal.ROUND_HALF_UP);
+                                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+                                        List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
+                                        if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)){
+                                           //sterm流求和 目标完成率集合
+                                            BigDecimal cyclePercentageCompleteSum = decomposeDetailCyclesDTOS.stream().map(DecomposeDetailCyclesDTO::getCyclePercentageComplete).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                            targetPercentageCompleteSum=targetPercentageCompleteSum.add(cyclePercentageCompleteSum);
+                                        }
+                                    }
+                                    if (targetPercentageCompleteSum.compareTo(new BigDecimal("0")) !=0 && StringUtils.isNotEmpty(targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS())){
+                                        targetPercentageCompleteAve = targetPercentageCompleteSum.divide(new BigDecimal(String.valueOf(targetDecomposeDetailsDTOS.get(0).getDecomposeDetailCyclesDTOS().size())),10,BigDecimal.ROUND_HALF_UP);
                                     }
                                     //目标完成率平均值
                                     decomposeDTO.setTargetPercentageCompleteAve(targetPercentageCompleteAve);
