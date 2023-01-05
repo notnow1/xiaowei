@@ -476,7 +476,8 @@
             </trim>
             <trim prefix="appraisal_result=case" suffix="end,">
                 <foreach collection="performanceAppraisalObjectsList" item="item" index="index">
-                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then #{item.appraisalResult}
+                    when perform_appraisal_objects_id=#{item.performAppraisalObjectsId} then
+                    #{item.appraisalResult}
                 </foreach>
             </trim>
             <trim prefix="appraisal_object_status=case" suffix="end,">
