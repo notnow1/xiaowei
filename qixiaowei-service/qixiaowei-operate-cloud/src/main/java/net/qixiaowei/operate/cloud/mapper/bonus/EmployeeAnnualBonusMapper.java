@@ -108,4 +108,11 @@ public interface EmployeeAnnualBonusMapper{
     * @return 结果
     */
     int batchEmployeeAnnualBonus(@Param("employeeAnnualBonuss")List<EmployeeAnnualBonus> EmployeeAnnualBonuss);
+
+    /**
+     * 根据人员id查询个人年终奖 申请人id
+     * @param employeeId
+     * @return
+     */
+    List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByEmployeeId(@Param("employeeId") Long employeeId);
 }
