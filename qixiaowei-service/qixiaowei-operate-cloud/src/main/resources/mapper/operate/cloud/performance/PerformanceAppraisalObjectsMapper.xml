@@ -318,6 +318,24 @@
         ORDER BY pa.filing_date DESC
         limit 3
     </select>
+    <select id="queryQuoteEmployeeById"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
+        SELECT
+        pa.appraisal_name,
+        pao.appraisal_object_id,
+        pas.appraisal_object_name
+        FROM
+        performance_appraisal_objects pao
+        left join performance_appraisal pa
+        on pao.performance_appraisal_id = pa.performance_appraisal_id
+        and pa.delete_flag =0
+        left join performance_appraisal_objects pa
+        on pao.performance_appraisal_id = pa.performance_appraisal_id
+        and pa.delete_flag =0
+        where pao.delete_flag =0
+        and pao.appraisal_object_id = #{employeeId}
+        and appraisal_object = 2
+    </select>
     <!--新增绩效考核对象表-->
     <insert id="insertPerformanceAppraisalObjects" useGeneratedKeys="true" keyProperty="performAppraisalObjectsId">
         INSERT INTO performance_appraisal_objects

@@ -29,11 +29,11 @@ public class RemotePerformanceAppraisal implements RemotePerformanceAppraisalSer
         return R.ok(performanceAppraisalObjectsService.performanceResult(performanceObjectId));
     }
 
-//    @Override
-//    @InnerAuth
-//    @GetMapping("/queryEmployeeResult")
-//    public R<List<PerformanceAppraisalObjectsDTO>> performanceResult(@RequestParam("performanceObjectId") Long performanceObjectId, String source) {
-//        return R.ok(performanceAppraisalObjectsService.performanceResult(performanceObjectId));
-//    }
+    @Override
+    @InnerAuth
+    @GetMapping("/queryQuoteEmployeeById")
+    public R<List<PerformanceAppraisalObjectsDTO>> queryQuoteEmployeeById(@RequestParam("employeeId") Long employeeId, String source) {
+        return R.ok(performanceAppraisalObjectsService.queryQuoteEmployeeById(employeeId));
+    }
 
 }

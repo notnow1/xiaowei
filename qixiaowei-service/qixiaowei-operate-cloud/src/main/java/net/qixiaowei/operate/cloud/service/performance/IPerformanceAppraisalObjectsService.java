@@ -166,4 +166,12 @@ public interface IPerformanceAppraisalObjectsService {
      * @return List
      */
     List<PerformanceAppraisalObjectsDTO> performanceResult(Long performAppraisalObjectsId);
+
+    /**
+     * 根据员工ID查询绩效考核是否被引用
+     *
+     * @param employeeId 员工ID
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> queryQuoteEmployeeById(Long employeeId);
 }
