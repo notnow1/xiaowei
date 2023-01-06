@@ -11,6 +11,7 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.enums.message.MessageType;
 import net.qixiaowei.integration.common.enums.targetManager.DecompositionDimension;
 import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeDimensionCode;
@@ -22,14 +23,13 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.message.api.dto.backlog.BacklogDTO;
 import net.qixiaowei.message.api.dto.message.MessageReceiverDTO;
 import net.qixiaowei.message.api.dto.message.MessageSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.message.api.remote.message.RemoteMessageService;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.*;
-import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
-import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.*;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
@@ -54,7 +54,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -260,10 +259,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * 查询滚动预测表详情
      *
      * @param targetDecomposeId 目标分解表主键
+     * @param backlogId
      * @return
      */
     @Override
-    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
+    public TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId) {
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNull(targetDecomposeDTO)) {
@@ -280,7 +280,14 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             this.packversion(targetDecomposeDTO);
         }
         //目标分解详情数据
-        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList =new ArrayList<>();
+        if (null == backlogId){
+             targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeId);
+        }else {
+            //目标分解详情数据
+            targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByPowerTargetDecomposeId(targetDecomposeId,SecurityUtils.getEmployeeId());
+        }
+
         this.packRemote(targetDecomposeDetailsDTOList);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
@@ -419,7 +426,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds) {
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeIds(targetDecomposeIds);
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
-            List<Long> collect = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
+            List<Long> collect = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect)) {
                 R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
                 List<IndicatorDTO> data = listR.getData();
@@ -1145,6 +1152,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         } catch (Exception e) {
             throw new ServiceException("修改目标分解主表失败");
         }
+            Long backlogId = targetDecomposeDTO.getBacklogId();
+            if (null != backlogId){
+                //待办事项表
+                BacklogDTO backlogDTO = new BacklogDTO();
+                backlogDTO.setBusinessType(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getParentBusinessType().getCode());
+                backlogDTO.setBusinessSubtype(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getCode());
+                backlogDTO.setBusinessId(targetDecomposeDTO.getTargetDecomposeId());
+                backlogDTO.setUserId(SecurityUtils.getUserId());
+                remoteBacklogService.handled(backlogDTO, SecurityConstants.INNER);
+            }
         return i;
     }
 

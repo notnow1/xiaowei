@@ -29,9 +29,10 @@ public interface ITargetDecomposeService {
      * 查询滚动预测表详情
      *
      * @param targetDecomposeId 目标分解表主键
+     * @param backlogId
      * @return 目标分解表
      */
-    TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId);
+    TargetDecomposeDTO selectRollTargetDecomposeByTargetDecomposeId(Long targetDecomposeId, Long backlogId);
 
     /**
      * 远程调用根据id目标分解id查询数据

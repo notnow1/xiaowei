@@ -186,5 +186,9 @@ public class TargetDecomposeDTO {
      * 是否可以分解年份
      */
     private Boolean decommpFlag;
+    /**
+     * 待办任务id
+     */
+    private Long backlogId;
 }
 

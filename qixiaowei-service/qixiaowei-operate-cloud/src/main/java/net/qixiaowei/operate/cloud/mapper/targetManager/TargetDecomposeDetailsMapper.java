@@ -29,9 +29,17 @@ public interface TargetDecomposeDetailsMapper{
      * @return 目标分解详情表
      */
     List<TargetDecomposeDetailsDTO> selectTargetDecomposeDetailsByTargetDecomposeId(@Param("targetDecomposeId")Long targetDecomposeId);
+    /**
+     * 根据分解id查询目标分解详情表只查询自己的
+     *
+     * @param targetDecomposeId 目标分解详情表主键
+     * @param employeeId 人员id
+     * @return 目标分解详情表
+     */
+    List<TargetDecomposeDetailsDTO> selectTargetDecomposeDetailsByPowerTargetDecomposeId(@Param("targetDecomposeId")Long targetDecomposeId,@Param("employeeId")Long employeeId);
 
     /**
-     * 根据分解id批量查询目标分解详情表
+     * 根据分解id批量查询目标分解详情表只查询自己的
      *
      * @param targetDecomposeIds 目标分解详情表主键集合
      * @return 目标分解详情表

@@ -176,6 +176,43 @@
         WHERE tdd.target_decompose_id = #{targetDecomposeId}
           and tdd.delete_flag = 0
     </select>
+    <!--    根据分解id查询目标分解详情表只查询自己的-->
+    <select id="selectTargetDecomposeDetailsByPowerTargetDecomposeId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
+        SELECT tdd.target_decompose_details_id,
+        tdd.target_decompose_id,
+        tdd.employee_id,
+        tdd.area_id,
+        a.area_name,
+        td.decompose_target ,
+        tdd.department_id,
+        tdd.product_id,
+        p.product_name,
+        tdd.region_id,
+        tdd.industry_id,
+        tdd.principal_employee_id,
+        IFNULL(tdd.amount_target, 0) AS amount_target,
+        tdd.delete_flag,
+        tdd.create_by,
+        tdd.create_time,
+        tdd.update_by,
+        tdd.update_time
+        FROM target_decompose_details tdd
+        left join target_decompose td
+        on td.target_decompose_id  = tdd .target_decompose_id
+        and td.delete_flag =0
+        left join product p
+        on p.product_id  = tdd.product_id
+        and p.delete_flag =0
+        left join area a
+        on a.area_id  = tdd.area_id
+        and a.delete_flag =0
+        WHERE tdd.target_decompose_id = #{targetDecomposeId}
+        and tdd.delete_flag = 0
+        <if test="employeeId != null">
+            AND tdd.principal_employee_id=#{employeeId}
+        </if>
+    </select>
     <!--    根据分解id批量查询目标分解详情表-->
     <select id="selectTargetDecomposeDetailsByTargetDecomposeIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">

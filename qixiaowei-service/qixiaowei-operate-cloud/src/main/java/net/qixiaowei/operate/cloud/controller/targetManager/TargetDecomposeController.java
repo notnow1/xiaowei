@@ -382,8 +382,8 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions(value = {"operate:cloud:targetDecompose:roll:info", "operate:cloud:targetDecompose:roll:edit"}, logical = Logical.OR)
     @GetMapping("/roll/info/{targetDecomposeId}")
-    public AjaxResult rollInfo(@PathVariable Long targetDecomposeId) {
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+    public AjaxResult rollInfo(@PathVariable Long targetDecomposeId,@RequestParam(required = false) Long backlogId ) {
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId,backlogId);
         return AjaxResult.success(targetDecomposeDTO);
     }
 
