@@ -9,10 +9,14 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteBonusPayApplicationService;
+import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteEmployeeAnnualBonusService;
 import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppraisalService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
@@ -79,6 +83,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private RemotePerformanceAppraisalService performanceAppraisalService;
     @Autowired
     private RemoteSalaryAdjustPlanService salaryAdjustPlanService;
+    @Autowired
+    private RemoteEmployeeAnnualBonusService remoteEmployeeAnnualBonusService;
+    @Autowired
+    private RemoteBonusPayApplicationService remoteBonusPayApplicationService;
 
 
     /**
@@ -525,7 +533,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 }
                 if (StringUtils.isNotBlank(employeeExcel.getEmployeeBasicWage())) {
                     //基本工资
-                    employee2.setEmployeeBasicWage(new BigDecimal(employeeExcel.getEmployeeBasicWage()));
+                    try {
+                        employee2.setEmployeeBasicWage(new BigDecimal(employeeExcel.getEmployeeBasicWage()));
+                    } catch (Exception e) {
+                        employeeError.append("基本工资填写错误！ 请填写数字类型");
+                    }
                 }
                 //工号
                 employee2.setEmployeeCode(employeeExcel.getEmployeeCode());
@@ -1099,6 +1111,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
         StringBuffer userErreo = new StringBuffer();
         //目标分解引用
         StringBuffer decomposeErreo = new StringBuffer();
+        //个人年终奖引用
+        StringBuffer employeeAnnualBonusErreo = new StringBuffer();
+        //奖金发放申请引用
+        StringBuffer bonusPayObjectsErreo = new StringBuffer();
         StringBuffer erreoEmp = new StringBuffer();
         //员工表
         Employee employee = new Employee();
@@ -1151,8 +1167,19 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (StringUtils.isNotBlank(examinationLeaderName) && !StringUtils.equals(examinationLeaderName, "[]")) {
             deptErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "在该部门" + examinationLeaderName + "已引用考核负责人 无法删除！\n");
         }
-
-        erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo);
+        //远程查看根据人员id查询个人年终奖 申请人id
+        R<List<EmployeeAnnualBonus>> employeeAnnualBonusData = remoteEmployeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeId(employeeId, SecurityConstants.INNER);
+        List<EmployeeAnnualBonus> employeeAnnualBonusList = employeeAnnualBonusData.getData();
+        if (StringUtils.isNotEmpty(employeeAnnualBonusList)){
+            employeeAnnualBonusErreo.append("人员被个人年终奖引用 无法删除！\n");
+        }
+        //根据人员id查询个人年终奖 奖金发放对象ID(员工id)
+        R<List<BonusPayObjectsDTO>> bonusPayObjectsDTOData = remoteBonusPayApplicationService.selectBonusPayApplicationByEmployeeId(employeeId, SecurityConstants.INNER);
+        List<BonusPayObjectsDTO> bonusPayObjectsDTOList = bonusPayObjectsDTOData.getData();
+        if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)){
+            bonusPayObjectsErreo.append("人员被奖金发放申请引用 无法删除！\n");
+        }
+        erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo).append(employeeAnnualBonusErreo).append(bonusPayObjectsErreo);
         if (erreoEmp.length() > 0) {
             throw new ServiceException(erreoEmp.toString());
         }

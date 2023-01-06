@@ -113,7 +113,7 @@
             bonus_pay_objects_id,bonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time
         FROM bonus_pay_objects
         WHERE  bonus_pay_object=2
-           and  bonus_pay_objects_id=#{employeeId}
+           and  bonus_pay_object_id=#{employeeId}
           and delete_flag=0
     </select>
     <!--新增奖金发放对象表-->
