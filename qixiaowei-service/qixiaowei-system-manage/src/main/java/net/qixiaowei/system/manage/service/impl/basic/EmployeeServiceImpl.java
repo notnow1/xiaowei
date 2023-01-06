@@ -898,9 +898,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 if (null != dto.getEmployeeDepartmentId()) {
 
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
-                        List<DepartmentDTO> employeePostIds = departmentDTOList.stream().filter(f -> f.getDepartmentId() == dto.getEmployeePostId()).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(employeePostIds)) {
-                            employeeExcel.setDepartmentName(employeePostIds.get(0).getParentDepartmentExcelName());
+                        List<DepartmentDTO> employeeDepartmentIds = departmentDTOList.stream().filter(f -> f.getDepartmentId() == dto.getEmployeeDepartmentId()).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(employeeDepartmentIds)) {
+                            employeeExcel.setDepartmentName(employeeDepartmentIds.get(0).getParentDepartmentExcelName());
                         }
                     }
                 }
