@@ -637,6 +637,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
             String postName = employeeExcel.getPostName();
             //个人职级名称
             String employeeRankName = employeeExcel.getEmployeeRankName();
+            String employmentStatus = employeeExcel.getEmploymentStatus();
+            //用工关系状态
+            if (StringUtils.isNotBlank(employmentStatus)) {
+                if (!StringUtils.equals(employmentStatus, "在职") && !StringUtils.equals(employmentStatus, "离职")) {
+                    validEmployeeError.append("用工关系状态不存在 必须为在职和离职！");
+                }
+            }
             if (StringUtils.isBlank(employeeExcel.getEmployeeCode())) {
                 validEmployeeError.append("员工工号为必填项");
             }
