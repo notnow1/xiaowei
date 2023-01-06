@@ -1154,13 +1154,18 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
             Long backlogId = targetDecomposeDTO.getBacklogId();
             if (null != backlogId){
-                //待办事项表
-                BacklogDTO backlogDTO = new BacklogDTO();
-                backlogDTO.setBusinessType(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getParentBusinessType().getCode());
-                backlogDTO.setBusinessSubtype(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getCode());
-                backlogDTO.setBusinessId(targetDecomposeDTO.getTargetDecomposeId());
-                backlogDTO.setUserId(SecurityUtils.getUserId());
-                remoteBacklogService.handled(backlogDTO, SecurityConstants.INNER);
+                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
+                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+                        //待办事项表
+                        BacklogDTO backlogDTO = new BacklogDTO();
+                        backlogDTO.setBusinessType(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getParentBusinessType().getCode());
+                        backlogDTO.setBusinessSubtype(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getCode());
+                        backlogDTO.setBusinessId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                        backlogDTO.setUserId(SecurityUtils.getUserId());
+                        remoteBacklogService.handled(backlogDTO, SecurityConstants.INNER);
+                    }
+                }
+
             }
         return i;
     }
