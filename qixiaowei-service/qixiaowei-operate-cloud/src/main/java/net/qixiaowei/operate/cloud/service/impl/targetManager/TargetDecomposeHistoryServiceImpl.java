@@ -77,6 +77,8 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     @Autowired
     private RemoteBacklogService remoteBacklogService;
     @Autowired
+    private RemoteEmployeeService employeeService;
+    @Autowired
     private RemoteUserService userService;
 
     /**
@@ -455,13 +457,78 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     throw new ServiceException("插入历史目标详情周期表失败");
                 }
             }
-            if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
-                UserDTO userDTO = getUserDTO();
-                for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                    sendMessage(targetDecomposeDetailsDTO, userDTO);
+            //人员id集合滚动预测负责人
+            List<Long> principalEmployeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getPrincipalEmployeeId).distinct().filter(p -> p != null).collect(Collectors.toList());
+            List<Long> createBys = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getCreateBy).distinct().filter(p -> p != null).collect(Collectors.toList());
+            List<UserDTO> userDTOS = getUserByCreateBys(createBys);
+            List<EmployeeDTO> employeeDTOS = getEmployeeDTOS(principalEmployeeIdCollect);
+            for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
+                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+                        sendMessage(targetDecomposeDetailsDTO, targetDecomposeDTO, employeeDTOS, userDTOS, timeDimension);
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param targetDecomposeDetailsDTO 目标分解详情
+     * @param targetDecomposeDTO        主表DTO
+     * @param employeeDTOS              员工列表
+     * @param userDTOS                  用户列表
+     * @param timeDimension             时间维度:1年度;2半年度;3季度;4月度;5周
+     */
+    private void sendMessage(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, TargetDecomposeDTO targetDecomposeDTO,
+                             List<EmployeeDTO> employeeDTOS, List<UserDTO> userDTOS, int timeDimension) {
+        if (StringUtils.isNotEmpty(employeeDTOS)) {
+            for (EmployeeDTO employeeDTO : employeeDTOS) {
+                if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(employeeDTO.getEmployeeId())) {
+                    UserDTO user = new UserDTO();
+                    for (UserDTO userDTO : userDTOS) {
+                        if (targetDecomposeDTO.getCreateBy().equals(userDTO.getUserId())) {
+                            user = userDTO;
+                            break;
+                        }
+                    }
+                    // 发送待办
+                    BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
+                    backlogSendDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
+                    backlogSendDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
+                    backlogSendDTO.setBusinessId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                    backlogSendDTO.setUserId(employeeDTO.getUserId());
+                    backlogSendDTO.setBacklogInitiator(user.getUserId());
+                    backlogSendDTO.setBacklogInitiatorName(user.getUserName());
+                    backlogSendDTO.setBacklogName("滚动预测");
+                    R<?> insertBacklog = remoteBacklogService.add(backlogSendDTO, SecurityConstants.INNER);
+                    if (R.SUCCESS != insertBacklog.getCode()) {
+                        throw new ServiceException("申请域名通知失败");
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据创建人获取用户信息
+     *
+     * @param createBys 创建人集合
+     * @return List
+     */
+    private List<UserDTO> getUserByCreateBys(List<Long> createBys) {
+        Set<Long> createBySets = new HashSet<>(createBys);
+        R<List<UserDTO>> usersByUserIds = userService.getUsersByUserIds(createBySets, SecurityConstants.INNER);
+        List<UserDTO> userDTOS = usersByUserIds.getData();
+        if (usersByUserIds.getCode() != 200) {
+            throw new ServiceException("远程访问用户信息失败");
+        }
+        if (StringUtils.isEmpty(userDTOS)) {
+            throw new ServiceException("部分用户信息已被删除 请检查用户配置");
+        }
+        return userDTOS;
     }
 
     /**
@@ -469,39 +536,18 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      *
      * @return userDTO
      */
-    private UserDTO getUserDTO() {
-        R<UserDTO> userInfoByUserId = userService.getUserInfoByUserId(SecurityUtils.getUserId(), SecurityConstants.INNER);
-        UserDTO userDTO = userInfoByUserId.getData();
-        if (userInfoByUserId.getCode() != 200) {
+    private List<EmployeeDTO> getEmployeeDTOS(List<Long> principalEmployeeIdCollect) {
+        R<List<EmployeeDTO>> listR = employeeService.selectByEmployeeIds(principalEmployeeIdCollect, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = listR.getData();
+        if (listR.getCode() != 200) {
             throw new ServiceException("远程访问用户信息失败");
         }
-        if (StringUtils.isNull(userDTO)) {
-            throw new ServiceException("当前用户未设置用户名称 请检查用户信息");
+        if (StringUtils.isEmpty(employeeDTOS)) {
+            throw new ServiceException("当前滚动预测负责人已被删除 请检查员工配置");
         }
-        return userDTO;
+        return employeeDTOS;
     }
 
-
-    /**
-     * 发送消息
-     *
-     * @param targetDecomposeDetailsDTO 目标分解详情
-     */
-    private void sendMessage(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, UserDTO userDTO) {
-        // 发送消息
-        BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
-        backlogSendDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
-        backlogSendDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
-        backlogSendDTO.setBusinessId(targetDecomposeDetailsDTO.getPrincipalEmployeeId());
-        backlogSendDTO.setUserId(SecurityUtils.getUserId());
-        backlogSendDTO.setBacklogName("二级域名申请");
-        backlogSendDTO.setBacklogInitiator(userDTO.getUserId());
-        backlogSendDTO.setBacklogInitiatorName(userDTO.getUserName());
-        R<?> insertBacklog = remoteBacklogService.add(backlogSendDTO, SecurityConstants.INNER);
-        if (R.SUCCESS != insertBacklog.getCode()) {
-            throw new ServiceException("申请域名通知失败");
-        }
-    }
 
     /**
      * 封装历史目标分解详情周期集合
