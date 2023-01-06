@@ -761,7 +761,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         R<List<DepartmentDTO>> parentAll = remoteDepartmentService.getParentAll(SecurityConstants.INNER);
         List<DepartmentDTO> data = parentAll.getData();
         //所有二级工资项目为奖金且级别为部门级的三级工资项目
-        List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemByBonusId(bonusPayApplicationDTO.getSalaryItemId());
+        //List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemByBonusId(bonusPayApplicationDTO.getSalaryItemId());
         //查找二级为奖金的三级工资条包含公司
         List<SalaryItemDTO> salaryItemDTOS1 = salaryItemMapper.applyByIdList(bonusPayApplicationDTO.getSalaryItemId());
 
@@ -770,7 +770,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             if (departmentType == 0) {
                 this.bonusGrantStandingApplyList(salaryItemDTOS1, data, bonusPayStandingDTOList,bonusPayApplicationDTO);
             } else if (departmentType == 1) {
-                this.bonusGrantStandingBudgetList(salaryItemDTOS, data, bonusPayStandingDTOList,bonusPayApplicationDTO);
+                this.bonusGrantStandingBudgetList(salaryItemDTOS1, data, bonusPayStandingDTOList,bonusPayApplicationDTO);
             } else {
                 this.bonusGrantStandingBenefitList(salaryItemDTOS1, data, bonusPayStandingDTOList,bonusPayApplicationDTO);
             }
@@ -844,13 +844,17 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             if (StringUtils.isNotEmpty(salaryItemDTOS)) {
                 for (DepartmentDTO datum : data) {
                     for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
-                        //封装工资项目
-                        this.packSalaryItemList(bonusPayStandingDTOList, salaryItemId, datum, salaryItemDTO);
+                        if (salaryItemDTO.getScope()==1){
+                            //封装工资项目
+                            this.packSalaryItemList(bonusPayStandingDTOList, salaryItemId, datum, salaryItemDTO);
+                        }
                     }
                 }
                 for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
-                    //封装公司工资项目
-                    this.packSalaryItemCompany(bonusPayStandingDTOList, salaryItemId, salaryItemDTO);
+                    if (salaryItemDTO.getScope()==2){
+                        //封装公司工资项目
+                        this.packSalaryItemCompany(bonusPayStandingDTOList, salaryItemId, salaryItemDTO);
+                    }
                 }
                 //封装预算部门
                 packBudget(bonusPayStandingDTOList, bonusPayApplicationDTO);
