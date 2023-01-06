@@ -127,7 +127,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                 BigDecimal bonusAmount = new BigDecimal("0");
                                 //奖金占比
                                 BigDecimal bonusPercentage = deptBonusBudgetItemsDTO.getBonusPercentage();
-                                bonusAmount = deptBonusSum.multiply(bonusPercentage.divide(new BigDecimal("100")));
+                                bonusAmount = deptBonusSum.multiply(bonusPercentage.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP));
                                 deptBonusBudgetItemsDTO.setBonusAmount(bonusAmount);
                             }
                         }
@@ -186,7 +186,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             BigDecimal deptBonusPercentage = deptBonusBudgetDetailsDTO.getDeptBonusPercentage();
             if (null != deptAmountBonus && deptAmountBonus.compareTo(new BigDecimal("0")) != 0 &&
                     null != deptBonusPercentage && deptBonusPercentage.compareTo(new BigDecimal("0")) != 0) {
-                deptBonusSum = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"))).setScale(2, RoundingMode.CEILING);
+                deptBonusSum = deptAmountBonus.multiply(deptBonusPercentage.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP)).setScale(2, RoundingMode.CEILING);
             }
             deptBonusBudgetDetailsDTO.setDeptBonusSum(deptBonusSum);
         }
@@ -670,11 +670,11 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 BigDecimal deptBonusPercentageReference = deptBonusBudgetDetailsDTO.getDeptBonusPercentageReference();
                 if (null != deptAmountBonus && deptAmountBonus.compareTo(new BigDecimal("0")) != 0 &&
                         null != deptBonusPercentageReference && deptBonusPercentageReference.compareTo(new BigDecimal("0")) != 0) {
-                    BigDecimal bigDecimal = deptAmountBonus.multiply(deptBonusPercentageReference).setScale(2, RoundingMode.HALF_DOWN);
+                    BigDecimal bigDecimal = deptAmountBonus.multiply(deptBonusPercentageReference.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP)).setScale(10, RoundingMode.HALF_DOWN);
                     //部门奖金总计
                     deptBonusBudgetDetailsDTO.setDeptBonusSum(bigDecimal);
                 }
-
+                deptBonusBudgetDetailsDTO.setDeptBonusPercentage(deptBonusPercentageReference);
             }
         }
     }
@@ -799,7 +799,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                     strategyAwardAmount = amountBonusBudget.multiply(new BigDecimal("0.05")).setScale(2, BigDecimal.ROUND_HALF_UP);
                 } else {
                     //战略奖金额
-                    strategyAwardAmount = amountBonusBudget.multiply(deptBonusBudgetDTO.getStrategyAwardPercentage().divide(new BigDecimal("100"))).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    strategyAwardAmount = amountBonusBudget.multiply(deptBonusBudgetDTO.getStrategyAwardPercentage().divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP)).setScale(2, BigDecimal.ROUND_HALF_UP);
                 }
                 ////战略奖金额
                 deptBonusBudgetDTO.setStrategyAwardAmount(strategyAwardAmount);

@@ -987,8 +987,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
             for (OfficialRankSystemDTO rankSystemDTO : officialRankSystemDTOs) {
                 for (EmployeeDTO dto : employeeDTOList) {
                     if (StringUtils.equals(rankSystemDTO.getRankCodeName(), dto.getEmployeeRankName())) {
-
                         rankSystemDTO.setAmountLastYear(dto.getAmountLastYear());
+                        if (null  != dto.getAmountLastYear()){
+                            rankSystemDTO.setAnnualAverageNum(new BigDecimal(String.valueOf(dto.getAmountLastYear())));
+                        }
+                        rankSystemDTO.setEndYearSum(dto.getAmountLastYear());
                     }
                 }
             }
