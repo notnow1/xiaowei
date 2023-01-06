@@ -554,9 +554,11 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 monthNow = DateUtils.getMonth();
                 quarterNow = DateUtils.getQuarter();
             }
-            Integer x = operateTime(performanceAppraisalDTO, performanceAppraisalObjectsDTOS, appraisalObject,
+            if (StringUtils.isNull(cycleType)) {
+                throw new ServiceException("请选择周期类型");
+            }
+            return operateTime(performanceAppraisalDTO, performanceAppraisalObjectsDTOS, appraisalObject,
                     appraisalYear, appraisalFlow, departmentData, employeeData, cycleType, monthNow, quarterNow);
-            if (x != null) return x;
         }
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList;// 对象List
         Integer cycleNumber = performanceAppraisalDTO.getCycleNumber();
@@ -585,47 +587,46 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     private Integer operateTime(PerformanceAppraisalDTO performanceAppraisalDTO, List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS,
                                 Integer appraisalObject, Integer appraisalYear, Integer appraisalFlow, List<DepartmentDTO> departmentData,
                                 List<EmployeeDTO> employeeData, Integer cycleType, int monthNow, int quarterNow) {
-        if (StringUtils.isNotNull(cycleType)) {
-            switch (cycleType) {//周期类型:1月度;2季度;3半年度;4年度
-                case 1://1月度
-                    for (int i = monthNow; i < 13; i++) {
-                        addPerformances(DateUtils.getMonthStart(appraisalYear, i), DateUtils.getMonthLast(appraisalYear, i),
-                                performanceAppraisalDTO, i, appraisalObject, departmentData,
-                                performanceAppraisalObjectsDTOS, appraisalFlow, employeeData);
-                    }
-                    return 1;
-                case 2: //2季度
-                    for (int i = quarterNow; i < 5; i++) {
-                        addPerformances(DateUtils.getQuarterStart(appraisalYear, i), DateUtils.getQuarterLast(appraisalYear, i),
-                                performanceAppraisalDTO, i, appraisalObject, departmentData,
-                                performanceAppraisalObjectsDTOS, appraisalFlow, employeeData);
-                    }
-                    return 1;
-                case 3: //3半年度
-                    for (int i = quarterNow; i < 3; i++) {
-                        addPerformances(DateUtils.getHalfYearStart(appraisalYear, i), DateUtils.getHalfYearLast(appraisalYear, i),
-                                performanceAppraisalDTO, i, appraisalObject, departmentData,
-                                performanceAppraisalObjectsDTOS, appraisalFlow, employeeData);
-                    }
-                    return 1;
-                case 4: //4年度
-                    List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList;// 对象List
-                    performanceAppraisalDTO.setCycleNumber(1);
-                    performanceAppraisalDTO.setAppraisalStartDate(DateUtils.toLocalDate(DateUtils.getYearStart(appraisalYear)));
-                    performanceAppraisalDTO.setAppraisalEndDate(DateUtils.toLocalDate(DateUtils.getYearLast(appraisalYear)));
-                    PerformanceAppraisal performanceAppraisal = setAppraisalValue(performanceAppraisalDTO);
-                    performanceAppraisalMapper.insertPerformanceAppraisal(performanceAppraisal);
-                    if (appraisalObject == 1) {
-                        performanceAppraisalObjectsDTOList = matchDepartmentObject(departmentData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow);
-                    } else {
-                        performanceAppraisalObjectsDTOList = matchEmployeeObject(employeeData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow);
-                    }
-                    performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
-                    List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
-                    return performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
-            }
+
+        switch (cycleType) {//周期类型:1月度;2季度;3半年度;4年度
+            case 1://1月度
+                for (int i = monthNow; i < 13; i++) {
+                    addPerformances(DateUtils.getMonthStart(appraisalYear, i), DateUtils.getMonthLast(appraisalYear, i),
+                            performanceAppraisalDTO, i, appraisalObject, departmentData,
+                            performanceAppraisalObjectsDTOS, appraisalFlow, employeeData);
+                }
+                return 1;
+            case 2: //2季度
+                for (int i = quarterNow; i < 5; i++) {
+                    addPerformances(DateUtils.getQuarterStart(appraisalYear, i), DateUtils.getQuarterLast(appraisalYear, i),
+                            performanceAppraisalDTO, i, appraisalObject, departmentData,
+                            performanceAppraisalObjectsDTOS, appraisalFlow, employeeData);
+                }
+                return 1;
+            case 3: //3半年度
+                for (int i = quarterNow; i < 3; i++) {
+                    addPerformances(DateUtils.getHalfYearStart(appraisalYear, i), DateUtils.getHalfYearLast(appraisalYear, i),
+                            performanceAppraisalDTO, i, appraisalObject, departmentData,
+                            performanceAppraisalObjectsDTOS, appraisalFlow, employeeData);
+                }
+                return 1;
+            case 4: //4年度
+                List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList;// 对象List
+                performanceAppraisalDTO.setCycleNumber(1);
+                performanceAppraisalDTO.setAppraisalStartDate(DateUtils.toLocalDate(DateUtils.getYearStart(appraisalYear)));
+                performanceAppraisalDTO.setAppraisalEndDate(DateUtils.toLocalDate(DateUtils.getYearLast(appraisalYear)));
+                PerformanceAppraisal performanceAppraisal = setAppraisalValue(performanceAppraisalDTO);
+                performanceAppraisalMapper.insertPerformanceAppraisal(performanceAppraisal);
+                if (appraisalObject == 1) {
+                    performanceAppraisalObjectsDTOList = matchDepartmentObject(departmentData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow);
+                } else {
+                    performanceAppraisalObjectsDTOList = matchEmployeeObject(employeeData, performanceAppraisalObjectsDTOS, performanceAppraisal, appraisalFlow);
+                }
+                performanceAppraisalObjectsService.insertPerformanceAppraisalObjectss(performanceAppraisalObjectsDTOList);
+                List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDTOS = setSnapValue(appraisalObject, performanceAppraisalObjectsDTOList);
+                return performAppraisalObjectSnapService.insertPerformAppraisalObjectSnaps(performAppraisalObjectSnapDTOS);
         }
-        return null;
+        throw new ServiceException("周期类型异常");
     }
 
     /**
