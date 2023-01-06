@@ -801,7 +801,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         int month = DateUtils.getMonth();
         if (bonusBudgetDTO.getBudgetYear() < year) {
             year = bonusBudgetDTO.getBudgetYear();
-            month = 12;
+            month = 13;
         }
         //当前月份倒推12个月的“奖金”部分合计
         BigDecimal bonusActualSum = salaryPayMapper.selectBonusActualNum(year, month);
@@ -861,7 +861,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
         BigDecimal bonusProportionStandard = new BigDecimal("0");
         //奖金驱动因素实际数
-        BigDecimal bonusProportionDrivingFactor = indicatorIdBonusMap.get(bonusBudgetParametersDTO.getIndicatorId());
+        BigDecimal bonusProportionDrivingFactor = indicatorIdBonusMap.get(bonusBudgetDTO.getIndicatorId());
         //奖金占比基准值 公式=奖金包实际数÷奖金驱动因素实际数
         if (null != bonusProportionDrivingFactor && bonusProportionDrivingFactor.compareTo(new BigDecimal("0")) != 0 &&
                 null != bonusActualSum && bonusActualSum.compareTo(new BigDecimal("0")) != 0) {
