@@ -146,7 +146,8 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-   order by bpa.award_month
+        group by bpa.award_month
+        order by bpa.award_month
     </select>
 <!--    查询奖金发放台账预算部门-->
     <select id="bonusGrantStandingBudgetList"

@@ -1,17 +1,25 @@
 package net.qixiaowei.operate.cloud.controller.targetManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.DataFormatData;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.AbstractVerticalCellStyleStrategy;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.excel.CustomVerticalCellStyleStrategy;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -382,8 +390,8 @@ public class TargetDecomposeController extends BaseController {
      */
     @RequiresPermissions(value = {"operate:cloud:targetDecompose:roll:info", "operate:cloud:targetDecompose:roll:edit"}, logical = Logical.OR)
     @GetMapping("/roll/info/{targetDecomposeId}")
-    public AjaxResult rollInfo(@PathVariable Long targetDecomposeId,@RequestParam(required = false) Long backlogId ) {
-        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId,backlogId);
+    public AjaxResult rollInfo(@PathVariable Long targetDecomposeId, @RequestParam(required = false) Long backlogId) {
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId);
         return AjaxResult.success(targetDecomposeDTO);
     }
 
@@ -416,6 +424,65 @@ public class TargetDecomposeController extends BaseController {
         return toAjax(targetDecomposeService.turnOverPrincipalEmployee(targetDecomposeDTO));
     }
 
+    /**
+     * 滚动预测导出详情Excel
+     */
+    @SneakyThrows
+    @GetMapping("/exportRoll-details/info/{targetDecomposeId}")
+    public void exportRollTargetDecomposeDetails(@PathVariable Long targetDecomposeId, @RequestParam(required = false) Long backlogId, HttpServletResponse response) {
+        //查询详情
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId);
+        if (StringUtils.isNull(targetDecomposeDTO)) {
+            throw new ServiceException("数据不存在！ 请刷新重试！");
+        }
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
+        //自定义表头
+        List<List<String>> head = TargetDecomposeImportListener.headRollDetails(targetDecomposeDTO);
+
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("自定义目标分解详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream())
+                .head(head)// 设置表头
+                .sheet("自定义目标分解详情")// 设置 sheet 的名字
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .registerWriteHandler(new AbstractVerticalCellStyleStrategy() {
+                    //设置标题栏的列样式
+                    @Override
+                    protected WriteCellStyle headCellStyle(Head head) {
+                        //内容样式策略
+                        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
+                        //居中
+                        contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                        //设置 自动换行
+                        contentWriteCellStyle.setWrapped(true);
+                        // 字体策略
+                        WriteFont contentWriteFont = new WriteFont();
+                        // 字体大小
+                        contentWriteFont.setFontHeightInPoints((short) 15);
+                        contentWriteCellStyle.setWriteFont(contentWriteFont);
+                        contentWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+                        return contentWriteCellStyle;
+                    }
+                })
+                .useDefaultStyle(false)
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                    }
+                })
+                .doWrite(TargetDecomposeImportListener.detailsDataList(new ArrayList<>(), targetDecomposeDTO));
+    }
 
     //==============================其他==================================//
 
@@ -527,11 +594,11 @@ public class TargetDecomposeController extends BaseController {
     public void exportTargetDecomposeDetails(@PathVariable Long targetDecomposeId, HttpServletResponse response) {
         //查询详情
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
-        if (StringUtils.isNull(targetDecomposeDTO)){
+        if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在！ 请刷新重试！");
         }
         //目标分解操作列导出详情数据
-       List<TargetDecomposeDetailsExcel> targetDecomposeDetailsExcels = targetDecomposeService.exportTargetDecomposeDetails(targetDecomposeId,targetDecomposeDTO);
+        List<TargetDecomposeDetailsExcel> targetDecomposeDetailsExcels = targetDecomposeService.exportTargetDecomposeDetails(targetDecomposeId, targetDecomposeDTO);
         //自定义表头
         List<List<String>> head = TargetDecomposeImportListener.headDetails(targetDecomposeDTO);
         response.setContentType("application/vnd.ms-excel");
@@ -556,6 +623,6 @@ public class TargetDecomposeController extends BaseController {
                         writeCellStyle.setDataFormatData(dataFormatData);
                     }
                 })
-                .doWrite(TargetDecomposeImportListener.detailsDataList(targetDecomposeDetailsExcels,targetDecomposeDTO));
+                .doWrite(TargetDecomposeImportListener.detailsDataList(targetDecomposeDetailsExcels, targetDecomposeDTO));
     }
 }

@@ -1,5 +1,6 @@
 package net.qixiaowei.system.manage.api.dto.basic;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.Data;
@@ -8,6 +9,7 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -127,6 +129,14 @@ public class OfficialRankSystemDTO {
      * 上年期末数
      */
     private Integer amountLastYear;
+    /**
+     * 年度平均人数
+     */
+    private BigDecimal annualAverageNum;
+    /**
+     * 年末总计
+     */
+    private Integer endYearSum;
     /**
      * 职级名称
      */
