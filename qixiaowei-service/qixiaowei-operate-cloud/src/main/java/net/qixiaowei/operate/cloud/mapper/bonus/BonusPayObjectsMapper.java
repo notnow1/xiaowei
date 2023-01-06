@@ -130,4 +130,11 @@ public interface BonusPayObjectsMapper{
     * @return 结果
     */
     int batchBonusPayObjects(@Param("bonusPayObjectss")List<BonusPayObjects> BonusPayObjectss);
+
+    /**
+     * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
+     * @param employeeId
+     * @return
+     */
+    List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(@Param("employeeId") Long employeeId);
 }

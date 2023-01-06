@@ -20,7 +20,7 @@ import java.util.List;
  */
 @FeignClient(contextId = "remoteEmployeeAnnualBonusService", value = ServiceNameConstants.OPERATE_CLOUD_SERVICE, fallbackFactory = RemoteEmployeeAnnualBonusFallbackFactory.class)
 public interface RemoteEmployeeAnnualBonusService {
-    String API_PREFIX_PERFORMANCE_APPRAISAL = "/employeeAnnualBonus";
+    String API_PREFIX_PERFORMANCE_APPRAISAL = "/employeeAnnualBonus/remote";
     /**
      * 根据人员id查询个人年终奖 申请人id
      */

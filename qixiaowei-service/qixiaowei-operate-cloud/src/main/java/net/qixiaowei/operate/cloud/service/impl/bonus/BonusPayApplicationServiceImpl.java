@@ -779,6 +779,16 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     }
 
     /**
+     * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
+     * @param employeeId
+     * @return
+     */
+    @Override
+    public List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(Long employeeId) {
+        return bonusPayObjectsMapper.selectBonusPayApplicationByEmployeeId(employeeId);
+    }
+
+    /**
      * 受益部门查询
      * @param salaryItemDTOS
      * @param data

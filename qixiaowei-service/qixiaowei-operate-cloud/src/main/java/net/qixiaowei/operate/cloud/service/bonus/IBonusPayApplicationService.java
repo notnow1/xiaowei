@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.service.bonus;
 
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO;
 
 
@@ -105,4 +106,11 @@ public interface IBonusPayApplicationService{
      * @return
      */
     List<BonusPayStandingDTO> bonusGrantStandingList(BonusPayApplicationDTO bonusPayApplicationDTO);
+
+    /**
+     * 根据人员id查询个人年终奖 奖金发放对象ID(员工id)
+     * @param employeeId
+     * @return
+     */
+    List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(Long employeeId);
 }
