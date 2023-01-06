@@ -1,13 +1,21 @@
 package net.qixiaowei.integration.log.aspect;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson2.JSONObject;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.filter.PropertyPreExcludeFilter;
 import net.qixiaowei.integration.log.service.AsyncLogService;
+import net.qixiaowei.system.manage.api.dto.log.OperationLogDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -25,12 +33,11 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.ip.IpUtils;
 import net.qixiaowei.integration.log.enums.BusinessStatus;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.domain.SysOperLog;
 
 /**
  * 操作日志记录处理
  */
-//@Aspect
+@Aspect
 @Component
 public class LogAspect {
     private static final Logger log = LoggerFactory.getLogger(LogAspect.class);
@@ -66,33 +73,28 @@ public class LogAspect {
 
     protected void handleLog(final JoinPoint joinPoint, Log controllerLog, final Exception e, Object jsonResult) {
         try {
-
-            // *========数据库日志=========*//
-            SysOperLog operLog = new SysOperLog();
-            operLog.setStatus(BusinessStatus.SUCCESS.ordinal());
-            // 请求的地址
-            String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
-            operLog.setOperIp(ip);
-            operLog.setOperUrl(ServletUtils.getRequest().getRequestURI());
-            String userAccount = SecurityUtils.getUserAccount();
-            if (StringUtils.isNotBlank(userAccount)) {
-                operLog.setOperName(userAccount);
+            Date nowDate = DateUtils.getNowDate();
+            OperationLogDTO operationLogDTO = new OperationLogDTO();
+            Long businessId;
+            //设置操作时间
+            operationLogDTO.setOperationTime(nowDate);
+            //设置操作用户信息
+            this.setUserInfo(operationLogDTO);
+            //设置请求信息
+            this.setRequestInfo(joinPoint, operationLogDTO);
+            int status = BusinessStatus.SUCCESS.ordinal();
+            //错误处理
+            if (StringUtils.isNotNull(e)) {
+                status = BusinessStatus.FAIL.ordinal();
+                String errorMessage = StringUtils.substring(e.getMessage(), 0, 2048);
+                operationLogDTO.setErrorMessage(errorMessage);
             }
-
-            if (e != null) {
-                operLog.setStatus(BusinessStatus.FAIL.ordinal());
-                operLog.setErrorMsg(StringUtils.substring(e.getMessage(), 0, 2000));
-            }
-            // 设置方法名称
-            String className = joinPoint.getTarget().getClass().getName();
-            String methodName = joinPoint.getSignature().getName();
-            operLog.setMethod(className + "." + methodName + "()");
-            // 设置请求方式
-            operLog.setRequestMethod(ServletUtils.getRequest().getMethod());
             // 处理设置注解上的参数
-            getControllerMethodDescription(joinPoint, controllerLog, operLog, jsonResult);
+            this.getControllerMethodDescription(joinPoint, controllerLog, operationLogDTO, jsonResult);
+            //设置状态
+            operationLogDTO.setStatus(status);
             // 保存数据库
-            asyncLogService.saveSysLog(operLog);
+            asyncLogService.addOperationLogLog(operationLogDTO);
         } catch (Exception exp) {
             // 记录本地异常日志
             log.error("==前置通知异常==");
@@ -104,39 +106,142 @@ public class LogAspect {
     /**
      * 获取注解中对方法的描述信息 用于Controller层注解
      *
-     * @param log     日志
-     * @param operLog 操作日志
+     * @param log             日志
+     * @param operationLogDTO 操作日志
      * @throws Exception
      */
-    public void getControllerMethodDescription(JoinPoint joinPoint, Log log, SysOperLog operLog, Object jsonResult) throws Exception {
+    public void getControllerMethodDescription(JoinPoint joinPoint, Log log, OperationLogDTO operationLogDTO, Object jsonResult) throws Exception {
         // 设置action动作
-        operLog.setBusinessType(log.businessType().ordinal());
+        operationLogDTO.setOperationType(log.operationType().ordinal());
+        BusinessType businessType = log.businessType();
+        //设置业务类型
+        operationLogDTO.setBusinessType(businessType.getCode());
         // 设置标题
-        operLog.setTitle(log.title());
-        // 设置操作人类别
-        operLog.setOperatorType(log.operatorType().ordinal());
+        operationLogDTO.setTitle(log.title());
         // 是否需要保存request，参数和值
         if (log.isSaveRequestData()) {
             // 获取参数的信息，传入到数据库中。
-            setRequestValue(joinPoint, operLog);
+            setRequestValue(joinPoint, operationLogDTO);
         }
         // 是否需要保存response，参数和值
         if (log.isSaveResponseData() && StringUtils.isNotNull(jsonResult)) {
-            operLog.setJsonResult(StringUtils.substring(JSON.toJSONString(jsonResult), 0, 2000));
+            String resultData = StringUtils.substring(JSON.toJSONString(jsonResult), 0, 4096);
+            operationLogDTO.setResultData(resultData);
         }
+        //设置业务ID
+        this.setBusinessId(joinPoint, log, operationLogDTO, jsonResult);
+    }
+
+    /**
+     * 设置操作用户的信息到log中
+     *
+     * @param operationLogDTO 操作日志
+     */
+    private void setBusinessId(JoinPoint joinPoint, Log log, OperationLogDTO operationLogDTO, Object jsonResult) {
+        String businessIdFlag = log.businessId();
+        Long businessId = null;
+        String requestMethod = operationLogDTO.getRequestMethod();
+        if (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod)) {
+            Object[] argValues = joinPoint.getArgs();
+            if (argValues != null && argValues.length > 0) {
+                for (Object argValue : argValues) {
+                    String argValueOfJsonString = JSON.toJSONString(argValue);
+                    JSONObject argValueOfJsonObject = JSON.parseObject(argValueOfJsonString);
+                    if (argValueOfJsonObject.containsKey(businessIdFlag)) {
+                        Object o = argValueOfJsonObject.get(businessIdFlag);
+                        if (StringUtils.isNotNull(o)) {
+                            if (o instanceof Integer) {
+                                Integer integer = (Integer) o;
+                                businessId = integer.longValue();
+                            } else if (o instanceof Long) {
+                                businessId = (Long) o;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (StringUtils.isNull(businessId) && StringUtils.isNotNull(jsonResult) && jsonResult instanceof AjaxResult) {
+            String jsonString = JSON.toJSONString(jsonResult);
+            JSONObject jsonObject = JSON.parseObject(jsonString);
+            JSONObject data = jsonObject.getJSONObject(AjaxResult.DATA_TAG);
+            if (StringUtils.isNotNull(data)) {
+                Object o = data.get(businessIdFlag);
+                if (StringUtils.isNotNull(o)) {
+                    if (o instanceof Integer) {
+                        Integer integer = (Integer) o;
+                        businessId = integer.longValue();
+                    } else if (o instanceof Long) {
+                        businessId = (Long) o;
+                    }
+                }
+            }
+        }
+        if (StringUtils.isNull(businessId)) {
+            businessId = 0L;
+        }
+        operationLogDTO.setBusinessId(businessId);
+    }
+
+    /**
+     * 设置操作用户的信息到log中
+     *
+     * @param operationLogDTO 操作日志
+     */
+    private void setUserInfo(OperationLogDTO operationLogDTO) {
+        String userAccount = SecurityUtils.getUserAccount();
+        operationLogDTO.setOperatorUserAccount(userAccount);
+        LoginUserVO loginUser = SecurityUtils.getLoginUser();
+        if (StringUtils.isNotNull(loginUser)) {
+            UserDTO userDTO = loginUser.getUserDTO();
+            if (StringUtils.isNotNull(userDTO)) {
+                String employeeName = userDTO.getEmployeeName();
+                String employeeCode = userDTO.getEmployeeCode();
+                String departmentName = userDTO.getDepartmentName();
+                String postName = userDTO.getPostName();
+                operationLogDTO.setOperatorEmployeeName(employeeName);
+                operationLogDTO.setOperatorEmployeeCode(employeeCode);
+                operationLogDTO.setOperatorDepartmentName(departmentName);
+                operationLogDTO.setOperatorPostName(postName);
+            }
+        }
+    }
+
+    /**
+     * 设置请求的信息
+     *
+     * @param operationLogDTO 操作日志
+     * @throws Exception 异常
+     */
+    private void setRequestInfo(JoinPoint joinPoint, OperationLogDTO operationLogDTO) throws Exception {
+        String className = joinPoint.getTarget().getClass().getName();
+        String methodName = joinPoint.getSignature().getName();
+        String method = className + "." + methodName + "()";
+        HttpServletRequest request = ServletUtils.getRequest();
+        String operatorIp = IpUtils.getIpAddr(request);
+        String requestMethod = request.getMethod();
+        String requestURI = request.getRequestURI();
+        String userAgent = ServletUtils.getHeader(request, "User-Agent");
+        operationLogDTO.setUserAgent(userAgent);
+        operationLogDTO.setRequestMethod(requestMethod);
+        operationLogDTO.setRequestUrl(requestURI);
+        operationLogDTO.setMethod(method);
+        operationLogDTO.setOperatorIp(operatorIp);
     }
 
     /**
      * 获取请求的参数，放到log中
      *
-     * @param operLog 操作日志
+     * @param operationLogDTO 操作日志
      * @throws Exception 异常
      */
-    private void setRequestValue(JoinPoint joinPoint, SysOperLog operLog) throws Exception {
-        String requestMethod = operLog.getRequestMethod();
+    private void setRequestValue(JoinPoint joinPoint, OperationLogDTO operationLogDTO) throws Exception {
+        String requestMethod = operationLogDTO.getRequestMethod();
         if (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod)) {
             String params = argsArrayToString(joinPoint.getArgs());
-            operLog.setOperParam(StringUtils.substring(params, 0, 2000));
+            String requestParam = StringUtils.substring(params, 0, 2048);
+            operationLogDTO.setRequestParam(requestParam);
         }
     }
 

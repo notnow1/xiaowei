@@ -1,8 +1,11 @@
 package net.qixiaowei.operate.cloud.controller.bonus;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
@@ -41,6 +44,7 @@ public class EmployeeAnnualBonusController extends BaseController {
     /**
      * 保存个人年终奖表
      */
+    @Log(title = "新增个人年终奖生成", businessType = BusinessType.EMPLOYEE_ANNUAL_BONUS, businessId = "employeeAnnualBonusId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:employeeAnnualBonus:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
@@ -50,6 +54,7 @@ public class EmployeeAnnualBonusController extends BaseController {
     /**
      * 修改个人年终奖表
      */
+    @Log(title = "保存个人年终奖生成", businessType = BusinessType.EMPLOYEE_ANNUAL_BONUS, businessId = "employeeAnnualBonusId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:employeeAnnualBonus:edit")
     @PostMapping("/edit")
     public AjaxResult edit(@RequestBody EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {

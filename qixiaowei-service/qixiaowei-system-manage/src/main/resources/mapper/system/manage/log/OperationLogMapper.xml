@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.log.OperationLogMapper">
+    <!--    查询操作日志表-->
+    <select id="selectOperationLogByOperationLogId"
+            resultType="net.qixiaowei.system.manage.api.dto.log.OperationLogDTO">
+        SELECT
+        operation_log_id,business_type,business_id,operation_type,operation_time,operator_user_account,operator_employee_name,operator_employee_code,operator_department_name,operator_post_name,user_agent,request_method,request_url,method,title,operator_ip,request_param,result_data,error_message,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM operation_log
+        WHERE operation_log_id=#{operationLogId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询操作日志表-->
+    <select id="selectOperationLogByOperationLogIds"
+            resultType="net.qixiaowei.system.manage.api.dto.log.OperationLogDTO">
+        SELECT
+        operation_log_id,business_type,business_id,operation_type,operation_time,operator_user_account,operator_employee_name,operator_employee_code,operator_department_name,operator_post_name,user_agent,request_method,request_url,method,title,operator_ip,request_param,result_data,error_message,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM operation_log
+        WHERE operation_log_id in
+        <foreach item="item"
+                 collection="operationLogIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询操作日志表列表-->
+    <select id="selectOperationLogList" resultType="net.qixiaowei.system.manage.api.vo.log.OperationLogVO">
+        SELECT
+        operation_log_id,
+        operation_type,
+        operation_time,
+        operator_user_account,
+        operator_employee_name,
+        operator_employee_code,
+        operator_department_name,
+        operator_post_name,
+        title,
+        status
+        FROM operation_log
+        WHERE delete_flag=0
+        <if test="operationLog.operationLogId != null">
+            and operation_log_id=#{operationLog.operationLogId}
+        </if>
+        <if test="operationLog.businessType != null">
+            and business_type=#{operationLog.businessType}
+        </if>
+        <if test="operationLog.businessId != null">
+            and business_id=#{operationLog.businessId}
+        </if>
+        <if test="operationLog.operationType != null">
+            and operation_type=#{operationLog.operationType}
+        </if>
+        <if test="operationLog.operationTime != null">
+            and operation_time=#{operationLog.operationTime}
+        </if>
+        <if test="operationLog.operatorUserAccount != null and operationLog.operatorUserAccount != ''">
+            and operator_user_account=#{operationLog.operatorUserAccount}
+        </if>
+        <if test="operationLog.operatorEmployeeName != null and operationLog.operatorEmployeeName != ''">
+            and operator_employee_name=#{operationLog.operatorEmployeeName}
+        </if>
+        <if test="operationLog.operatorEmployeeCode != null and operationLog.operatorEmployeeCode != ''">
+            and operator_employee_code=#{operationLog.operatorEmployeeCode}
+        </if>
+        <if test="operationLog.operatorDepartmentName != null and operationLog.operatorDepartmentName != ''">
+            and operator_department_name=#{operationLog.operatorDepartmentName}
+        </if>
+        <if test="operationLog.operatorPostName != null and operationLog.operatorPostName != ''">
+            and operator_post_name=#{operationLog.operatorPostName}
+        </if>
+        <if test="operationLog.userAgent != null and operationLog.userAgent != ''">
+            and user_agent=#{operationLog.userAgent}
+        </if>
+        <if test="operationLog.requestMethod != null and operationLog.requestMethod != ''">
+            and request_method=#{operationLog.requestMethod}
+        </if>
+        <if test="operationLog.requestUrl != null and operationLog.requestUrl != ''">
+            and request_url=#{operationLog.requestUrl}
+        </if>
+        <if test="operationLog.method != null and operationLog.method != ''">
+            and method=#{operationLog.method}
+        </if>
+        <if test="operationLog.title != null and operationLog.title != ''">
+            and title=#{operationLog.title}
+        </if>
+        <if test="operationLog.operatorIp != null and operationLog.operatorIp != ''">
+            and operator_ip=#{operationLog.operatorIp}
+        </if>
+        <if test="operationLog.requestParam != null and operationLog.requestParam != ''">
+            and request_param=#{operationLog.requestParam}
+        </if>
+        <if test="operationLog.resultData != null and operationLog.resultData != ''">
+            and result_data=#{operationLog.resultData}
+        </if>
+        <if test="operationLog.errorMessage != null and operationLog.errorMessage != ''">
+            and error_message=#{operationLog.errorMessage}
+        </if>
+        <if test="operationLog.status != null">
+            and status=#{operationLog.status}
+        </if>
+        <if test="operationLog.deleteFlag != null">
+            and delete_flag=#{operationLog.deleteFlag}
+        </if>
+        <if test="operationLog.createBy != null">
+            and create_by=#{operationLog.createBy}
+        </if>
+        <if test="operationLog.createTime != null">
+            and create_time=#{operationLog.createTime}
+        </if>
+        <if test="operationLog.updateBy != null">
+            and update_by=#{operationLog.updateBy}
+        </if>
+        <if test="operationLog.updateTime != null">
+            and update_time=#{operationLog.updateTime}
+        </if>
+    </select>
+    <!--新增操作日志表-->
+    <insert id="insertOperationLog" useGeneratedKeys="true" keyProperty="operationLogId">
+        INSERT INTO operation_log
+        (business_type,business_id,operation_type,operation_time,operator_user_account,operator_employee_name,operator_employee_code,operator_department_name,operator_post_name,user_agent,request_method,request_url,method,title,operator_ip,request_param,result_data,error_message,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{operationLog.businessType},#{operationLog.businessId},#{operationLog.operationType},#{operationLog.operationTime},#{operationLog.operatorUserAccount},#{operationLog.operatorEmployeeName},#{operationLog.operatorEmployeeCode},#{operationLog.operatorDepartmentName},#{operationLog.operatorPostName},#{operationLog.userAgent},#{operationLog.requestMethod},#{operationLog.requestUrl},#{operationLog.method},#{operationLog.title},#{operationLog.operatorIp},#{operationLog.requestParam},#{operationLog.resultData},#{operationLog.errorMessage},#{operationLog.status},#{operationLog.deleteFlag},#{operationLog.createBy},#{operationLog.createTime},#{operationLog.updateBy},#{operationLog.updateTime})
+    </insert>
+    <!--修改操作日志表-->
+    <update id="updateOperationLog">
+        UPDATE operation_log
+        SET
+        <if test="operationLog.businessType != null">
+            business_type=#{operationLog.businessType},
+        </if>
+        <if test="operationLog.businessId != null">
+            business_id=#{operationLog.businessId},
+        </if>
+        <if test="operationLog.operationType != null">
+            operation_type=#{operationLog.operationType},
+        </if>
+        <if test="operationLog.operationTime != null">
+            operation_time=#{operationLog.operationTime},
+        </if>
+        <if test="operationLog.operatorUserAccount != null and operationLog.operatorUserAccount != ''">
+            operator_user_account=#{operationLog.operatorUserAccount},
+        </if>
+        <if test="operationLog.operatorEmployeeName != null and operationLog.operatorEmployeeName != ''">
+            operator_employee_name=#{operationLog.operatorEmployeeName},
+        </if>
+        <if test="operationLog.operatorEmployeeCode != null and operationLog.operatorEmployeeCode != ''">
+            operator_employee_code=#{operationLog.operatorEmployeeCode},
+        </if>
+        <if test="operationLog.operatorDepartmentName != null and operationLog.operatorDepartmentName != ''">
+            operator_department_name=#{operationLog.operatorDepartmentName},
+        </if>
+        <if test="operationLog.operatorPostName != null and operationLog.operatorPostName != ''">
+            operator_post_name=#{operationLog.operatorPostName},
+        </if>
+        <if test="operationLog.userAgent != null and operationLog.userAgent != ''">
+            user_agent=#{operationLog.userAgent},
+        </if>
+        <if test="operationLog.requestMethod != null and operationLog.requestMethod != ''">
+            request_method=#{operationLog.requestMethod},
+        </if>
+        <if test="operationLog.requestUrl != null and operationLog.requestUrl != ''">
+            request_url=#{operationLog.requestUrl},
+        </if>
+        <if test="operationLog.method != null and operationLog.method != ''">
+            method=#{operationLog.method},
+        </if>
+        <if test="operationLog.title != null and operationLog.title != ''">
+            title=#{operationLog.title},
+        </if>
+        <if test="operationLog.operatorIp != null and operationLog.operatorIp != ''">
+            operator_ip=#{operationLog.operatorIp},
+        </if>
+        <if test="operationLog.requestParam != null and operationLog.requestParam != ''">
+            request_param=#{operationLog.requestParam},
+        </if>
+        <if test="operationLog.resultData != null and operationLog.resultData != ''">
+            result_data=#{operationLog.resultData},
+        </if>
+        <if test="operationLog.errorMessage != null and operationLog.errorMessage != ''">
+            error_message=#{operationLog.errorMessage},
+        </if>
+        <if test="operationLog.status != null">
+            status=#{operationLog.status},
+        </if>
+        <if test="operationLog.deleteFlag != null">
+            delete_flag=#{operationLog.deleteFlag},
+        </if>
+        <if test="operationLog.createBy != null">
+            create_by=#{operationLog.createBy},
+        </if>
+        <if test="operationLog.createTime != null">
+            create_time=#{operationLog.createTime},
+        </if>
+        <if test="operationLog.updateBy != null">
+            update_by=#{operationLog.updateBy},
+        </if>
+        <if test="operationLog.updateTime != null">
+            update_time=#{operationLog.updateTime}
+        </if>
+        WHERE
+        operation_log_id=#{operationLog.operationLogId}
+    </update>
+    <!--逻辑删除操作日志表-->
+    <update id="logicDeleteOperationLogByOperationLogId">
+        UPDATE operation_log
+        SET delete_flag= 1,
+        update_by=#{operationLog.updateBy},
+        update_time=#{operationLog.updateTime}
+        WHERE
+        operation_log_id=#{operationLog.operationLogId}
+    </update>
+    <!--逻辑批量删除操作日志表-->
+    <update id="logicDeleteOperationLogByOperationLogIds">
+        UPDATE operation_log
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        operation_log_id IN
+        <foreach item="item"
+                 collection="operationLogIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增操作日志表-->
+    <insert id="batchOperationLog">
+        INSERT INTO operation_log
+        (business_type,business_id,operation_type,operation_time,operator_user_account,operator_employee_name,operator_employee_code,operator_department_name,operator_post_name,user_agent,request_method,request_url,method,title,operator_ip,request_param,result_data,error_message,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="operationLogs"
+                 separator=",">
+            (#{item.businessType},#{item.businessId},#{item.operationType},#{item.operationTime},#{item.operatorUserAccount},#{item.operatorEmployeeName},#{item.operatorEmployeeCode},#{item.operatorDepartmentName},#{item.operatorPostName},#{item.userAgent},#{item.requestMethod},#{item.requestUrl},#{item.method},#{item.title},#{item.operatorIp},#{item.requestParam},#{item.resultData},#{item.errorMessage},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除操作日志表-->
+    <delete id="deleteOperationLogByOperationLogId">
+        DELETE FROM operation_log
+        WHERE operation_log_id=#{operationLog}
+
+    </delete>
+    <!--物理批量删除操作日志表-->
+    <delete id="deleteOperationLogByOperationLogIds">
+        DELETE FROM operation_log
+        WHERE operation_log_id IN
+        <foreach item="item"
+                 collection="operationLogIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改操作日志表-->
+    <update id="updateOperationLogs">
+        update operation_log
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="business_type=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.businessType != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.businessType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_id=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.businessId != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.businessId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operation_type=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.operationType != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.operationType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operation_time=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.operationTime != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.operationTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operator_user_account=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.operatorUserAccount != null and item.operatorUserAccount != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.operatorUserAccount}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operator_employee_name=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.operatorEmployeeName != null and item.operatorEmployeeName != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.operatorEmployeeName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operator_employee_code=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.operatorEmployeeCode != null and item.operatorEmployeeCode != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.operatorEmployeeCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operator_department_name=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.operatorDepartmentName != null and item.operatorDepartmentName != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.operatorDepartmentName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operator_post_name=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.operatorPostName != null and item.operatorPostName != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.operatorPostName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="user_agent=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.userAgent != null and item.userAgent != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.userAgent}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="request_method=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.requestMethod != null and item.requestMethod != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.requestMethod}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="request_url=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.requestUrl != null and item.requestUrl != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.requestUrl}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="method=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.method != null and item.method != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.method}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="title=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.title != null and item.title != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.title}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operator_ip=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.operatorIp != null and item.operatorIp != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.operatorIp}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="request_param=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.requestParam != null and item.requestParam != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.requestParam}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="result_data=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.resultData != null and item.resultData != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.resultData}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="error_message=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.errorMessage != null and item.errorMessage != ''">
+                        when operation_log_id=#{item.operationLogId} then #{item.errorMessage}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.status != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="operationLogList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when operation_log_id=#{item.operationLogId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="operationLogList" separator="or" item="item" index="index">
+            operation_log_id=#{item.operationLogId}
+        </foreach>
+    </update>
+</mapper>
+
+

@@ -178,6 +178,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
         performancePercentage.setUpdateBy(SecurityUtils.getUserId());
         performancePercentage.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         int i = performancePercentageMapper.insertPerformancePercentage(performancePercentage);
+        performancePercentageDTO.setPerformancePercentageId(performancePercentage.getPerformancePercentageId());
         if (StringUtils.isNotEmpty(receiveList)) {
             return performancePercentageDataService.insertPerformancePercentageDatas(receiveList, performancePercentage);
         }

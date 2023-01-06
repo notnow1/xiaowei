@@ -2,6 +2,9 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,7 @@ public class PostController extends BaseController {
     /**
      * 新增岗位表
      */
+    @Log(title = "新增岗位", businessType = BusinessType.POST, businessId = "postId", operationType = OperationType.INSERT)
     @RequiresPermissions("system:manage:post:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(PostDTO.AddPostDTO.class) PostDTO postDTO) {
@@ -53,6 +57,7 @@ public class PostController extends BaseController {
     /**
      * 修改岗位表
      */
+    @Log(title = "编辑岗位", businessType = BusinessType.POST, businessId = "postId", operationType = OperationType.UPDATE)
     @RequiresPermissions("system:manage:post:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(PostDTO.UpdatePostDTO.class) PostDTO postDTO) {

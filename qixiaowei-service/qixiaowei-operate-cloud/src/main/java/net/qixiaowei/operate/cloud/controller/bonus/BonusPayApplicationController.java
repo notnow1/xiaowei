@@ -2,6 +2,9 @@ package net.qixiaowei.operate.cloud.controller.bonus;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,7 @@ public class BonusPayApplicationController extends BaseController {
     /**
      * 新增奖金发放申请表
      */
+    @Log(title = "新增奖金发放申请", businessType = BusinessType.BONUS_PAY_APPLICATION, businessId = "bonusPayApplicationId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:bonusPayApplication:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody BonusPayApplicationDTO bonusPayApplicationDTO) {
@@ -52,6 +56,7 @@ public class BonusPayApplicationController extends BaseController {
     /**
      * 修改奖金发放申请表
      */
+    @Log(title = "保存奖金发放申请", businessType = BusinessType.BONUS_PAY_APPLICATION, businessId = "bonusPayApplicationId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:bonusPayApplication:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody BonusPayApplicationDTO bonusPayApplicationDTO) {

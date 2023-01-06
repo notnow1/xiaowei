@@ -1,8 +1,11 @@
 package net.qixiaowei.system.manage.controller.basic;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
@@ -39,6 +42,7 @@ public class OfficialRankSystemController extends BaseController {
     /**
      * 新增职级体系表
      */
+    @Log(title = "新增职级", businessType = BusinessType.OFFICIAL_RANK_SYSTEM, businessId = "officialRankSystemId", operationType = OperationType.INSERT)
     @RequiresPermissions("system:manage:officialRankSystem:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody OfficialRankSystemDTO officialRankSystemDTO) {
@@ -48,6 +52,7 @@ public class OfficialRankSystemController extends BaseController {
     /**
      * 修改职级体系表
      */
+    @Log(title = "编辑职级", businessType = BusinessType.OFFICIAL_RANK_SYSTEM, businessId = "officialRankSystemId", operationType = OperationType.UPDATE)
     @RequiresPermissions("system:manage:officialRankSystem:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody OfficialRankSystemDTO officialRankSystemDTO) {

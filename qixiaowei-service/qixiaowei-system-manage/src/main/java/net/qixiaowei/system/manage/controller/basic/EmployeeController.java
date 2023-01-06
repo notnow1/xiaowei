@@ -14,6 +14,7 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
@@ -21,6 +22,8 @@ import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
@@ -77,6 +80,7 @@ public class EmployeeController extends BaseController {
     /**
      * 新增员工表
      */
+    @Log(title = "新增员工", businessType = BusinessType.EMPLOYEE, businessId = "employeeId", operationType = OperationType.INSERT)
     @RequiresPermissions("system:manage:employee:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(EmployeeDTO.AddEmployeeDTO.class) EmployeeDTO employeeDTO) {
@@ -86,6 +90,7 @@ public class EmployeeController extends BaseController {
     /**
      * 修改员工表
      */
+    @Log(title = "编辑员工", businessType = BusinessType.EMPLOYEE, businessId = "employeeId", operationType = OperationType.UPDATE)
     @RequiresPermissions("system:manage:employee:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(EmployeeDTO.UpdateEmployeeDTO.class) EmployeeDTO employeeDTO) {

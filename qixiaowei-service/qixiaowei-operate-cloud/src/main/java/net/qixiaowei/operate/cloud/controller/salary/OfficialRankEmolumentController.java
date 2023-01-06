@@ -1,7 +1,10 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
 import net.qixiaowei.operate.cloud.service.salary.IOfficialRankEmolumentService;
@@ -43,6 +46,7 @@ public class OfficialRankEmolumentController extends BaseController {
     /**
      * 修改职级薪酬表
      */
+    @Log(title = "保存", businessType = BusinessType.OFFICIAL_RANK_EMOLUMENT, businessId = "officialRankSystemId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:officialRankEmolument:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody OfficialRankEmolumentDTO officialRankEmolumentDTO) {

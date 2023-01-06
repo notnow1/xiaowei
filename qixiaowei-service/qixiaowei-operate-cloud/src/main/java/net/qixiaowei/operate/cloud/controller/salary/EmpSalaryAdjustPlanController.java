@@ -3,12 +3,15 @@ package net.qixiaowei.operate.cloud.controller.salary;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.EmpSalaryAdjustPlanExcel;
@@ -56,6 +59,7 @@ public class EmpSalaryAdjustPlanController extends BaseController {
     /**
      * 新增个人调薪计划表
      */
+    @Log(title = "新增个人调薪计划", businessType = BusinessType.EMP_SALARY_ADJUST_PLAN, businessId = "empSalaryAdjustPlanId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
@@ -65,6 +69,7 @@ public class EmpSalaryAdjustPlanController extends BaseController {
     /**
      * 修改个人调薪计划表
      */
+    @Log(title = "保存个人调薪计划", businessType = BusinessType.EMP_SALARY_ADJUST_PLAN, businessId = "empSalaryAdjustPlanId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:empSalaryAdjustPlan:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {

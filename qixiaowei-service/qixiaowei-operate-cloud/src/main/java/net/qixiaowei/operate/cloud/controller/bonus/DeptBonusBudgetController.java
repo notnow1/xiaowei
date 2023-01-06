@@ -1,8 +1,11 @@
 package net.qixiaowei.operate.cloud.controller.bonus;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.bonus.DeptBonusBudgetDTO;
@@ -42,6 +45,7 @@ public class DeptBonusBudgetController extends BaseController {
     /**
      * 新增部门奖金包预算表
      */
+    @Log(title = "新增部门奖金包预算", businessType = BusinessType.DEPT_BONUS_BUDGET, businessId = "deptBonusBudgetId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:deptBonusBudget:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody DeptBonusBudgetDTO deptBonusBudgetDTO) {
@@ -51,6 +55,7 @@ public class DeptBonusBudgetController extends BaseController {
     /**
      * 修改部门奖金包预算表
      */
+    @Log(title = "保存部门奖金包预算", businessType = BusinessType.DEPT_BONUS_BUDGET, businessId = "deptBonusBudgetId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:deptBonusBudget:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(DeptBonusBudgetDTO.UpdateDeptBonusBudgetDTO.class) DeptBonusBudgetDTO deptBonusBudgetDTO) {

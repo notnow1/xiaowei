@@ -1,9 +1,12 @@
 package net.qixiaowei.operate.cloud.controller.performance;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO;
@@ -41,6 +44,7 @@ public class PerformanceRankController extends BaseController {
     /**
      * 新增绩效等级表
      */
+    @Log(title = "新增绩效等级", businessType = BusinessType.PERFORMANCE_RANK, businessId = "performanceRankId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:performanceRank:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody PerformanceRankDTO performanceRankDTO) {
@@ -50,6 +54,7 @@ public class PerformanceRankController extends BaseController {
     /**
      * 修改绩效等级表
      */
+    @Log(title = "编辑绩效等级", businessType = BusinessType.PERFORMANCE_RANK, businessId = "performanceRankId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:performanceRank:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody PerformanceRankDTO performanceRankDTO) {

@@ -5,11 +5,14 @@ import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
@@ -56,6 +59,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 保存销售订单目标制定
      */
+    @Log(title = "保存", businessType = BusinessType.TARGET_SETTING_ORDER, businessId = "targetSettingId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:targetSetting:order:save")
     @PostMapping("/order/save")
     public AjaxResult saveOrder(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
@@ -105,6 +109,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 新增目标制定
      */
+    @Log(title = "保存", businessType = BusinessType.TARGET_SETTING_INCOME, businessId = "targetSettingId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:targetSetting:income:save")
     @PostMapping("/income/save")
     public AjaxResult saveIncome(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
@@ -144,6 +149,7 @@ public class TargetSettingController extends BaseController {
     /**
      * 新增目标制定
      */
+    @Log(title = "保存", businessType = BusinessType.TARGET_SETTING_RECOVERY, businessId = "targetSettingId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:targetSetting:recovery:save")
     @PostMapping("/recovery/save")
     public AjaxResult saveRecoveries(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {

@@ -8,7 +8,10 @@ import java.util.Map;
 
 import com.alibaba.excel.EasyExcel;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.text.CharsetKit;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
@@ -57,6 +60,7 @@ public class TenantController extends BaseController {
     /**
      * 新增租户表
      */
+    @Log(title = "新增租户", businessType = BusinessType.TENANT, businessId = "tenantId", operationType = OperationType.INSERT)
     @RequiresPermissions("system:manage:tenant:add")
     @PostMapping("/add")
     public AjaxResult addSave(@Validated(TenantDTO.AddTenantDTO.class) @RequestBody TenantDTO tenantDTO) {
@@ -66,6 +70,7 @@ public class TenantController extends BaseController {
     /**
      * 修改租户表
      */
+    @Log(title = "编辑租户", businessType = BusinessType.TENANT, businessId = "tenantId", operationType = OperationType.UPDATE)
     @RequiresPermissions(value = {"system:manage:tenant:edit", "system:manage:tenant:info"}, logical = Logical.OR)
     @PostMapping("/edit")
     public AjaxResult editSave(@Validated(TenantDTO.UpdateTenantDTO.class) @RequestBody TenantDTO tenantDTO) {

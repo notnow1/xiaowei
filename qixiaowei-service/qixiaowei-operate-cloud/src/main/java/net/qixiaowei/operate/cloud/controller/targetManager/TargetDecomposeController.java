@@ -12,7 +12,10 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.AbstractVerticalCellStyleStrategy;
 import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.common.utils.excel.CustomVerticalCellStyleStrategy;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -75,6 +78,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 新增目标分解(销售订单)表
      */
+    @Log(title = "保存目标分解", businessType = BusinessType.TARGET_DECOMPOSE_ORDER, businessId = "targetDecomposeId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:targetDecompose:order:add")
     @PostMapping("/order/add")
     public AjaxResult orderAddSave(@RequestBody @Validated({TargetDecomposeDTO.AddTargetDecomposeDTO.class}) TargetDecomposeDTO targetDecomposeDTO) {
@@ -84,6 +88,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 修改目标分解(销售订单)表
      */
+    @Log(title = "保存目标分解", businessType = BusinessType.TARGET_DECOMPOSE_ORDER, businessId = "targetDecomposeId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:targetDecompose:order:edit")
     @PostMapping("/order/edit")
     public AjaxResult orderEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
@@ -151,6 +156,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 新增目标分解(销售收入)表
      */
+    @Log(title = "保存目标分解", businessType = BusinessType.TARGET_DECOMPOSE_INCOME, businessId = "targetDecomposeId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:targetDecompose:income:add")
     @PostMapping("/income/add")
     public AjaxResult incomeAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
@@ -160,6 +166,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 修改目标分解(销售收入)表
      */
+    @Log(title = "保存目标分解", businessType = BusinessType.TARGET_DECOMPOSE_INCOME, businessId = "targetDecomposeId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:targetDecompose:income:edit")
     @PostMapping("/income/edit")
     public AjaxResult incomeEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
@@ -228,6 +235,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 新增目标分解(销售回款)表
      */
+    @Log(title = "保存目标分解", businessType = BusinessType.TARGET_DECOMPOSE_RECOVERY, businessId = "targetDecomposeId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:targetDecompose:returned:add")
     @PostMapping("/returned/add")
     public AjaxResult returnedAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
@@ -237,6 +245,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 修改目标分解(销售回款)表
      */
+    @Log(title = "保存目标分解", businessType = BusinessType.TARGET_DECOMPOSE_RECOVERY, businessId = "targetDecomposeId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:targetDecompose:returned:edit")
     @PostMapping("/returned/edit")
     public AjaxResult returnedEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
@@ -304,6 +313,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 新增目标分解(自定义)表
      */
+    @Log(title = "保存目标分解", businessType = BusinessType.TARGET_DECOMPOSE, businessId = "targetDecomposeId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:targetDecompose:custom:add")
     @PostMapping("/custom/add")
     public AjaxResult customAddSave(@RequestBody @Validated(TargetDecomposeDTO.AddTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
@@ -313,6 +323,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 修改目标分解(自定义)表
      */
+    @Log(title = "保存目标分解", businessType = BusinessType.TARGET_DECOMPOSE, businessId = "targetDecomposeId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:targetDecompose:custom:edit")
     @PostMapping("/custom/edit")
     public AjaxResult customEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
@@ -409,6 +420,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 修改滚动预测详情
      */
+    @Log(title = "保存", businessType = BusinessType.TARGET_DECOMPOSE_ROLL, businessId = "targetDecomposeId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:targetDecompose:roll:edit")
     @PostMapping("/roll/edit")
     public AjaxResult rollEditSave(@RequestBody @Validated(TargetDecomposeDTO.UpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {
@@ -418,6 +430,7 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 移交预测负责人
      */
+    @Log(title = "移交预测负责人", businessType = BusinessType.TARGET_DECOMPOSE_ROLL, businessId = "targetDecomposeId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:targetDecompose:roll:turnOver")
     @PostMapping("/turnOver/edit")
     public AjaxResult turnOverPrincipalEmployee(@RequestBody @Validated(TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {

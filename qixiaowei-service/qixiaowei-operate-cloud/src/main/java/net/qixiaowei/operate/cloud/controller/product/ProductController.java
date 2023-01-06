@@ -16,6 +16,7 @@ import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -24,6 +25,8 @@ import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
@@ -121,6 +124,7 @@ public class ProductController extends BaseController {
     /**
      * 新增产品表
      */
+    @Log(title = "新增产品", businessType = BusinessType.PRODUCT, businessId = "productId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:product:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(ProductDTO.AddProductDTO.class) ProductDTO productDTO) {
@@ -130,6 +134,7 @@ public class ProductController extends BaseController {
     /**
      * 修改产品表
      */
+    @Log(title = "编辑产品", businessType = BusinessType.PRODUCT, businessId = "productId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:product:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(ProductDTO.UpdateProductDTO.class) ProductDTO productDTO) {

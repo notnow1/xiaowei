@@ -3,6 +3,9 @@ package net.qixiaowei.system.manage.controller.user;
 import java.util.List;
 import java.util.Set;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,7 @@ public class UserController extends BaseController {
     /**
      * 新增用户表
      */
+    @Log(title = "新增账号", businessType = BusinessType.USER, businessId = "userId", operationType = OperationType.INSERT)
     @RequiresPermissions("system:manage:user:add")
     @PostMapping("/add")
     public AjaxResult addSave(@Validated(UserDTO.AddUserDTO.class) @RequestBody UserDTO userDTO) {
@@ -55,6 +59,7 @@ public class UserController extends BaseController {
     /**
      * 修改用户表
      */
+    @Log(title = "编辑账号", businessType = BusinessType.USER, businessId = "userId", operationType = OperationType.UPDATE)
     @RequiresPermissions("system:manage:user:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@Validated(UserDTO.UpdateUserDTO.class) @RequestBody UserDTO userDTO) {
@@ -93,6 +98,7 @@ public class UserController extends BaseController {
     /**
      * 重置密码
      */
+    @Log(title = "重置密码", businessType = BusinessType.USER, businessId = "userId", operationType = OperationType.UPDATE)
     @RequiresPermissions("system:manage:user:resetPwd")
     @PostMapping("/resetPwd")
     public AjaxResult resetPwd(@Validated(UserDTO.DeleteUserDTO.class) @RequestBody UserDTO userDTO) {

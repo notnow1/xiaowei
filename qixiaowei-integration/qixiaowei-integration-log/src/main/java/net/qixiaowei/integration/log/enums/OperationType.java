@@ -2,11 +2,8 @@ package net.qixiaowei.integration.log.enums;
 
 /**
  * 业务操作类型
- * 
- * 
  */
-public enum BusinessType
-{
+public enum OperationType {
     /**
      * 其它
      */
@@ -23,14 +20,9 @@ public enum BusinessType
     UPDATE,
 
     /**
-     * 删除
+     * 导入
      */
-    DELETE,
-
-    /**
-     * 授权
-     */
-    GRANT,
+    IMPORT,
 
     /**
      * 导出
@@ -38,22 +30,18 @@ public enum BusinessType
     EXPORT,
 
     /**
-     * 导入
+     * 下载
      */
-    IMPORT,
+    DOWNLOAD,
 
     /**
-     * 强退
+     * 删除
      */
-    FORCE,
+    DELETE,
 
     /**
-     * 生成代码
+     * 撤回
      */
-    GENCODE,
+    REVOCATION,
 
-    /**
-     * 清空数据
-     */
-    CLEAN,
 }

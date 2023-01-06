@@ -1,9 +1,12 @@
 package net.qixiaowei.operate.cloud.controller.bonus;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
@@ -41,6 +44,7 @@ public class BonusBudgetController extends BaseController {
     /**
      * 新增奖金预算表
      */
+    @Log(title = "新增总奖金包预算", businessType = BusinessType.BONUS_BUDGET, businessId = "bonusBudgetId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:bonusBudget:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody BonusBudgetDTO bonusBudgetDTO) {
@@ -50,6 +54,7 @@ public class BonusBudgetController extends BaseController {
     /**
      * 修改奖金预算表
      */
+    @Log(title = "保存总奖金包预算", businessType = BusinessType.BONUS_BUDGET, businessId = "bonusBudgetId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:bonusBudget:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(BonusBudgetDTO.UpdateBonusBudgetDTO.class) BonusBudgetDTO bonusBudgetDTO) {

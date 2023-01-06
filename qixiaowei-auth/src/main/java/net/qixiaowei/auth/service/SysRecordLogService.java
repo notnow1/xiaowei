@@ -7,7 +7,7 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.utils.ServletUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.ip.IpUtils;
-import net.qixiaowei.system.manage.api.RemoteLogService;
+import net.qixiaowei.system.manage.api.remote.log.RemoteOperationLogService;
 import net.qixiaowei.system.manage.api.domain.SysLoginInfo;
 
 /**
@@ -16,7 +16,7 @@ import net.qixiaowei.system.manage.api.domain.SysLoginInfo;
 @Component
 public class SysRecordLogService {
     @Autowired
-    private RemoteLogService remoteLogService;
+    private RemoteOperationLogService remoteOperationLogService;
 
     /**
      * 记录登录信息
@@ -37,6 +37,6 @@ public class SysRecordLogService {
         } else if (Constants.LOGIN_FAIL.equals(status)) {
             loginInfo.setStatus(Constants.LOGIN_FAIL_STATUS);
         }
-        remoteLogService.saveLoginInfo(loginInfo, SecurityConstants.INNER);
+//        remoteOperationLogService.saveLoginInfo(loginInfo, SecurityConstants.INNER);
     }
 }

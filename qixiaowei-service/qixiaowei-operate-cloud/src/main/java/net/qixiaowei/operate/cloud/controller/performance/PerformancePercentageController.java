@@ -1,8 +1,11 @@
 package net.qixiaowei.operate.cloud.controller.performance;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
@@ -49,6 +52,7 @@ public class PerformancePercentageController extends BaseController {
     /**
      * 新增绩效比例表
      */
+    @Log(title = "新增绩效比例", businessType = BusinessType.PERFORMANCE_PERCENTAGE, businessId = "performancePercentageId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:performancePercentage:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(PerformancePercentageDTO.AddPerformancePercentageDTO.class) PerformancePercentageDTO performancePercentageDTO) {
@@ -58,6 +62,7 @@ public class PerformancePercentageController extends BaseController {
     /**
      * 修改绩效比例表
      */
+    @Log(title = "编辑绩效比例", businessType = BusinessType.PERFORMANCE_PERCENTAGE, businessId = "performancePercentageId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:performancePercentage:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(PerformancePercentageDTO.UpdatePerformancePercentageDTO.class) PerformancePercentageDTO performancePercentageDTO) {

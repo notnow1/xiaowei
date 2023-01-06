@@ -1,9 +1,12 @@
 package net.qixiaowei.operate.cloud.controller.salary;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
@@ -42,6 +45,7 @@ public class EmolumentPlanController extends BaseController {
     /**
      * 新增薪酬规划表
      */
+    @Log(title = "新增薪酬规划", businessType = BusinessType.EMOLUMENT_PLAN, businessId = "emolumentPlanId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:emolumentPlan:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(EmolumentPlanDTO.AddEmolumentPlanDTO.class) EmolumentPlanDTO emolumentPlanDTO) {
@@ -51,6 +55,7 @@ public class EmolumentPlanController extends BaseController {
     /**
      * 修改薪酬规划表
      */
+    @Log(title = "保存薪酬规划", businessType = BusinessType.EMOLUMENT_PLAN, businessId = "emolumentPlanId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:emolumentPlan:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody EmolumentPlanDTO emolumentPlanDTO) {

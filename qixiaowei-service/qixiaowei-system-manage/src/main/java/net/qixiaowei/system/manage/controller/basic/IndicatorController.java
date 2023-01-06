@@ -1,10 +1,13 @@
 package net.qixiaowei.system.manage.controller.basic;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -71,6 +74,7 @@ public class IndicatorController extends BaseController {
     /**
      * 新增指标表
      */
+    @Log(title = "新增指标", businessType = BusinessType.INDICATOR, businessId = "indicatorId", operationType = OperationType.INSERT)
     @RequiresPermissions("system:manage:indicator:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndicatorDTO indicatorDTO) {
@@ -80,6 +84,7 @@ public class IndicatorController extends BaseController {
     /**
      * 修改指标表
      */
+    @Log(title = "编辑指标", businessType = BusinessType.INDICATOR, businessId = "indicatorId", operationType = OperationType.UPDATE)
     @RequiresPermissions("system:manage:indicator:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody IndicatorDTO indicatorDTO) {

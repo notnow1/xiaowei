@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.controller.performance;
 
 import com.alibaba.excel.EasyExcel;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -9,6 +10,8 @@ import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalColumnsDTO;
@@ -111,6 +114,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 编辑组织绩效考核制定表
      */
+    @Log(title = "保存组织绩效制定", businessType = BusinessType.PERFORMANCE_APPRAISAL_ORG_SETTING, businessId = "performAppraisalObjectsId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgDevelop:edit")
     @PostMapping("/orgDevelop/edit")
     public AjaxResult editOrgDevelop(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
@@ -141,6 +145,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 编辑组织绩效考核评议表
      */
+    @Log(title = "保存组织绩效评议", businessType = BusinessType.PERFORMANCE_APPRAISAL_ORG_REVIEW, businessId = "performAppraisalObjectsId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgReview:edit")
     @PostMapping("/orgReview/edit")
     public AjaxResult editOrgReview(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
@@ -181,6 +186,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 编辑绩效考核-组织-排名
      */
+    @Log(title = "保存组织绩效排名", businessType = BusinessType.PERFORMANCE_APPRAISAL_ORG_RANKING, businessId = "performanceAppraisalId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:performanceAppraisal:orgRanking:edit")
     @PostMapping("/orgRanking/edit")
     public AjaxResult editOrgRanking(@RequestBody @Validated(PerformanceAppraisalDTO.UpdatePerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {
@@ -323,6 +329,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 编辑组织绩效考核制定表
      */
+    @Log(title = "保存个人绩效指定", businessType = BusinessType.PERFORMANCE_APPRAISAL_PERSON_SETTING, businessId = "performAppraisalObjectsId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:performanceAppraisal:perDevelop:edit")
     @PostMapping("/perDevelop/edit")
     public AjaxResult editPerDevelop(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
@@ -353,6 +360,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 编辑组织绩效考核评议表
      */
+    @Log(title = "保存个人绩效评议", businessType = BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW, businessId = "performAppraisalObjectsId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:performanceAppraisal:perReview:edit")
     @PostMapping("/perReview/edit")
     public AjaxResult editPerReview(@RequestBody @Validated(PerformanceAppraisalObjectsDTO.UpdatePerformanceAppraisalObjectsDTO.class) PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
@@ -384,6 +392,7 @@ public class PerformanceAppraisalController extends BaseController {
     /**
      * 编辑绩效考核-个人-排名
      */
+    @Log(title = "保存个人绩效排名", businessType = BusinessType.PERFORMANCE_APPRAISAL_PERSON_RANKING, businessId = "performanceAppraisalId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:performanceAppraisal:perRanking:edit")
     @PostMapping("/perRanking/edit")
     public AjaxResult editPerRanking(@RequestBody @Validated(PerformanceAppraisalDTO.UpdatePerformanceAppraisalDTO.class) PerformanceAppraisalDTO performanceAppraisalDTO) {

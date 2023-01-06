@@ -3,12 +3,15 @@ package net.qixiaowei.operate.cloud.controller.employee;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import lombok.SneakyThrows;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
@@ -61,6 +64,7 @@ public class EmployeeBudgetController extends BaseController {
     /**
      * 新增人力预算表
      */
+    @Log(title = "新增人力预算调控", businessType = BusinessType.EMPLOYEE_BUDGET, businessId = "employeeBudgetId", operationType = OperationType.INSERT)
     @RequiresPermissions("operate:cloud:employeeBudget:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(EmployeeBudgetDTO.AddEmployeeBudgetDTO.class) EmployeeBudgetDTO employeeBudgetDTO) {
@@ -70,6 +74,7 @@ public class EmployeeBudgetController extends BaseController {
     /**
      * 修改人力预算表
      */
+    @Log(title = "保存人力预算调控", businessType = BusinessType.EMPLOYEE_BUDGET, businessId = "employeeBudgetId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:employeeBudget:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(EmployeeBudgetDTO.UpdateEmployeeBudgetDTO.class) EmployeeBudgetDTO employeeBudgetDTO) {

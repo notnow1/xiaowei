@@ -2,6 +2,9 @@ package net.qixiaowei.system.manage.controller.basic;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,7 @@ public class DepartmentController extends BaseController {
     /**
      * 新增部门表
      */
+    @Log(title = "新增组织", businessType = BusinessType.DEPARTMENT, businessId = "departmentId", operationType = OperationType.INSERT)
     @RequiresPermissions("system:manage:department:add")
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(DepartmentDTO.AddDepartmentDTO.class) DepartmentDTO departmentDTO) {
@@ -42,6 +46,7 @@ public class DepartmentController extends BaseController {
     /**
      * 修改部门表
      */
+    @Log(title = "编辑组织", businessType = BusinessType.DEPARTMENT, businessId = "departmentId", operationType = OperationType.UPDATE)
     @RequiresPermissions("system:manage:department:edit")
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(DepartmentDTO.UpdateDepartmentDTO.class) DepartmentDTO departmentDTO) {
