@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.message.api.dto.message.MessageContentConfigDTO;
 import net.qixiaowei.message.service.message.IMessageContentConfigService;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -66,7 +64,6 @@ public class MessageContentConfigController extends BaseController {
      * 新增消息内容配置表
      */
     @RequiresPermissions("message:messageContentConfig:add")
-    @Log(title = "新增消息内容配置表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody MessageContentConfigDTO messageContentConfigDTO) {
         return AjaxResult.success(messageContentConfigService.insertMessageContentConfig(messageContentConfigDTO));
@@ -77,7 +74,6 @@ public class MessageContentConfigController extends BaseController {
      * 修改消息内容配置表
      */
     @RequiresPermissions("message:messageContentConfig:edit")
-    @Log(title = "修改消息内容配置表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody MessageContentConfigDTO messageContentConfigDTO) {
         return toAjax(messageContentConfigService.updateMessageContentConfig(messageContentConfigDTO));
@@ -87,7 +83,6 @@ public class MessageContentConfigController extends BaseController {
      * 逻辑删除消息内容配置表
      */
     @RequiresPermissions("message:messageContentConfig:remove")
-    @Log(title = "删除消息内容配置表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody MessageContentConfigDTO messageContentConfigDTO) {
         return toAjax(messageContentConfigService.logicDeleteMessageContentConfigByMessageContentConfigId(messageContentConfigDTO));
@@ -97,7 +92,6 @@ public class MessageContentConfigController extends BaseController {
      * 批量修改消息内容配置表
      */
     @RequiresPermissions("message:messageContentConfig:edits")
-    @Log(title = "批量修改消息内容配置表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<MessageContentConfigDTO> messageContentConfigDtos) {
         return toAjax(messageContentConfigService.updateMessageContentConfigs(messageContentConfigDtos));
@@ -107,7 +101,6 @@ public class MessageContentConfigController extends BaseController {
      * 批量新增消息内容配置表
      */
     @RequiresPermissions("message:messageContentConfig:insertMessageContentConfigs")
-    @Log(title = "批量新增消息内容配置表", businessType = BusinessType.INSERT)
     @PostMapping("/insertMessageContentConfigs")
     public AjaxResult insertMessageContentConfigs(@RequestBody List<MessageContentConfigDTO> messageContentConfigDtos) {
         return toAjax(messageContentConfigService.insertMessageContentConfigs(messageContentConfigDtos));
@@ -117,7 +110,6 @@ public class MessageContentConfigController extends BaseController {
      * 逻辑批量删除消息内容配置表
      */
     @RequiresPermissions("message:messageContentConfig:removes")
-    @Log(title = "批量删除消息内容配置表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> messageContentConfigIds) {
         return toAjax(messageContentConfigService.logicDeleteMessageContentConfigByMessageContentConfigIds(messageContentConfigIds));

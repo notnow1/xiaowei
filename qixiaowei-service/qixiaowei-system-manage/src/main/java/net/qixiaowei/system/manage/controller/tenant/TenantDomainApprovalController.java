@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
 import net.qixiaowei.system.manage.service.tenant.ITenantDomainApprovalService;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -80,7 +78,6 @@ public class TenantDomainApprovalController extends BaseController {
      * 新增租户域名申请
      */
     @RequiresPermissions("system:manage:tenantDomainApproval:add")
-    @Log(title = "新增租户域名申请", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody TenantDomainApprovalDTO tenantDomainApprovalDTO) {
         return toAjax(tenantDomainApprovalService.insertTenantDomainApproval(tenantDomainApprovalDTO));
@@ -91,7 +88,6 @@ public class TenantDomainApprovalController extends BaseController {
      * 修改租户域名申请
      */
     @RequiresPermissions("system:manage:tenantDomainApproval:edit")
-    @Log(title = "修改租户域名申请", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody TenantDomainApprovalDTO tenantDomainApprovalDTO) {
         return toAjax(tenantDomainApprovalService.updateTenantDomainApproval(tenantDomainApprovalDTO));
@@ -101,7 +97,6 @@ public class TenantDomainApprovalController extends BaseController {
      * 逻辑删除租户域名申请
      */
     @RequiresPermissions("system:manage:tenantDomainApproval:remove")
-    @Log(title = "删除租户域名申请", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody TenantDomainApprovalDTO tenantDomainApprovalDTO) {
         return toAjax(tenantDomainApprovalService.logicDeleteTenantDomainApprovalByTenantDomainApprovalId(tenantDomainApprovalDTO));
@@ -111,7 +106,6 @@ public class TenantDomainApprovalController extends BaseController {
      * 批量修改租户域名申请
      */
     @RequiresPermissions("system:manage:tenantDomainApproval:edits")
-    @Log(title = "批量修改租户域名申请", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<TenantDomainApprovalDTO> tenantDomainApprovalDtos) {
         return toAjax(tenantDomainApprovalService.updateTenantDomainApprovals(tenantDomainApprovalDtos));
@@ -121,7 +115,6 @@ public class TenantDomainApprovalController extends BaseController {
      * 批量新增租户域名申请
      */
     @RequiresPermissions("system:manage:tenantDomainApproval:insertTenantDomainApprovals")
-    @Log(title = "批量新增租户域名申请", businessType = BusinessType.INSERT)
     @PostMapping("/insertTenantDomainApprovals")
     public AjaxResult insertTenantDomainApprovals(@RequestBody List<TenantDomainApprovalDTO> tenantDomainApprovalDtos) {
         return toAjax(tenantDomainApprovalService.insertTenantDomainApprovals(tenantDomainApprovalDtos));
@@ -131,7 +124,6 @@ public class TenantDomainApprovalController extends BaseController {
      * 逻辑批量删除租户域名申请
      */
     @RequiresPermissions("system:manage:tenantDomainApproval:removes")
-    @Log(title = "批量删除租户域名申请", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<TenantDomainApprovalDTO> TenantDomainApprovalDtos) {
         return toAjax(tenantDomainApprovalService.logicDeleteTenantDomainApprovalByTenantDomainApprovalIds(TenantDomainApprovalDtos));
