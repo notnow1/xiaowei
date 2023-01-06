@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.basic.CountryDTO;
 import net.qixiaowei.system.manage.service.basic.ICountryService;
 import net.qixiaowei.integration.common.web.controller.BaseController;
@@ -74,7 +72,6 @@ public class CountryController extends BaseController {
      * 逻辑删除国家表
      */
     @RequiresPermissions("system:manage:country:remove")
-    @Log(title = "删除国家表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody CountryDTO countryDTO) {
         return toAjax(countryService.logicDeleteCountryByCountryId(countryDTO));

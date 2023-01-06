@@ -10,8 +10,6 @@ import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
@@ -108,7 +106,6 @@ public class TargetSettingController extends BaseController {
      * 新增目标制定
      */
     @RequiresPermissions("operate:cloud:targetSetting:income:save")
-    @Log(title = "保存销售收入目标制定", businessType = BusinessType.UPDATE)
     @PostMapping("/income/save")
     public AjaxResult saveIncome(@RequestBody @Validated(TargetSettingDTO.UpdateTargetSettingDTO.class) TargetSettingDTO targetSettingDTO) {
         return AjaxResult.success(targetSettingService.saveIncomeTargetSetting(targetSettingDTO));

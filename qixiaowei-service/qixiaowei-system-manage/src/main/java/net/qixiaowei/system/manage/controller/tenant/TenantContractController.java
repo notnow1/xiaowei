@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import net.qixiaowei.system.manage.service.tenant.ITenantContractService;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -69,7 +67,6 @@ public class TenantContractController extends BaseController
     * 新增租户合同信息
     */
     @RequiresPermissions("system:manage:tenantContract:add")
-    @Log(title = "新增租户合同信息", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody TenantContractDTO tenantContractDTO) {
     return toAjax(tenantContractService.insertTenantContract(tenantContractDTO));
@@ -80,7 +77,6 @@ public class TenantContractController extends BaseController
     * 修改租户合同信息
     */
     @RequiresPermissions("system:manage:tenantContract:edit")
-    @Log(title = "修改租户合同信息", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody TenantContractDTO tenantContractDTO)
     {
@@ -91,7 +87,6 @@ public class TenantContractController extends BaseController
     * 逻辑删除租户合同信息
     */
     @RequiresPermissions("system:manage:tenantContract:remove")
-    @Log(title = "删除租户合同信息", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody TenantContractDTO tenantContractDTO)
     {
@@ -101,7 +96,6 @@ public class TenantContractController extends BaseController
     * 批量修改租户合同信息
     */
     @RequiresPermissions("system:manage:tenantContract:edits")
-    @Log(title = "批量修改租户合同信息", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<TenantContractDTO> tenantContractDtos)
     {
@@ -112,7 +106,6 @@ public class TenantContractController extends BaseController
     * 批量新增租户合同信息
     */
     @RequiresPermissions("system:manage:tenantContract:insertTenantContracts")
-    @Log(title = "批量新增租户合同信息", businessType = BusinessType.INSERT)
     @PostMapping("/insertTenantContracts")
     public AjaxResult insertTenantContracts(@RequestBody List<TenantContractDTO> tenantContractDtos)
     {
@@ -123,7 +116,6 @@ public class TenantContractController extends BaseController
     * 逻辑批量删除租户合同信息
     */
     @RequiresPermissions("system:manage:tenantContract:removes")
-    @Log(title = "批量删除租户合同信息", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<TenantContractDTO>  TenantContractDtos)
     {

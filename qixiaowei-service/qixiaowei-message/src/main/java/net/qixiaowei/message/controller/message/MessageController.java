@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.message.api.dto.message.MessageDTO;
 import net.qixiaowei.message.service.message.IMessageService;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
@@ -66,7 +64,6 @@ public class MessageController extends BaseController {
      * 新增消息表
      */
     @RequiresPermissions("message:message:add")
-    @Log(title = "新增消息表", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody MessageDTO messageDTO) {
         return AjaxResult.success(messageService.insertMessage(messageDTO));
@@ -77,7 +74,6 @@ public class MessageController extends BaseController {
      * 修改消息表
      */
     @RequiresPermissions("message:message:edit")
-    @Log(title = "修改消息表", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody MessageDTO messageDTO) {
         return toAjax(messageService.updateMessage(messageDTO));
@@ -87,7 +83,6 @@ public class MessageController extends BaseController {
      * 逻辑删除消息表
      */
     @RequiresPermissions("message:message:remove")
-    @Log(title = "删除消息表", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody MessageDTO messageDTO) {
         return toAjax(messageService.logicDeleteMessageByMessageId(messageDTO));
@@ -97,7 +92,6 @@ public class MessageController extends BaseController {
      * 批量修改消息表
      */
     @RequiresPermissions("message:message:edits")
-    @Log(title = "批量修改消息表", businessType = BusinessType.UPDATE)
     @PostMapping("/edits")
     public AjaxResult editSaves(@RequestBody List<MessageDTO> messageDtos) {
         return toAjax(messageService.updateMessages(messageDtos));
@@ -107,7 +101,6 @@ public class MessageController extends BaseController {
      * 批量新增消息表
      */
     @RequiresPermissions("message:message:insertMessages")
-    @Log(title = "批量新增消息表", businessType = BusinessType.INSERT)
     @PostMapping("/insertMessages")
     public AjaxResult insertMessages(@RequestBody List<MessageDTO> messageDtos) {
         return toAjax(messageService.insertMessages(messageDtos));
@@ -117,7 +110,6 @@ public class MessageController extends BaseController {
      * 逻辑批量删除消息表
      */
     @RequiresPermissions("message:message:removes")
-    @Log(title = "批量删除消息表", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long> messageIds) {
         return toAjax(messageService.logicDeleteMessageByMessageIds(messageIds));

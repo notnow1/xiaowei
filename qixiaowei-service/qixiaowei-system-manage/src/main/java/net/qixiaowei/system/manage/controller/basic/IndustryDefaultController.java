@@ -5,8 +5,6 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.web.controller.BaseController;
 import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
-import net.qixiaowei.integration.log.annotation.Log;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
@@ -106,7 +104,6 @@ public class IndustryDefaultController extends BaseController {
      * 行业配置详情
      */
     @RequiresPermissions("system:manage:industryDefault:info")
-    @Log(title = "默认行业配置详情")
     @GetMapping("/info/{industryId}")
     public AjaxResult info(@PathVariable Long industryId) {
         return AjaxResult.success(industryDefaultService.detailIndustryDefault(industryId));
