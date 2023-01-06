@@ -1785,7 +1785,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
         List<Long> appraisalPrincipalIds = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-            appraisalPrincipalIds.add(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
+            if (StringUtils.isNotNull(performanceAppraisalObjectsDTO.getAppraisalPrincipalId())) {
+                appraisalPrincipalIds.add(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
+            }
         }
         List<EmployeeDTO> employeeDTOS = new ArrayList<>();
         if (StringUtils.isNotEmpty(appraisalPrincipalIds)) {
@@ -1825,7 +1827,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             throw new ServiceException("远程调用失败 请联系管理员");
         }
         if (StringUtils.isEmpty(employeeDTOS)) {
-            throw new ServiceException("获取的考核人信息为空 请检查员工配置");
+            throw new ServiceException("部分考核负责人已被删除 请重新导入");
         }
         return employeeDTOS;
     }
@@ -1919,7 +1921,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
         List<Long> appraisalPrincipalIds = new ArrayList<>();
         for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOList) {
-            appraisalPrincipalIds.add(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
+            if (StringUtils.isNotNull(performanceAppraisalObjectsDTO.getAppraisalPrincipalId())) {
+                appraisalPrincipalIds.add(performanceAppraisalObjectsDTO.getAppraisalPrincipalId());
+            }
         }
         List<EmployeeDTO> employeeDTOS;
         if (StringUtils.isNotEmpty(appraisalPrincipalIds)) {
