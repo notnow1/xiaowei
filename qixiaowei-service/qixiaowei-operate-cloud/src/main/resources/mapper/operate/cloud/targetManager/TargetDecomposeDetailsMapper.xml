@@ -5,23 +5,23 @@
     <select id="selectTargetDecomposeDetailsByTargetDecomposeDetailsId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
         SELECT target_decompose_details_id,
-               target_decompose_id,
-               employee_id,
-               area_id,
-               department_id,
-               product_id,
-               region_id,
-               industry_id,
-               principal_employee_id,
-               amount_target,
-               delete_flag,
-               create_by,
-               create_time,
-               update_by,
-               update_time
+        target_decompose_id,
+        employee_id,
+        area_id,
+        department_id,
+        product_id,
+        region_id,
+        industry_id,
+        principal_employee_id,
+        amount_target,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM target_decompose_details
         WHERE target_decompose_details_id = #{targetDecomposeDetailsId}
-          and delete_flag = 0
+        and delete_flag = 0
     </select>
 
     <!--    批量查询目标分解详情表-->
@@ -146,35 +146,35 @@
     <select id="selectTargetDecomposeDetailsByTargetDecomposeId"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
         SELECT tdd.target_decompose_details_id,
-               tdd.target_decompose_id,
-               tdd.employee_id,
-               tdd.area_id,
-               a.area_name,
-               td.decompose_target ,
-               tdd.department_id,
-               tdd.product_id,
-               p.product_name,
-               tdd.region_id,
-               tdd.industry_id,
-               tdd.principal_employee_id,
-               IFNULL(tdd.amount_target, 0) AS amount_target,
-               tdd.delete_flag,
-               tdd.create_by,
-               tdd.create_time,
-               tdd.update_by,
-               tdd.update_time
+        tdd.target_decompose_id,
+        tdd.employee_id,
+        tdd.area_id,
+        a.area_name,
+        td.decompose_target ,
+        tdd.department_id,
+        tdd.product_id,
+        p.product_name,
+        tdd.region_id,
+        tdd.industry_id,
+        tdd.principal_employee_id,
+        IFNULL(tdd.amount_target, 0) AS amount_target,
+        tdd.delete_flag,
+        tdd.create_by,
+        tdd.create_time,
+        tdd.update_by,
+        tdd.update_time
         FROM target_decompose_details tdd
-                 left join target_decompose td
-                           on td.target_decompose_id  = tdd .target_decompose_id
-                               and td.delete_flag =0
-                 left join product p
-                           on p.product_id  = tdd.product_id
-                               and p.delete_flag =0
-                 left join area a
-                           on a.area_id  = tdd.area_id
-                               and a.delete_flag =0
+        left join target_decompose td
+        on td.target_decompose_id = tdd .target_decompose_id
+        and td.delete_flag =0
+        left join product p
+        on p.product_id = tdd.product_id
+        and p.delete_flag =0
+        left join area a
+        on a.area_id = tdd.area_id
+        and a.delete_flag =0
         WHERE tdd.target_decompose_id = #{targetDecomposeId}
-          and tdd.delete_flag = 0
+        and tdd.delete_flag = 0
     </select>
     <!--    根据分解id查询目标分解详情表只查询自己的-->
     <select id="selectTargetDecomposeDetailsByPowerTargetDecomposeId"
@@ -199,13 +199,13 @@
         tdd.update_time
         FROM target_decompose_details tdd
         left join target_decompose td
-        on td.target_decompose_id  = tdd .target_decompose_id
+        on td.target_decompose_id = tdd .target_decompose_id
         and td.delete_flag =0
         left join product p
-        on p.product_id  = tdd.product_id
+        on p.product_id = tdd.product_id
         and p.delete_flag =0
         left join area a
-        on a.area_id  = tdd.area_id
+        on a.area_id = tdd.area_id
         and a.delete_flag =0
         WHERE tdd.target_decompose_id = #{targetDecomposeId}
         and tdd.delete_flag = 0
@@ -228,18 +228,101 @@
         </foreach>
         and delete_flag=0
     </select>
+    <!--根据区域ID集合查询目标分解数据-->
+    <select id="selectByIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO">
+        SELECT
+        td.target_year,
+        td.decomposition_dimension,
+        td.target_decompose_dimension_id,
+        tdi.target_decompose_details_id,
+        tdi.target_decompose_id,
+        tdi.employee_id,
+        tdi.area_id,
+        tdi.department_id,
+        tdi.product_id,
+        tdi.region_id,
+        tdi.industry_id,
+        tdi.principal_employee_id,
+        tdi.amount_target,
+        tdi.delete_flag,
+        tdi.create_by,
+        tdi.create_time,
+        tdi.update_by,
+        tdi.update_time
+        FROM target_decompose_details tdi
+        LEFT JOIN target_decompose td ON td.target_decompose_id = tdi.target_decompose_id
+        AND td.delete_flag=0
+        WHERE tdi.delete_flag=0
+        <if test="employeeIds != null and employeeIds.size != 0 ">
+            AND tdi.employee_id in
+            <foreach item="item"
+                     collection="employeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="areaIds != null and areaIds.size != 0 ">
+            AND tdi.area_id in
+            <foreach item="item"
+                     collection="areaIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="departmentIds != null and departmentIds.size != 0 ">
+            AND tdi.department_id in
+            <foreach item="item"
+                     collection="departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="productIds != null and productIds.size != 0 ">
+            AND tdi.product_id in
+            <foreach item="item"
+                     collection="productIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="regionIds != null and regionIds.size != 0 ">
+            AND tdi.region_id in
+            <foreach item="item"
+                     collection="regionIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="industryIds != null and industryIds.size != 0 ">
+            AND tdi.industry_id in
+            <foreach item="item"
+                     collection="industryIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="principalEmployeeIds != null and principalEmployeeIds.size != 0 ">
+            AND tdi.principal_employee_id in
+            <foreach item="item"
+                     collection="principalEmployeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
     <!--新增目标分解详情表-->
     <insert id="insertTargetDecomposeDetails" useGeneratedKeys="true" keyProperty="targetDecomposeDetailsId">
         INSERT INTO target_decompose_details (target_decompose_id, employee_id, area_id, department_id, product_id,
-                                              region_id, industry_id, principal_employee_id, amount_target, delete_flag,
-                                              create_by, create_time, update_by, update_time)
+        region_id, industry_id, principal_employee_id, amount_target, delete_flag,
+        create_by, create_time, update_by, update_time)
         VALUES (#{targetDecomposeDetails.targetDecomposeId}, #{targetDecomposeDetails.employeeId},
-                #{targetDecomposeDetails.areaId}, #{targetDecomposeDetails.departmentId},
-                #{targetDecomposeDetails.productId}, #{targetDecomposeDetails.regionId},
-                #{targetDecomposeDetails.industryId}, #{targetDecomposeDetails.principalEmployeeId},
-                #{targetDecomposeDetails.amountTarget}, #{targetDecomposeDetails.deleteFlag},
-                #{targetDecomposeDetails.createBy}, #{targetDecomposeDetails.createTime},
-                #{targetDecomposeDetails.updateBy}, #{targetDecomposeDetails.updateTime})
+        #{targetDecomposeDetails.areaId}, #{targetDecomposeDetails.departmentId},
+        #{targetDecomposeDetails.productId}, #{targetDecomposeDetails.regionId},
+        #{targetDecomposeDetails.industryId}, #{targetDecomposeDetails.principalEmployeeId},
+        #{targetDecomposeDetails.amountTarget}, #{targetDecomposeDetails.deleteFlag},
+        #{targetDecomposeDetails.createBy}, #{targetDecomposeDetails.createTime},
+        #{targetDecomposeDetails.updateBy}, #{targetDecomposeDetails.updateTime})
     </insert>
     <!--修改目标分解详情表-->
     <update id="updateTargetDecomposeDetails">
@@ -294,8 +377,8 @@
     <update id="logicDeleteTargetDecomposeDetailsByTargetDecomposeDetailsId">
         UPDATE target_decompose_details
         SET delete_flag= 1,
-            update_by=#{targetDecomposeDetails.updateBy},
-            update_time=#{targetDecomposeDetails.updateTime}
+        update_by=#{targetDecomposeDetails.updateBy},
+        update_time=#{targetDecomposeDetails.updateTime}
         WHERE target_decompose_details_id = #{targetDecomposeDetails.targetDecomposeDetailsId}
     </update>
     <!--逻辑批量删除目标分解详情表-->

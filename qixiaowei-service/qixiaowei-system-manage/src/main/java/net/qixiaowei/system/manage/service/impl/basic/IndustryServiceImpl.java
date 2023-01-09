@@ -6,12 +6,16 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.system.ConfigCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
@@ -25,7 +29,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -44,6 +50,10 @@ public class IndustryServiceImpl implements IIndustryService {
 
     @Autowired
     private IIndustryDefaultService industryDefaultService;
+
+    @Autowired
+    private RemoteDecomposeService targetDecomposeService;
+
 
     /**
      * 查询行业
@@ -233,15 +243,12 @@ public class IndustryServiceImpl implements IIndustryService {
     @Transactional
     @Override
     public int logicDeleteIndustryByIndustryIds(List<Long> industryIds) {
-        List<Long> exist = industryMapper.isExist(industryIds);
-        if (StringUtils.isEmpty(exist)) {
+        List<IndustryDTO> industryByIds = industryMapper.isExist(industryIds);
+        if (StringUtils.isEmpty(industryByIds)) {
             throw new ServiceException("该行业已不存在");
         }
         addSons(industryIds);
-        // todo 引用校验
-        if (isQuote(industryIds)) {
-            throw new ServiceException("存在被引用的行业");
-        }
+        isQuote(industryIds, industryByIds);
         return industryMapper.logicDeleteIndustryByIndustryIds(industryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -259,13 +266,35 @@ public class IndustryServiceImpl implements IIndustryService {
     }
 
     /**
-     * todo 引用校验
+     * 行业引用校验
      *
-     * @param industryIds
-     * @return
+     * @param industryIds   行业ID集合
+     * @param industryByIds 行业DTO
      */
-    private boolean isQuote(List<Long> industryIds) {
-        return false;
+    private void isQuote(List<Long> industryIds, List<IndustryDTO> industryByIds) {
+        StringBuilder quoteReminder = new StringBuilder("");
+        Map<Integer, List<Long>> map = new HashMap<>();
+        map.put(6, industryIds);
+        R<List<TargetDecomposeDetailsDTO>> decomposeListR = targetDecomposeService.selectByIds(map, SecurityConstants.INNER);
+        if (decomposeListR.getCode() != 200) {
+            throw new ServiceException("远程调用目标分解失败 请联系管理员");
+        }
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = decomposeListR.getData();
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+            StringBuilder industryNames = new StringBuilder("");
+            for (IndustryDTO industryById : industryByIds) {
+                for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+                    if (targetDecomposeDetailsDTO.getIndustryId().equals(industryById.getIndustryId())) {
+                        industryNames.append(industryById.getIndustryName()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("行业配置【").append(industryNames.deleteCharAt(industryNames.length() - 1)).append("】正在被目标分解中的【分解维度-区域】引用 无法删除\n");
+        }
+        if (quoteReminder.length() != 0) {
+            throw new ServiceException(quoteReminder.toString());
+        }
     }
 
     /**

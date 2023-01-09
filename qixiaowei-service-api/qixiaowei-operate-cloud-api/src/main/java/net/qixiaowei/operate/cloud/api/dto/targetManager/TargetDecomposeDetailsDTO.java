@@ -185,6 +185,9 @@ public class TargetDecomposeDetailsDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
-
+    /**
+     * 更新人
+     */
+    private  Integer targetYear;
 }
 

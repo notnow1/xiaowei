@@ -4,7 +4,6 @@ package net.qixiaowei.operate.cloud.api.factory.salary;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
-import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -24,6 +23,16 @@ public class RemoteSalaryAdjustPlanFallbackFactory implements FallbackFactory<Re
             @Override
             public R<List<EmpSalaryAdjustPlanDTO>> selectByEmployeeId(Long employeeId, String source) {
                 return R.fail("根据员工ID获取个人调薪服务失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<EmpSalaryAdjustPlanDTO>> selectByEmployeeIds(List<Long> employeeIds, String source) {
+                return R.fail("根据员工ID集合获取个人调薪服务失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<EmpSalaryAdjustPlanDTO>> selectBySystemIds(List<Long> officialRankSystemIds, String source) {
+                return R.fail("根据职级体系ID集合获取个人调薪失败:" + throwable.getMessage());
             }
 
         };

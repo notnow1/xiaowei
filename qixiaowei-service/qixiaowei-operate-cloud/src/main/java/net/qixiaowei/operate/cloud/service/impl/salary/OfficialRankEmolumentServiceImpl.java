@@ -87,6 +87,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             for (Integer end = rankEnd; end >= rankStart; end--) {
                 OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
                 List<Map<String, Object>> postList = getPostList(postDTOS, end);
+                officialRankEmolumentDTO.setOfficialRankSystemId(officialRankSystemId);
                 officialRankEmolumentDTO.setOfficialRank(end);
                 officialRankEmolumentDTO.setPostList(postList);
                 officialRankEmolumentDTO.setOfficialRankName(rankPrefixCode + end);
@@ -138,6 +139,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
             if (isNotExist) {
                 OfficialRankEmolumentDTO officialRankEmolumentDTO = new OfficialRankEmolumentDTO();
                 List<Map<String, Object>> postList = getPostList(postDTOS, end);
+                officialRankEmolumentDTO.setOfficialRankSystemId(officialRankSystemId);
                 officialRankEmolumentDTO.setOfficialRank(end);
                 officialRankEmolumentDTO.setPostList(postList);
                 officialRankEmolumentDTO.setOfficialRankName(rankPrefixCode + end);
@@ -530,7 +532,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
     @Override
     public String officialRankInfo(Long officialRankSystemId, Integer officialRank) {
         OfficialRankEmolumentDTO emolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(officialRankSystemId, officialRank);
-        if (StringUtils.isNull(emolumentDTO)){
+        if (StringUtils.isNull(emolumentDTO)) {
             throw new ServiceException("");
         }
         BigDecimal salaryMedian = emolumentDTO.getSalaryMedian();// 中位数

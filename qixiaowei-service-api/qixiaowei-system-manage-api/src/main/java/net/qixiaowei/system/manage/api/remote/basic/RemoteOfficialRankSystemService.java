@@ -74,7 +74,7 @@ public interface RemoteOfficialRankSystemService {
                                                                          @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
-     * 根据职级体系ID集合和职级分解维度查找分解表
+     * 根据职级体系ID集合和职级分解维度查找分解表-引用可用
      *
      * @return 结果
      */

@@ -6,8 +6,11 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.system.manage.api.domain.basic.IndicatorCategory;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.service.basic.IIndicatorCategoryService;
@@ -141,24 +144,38 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
     @Transactional
     @Override
     public int logicDeleteIndicatorCategoryByIndicatorCategoryIds(List<Long> indicatorCategoryIds) {
-        List<Long> exist = indicatorCategoryMapper.isExist(indicatorCategoryIds);
-        if (StringUtils.isEmpty(exist)) {
+        List<IndicatorCategoryDTO> indicatorCategoryByIds = indicatorCategoryMapper.selectIndicatorCategoryIds(indicatorCategoryIds);
+        if (StringUtils.isEmpty(indicatorCategoryByIds)) {
             throw new ServiceException("指标分类不存在");
         }
-        if (isQuote(indicatorCategoryIds) > 0) {
-            throw new ServiceException("存在被正在引用的指标");
-        }
+        isQuote(indicatorCategoryIds, indicatorCategoryByIds);
         return indicatorCategoryMapper.logicDeleteIndicatorCategoryByIndicatorCategoryIds(indicatorCategoryIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**
      * 引用校验
      *
-     * @param indicatorCategoryIds 需要删除的指标分类表主键
-     * @return 结果
+     * @param indicatorCategoryIds   需要删除的指标分类表主键
+     * @param indicatorCategoryByIds 指标分类DTO集合
      */
-    private int isQuote(List<Long> indicatorCategoryIds) {
-        return indicatorMapper.selectIndicatorCountByIndicatorCategoryId(indicatorCategoryIds);
+    private void isQuote(List<Long> indicatorCategoryIds, List<IndicatorCategoryDTO> indicatorCategoryByIds) {
+        StringBuilder quoteReminder = new StringBuilder("");
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorCountByIndicatorCategoryId(indicatorCategoryIds);
+        if (StringUtils.isNotEmpty(indicatorDTOS)) {
+            StringBuilder indicatorCategoryNames = new StringBuilder("");
+            for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+                for (IndicatorCategoryDTO indicatorCategoryDTO : indicatorCategoryByIds) {
+                    if (indicatorCategoryDTO.getIndicatorCategoryId().equals(indicatorDTO.getIndicatorCategoryId())) {
+                        indicatorCategoryNames.append(indicatorCategoryDTO.getIndicatorCategoryName()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("指标类型配置【").append(indicatorCategoryNames.deleteCharAt(indicatorCategoryNames.length() - 1)).append("】已被指标配置中的【指标类型】引用 无法删除\n");
+        }
+        if (quoteReminder.length() != 0) {
+            throw new ServiceException(quoteReminder.toString());
+        }
     }
 
     /**

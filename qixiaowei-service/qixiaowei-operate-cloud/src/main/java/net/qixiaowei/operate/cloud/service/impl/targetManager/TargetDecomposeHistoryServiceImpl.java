@@ -500,7 +500,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     backlogSendDTO.setBusinessId(targetDecomposeDTO.getTargetDecomposeId());
                     backlogSendDTO.setUserId(employeeDTO.getUserId());
                     backlogSendDTO.setBacklogInitiator(user.getUserId());
-                    backlogSendDTO.setBacklogInitiatorName(user.getUserName());
+                    backlogSendDTO.setBacklogInitiatorName(user.getEmployeeName());
                     backlogSendDTO.setBacklogName("滚动预测");
                     R<?> insertBacklog = remoteBacklogService.add(backlogSendDTO, SecurityConstants.INNER);
                     if (R.SUCCESS != insertBacklog.getCode()) {

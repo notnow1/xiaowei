@@ -1,23 +1,29 @@
 package net.qixiaowei.operate.cloud.service.impl.employee;
 
-import java.math.BigDecimal;
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudget;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetAdjusts;
 import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudgetDetails;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetAdjustsDTO;
+import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.OfficialRankEmolumentDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetDetailsExcel;
+import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetExcel;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetAdjustsMapper;
 import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetDetailsMapper;
+import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.OfficialRankEmolumentMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
+import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
@@ -25,25 +31,17 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
-import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.operate.cloud.api.domain.employee.EmployeeBudget;
-import net.qixiaowei.operate.cloud.excel.employee.EmployeeBudgetExcel;
-import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
-import net.qixiaowei.operate.cloud.mapper.employee.EmployeeBudgetMapper;
-import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import net.qixiaowei.integration.common.exception.ServiceException;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -121,7 +119,8 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     }
 
     /**
-     *封装人力预算计算年末总计等值
+     * 封装人力预算计算年末总计等值
+     *
      * @param employeeBudgetDetailsDTOS
      * @param employeeBudgetAdjustsDTOS
      */
@@ -240,11 +239,11 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 Matcher departmentName = null;
                 //职级体系名称
                 Matcher officialRankSystemName = null;
-                if (StringUtils.isNotNull(departmentName1)){
+                if (StringUtils.isNotNull(departmentName1)) {
                     //部门名称
                     departmentName = pattern.matcher(budgetDTO.getDepartmentName());
                 }
-                if (StringUtils.isNotNull(officialRankSystemName1)){
+                if (StringUtils.isNotNull(officialRankSystemName1)) {
                     //职级体系名称
                     officialRankSystemName = pattern1.matcher(budgetDTO.getOfficialRankSystemName());
                 }
@@ -265,7 +264,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     }
                 }
             }
-            if (StringUtils.isNotNull(departmentName1) || StringUtils.isNotNull(officialRankSystemName1)){
+            if (StringUtils.isNotNull(departmentName1) || StringUtils.isNotNull(officialRankSystemName1)) {
                 return employeeBudgetDTOList;
             }
         }
@@ -346,7 +345,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 //上年期末人数
                 amountLastYear = amountLastYear + employeeBudgetDetailsDTO.getNumberLastYear();
                 //列表本年新增人数
-                amountAdjust = amountAdjust +  employeeBudgetDetailsDTO.getCountAdjust();
+                amountAdjust = amountAdjust + employeeBudgetDetailsDTO.getCountAdjust();
                 //平均新增数
                 amountAverageAdjust = amountAverageAdjust.add(employeeBudgetDetailsDTO.getAverageAdjust());
             }
@@ -826,11 +825,11 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 Matcher departmentName = null;
                 //职级体系名称
                 Matcher officialRankSystemName = null;
-                if (StringUtils.isNotNull(departmentName1)){
+                if (StringUtils.isNotNull(departmentName1)) {
                     //部门名称
                     departmentName = pattern.matcher(budgetDetailsDTO.getDepartmentName());
                 }
-                if (StringUtils.isNotNull(officialRankSystemName1)){
+                if (StringUtils.isNotNull(officialRankSystemName1)) {
                     //职级体系名称
                     officialRankSystemName = pattern1.matcher(budgetDetailsDTO.getOfficialRankSystemName());
                 }
@@ -850,7 +849,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     }
                 }
             }
-            if (StringUtils.isNotNull(departmentName1) || StringUtils.isNotNull(officialRankSystemName1)){
+            if (StringUtils.isNotNull(departmentName1) || StringUtils.isNotNull(officialRankSystemName1)) {
                 return emolumentPlanDTOList;
             }
         }
@@ -877,6 +876,17 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     }
 
     /**
+     * 根据职级体系ID集合查询预算表
+     *
+     * @param officialRankSystemIds 职级体系ID集合
+     * @return List
+     */
+    @Override
+    public List<EmployeeBudgetDTO> selectBySystemIds(List<Long> officialRankSystemIds) {
+        return employeeBudgetMapper.selectEmployeeBudgetBySystemIds(officialRankSystemIds);
+    }
+
+    /**
      * 封装增人减人工资
      *
      * @param employeeBudgetDTO
@@ -900,11 +910,11 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
 
                         }//取职级确定薪酬中位数
                         else {
-                                OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
-                                if (StringUtils.isNotNull(officialRankEmolumentDTO)){
-                                    employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10,BigDecimal.ROUND_HALF_UP));
-                                    employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
-                                }
+                            OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDetailsDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
+                            if (StringUtils.isNotNull(officialRankEmolumentDTO)) {
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYear(officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10, BigDecimal.ROUND_HALF_UP));
+                                employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(1);
+                            }
 
                         }
                     }
@@ -917,11 +927,11 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                             //根据人员id集合查询工资发薪表数据 计算该部门该职级体系下 根据职级等级分组的上年平均工资
                             List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectSalaryPayByBudggetEmployeeId(employeeId, employeeBudgetDTO.getBudgetYear());
                             BigDecimal reduce = salaryPayDTOS.stream().map(SalaryPayDTO::getPayAmountSum).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-                            payAmountSum=payAmountSum.add(reduce);
+                            payAmountSum = payAmountSum.add(reduce);
                         }
 
                         if (payAmountSum.compareTo(new BigDecimal("0")) != 0 && size > 0) {
-                            BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)),10,BigDecimal.ROUND_HALF_UP);
+                            BigDecimal divide = payAmountSum.divide(new BigDecimal(String.valueOf(size)), 10, BigDecimal.ROUND_HALF_UP);
                             //上年平均工资 公式=相同部门、相同职级体系、相同岗位职级的员工倒推12个月的工资包合计÷员工人数
                             employeeBudgetDetailsDTO.setAgePayAmountLastYear(divide);
                             employeeBudgetDetailsDTO.setAgePayAmountLastYearFlag(0);
@@ -936,7 +946,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     BigDecimal averageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
                     if (null != agePayAmountLastYear && null != averageAdjust && agePayAmountLastYear.compareTo(new BigDecimal("0")) != 0 && averageAdjust.compareTo(new BigDecimal("0")) != 0) {
                         //增人/减人工资包  公式=平均规划新增人数×上年平均工资。可为负数（代表部门人数减少）
-                        increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust).setScale(2,BigDecimal.ROUND_FLOOR);
+                        increaseAndDecreasePay = agePayAmountLastYear.multiply(averageAdjust).setScale(2, BigDecimal.ROUND_FLOOR);
                     }
                     employeeBudgetDetailsDTO.setIncreaseAndDecreasePay(increaseAndDecreasePay);
                 }

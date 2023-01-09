@@ -63,8 +63,12 @@
         </foreach>
     </select>
     <!--根据id集合判断是否存在-->
-    <select id="isExist" resultType="java.lang.Long">
-        SELECT indicator_category_id FROM indicator_category WHERE indicator_category_id IN
+    <select id="selectIndicatorCategoryIds"
+            resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO">
+        SELECT indicator_category_id, indicator_type, indicator_category_code, indicator_category_name, delete_flag,
+        create_by,
+        create_time, update_by, update_time
+        FROM indicator_category WHERE indicator_category_id IN
         <foreach item="item"
                  collection="indicatorCategoryIds"
                  index="index" open="(" separator="," close=")">

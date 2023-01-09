@@ -34,8 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -738,8 +740,8 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
     /**
      * 导出Excel
      *
-     * @param empSalaryAdjustPlanDTO
-     * @return
+     * @param empSalaryAdjustPlanDTO 隔热膜调薪计划dto
+     * @return List
      */
     @Override
     public List<EmpSalaryAdjustPlanExcel> exportEmpSalaryAdjustPlan(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
@@ -779,6 +781,28 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             return null;
         }
         return officialRankEmolumentService.officialRankInfo(officialRankSystemId, officialRank);
+    }
+
+    /**
+     * 根据ID集合查询个人调薪
+     *
+     * @param employeeIds 员工Id集合
+     * @return List
+     */
+    @Override
+    public List<EmpSalaryAdjustPlanDTO> selectByEmployeeIds(List<Long> employeeIds) {
+        return empSalaryAdjustPlanMapper.selectByEmployeeIds(employeeIds);
+    }
+
+    /**
+     * 根据职级体系ID集合获取个人调薪
+     *
+     * @param officialRankSystemIds 职级体系ID集合
+     * @return List
+     */
+    @Override
+    public List<EmpSalaryAdjustPlanDTO> selectBySystemIds(List<Long> officialRankSystemIds) {
+        return empSalaryAdjustPlanMapper.selectBySystemIds(officialRankSystemIds);
     }
 }
 

@@ -11,7 +11,17 @@
         WHERE industry_id=#{industryId}
         and delete_flag=0
     </select>
-
+    <!--根据id集合判断是否存在-->
+    <select id="isExist" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
+        SELECT industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        create_time, update_by, update_time
+        FROM industry WHERE industry_id IN
+        <foreach item="item"
+                 collection="industryIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--    查询行业列表-->
     <select id="selectIndustryList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
         SELECT
@@ -181,15 +191,6 @@
     <!--获取启用行业类型-->
     <select id="getEnableType" resultType="java.lang.Integer">
 
-    </select>
-    <!--根据id集合判断是否存在-->
-    <select id="isExist" resultType="Long">
-        SELECT industry_id FROM industry WHERE industry_id IN
-        <foreach item="item"
-                 collection="industryIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
     </select>
     <select id="checkUnique" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
         SELECT

@@ -147,18 +147,10 @@ public interface IndicatorMapper {
     /**
      * 被引用校验
      *
-     * @param indicatorCategoryIds
+     * @param indicatorCategoryIds 指标类型集合
      * @return
      */
-    int selectIndicatorCountByIndicatorCategoryId(@Param("indicatorCategoryIds") List<Long> indicatorCategoryIds);
-
-    /**
-     * 根据id集合判断是否存在
-     *
-     * @param indicatorIds
-     * @return
-     */
-    List<IndicatorDTO> isExist(@Param("indicatorIds") List<Long> indicatorIds);
+    List<IndicatorDTO> selectIndicatorCountByIndicatorCategoryId(@Param("indicatorCategoryIds") List<Long> indicatorCategoryIds);
 
     /**
      * 获取指标最大层级

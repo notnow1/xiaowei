@@ -1,13 +1,14 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
-import java.util.List;
-
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -25,6 +26,7 @@ public interface ITargetDecomposeService {
      * @return 目标分解表
      */
     TargetDecomposeDTO selectResultTargetDecomposeByTargetDecomposeId(Long targetDecomposeId);
+
     /**
      * 查询滚动预测表详情
      *
@@ -41,6 +43,7 @@ public interface ITargetDecomposeService {
      * @return 目标分解表
      */
     TargetDecomposeDTO selectTargetDecomposeByTargetDecomposeId(Long targetDecomposeId);
+
     /**
      * 远程调用根据id集合目标分解id查询数据
      *
@@ -48,6 +51,7 @@ public interface ITargetDecomposeService {
      * @return 目标分解表
      */
     List<TargetDecomposeDTO> selectTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds);
+
     /**
      * 查询目标分解(销售订单)表
      *
@@ -177,6 +181,7 @@ public interface ITargetDecomposeService {
      * @return 结果
      */
     int updateResultTargetDecompose(TargetDecomposeDTO targetDecomposeDTO);
+
     /**
      * 修改目标分解(销售订单)表
      *
@@ -184,6 +189,7 @@ public interface ITargetDecomposeService {
      * @return 结果
      */
     int updateOrderTargetDecompose(TargetDecomposeDTO targetDecomposeDTO);
+
     /**
      * 修改目标分解(销售收入)表
      *
@@ -231,6 +237,7 @@ public interface ITargetDecomposeService {
      * @return 结果
      */
     int logicDeleteOrderTargetDecomposeByTargetDecomposeIds(List<Long> targetDecomposeIds);
+
     /**
      * 逻辑批量删除目标分解(销售收入)表
      *
@@ -294,12 +301,13 @@ public interface ITargetDecomposeService {
      * @param list
      */
     void importTargetDecompose(List<TargetDecomposeExcel> list);
+
     /**
      * 解析Excel
      *
      * @param file
      */
-    TargetDecomposeDTO  excelParseObject(TargetDecomposeDTO targetDecomposeDTO,MultipartFile file);
+    TargetDecomposeDTO excelParseObject(TargetDecomposeDTO targetDecomposeDTO, MultipartFile file);
 
     /**
      * 目标分解(销售订单)导出列表Excel
@@ -335,6 +343,7 @@ public interface ITargetDecomposeService {
 
     /**
      * 移交预测负责人
+     *
      * @param targetDecomposeDTO
      * @return
      */
@@ -342,6 +351,7 @@ public interface ITargetDecomposeService {
 
     /**
      * 根据目标分解id查询目标分解详情数据
+     *
      * @param targetDecomposeId
      * @return
      */
@@ -349,6 +359,7 @@ public interface ITargetDecomposeService {
 
     /**
      * 传入实体类根据条件查询
+     *
      * @param targetDecomposeDetailsDTO
      * @return
      */
@@ -356,13 +367,15 @@ public interface ITargetDecomposeService {
 
     /**
      * 目标分解是否被引用
+     *
      * @param departmentId
      * @return
      */
     List<TargetDecompose> queryDeptDecompose(Long departmentId);
 
     /**
-     *查询目标分解预制数据年份
+     * 查询目标分解预制数据年份
+     *
      * @param targetDecomposeDTO
      * @return
      */
@@ -370,9 +383,33 @@ public interface ITargetDecomposeService {
 
     /**
      * 目标分解操作列导出详情数据
-     * @return
+     *
      * @param targetDecomposeId
      * @param targetDecomposeDTO
+     * @return
      */
     List<TargetDecomposeDetailsExcel> exportTargetDecomposeDetails(Long targetDecomposeId, TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
+     * 根据区域ID集合查询目标分解数据
+     * 1.员工ID
+     * 2.区域ID
+     * 3.部门ID
+     * 4.产品ID
+     * 5.省份ID
+     * 6.行业ID
+     * 7.负责人ID
+     *
+     * @param map map
+     * @return List
+     */
+    List<TargetDecomposeDetailsDTO> selectByIds(Map<Integer, List<Long>> map);
+
+    /**
+     * 根据指标ID查询目标分解
+     *
+     * @param indicatorIds 指标ID集合
+     * @return R
+     */
+    List<TargetDecomposeDTO> selectByIndicatorIds(List<Long> indicatorIds);
 }

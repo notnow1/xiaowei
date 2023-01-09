@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 目标分解服务降级处理
@@ -49,6 +50,15 @@ public class RemoteDecomposeFallbackFactory implements FallbackFactory<RemoteDec
                 return R.fail("根据表字段条件获取目标分解详细信息失败:" + throwable.getMessage());
             }
 
+            @Override
+            public R<List<TargetDecomposeDetailsDTO>> selectByIds(Map<Integer, List<Long>> map, String source) {
+                return R.fail("根据分解维度ID集合查询目标分解数据失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<TargetDecomposeDTO>> selectByIndicatorIds(List<Long> indicatorIds, String source) {
+                return R.fail("根据指标ID查询目标分解失败:" + throwable.getMessage());
+            }
 
         };
     }

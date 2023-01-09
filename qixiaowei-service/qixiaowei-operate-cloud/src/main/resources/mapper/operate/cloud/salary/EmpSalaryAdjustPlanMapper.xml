@@ -215,6 +215,75 @@
         AND esp.status = 1
         AND esp.employee_id = #{employeeId}
     </select>
+    <select id="selectByEmployeeIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO">
+        SELECT
+        esp.emp_salary_adjust_plan_id,
+        esp.employee_id,
+        esp.effective_date,
+        esp.adjustment_type,
+        esp.adjust_department_id,
+        esp.adjust_department_name,
+        esp.adjust_post_id,
+        esp.adjust_post_name,
+        esp.adjust_official_rank_system_id,
+        esp.adjust_official_rank_system_name,
+        esp.adjust_official_rank,
+        esp.adjust_official_rank_name,
+        esp.adjust_emolument,
+        esp.adjust_explain,
+        esp.status,
+        ess.post_id,
+        ess.post_name,
+        ess.official_rank_name,
+        ess.basic_wage
+        FROM emp_salary_adjust_plan esp
+        LEFT JOIN emp_salary_adjust_snap ess
+        ON esp.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
+        AND ess.delete_flag=0
+        WHERE esp.delete_flag=0
+        AND esp.status = 1
+        AND esp.employee_id
+        IN
+        <foreach collection="employeeIds" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="selectBySystemIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO">
+        SELECT
+        esp.emp_salary_adjust_plan_id,
+        esp.employee_id,
+        esp.effective_date,
+        esp.adjustment_type,
+        esp.adjust_department_id,
+        esp.adjust_department_name,
+        esp.adjust_post_id,
+        esp.adjust_post_name,
+        esp.adjust_official_rank_system_id,
+        esp.adjust_official_rank_system_name,
+        esp.adjust_official_rank,
+        esp.adjust_official_rank_name,
+        esp.adjust_emolument,
+        esp.adjust_explain,
+        esp.status,
+        ess.post_id,
+        ess.post_name,
+        ess.official_rank_name,
+        ess.employee_name,
+        ess.basic_wage
+        FROM emp_salary_adjust_plan esp
+        LEFT JOIN emp_salary_adjust_snap ess
+        ON esp.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
+        AND ess.delete_flag=0
+        WHERE esp.delete_flag=0
+        AND esp.status = 1
+        AND esp.adjust_official_rank_system_id
+        IN
+        <foreach collection="officialRankSystemIds" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
     <!--新增个人调薪计划表-->
     <insert id="insertEmpSalaryAdjustPlan" useGeneratedKeys="true" keyProperty="empSalaryAdjustPlanId">
         INSERT INTO emp_salary_adjust_plan

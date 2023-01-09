@@ -1,27 +1,29 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
-import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.Area;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.mapper.targetManager.AreaMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -37,6 +39,9 @@ public class AreaServiceImpl implements IAreaService {
 
     @Autowired
     private RemoteOfficialRankSystemService officialRankSystemService;
+
+    @Autowired
+    private RemoteDecomposeService targetDecomposeService;
 
     /**
      * 查询区域表
@@ -187,17 +192,63 @@ public class AreaServiceImpl implements IAreaService {
         if (StringUtils.isNull(areaById)) {
             throw new ServiceException("当前区域配置不存在");
         }
-        R<List<OfficialRankDecomposeDTO>> listR = officialRankSystemService.selectOfficialDecomposeByDimension(areaId, 2, SecurityConstants.INNER);
+        List<AreaDTO> areaByIds = new ArrayList<>();
+        areaByIds.add(areaById);
+        List<Long> areaIds = new ArrayList<>();
+        areaIds.add(areaId);
+        isQuote(areaIds, areaByIds);
+        Area area = new Area();
+        BeanUtils.copyProperties(areaDTO, area);
+        return areaMapper.logicDeleteAreaByAreaId(area, SecurityUtils.getUserId(), DateUtils.getNowDate());
+    }
+
+    /**
+     * 引用校验
+     *
+     * @param areaIds   区域ID集合
+     * @param areaByIds 区域DTO
+     */
+    private void isQuote(List<Long> areaIds, List<AreaDTO> areaByIds) {
+        StringBuilder quoteReminder = new StringBuilder("");
+        R<List<OfficialRankDecomposeDTO>> listR = officialRankSystemService.selectOfficialDecomposeByDimensions(areaIds, 2, SecurityConstants.INNER);
         if (listR.getCode() != 200) {
             throw new ServiceException("远程调用职级分解失败 请联系管理员");
         }
         List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = listR.getData();
         if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)) {
-            throw new ServiceException("当前区域配置正在被职级分解引用 无法删除");
+            StringBuilder areaNames = new StringBuilder("");
+            for (AreaDTO areaById : areaByIds) {
+                for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
+                    if (officialRankDecomposeDTO.getDecomposeDimension().equals(areaById.getAreaId())) {
+                        areaNames.append(areaById.getAreaName()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("区域配置【").append(areaNames.deleteCharAt(areaNames.length() - 1)).append("】已被职级配置中的【职级分解】引用 无法删除\n");
         }
-        Area area = new Area();
-        BeanUtils.copyProperties(areaDTO, area);
-        return areaMapper.logicDeleteAreaByAreaId(area, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        Map<Integer, List<Long>> map = new HashMap<>();
+        map.put(2, areaIds);
+        R<List<TargetDecomposeDetailsDTO>> decomposeListR = targetDecomposeService.selectByIds(map, SecurityConstants.INNER);
+        if (decomposeListR.getCode() != 200) {
+            throw new ServiceException("远程调用目标分解失败 请联系管理员");
+        }
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = decomposeListR.getData();
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+            StringBuilder areaNames = new StringBuilder("");
+            for (AreaDTO areaById : areaByIds) {
+                for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+                    if (targetDecomposeDetailsDTO.getAreaId().equals(areaById.getAreaId())) {
+                        areaNames.append(areaById.getAreaName()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("区域配置【").append(areaNames.deleteCharAt(areaNames.length() - 1)).append("】正在被目标分解中的【分解维度-区域】引用 无法删除\n");
+        }
+        if (quoteReminder.length() != 0) {
+            throw new ServiceException(quoteReminder.toString());
+        }
     }
 
     /**
@@ -216,14 +267,7 @@ public class AreaServiceImpl implements IAreaService {
         if (areaByIds.size() < areaIds.size()) {
             throw new ServiceException("区域配置已不存在");
         }
-        R<List<OfficialRankDecomposeDTO>> listR = officialRankSystemService.selectOfficialDecomposeByDimensions(areaIds, 2, SecurityConstants.INNER);
-        if (listR.getCode() != 200) {
-            throw new ServiceException("远程调用职级分解失败 请联系管理员");
-        }
-        List<OfficialRankDecomposeDTO> officialRankDecomposeDTOS = listR.getData();
-        if (StringUtils.isNotEmpty(officialRankDecomposeDTOS)) {
-            throw new ServiceException("当前区域配置正在被职级分解引用 无法删除");
-        }
+        isQuote(areaIds, areaByIds);
         return areaMapper.logicDeleteAreaByAreaIds(areaIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -282,13 +326,13 @@ public class AreaServiceImpl implements IAreaService {
     /**
      * 批量修改区域表信息
      *
-     * @param areaDtos 区域表对象
+     * @param areaDtoS 区域表对象
      */
     @Transactional
-    public int updateAreas(List<AreaDTO> areaDtos) {
+    public int updateAreas(List<AreaDTO> areaDtoS) {
         List<Area> areaList = new ArrayList<>();
 
-        for (AreaDTO areaDTO : areaDtos) {
+        for (AreaDTO areaDTO : areaDtoS) {
             Area area = new Area();
             BeanUtils.copyProperties(areaDTO, area);
             area.setCreateBy(SecurityUtils.getUserId());

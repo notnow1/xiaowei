@@ -110,7 +110,21 @@ public interface EmpSalaryAdjustPlanMapper {
      * 根据员工ID获取个人调薪计划表
      *
      * @param employeeId 员工ID
-     * @return
+     * @return List
      */
     List<EmpSalaryAdjustPlanDTO> selectByEmployeeId(@Param("employeeId") Long employeeId);
+
+    /**
+     * @param employeeIds 员工ID集合
+     * @return List
+     */
+    List<EmpSalaryAdjustPlanDTO> selectByEmployeeIds(@Param("employeeIds") List<Long> employeeIds);
+
+    /**
+     * 根据职级体系ID集合获取个人调薪
+     *
+     * @param officialRankSystemIds 职级体系ID集合
+     * @return List
+     */
+    List<EmpSalaryAdjustPlanDTO> selectBySystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
 }

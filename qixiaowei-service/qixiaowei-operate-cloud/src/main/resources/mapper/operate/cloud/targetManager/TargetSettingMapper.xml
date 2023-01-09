@@ -338,6 +338,7 @@
         <foreach collection="indicatorIds" open="(" close=")" item="item" index="index" separator=",">
             #{item}
         </foreach>
+        ORDER BY target_year
     </select>
 <!--    根据年份指标id查询数据-->
     <select id="selectSetDrivingFactor"

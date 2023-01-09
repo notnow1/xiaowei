@@ -385,6 +385,31 @@
         order by target_year desc
         limit 1
     </select>
+    <select id="selectByIndicatorIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
+        SELECT
+        target_setting_id,
+        target_setting_type,
+        indicator_id,
+        target_year,
+        percentage,
+        challenge_value,
+        target_value,
+        guaranteed_value,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM target_setting
+        where indicator_id
+        IN
+        <foreach collection="indicatorIds" separator="," open="(" close=")" item="item" index="index">
+            #{item}
+        </foreach>
+        and delete_flag = 0
+    </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">
         INSERT INTO target_decompose (target_decompose_type, indicator_id, target_year, target_decompose_dimension_id,

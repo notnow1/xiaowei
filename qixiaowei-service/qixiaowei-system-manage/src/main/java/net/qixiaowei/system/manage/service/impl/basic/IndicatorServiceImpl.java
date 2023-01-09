@@ -5,12 +5,17 @@ import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
+import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteSettingService;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
@@ -39,8 +44,11 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Autowired
     private IndicatorCategoryMapper indicatorCategoryMapper;
 
-//    @Autowired
-//    private RemoteTargetSetting targetSettingService;
+    @Autowired
+    private RemoteSettingService targetSettingService;
+
+    @Autowired
+    private RemoteDecomposeService targetDecomposeService;
 
     /**
      * 查询指标表
@@ -248,7 +256,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     @Override
     public int logicDeleteIndicatorByIndicatorIds(List<Long> indicatorIds) {
-        List<IndicatorDTO> indicatorByIds = indicatorMapper.isExist(indicatorIds);
+        List<IndicatorDTO> indicatorByIds = indicatorMapper.selectIndicatorByIds(indicatorIds);
         if (StringUtils.isEmpty(indicatorByIds)) {
             throw new ServiceException("指标不存在");
         }
@@ -259,9 +267,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
 //        }
         addSons(indicatorIds);
         // todo 引用校验
-        if (isQuote(indicatorIds)) {
-            throw new ServiceException("存在被引用的指标");
-        }
+        isQuote(indicatorIds, indicatorByIds);
         return indicatorMapper.logicDeleteIndicatorByIndicatorIds(indicatorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -280,17 +286,34 @@ public class IndicatorServiceImpl implements IIndicatorService {
     /**
      * 引用校验
      *
-     * @param indicatorIds 指标ID集合
-     * @return boolean
+     * @param indicatorIds   指标ID集合
+     * @param indicatorByIds 指标DTO集合
      */
-    private boolean isQuote(List<Long> indicatorIds) {
-//        R<List<TargetSettingDTO>> listR = targetSettingService.queryIndicatorSetting(indicatorIds, SecurityConstants.INNER);
-//        if (listR.getCode() != 200) {
-//            throw new ServiceException("远程调用失败");
-//        }
-//        List<TargetSettingDTO> targetSettingDTOS = listR.getData();
-//        return StringUtils.isNotEmpty(targetSettingDTOS);
-        return false;
+    private void isQuote(List<Long> indicatorIds, List<IndicatorDTO> indicatorByIds) {
+        StringBuilder quoteReminder = new StringBuilder("");
+        // 目标制定
+        R<List<TargetSettingDTO>> listR = targetSettingService.queryIndicatorSetting(indicatorIds, SecurityConstants.INNER);
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程调用失败");
+        }
+        List<TargetSettingDTO> targetSettingDTOS = listR.getData();
+        if (StringUtils.isNotEmpty(targetSettingDTOS)) {
+            StringBuilder indicatorNames = new StringBuilder("");
+            for (TargetSettingDTO targetSettingDTO : targetSettingDTOS) {
+                for (IndicatorDTO indicatorById : indicatorByIds) {
+                    if (indicatorById.getIndicatorId().equals(targetSettingDTO.getIndicatorId())) {
+                        indicatorNames.append(indicatorById.getIndicatorName()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被目标制定中的【主要指标】引用 无法删除\n");
+        }
+        // 目标分解
+//        targetDecomposeService.selectByIndicatorIds();
+        if (quoteReminder.length() != 0) {
+            throw new ServiceException(quoteReminder.toString());
+        }
     }
 
     /**

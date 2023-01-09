@@ -42,6 +42,14 @@ public interface EmployeeBudgetMapper {
      */
     List<EmployeeBudgetDTO> selectEmployeeBudgetByOfficialRankSystemIds(@Param("departmentIds") List<Long> departmentIds, @Param("budgetYear") int budgetYear);
 
+    /**
+     * 根据职级体系ID集合查询预算
+     *
+     * @param officialRankSystemIds 职级体系ID集合
+     * @return 人力预算表
+     */
+    List<EmployeeBudgetDTO> selectEmployeeBudgetBySystemIds(@Param("officialRankSystemIds") List<Long> officialRankSystemIds);
+
 
     /**
      * 根据部门id集合批量查询人力预算表(平均人数用)

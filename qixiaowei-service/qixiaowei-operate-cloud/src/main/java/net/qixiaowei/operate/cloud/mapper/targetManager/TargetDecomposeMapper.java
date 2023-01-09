@@ -64,6 +64,7 @@ public interface TargetDecomposeMapper {
      * @return 滚动预测列表集合
      */
     List<TargetDecomposeDTO> selectRollPageList(@Param("targetDecompose") TargetDecompose targetDecompose);
+
     /**
      * 新增目标分解(销售订单)表
      *
@@ -115,6 +116,7 @@ public interface TargetDecomposeMapper {
 
     /**
      * 查询经营结果分析报表列表
+     *
      * @param targetDecompose
      * @return
      */
@@ -122,15 +124,25 @@ public interface TargetDecomposeMapper {
 
     /**
      * 目标分解是否被引用
-     * @param departmentId
+     *
+     * @param departmentId 部门ID
      * @return
      */
     List<TargetDecompose> queryDeptDecompose(@Param("departmentId") Long departmentId);
 
     /**
      * 查询目标分解预制数据年份
-     * @param targetDecompose
-     * @return
+     *
+     * @param targetDecompose 目标分解
+     * @return TargetDecomposeDTO
      */
     TargetDecomposeDTO selectMaxYear(@Param("targetDecompose") TargetDecompose targetDecompose);
+
+    /**
+     * 根据指标ID查询目标分解
+     *
+     * @param indicatorIds 指标ID集合
+     * @return List
+     */
+    List<TargetDecomposeDTO> selectByIndicatorIds(List<Long> indicatorIds);
 }

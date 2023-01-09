@@ -94,9 +94,14 @@
     <select id="selectOfficialDecomposeByDimensions"
             resultType="net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO">
         SELECT
-        official_rank_decompose_id, official_rank_system_id, rank_decompose_dimension, decompose_dimension,
-        salary_factor, delete_flag, create_by, create_time, update_by, update_time
-        FROM official_rank_decompose
+        ord.official_rank_decompose_id,
+        ors.official_rank_system_name,
+        ord.official_rank_system_id,
+        ord.rank_decompose_dimension,
+        ord.decompose_dimension,
+        ord.salary_factor
+        FROM official_rank_decompose ord
+        LEFT JOIN official_rank_system ors ON ors.official_rank_system_id = ord.official_rank_system_id
         WHERE rank_decompose_dimension = #{rankDecomposeDimension}
         AND delete_flag=0
         AND decompose_dimension IN

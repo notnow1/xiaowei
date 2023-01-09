@@ -134,4 +134,20 @@ public interface IEmpSalaryAdjustPlanService {
      * @return String
      */
     String officialRankInfo(Long postId, Integer officialRank);
+
+    /**
+     * 根据ID集合查询个人调薪
+     *
+     * @param employeeIds 员工Id集合
+     * @return
+     */
+    List<EmpSalaryAdjustPlanDTO> selectByEmployeeIds(List<Long> employeeIds);
+
+    /**
+     * 根据职级体系ID集合获取个人调薪
+     *
+     * @param officialRankSystemIds 职级体系ID集合
+     * @return List
+     */
+    List<EmpSalaryAdjustPlanDTO> selectBySystemIds(List<Long> officialRankSystemIds);
 }

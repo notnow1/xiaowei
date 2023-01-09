@@ -8,3 +8,4 @@ net.qixiaowei.operate.cloud.api.factory.performance.RemotePerformanceAppraisalFa
 net.qixiaowei.operate.cloud.api.factory.salary.RemoteSalaryAdjustPlanFallbackFactory
 net.qixiaowei.operate.cloud.api.factory.bonus.RemoteEmployeeAnnualBonusFallbackFactory
 net.qixiaowei.operate.cloud.api.factory.bonus.RemoteBonusPayApplicationFallbackFactory
+net.qixiaowei.operate.cloud.api.factory.employee.RemoteEmployeeBudgetFallbackFactory

@@ -50,6 +50,10 @@ public class OfficialRankDecomposeDTO {
      */
     private Long officialRankSystemId;
     /**
+     * 职级体系名称
+     */
+    private Long officialRankSystemName;
+    /**
      * 职级分解维度:1部门;2区域;3省份;4产品
      */
     private Integer rankDecomposeDimension;

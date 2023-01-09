@@ -123,9 +123,9 @@ public interface IndicatorCategoryMapper {
     /**
      * 根据id集合判断是否存在
      *
-     * @param indicatorCategoryIds
-     * @return
+     * @param indicatorCategoryIds 指标类型ID集合
+     * @return List
      */
-    List<Long> isExist(@Param("indicatorCategoryIds") List<Long> indicatorCategoryIds);
+    List<IndicatorCategoryDTO> selectIndicatorCategoryIds(@Param("indicatorCategoryIds") List<Long> indicatorCategoryIds);
 
 }

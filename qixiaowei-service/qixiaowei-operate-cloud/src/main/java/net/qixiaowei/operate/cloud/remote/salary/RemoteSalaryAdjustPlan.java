@@ -4,9 +4,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
-import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.IEmpSalaryAdjustPlanService;
-import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,5 +29,25 @@ public class RemoteSalaryAdjustPlan implements RemoteSalaryAdjustPlanService {
     @GetMapping("/selectByEmployeeId")
     public R<List<EmpSalaryAdjustPlanDTO>> selectByEmployeeId(@RequestParam("employeeId") Long employeeId, String source) {
         return R.ok(empSalaryAdjustPlanService.selectByEmployeeId(employeeId));
+    }
+
+    @Override
+    @InnerAuth
+    @PostMapping("/selectByEmployeeIds")
+    public R<List<EmpSalaryAdjustPlanDTO>> selectByEmployeeIds(@RequestBody List<Long> employeeIds, String source) {
+        return R.ok(empSalaryAdjustPlanService.selectByEmployeeIds(employeeIds));
+    }
+
+    /**
+     * 根据职级体系ID集合获取个人调薪
+     *
+     * @param officialRankSystemIds 职级体系ID集合
+     * @return List
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectBySystemIds")
+    public R<List<EmpSalaryAdjustPlanDTO>> selectBySystemIds(@RequestBody List<Long> officialRankSystemIds, String source) {
+        return R.ok(empSalaryAdjustPlanService.selectBySystemIds(officialRankSystemIds));
     }
 }
