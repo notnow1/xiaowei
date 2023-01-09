@@ -1086,7 +1086,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
         BigDecimal strategyDeveAward = bonusPayApplicationMapper.selectBonusPayApplicationAddDeptAnnual(annualBonusYear, salaryItemDTO.getSalaryItemId());
 
         //战略奖实发 公式 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
-        deptAnnualBonusDTO.setStrategyDeveAward(strategyDeveAward);
+        deptAnnualBonusDTO.setStrategyDeveAward(strategyDeveAward.divide(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP));
         if (null != strategyDeveAward) {
             departmentAnnualBonus = endYearSalaryAmountBonus.subtract(strategyDeveAward);
         }

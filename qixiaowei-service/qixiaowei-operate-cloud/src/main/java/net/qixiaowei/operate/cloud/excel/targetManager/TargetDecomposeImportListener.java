@@ -739,7 +739,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 list.add(dataMax);
             }
         }*/
-        return list;
+        return null;
     }
 }
 
