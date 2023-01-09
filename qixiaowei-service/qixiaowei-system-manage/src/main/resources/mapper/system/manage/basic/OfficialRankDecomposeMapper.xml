@@ -102,9 +102,9 @@
         ord.salary_factor
         FROM official_rank_decompose ord
         LEFT JOIN official_rank_system ors ON ors.official_rank_system_id = ord.official_rank_system_id
-        WHERE rank_decompose_dimension = #{rankDecomposeDimension}
-        AND delete_flag=0
-        AND decompose_dimension IN
+        WHERE ord.rank_decompose_dimension = #{rankDecomposeDimension}
+        AND ord.delete_flag=0
+        AND ord.decompose_dimension IN
         <foreach collection="decomposeDimensions" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>

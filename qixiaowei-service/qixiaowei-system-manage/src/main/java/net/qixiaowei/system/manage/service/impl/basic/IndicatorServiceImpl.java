@@ -13,6 +13,7 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteSettingService;
@@ -266,7 +267,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
 //            }
 //        }
         addSons(indicatorIds);
-        // todo 引用校验
         isQuote(indicatorIds, indicatorByIds);
         return indicatorMapper.logicDeleteIndicatorByIndicatorIds(indicatorIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
@@ -307,10 +307,27 @@ public class IndicatorServiceImpl implements IIndicatorService {
                     }
                 }
             }
-            quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被目标制定中的【主要指标】引用 无法删除\n");
+            quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被关键经营目标制定中的【主要指标】引用 无法删除\n");
         }
         // 目标分解
-//        targetDecomposeService.selectByIndicatorIds();
+        R<List<TargetDecomposeDTO>> decomposeR = targetDecomposeService.selectByIndicatorIds(indicatorIds, SecurityConstants.INNER);
+        if (decomposeR.getCode() != 200) {
+            throw new ServiceException("远程调用失败");
+        }
+        List<TargetDecomposeDTO> targetDecomposeDTOS = decomposeR.getData();
+        if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
+            StringBuilder indicatorNames = new StringBuilder("");
+            for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
+                for (IndicatorDTO indicatorById : indicatorByIds) {
+                    if (indicatorById.getIndicatorId().equals(targetDecomposeDTO.getIndicatorId())) {
+                        indicatorNames.append(indicatorById.getIndicatorName()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被自定义目标分解中的【指标名称】引用 无法删除\n");
+        }
+        //
         if (quoteReminder.length() != 0) {
             throw new ServiceException(quoteReminder.toString());
         }
