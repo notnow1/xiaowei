@@ -5,24 +5,27 @@
     <select id="selectRoleByRoleId"
             resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT
-        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM role
-        WHERE  role_id=#{roleId}
+        WHERE role_id=#{roleId}
         and delete_flag=0
     </select>
 
     <select id="selectRoleByRoleCode"
             resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT
-        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM role
-        WHERE  role_code = #{roleCode}
+        WHERE role_code = #{roleCode}
         and delete_flag = 0
     </select>
 
     <select id="selectRolesByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT distinct
-        r.role_id, r.role_code, r.role_name, r.data_scope, r.product_package, r.sort, r.remark, r.status, r.delete_flag, r.create_by, r.create_time, r.update_by, r.update_time
+        r.role_id, r.role_code, r.role_name, r.data_scope, r.product_package, r.sort, r.remark, r.status, r.delete_flag,
+        r.create_by, r.create_time, r.update_by, r.update_time
         FROM role r
         LEFT JOIN user_role ur on ur.role_id = r.role_id AND ur.delete_flag = 0
         LEFT JOIN user u on u.user_id = ur.user_id AND u.delete_flag = 0
@@ -33,53 +36,59 @@
     <!--    查询角色表列表-->
     <select id="selectRoleList" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT
-        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM role
         WHERE delete_flag=0
-                <if test="role.roleId != null">
-                    and role_id=#{role.roleId}
-                </if>
-                <if test="role.roleCode != null and role.roleCode != ''">
-                    and role_code LIKE concat('%', #{role.roleCode}, '%')
-                </if>
-                <if test="role.roleName != null and role.roleName != ''">
-                    and role_name LIKE concat('%', #{role.roleName}, '%')
-                </if>
-                <if test="role.dataScope != null">
-                    and data_scope=#{role.dataScope}
-                </if>
-                <if test="role.productPackage != null and role.productPackage != ''">
-                    and product_package=#{role.productPackage}
-                </if>
-                <if test="role.sort != null">
-                    and sort=#{role.sort}
-                </if>
-                <if test="role.remark != null and role.remark != ''">
-                    and remark=#{role.remark}
-                </if>
-                <if test="role.status != null">
-                    and status=#{role.status}
-                </if>
-                <if test="role.deleteFlag != null">
-                    and delete_flag=#{role.deleteFlag}
-                </if>
-                <if test="role.createBy != null">
-                    and create_by=#{role.createBy}
-                </if>
-                <if test="role.createTime != null">
-                    and create_time=#{role.createTime}
-                </if>
-                <if test="role.updateBy != null">
-                    and update_by=#{role.updateBy}
-                </if>
-                <if test="role.updateTime != null">
-                    and update_time=#{role.updateTime}
-                </if>
+        <if test="role.roleId != null">
+            and role_id=#{role.roleId}
+        </if>
+        <if test="role.roleCode != null and role.roleCode != ''">
+            and role_code LIKE concat('%', #{role.roleCode}, '%')
+        </if>
+        <if test="role.roleName != null and role.roleName != ''">
+            and role_name LIKE concat('%', #{role.roleName}, '%')
+        </if>
+        <if test="role.dataScope != null">
+            and data_scope=#{role.dataScope}
+        </if>
+        <if test="role.productPackage != null and role.productPackage != ''">
+            and product_package=#{role.productPackage}
+        </if>
+        <if test="role.sort != null">
+            and sort=#{role.sort}
+        </if>
+        <if test="role.remark != null and role.remark != ''">
+            and remark=#{role.remark}
+        </if>
+        <if test="role.status != null">
+            and status=#{role.status}
+        </if>
+        <if test="role.deleteFlag != null">
+            and delete_flag=#{role.deleteFlag}
+        </if>
+        <if test="role.createBy != null">
+            and create_by=#{role.createBy}
+        </if>
+        <if test="role.createTime != null">
+            and create_time=#{role.createTime}
+        </if>
+        <if test="role.updateBy != null">
+            and update_by=#{role.updateBy}
+        </if>
+        <if test="role.updateTime != null">
+            and update_time=#{role.updateTime}
+        </if>
+    </select>
+
+    <select id="getRoleCodes" resultType="java.lang.String">
+        SELECT role_code FROM role WHERE delete_flag=0 ORDER BY role_code ASC
     </select>
 
     <select id="selectRolesByRoleIds" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT
-        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
+        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM role
         WHERE delete_flag=0 AND
         role_id IN
@@ -92,7 +101,8 @@
 
     <!--新增角色表-->
     <insert id="insertRole" useGeneratedKeys="true" keyProperty="roleId">
-        INSERT INTO role (role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO role
+        (role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{role.roleCode},#{role.roleName},#{role.dataScope},#{role.productPackage},#{role.sort},#{role.remark},#{role.status},#{role.deleteFlag},#{role.createBy},#{role.createTime},#{role.updateBy},#{role.updateTime})
     </insert>
@@ -108,71 +118,72 @@
     <update id="updateRole">
         UPDATE role
         SET
-                    <if test="role.roleCode != null and role.roleCode != ''">
-                        role_code=#{role.roleCode},
-                    </if>
-                    <if test="role.roleName != null and role.roleName != ''">
-                        role_name=#{role.roleName},
-                    </if>
-                    <if test="role.dataScope != null">
-                        data_scope=#{role.dataScope},
-                    </if>
-                    <if test="role.productPackage != null and role.productPackage != ''">
-                        product_package=#{role.productPackage},
-                    </if>
-                    <if test="role.sort != null">
-                        sort=#{role.sort},
-                    </if>
-                    <if test="role.remark != null and role.remark != ''">
-                        remark=#{role.remark},
-                    </if>
-                    <if test="role.status != null">
-                        status=#{role.status},
-                    </if>
-                    <if test="role.deleteFlag != null">
-                        delete_flag=#{role.deleteFlag},
-                    </if>
-                    <if test="role.createBy != null">
-                        create_by=#{role.createBy},
-                    </if>
-                    <if test="role.createTime != null">
-                        create_time=#{role.createTime},
-                    </if>
-                    <if test="role.updateBy != null">
-                        update_by=#{role.updateBy},
-                    </if>
-                    <if test="role.updateTime != null">
-                        update_time=#{role.updateTime}
-                    </if>
+        <if test="role.roleCode != null and role.roleCode != ''">
+            role_code=#{role.roleCode},
+        </if>
+        <if test="role.roleName != null and role.roleName != ''">
+            role_name=#{role.roleName},
+        </if>
+        <if test="role.dataScope != null">
+            data_scope=#{role.dataScope},
+        </if>
+        <if test="role.productPackage != null and role.productPackage != ''">
+            product_package=#{role.productPackage},
+        </if>
+        <if test="role.sort != null">
+            sort=#{role.sort},
+        </if>
+        <if test="role.remark != null and role.remark != ''">
+            remark=#{role.remark},
+        </if>
+        <if test="role.status != null">
+            status=#{role.status},
+        </if>
+        <if test="role.deleteFlag != null">
+            delete_flag=#{role.deleteFlag},
+        </if>
+        <if test="role.createBy != null">
+            create_by=#{role.createBy},
+        </if>
+        <if test="role.createTime != null">
+            create_time=#{role.createTime},
+        </if>
+        <if test="role.updateBy != null">
+            update_by=#{role.updateBy},
+        </if>
+        <if test="role.updateTime != null">
+            update_time=#{role.updateTime}
+        </if>
         WHERE
-                 role_id=#{role.roleId}
+        role_id=#{role.roleId}
     </update>
     <!--逻辑删除角色表-->
     <update id="logicDeleteRoleByRoleId">
         UPDATE role
-        SET     delete_flag= 1,
-                update_by=#{role.updateBy},
-                update_time=#{role.updateTime}
+        SET delete_flag= 1,
+        update_by=#{role.updateBy},
+        update_time=#{role.updateTime}
         WHERE
-                role_id=#{role.roleId}
+        role_id=#{role.roleId}
     </update>
     <!--逻辑批量删除角色表-->
     <update id="logicDeleteRoleByRoleIds">
         UPDATE role
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         role_id IN
-            <foreach item="item"
-                     collection="roleIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        role_id IN
+        <foreach item="item"
+                 collection="roleIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增角色表-->
-    <insert id="batchRole" >
-        INSERT INTO role (role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+    <insert id="batchRole">
+        INSERT INTO role
+        (role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="roles"
@@ -184,18 +195,18 @@
     <!--物理删除角色表-->
     <delete id="deleteRoleByRoleId">
         DELETE FROM role
-        WHERE  role_id=#{role}
+        WHERE role_id=#{role}
 
     </delete>
     <!--物理批量删除角色表-->
     <delete id="deleteRoleByRoleIds">
         DELETE FROM role
-        WHERE  role_id IN
-            <foreach item="item"
-                     collection="roleIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE role_id IN
+        <foreach item="item"
+                 collection="roleIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改角色表-->
     <update id="updateRoles">
@@ -205,92 +216,92 @@
             </trim>
             <trim prefix="role_code=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.roleCode != null and item.roleCode != ''">
-                                 when role_id=#{item.roleId} then #{item.roleCode}
-                             </if>
+                    <if test="item.roleCode != null and item.roleCode != ''">
+                        when role_id=#{item.roleId} then #{item.roleCode}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="role_name=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.roleName != null and item.roleName != ''">
-                                 when role_id=#{item.roleId} then #{item.roleName}
-                             </if>
+                    <if test="item.roleName != null and item.roleName != ''">
+                        when role_id=#{item.roleId} then #{item.roleName}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="data_scope=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.dataScope != null">
-                                 when role_id=#{item.roleId} then #{item.dataScope}
-                             </if>
+                    <if test="item.dataScope != null">
+                        when role_id=#{item.roleId} then #{item.dataScope}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="product_package=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.productPackage != null and item.productPackage != ''">
-                                 when role_id=#{item.roleId} then #{item.productPackage}
-                             </if>
+                    <if test="item.productPackage != null and item.productPackage != ''">
+                        when role_id=#{item.roleId} then #{item.productPackage}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="sort=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.sort != null">
-                                 when role_id=#{item.roleId} then #{item.sort}
-                             </if>
+                    <if test="item.sort != null">
+                        when role_id=#{item.roleId} then #{item.sort}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="remark=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.remark != null and item.remark != ''">
-                                 when role_id=#{item.roleId} then #{item.remark}
-                             </if>
+                    <if test="item.remark != null and item.remark != ''">
+                        when role_id=#{item.roleId} then #{item.remark}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="status=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.status != null">
-                                 when role_id=#{item.roleId} then #{item.status}
-                             </if>
+                    <if test="item.status != null">
+                        when role_id=#{item.roleId} then #{item.status}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when role_id=#{item.roleId} then #{item.deleteFlag}
-                             </if>
+                    <if test="item.deleteFlag != null">
+                        when role_id=#{item.roleId} then #{item.deleteFlag}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when role_id=#{item.roleId} then #{item.createBy}
-                             </if>
+                    <if test="item.createBy != null">
+                        when role_id=#{item.roleId} then #{item.createBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when role_id=#{item.roleId} then #{item.createTime}
-                             </if>
+                    <if test="item.createTime != null">
+                        when role_id=#{item.roleId} then #{item.createTime}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when role_id=#{item.roleId} then #{item.updateBy}
-                             </if>
+                    <if test="item.updateBy != null">
+                        when role_id=#{item.roleId} then #{item.updateBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when role_id=#{item.roleId} then #{item.updateTime}
-                             </if>
+                    <if test="item.updateTime != null">
+                        when role_id=#{item.roleId} then #{item.updateTime}
+                    </if>
                 </foreach>
             </trim>
         </trim>
         where
         <foreach collection="roleList" separator="or" item="item" index="index">
-                    role_id=#{item.roleId}
+            role_id=#{item.roleId}
         </foreach>
     </update>
 </mapper>

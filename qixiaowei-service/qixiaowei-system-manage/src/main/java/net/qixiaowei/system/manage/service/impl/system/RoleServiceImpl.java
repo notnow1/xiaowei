@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.common.constant.Constants;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -92,6 +93,39 @@ public class RoleServiceImpl implements IRoleService {
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
         return roleMapper.selectRoleList(role);
+    }
+
+    /**
+     * 获取角色编码
+     *
+     * @return 角色信息
+     */
+    @Override
+    public String getRoleCode() {
+        String roleCode;
+        int number = 1;
+        List<String> roleCodes = roleMapper.getRoleCodes();
+        String prefixCodeRule = PrefixCodeRule.ROLE.getCode();
+        for (String code : roleCodes) {
+            if (StringUtils.isEmpty(code) || code.length() != 5 || !code.startsWith(prefixCodeRule)) {
+                continue;
+            }
+            code = code.replaceFirst(prefixCodeRule, "");
+            try {
+                int codeOfNumber = Integer.parseInt(code);
+                if (number != codeOfNumber) {
+                    break;
+                }
+                number++;
+            } catch (Exception ignored) {
+            }
+        }
+        if (number > 1000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        roleCode = "000" + number;
+        roleCode = prefixCodeRule + roleCode.substring(roleCode.length() - 3);
+        return roleCode;
     }
 
     /**

@@ -39,6 +39,13 @@ public interface IRoleService{
     List<RoleDTO> selectRoleList(RoleDTO roleDTO);
 
     /**
+     * 获取角色编码
+     *
+     * @return 角色信息
+     */
+    String getRoleCode();
+
+    /**
     * 新增角色表
     *
     * @param roleDTO 角色表

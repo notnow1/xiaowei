@@ -46,6 +46,17 @@ public class RoleController extends BaseController {
     }
 
     /**
+     * 获取角色编码
+     *
+     * @return 角色信息
+     */
+    @RequiresPermissions(value = {"system:manage:role:add", "system:manage:role:edit"}, logical = Logical.OR)
+    @GetMapping("/getRoleCode")
+    public AjaxResult getRoleCode() {
+        return AjaxResult.success(roleService.getRoleCode());
+    }
+
+    /**
      * 新增角色表
      */
     @Log(title = "新增角色", businessType = BusinessType.ROLE, businessId = "roleId", operationType = OperationType.INSERT)
