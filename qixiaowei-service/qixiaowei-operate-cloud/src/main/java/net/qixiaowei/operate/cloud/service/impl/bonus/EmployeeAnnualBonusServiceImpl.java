@@ -156,7 +156,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             if (StringUtils.isNotEmpty(data)) {
                 for (EmployeeAnnualBonusDTO annualBonusDTO : employeeAnnualBonusDTOS) {
                     for (EmployeeDTO datum : data) {
-                        if (annualBonusDTO.getApplyEmployeeId() == datum.getEmployeeId()) {
+                        if (annualBonusDTO.getApplyEmployeeId().equals(datum.getEmployeeId())) {
                             annualBonusDTO.setApplyEmployeeName(datum.getEmployeeName());
                         }
                     }
@@ -180,7 +180,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             if (StringUtils.isNotEmpty(data)) {
                 for (EmployeeAnnualBonusDTO annualBonusDTO : employeeAnnualBonusDTOS) {
                     for (DepartmentDTO datum : data) {
-                        if (annualBonusDTO.getApplyDepartmentId() == datum.getDepartmentId()) {
+                        if (annualBonusDTO.getApplyDepartmentId().equals(datum.getDepartmentId())) {
                             annualBonusDTO.setApplyDepartmentName(datum.getDepartmentName());
                         }
                     }
@@ -204,7 +204,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             if (StringUtils.isNotEmpty(data)) {
                 for (EmployeeAnnualBonusDTO annualBonusDTO : employeeAnnualBonusDTOS) {
                     for (DepartmentDTO datum : data) {
-                        if (annualBonusDTO.getDepartmentId() == datum.getDepartmentId()) {
+                        if (annualBonusDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                             annualBonusDTO.setDepartmentName(datum.getDepartmentName());
                         }
                     }
@@ -497,7 +497,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     BigDecimal bonusBeforeTwo = new BigDecimal("0");
                     if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOList1)) {
                         for (EmpAnnualBonusSnapshotDTO annualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList1) {
-                            if (empAnnualBonusSnapshotDTO.getEmployeeId() == annualBonusSnapshotDTO.getEmployeeId()) {
+                            if (empAnnualBonusSnapshotDTO.getEmployeeId().equals(annualBonusSnapshotDTO.getEmployeeId())) {
 
                                 if (null != annualBonusSnapshotDTO.getEmployeeBasicWage()) {
                                     //基本工资
@@ -832,7 +832,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     //去除自己
                     List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOList = empAnnualBonusObjectsDTOS.stream().filter(f -> !collect.contains(f.getEmpAnnualBonusObjectsId())).collect(Collectors.toList());
                     for (EmpAnnualBonusObjectsDTO empAnnualBonusObjectsDTO : empAnnualBonusObjectsDTOList) {
-                        if ( empAnnualBonusObjectsDTO.getStatus() == Constants.ONE) {
+                        if (empAnnualBonusObjectsDTO.getStatus().equals(Constants.ONE)) {
                             employeeAnnualBonus.setStatus(Constants.ONE);
                         }
                     }

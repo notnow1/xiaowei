@@ -152,7 +152,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             if (StringUtils.isNotEmpty(data)){
                 for (EmolumentPlanDTO planDTO : emolumentPlanDTOS) {
                     for (UserDTO datum : data) {
-                        if (planDTO.getCreateBy() == datum.getUserId()){
+                        if (planDTO.getCreateBy().equals(datum.getUserId())){
                             //员工姓名
                             planDTO.setCreateName(datum.getEmployeeName());
                         }

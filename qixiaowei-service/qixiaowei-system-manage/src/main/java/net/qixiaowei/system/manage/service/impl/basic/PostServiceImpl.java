@@ -225,7 +225,7 @@ public class PostServiceImpl implements IPostService {
                 departmentPost.setUpdateBy(SecurityUtils.getUserId());
                 departmentPost.setUpdateTime(DateUtils.getNowDate());
                 for (DepartmentDTO departmentDTO1 : departmentPostDTOS1) {
-                    if (departmentDTO1.getDepartmentId() == departmentDTO.getDepartmentId()) {
+                    if (departmentDTO1.getDepartmentId().equals(departmentDTO.getDepartmentId())) {
                         departmentPost.setDepartmentPostId(departmentDTO1.getDepartmentPostId());
                     }
                 }

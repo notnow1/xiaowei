@@ -140,7 +140,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOS) {
                         for (DepartmentDTO datum : data) {
-                            if (datum.getDepartmentId() == deptAnnualBonusFactorDTO.getDepartmentId()) {
+                            if (datum.getDepartmentId().equals(deptAnnualBonusFactorDTO.getDepartmentId())) {
                                 deptAnnualBonusFactorDTO.setDepartmentName(datum.getDepartmentName());
                             }
                         }
@@ -558,7 +558,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                                 for (Long key : bonusPayMap.keySet()) {
                                     List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS1 = bonusPayMap.get(key);
                                     for (BonusPayBudgetDeptDTO bonusPayBudgetDeptDTO : bonusPayBudgetDeptDTOS1) {
-                                        if (salaryItemDTO.getSalaryItemId() == bonusPayBudgetDeptDTO.getSalaryItemId()) {
+                                        if (salaryItemDTO.getSalaryItemId().equals(bonusPayBudgetDeptDTO.getSalaryItemId())) {
                                             //奖项总金额
                                             BigDecimal awardTotalAmount = bonusPayBudgetDeptDTO.getAwardTotalAmount();
                                             //奖金比例
@@ -661,7 +661,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             }
             for (DepartmentDTO datum : data) {
                 for (DeptAnnualBonusFactorDTO deptAnnualBonusFactorDTO : deptAnnualBonusFactorDTOs) {
-                    if (datum.getDepartmentId() == deptAnnualBonusFactorDTO.getDepartmentId()) {
+                    if (datum.getDepartmentId().equals(deptAnnualBonusFactorDTO.getDepartmentId())) {
                         //部门奖金包发放奖金项目
                         List<DeptAnnualBonusItemDTO> deptAnnualBonusItemDTOS = new ArrayList<>();
                         //部门奖金占比
@@ -724,7 +724,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                                         for (Long key : bonusPayMap.keySet()) {
                                             List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS1 = bonusPayMap.get(key);
                                             for (BonusPayBudgetDeptDTO bonusPayBudgetDeptDTO : bonusPayBudgetDeptDTOS1) {
-                                                if (salaryItemDTO.getSalaryItemId() == bonusPayBudgetDeptDTO.getSalaryItemId()) {
+                                                if (salaryItemDTO.getSalaryItemId().equals(bonusPayBudgetDeptDTO.getSalaryItemId())) {
                                                     //奖项总金额
                                                     BigDecimal awardTotalAmount = bonusPayBudgetDeptDTO.getAwardTotalAmount();
                                                     //奖金比例
@@ -814,7 +814,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (DeptAnnualBonusOperateDTO deptAnnualBonusOperateDTO : deptAnnualBonusOperateDTOList) {
                         for (IndicatorDTO datum : data) {
-                            if (datum.getIndicatorId() == deptAnnualBonusOperateDTO.getIndicatorId()) {
+                            if (datum.getIndicatorId().equals(deptAnnualBonusOperateDTO.getIndicatorId())) {
                                 deptAnnualBonusOperateDTO.setIndicatorName(datum.getIndicatorName());
                             }
                         }
@@ -1115,7 +1115,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             if (StringUtils.isNotEmpty(data)) {
                 for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
                     for (IndicatorDTO datum : data) {
-                        if (bonusBudgetParametersDTO.getIndicatorId() == datum.getIndicatorId()) {
+                        if (bonusBudgetParametersDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                             bonusBudgetParametersDTO.setIndicatorName(datum.getIndicatorName());
                         }
                     }

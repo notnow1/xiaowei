@@ -15,6 +15,7 @@ import java.util.Map;
 import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
 
 /**
@@ -617,6 +618,127 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 list.add(dataMax);
             }
         }
+        return list;
+    }
+
+
+    /**
+     * 封装滚动预测导出数据
+     *
+     * @param targetDecomposeDetailsDTOS
+     * @param targetDecomposeDTO
+     * @return
+     */
+    public static List detailsRollDataList(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, TargetDecomposeDTO targetDecomposeDTO) {
+/*        //写入excel数据集合
+        List<List<Object>> list = new ArrayList<List<Object>>();
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
+            //汇总金额合计
+            String amountTargetSum = targetDecomposeDetailsDTOS.get(0).getAmountTargetSum();
+            //周期目标值集合
+            List<String> cycleTargetSum = targetDecomposeDetailsDTOS.get(0).getCycleTargetSum();
+            //分解维度数据集合
+            List<String> decompositionDimensions1 = targetDecomposeDetailsDTOS.get(0).getDecompositionDimensions();
+            //周期目标值集合
+            List<String> cycleTargets1 = targetDecomposeDetailsDTOS.get(0).getCycleTargets();
+            for (int i = 0; i < Math.max(targetDecomposeDetailsDTOS.size(),8); i++) {
+                //每一行的数据集合
+                List<Object> data = new ArrayList<Object>();
+                TargetDecomposeDetailsExcel targetDecomposeDetailsExcel = new TargetDecomposeDetailsExcel();
+                if (i<targetDecomposeDetailsDTOS.size()){
+                    targetDecomposeDetailsExcel = targetDecomposeDetailsDTOS.get(i);
+                }
+
+
+                //分解维度数据集合
+                List<String> decompositionDimensions = targetDecomposeDetailsExcel.getDecompositionDimensions();
+                //周期目标值集合
+                List<String> cycleTargets = targetDecomposeDetailsExcel.getCycleTargets();
+                if (i == 0){
+                    StringBuffer stringBuffer = new StringBuffer();
+                    for (int i1 = 0; i1 < targetDecomposeDTO.getFileNameList().size(); i1++) {
+                        if (i1 !=0){
+                            stringBuffer.append("+").append(targetDecomposeDTO.getFileNameList().get(i1).get("label"));
+                        }else {
+                            stringBuffer.append(targetDecomposeDTO.getFileNameList().get(i1).get("label"));
+                        }
+                    }
+                    data.add("分解维度：" + stringBuffer);
+                }else if (i ==1){
+                    if (StringUtils.isNotEmpty(cycleTargets1)){
+                        if (cycleTargets1.size()==1){
+                            data.add("时间维度：年度");
+                        }else if (cycleTargets1.size()==2){
+                            data.add("时间维度：半年度");
+                        }else if (cycleTargets1.size()==4){
+                            data.add("时间维度：季度");
+                        }else if (cycleTargets1.size()==12){
+                            data.add("时间维度：月度");
+                        }else if (cycleTargets1.size()==52){
+                            data.add("时间维度：周");
+                        }
+                    }
+                }else if (i ==2){
+                    data.add("挑战值：" + targetDecomposeDTO.getChallengeValue());
+                }else if (i ==3){
+                    data.add("目标值：" + targetDecomposeDTO.getTargetValue());
+                }else if (i ==4){
+                    data.add("保底值：" + targetDecomposeDTO.getGuaranteedValue());
+                }else if (i ==5){
+                    data.add("分解目标：" + targetDecomposeDTO.getDecomposeTarget());
+                }else if (i ==6 ){
+                    data.add("已分解：" + amountTargetSum);
+                }else if (i ==7){
+                    data.add("未分解：" + targetDecomposeDTO.getDecomposeTarget().subtract(new BigDecimal(amountTargetSum)));
+                }
+                if (StringUtils.isNotEmpty(decompositionDimensions)){
+                    for (String decompositionDimension : decompositionDimensions) {
+                        data.add(decompositionDimension);
+                    }
+                }
+
+                if (targetDecomposeDetailsDTOS.size()<8){
+                    if (targetDecomposeDetailsDTOS.size() == i){
+                        for (int i1 = 0; i1 < decompositionDimensions1.size(); i1++) {
+                            data.add("");
+                        }
+                        data.add("合计");
+                        data.add(amountTargetSum);
+                        if (StringUtils.isNotEmpty(cycleTargetSum)) {
+                            for (String s : cycleTargetSum) {
+                                data.add(s);
+                            }
+                        }
+                    }
+                }
+                //负责人名称
+                data.add(targetDecomposeDetailsExcel.getPrincipalEmployeeName());
+                //汇总金额
+                data.add(targetDecomposeDetailsExcel.getAmountTarget());
+                if (StringUtils.isNotEmpty(cycleTargets)){
+                    for (String cycleTarget : cycleTargets) {
+                        data.add(cycleTarget);
+                    }
+                }
+
+                list.add(data);
+            }
+            if (targetDecomposeDetailsDTOS.size()>=8){
+                //每一行的数据集合
+                List<Object> dataMax = new ArrayList<Object>();
+                while (dataMax.size()<(decompositionDimensions1.size()+1)){
+                    dataMax.add("");
+                }
+                dataMax.add("合计");
+                dataMax.add(amountTargetSum);
+                if (StringUtils.isNotEmpty(cycleTargetSum)) {
+                    for (String s : cycleTargetSum) {
+                        dataMax.add(s);
+                    }
+                }
+                list.add(dataMax);
+            }
+        }*/
         return list;
     }
 }

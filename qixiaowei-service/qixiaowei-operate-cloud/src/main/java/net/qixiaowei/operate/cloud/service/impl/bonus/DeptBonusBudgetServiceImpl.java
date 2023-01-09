@@ -158,7 +158,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (DeptBonusBudgetDetailsDTO deptBonusBudgetDetailsDTO : deptBonusBudgetDetailsDTOS) {
                         for (DepartmentDTO datum : data) {
-                            if (deptBonusBudgetDetailsDTO.getDepartmentId() == datum.getDepartmentId()) {
+                            if (deptBonusBudgetDetailsDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                                 deptBonusBudgetDetailsDTO.setDepartmentName(datum.getDepartmentName());
                             }
                         }
@@ -229,7 +229,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
             if (StringUtils.isNotEmpty(data)) {
                 for (DeptBonusBudgetDTO bonusBudgetDTO : deptBonusBudgetDTOS) {
                     for (UserDTO datum : data) {
-                        if (bonusBudgetDTO.getCreateBy() == datum.getUserId()) {
+                        if (bonusBudgetDTO.getCreateBy().equals(datum.getUserId())) {
                             bonusBudgetDTO.setCreateByName(datum.getEmployeeName());
                         }
                     }
@@ -702,7 +702,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 //当前一级部门带包数×当前一级部门组织重要性系数
                 BigDecimal nowTopDeptPay = new BigDecimal("0");
                 for (Long aLong : topDeptPaymentMap.keySet()) {
-                    if (deptBonusBudgetDetailsDTO.getDepartmentId() == aLong) {
+                    if (deptBonusBudgetDetailsDTO.getDepartmentId().equals(aLong)) {
                         //一级部门带包数
                         BigDecimal topDeptPay = topDeptPaymentMap.get(aLong);
                         //部门组织重要性系数
@@ -750,7 +750,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         if (StringUtils.isNotEmpty(topDeptPaymentMap) && StringUtils.isNotEmpty(deptImportFactorMap)) {
             for (Long aLong : topDeptPaymentMap.keySet()) {
                 for (Long aLong1 : deptImportFactorMap.keySet()) {
-                    if (aLong == aLong1) {
+                    if (aLong.equals(aLong1)) {
                         //一级部门带包数
                         BigDecimal topDeptPay = topDeptPaymentMap.get(aLong);
                         //部门组织重要性系数
@@ -907,7 +907,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                 for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                     //远程赋值职级名称
                     for (OfficialRankSystemDTO datum : data) {
-                        if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()) {
+                        if (employeeBudgetDetailsDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())) {
                             employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
                             if (StringUtils.isNotBlank(datum.getRankPrefixCode())){
                                 employeeBudgetDetailsDTO.setOfficialRankName( datum.getRankPrefixCode()+ employeeBudgetDetailsDTO.getOfficialRank());

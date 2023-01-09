@@ -107,7 +107,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 if (StringUtils.isNotEmpty(data)) {
                     for (BonusPayObjectsDTO bonusPayObjectsDTO : bonusPayDeptObjectsDTOS) {
                         for (DepartmentDTO datum : data) {
-                            if (bonusPayObjectsDTO.getBonusPayObjectId() == datum.getDepartmentId()) {
+                            if (bonusPayObjectsDTO.getBonusPayObjectId().equals(datum.getDepartmentId())) {
                                 //部门名称
                                 bonusPayObjectsDTO.setBonusPayObjectName(datum.getDepartmentName());
                                 //编码
@@ -138,7 +138,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 if (StringUtils.isNotEmpty(data)) {
                     for (BonusPayObjectsDTO bonusPayObjectsDTO : bonusPayEmployeeObjectsDTOS) {
                         for (EmployeeDTO datum : data) {
-                            if (bonusPayObjectsDTO.getBonusPayObjectId() == datum.getEmployeeId()) {
+                            if (bonusPayObjectsDTO.getBonusPayObjectId().equals(datum.getEmployeeId())) {
                                 //员工名称
                                 bonusPayObjectsDTO.setBonusPayObjectName(datum.getEmployeeName());
                                 //工号
@@ -163,7 +163,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             R<DepartmentDTO> departmentDTOR = remoteDepartmentService.selectdepartmentId(bonusPayApplicationDTO.getApplyDepartmentId(), SecurityConstants.INNER);
             DepartmentDTO data = departmentDTOR.getData();
             if (StringUtils.isNotNull(data)) {
-                if (bonusPayApplicationDTO.getApplyDepartmentId() == data.getDepartmentId()) {
+                if (bonusPayApplicationDTO.getApplyDepartmentId().equals(data.getDepartmentId())) {
                     //赋值申请部门名称
                     bonusPayApplicationDTO.setApplyDepartmentName(data.getDepartmentName());
                 }
@@ -200,7 +200,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 if (StringUtils.isNotEmpty(data)) {
                     for (BonusPayBudgetDeptDTO bonusPayBudgetDeptDTO : bonusPayBudgetDeptDTOS) {
                         for (DepartmentDTO datum : data) {
-                            if (bonusPayBudgetDeptDTO.getDepartmentId() == datum.getDepartmentId()) {
+                            if (bonusPayBudgetDeptDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                                 //赋值部门名称
                                 bonusPayBudgetDeptDTO.setDepartmentName(datum.getDepartmentName());
                             }
@@ -266,7 +266,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             if (StringUtils.isNotEmpty(data)) {
                 for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                     for (DepartmentDTO datum : data) {
-                        if (payApplicationDTO.getApplyDepartmentId() == datum.getDepartmentId()) {
+                        if (payApplicationDTO.getApplyDepartmentId().equals(datum.getDepartmentId())) {
                             //申请部门名称
                             payApplicationDTO.setApplyDepartmentName(datum.getDepartmentName());
                         }
@@ -279,7 +279,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             if (StringUtils.isNotEmpty(data1)) {
                 for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                     for (UserDTO userDTO : data1) {
-                        if (payApplicationDTO.getCreateBy() == userDTO.getUserId()) {
+                        if (payApplicationDTO.getCreateBy().equals(userDTO.getUserId())) {
                             //创建人名称
                             payApplicationDTO.setCreateName(userDTO.getEmployeeName());
                         }
@@ -888,7 +888,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             bonusPayStandingDTO2.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
             bonusPayStandingDTOList.add(bonusPayStandingDTO2);
         }else {
-            if (salaryItemDTO.getSalaryItemId() == salaryItemId) {
+            if (salaryItemDTO.getSalaryItemId().equals(salaryItemId)) {
                 //公司级别
                 BonusPayStandingDTO bonusPayStandingDTO2 = new BonusPayStandingDTO();
                 bonusPayStandingDTO2.setDepartmentName("公司");
@@ -1011,7 +1011,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             bonusPayStandingDTO.setThirdLevelItem(salaryItemDTO.getThirdLevelItem());
             bonusPayStandingDTOList.add(bonusPayStandingDTO);
         }else {
-            if (salaryItemDTO.getSalaryItemId() == salaryItemId) {
+            if (salaryItemDTO.getSalaryItemId().equals(salaryItemId)) {
                 BonusPayStandingDTO bonusPayStandingDTO = new BonusPayStandingDTO();
                 //部门id
                 bonusPayStandingDTO.setDepartmentId(datum.getDepartmentId());
@@ -1081,84 +1081,84 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     private void packAmoutMonth(BonusPayStandingDTO bonusPayStandingDTO, Integer integer, List<BonusPayApplicationDTO> bonusPayApplicationDTOS1) {
         if (integer ==1 ){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //一月金额
                     bonusPayStandingDTO.setAmountJanuary(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 2){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //二月金额
                     bonusPayStandingDTO.setAmountFebruary(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 3){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //三月金额
                     bonusPayStandingDTO.setAmountMarch(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 4){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //四月金额
                     bonusPayStandingDTO.setAmountApril(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 5){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //五月金额
                     bonusPayStandingDTO.setAmountMay(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 6){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //六月金额
                     bonusPayStandingDTO.setAmountJune(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 7){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //七月金额
                     bonusPayStandingDTO.setAmountJuly(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 8){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //八月金额
                     bonusPayStandingDTO.setAmountAugust(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 9){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //九月金额
                     bonusPayStandingDTO.setAmountSeptember(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 10){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //十月金额
                     bonusPayStandingDTO.setAmountOctober(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 11){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //十一月金额
                     bonusPayStandingDTO.setAmountNovember(payApplicationDTO.getAwardTotalAmount());
                 }
             }
         }else if (integer == 12){
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                if (bonusPayStandingDTO.getSalaryItemId() == payApplicationDTO.getSalaryItemId()){
+                if (bonusPayStandingDTO.getSalaryItemId().equals(payApplicationDTO.getSalaryItemId())){
                     //十二月金额
                     bonusPayStandingDTO.setAmountDecember(payApplicationDTO.getAwardTotalAmount());
                 }

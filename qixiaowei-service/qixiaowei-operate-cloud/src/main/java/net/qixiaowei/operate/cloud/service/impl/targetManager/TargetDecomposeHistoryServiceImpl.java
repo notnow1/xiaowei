@@ -639,7 +639,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getEmployeeId() == datum.getEmployeeId()) {
+                            if (targetDecomposeDetailsDTO.getEmployeeId().equals(datum.getEmployeeId())) {
                                 targetDecomposeDetailsDTO.setEmployeeId(datum.getEmployeeId());
                                 targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
                             }
@@ -654,7 +654,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId() == datum.getEmployeeId()) {
+                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(datum.getEmployeeId())) {
                                 targetDecomposeDetailsDTO.setPrincipalEmployeeId(datum.getEmployeeId());
                                 targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
                             }
@@ -669,7 +669,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (DepartmentDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getDepartmentId() == datum.getDepartmentId()) {
+                            if (targetDecomposeDetailsDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                                 targetDecomposeDetailsDTO.setDepartmentId(datum.getDepartmentId());
                                 targetDecomposeDetailsDTO.setDepartmentName(datum.getDepartmentName());
                             }
@@ -684,7 +684,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (RegionDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getRegionId() == datum.getRegionId()) {
+                            if (targetDecomposeDetailsDTO.getRegionId().equals(datum.getRegionId())) {
                                 targetDecomposeDetailsDTO.setRegionId(datum.getRegionId());
                                 targetDecomposeDetailsDTO.setRegionName(datum.getRegionName());
                             }
@@ -699,7 +699,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (IndustryDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getIndustryId() == datum.getIndustryId()) {
+                            if (targetDecomposeDetailsDTO.getIndustryId().equals(datum.getIndustryId())) {
                                 targetDecomposeDetailsDTO.setIndustryId(datum.getIndustryId());
                                 targetDecomposeDetailsDTO.setIndustryName(datum.getIndustryName());
                             }
@@ -741,7 +741,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
                         for (EmployeeDTO datum : data) {
-                            if (decomposeDetailsSnapshotDTO.getEmployeeId() == datum.getEmployeeId()) {
+                            if (decomposeDetailsSnapshotDTO.getEmployeeId().equals(datum.getEmployeeId())) {
                                 decomposeDetailsSnapshotDTO.setEmployeeId(datum.getEmployeeId());
                                 decomposeDetailsSnapshotDTO.setEmployeeName(datum.getEmployeeName());
                             }
@@ -756,7 +756,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
                         for (EmployeeDTO datum : data) {
-                            if (decomposeDetailsSnapshotDTO.getPrincipalEmployeeId() == datum.getEmployeeId()) {
+                            if (decomposeDetailsSnapshotDTO.getPrincipalEmployeeId().equals(datum.getEmployeeId())) {
                                 decomposeDetailsSnapshotDTO.setPrincipalEmployeeId(datum.getEmployeeId());
                                 decomposeDetailsSnapshotDTO.setPrincipalEmployeeName(datum.getEmployeeName());
                             }
@@ -771,7 +771,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
                         for (DepartmentDTO datum : data) {
-                            if (decomposeDetailsSnapshotDTO.getDepartmentId() == datum.getDepartmentId()) {
+                            if (decomposeDetailsSnapshotDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                                 decomposeDetailsSnapshotDTO.setDepartmentId(datum.getDepartmentId());
                                 decomposeDetailsSnapshotDTO.setDepartmentName(datum.getDepartmentName());
                             }
@@ -786,7 +786,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
                         for (RegionDTO datum : data) {
-                            if (decomposeDetailsSnapshotDTO.getRegionId() == datum.getRegionId()) {
+                            if (decomposeDetailsSnapshotDTO.getRegionId().equals(datum.getRegionId())) {
                                 decomposeDetailsSnapshotDTO.setRegionId(datum.getRegionId());
                                 decomposeDetailsSnapshotDTO.setRegionName(datum.getRegionName());
                             }
@@ -801,7 +801,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 if (StringUtils.isNotEmpty(data)) {
                     for (DecomposeDetailsSnapshotDTO decomposeDetailsSnapshotDTO : decomposeDetailsSnapshotDTOS) {
                         for (IndustryDTO datum : data) {
-                            if (decomposeDetailsSnapshotDTO.getIndustryId() == datum.getIndustryId()) {
+                            if (decomposeDetailsSnapshotDTO.getIndustryId().equals(datum.getIndustryId())) {
                                 decomposeDetailsSnapshotDTO.setIndustryId(datum.getIndustryId());
                                 decomposeDetailsSnapshotDTO.setIndustryName(datum.getIndustryName());
                             }

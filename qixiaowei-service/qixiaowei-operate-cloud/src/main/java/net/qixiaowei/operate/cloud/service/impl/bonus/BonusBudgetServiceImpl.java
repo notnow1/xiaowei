@@ -143,7 +143,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             if (StringUtils.isNotEmpty(data)) {
                 for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
                     for (IndicatorDTO datum : data) {
-                        if (bonusBudgetParametersDTO.getIndicatorId() == datum.getIndicatorId()) {
+                        if (bonusBudgetParametersDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                             bonusBudgetParametersDTO.setIndicatorName(datum.getIndicatorName());
                         }
                     }
@@ -207,7 +207,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             if (StringUtils.isNotEmpty(data)) {
                 for (BonusBudgetDTO budgetDTO : bonusBudgetDTOS) {
                     for (UserDTO datum : data) {
-                        if (budgetDTO.getCreateBy() == datum.getUserId()) {
+                        if (budgetDTO.getCreateBy().equals(datum.getUserId())) {
                             budgetDTO.setCreateName(datum.getEmployeeName());
                         }
                     }
@@ -1541,7 +1541,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     //远程赋值部门名称
                     for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                         for (DepartmentDTO datum : data) {
-                            if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getDepartmentId()) {
+                            if (employeeBudgetDetailsDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                                 employeeBudgetDetailsDTO.setDepartmentName(datum.getDepartmentName());
                             }
                         }
@@ -1558,7 +1558,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                         //远程赋值职级名称
                         for (OfficialRankSystemDTO datum : data) {
-                            if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()) {
+                            if (employeeBudgetDetailsDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())) {
                                 employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
                                 employeeBudgetDetailsDTO.setOfficialRankName(datum.getRankPrefixCode() + employeeBudgetDetailsDTO.getOfficialRank());
                             }
@@ -1609,8 +1609,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                     List<Long> employeeIds = new ArrayList<>();
                     for (EmployeeDTO datum : data) {
                         //部门id 和个人职级相等
-                        if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() &&
-                                employeeBudgetDetailsDTO.getOfficialRank() == datum.getEmployeeRank()) {
+                        if (employeeBudgetDetailsDTO.getDepartmentId().equals(datum.getEmployeeDepartmentId()) &&
+                                employeeBudgetDetailsDTO.getOfficialRank().equals(datum.getEmployeeRank())) {
                             //人员id
                             employeeIds.add(datum.getEmployeeId());
 

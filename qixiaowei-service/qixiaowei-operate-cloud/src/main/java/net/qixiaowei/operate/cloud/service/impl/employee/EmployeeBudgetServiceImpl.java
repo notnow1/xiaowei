@@ -172,7 +172,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             if (StringUtils.isNotEmpty(data)) {
                 for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
                     for (DepartmentDTO datum : data) {
-                        if (budgetDTO.getDepartmentId() == datum.getDepartmentId()) {
+                        if (budgetDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                             budgetDTO.setDepartmentName(datum.getDepartmentName());
                         }
                     }
@@ -186,7 +186,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         if (StringUtils.isNotEmpty(data)) {
             for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
                 for (OfficialRankSystemDTO datum : data) {
-                    if (budgetDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()) {
+                    if (budgetDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())) {
                         budgetDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
                     }
                 }
@@ -751,7 +751,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     //远程赋值部门名称
                     for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                         for (DepartmentDTO datum : data) {
-                            if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getDepartmentId()) {
+                            if (employeeBudgetDetailsDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                                 employeeBudgetDetailsDTO.setDepartmentName(datum.getDepartmentName());
                             }
                         }
@@ -768,7 +768,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                         //远程赋值职级名称
                         for (OfficialRankSystemDTO datum : data) {
-                            if (employeeBudgetDetailsDTO.getOfficialRankSystemId() == datum.getOfficialRankSystemId()) {
+                            if (employeeBudgetDetailsDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())) {
                                 employeeBudgetDetailsDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
                                 employeeBudgetDetailsDTO.setOfficialRankName(datum.getRankPrefixCode() + employeeBudgetDetailsDTO.getOfficialRank());
                             }
@@ -893,8 +893,8 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     List<Long> employeeIds = new ArrayList<>();
                     for (EmployeeDTO datum : data) {
                         //部门id 和个人职级相等
-                        if (employeeBudgetDetailsDTO.getDepartmentId() == datum.getEmployeeDepartmentId() &&
-                                employeeBudgetDetailsDTO.getOfficialRank() == datum.getEmployeeRank()) {
+                        if (employeeBudgetDetailsDTO.getDepartmentId().equals(datum.getEmployeeDepartmentId()) &&
+                                employeeBudgetDetailsDTO.getOfficialRank().equals(datum.getEmployeeRank())) {
                             //人员id
                             employeeIds.add(datum.getEmployeeId());
 

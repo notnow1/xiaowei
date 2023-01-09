@@ -494,7 +494,7 @@ public class TargetDecomposeController extends BaseController {
                         writeCellStyle.setDataFormatData(dataFormatData);
                     }
                 })
-                .doWrite(TargetDecomposeImportListener.detailsDataList(new ArrayList<>(), targetDecomposeDTO));
+                .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO));
     }
 
     //==============================其他==================================//

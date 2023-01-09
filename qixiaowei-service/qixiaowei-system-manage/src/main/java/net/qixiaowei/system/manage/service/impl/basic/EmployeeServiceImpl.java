@@ -898,7 +898,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 if (null != dto.getEmployeeDepartmentId()) {
 
                     if (StringUtils.isNotEmpty(departmentDTOList)) {
-                        List<DepartmentDTO> employeeDepartmentIds = departmentDTOList.stream().filter(f -> f.getDepartmentId() == dto.getEmployeeDepartmentId()).collect(Collectors.toList());
+                        List<DepartmentDTO> employeeDepartmentIds = departmentDTOList.stream().filter(f -> f.getDepartmentId().equals(dto.getEmployeeDepartmentId())).collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(employeeDepartmentIds)) {
                             employeeExcel.setDepartmentName(employeeDepartmentIds.get(0).getParentDepartmentExcelName());
                         }
@@ -907,7 +907,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 //岗位*
                 if (null != dto.getEmployeePostId()) {
                     if (StringUtils.isNotEmpty(postDTOS)) {
-                        List<PostDTO> employeePostIds = postDTOS.stream().filter(f -> f.getPostId() == dto.getEmployeePostId()).collect(Collectors.toList());
+                        List<PostDTO> employeePostIds = postDTOS.stream().filter(f -> f.getPostId().equals(dto.getEmployeePostId())).collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(employeePostIds)) {
                             employeeExcel.setPostName(employeePostIds.get(0).getPostName());
                         }
@@ -1208,7 +1208,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (StringUtils.isNotEmpty(data)) {
             for (EmployeeDTO employeeDTO : employeeDTOList) {
                 for (TargetDecomposeDetailsDTO datum : data) {
-                    if (employeeDTO.getEmployeeId() == datum.getEmployeeId()) {
+                    if (employeeDTO.getEmployeeId().equals(datum.getEmployeeId())) {
                         employeeDTO.setTargetDecomposeId(datum.getTargetDecomposeId());
                     }
                 }
@@ -1221,7 +1221,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
             if (StringUtils.isNotEmpty(data1)) {
                 for (EmployeeDTO employeeDTO : employeeDTOList) {
                     for (TargetDecomposeDTO targetDecomposeDTO : data1) {
-                        if (employeeDTO.getTargetDecomposeId() == targetDecomposeDTO.getTargetDecomposeId()) {
+                        if (employeeDTO.getTargetDecomposeId().equals(targetDecomposeDTO.getTargetDecomposeId())) {
                             employeeDTO.setIndicatorName(targetDecomposeDTO.getIndicatorName());
                         }
                     }

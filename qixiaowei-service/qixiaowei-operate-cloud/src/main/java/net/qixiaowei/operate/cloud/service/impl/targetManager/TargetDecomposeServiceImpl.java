@@ -433,7 +433,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
                     if (StringUtils.isNotEmpty(data)) {
                         for (IndicatorDTO datum : data) {
-                            if (targetDecomposeDTO.getIndicatorId() == datum.getIndicatorId()) {
+                            if (targetDecomposeDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                                 targetDecomposeDTO.setIndicatorName(datum.getIndicatorName());
                             }
                         }
@@ -614,7 +614,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             if (StringUtils.isNotEmpty(data)) {
                 for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
                     for (IndicatorDTO datum : data) {
-                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()) {
+                        if (decomposeDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                             decomposeDTO.setIndicatorName(datum.getIndicatorName());
                         }
                     }
@@ -822,7 +822,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             if (StringUtils.isNotEmpty(data)) {
                 for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
                     for (IndicatorDTO datum : data) {
-                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()) {
+                        if (decomposeDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                             decomposeDTO.setIndicatorName(datum.getIndicatorName());
                         }
                     }
@@ -925,7 +925,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 List<IndicatorDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     for (IndicatorDTO datum : data) {
-                        if (decomposeDTO.getIndicatorId() == datum.getIndicatorId()) {
+                        if (decomposeDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                             decomposeDTO.setIndicatorName(datum.getIndicatorName());
                         }
                     }
@@ -1958,42 +1958,42 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     List<String> list = new ArrayList<>();
                     map.forEach((key, value) -> {
                         if (0 != employeeNameKey.get()) {
-                            if (key == employeeNameKey.get()) {
+                            if (key.equals(employeeNameKey.get())) {
                                 employeeCodes.add(map.get(employeeNameKey.get()));
                                 mapAllData.put(DecompositionDimension.EMPLOYEE.getInfo(), employeeCodes);
                             }
 
                         }
                         if (0 != areaCodesKey.get()) {
-                            if (key == areaCodesKey.get()) {
+                            if (key.equals(areaCodesKey.get())) {
                                 areaCodes.add(map.get(areaCodesKey.get()));
                                 mapAllData.put(DecompositionDimension.AREA.getInfo(), areaCodes);
                             }
 
                         }
                         if (0 != departmentCodeKey.get()) {
-                            if (key == departmentCodeKey.get()) {
+                            if (key.equals(departmentCodeKey.get())) {
                                 departmentCodes.add(map.get(departmentCodeKey.get()));
                                 mapAllData.put(DecompositionDimension.DEPARTMENT.getInfo(), departmentCodes);
                             }
 
                         }
                         if (0 != industryCodeKey.get()) {
-                            if (key == industryCodeKey.get()) {
+                            if (key.equals(industryCodeKey.get())) {
                                 industryCodes.add(map.get(industryCodeKey.get()));
                                 mapAllData.put(DecompositionDimension.INDUSTRY.getInfo(), industryCodes);
                             }
 
                         }
                         if (0 != provinceNameKey.get()) {
-                            if (key == provinceNameKey.get()) {
+                            if (key.equals(provinceNameKey.get())) {
                                 provinceNames.add(map.get(provinceNameKey.get()));
                                 mapAllData.put(DecompositionDimension.REGION.getInfo(), provinceNames);
                             }
 
                         }
                         if (0 != productCodeKey.get()) {
-                            if (key == productCodeKey.get()) {
+                            if (key.equals(productCodeKey.get())) {
                                 productCodes.add(map.get(productCodeKey.get()));
                                 mapAllData.put(DecompositionDimension.PRODUCT.getInfo(), productCodes);
                             }
@@ -2215,7 +2215,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecompose targetDecompose : targetDecomposes) {
                         for (IndicatorDTO datum : data) {
-                            if (targetDecompose.getIndicatorId() == datum.getIndicatorId()) {
+                            if (targetDecompose.getIndicatorId().equals(datum.getIndicatorId())) {
                                 targetDecompose.setIndicatorName(datum.getIndicatorName());
                             }
                         }
@@ -2400,7 +2400,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getEmployeeId() == datum.getEmployeeId()) {
+                            if (targetDecomposeDetailsDTO.getEmployeeId().equals(datum.getEmployeeId())) {
                                 targetDecomposeDetailsDTO.setEmployeeId(datum.getEmployeeId());
                                 targetDecomposeDetailsDTO.setEmployeeName(datum.getEmployeeName());
                             }
@@ -2415,7 +2415,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (EmployeeDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId() == datum.getEmployeeId()) {
+                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(datum.getEmployeeId())) {
                                 targetDecomposeDetailsDTO.setPrincipalEmployeeId(datum.getEmployeeId());
                                 targetDecomposeDetailsDTO.setPrincipalEmployeeName(datum.getEmployeeName());
                             }
@@ -2430,7 +2430,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (DepartmentDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getDepartmentId() == datum.getDepartmentId()) {
+                            if (targetDecomposeDetailsDTO.getDepartmentId().equals(datum.getDepartmentId())) {
                                 targetDecomposeDetailsDTO.setDepartmentId(datum.getDepartmentId());
                                 targetDecomposeDetailsDTO.setDepartmentName(datum.getDepartmentName());
                             }
@@ -2445,7 +2445,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (RegionDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getRegionId() == datum.getRegionId()) {
+                            if (targetDecomposeDetailsDTO.getRegionId().equals(datum.getRegionId())) {
                                 targetDecomposeDetailsDTO.setRegionId(datum.getRegionId());
                                 targetDecomposeDetailsDTO.setRegionName(datum.getRegionName());
                             }
@@ -2460,7 +2460,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (StringUtils.isNotEmpty(data)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
                         for (IndustryDTO datum : data) {
-                            if (targetDecomposeDetailsDTO.getIndustryId() == datum.getIndustryId()) {
+                            if (targetDecomposeDetailsDTO.getIndustryId().equals(datum.getIndustryId())) {
                                 targetDecomposeDetailsDTO.setIndustryId(datum.getIndustryId());
                                 targetDecomposeDetailsDTO.setIndustryName(datum.getIndustryName());
                             }
