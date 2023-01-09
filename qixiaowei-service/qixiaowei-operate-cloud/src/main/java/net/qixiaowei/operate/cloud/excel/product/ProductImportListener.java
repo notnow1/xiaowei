@@ -432,24 +432,50 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                     }
                     if (key >= 7) {
                         if (key == 7) {
-                            productDataDTO.setSpecificationName(value.trim());
+                            if (StringUtils.isNotBlank(value)){
+                                productDataDTO.setSpecificationName(value.trim());
+                            }else {
+                                productDataDTO.setSpecificationName(value);
+                            }
+
                         }
                         if (key == 8) {
-                            productDataDTO.setListPrice(new BigDecimal(value.trim()));
+                            if (StringUtils.isNotBlank(value)){
+                                productDataDTO.setListPrice(new BigDecimal(value.trim()));
+                            }else {
+                                if (StringUtils.isNotBlank(value)){
+                                    productDataDTO.setListPrice(new BigDecimal(value));
+                                }else {
+                                    productDataDTO.setListPrice(new BigDecimal("0"));
+                                }
+
+                            }
+
                         }
                         if (key >= 9) {
 
                             if (key % 2 == 0) {
                                 //产品规格数据表
                                 ProductSpecificationDataDTO productSpecificationDataDTO = new ProductSpecificationDataDTO();
-                                //参数值
-                                productSpecificationDataDTO.setValue(value.trim());
+                                if (StringUtils.isNotBlank(value)){
+                                    //参数值
+                                    productSpecificationDataDTO.setValue(value.trim());
+                                }else {
+                                    //参数值
+                                    productSpecificationDataDTO.setValue(value);
+                                }
+
                                 productSpecificationDataDTOList.add(productSpecificationDataDTO);
                                 productDataDTO.setProductSpecificationDataDTOList(productSpecificationDataDTOList);
                             } else {
                                 //产品规格参数
                                 ProductSpecificationParamDTO productSpecificationParamDTO = new ProductSpecificationParamDTO();
-                                productSpecificationParamDTO.setSpecificationParamName(value.trim());
+                                if (StringUtils.isNotBlank(value)){
+                                    productSpecificationParamDTO.setSpecificationParamName(value.trim());
+                                }else {
+                                    productSpecificationParamDTO.setSpecificationParamName(value);
+                                }
+
                                 productSpecificationParamDTOList.add(productSpecificationParamDTO);
                             }
                         }

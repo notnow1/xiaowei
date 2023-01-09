@@ -666,12 +666,12 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             if (StringUtils.isNotEmpty(collect1)) {
                 targetDecomposeDTOS.clear();
                 for (Long aLong : collect1) {
-                    BigDecimal targetPercentageCompleteAve = new BigDecimal("0");
                     List<TargetDecomposeDTO> targetDecomposeDTOS1 = listMap.get(aLong);
                     if (StringUtils.isNotEmpty(targetDecomposeDTOS1)) {
                         ////目标完成率平均值
                         for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS1) {
                             BigDecimal targetPercentageCompleteSum = new BigDecimal("0");
+                            BigDecimal targetPercentageCompleteAve = new BigDecimal("0");
                             TargetDecomposeDTO targetDecomposeDTO1 = this.selectResultTargetDecomposeByTargetDecomposeId(decomposeDTO.getTargetDecomposeId());
                             if (StringUtils.isNotNull(targetDecomposeDTO1)){
                                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = new ArrayList<>();

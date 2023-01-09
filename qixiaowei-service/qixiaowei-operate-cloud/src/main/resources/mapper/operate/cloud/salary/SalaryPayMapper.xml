@@ -561,19 +561,26 @@
                sp.update_time
         FROM salary_pay sp
         where sp.pay_year &lt;= #{payYear}
-          and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
+          and sp.pay_month != DATE_FORMAT(NOW(), '%m')
           and sp.employee_id = #{employeeId}
           and sp.delete_flag = 0
-          and (SELECT sum(sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus)
-               FROM salary_pay sp
-               where sp.pay_year &lt;= #{payYear}
-                 and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
-                 and sp.employee_id = #{employeeId}
-                 and sp.delete_flag = 0
-                 and sp.tenant_id=#{tenantId}
-               ORDER BY sp.pay_year DESC, sp.pay_month DESC
-            limit 12)
-            > sp.pay_amount
+          and (select sum(sp2.bonus_amount) from (SELECT sp.bonus_amount
+        FROM salary_pay sp
+        where sp.pay_year &lt;= #{payYear}
+        and sp.pay_month != DATE_FORMAT(NOW(), '%m')
+        and sp.employee_id = #{employeeId}
+        and sp.delete_flag = 0
+        and sp.tenant_id=#{tenantId}
+        ORDER BY sp.pay_year DESC, sp.pay_month DESC
+        limit 12) sp2) > (select sum(sp3.salary_amount)/count(sp3.salary_amount) from (SELECT sp.salary_amount
+        FROM salary_pay sp
+        where sp.pay_year &lt;= #{payYear}
+        and sp.pay_month != DATE_FORMAT(NOW(), '%m')
+        and sp.employee_id = #{employeeId}
+        and sp.delete_flag = 0
+        and sp.tenant_id=#{tenantId}
+        ORDER BY sp.pay_year DESC, sp.pay_month DESC
+        limit 12) sp3)
         <if test="payYear &lt;  nowYear">
             and sp.pay_year = #{payYear}
         </if>

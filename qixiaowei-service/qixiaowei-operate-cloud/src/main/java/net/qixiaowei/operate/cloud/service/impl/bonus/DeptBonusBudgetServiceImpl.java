@@ -848,7 +848,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                             List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), budgetYear, DateUtils.getYear(), SecurityUtils.getTenantId());
                             if (StringUtils.isNotEmpty(salaryPayDTOS)){
                                 //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
-                                 paymentBonus = salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                                 paymentBonus = paymentBonus.add(salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
                             }
                         }
 
@@ -863,12 +863,17 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                 for (EmployeeBudgetDetailsDTO employeeBudgetDetailsDTO : employeeBudgetDetailsDTOS) {
                                     //根据职级体系ID和职级获取职级确认薪酬
                                     OfficialRankEmolumentDTO officialRankEmolumentDTO = officialRankEmolumentMapper.selectOfficialRankEmolumentByRank(employeeBudgetDTO.getOfficialRankSystemId(), employeeBudgetDetailsDTO.getOfficialRank());
-                                    //中位数*12
-                                    BigDecimal bigDecimal = officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10, BigDecimal.ROUND_HALF_UP);
-                                    //平均新增数
-                                    BigDecimal amountAverageAdjust = employeeBudgetDTO.getAmountAverageAdjust();
-                                    if (bigDecimal != null && bigDecimal.compareTo(new BigDecimal("0"))!=0 && amountAverageAdjust != null && amountAverageAdjust.compareTo(new BigDecimal("0")) != 0){
-                                        employeeBudgetSum=employeeBudgetSum.add(bigDecimal.multiply(amountAverageAdjust).setScale(10,BigDecimal.ROUND_HALF_UP));
+                                    if (StringUtils.isNotNull(officialRankEmolumentDTO)){
+                                        //中位数*12
+                                        BigDecimal bigDecimal = officialRankEmolumentDTO.getSalaryMedian().multiply(new BigDecimal("12")).setScale(10, BigDecimal.ROUND_HALF_UP);
+                                        if (null!= employeeBudgetDetailsDTO.getAverageAdjust() && employeeBudgetDetailsDTO.getAverageAdjust().compareTo(new BigDecimal("0")) != 0){
+                                            //平均新增数
+                                            BigDecimal amountAverageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
+                                            if (bigDecimal != null && bigDecimal.compareTo(new BigDecimal("0"))!=0 && amountAverageAdjust != null && amountAverageAdjust.compareTo(new BigDecimal("0")) != 0){
+                                                employeeBudgetSum=employeeBudgetSum.add(employeeBudgetSum.add(bigDecimal.multiply(amountAverageAdjust).setScale(10,BigDecimal.ROUND_HALF_UP)));
+                                            }
+
+                                        }
                                     }
                                 }
                             }
