@@ -1,8 +1,10 @@
 package net.qixiaowei.system.manage.service.impl.log;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.vo.log.OperationLogVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -48,6 +50,11 @@ public class OperationLogServiceImpl implements IOperationLogService {
      */
     @Override
     public List<OperationLogVO> selectOperationLogList(OperationLogDTO operationLogDTO) {
+        Long businessId = operationLogDTO.getBusinessId();
+        //如果业务ID为空，则返回空数据，认为没有对应的操作记录，方便前端调用
+        if (StringUtils.isNull(businessId)) {
+            return Collections.emptyList();
+        }
         OperationLog operationLog = new OperationLog();
         BeanUtils.copyProperties(operationLogDTO, operationLog);
         return operationLogMapper.selectOperationLogList(operationLog);

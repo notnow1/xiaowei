@@ -495,9 +495,9 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     }
                     // 发送待办
                     BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
-                    backlogSendDTO.setBusinessType(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getParentBusinessType().getCode());
-                    backlogSendDTO.setBusinessSubtype(BusinessSubtype.TENANT_DOMAIN_APPROVAL.getCode());
-                    backlogSendDTO.setBusinessId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+                    backlogSendDTO.setBusinessType(BusinessSubtype.ROLLING_PREDICTION_MANAGE_BACKLOG.getParentBusinessType().getCode());
+                    backlogSendDTO.setBusinessSubtype(BusinessSubtype.ROLLING_PREDICTION_MANAGE_BACKLOG.getCode());
+                    backlogSendDTO.setBusinessId(targetDecomposeDTO.getTargetDecomposeId());
                     backlogSendDTO.setUserId(employeeDTO.getUserId());
                     backlogSendDTO.setBacklogInitiator(user.getUserId());
                     backlogSendDTO.setBacklogInitiatorName(user.getUserName());

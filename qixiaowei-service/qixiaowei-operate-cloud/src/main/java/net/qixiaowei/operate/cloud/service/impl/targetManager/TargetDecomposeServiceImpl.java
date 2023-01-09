@@ -1158,8 +1158,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
                         //待办事项表
                         BacklogDTO backlogDTO = new BacklogDTO();
-                        backlogDTO.setBusinessType(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getParentBusinessType().getCode());
-                        backlogDTO.setBusinessSubtype(BusinessSubtype.ROLLING_PREDICTION_MANAGE_TRANSFER.getCode());
+                        backlogDTO.setBusinessType(BusinessSubtype.ROLLING_PREDICTION_MANAGE_BACKLOG.getParentBusinessType().getCode());
+                        backlogDTO.setBusinessSubtype(BusinessSubtype.ROLLING_PREDICTION_MANAGE_BACKLOG.getCode());
                         backlogDTO.setBusinessId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                         backlogDTO.setUserId(SecurityUtils.getUserId());
                         remoteBacklogService.handled(backlogDTO, SecurityConstants.INNER);

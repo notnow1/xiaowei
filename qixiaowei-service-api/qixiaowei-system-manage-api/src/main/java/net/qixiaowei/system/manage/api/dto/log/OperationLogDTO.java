@@ -52,7 +52,6 @@ public class OperationLogDTO {
     /**
      * 业务ID
      */
-    @NotNull(message = "业务ID不能为空", groups = {OperationLogDTO.QueryOperationLogDTO.class})
     private Long businessId;
     /**
      * 操作类型
