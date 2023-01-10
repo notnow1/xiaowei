@@ -477,6 +477,7 @@ public class TenantServiceImpl implements ITenantService {
      *
      * @param tenantDtos 租户表对象
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public int insertTenants(List<TenantDTO> tenantDtos) {
         List<Tenant> tenantList = new ArrayList();
@@ -496,6 +497,7 @@ public class TenantServiceImpl implements ITenantService {
      *
      * @param tenantDtos 租户表对象
      */
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateTenants(List<TenantDTO> tenantDtos) {
         List<Tenant> tenantList = new ArrayList();

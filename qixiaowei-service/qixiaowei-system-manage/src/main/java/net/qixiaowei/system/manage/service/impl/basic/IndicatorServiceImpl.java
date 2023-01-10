@@ -515,6 +515,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
      *
      * @param indicatorDtos 指标表对象
      */
+    @Override
     @Transactional
     public int insertIndicators(List<IndicatorDTO> indicatorDtos) {
         List<Indicator> indicatorList = new ArrayList<>();
@@ -536,6 +537,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
      *
      * @param indicatorDtos 指标表对象
      */
+    @Override
     @Transactional
     public int updateIndicators(List<IndicatorDTO> indicatorDtos) {
         List<Indicator> indicatorList = new ArrayList<>();

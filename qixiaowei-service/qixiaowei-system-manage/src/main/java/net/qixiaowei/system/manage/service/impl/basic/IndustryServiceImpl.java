@@ -358,6 +358,7 @@ public class IndustryServiceImpl implements IIndustryService {
      *
      * @param industryDtos 行业对象
      */
+    @Override
     @Transactional
     public int insertIndustrys(List<IndustryDTO> industryDtos) {
         List<Industry> industryList = new ArrayList<>();
@@ -379,6 +380,7 @@ public class IndustryServiceImpl implements IIndustryService {
      *
      * @param industryDtos 行业对象
      */
+    @Override
     @Transactional
     public int updateIndustrys(List<IndustryDTO> industryDtos) {
         List<Industry> industryList = new ArrayList<>();

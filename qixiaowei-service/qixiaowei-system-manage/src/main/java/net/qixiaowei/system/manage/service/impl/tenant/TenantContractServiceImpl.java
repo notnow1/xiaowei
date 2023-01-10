@@ -164,6 +164,7 @@ public class TenantContractServiceImpl implements ITenantContractService{
     * @param tenantContractDtos 租户合同信息对象
     */
     
+    @Override
     public int insertTenantContracts(List<TenantContractDTO> tenantContractDtos){
       List<TenantContract> tenantContractList = new ArrayList();
 
@@ -186,6 +187,7 @@ public class TenantContractServiceImpl implements ITenantContractService{
     * @param tenantContractDtos 租户合同信息对象
     */
     
+    @Override
     public int updateTenantContracts(List<TenantContractDTO> tenantContractDtos){
      List<TenantContract> tenantContractList = new ArrayList();
 

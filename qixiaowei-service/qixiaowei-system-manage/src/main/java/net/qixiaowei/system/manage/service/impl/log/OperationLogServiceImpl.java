@@ -168,6 +168,7 @@ public class OperationLogServiceImpl implements IOperationLogService {
      * @param operationLogDtos 操作日志表对象
      */
 
+    @Override
     public int insertOperationLogs(List<OperationLogDTO> operationLogDtos) {
         List<OperationLog> operationLogList = new ArrayList();
 
@@ -190,6 +191,7 @@ public class OperationLogServiceImpl implements IOperationLogService {
      * @param operationLogDtos 操作日志表对象
      */
 
+    @Override
     public int updateOperationLogs(List<OperationLogDTO> operationLogDtos) {
         List<OperationLog> operationLogList = new ArrayList();
 

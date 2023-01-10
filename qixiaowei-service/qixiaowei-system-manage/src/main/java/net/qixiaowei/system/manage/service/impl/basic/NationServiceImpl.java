@@ -162,6 +162,7 @@ public class NationServiceImpl implements INationService{
     * @param nationDtos 民族表对象
     */
     
+    @Override
     public int insertNations(List<NationDTO> nationDtos){
       List<Nation> nationList = new ArrayList();
 
@@ -184,6 +185,7 @@ public class NationServiceImpl implements INationService{
     * @param nationDtos 民族表对象
     */
     
+    @Override
     public int updateNations(List<NationDTO> nationDtos){
      List<Nation> nationList = new ArrayList();
 

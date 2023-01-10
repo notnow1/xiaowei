@@ -270,6 +270,7 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
      * @param tenantDomainApprovalDtos 租户域名申请对象
      */
 
+    @Override
     public int insertTenantDomainApprovals(List<TenantDomainApprovalDTO> tenantDomainApprovalDtos) {
         List<TenantDomainApproval> tenantDomainApprovalList = new ArrayList();
 
@@ -292,6 +293,7 @@ public class TenantDomainApprovalServiceImpl implements ITenantDomainApprovalSer
      * @param tenantDomainApprovalDtos 租户域名申请对象
      */
 
+    @Override
     public int updateTenantDomainApprovals(List<TenantDomainApprovalDTO> tenantDomainApprovalDtos) {
         List<TenantDomainApproval> tenantDomainApprovalList = new ArrayList();
 

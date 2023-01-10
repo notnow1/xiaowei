@@ -744,6 +744,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      *
      * @param departmentDtos 部门表对象
      */
+    @Override
     @Transactional
     public int insertDepartments(List<DepartmentDTO> departmentDtos) {
         List<Department> departmentList = new ArrayList();
@@ -766,6 +767,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
      *
      * @param departmentDtos 部门表对象
      */
+    @Override
     @Transactional
     public int updateDepartments(List<DepartmentDTO> departmentDtos) {
         List<Department> departmentList = new ArrayList();

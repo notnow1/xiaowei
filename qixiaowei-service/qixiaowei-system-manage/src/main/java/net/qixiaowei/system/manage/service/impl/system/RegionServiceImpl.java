@@ -228,6 +228,7 @@ public class RegionServiceImpl implements IRegionService {
      * @param regionDtos 区域表对象
      */
 
+    @Override
     public int insertRegions(List<RegionDTO> regionDtos) {
         List<Region> regionList = new ArrayList();
 
@@ -250,6 +251,7 @@ public class RegionServiceImpl implements IRegionService {
      * @param regionDtos 区域表对象
      */
 
+    @Override
     public int updateRegions(List<RegionDTO> regionDtos) {
         List<Region> regionList = new ArrayList();
 

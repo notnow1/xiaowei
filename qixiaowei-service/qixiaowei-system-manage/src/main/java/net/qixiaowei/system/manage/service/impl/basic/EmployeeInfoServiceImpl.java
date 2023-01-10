@@ -163,6 +163,7 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
     * @param employeeInfoDtos 员工信息对象
     */
     
+    @Override
     public int insertEmployeeInfos(List<EmployeeInfoDTO> employeeInfoDtos){
       List<EmployeeInfo> employeeInfoList = new ArrayList();
 
@@ -184,6 +185,7 @@ public class EmployeeInfoServiceImpl implements IEmployeeInfoService{
     * @param employeeInfoDtos 员工信息对象
     */
     
+    @Override
     public int updateEmployeeInfos(List<EmployeeInfoDTO> employeeInfoDtos){
      List<EmployeeInfo> employeeInfoList = new ArrayList();
 

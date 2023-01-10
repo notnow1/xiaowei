@@ -373,6 +373,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
      * @param officialRankDecomposeDtos
      * @param officialRankSystem
      */
+    @Override
     @Transactional
     public List<OfficialRankDecompose> insertOfficialRankDecomposes(List<OfficialRankDecomposeDTO> officialRankDecomposeDtos, OfficialRankSystem officialRankSystem) {
         List<OfficialRankDecompose> officialRankDecomposeList = new ArrayList<>();
@@ -402,6 +403,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
      *
      * @param officialRankDecomposeDtos 职级分解表对象
      */
+    @Override
     @Transactional
     public int updateOfficialRankDecomposes(List<OfficialRankDecomposeDTO> officialRankDecomposeDtos, OfficialRankSystem officialRankSystem) {
         Long officialRankSystemId = officialRankSystem.getOfficialRankSystemId();

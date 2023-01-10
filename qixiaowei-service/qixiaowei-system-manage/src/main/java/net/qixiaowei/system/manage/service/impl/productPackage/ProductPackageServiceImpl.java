@@ -184,6 +184,7 @@ public class ProductPackageServiceImpl implements IProductPackageService {
      * @param productPackageDtos 产品包对象
      */
 
+    @Override
     public int insertProductPackages(List<ProductPackageDTO> productPackageDtos) {
         int sort =1;
         List<String> collect = productPackageDtos.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList());
@@ -220,6 +221,7 @@ public class ProductPackageServiceImpl implements IProductPackageService {
      * @param productPackageDtos 产品包对象
      */
 
+    @Override
     public int updateProductPackages(List<ProductPackageDTO> productPackageDtos) {
         List<ProductPackage> productPackageList = new ArrayList();
 

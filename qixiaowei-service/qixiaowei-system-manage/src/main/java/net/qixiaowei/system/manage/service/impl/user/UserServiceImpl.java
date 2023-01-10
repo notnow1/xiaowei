@@ -388,6 +388,7 @@ public class UserServiceImpl implements IUserService {
      *
      * @param userDtos 用户表对象
      */
+    @Override
     @Transactional
     public int insertUsers(List<UserDTO> userDtos) {
         List<User> userList = new ArrayList();
@@ -410,6 +411,7 @@ public class UserServiceImpl implements IUserService {
      *
      * @param userDtos 用户表对象
      */
+    @Override
     @Transactional
     public int updateUsers(List<UserDTO> userDtos) {
         List<User> userList = new ArrayList();

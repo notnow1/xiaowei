@@ -257,6 +257,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
      *
      * @param indicatorCategoryDtos 指标分类表对象
      */
+    @Override
     @Transactional
     public int insertIndicatorCategorys(List<IndicatorCategoryDTO> indicatorCategoryDtos) {
         List<IndicatorCategory> indicatorCategoryList = new ArrayList<>();
@@ -278,6 +279,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
      *
      * @param indicatorCategoryDtos 指标分类表对象
      */
+    @Override
     @Transactional
     public int updateIndicatorCategorys(List<IndicatorCategoryDTO> indicatorCategoryDtos) {
         List<IndicatorCategory> indicatorCategoryList = new ArrayList<>();

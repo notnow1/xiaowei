@@ -341,6 +341,7 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
      *
      * @param industryDefaultDtos 默认行业对象
      */
+    @Override
     @Transactional
     public int insertIndustryDefaults(List<IndustryDefaultDTO> industryDefaultDtos) {
         List<IndustryDefault> industryDefaultList = new ArrayList();
@@ -363,6 +364,7 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
      *
      * @param industryDefaultDtos 默认行业对象
      */
+    @Override
     @Transactional
     public int updateIndustryDefaults(List<IndustryDefaultDTO> industryDefaultDtos) {
         List<IndustryDefault> industryDefaultList = new ArrayList();

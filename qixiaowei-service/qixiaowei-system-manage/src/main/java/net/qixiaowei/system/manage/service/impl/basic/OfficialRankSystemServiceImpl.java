@@ -762,6 +762,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      *
      * @param officialRankSystemDtos 职级体系表对象
      */
+    @Override
     @Transactional
     public int insertOfficialRankSystems(List<OfficialRankSystemDTO> officialRankSystemDtos) {
         List<OfficialRankSystem> officialRankSystemList = new ArrayList<>();
@@ -784,6 +785,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
      *
      * @param officialRankSystemDtos 职级体系表对象
      */
+    @Override
     @Transactional
     public int updateOfficialRankSystems(List<OfficialRankSystemDTO> officialRankSystemDtos) {
         List<OfficialRankSystem> officialRankSystemList = new ArrayList<>();

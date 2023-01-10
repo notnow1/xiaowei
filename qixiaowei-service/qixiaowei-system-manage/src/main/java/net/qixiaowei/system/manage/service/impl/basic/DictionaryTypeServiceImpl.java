@@ -172,6 +172,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @param dictionaryTypeDtos 字典类型表对象
     */
     
+    @Override
     public int insertDictionaryTypes(List<DictionaryTypeDTO> dictionaryTypeDtos){
       List<DictionaryType> dictionaryTypeList = new ArrayList();
 
@@ -194,6 +195,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @param dictionaryTypeDtos 字典类型表对象
     */
     
+    @Override
     public int updateDictionaryTypes(List<DictionaryTypeDTO> dictionaryTypeDtos){
      List<DictionaryType> dictionaryTypeList = new ArrayList();
 

@@ -410,6 +410,7 @@ public class PostServiceImpl implements IPostService {
      *
      * @param postDtos 岗位表对象
      */
+    @Override
     @Transactional
     public int insertPosts(List<PostDTO> postDtos) {
         List<Post> postList = new ArrayList();
@@ -432,6 +433,7 @@ public class PostServiceImpl implements IPostService {
      *
      * @param postDtos 岗位表对象
      */
+    @Override
     @Transactional
     public int updatePosts(List<PostDTO> postDtos) {
         List<Post> postList = new ArrayList();
