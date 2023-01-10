@@ -885,33 +885,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
         BonusBudget bonusBudget = new BonusBudget();
         BeanUtils.copyProperties(bonusBudgetDTO,bonusBudget);
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS1 = bonusBudgetMapper.selectBonusBudgetByIndicatorId(bonusBudget);
-        if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS1) && bonusBudgetParametersDTOS1.get(0) != null){
-            Long bonusBudgetId = bonusBudgetParametersDTOS1.get(0).getBonusBudgetId();
-            BonusBudgetDTO budgetDTO = bonusBudgetMapper.selectBonusBudgetByBonusBudgetId(bonusBudgetId);
-            if (StringUtils.isNull(budgetDTO)) {
-                throw new ServiceException("数据不存在 请联系管理员！");
-            }
-            //根据总奖金id查询奖金预算参数表
-            List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudgetParametersMapper.selectBonusBudgetParametersByBonusBudgetId(budgetDTO.getBonusBudgetId());
-            //详情封装总奖金包预算阶梯数据
-            List<BonusBudgetLaddertersDTO> bonusBudgetLaddertersDTOS = this.queryBonusBudgetLadderters(budgetDTO, bonusBudgetParametersDTOS);
-            //奖金增长率
-            this.packQueryBudgetParameters(bonusBudgetParametersDTOS);
-            //封装总奖金包预算生成
-            this.packPaymentBonusBudget(budgetDTO.getBudgetYear(), budgetDTO);
-            BigDecimal basicWageBonusBudget = budgetDTO.getBasicWageBonusBudget();
-            log.info("再次打印总工资预算==============================" + JSONUtil.toJsonStr(basicWageBonusBudget));
-            //未来三年奖金趋势集合
-            List<FutureBonusBudgetLaddertersDTO> futureBonusBudgetLaddertersDTOS = new ArrayList<>();
-            //查询详情未来三年奖金趋势集合
-            this.packQueryFutureBonusTrend(budgetDTO, budgetDTO.getBudgetYear(), futureBonusBudgetLaddertersDTOS, bonusBudgetParametersDTOS);
 
-            budgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS);
-            budgetDTO.setBonusBudgetLaddertersDTOS(bonusBudgetLaddertersDTOS);
-            budgetDTO.setFutureBonusBudgetLaddertersDTOS(futureBonusBudgetLaddertersDTOS);
-            log.info("再次打印所有数据=======================" + JSONUtil.toJsonStr(budgetDTO));
-            return budgetDTO;
-        }
+
         return null;
     }
 

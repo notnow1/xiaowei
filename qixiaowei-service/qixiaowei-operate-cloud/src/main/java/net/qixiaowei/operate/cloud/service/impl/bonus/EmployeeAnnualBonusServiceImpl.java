@@ -245,7 +245,11 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 }
             }
             if (commentFlag == 1) {
-                employeeAnnualBonus.setStatus(1);
+                if (submitFlag == 0) {
+                    employeeAnnualBonus.setStatus(0);
+                } else {
+                    employeeAnnualBonus.setStatus(1);
+                }
             }
             employeeAnnualBonus.setCreateBy(SecurityUtils.getUserId());
             employeeAnnualBonus.setCreateTime(DateUtils.getNowDate());

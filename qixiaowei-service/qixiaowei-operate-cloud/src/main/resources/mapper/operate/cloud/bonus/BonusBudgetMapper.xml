@@ -166,7 +166,9 @@
                           on bb.bonus_budget_id = bbp .bonus_budget_id
                               and bb.delete_flag =0
         where  bbp.delete_flag = 0
-        and   bb.budget_year = #{bonusBudget.budgetYear}
+        <if test="bonusBudget.budgetYear != null">
+            and   bb.budget_year = #{bonusBudget.budgetYear}
+        </if>
         and   bbp.indicator_id in
         <foreach item="item"
                  collection="bonusBudget.indicatorIds"

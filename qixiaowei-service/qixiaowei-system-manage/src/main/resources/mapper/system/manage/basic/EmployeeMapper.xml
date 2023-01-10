@@ -638,7 +638,7 @@
         select
         DISTINCT
         case when TIMESTAMPDIFF(month,e.employment_date,NOW())=0 then concat(1,'月')
-        when TIMESTAMPDIFF(month,e.employment_date,NOW()) &lt; 12 then
+        when TIMESTAMPDIFF(month,e.employment_date,NOW()) &lt;= 12 then
         concat(TIMESTAMPDIFF(month,e.employment_date,NOW()),'月')
         when TIMESTAMPDIFF(month,e.employment_date,NOW()) &gt; 12 then
         concat(FLOOR(TIMESTAMPDIFF(month,e.employment_date,NOW())/12),'年', case when
@@ -919,7 +919,7 @@
         select
         DISTINCT
         case when TIMESTAMPDIFF(month,e.employment_date,NOW())=0 then concat(1,'月')
-        when TIMESTAMPDIFF(month,e.employment_date,NOW()) &lt; 12 then
+        when TIMESTAMPDIFF(month,e.employment_date,NOW()) &lt;= 12 then
         concat(TIMESTAMPDIFF(month,e.employment_date,NOW()),'月')
         when TIMESTAMPDIFF(month,e.employment_date,NOW()) &gt; 12 then
         concat(FLOOR(TIMESTAMPDIFF(month,e.employment_date,NOW())/12),'年', case when
