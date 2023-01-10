@@ -161,6 +161,7 @@ public class PerformAppraisalObjectSnapServiceImpl implements IPerformAppraisalO
      * @param performAppraisalObjectSnapDtos 绩效考核对象快照表对象
      */
 
+    @Override
     public int insertPerformAppraisalObjectSnaps(List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDtos) {
         if (StringUtils.isEmpty(performAppraisalObjectSnapDtos)) {
             return 1;
@@ -185,6 +186,7 @@ public class PerformAppraisalObjectSnapServiceImpl implements IPerformAppraisalO
      * @param performAppraisalObjectSnapDtos 绩效考核对象快照表对象
      */
 
+    @Override
     public int updatePerformAppraisalObjectSnaps(List<PerformAppraisalObjectSnapDTO> performAppraisalObjectSnapDtos) {
         List<PerformAppraisalObjectSnap> performAppraisalObjectSnapList = new ArrayList<>();
 

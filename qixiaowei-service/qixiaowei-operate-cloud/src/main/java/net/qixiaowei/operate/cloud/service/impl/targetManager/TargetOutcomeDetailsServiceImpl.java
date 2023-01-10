@@ -256,6 +256,7 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
      * @param targetOutcomeDetailsDtos 目标结果详情表对象
      */
 
+    @Override
     public int insertTargetOutcomeDetailss(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDtos) {
         List<TargetOutcomeDetails> targetOutcomeDetailsList = new ArrayList<>();
         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDtos) {
@@ -277,6 +278,7 @@ public class TargetOutcomeDetailsServiceImpl implements ITargetOutcomeDetailsSer
      * @param targetOutcomeDetailsDtos 目标结果详情表对象
      */
 
+    @Override
     public int updateTargetOutcomeDetailss(List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDtos) {
         List<TargetOutcomeDetails> targetOutcomeDetailsList = new ArrayList<>();
 

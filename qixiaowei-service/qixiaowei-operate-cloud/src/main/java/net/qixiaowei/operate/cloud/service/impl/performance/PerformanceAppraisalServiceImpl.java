@@ -1091,6 +1091,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param performanceAppraisalDtos 绩效考核表对象
      */
+    @Override
     @Transactional
     public int insertPerformanceAppraisals(List<PerformanceAppraisal> performanceAppraisalDtos) {
         return performanceAppraisalMapper.batchPerformanceAppraisal(performanceAppraisalDtos);
@@ -1101,6 +1102,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param performanceAppraisalDtos 绩效考核表对象
      */
+    @Override
     @Transactional
     public int updatePerformanceAppraisals(List<PerformanceAppraisalDTO> performanceAppraisalDtos) {
         List<PerformanceAppraisal> performanceAppraisalList = new ArrayList<>();
@@ -1738,6 +1740,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceRankFactorDTOS 绩效考核等级
      * @return Collection
      */
+    @Override
     public Collection<List<Object>> dataOrgCustomList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS) {
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList =
                 performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);
@@ -1781,6 +1784,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @param performanceRankFactorDTOS 绩效考核等级
      * @return Collection
      */
+    @Override
     public Collection<List<Object>> dataOrgSysList(Long performanceAppraisalId, List<PerformanceRankFactorDTO> performanceRankFactorDTOS) {
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList =
                 performanceAppraisalObjectsService.selectPerformanceAppraisalObjectsByPerformAppraisalId(performanceAppraisalId);

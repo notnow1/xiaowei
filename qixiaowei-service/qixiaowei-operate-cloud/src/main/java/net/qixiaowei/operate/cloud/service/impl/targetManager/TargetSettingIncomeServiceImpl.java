@@ -176,6 +176,7 @@ public class TargetSettingIncomeServiceImpl implements ITargetSettingIncomeServi
      * @param targetSettingIncomeDtos 目标制定收入表对象
      */
 
+    @Override
     public int insertTargetSettingIncomes(List<TargetSettingIncomeDTO> targetSettingIncomeDtos) {
         List<TargetSettingIncome> targetSettingIncomeList = new ArrayList<>();
         for (TargetSettingIncomeDTO targetSettingIncomeDTO : targetSettingIncomeDtos) {
@@ -197,6 +198,7 @@ public class TargetSettingIncomeServiceImpl implements ITargetSettingIncomeServi
      * @param targetSettingIncomeDtos 目标制定收入表对象
      */
 
+    @Override
     public int updateTargetSettingIncomes(List<TargetSettingIncomeDTO> targetSettingIncomeDtos) {
         List<TargetSettingIncome> targetSettingIncomeList = new ArrayList<>();
 

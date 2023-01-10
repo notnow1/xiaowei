@@ -180,6 +180,7 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
      *
      * @param performanceRankFactorDtos 绩效等级系数对象
      */
+    @Override
     @Transactional
     public int insertPerformanceRankFactors(List<PerformanceRankFactorDTO> performanceRankFactorDtos) {
         List<PerformanceRankFactor> performanceRankFactorList = new ArrayList<>();
@@ -225,6 +226,7 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
      * @param performanceRankId          绩效等级Id
      * @return
      */
+    @Override
     @Transactional
     public int operatePerformanceRankFactor(List<PerformanceRankFactorDTO> performanceRankFactorAfter, Long performanceRankId) {
         ArrayList<String> performanceRankFactorNames = new ArrayList<>();

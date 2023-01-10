@@ -367,6 +367,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      * @param officialRankEmolumentDtos 职级薪酬表对象
      */
 
+    @Override
     public int insertOfficialRankEmoluments(List<OfficialRankEmolumentDTO> officialRankEmolumentDtos) {
         List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList<>();
 
@@ -389,6 +390,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
      * @param officialRankEmolumentDtos 职级薪酬表对象
      */
 
+    @Override
     public int updateOfficialRankEmoluments(List<OfficialRankEmolumentDTO> officialRankEmolumentDtos) {
         List<OfficialRankEmolument> officialRankEmolumentList = new ArrayList<>();
 

@@ -844,6 +844,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
      *
      * @param targetSettingDtos 目标制定对象
      */
+    @Override
     public int updateTargetSettings(List<TargetSettingDTO> targetSettingDtos) {
         List<TargetSetting> targetSettingList = new ArrayList<>();
         for (TargetSettingDTO targetSettingDTO : targetSettingDtos) {

@@ -164,6 +164,7 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
     * @param productSpecificationDtos 产品规格表对象
     */
     
+    @Override
     public int insertProductSpecifications(List<ProductSpecificationDTO> productSpecificationDtos){
       List<ProductSpecification> productSpecificationList = new ArrayList();
 
@@ -186,6 +187,7 @@ public class ProductSpecificationServiceImpl implements IProductSpecificationSer
     * @param productSpecificationDtos 产品规格表对象
     */
     
+    @Override
     public int updateProductSpecifications(List<ProductSpecificationDTO> productSpecificationDtos){
      List<ProductSpecification> productSpecificationList = new ArrayList();
 

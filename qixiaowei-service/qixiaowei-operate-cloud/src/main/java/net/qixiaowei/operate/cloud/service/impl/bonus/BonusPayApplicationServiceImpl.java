@@ -1252,6 +1252,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @param bonusPayApplicationDtos 奖金发放申请表对象
      */
 
+    @Override
     public int insertBonusPayApplications(List<BonusPayApplicationDTO> bonusPayApplicationDtos) {
         List<BonusPayApplication> bonusPayApplicationList = new ArrayList();
 
@@ -1274,6 +1275,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      * @param bonusPayApplicationDtos 奖金发放申请表对象
      */
 
+    @Override
     public int updateBonusPayApplications(List<BonusPayApplicationDTO> bonusPayApplicationDtos) {
         List<BonusPayApplication> bonusPayApplicationList = new ArrayList();
 

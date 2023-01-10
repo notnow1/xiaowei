@@ -252,6 +252,9 @@ public class ProductServiceImpl implements IProductService {
         Long parentProductId = productDTO.getParentProductId();
         if (null != parentProductId) {
             ProductDTO productDTO2 = productMapper.selectProductByProductId(parentProductId);
+            if (StringUtils.isNull(productDTO2)){
+                throw new ServiceException("上级不存在！请刷新页面重试");
+            }
             product.setParentProductId(productDTO2.getProductId());
             if (productDTO2.getAncestors() == null) {
                 //拼接祖级id
@@ -1584,6 +1587,7 @@ public class ProductServiceImpl implements IProductService {
      *
      * @param productDtos 产品表对象
      */
+    @Override
     @Transactional
     public int insertProducts(List<ProductDTO> productDtos) {
         List<Product> productList = new ArrayList();
@@ -1606,6 +1610,7 @@ public class ProductServiceImpl implements IProductService {
      *
      * @param productDtos 产品表对象
      */
+    @Override
     @Transactional
     public int updateProducts(List<ProductDTO> productDtos) {
         List<Product> productList = new ArrayList();

@@ -329,6 +329,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      * @param targetDecomposeHistoryDtos 目标分解历史版本表对象
      */
 
+    @Override
     public int insertTargetDecomposeHistorys(List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDtos) {
         List<TargetDecomposeHistory> targetDecomposeHistoryList = new ArrayList();
 
@@ -351,6 +352,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      * @param targetDecomposeHistoryDtos 目标分解历史版本表对象
      */
 
+    @Override
     public int updateTargetDecomposeHistorys(List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDtos) {
         List<TargetDecomposeHistory> targetDecomposeHistoryList = new ArrayList();
 

@@ -172,6 +172,7 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
      * @param targetSettingOrderDtoS 目标制定订单表对象
      */
 
+    @Override
     public int insertTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtoS, TargetSettingDTO targetSettingDTO) {
         List<TargetSettingOrder> targetSettingOrderList = new ArrayList<>();
         for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDtoS) {
@@ -196,6 +197,7 @@ public class TargetSettingOrderServiceImpl implements ITargetSettingOrderService
      * @param targetSettingOrderDtoS 目标制定订单表对象
      */
 
+    @Override
     public int updateTargetSettingOrders(List<TargetSettingOrderDTO> targetSettingOrderDtoS, TargetSettingDTO targetSetting) {
         List<TargetSettingOrder> targetSettingOrderList = new ArrayList<>();
         for (TargetSettingOrderDTO targetSettingOrderDTO : targetSettingOrderDtoS) {

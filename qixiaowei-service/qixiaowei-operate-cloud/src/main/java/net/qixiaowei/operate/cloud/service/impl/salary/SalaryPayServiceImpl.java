@@ -549,6 +549,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @param salaryPayDtos 工资发薪表对象
      */
 
+    @Override
     public int insertSalaryPays(List<SalaryPayDTO> salaryPayDtos) {
         List<SalaryPay> salaryPayList = new ArrayList<>();
         for (SalaryPayDTO salaryPayDTO : salaryPayDtos) {
@@ -570,6 +571,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @param salaryPayDtos 工资发薪表对象
      */
 
+    @Override
     public int updateSalaryPays(List<SalaryPayDTO> salaryPayDtos) {
         List<SalaryPay> salaryPayList = new ArrayList<>();
 

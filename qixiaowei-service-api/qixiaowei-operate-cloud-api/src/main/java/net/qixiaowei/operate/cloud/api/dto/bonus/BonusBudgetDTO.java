@@ -157,5 +157,9 @@ public class BonusBudgetDTO {
      * 指标ID
      */
     private  Long  indicatorId;
+    /**
+     * 指标id集合
+     */
+    private  List<Long>  indicatorIds;
 }
 

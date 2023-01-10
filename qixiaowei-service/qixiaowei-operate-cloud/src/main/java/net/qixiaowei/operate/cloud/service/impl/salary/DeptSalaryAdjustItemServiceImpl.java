@@ -180,6 +180,7 @@ public class DeptSalaryAdjustItemServiceImpl implements IDeptSalaryAdjustItemSer
      * @param deptSalaryAdjustItemDtos 部门调薪项表对象
      */
 
+    @Override
     public int insertDeptSalaryAdjustItems(List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDtos) {
         List<DeptSalaryAdjustItem> deptSalaryAdjustItemList = new ArrayList();
 
@@ -202,6 +203,7 @@ public class DeptSalaryAdjustItemServiceImpl implements IDeptSalaryAdjustItemSer
      * @param deptSalaryAdjustItemDtos 部门调薪项表对象
      */
 
+    @Override
     public int updateDeptSalaryAdjustItems(List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDtos) {
         List<DeptSalaryAdjustItem> deptSalaryAdjustItemList = new ArrayList();
 

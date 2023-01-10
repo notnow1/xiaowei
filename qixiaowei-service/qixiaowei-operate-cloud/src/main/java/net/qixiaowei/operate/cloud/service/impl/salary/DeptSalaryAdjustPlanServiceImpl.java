@@ -635,6 +635,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      * @param deptSalaryAdjustPlanDtos 部门调薪计划表对象
      */
 
+    @Override
     public int insertDeptSalaryAdjustPlans(List<DeptSalaryAdjustPlanDTO> deptSalaryAdjustPlanDtos) {
         List<DeptSalaryAdjustPlan> deptSalaryAdjustPlanList = new ArrayList<>();
 
@@ -657,6 +658,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      * @param deptSalaryAdjustPlanDtos 部门调薪计划表对象
      */
 
+    @Override
     public int updateDeptSalaryAdjustPlans(List<DeptSalaryAdjustPlanDTO> deptSalaryAdjustPlanDtos) {
         List<DeptSalaryAdjustPlan> deptSalaryAdjustPlanList = new ArrayList<>();
 

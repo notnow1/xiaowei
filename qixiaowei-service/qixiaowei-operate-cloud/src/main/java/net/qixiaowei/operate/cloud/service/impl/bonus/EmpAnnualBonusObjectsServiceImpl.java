@@ -163,6 +163,7 @@ public class EmpAnnualBonusObjectsServiceImpl implements IEmpAnnualBonusObjectsS
     * @param empAnnualBonusObjectsDtos 个人年终奖发放对象表对象
     */
     
+    @Override
     public int insertEmpAnnualBonusObjectss(List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDtos){
       List<EmpAnnualBonusObjects> empAnnualBonusObjectsList = new ArrayList();
 
@@ -185,6 +186,7 @@ public class EmpAnnualBonusObjectsServiceImpl implements IEmpAnnualBonusObjectsS
     * @param empAnnualBonusObjectsDtos 个人年终奖发放对象表对象
     */
     
+    @Override
     public int updateEmpAnnualBonusObjectss(List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDtos){
      List<EmpAnnualBonusObjects> empAnnualBonusObjectsList = new ArrayList();
 

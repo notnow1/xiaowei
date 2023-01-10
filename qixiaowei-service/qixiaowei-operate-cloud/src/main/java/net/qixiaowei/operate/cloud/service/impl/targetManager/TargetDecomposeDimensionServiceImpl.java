@@ -233,6 +233,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
      *
      * @param targetDecomposeDimensionDtos 目标分解维度配置对象
      */
+    @Override
     @Transactional
     public int insertTargetDecomposeDimensions(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
         List<TargetDecomposeDimension> targetDecomposeDimensionList = new ArrayList<>();
@@ -254,6 +255,7 @@ public class TargetDecomposeDimensionServiceImpl implements ITargetDecomposeDime
      *
      * @param targetDecomposeDimensionDtos 目标分解维度配置对象
      */
+    @Override
     @Transactional
     public int updateTargetDecomposeDimensions(List<TargetDecomposeDimensionDTO> targetDecomposeDimensionDtos) {
         Long targetDecomposeDimensionId;

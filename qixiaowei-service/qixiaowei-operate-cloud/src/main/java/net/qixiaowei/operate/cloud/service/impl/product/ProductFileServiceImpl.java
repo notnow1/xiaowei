@@ -164,6 +164,7 @@ public class ProductFileServiceImpl implements IProductFileService{
     * @param productFileDtos 产品文件表对象
     */
     
+    @Override
     public int insertProductFiles(List<ProductFileDTO> productFileDtos){
       List<ProductFile> productFileList = new ArrayList();
 
@@ -186,6 +187,7 @@ public class ProductFileServiceImpl implements IProductFileService{
     * @param productFileDtos 产品文件表对象
     */
     
+    @Override
     public int updateProductFiles(List<ProductFileDTO> productFileDtos){
      List<ProductFile> productFileList = new ArrayList();
 

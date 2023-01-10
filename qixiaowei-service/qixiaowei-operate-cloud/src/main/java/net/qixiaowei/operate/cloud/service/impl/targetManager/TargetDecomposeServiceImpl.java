@@ -1822,6 +1822,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDtos 目标分解(销售订单)表对象
      */
 
+    @Override
     public int insertTargetDecomposes(List<TargetDecomposeDTO> targetDecomposeDtos) {
         List<TargetDecompose> targetDecomposeList = new ArrayList();
 
@@ -1844,6 +1845,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @param targetDecomposeDtos 目标分解(销售订单)表对象
      */
 
+    @Override
     public int updateTargetDecomposes(List<TargetDecomposeDTO> targetDecomposeDtos) {
         List<TargetDecompose> targetDecomposeList = new ArrayList();
 

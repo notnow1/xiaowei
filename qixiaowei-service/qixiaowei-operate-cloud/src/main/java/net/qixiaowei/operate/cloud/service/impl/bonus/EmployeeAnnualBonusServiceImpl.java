@@ -1156,6 +1156,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      * @param employeeAnnualBonusDtos 个人年终奖表对象
      */
 
+    @Override
     public int insertEmployeeAnnualBonuss(List<EmployeeAnnualBonusDTO> employeeAnnualBonusDtos) {
         List<EmployeeAnnualBonus> employeeAnnualBonusList = new ArrayList();
 
@@ -1178,6 +1179,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      * @param employeeAnnualBonusDtos 个人年终奖表对象
      */
 
+    @Override
     public int updateEmployeeAnnualBonuss(List<EmployeeAnnualBonusDTO> employeeAnnualBonusDtos) {
         List<EmployeeAnnualBonus> employeeAnnualBonusList = new ArrayList();
 

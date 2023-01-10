@@ -547,6 +547,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      *
      * @param targetOutcomeDtoS 目标结果表对象
      */
+    @Override
     public int insertTargetOutcomes(List<TargetOutcomeDTO> targetOutcomeDtoS) {
         List<TargetOutcome> targetOutcomeList = new ArrayList<>();
 
@@ -569,6 +570,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
      * @param targetOutcomeDtoS 目标结果表对象
      */
 
+    @Override
     public int updateTargetOutcomes(List<TargetOutcomeDTO> targetOutcomeDtoS) {
         List<TargetOutcome> targetOutcomeList = new ArrayList<>();
 

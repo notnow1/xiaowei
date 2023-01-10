@@ -676,6 +676,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      * @param empSalaryAdjustPlanDtos 个人调薪计划表对象
      */
 
+    @Override
     public int insertEmpSalaryAdjustPlans(List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDtos) {
         List<EmpSalaryAdjustPlan> empSalaryAdjustPlanList = new ArrayList<>();
         for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : empSalaryAdjustPlanDtos) {
@@ -697,6 +698,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      * @param empSalaryAdjustPlanDtos 个人调薪计划表对象
      */
 
+    @Override
     public int updateEmpSalaryAdjustPlans(List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDtos) {
         List<EmpSalaryAdjustPlan> empSalaryAdjustPlanList = new ArrayList<>();
 

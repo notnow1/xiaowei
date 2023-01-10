@@ -215,6 +215,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
      *
      * @param performanceRankDtos 绩效等级表对象
      */
+    @Override
     @Transactional
     public int insertPerformanceRanks(List<PerformanceRankDTO> performanceRankDtos) {
         List<PerformanceRank> performanceRankList = new ArrayList<>();
@@ -236,6 +237,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
      *
      * @param performanceRankDtos 绩效等级表对象
      */
+    @Override
     @Transactional
     public int updatePerformanceRanks(List<PerformanceRankDTO> performanceRankDtos) {
         List<PerformanceRank> performanceRankList = new ArrayList<>();

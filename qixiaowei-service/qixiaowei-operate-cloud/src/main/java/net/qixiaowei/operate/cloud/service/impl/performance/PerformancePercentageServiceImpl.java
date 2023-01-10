@@ -337,6 +337,7 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
      *
      * @param performancePercentageDtos 绩效比例表对象
      */
+    @Override
     @Transactional
     public int updatePerformancePercentages(List<PerformancePercentageDTO> performancePercentageDtos) {
         List<PerformancePercentage> performancePercentageList = new ArrayList<>();

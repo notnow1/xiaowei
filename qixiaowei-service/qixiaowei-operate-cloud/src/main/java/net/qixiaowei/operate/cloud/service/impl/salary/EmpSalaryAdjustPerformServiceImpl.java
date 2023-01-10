@@ -180,6 +180,7 @@ public class EmpSalaryAdjustPerformServiceImpl implements IEmpSalaryAdjustPerfor
      * @param empSalaryAdjustPerformDtoS 个人调薪绩效记录表对象
      */
 
+    @Override
     public int insertEmpSalaryAdjustPerforms(List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDtoS) {
         List<EmpSalaryAdjustPerform> empSalaryAdjustPerformList = new ArrayList<>();
 
@@ -202,6 +203,7 @@ public class EmpSalaryAdjustPerformServiceImpl implements IEmpSalaryAdjustPerfor
      * @param empSalaryAdjustPerformDtoS 个人调薪绩效记录表对象
      */
 
+    @Override
     public int updateEmpSalaryAdjustPerforms(List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDtoS) {
         List<EmpSalaryAdjustPerform> empSalaryAdjustPerformList = new ArrayList<>();
 

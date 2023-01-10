@@ -180,6 +180,7 @@ public class PerformanceAppraisalColumnsServiceImpl implements IPerformanceAppra
      * @param performanceAppraisalColumnsDtos 绩效考核自定义列表对象
      */
 
+    @Override
     public int insertPerformanceAppraisalColumnss(List<PerformanceAppraisalColumnsDTO> performanceAppraisalColumnsDtos) {
         List<PerformanceAppraisalColumns> performanceAppraisalColumnsList = new ArrayList();
 
@@ -202,6 +203,7 @@ public class PerformanceAppraisalColumnsServiceImpl implements IPerformanceAppra
      * @param performanceAppraisalColumnsDtos 绩效考核自定义列表对象
      */
 
+    @Override
     public int updatePerformanceAppraisalColumnss(List<PerformanceAppraisalColumnsDTO> performanceAppraisalColumnsDtos) {
         List<PerformanceAppraisalColumns> performanceAppraisalColumnsList = new ArrayList();
 

@@ -403,6 +403,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      *
      * @param salaryItemDtos 工资项对象
      */
+    @Override
     @Transactional
     public int insertSalaryItems(List<SalaryItemDTO> salaryItemDtos) {
         List<SalaryItem> salaryItemList = new ArrayList<>();
@@ -425,6 +426,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      *
      * @param salaryItemDtos 工资项对象
      */
+    @Override
     @Transactional
     public int updateSalaryItems(List<SalaryItemDTO> salaryItemDtos) {
         List<SalaryItem> salaryItemList = new ArrayList<>();

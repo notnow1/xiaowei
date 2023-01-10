@@ -653,6 +653,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @param employeeBudgetDtos 人力预算表对象
      */
 
+    @Override
     public int insertEmployeeBudgets(List<EmployeeBudgetDTO> employeeBudgetDtos) {
         List<EmployeeBudget> employeeBudgetList = new ArrayList();
 
@@ -675,6 +676,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @param employeeBudgetDtos 人力预算表对象
      */
 
+    @Override
     public int updateEmployeeBudgets(List<EmployeeBudgetDTO> employeeBudgetDtos) {
         List<EmployeeBudget> employeeBudgetList = new ArrayList();
 

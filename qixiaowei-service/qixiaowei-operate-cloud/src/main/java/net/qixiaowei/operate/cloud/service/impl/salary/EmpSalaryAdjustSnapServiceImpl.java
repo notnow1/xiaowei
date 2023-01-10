@@ -180,6 +180,7 @@ public class EmpSalaryAdjustSnapServiceImpl implements IEmpSalaryAdjustSnapServi
      * @param empSalaryAdjustSnapDtos 个人调薪快照表对象
      */
 
+    @Override
     public int insertEmpSalaryAdjustSnaps(List<EmpSalaryAdjustSnapDTO> empSalaryAdjustSnapDtos) {
         List<EmpSalaryAdjustSnap> empSalaryAdjustSnapList = new ArrayList<>();
 
@@ -202,6 +203,7 @@ public class EmpSalaryAdjustSnapServiceImpl implements IEmpSalaryAdjustSnapServi
      * @param empSalaryAdjustSnapDtos 个人调薪快照表对象
      */
 
+    @Override
     public int updateEmpSalaryAdjustSnaps(List<EmpSalaryAdjustSnapDTO> empSalaryAdjustSnapDtos) {
         List<EmpSalaryAdjustSnap> empSalaryAdjustSnapList = new ArrayList<>();
 

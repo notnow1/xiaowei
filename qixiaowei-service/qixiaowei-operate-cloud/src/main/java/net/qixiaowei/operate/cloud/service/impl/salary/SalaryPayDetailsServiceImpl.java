@@ -160,6 +160,7 @@ public class SalaryPayDetailsServiceImpl implements ISalaryPayDetailsService {
      * @param salaryPayDetailsDtos 工资发薪明细表对象
      */
 
+    @Override
     public int insertSalaryPayDetailss(List<SalaryPayDetailsDTO> salaryPayDetailsDtos) {
         List<SalaryPayDetails> salaryPayDetailsList = new ArrayList<>();
 
@@ -182,6 +183,7 @@ public class SalaryPayDetailsServiceImpl implements ISalaryPayDetailsService {
      * @param salaryPayDetailsDtos 工资发薪明细表对象
      */
 
+    @Override
     public int updateSalaryPayDetailss(List<SalaryPayDetailsDTO> salaryPayDetailsDtos) {
         List<SalaryPayDetails> salaryPayDetailsList = new ArrayList<>();
 

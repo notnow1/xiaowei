@@ -160,6 +160,7 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
      * @param performanceAppraisalItemsDtos 绩效考核项目表对象
      */
 
+    @Override
     public int insertPerformanceAppraisalItemss(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtos) {
         List<PerformanceAppraisalItems> performanceAppraisalItemsList = new ArrayList<>();
 
@@ -181,6 +182,7 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
      *
      * @param performanceAppraisalItemsDtoS 绩效考核项目表对象
      */
+    @Override
     public int updatePerformanceAppraisalItemsS(List<PerformanceAppraisalItemsDTO> performanceAppraisalItemsDtoS) {
         List<PerformanceAppraisalItems> performanceAppraisalItemsList = new ArrayList<>();
         for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : performanceAppraisalItemsDtoS) {

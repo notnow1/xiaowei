@@ -652,29 +652,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         departmentDTOList = departmentMapper.selectAncestors(department.getDepartmentId());
 
         for (DepartmentDTO dto : departmentDTOList) {
-            // 岗位是否被引用
-            List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
-            String s = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-            if (!StringUtils.isEmpty(departmentPostDTOS)) {
-                posterreo.append("组织" + dto.getDepartmentName() + "已被岗位" + s + "引用\n");
-            }
-
-            // 人员是否被引用
-            List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
-            String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
-            if (!StringUtils.isEmpty(employeeDTOS)) {
-                emplerreo.append("组织名称" + dto.getDepartmentName() + "已被人员" + s1 + "引用\n");
-            }
-            //远程调用 目标分解是否被引用
-            R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(dto.getDepartmentId());
-            List<TargetDecompose> data = listR.getData();
-            if (StringUtils.isNotEmpty(data)){
-                List<String> collect = data.stream().map(TargetDecompose::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
-                if (StringUtils.isNotEmpty(collect)) {
-                    decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解" + collect + "引用\n");
-                }
-            }
-
+            this.quoteEmployee(dto,posterreo,emplerreo,decomposesErreo,depterreo);
         }
         //将错误信息放在一个字符串中
         depterreo.append(posterreo).append(emplerreo).append(decomposesErreo);
@@ -695,6 +673,40 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
         }
         return i;
+    }
+
+    /**
+     * 组织引用删除
+     * @param dto
+     * @param posterreo
+     * @param emplerreo
+     * @param decomposesErreo
+     * @param depterreo
+     */
+    private void quoteEmployee(DepartmentDTO dto, StringBuffer posterreo, StringBuffer emplerreo, StringBuffer decomposesErreo, StringBuffer depterreo) {
+        // 岗位是否被引用
+        List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
+        String postName = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        String officialRankSystemName = departmentPostDTOS.stream().map(DepartmentPostDTO::getOfficialRankSystemName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        if (!StringUtils.isEmpty(departmentPostDTOS)) {
+            posterreo.append("组织" + dto.getDepartmentName() + "已被岗位" + postName + "引用\n");
+        }
+
+        // 人员是否被引用
+        List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(dto.getDepartmentId());
+        String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        if (!StringUtils.isEmpty(employeeDTOS)) {
+            emplerreo.append("组织名称" + dto.getDepartmentName() + "已被人员" + s1 + "引用\n");
+        }
+        //远程调用 目标分解是否被引用
+        R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(dto.getDepartmentId());
+        List<TargetDecompose> data = listR.getData();
+        if (StringUtils.isNotEmpty(data)){
+            List<String> collect = data.stream().map(TargetDecompose::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)) {
+                decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解" + collect + "引用\n");
+            }
+        }
     }
 
     /**

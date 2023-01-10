@@ -136,6 +136,44 @@
         WHERE  budget_year = #{planYear}
         and delete_flag=0
     </select>
+<!--    远程查询总奖金预算-->
+    <select id="selectBonusBudgetByIndicatorId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
+        SELECT
+            bbp.bonus_budget_parameters_id,
+            bbp.bonus_budget_id,
+            bbp.indicator_id,
+            bbp.bonus_weight,
+            bbp.bonus_proportion_standard,
+            bbp.bonus_proportion_variation,
+            bbp.challenge_value,
+            bbp.target_value,
+            bbp.guaranteed_value,
+            bbp.target_completion_rate,
+            bbp.performance_after_one,
+            bbp.performance_after_two,
+            bbp.bonus_allowance_after_one,
+            bbp.bonus_allowance_after_two,
+            bbp.delete_flag,
+            bbp.create_by,
+            bbp.create_time,
+            bbp.update_by,
+            bbp.update_time,
+            bbp.tenant_id
+        FROM
+            bonus_budget_parameters bbp
+                left join bonus_budget bb
+                          on bb.bonus_budget_id = bbp .bonus_budget_id
+                              and bb.delete_flag =0
+        where  bbp.delete_flag = 0
+        and   bb.budget_year = #{bonusBudget.budgetYear}
+        and   bbp.indicator_id in
+        <foreach item="item"
+                 collection="bonusBudget.indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--新增奖金预算表-->
     <insert id="insertBonusBudget" useGeneratedKeys="true" keyProperty="bonusBudgetId">
         INSERT INTO bonus_budget (budget_year,amount_bonus_budget,bonus_before_one,delete_flag,create_by,create_time,update_by,update_time)

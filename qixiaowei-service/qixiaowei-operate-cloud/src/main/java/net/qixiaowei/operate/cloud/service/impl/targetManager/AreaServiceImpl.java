@@ -306,6 +306,7 @@ public class AreaServiceImpl implements IAreaService {
      *
      * @param areaDtos 区域表对象
      */
+    @Override
     @Transactional
     public int insertAreas(List<AreaDTO> areaDtos) {
         List<Area> areaList = new ArrayList<>();
@@ -328,6 +329,7 @@ public class AreaServiceImpl implements IAreaService {
      *
      * @param areaDtoS 区域表对象
      */
+    @Override
     @Transactional
     public int updateAreas(List<AreaDTO> areaDtoS) {
         List<Area> areaList = new ArrayList<>();

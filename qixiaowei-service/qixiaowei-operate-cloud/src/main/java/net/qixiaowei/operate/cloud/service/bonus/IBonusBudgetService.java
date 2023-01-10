@@ -137,4 +137,11 @@ public interface IBonusBudgetService{
      * @return
      */
     BonusBudgetParametersDTO addBonusBudgetIndicatorTamount(BonusBudgetDTO bonusBudgetDTO);
+
+    /**
+     * 远程查询总奖金预算
+     * @param bonusBudgetDTO
+     * @return
+     */
+    BonusBudgetDTO selectBonusBudgetByIndicatorId(BonusBudgetDTO bonusBudgetDTO);
 }

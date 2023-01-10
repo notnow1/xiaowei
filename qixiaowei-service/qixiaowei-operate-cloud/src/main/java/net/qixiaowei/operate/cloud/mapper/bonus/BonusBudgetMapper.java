@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusBudget;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.DeptAnnualBonusOperateDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -147,5 +148,10 @@ public interface BonusBudgetMapper {
      */
     List<DeptAnnualBonusOperateDTO> selectDeptAnnualBonusOperate(@Param("annualBonusYear") int annualBonusYear);
 
-
+    /**
+     * 远程查询总奖金预算
+     * @param bonusBudget
+     * @return
+     */
+    List<BonusBudgetParametersDTO> selectBonusBudgetByIndicatorId(@Param("bonusBudget") BonusBudget bonusBudget);
 }

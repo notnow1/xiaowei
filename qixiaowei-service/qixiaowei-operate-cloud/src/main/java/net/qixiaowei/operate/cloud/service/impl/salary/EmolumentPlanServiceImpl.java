@@ -398,6 +398,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      * @param emolumentPlanDtos 薪酬规划表对象
      */
 
+    @Override
     public int insertEmolumentPlans(List<EmolumentPlanDTO> emolumentPlanDtos) {
         List<EmolumentPlan> emolumentPlanList = new ArrayList();
 
@@ -420,6 +421,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      * @param emolumentPlanDtos 薪酬规划表对象
      */
 
+    @Override
     public int updateEmolumentPlans(List<EmolumentPlanDTO> emolumentPlanDtos) {
         List<EmolumentPlan> emolumentPlanList = new ArrayList();
 

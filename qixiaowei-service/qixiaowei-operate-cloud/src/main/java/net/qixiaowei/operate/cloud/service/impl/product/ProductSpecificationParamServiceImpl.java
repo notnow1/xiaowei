@@ -169,6 +169,7 @@ public class ProductSpecificationParamServiceImpl implements IProductSpecificati
      *
      * @param productSpecificationParamDtos 产品规格参数表对象
      */
+    @Override
     @Transactional
     public int insertProductSpecificationParams(List<ProductSpecificationParamDTO> productSpecificationParamDtos) {
         List<ProductSpecificationParam> productSpecificationParamList = new ArrayList();
@@ -191,6 +192,7 @@ public class ProductSpecificationParamServiceImpl implements IProductSpecificati
      *
      * @param productSpecificationParamDtos 产品规格参数表对象
      */
+    @Override
     @Transactional
     public int updateProductSpecificationParams(List<ProductSpecificationParamDTO> productSpecificationParamDtos) {
         List<ProductSpecificationParam> productSpecificationParamList = new ArrayList();

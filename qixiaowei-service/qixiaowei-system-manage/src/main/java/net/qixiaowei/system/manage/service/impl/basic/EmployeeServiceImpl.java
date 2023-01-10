@@ -148,6 +148,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * @param idMaps id集合表
      * @return 员工表集合
      */
+    @Override
     public List<EmployeeDTO> selectEmployeeByPDRIds(Map<String, List<String>> idMaps) {
         List<String> departmentIds = idMaps.get("departmentIds");
         List<Long> departments = departmentIds.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
@@ -1265,6 +1266,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      *
      * @param employeeDtos 员工表对象
      */
+    @Override
     @Transactional
     public int insertEmployees(List<EmployeeDTO> employeeDtos) {
         List<Employee> employeeList = new ArrayList<>();
@@ -1287,6 +1289,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
      *
      * @param employeeDtos 员工表对象
      */
+    @Override
     @Transactional
     public int updateEmployees(List<EmployeeDTO> employeeDtos) {
         List<Employee> employeeList = new ArrayList();

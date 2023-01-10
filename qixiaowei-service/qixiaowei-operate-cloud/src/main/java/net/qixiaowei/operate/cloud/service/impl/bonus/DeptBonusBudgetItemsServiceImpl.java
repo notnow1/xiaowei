@@ -162,6 +162,7 @@ public class DeptBonusBudgetItemsServiceImpl implements IDeptBonusBudgetItemsSer
     * @param deptBonusBudgetItemsDtos 部门奖金预算项目表对象
     */
     
+    @Override
     public int insertDeptBonusBudgetItemss(List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDtos){
       List<DeptBonusBudgetItems> deptBonusBudgetItemsList = new ArrayList();
 
@@ -184,6 +185,7 @@ public class DeptBonusBudgetItemsServiceImpl implements IDeptBonusBudgetItemsSer
     * @param deptBonusBudgetItemsDtos 部门奖金预算项目表对象
     */
     
+    @Override
     public int updateDeptBonusBudgetItemss(List<DeptBonusBudgetItemsDTO> deptBonusBudgetItemsDtos){
      List<DeptBonusBudgetItems> deptBonusBudgetItemsList = new ArrayList();
 

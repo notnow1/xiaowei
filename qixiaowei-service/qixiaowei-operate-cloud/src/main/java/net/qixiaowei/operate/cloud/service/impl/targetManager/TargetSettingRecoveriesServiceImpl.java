@@ -160,6 +160,7 @@ public class TargetSettingRecoveriesServiceImpl implements ITargetSettingRecover
      * @param targetSettingRecoveriesDtos 目标制定回款集合表对象
      */
 
+    @Override
     public int insertTargetSettingRecoveriess(List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDtos) {
         List<TargetSettingRecoveries> targetSettingRecoveriesList = new ArrayList<>();
 
@@ -182,6 +183,7 @@ public class TargetSettingRecoveriesServiceImpl implements ITargetSettingRecover
      * @param targetSettingRecoveriesDtos 目标制定回款集合表对象
      */
 
+    @Override
     public int updateTargetSettingRecoveriess(List<TargetSettingRecoveriesDTO> targetSettingRecoveriesDtos) {
         List<TargetSettingRecoveries> targetSettingRecoveriesList = new ArrayList<>();
         for (TargetSettingRecoveriesDTO targetSettingRecoveriesDTO : targetSettingRecoveriesDtos) {

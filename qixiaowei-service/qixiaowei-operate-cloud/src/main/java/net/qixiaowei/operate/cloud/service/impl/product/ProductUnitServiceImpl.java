@@ -207,6 +207,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
      *
      * @param productUnitDtos 产品单位表对象
      */
+    @Override
     @Transactional
     public int insertProductUnits(List<ProductUnitDTO> productUnitDtos) {
         List<ProductUnit> productUnitList = new ArrayList();
@@ -229,6 +230,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
      *
      * @param productUnitDtos 产品单位表对象
      */
+    @Override
     @Transactional
     public int updateProductUnits(List<ProductUnitDTO> productUnitDtos) {
         List<ProductUnit> productUnitList = new ArrayList();

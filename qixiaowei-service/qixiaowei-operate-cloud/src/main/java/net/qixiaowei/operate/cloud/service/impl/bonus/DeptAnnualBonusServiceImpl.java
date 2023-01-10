@@ -1085,15 +1085,18 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
 
         BigDecimal strategyDeveAward = bonusPayApplicationMapper.selectBonusPayApplicationAddDeptAnnual(annualBonusYear, salaryItemDTO.getSalaryItemId());
         if (strategyDeveAward.compareTo(new BigDecimal("0")) !=0 ){
-            //战略奖实发 公式 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
-            deptAnnualBonusDTO.setStrategyDeveAward(strategyDeveAward.divide(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP));
-        }else {
-            //战略奖实发 公式 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
-            deptAnnualBonusDTO.setStrategyDeveAward(strategyDeveAward);
-        }
+            strategyDeveAward=strategyDeveAward.divide(new BigDecimal("10000")).setScale(10, BigDecimal.ROUND_HALF_UP);
 
+        }
+        //战略奖实发 公式 取相同年度下，奖项类别为战略奖的所有奖金发放申请单中，奖金总金额的合计
+        deptAnnualBonusDTO.setStrategyDeveAward(strategyDeveAward);
         if (null != strategyDeveAward) {
-            departmentAnnualBonus = endYearSalaryAmountBonus.subtract(strategyDeveAward);
+            if (null == deptAnnualBonusDTO.getCompanyAnnualBonus()) {
+                departmentAnnualBonus = endYearSalaryAmountBonus.subtract(strategyDeveAward);
+            }else {
+                departmentAnnualBonus = deptAnnualBonusDTO.getCompanyAnnualBonus().subtract(strategyDeveAward);
+            }
+
         }
         //可发经营奖总包 旧：部门年终奖总包 公式=公司年终奖总包-战略奖实发。
         deptAnnualBonusDTO.setDepartmentAnnualBonus(departmentAnnualBonus);
@@ -1254,6 +1257,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @param deptAnnualBonusDtos 部门年终奖表对象
      */
 
+    @Override
     public int insertDeptAnnualBonuss(List<DeptAnnualBonusDTO> deptAnnualBonusDtos) {
         List<DeptAnnualBonus> deptAnnualBonusList = new ArrayList();
 
@@ -1276,6 +1280,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @param deptAnnualBonusDtos 部门年终奖表对象
      */
 
+    @Override
     public int updateDeptAnnualBonuss(List<DeptAnnualBonusDTO> deptAnnualBonusDtos) {
         List<DeptAnnualBonus> deptAnnualBonusList = new ArrayList();
 
