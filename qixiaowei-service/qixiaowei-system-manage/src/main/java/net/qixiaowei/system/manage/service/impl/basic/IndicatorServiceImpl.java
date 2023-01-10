@@ -13,8 +13,13 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteBonusBudgetService;
+import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppraisalService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteSettingService;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
@@ -27,8 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -50,6 +54,12 @@ public class IndicatorServiceImpl implements IIndicatorService {
 
     @Autowired
     private RemoteDecomposeService targetDecomposeService;
+
+    @Autowired
+    private RemotePerformanceAppraisalService performanceAppraisalService;
+
+    @Autowired
+    private RemoteBonusBudgetService bonusBudgetService;
 
     /**
      * 查询指标表
@@ -257,6 +267,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Transactional
     @Override
     public int logicDeleteIndicatorByIndicatorIds(List<Long> indicatorIds) {
+        if (StringUtils.isEmpty(indicatorIds)) {
+            throw new ServiceException("请选择指标");
+        }
         List<IndicatorDTO> indicatorByIds = indicatorMapper.selectIndicatorByIds(indicatorIds);
         if (StringUtils.isEmpty(indicatorByIds)) {
             throw new ServiceException("指标不存在");
@@ -317,8 +330,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
         List<TargetDecomposeDTO> targetDecomposeDTOS = decomposeR.getData();
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             StringBuilder indicatorNames = new StringBuilder("");
-            for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
-                for (IndicatorDTO indicatorById : indicatorByIds) {
+            for (IndicatorDTO indicatorById : indicatorByIds) {
+                for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
                     if (indicatorById.getIndicatorId().equals(targetDecomposeDTO.getIndicatorId())) {
                         indicatorNames.append(indicatorById.getIndicatorName()).append(",");
                         break;
@@ -327,7 +340,91 @@ public class IndicatorServiceImpl implements IIndicatorService {
             }
             quoteReminder.append("指标配置【").append(indicatorNames.deleteCharAt(indicatorNames.length() - 1)).append("】已被自定义目标分解中的【指标名称】引用 无法删除\n");
         }
-        //
+        //组织绩效制定
+        Map<Integer, List<Long>> orgMap = new HashMap<>();
+        orgMap.put(1, indicatorIds);
+        R<List<PerformanceAppraisalItemsDTO>> orgPerformanceR = performanceAppraisalService.selectByIndicatorIds(orgMap, SecurityConstants.INNER);
+        List<PerformanceAppraisalItemsDTO> orgPerformanceDTOS = orgPerformanceR.getData();
+        if (orgPerformanceR.getCode() != 200) {
+            throw new ServiceException("远程调用失败");
+        }
+        if (StringUtils.isNotEmpty(orgPerformanceDTOS)) {
+            StringBuilder indicatorNames = new StringBuilder("");
+            for (IndicatorDTO indicatorById : indicatorByIds) {
+                for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : orgPerformanceDTOS) {
+                    if (indicatorById.getIndicatorId().equals(performanceAppraisalItemsDTO.getIndicatorId())) {
+                        indicatorNames.append(indicatorById.getIndicatorName()).append(",");
+                        break;
+                    }
+                }
+            }
+            StringBuilder performanceName = new StringBuilder("");
+            Set<String> performanceSet = new HashSet<>();
+            for (IndicatorDTO indicatorById : indicatorByIds) {
+                for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : orgPerformanceDTOS) {
+                    if (indicatorById.getIndicatorId().equals(performanceAppraisalItemsDTO.getIndicatorId())) {
+                        performanceSet.add(performanceAppraisalItemsDTO.getPerformanceRankName());
+                    }
+                }
+            }
+            for (String performance : performanceSet) {
+                performanceName.append(performance).append(",");
+            }
+            quoteReminder.append("指标配置【")
+                    .append(indicatorNames.deleteCharAt(indicatorNames.length() - 1))
+                    .append("】已被组织绩效中的【任务名称】【")
+                    .append(performanceName.deleteCharAt(performanceName.length() - 1))
+                    .append("】引用 无法删除\n");
+        }
+        //个人绩效制定
+        Map<Integer, List<Long>> perMap = new HashMap<>();
+        perMap.put(2, indicatorIds);
+        R<List<PerformanceAppraisalItemsDTO>> perPerformanceR = performanceAppraisalService.selectByIndicatorIds(perMap, SecurityConstants.INNER);
+        List<PerformanceAppraisalItemsDTO> perPerformanceDTOS = perPerformanceR.getData();
+        if (perPerformanceR.getCode() != 200) {
+            throw new ServiceException("远程调用失败");
+        }
+        if (StringUtils.isNotEmpty(perPerformanceDTOS)) {
+            StringBuilder indicatorNames = new StringBuilder("");
+            for (IndicatorDTO indicatorById : indicatorByIds) {
+                for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : perPerformanceDTOS) {
+                    if (indicatorById.getIndicatorId().equals(performanceAppraisalItemsDTO.getIndicatorId())) {
+                        indicatorNames.append(indicatorById.getIndicatorName()).append(",");
+                        break;
+                    }
+                }
+            }
+            StringBuilder performanceName = new StringBuilder("");
+            Set<String> performanceSet = new HashSet<>();
+            for (PerformanceAppraisalItemsDTO performanceAppraisalItemsDTO : orgPerformanceDTOS) {
+                for (IndicatorDTO indicatorById : indicatorByIds) {
+                    if (indicatorById.getIndicatorId().equals(performanceAppraisalItemsDTO.getIndicatorId())) {
+                        performanceSet.add(performanceAppraisalItemsDTO.getPerformanceRankName());
+                    }
+                }
+            }
+            for (String performance : performanceSet) {
+                performanceName.append(performance).append(",");
+            }
+            quoteReminder.append("指标配置【")
+                    .append(indicatorNames.deleteCharAt(indicatorNames.length() - 1))
+                    .append("】已被个人绩效中的【任务名称】【")
+                    .append(performanceName.deleteCharAt(performanceName.length() - 1))
+                    .append("】引用 无法删除\n");
+        }
+        // 总奖金包预算
+        BonusBudgetDTO bonusBudgetDTO = new BonusBudgetDTO();
+        bonusBudgetDTO.setIndicatorIds(indicatorIds);
+        R<BonusBudgetDTO> bonusBudgetDTOR = bonusBudgetService.selectBonusBudgetByIndicatorId(bonusBudgetDTO, SecurityConstants.INNER);
+        if (bonusBudgetDTOR.getCode() != 200) {
+            throw new ServiceException("远程调用总奖金包预算失败");
+        }
+        BonusBudgetDTO bonusBudget = bonusBudgetDTOR.getData();
+        List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudget.getBonusBudgetParametersDTOS();
+        // todo 总奖金包预算-奖金驱动因素，引用校验
+        if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
+
+        }
         if (quoteReminder.length() != 0) {
             throw new ServiceException(quoteReminder.toString());
         }
@@ -339,7 +436,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
      * @param indicatorId 指标表主键
      * @return 结果
      */
-
     @Transactional
     @Override
     public int deleteIndicatorByIndicatorId(Long indicatorId) {

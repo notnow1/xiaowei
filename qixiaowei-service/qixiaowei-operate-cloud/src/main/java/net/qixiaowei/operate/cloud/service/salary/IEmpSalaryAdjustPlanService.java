@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.EmpSalaryAdjustPlanExcel;
 
@@ -150,4 +151,12 @@ public interface IEmpSalaryAdjustPlanService {
      * @return List
      */
     List<EmpSalaryAdjustPlanDTO> selectBySystemIds(List<Long> officialRankSystemIds);
+
+    /**
+     * 根据部门ID查询个人调薪
+     *
+     * @param departmentId 部门ID
+     * @return R
+     */
+    List<EmpSalaryAdjustPlanDTO> selectByDepartmentId(Long departmentId);
 }

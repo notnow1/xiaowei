@@ -34,7 +34,8 @@
             and performance_percentage_id=#{performancePercentageDTO.performancePercentageId}
         </if>
         <if test="performancePercentageDTO.performancePercentageName != null and performancePercentageDTO.performancePercentageName != ''">
-            and t1.performance_percentage_name like concat('%', #{performancePercentageDTO.performancePercentageName}, '%')
+            and t1.performance_percentage_name like concat('%', #{performancePercentageDTO.performancePercentageName},
+            '%')
         </if>
         <if test="performancePercentageDTO.orgPerformanceRankName != null and performancePercentageDTO.orgPerformanceRankName != ''">
             and t2.performance_rank_name like concat('%', #{performancePercentageDTO.orgPerformanceRankName}, '%')
@@ -110,6 +111,36 @@
         FROM performance_percentage
         WHERE delete_flag=0
         AND person_performance_rank_id = #{performanceRankId}
+    </select>
+    <!--根据绩效等级ID集合查询绩效考核-->
+    <select id="selectPerformancePercentageByRankIdAndCategory"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO">
+        SELECT
+        performance_percentage_id,
+        performance_percentage_name,
+        org_performance_rank_id,
+        person_performance_rank_id,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM performance_percentage
+        WHERE delete_flag=0
+        <if test="perPerformanceRankIds != null">
+            AND person_performance_rank_id
+            IN
+            <foreach collection="perPerformanceRankIds" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orgPerformanceRankIds != null">
+            AND org_performance_rank_id
+            IN
+            <foreach collection="orgPerformanceRankIds" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <!--新增绩效比例表-->
     <insert id="insertPerformancePercentage" useGeneratedKeys="true" keyProperty="performancePercentageId">

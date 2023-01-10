@@ -33,4 +33,10 @@ public interface RemoteSalaryAdjustPlanService {
      */
     @PostMapping(API_PREFIX_SALARY_ITEM + "/selectBySystemIds")
     R<List<EmpSalaryAdjustPlanDTO>> selectBySystemIds(@RequestBody List<Long> officialRankSystemIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据部门ID集合获取个人调薪
+     */
+    @PostMapping(API_PREFIX_SALARY_ITEM + "/selectByDepartmentId")
+    R<List<EmpSalaryAdjustPlanDTO>> selectByDepartmentId(@RequestParam("departmentId") Long officialRankSystemIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

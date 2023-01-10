@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.mapper.performance;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalItems;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -129,4 +130,13 @@ public interface PerformanceAppraisalItemsMapper {
      * @return int
      */
     int withdrawPerformanceAppraisalItems(@Param("itemsDTOList") List<PerformanceAppraisalItemsDTO> itemsDTOList);
+
+    /**
+     * 根据指标ID集合查询绩效
+     *
+     * @param indicatorIds    指标ID集合
+     * @param appraisalObject 考核对象
+     * @return List
+     */
+    List<PerformanceAppraisalItemsDTO> selectByIndicatorIds(@Param("indicatorIds") List<Long> indicatorIds, @Param("appraisalObject") int appraisalObject);
 }

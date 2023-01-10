@@ -286,6 +286,17 @@ public class PerformancePercentageServiceImpl implements IPerformancePercentageS
     }
 
     /**
+     * 根据绩效等级ID集合查询绩效考核
+     *
+     * @param perPerformanceRankIds  绩效等级ID集合
+     * @return List
+     */
+    @Override
+    public List<PerformancePercentageDTO> selectPerformancePercentageByRankIdAndCategory(List<Long> perPerformanceRankIds, List<Long> orgPerformanceRankIds) {
+        return performancePercentageMapper.selectPerformancePercentageByRankIdAndCategory(perPerformanceRankIds, orgPerformanceRankIds);
+    }
+
+    /**
      * 逻辑删除绩效比例表信息
      *
      * @param performancePercentageDTO 绩效比例表

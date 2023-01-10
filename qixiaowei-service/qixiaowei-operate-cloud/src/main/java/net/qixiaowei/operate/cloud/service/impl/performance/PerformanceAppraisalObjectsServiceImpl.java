@@ -327,5 +327,16 @@ public class PerformanceAppraisalObjectsServiceImpl implements IPerformanceAppra
     public List<PerformanceAppraisalObjectsDTO> queryQuoteEmployeeById(Long employeeId) {
         return performanceAppraisalObjectsMapper.queryQuoteEmployeeById(employeeId);
     }
+
+    /**
+     * 通过部门ID集合查询绩效考核对象集合
+     *
+     * @param departmentIds 部门ID集合
+     * @return List
+     */
+    @Override
+    public List<PerformanceAppraisalObjectsDTO> selectByDepartmentIds(List<Long> departmentIds) {
+        return performanceAppraisalObjectsMapper.selectByDepartmentIds(departmentIds);
+    }
 }
 

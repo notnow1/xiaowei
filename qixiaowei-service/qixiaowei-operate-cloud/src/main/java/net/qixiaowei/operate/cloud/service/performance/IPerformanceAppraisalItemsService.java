@@ -1,9 +1,11 @@
 package net.qixiaowei.operate.cloud.service.performance;
 
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalItemsExcel;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -140,4 +142,13 @@ public interface IPerformanceAppraisalItemsService {
      * @return List
      */
     List<PerformanceAppraisalItemsDTO> selectPerformanceAppraisalItemsByPerformAppraisalObjectIds(List<Long> performanceAppraisalObjectsIds);
+
+    /**
+     * 根据指标ID集合查询绩效
+     *
+     * @param map 指标ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalItemsDTO> selectByIndicatorIds(Map<Integer, List<Long>> map);
+
 }

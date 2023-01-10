@@ -140,4 +140,12 @@ public interface SalaryPayDetailsMapper {
      * @return
      */
     List<SalaryPayDetailsDTO> selectSalaryPayDetailsBySalaryPayIds(@Param("salaryPayIds") List<Long> salaryPayIds);
+
+    /**
+     * 根据工资项查询工资详情表
+     *
+     * @param salaryItemIds 工资项ID集合
+     * @return List
+     */
+    List<SalaryPayDetailsDTO> selectSalaryPayDetailsByItemIds(@Param("salaryItemIds") List<Long> salaryItemIds);
 }

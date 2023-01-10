@@ -117,10 +117,10 @@ public interface PerformanceRankMapper {
     /**
      * 删除前查看ids是否存在
      *
-     * @param performanceRankIds
+     * @param performanceRankIds 绩效等级ID集合
      * @return
      */
-    int isExist(@Param("performanceRankIds") List<Long> performanceRankIds);
+    List<PerformanceRankDTO> isExist(@Param("performanceRankIds") List<Long> performanceRankIds);
 
     /**
      * 获取组织绩效等级体系表

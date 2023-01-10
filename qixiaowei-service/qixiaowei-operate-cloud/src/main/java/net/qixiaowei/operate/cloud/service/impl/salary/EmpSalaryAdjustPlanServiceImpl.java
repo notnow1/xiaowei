@@ -806,5 +806,18 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
     public List<EmpSalaryAdjustPlanDTO> selectBySystemIds(List<Long> officialRankSystemIds) {
         return empSalaryAdjustPlanMapper.selectBySystemIds(officialRankSystemIds);
     }
+
+    /**
+     * 根据部门Id查询个人调薪
+     *
+     * @param departmentId 部门ID
+     * @return List
+     */
+    @Override
+    public List<EmpSalaryAdjustPlanDTO> selectByDepartmentId(Long departmentId) {
+        EmpSalaryAdjustPlanDTO empSalaryAdjustPlan = new EmpSalaryAdjustPlanDTO();
+        empSalaryAdjustPlan.setAdjustDepartmentId(departmentId);
+        return empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
+    }
 }
 

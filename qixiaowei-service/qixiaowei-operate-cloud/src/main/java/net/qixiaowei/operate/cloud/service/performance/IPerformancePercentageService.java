@@ -109,4 +109,12 @@ public interface IPerformancePercentageService {
      * @return
      */
     List<PerformancePercentageDTO> selectPerformancePercentageByPersonId(Long performanceRankId);
+
+    /**
+     * 根据绩效等级ID集合查询绩效考核
+     *
+     * @param perPerformanceRankIds 绩效等级ID集合
+     * @return List
+     */
+    List<PerformancePercentageDTO> selectPerformancePercentageByRankIdAndCategory(List<Long> perPerformanceRankIds, List<Long> orgPerformanceRankIds);
 }

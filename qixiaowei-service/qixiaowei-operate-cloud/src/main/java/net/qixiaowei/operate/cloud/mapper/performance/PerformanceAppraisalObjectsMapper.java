@@ -188,4 +188,12 @@ public interface PerformanceAppraisalObjectsMapper {
      * @return
      */
     List<PerformanceAppraisalObjectsDTO> queryQuoteEmployeeById(@Param("employeeId") Long employeeId);
+
+    /**
+     * 通过部门ID集合查询绩效考核对象集合
+     *
+     * @param departmentIds 部门ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> selectByDepartmentIds(@Param("departmentIds") List<Long> departmentIds);
 }

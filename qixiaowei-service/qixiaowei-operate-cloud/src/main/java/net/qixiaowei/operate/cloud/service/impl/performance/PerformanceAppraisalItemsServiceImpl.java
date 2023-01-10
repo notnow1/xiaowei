@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.impl.performance;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalItems;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -266,6 +268,23 @@ public class PerformanceAppraisalItemsServiceImpl implements IPerformanceApprais
     @Override
     public List<PerformanceAppraisalItemsDTO> selectPerformanceAppraisalItemsByPerformAppraisalObjectIds(List<Long> performanceAppraisalObjectsIds) {
         return performanceAppraisalItemsMapper.selectPerformanceAppraisalItemsByPerformAppraisalObjectIds(performanceAppraisalObjectsIds);
+    }
+
+    /**
+     * 根据指标ID集合查询绩效
+     *
+     * @param map 指标ID集合
+     * @return List
+     */
+    @Override
+    public List<PerformanceAppraisalItemsDTO> selectByIndicatorIds(Map<Integer, List<Long>> map) {
+        if (StringUtils.isNotNull(map) && map.size() == 1) {
+            for (Integer integer : map.keySet()) {
+                List<Long> indicatorIds = map.get(integer);
+                return performanceAppraisalItemsMapper.selectByIndicatorIds(indicatorIds, integer);
+            }
+        }
+        throw new ServiceException("系统错误 入参不对");
     }
 }
 

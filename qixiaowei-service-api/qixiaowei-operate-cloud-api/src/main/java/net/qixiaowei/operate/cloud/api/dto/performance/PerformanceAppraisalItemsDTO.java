@@ -35,6 +35,10 @@ public class PerformanceAppraisalItemsDTO {
 
     }
     /**
+     * 绩效等级名称
+     */
+    private String performanceRankName;
+    /**
     * ID
     */
     private  Long performAppraisalItemsId;

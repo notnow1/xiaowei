@@ -137,4 +137,13 @@ public interface PerformancePercentageMapper {
      * @return
      */
     List<PerformancePercentageDTO> selectPerformancePercentageByPersonId(@Param("performanceRankId") Long performanceRankId);
+
+    /**
+     * 根据绩效等级ID集合查询绩效考核
+     *
+     * @param perPerformanceRankIds 绩效等级ID集合
+     * @return List
+     */
+    List<PerformancePercentageDTO> selectPerformancePercentageByRankIdAndCategory(@Param("perPerformanceRankIds") List<Long> perPerformanceRankIds,
+                                                                                  @Param("orgPerformanceRankIds") List<Long> orgPerformanceRankIds);
 }

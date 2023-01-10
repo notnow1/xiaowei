@@ -287,6 +287,21 @@
         pao.evaluation_score,
         pao.sort
     </select>
+    <!--根据绩效等级ID集合查询绩效考核-->
+    <select id="selectPerformanceAppraisalByRankIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO">
+        SELECT
+        pa.performance_appraisal_id,
+        pa.performance_rank_id,
+        pa.performance_rank_name
+        FROM performance_appraisal pa
+        WHERE pa.delete_flag = 0
+        AND pa.performance_rank_id
+        IN
+        <foreach collection="performanceRankIds" open="(" close=")" separator="," item="item" index="index">
+            #{item}
+        </foreach>
+    </select>
     <!--新增绩效考核表-->
     <insert id="insertPerformanceAppraisal" useGeneratedKeys="true" keyProperty="performanceAppraisalId">
         INSERT INTO performance_appraisal

@@ -1,10 +1,7 @@
 package net.qixiaowei.operate.cloud.service.performance;
 
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.*;
 import net.qixiaowei.operate.cloud.excel.performance.PerformanceAppraisalExcel;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -416,4 +413,12 @@ public interface IPerformanceAppraisalService {
      * @return
      */
     int withdraw(Long performAppraisalObjectsId);
+
+    /**
+     * 根据绩效等级ID集合查询绩效考核
+     *
+     * @param performanceRankIds 绩效等级ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalDTO> selectPerformanceAppraisalByRankIds(List<Long> performanceRankIds);
 }

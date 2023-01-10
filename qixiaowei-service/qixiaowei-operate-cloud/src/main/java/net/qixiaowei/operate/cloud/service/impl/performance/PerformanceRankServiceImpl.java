@@ -1,28 +1,27 @@
 package net.qixiaowei.operate.cloud.service.impl.performance;
 
-import java.util.HashMap;
-import java.util.List;
-
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
-import net.qixiaowei.operate.cloud.service.performance.IPerformancePercentageService;
-import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankFactorService;
-import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Map;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceRank;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;
+import net.qixiaowei.operate.cloud.mapper.performance.PerformanceAppraisalMapper;
+import net.qixiaowei.operate.cloud.mapper.performance.PerformancePercentageMapper;
 import net.qixiaowei.operate.cloud.mapper.performance.PerformanceRankMapper;
+import net.qixiaowei.operate.cloud.service.performance.IPerformancePercentageService;
+import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankFactorService;
 import net.qixiaowei.operate.cloud.service.performance.IPerformanceRankService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 
 /**
@@ -40,7 +39,13 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
     IPerformanceRankFactorService performanceRankFactorService;
 
     @Autowired
+    PerformancePercentageMapper performancePercentageMapper;
+
+    @Autowired
     IPerformancePercentageService performancePercentageService;
+
+    @Autowired
+    PerformanceAppraisalMapper performanceAppraisalMapper;
 
     /**
      * 查询绩效等级表
@@ -84,7 +89,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         if (StringUtils.isNull(performanceRankCategory)) {
             throw new ServiceException("请选择绩效类别");
         }
-        int count = performanceRankMapper.checkUniqueName(performanceRankName,performanceRankCategory);
+        int count = performanceRankMapper.checkUniqueName(performanceRankName, performanceRankCategory);
         if (count > 0) {
             throw new ServiceException("绩效等级名称不能重复");
         }
@@ -113,6 +118,9 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         if (StringUtils.isNull(performanceRankId)) {
             throw new ServiceException("绩效等级配置id不能为空");
         }
+        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
+            throw new ServiceException("等级系数信息不可以为空");
+        }
         PerformanceRank performanceRank = new PerformanceRank();
         BeanUtils.copyProperties(performanceRankDTO, performanceRank);
         performanceRank.setUpdateTime(DateUtils.getNowDate());
@@ -130,28 +138,89 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
     @Transactional
     @Override
     public int logicDeletePerformanceRankByPerformanceRankIds(List<Long> performanceRankIds) {
-        int exist = performanceRankMapper.isExist(performanceRankIds);
-        if (exist < performanceRankIds.size()) {
+        List<PerformanceRankDTO> performanceRankDTOByIds = performanceRankMapper.isExist(performanceRankIds);
+        if (performanceRankDTOByIds.size() < performanceRankIds.size()) {
             throw new ServiceException("绩效等级已不存在");
         }
-        if (isQuote(performanceRankIds)) {
-            throw new ServiceException("存在被引用的绩效等级");
-        }
+        isQuote(performanceRankIds, performanceRankDTOByIds);
         List<Long> performanceRankFactorIds = performanceRankMapper.selectPerformanceRankFactorIds(performanceRankIds);
         if (StringUtils.isNotEmpty(performanceRankFactorIds)) {
             performanceRankFactorService.logicDeletePerformanceRankFactorByPerformanceRankFactorIds(performanceRankFactorIds);
         }
+
         return performanceRankMapper.logicDeletePerformanceRankByPerformanceRankIds(performanceRankIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**
-     * todo 绩效等级删除引用校验
-     *
-     * @param performanceRankIds
-     * @return
+     * @param performanceRankIds      绩效等级ID集合
+     * @param performanceRankDTOByIds 绩效等级DTO集合
      */
-    private boolean isQuote(List<Long> performanceRankIds) {
-        return false;
+    private void isQuote(List<Long> performanceRankIds, List<PerformanceRankDTO> performanceRankDTOByIds) {
+        StringBuilder quoteReminder = new StringBuilder("");
+        List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalByRankIds(performanceRankIds);
+        if (StringUtils.isNotEmpty(performanceAppraisalDTOS)) {
+            StringBuilder performanceRankNames = new StringBuilder("");
+            for (PerformanceRankDTO performanceRankDTO : performanceRankDTOByIds) {
+                for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
+                    if (performanceAppraisalDTO.getPerformanceRankId().equals(performanceRankDTO.getPerformanceRankId())) {
+                        performanceRankNames.append(performanceRankDTO.getPerformanceRankName()).append(",");
+                        break;
+                    }
+                }
+            }
+            StringBuilder performanceAppraisalName = new StringBuilder("");
+            Set<String> performanceAppraisalSet = new HashSet<>();
+            for (PerformanceRankDTO performanceRankDTO : performanceRankDTOByIds) {
+                for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
+                    if (performanceAppraisalDTO.getPerformanceRankId().equals(performanceRankDTO.getPerformanceRankId())) {
+                        performanceAppraisalSet.add(performanceAppraisalDTO.getAppraisalName());
+                    }
+                }
+            }
+            for (String performanceAppraisal : performanceAppraisalSet) {
+                performanceAppraisalName.append(performanceAppraisal).append(",");
+            }
+            quoteReminder.append("绩效等级配置【")
+                    .append(performanceRankNames.deleteCharAt(performanceRankNames.length() - 1))
+                    .append("】已被绩效考核任务中的【考核任务名称】为【")
+                    .append(performanceAppraisalName.deleteCharAt(performanceAppraisalName.length() - 1))
+                    .append("】引用 无法删除\n");
+        }
+        // 个人绩效等级
+        List<PerformancePercentageDTO> perPerformancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageByRankIdAndCategory(performanceRankIds, null);
+        if (StringUtils.isEmpty(perPerformancePercentageDTOS)) {
+            StringBuilder performanceRankNames = new StringBuilder("");
+            for (PerformanceRankDTO performanceRankDTO : performanceRankDTOByIds) {
+                for (PerformancePercentageDTO performancePercentageDTO : perPerformancePercentageDTOS) {
+                    if (performancePercentageDTO.getPersonPerformanceRankId().equals(performanceRankDTO.getPerformanceRankId())) {
+                        performanceRankNames.append(performanceRankDTO.getPerformanceRankName()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("绩效等级配置【")
+                    .append(performanceRankNames.deleteCharAt(performanceRankNames.length() - 1))
+                    .append("】已被绩效考核任务中的【个人绩效等级】引用 无法删除\n");
+        }
+        // 组织绩效等级
+        List<PerformancePercentageDTO> orgPerformancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageByRankIdAndCategory(null, performanceRankIds);
+        if (StringUtils.isEmpty(orgPerformancePercentageDTOS)) {
+            StringBuilder performanceRankNames = new StringBuilder("");
+            for (PerformanceRankDTO performanceRankDTO : performanceRankDTOByIds) {
+                for (PerformancePercentageDTO performancePercentageDTO : orgPerformancePercentageDTOS) {
+                    if (performancePercentageDTO.getPersonPerformanceRankId().equals(performanceRankDTO.getPerformanceRankId())) {
+                        performanceRankNames.append(performanceRankDTO.getPerformanceRankName()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("绩效等级配置【")
+                    .append(performanceRankNames.deleteCharAt(performanceRankNames.length() - 1))
+                    .append("】已被绩效考核任务中的【组织绩效等级】引用 无法删除\n");
+        }
+        if (quoteReminder.length() != 0) {
+            throw new ServiceException(quoteReminder.toString());
+        }
     }
 
     /**

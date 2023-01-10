@@ -112,7 +112,7 @@ public interface DeptSalaryAdjustItemMapper {
      * @param deptSalaryAdjustPlanId 计划ID
      * @return
      */
-    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemBySalaryAdjustPlanId(Long deptSalaryAdjustPlanId);
+    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemBySalaryAdjustPlanId(@Param("deptSalaryAdjustPlanId") Long deptSalaryAdjustPlanId);
 
     /**
      * 通过计划ID集合查找调薪项
@@ -120,5 +120,13 @@ public interface DeptSalaryAdjustItemMapper {
      * @param deptSalaryAdjustPlanIds 计划ID集合
      * @return
      */
-    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemBySalaryAdjustPlanIds(List<Long> deptSalaryAdjustPlanIds);
+    List<DeptSalaryAdjustItemDTO> selectDeptSalaryAdjustItemBySalaryAdjustPlanIds(@Param("deptSalaryAdjustPlanIds") List<Long> deptSalaryAdjustPlanIds);
+
+    /**
+     * 根据部门ID集合查询部门调薪
+     *
+     * @param departmentId 部门ID集合
+     * @return List
+     */
+    List<DeptSalaryAdjustItemDTO> selectByDepartmentId(@Param("departmentId") Long departmentId);
 }

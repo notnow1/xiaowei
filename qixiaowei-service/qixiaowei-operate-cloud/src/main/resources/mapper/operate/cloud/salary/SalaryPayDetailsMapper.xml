@@ -109,6 +109,26 @@
         </foreach>
         ORDER BY spd.sort ASC
     </select>
+    <select id="selectSalaryPayDetailsByItemIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO">
+        SELECT
+        spd.salary_pay_details_id,
+        spd.salary_pay_id,
+        spd.salary_item_id,
+        spd.amount,
+        spd.sort,
+        sp.employee_id
+        FROM
+        salary_pay_details spd
+        LEFT JOIN salary_pay sp ON sp.salary_pay_id = spd.salary_pay_id
+        AND sp.delete_flag = 0
+        WHERE spd.delete_flag = 0
+        AND spd.salary_item_id
+        IN
+        <foreach collection="salaryItemIds" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
     <!--新增工资发薪明细表-->
     <insert id="insertSalaryPayDetails" useGeneratedKeys="true" keyProperty="salaryPayDetailsId">
         INSERT INTO salary_pay_details

@@ -174,4 +174,12 @@ public interface IPerformanceAppraisalObjectsService {
      * @return List
      */
     List<PerformanceAppraisalObjectsDTO> queryQuoteEmployeeById(Long employeeId);
+
+    /**
+     * 通过部门ID集合查询绩效考核对象集合
+     *
+     * @param departmentIds 部门ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalObjectsDTO> selectByDepartmentIds(List<Long> departmentIds);
 }

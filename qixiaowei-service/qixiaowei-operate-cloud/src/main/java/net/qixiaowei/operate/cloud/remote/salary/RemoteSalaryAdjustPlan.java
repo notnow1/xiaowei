@@ -50,4 +50,9 @@ public class RemoteSalaryAdjustPlan implements RemoteSalaryAdjustPlanService {
     public R<List<EmpSalaryAdjustPlanDTO>> selectBySystemIds(@RequestBody List<Long> officialRankSystemIds, String source) {
         return R.ok(empSalaryAdjustPlanService.selectBySystemIds(officialRankSystemIds));
     }
+
+    @Override
+    public R<List<EmpSalaryAdjustPlanDTO>> selectByDepartmentId(@RequestParam("departmentId") Long departmentId, String source) {
+        return R.ok(empSalaryAdjustPlanService.selectByDepartmentId(departmentId));
+    }
 }

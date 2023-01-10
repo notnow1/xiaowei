@@ -5,6 +5,7 @@ import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import groovy.lang.Lazy;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -64,6 +65,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
     private IPerformancePercentageService performancePercentageService;
 
     @Autowired
+    @Lazy
     private IPerformanceRankService performanceRankService;
 
     @Autowired
@@ -2686,6 +2688,17 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
             itemsDTOList.add(itemsDTO);
         }
         return performanceAppraisalItemsService.withdrawPerformanceAppraisalItems(itemsDTOList);
+    }
+
+    /**
+     * 根据绩效等级ID集合查询绩效考核
+     *
+     * @param performanceRankIds 绩效等级ID集合
+     * @return List
+     */
+    @Override
+    public List<PerformanceAppraisalDTO> selectPerformanceAppraisalByRankIds(List<Long> performanceRankIds) {
+        return performanceAppraisalMapper.selectPerformanceAppraisalByRankIds(performanceRankIds);
     }
 
     /**

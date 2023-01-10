@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.service.impl.salary;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.salary.ThirdLevelSalaryCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -9,14 +11,20 @@ import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
+import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayDetailsMapper;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -40,6 +48,12 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
 
     @Autowired
     private SalaryItemMapper salaryItemMapper;
+
+    @Autowired
+    private SalaryPayDetailsMapper salaryPayDetailsMapper;
+
+    @Autowired
+    private RemoteEmployeeService employeeService;
 
     /**
      * 查询工资项
@@ -222,10 +236,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
                 throw new ServiceException(salaryItemDTO.getThirdLevelItem() + "为预置配置，不可以删除");
             }
         }
-        //todo 引用校验
-        if (isQuote(salaryItemIds)) {
-            throw new ServiceException("存在被引用的工资条配置");
-        }
+        isQuote(salaryItemIds, salaryItemDTOS);
         salaryItemMapper.logicDeleteSalaryItemBySalaryItemIds(salaryItemIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
         try {
             Thread.sleep(500);
@@ -235,8 +246,50 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
         return 1;
     }
 
-    private boolean isQuote(List<Long> salaryItemIds) {
-        return false;
+    /**
+     * 引用校验
+     *
+     * @param salaryItemIds  工资项Id集合
+     * @param salaryItemDTOS 工资项DTO集合
+     */
+    private void isQuote(List<Long> salaryItemIds, List<SalaryItemDTO> salaryItemDTOS) {
+        StringBuilder quoteReminder = new StringBuilder("");
+        List<SalaryPayDetailsDTO> salaryPayDetailsDTOS = salaryPayDetailsMapper.selectSalaryPayDetailsByItemIds(salaryItemIds);
+        if (StringUtils.isNotEmpty(salaryPayDetailsDTOS)) {
+            Set<Long> employeeIds = new HashSet<>();
+            StringBuilder salaryItemName = new StringBuilder("");
+            for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+                for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOS) {
+                    if (salaryPayDetailsDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())) {
+                        employeeIds.add(salaryPayDetailsDTO.getEmployeeId());
+                    }
+                }
+            }
+            for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+                for (SalaryPayDetailsDTO salaryPayDetailsDTO : salaryPayDetailsDTOS) {
+                    if (salaryPayDetailsDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())) {
+                        salaryItemName.append(salaryItemDTO.getThirdLevelItem()).append(",");
+                        break;
+                    }
+                }
+            }
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                R<List<EmployeeDTO>> listR = employeeService.selectByEmployeeIds(new ArrayList<>(employeeIds), SecurityConstants.INNER);
+                if (listR.getCode() != 200) {
+                    throw new ServiceException("远程调用人员信息失败 请联系管理员");
+                }
+                List<EmployeeDTO> employeeDTOS = listR.getData();
+                List<String> employeeNames = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList());
+                quoteReminder.append("薪酬类别【三级工资项目】的【")
+                        .append(salaryItemName.deleteCharAt(salaryItemName.length() - 1))
+                        .append("】已被月度工资数据管理中的【员工姓名】为【")
+                        .append(employeeNames)
+                        .append("】引用 无法删除\n");
+            }
+        }
+        if (quoteReminder.length() != 0) {
+            throw new ServiceException(quoteReminder.toString());
+        }
     }
 
     /**

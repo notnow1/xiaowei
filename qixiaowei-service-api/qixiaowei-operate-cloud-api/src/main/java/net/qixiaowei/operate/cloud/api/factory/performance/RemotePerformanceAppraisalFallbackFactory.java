@@ -1,6 +1,8 @@
 package net.qixiaowei.operate.cloud.api.factory.performance;
 
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
+import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalItemsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppraisalService;
 import org.slf4j.Logger;
@@ -9,6 +11,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -31,6 +34,16 @@ public class RemotePerformanceAppraisalFallbackFactory implements FallbackFactor
             @Override
             public R<List<PerformanceAppraisalObjectsDTO>> queryQuoteEmployeeById(Long employeeId, String source) {
                 return R.fail("根据员工ID查询绩效考核是否被引用失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<PerformanceAppraisalItemsDTO>> selectByIndicatorIds(Map<Integer, List<Long>> map, String source) {
+                return R.fail("根据员工ID查询绩效考核是否被引用失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<PerformanceAppraisalObjectsDTO>> selectByDepartmentIds(List<Long> departmentIds, String source) {
+                return R.fail("根据部门ID查询绩效考核是否被引用失败:" + throwable.getMessage());
             }
 
         };

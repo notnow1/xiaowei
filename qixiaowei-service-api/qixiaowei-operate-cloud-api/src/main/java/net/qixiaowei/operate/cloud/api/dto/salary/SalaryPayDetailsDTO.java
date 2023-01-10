@@ -63,6 +63,10 @@ public class SalaryPayDetailsDTO {
      */
     private Long employeeId;
     /**
+     * 员工名称
+     */
+    private String employeeName;
+    /**
      * 发薪年份
      */
     private Integer payYear;

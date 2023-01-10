@@ -63,12 +63,17 @@
         </foreach>
         AND delete_flag = 0
     </select>
-    <select id="isExist" resultType="java.lang.Integer">
-        SELECT COUNT(performance_rank_id) FROM performance_rank WHERE performance_rank_id IN
+    <select id="isExist"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankDTO">
+        SELECT
+        performance_rank_id, performance_rank_category, performance_rank_name, performance_rank_description,
+        delete_flag, create_by, create_time, update_by, update_time
+        FROM performance_rank
+        WHERE delete_flag=0
+        AND performance_rank_id IN
         <foreach collection="performanceRankIds" index="index" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        AND delete_flag = 0
     </select>
     <!--获取组织绩效等级体系表-->
     <select id="selectOrganizeDto"

@@ -138,4 +138,12 @@ public interface PerformanceAppraisalMapper {
      * @return 绩效考核对象
      */
     PerformanceAppraisalObjectsDTO selectOrgAppraisalObjectByObjectId(@Param("performAppraisalObjectsId") Long performAppraisalObjectsId);
+
+    /**
+     * 根据绩效等级ID集合查询绩效考核
+     *
+     * @param performanceRankIds 绩效等级ID集合
+     * @return List
+     */
+    List<PerformanceAppraisalDTO> selectPerformanceAppraisalByRankIds(@Param("performanceRankIds") List<Long> performanceRankIds);
 }

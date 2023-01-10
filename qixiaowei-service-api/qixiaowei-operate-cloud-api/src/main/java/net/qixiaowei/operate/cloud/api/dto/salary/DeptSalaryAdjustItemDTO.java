@@ -44,6 +44,10 @@ public class DeptSalaryAdjustItemDTO {
      */
     private Long deptSalaryAdjustItemId;
     /**
+     * 计划年份
+     */
+    private Integer planYear;
+    /**
      * 部门调薪计划ID
      */
     private Long deptSalaryAdjustPlanId;

@@ -11,9 +11,9 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.Area;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
-import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.mapper.targetManager.AreaMapper;
 import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
+import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankDecomposeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class AreaServiceImpl implements IAreaService {
     private RemoteOfficialRankSystemService officialRankSystemService;
 
     @Autowired
-    private RemoteDecomposeService targetDecomposeService;
+    private ITargetDecomposeService targetDecomposeService;
 
     /**
      * 查询区域表
@@ -229,11 +229,7 @@ public class AreaServiceImpl implements IAreaService {
         }
         Map<Integer, List<Long>> map = new HashMap<>();
         map.put(2, areaIds);
-        R<List<TargetDecomposeDetailsDTO>> decomposeListR = targetDecomposeService.selectByIds(map, SecurityConstants.INNER);
-        if (decomposeListR.getCode() != 200) {
-            throw new ServiceException("远程调用目标分解失败 请联系管理员");
-        }
-        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = decomposeListR.getData();
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeService.selectByIds(map);
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
             StringBuilder areaNames = new StringBuilder("");
             for (AreaDTO areaById : areaByIds) {
