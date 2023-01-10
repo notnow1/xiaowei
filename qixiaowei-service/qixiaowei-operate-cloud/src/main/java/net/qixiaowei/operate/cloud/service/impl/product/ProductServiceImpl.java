@@ -250,7 +250,7 @@ public class ProductServiceImpl implements IProductService {
 
         //父级id
         Long parentProductId = productDTO.getParentProductId();
-        if (null != parentProductId) {
+        if (null != parentProductId && !parentProductId.equals(0L)) {
             ProductDTO productDTO2 = productMapper.selectProductByProductId(parentProductId);
             if (StringUtils.isNull(productDTO2)){
                 throw new ServiceException("上级不存在！请刷新页面重试");
