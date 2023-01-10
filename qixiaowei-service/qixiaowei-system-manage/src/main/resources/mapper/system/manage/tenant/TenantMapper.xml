@@ -154,6 +154,10 @@
         </if>
     </select>
 
+    <select id="getTenantCodes" resultType="java.lang.String">
+        SELECT tenant_code FROM tenant WHERE delete_flag=0 AND tenant_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY tenant_code ASC
+    </select>
+
     <select id="getTenantIds" resultType="java.lang.Long">
         select
         t.tenant_id

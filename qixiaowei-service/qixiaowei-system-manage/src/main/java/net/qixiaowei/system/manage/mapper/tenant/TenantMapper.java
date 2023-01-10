@@ -45,6 +45,12 @@ public interface TenantMapper{
     */
     List<TenantDTO> selectTenantList(@Param("tenant")Tenant tenant);
 
+    /**
+     * 查询租户编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 租户编码集合
+     */
+    List<String> getTenantCodes(@Param("prefixCodeRule")String prefixCodeRule);
 
     /**
      * 查询有效的租户ID集合

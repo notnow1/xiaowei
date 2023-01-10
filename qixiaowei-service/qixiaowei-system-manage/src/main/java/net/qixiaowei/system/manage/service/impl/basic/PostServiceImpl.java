@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -73,6 +74,41 @@ public class PostServiceImpl implements IPostService {
         Post post = new Post();
         BeanUtils.copyProperties(postDTO, post);
         return postMapper.selectPostList(post);
+    }
+
+    /**
+     * 生成岗位编码
+     *
+     * @return 岗位编码
+     */
+    @Override
+    public String generatePostCode() {
+        String postCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.POST.getCode();
+        List<String> postCodes = postMapper.getPostCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(postCodes)) {
+            for (String code : postCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 5) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        postCode = "000" + number;
+        postCode = prefixCodeRule + postCode.substring(postCode.length() - 3);
+        return postCode;
     }
 
     /**

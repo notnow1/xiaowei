@@ -536,6 +536,11 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="getEmployeeCodes" resultType="java.lang.String">
+        SELECT employee_code FROM employee WHERE delete_flag=0 AND employee_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY employee_code ASC
+    </select>
+
     <!--    批量查询是否被引用-->
     <select id="selectEmployeePostIds" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT

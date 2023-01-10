@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.enums.system.ConfigCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -121,6 +122,41 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
         });
+    }
+
+    /**
+     * 生成行业编码
+     *
+     * @return 行业编码
+     */
+    @Override
+    public String generateIndustryCode() {
+        String industryCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.INDUSTRY.getCode();
+        List<String> industryCodes = industryMapper.getIndustryCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(industryCodes)) {
+            for (String code : industryCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 5) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        industryCode = "000" + number;
+        industryCode = prefixCodeRule + industryCode.substring(industryCode.length() - 3);
+        return industryCode;
     }
 
     /**

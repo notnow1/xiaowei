@@ -54,6 +54,13 @@ public interface IIndicatorService {
     List<Tree<Long>> selectTreeList(IndicatorDTO indicatorDTO);
 
     /**
+     * 生成指标编码
+     *
+     * @return 指标编码
+     */
+    String generateIndicatorCode(Integer indicatorType);
+
+    /**
      * 新增指标表
      *
      * @param indicatorDTO 指标表

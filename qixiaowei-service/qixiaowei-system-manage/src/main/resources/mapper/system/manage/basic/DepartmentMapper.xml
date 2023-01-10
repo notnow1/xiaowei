@@ -96,6 +96,11 @@
         </if>
 
     </select>
+
+    <select id="getDepartmentCodes" resultType="java.lang.String">
+        SELECT department_code FROM department WHERE delete_flag=0 AND department_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY department_code ASC
+    </select>
+
     <!--    根据父级id查询数据-->
     <select id="selectParentDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         select

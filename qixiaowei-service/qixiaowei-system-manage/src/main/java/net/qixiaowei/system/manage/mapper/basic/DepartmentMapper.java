@@ -41,6 +41,13 @@ public interface DepartmentMapper{
     List<DepartmentDTO> selectDepartmentList(@Param("department")DepartmentDTO departmentDTO);
 
     /**
+     * 查询部门编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 部门编码集合
+     */
+    List<String> getDepartmentCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+    /**
      * 查询人员是否被部门引用
      *
      * @param employeeId 部门表

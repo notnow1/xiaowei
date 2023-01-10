@@ -39,11 +39,11 @@ public interface IRoleService{
     List<RoleDTO> selectRoleList(RoleDTO roleDTO);
 
     /**
-     * 获取角色编码
+     * 生成角色编码
      *
-     * @return 角色信息
+     * @return 角色编码
      */
-    String getRoleCode();
+    String generateRoleCode();
 
     /**
     * 新增角色表

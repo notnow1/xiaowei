@@ -46,14 +46,14 @@ public class RoleController extends BaseController {
     }
 
     /**
-     * 获取角色编码
+     * 生成角色编码
      *
-     * @return 角色信息
+     * @return 角色编码
      */
     @RequiresPermissions(value = {"system:manage:role:add", "system:manage:role:edit"}, logical = Logical.OR)
-    @GetMapping("/getRoleCode")
-    public AjaxResult getRoleCode() {
-        return AjaxResult.success(roleService.getRoleCode());
+    @GetMapping("/generate/roleCode")
+    public AjaxResult generateRoleCode() {
+        return AjaxResult.success(roleService.generateRoleCode());
     }
 
     /**

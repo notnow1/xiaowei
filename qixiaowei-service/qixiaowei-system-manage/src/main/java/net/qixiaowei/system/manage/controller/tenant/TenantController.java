@@ -58,6 +58,17 @@ public class TenantController extends BaseController {
     }
 
     /**
+     * 生成租户编码
+     *
+     * @return 租户编码
+     */
+    @RequiresPermissions(value = {"system:manage:tenant:add", "system:manage:tenant:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/tenantCode")
+    public AjaxResult generateTenantCode() {
+        return AjaxResult.success(tenantService.generateTenantCode());
+    }
+
+    /**
      * 新增租户表
      */
     @Log(title = "新增租户", businessType = BusinessType.TENANT, businessId = "tenantId", operationType = OperationType.INSERT)

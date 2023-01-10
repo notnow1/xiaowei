@@ -45,6 +45,17 @@ public class PostController extends BaseController {
     }
 
     /**
+     * 生成岗位编码
+     *
+     * @return 岗位编码
+     */
+    @RequiresPermissions(value = {"system:manage:post:add", "system:manage:post:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/postCode")
+    public AjaxResult generatePostCode() {
+        return AjaxResult.success(postService.generatePostCode());
+    }
+
+    /**
      * 新增岗位表
      */
     @Log(title = "新增岗位", businessType = BusinessType.POST, businessId = "postId", operationType = OperationType.INSERT)

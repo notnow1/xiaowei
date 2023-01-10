@@ -5,6 +5,7 @@ import java.util.List;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,17 @@ public class DepartmentController extends BaseController {
 
     @Autowired
     private IDepartmentService departmentService;
+
+    /**
+     * 生成部门编码
+     *
+     * @return 部门编码
+     */
+    @RequiresPermissions(value = {"system:manage:department:add", "system:manage:department:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/departmentCode")
+    public AjaxResult generateDepartmentCode() {
+        return AjaxResult.success(departmentService.generateDepartmentCode());
+    }
 
 
     /**

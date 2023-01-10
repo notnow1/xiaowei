@@ -60,10 +60,10 @@ public interface RoleMapper {
 
     /**
      * 查询角色编码集合
-     *
+     * @param prefixCodeRule 编码前缀
      * @return 角色编码集合
      */
-    List<String> getRoleCodes();
+    List<String> getRoleCodes(@Param("prefixCodeRule")String prefixCodeRule);
 
     /**
      * 新增角色表

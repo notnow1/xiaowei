@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.service.impl.basic;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -87,18 +88,19 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 查询部门名称附加父级名称
+     *
      * @return
      */
     @Override
     public List<String> selectDepartmentListName() {
-        List<String> parentDepartmentExcelNames =  new ArrayList<>();
+        List<String> parentDepartmentExcelNames = new ArrayList<>();
         DepartmentDTO departmentDTO = new DepartmentDTO();
         //查询数据
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
         List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0);
         List<DepartmentDTO> natureGroups = treeToList(tree);
-        if (StringUtils.isNotEmpty(natureGroups)){
-            parentDepartmentExcelNames=natureGroups.stream().map(DepartmentDTO::getParentDepartmentExcelName).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(natureGroups)) {
+            parentDepartmentExcelNames = natureGroups.stream().map(DepartmentDTO::getParentDepartmentExcelName).collect(Collectors.toList());
         }
         return parentDepartmentExcelNames;
     }
@@ -115,6 +117,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 树形数据转list
+     *
      * @param departmentDTOList
      * @return
      */
@@ -154,12 +157,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
         for (DepartmentDTO catelog : lists) {
             if (catelog.getParentDepartmentId() == pid) {
-                if (pid==0){
+                if (pid == 0) {
                     catelog.setParentDepartmentExcelName(catelog.getDepartmentName());
                 } else {
                     List<DepartmentDTO> departmentDTOList = lists.stream().filter(f -> f.getDepartmentId() == pid).collect(Collectors.toList());
-                    if (StringUtils.isNotEmpty(departmentDTOList)){
-                        catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName()+"/"+catelog.getDepartmentName());
+                    if (StringUtils.isNotEmpty(departmentDTOList)) {
+                        catelog.setParentDepartmentExcelName(departmentDTOList.get(0).getParentDepartmentExcelName() + "/" + catelog.getDepartmentName());
                     }
                 }
                 catelog.setChildren(createTree(lists, Integer.parseInt(catelog.getDepartmentId().toString())));
@@ -167,6 +170,41 @@ public class DepartmentServiceImpl implements IDepartmentService {
             }
         }
         return tree;
+    }
+
+    /**
+     * 生成部门编码
+     *
+     * @return 部门编码
+     */
+    @Override
+    public String generateDepartmentCode() {
+        String departmentCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.DEPARTMENT.getCode();
+        List<String> departmentCodes = departmentMapper.getDepartmentCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(departmentCodes)) {
+            for (String code : departmentCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 5) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        departmentCode = "000" + number;
+        departmentCode = prefixCodeRule + departmentCode.substring(departmentCode.length() - 3);
+        return departmentCode;
     }
 
     /**
@@ -257,7 +295,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
         Department department = new Department();
         //排序
         int i = 1;
-        if (departmentDTO.getParentDepartmentId()==0) {
+        if (departmentDTO.getParentDepartmentId() == 0) {
             BeanUtils.copyProperties(departmentDTO, department);
             departmentDTO.setParentDepartmentId(Constants.TOP_PARENT_ID);
         } else {
@@ -368,9 +406,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
             //根据id查询所有子级数据
             departmentDTOList.addAll(departmentMapper.selectAncestors(departmentDTO.getDepartmentId()));
         }
-        if (StringUtils.isNotEmpty(departmentDTOList)&& departmentDTOList.get(0) != null){
+        if (StringUtils.isNotEmpty(departmentDTOList) && departmentDTOList.get(0) != null) {
             List<DepartmentDTO> departmentDTOList12 = departmentDTOList.stream().distinct().collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(departmentDTOList12)){
+            if (StringUtils.isNotEmpty(departmentDTOList12)) {
                 for (DepartmentDTO dto : departmentDTOList12) {
                     // 岗位是否被引用
                     List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(dto.getDepartmentId());
@@ -388,7 +426,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                     //远程调用 目标分解是否被引用
                     R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(dto.getDepartmentId());
                     List<TargetDecompose> data = listR.getData();
-                    if (StringUtils.isNotEmpty(data)){
+                    if (StringUtils.isNotEmpty(data)) {
                         List<String> collect = data.stream().map(TargetDecompose::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
                         if (StringUtils.isNotEmpty(data)) {
                             decomposesErreo.append("组织名称" + dto.getDepartmentName() + "已被目标分解" + collect + "引用\n");
@@ -518,6 +556,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 根据code查询部门集合
+     *
      * @param departmentCodes
      * @return
      */
@@ -539,6 +578,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 查询所有部门
+     *
      * @return
      */
     @Override
@@ -548,6 +588,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 远程查询一级部门及子级部门
+     *
      * @param departmentId
      * @return
      */
@@ -558,6 +599,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 远程查询所有部门
+     *
      * @return
      */
     @Override
@@ -567,6 +609,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 根据等级查找部门
+     *
      * @param level 等级
      * @return List
      */
@@ -594,18 +637,18 @@ public class DepartmentServiceImpl implements IDepartmentService {
         List<DepartmentPostDTO> departmentPostDTOS = departmentMapper.selectDeptAndPost(departmentDTO.getDepartmentId());
         List<String> collect1 = departmentPostDTOS.stream().map(DepartmentPostDTO::getPostName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         if (StringUtils.isNotEmpty(departmentPostDTOS)) {
-            posterreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被岗位"+collect1+"引用\n");
+            posterreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被岗位" + collect1 + "引用\n");
         }
         //人员是否被引用
         List<EmployeeDTO> employeeDTOS = departmentMapper.queryDeptEmployee(departmentDTO.getDepartmentId());
         List<String> collect2 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
         if (!StringUtils.isEmpty(employeeDTOS)) {
-            emplerreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被人员"+collect2+"引用\n");
+            emplerreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被人员" + collect2 + "引用\n");
         }
         //远程调用 目标分解是否被引用
         R<List<TargetDecompose>> listR = remoteDecomposeService.queryDeptDecompose(departmentDTO.getDepartmentId());
         List<TargetDecompose> data = listR.getData();
-        if (StringUtils.isNotEmpty(data)){
+        if (StringUtils.isNotEmpty(data)) {
             List<String> collect = data.stream().map(TargetDecompose::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList());
             if (StringUtils.isNotEmpty(data)) {
                 decomposesErreo.append("组织名称" + departmentDTO.getDepartmentName() + "已被目标分解" + collect + "引用\n");

@@ -82,7 +82,7 @@
     </select>
 
     <select id="getRoleCodes" resultType="java.lang.String">
-        SELECT role_code FROM role WHERE delete_flag=0 ORDER BY role_code ASC
+        SELECT role_code FROM role WHERE delete_flag=0  AND  role_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY role_code ASC
     </select>
 
     <select id="selectRolesByRoleIds" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">

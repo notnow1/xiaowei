@@ -58,6 +58,14 @@ public interface PostMapper {
     List<PostDTO> selectPostList(@Param("post") Post post);
 
     /**
+     * 查询岗位编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 岗位编码集合
+     */
+    List<String> getPostCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+
+    /**
      * 新增岗位表
      *
      * @param post 岗位表

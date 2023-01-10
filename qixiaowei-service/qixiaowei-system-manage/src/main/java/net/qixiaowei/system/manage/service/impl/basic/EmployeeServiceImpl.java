@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -170,6 +171,41 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         return employeeMapper.selectEmployee(employee);
+    }
+
+    /**
+     * 生成员工编码
+     *
+     * @return 员工编码
+     */
+    @Override
+    public String generateEmployeeCode() {
+        String employeeCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.EMPLOYEE.getCode();
+        List<String> employeeCodes = employeeMapper.getEmployeeCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(employeeCodes)) {
+            for (String code : employeeCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 8) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        employeeCode = "000000" + number;
+        employeeCode = prefixCodeRule + employeeCode.substring(employeeCode.length() - 6);
+        return employeeCode;
     }
 
     /**

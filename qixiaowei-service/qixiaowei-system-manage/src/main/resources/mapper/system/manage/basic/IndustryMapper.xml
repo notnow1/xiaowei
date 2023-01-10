@@ -72,6 +72,10 @@
         </if>
     </select>
 
+    <select id="getIndustryCodes" resultType="java.lang.String">
+        SELECT industry_code FROM industry WHERE delete_flag=0 AND industry_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY industry_code ASC
+    </select>
+
     <!--新增行业-->
     <insert id="insertIndustry" useGeneratedKeys="true" keyProperty="industryId">
         INSERT INTO industry

@@ -35,6 +35,13 @@ public interface ITenantService {
     List<TenantDTO> selectTenantList(TenantDTO tenantDTO);
 
     /**
+     * 生成租户编码
+     *
+     * @return 租户编码
+     */
+    String generateTenantCode();
+
+    /**
      * 新增租户表
      *
      * @param tenantDTO 租户表

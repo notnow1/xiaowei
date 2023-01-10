@@ -96,28 +96,30 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     /**
-     * 获取角色编码
+     * 生成角色编码
      *
-     * @return 角色信息
+     * @return 角色编码
      */
     @Override
-    public String getRoleCode() {
+    public String generateRoleCode() {
         String roleCode;
         int number = 1;
-        List<String> roleCodes = roleMapper.getRoleCodes();
         String prefixCodeRule = PrefixCodeRule.ROLE.getCode();
-        for (String code : roleCodes) {
-            if (StringUtils.isEmpty(code) || code.length() != 5 || !code.startsWith(prefixCodeRule)) {
-                continue;
-            }
-            code = code.replaceFirst(prefixCodeRule, "");
-            try {
-                int codeOfNumber = Integer.parseInt(code);
-                if (number != codeOfNumber) {
-                    break;
+        List<String> roleCodes = roleMapper.getRoleCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(roleCodes)) {
+            for (String code : roleCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 5) {
+                    continue;
                 }
-                number++;
-            } catch (Exception ignored) {
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
             }
         }
         if (number > 1000) {

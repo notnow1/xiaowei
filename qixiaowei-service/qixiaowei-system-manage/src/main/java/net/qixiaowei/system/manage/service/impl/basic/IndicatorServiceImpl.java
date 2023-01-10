@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -141,6 +142,44 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
             tree.putExtra("isPreset", treeNode.getIsPreset());
         });
+    }
+
+    /**
+     * 生成指标编码
+     *
+     * @return 指标编码
+     */
+    @Override
+    public String generateIndicatorCode(Integer indicatorType) {
+        String prefixCodeRule = PrefixCodeRule.INDICATOR_FINANCE.getCode();
+        if (indicatorType.equals(2)) {
+            prefixCodeRule = PrefixCodeRule.INDICATOR_BUSINESS.getCode();
+        }
+        String indicatorCode;
+        int number = 1;
+        List<String> indicatorCodes = indicatorMapper.getIndicatorCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(indicatorCodes)) {
+            for (String code : indicatorCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 5) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        indicatorCode = "000" + number;
+        indicatorCode = prefixCodeRule + indicatorCode.substring(indicatorCode.length() - 3);
+        return indicatorCode;
     }
 
     /**

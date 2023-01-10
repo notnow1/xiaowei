@@ -32,6 +32,13 @@ public interface EmployeeMapper {
     List<EmployeeDTO> selectEmployeeByEmployeeIds(@Param("employeeIds") List<Long> employeeIds);
 
     /**
+     * 查询人员编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 人员编码集合
+     */
+    List<String> getEmployeeCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+    /**
      * 查询员工表
      *
      * @param employeeCode 员工表主键

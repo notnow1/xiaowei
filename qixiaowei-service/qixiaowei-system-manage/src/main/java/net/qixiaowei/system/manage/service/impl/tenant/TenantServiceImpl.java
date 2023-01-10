@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -160,6 +161,41 @@ public class TenantServiceImpl implements ITenantService {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
         return tenantMapper.selectTenantList(tenant);
+    }
+
+    /**
+     * 生成租户编码
+     *
+     * @return 租户编码
+     */
+    @Override
+    public String generateTenantCode() {
+        String tenantCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.TENANT.getCode();
+        List<String> tenantCodes = tenantMapper.getTenantCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(tenantCodes)) {
+            for (String code : tenantCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 8) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        tenantCode = "000000" + number;
+        tenantCode = prefixCodeRule + tenantCode.substring(tenantCode.length() - 6);
+        return tenantCode;
     }
 
     /**
