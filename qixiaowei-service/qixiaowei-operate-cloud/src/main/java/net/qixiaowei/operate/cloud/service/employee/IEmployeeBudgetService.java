@@ -143,4 +143,11 @@ public interface IEmployeeBudgetService {
      * @return List
      */
     List<EmployeeBudgetDTO> selectBySystemIds(List<Long> officialRankSystemIds);
+
+    /**
+     * 远程 根据部门ID集合查询预算表
+     * @param departmentId
+     * @return
+     */
+    List<EmployeeBudgetDTO> selectByDepartmentId(Long departmentId);
 }

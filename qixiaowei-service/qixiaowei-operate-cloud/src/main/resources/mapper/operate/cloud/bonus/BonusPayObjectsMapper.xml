@@ -116,6 +116,45 @@
            and  bonus_pay_object_id=#{employeeId}
           and delete_flag=0
     </select>
+<!--    根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)-->
+    <select id="selectBonusPayApplicationByDepartmentId"
+            resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
+        SELECT
+        DISTINCT
+        case when bpa.award_month &lt; 10
+        then concat( bpa.award_year,"年/0",bpa.award_month)
+        when bpa.award_month &gt;= 10
+        then concat( bpa.award_year,"年/",bpa.award_month) end as awardYearMonth,
+            bpa.bonus_pay_application_id,
+            bpa.salary_item_id,
+            bpa.award_code,
+            bpa.award_name,
+            bpa.award_year,
+            bpa.award_month,
+            bpa.apply_department_id,
+            bpa.award_total_amount,
+            bpa.bonus_pay_object,
+            bpa.award_description,
+            bpa.delete_flag,
+            bpa.create_by,
+            bpa.create_time,
+            bpa.update_by,
+            bpa.update_time,
+            bpa.tenant_id
+        FROM
+            bonus_pay_application bpa
+                left join  bonus_pay_objects bpo
+                           on bpo.bonus_pay_application_id = bpa .bonus_pay_application_id
+                               and bpo.delete_flag =0
+                               and bpo.bonus_pay_object =1
+                left join  bonus_pay_budget_dept bpbd
+                           on bpbd.bonus_pay_application_id = bpa .bonus_pay_application_id
+                               and bpbd.delete_flag =0
+        WHERE bpa.apply_department_id=#{departmentId}
+            and bpa.delete_flag = 0
+           or  bpo.bonus_pay_object_id=#{departmentId}
+           or  bpbd.department_id =#{departmentId}
+    </select>
     <!--新增奖金发放对象表-->
     <insert id="insertBonusPayObjects" useGeneratedKeys="true" keyProperty="bonusPayObjectsId">
         INSERT INTO bonus_pay_objects (bonus_pay_application_id,bonus_pay_object,bonus_pay_object_id,award_amount,delete_flag,create_by,create_time,update_by,update_time)

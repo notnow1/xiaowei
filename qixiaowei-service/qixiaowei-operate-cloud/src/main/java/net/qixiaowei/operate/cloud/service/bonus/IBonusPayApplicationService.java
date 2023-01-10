@@ -120,4 +120,11 @@ public interface IBonusPayApplicationService{
      * @return
      */
     List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(Long employeeId);
+
+    /**
+     * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
+     * @param departmentId
+     * @return
+     */
+    List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentId(Long departmentId);
 }

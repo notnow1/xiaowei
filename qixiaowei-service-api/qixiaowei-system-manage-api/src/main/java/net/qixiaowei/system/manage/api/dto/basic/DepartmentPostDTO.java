@@ -65,6 +65,7 @@ public class DepartmentPostDTO {
      */
     private  Long officialRankSystemId;
     private  String officialRankSystemName;
+    private  String officialRankDecomposeName;
 
     /**
     * ID
@@ -108,6 +109,9 @@ public class DepartmentPostDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
-
+    /**
+     * 职级分解id
+     */
+    private Long officialRankDecomposeId;
 }
 

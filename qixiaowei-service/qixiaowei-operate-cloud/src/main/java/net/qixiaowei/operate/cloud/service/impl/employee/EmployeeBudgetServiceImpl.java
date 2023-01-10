@@ -889,6 +889,33 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     }
 
     /**
+     * 远程 根据部门ID集合查询预算表
+     * @param departmentId
+     * @return
+     */
+    @Override
+    public List<EmployeeBudgetDTO> selectByDepartmentId(Long departmentId) {
+        List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectByDepartmentId(departmentId);
+        if (StringUtils.isNotEmpty(employeeBudgetDTOList) ) {
+            List<Long> officialRankSystemIds = employeeBudgetDTOList.stream().map(EmployeeBudgetDTO::getOfficialRankSystemId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
+            R<List<OfficialRankSystemDTO>> officialRankSystemList = remoteOfficialRankSystemService.selectByIds(officialRankSystemIds, SecurityConstants.INNER);
+            List<OfficialRankSystemDTO> data = officialRankSystemList.getData();
+            if (StringUtils.isNotEmpty(data)){
+                for (EmployeeBudgetDTO employeeBudgetDTO : employeeBudgetDTOList) {
+                    for (OfficialRankSystemDTO datum : data) {
+                        if (employeeBudgetDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())){
+                            employeeBudgetDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+                        }
+                    }
+                }
+            }
+        }
+
+        return employeeBudgetDTOList;
+    }
+
+    /**
      * 封装增人减人工资
      *
      * @param employeeBudgetDTO

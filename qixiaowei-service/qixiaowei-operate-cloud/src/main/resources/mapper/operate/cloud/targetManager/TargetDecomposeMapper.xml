@@ -347,7 +347,8 @@
                tdd.create_by,
                tdd.create_time,
                tdd.update_by,
-               tdd.update_time
+               tdd.update_time,
+               td.indicator_id
         FROM target_decompose_details tdd
                  left join target_decompose td
                            on td.target_decompose_id = tdd.target_decompose_id

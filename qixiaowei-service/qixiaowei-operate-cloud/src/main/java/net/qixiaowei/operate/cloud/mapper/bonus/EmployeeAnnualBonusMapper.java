@@ -115,4 +115,11 @@ public interface EmployeeAnnualBonusMapper{
      * @return
      */
     List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByEmployeeId(@Param("employeeId") Long employeeId);
+
+    /**
+     * 根据部门id查询个人年终奖 (一级部门,申请部门)
+     * @param departmentId
+     * @return
+     */
+    List<EmployeeAnnualBonus> selectEmployeeAnnualBonusByDepartmentId(@Param("departmentId")Long departmentId);
 }
