@@ -29,6 +29,13 @@ public interface IBonusPayApplicationService{
     List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO);
 
     /**
+     * 生成奖项编码
+     *
+     * @return 奖项编码
+     */
+    String generateAwardCode();
+
+    /**
     * 新增奖金发放申请表
     *
     * @param bonusPayApplicationDTO 奖金发放申请表

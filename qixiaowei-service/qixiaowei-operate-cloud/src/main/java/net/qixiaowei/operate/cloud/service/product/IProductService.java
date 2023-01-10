@@ -48,6 +48,13 @@ public interface IProductService {
     List<ProductDTO> selectDropList(ProductDTO productDTO);
 
     /**
+     * 生成产品编码
+     *
+     * @return 产品编码
+     */
+    String generateProductCode();
+
+    /**
      * 新增产品表
      *
      * @param productDTO 产品表

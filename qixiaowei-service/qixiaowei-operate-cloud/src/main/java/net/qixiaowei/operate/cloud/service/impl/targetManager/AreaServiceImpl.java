@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.impl.targetManager;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -65,6 +66,41 @@ public class AreaServiceImpl implements IAreaService {
         Area area = new Area();
         BeanUtils.copyProperties(areaDTO, area);
         return areaMapper.selectAreaList(area);
+    }
+
+    /**
+     * 生成区域编码
+     *
+     * @return 区域编码
+     */
+    @Override
+    public String generateAreaCode() {
+        String areaCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.AREA.getCode();
+        List<String> areaCodes = areaMapper.getAreaCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(areaCodes)) {
+            for (String code : areaCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 5) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        areaCode = "000" + number;
+        areaCode = prefixCodeRule + areaCode.substring(areaCode.length() - 3);
+        return areaCode;
     }
 
     /**

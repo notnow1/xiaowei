@@ -5,6 +5,7 @@ import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -230,6 +231,41 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         return allSysMenuDto;
+    }
+
+    /**
+     * 生成产品编码
+     *
+     * @return 产品编码
+     */
+    @Override
+    public String generateProductCode() {
+        String productCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.PRODUCT.getCode();
+        List<String> productCodes = productMapper.getProductCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(productCodes)) {
+            for (String code : productCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 8) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        productCode = "000000" + number;
+        productCode = prefixCodeRule + productCode.substring(productCode.length() - 6);
+        return productCode;
     }
 
     /**

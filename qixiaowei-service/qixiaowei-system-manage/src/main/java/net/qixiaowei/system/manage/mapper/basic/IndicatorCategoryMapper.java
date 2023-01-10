@@ -40,6 +40,13 @@ public interface IndicatorCategoryMapper {
     List<IndicatorCategoryDTO> selectIndicatorCategoryList(@Param("indicatorCategory") IndicatorCategory indicatorCategory);
 
     /**
+     * 查询指标分类编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 指标分类编码集合
+     */
+    List<String> getIndicatorCategoryCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+    /**
      * 新增指标分类表
      *
      * @param indicatorCategory 指标分类表

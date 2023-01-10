@@ -100,6 +100,11 @@
             and p.listing_flag =#{product.listingFlag}
         </if>
     </select>
+
+    <select id="getProductCodes" resultType="java.lang.String">
+        SELECT product_code FROM product WHERE delete_flag=0 AND product_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY product_code ASC
+    </select>
+
     <!--    根据产品编码查询产品表-->
     <select id="selectProductByProductCode"
             resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">

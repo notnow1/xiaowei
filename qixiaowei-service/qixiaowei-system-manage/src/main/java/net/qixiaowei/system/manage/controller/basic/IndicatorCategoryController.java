@@ -39,6 +39,17 @@ public class IndicatorCategoryController extends BaseController {
     }
 
     /**
+     * 生成指标分类编码
+     *
+     * @return 指标分类编码
+     */
+    @RequiresPermissions(value = {"system:manage:indicatorCategory:add", "system:manage:indicatorCategory:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/indicatorCategoryCode")
+    public AjaxResult generateIndicatorCategoryCode(@RequestParam(value = "indicatorType", required = false, defaultValue = "1") Integer indicatorType) {
+        return AjaxResult.success(indicatorCategoryService.generateIndicatorCategoryCode(indicatorType));
+    }
+
+    /**
      * 新增指标分类表
      */
     @RequiresPermissions("system:manage:indicatorCategory:add")
