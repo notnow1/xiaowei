@@ -28,6 +28,13 @@ public interface IPostService{
     List<PostDTO> selectPostList(PostDTO postDTO);
 
     /**
+     * 生成岗位编码
+     *
+     * @return 岗位编码
+     */
+    String generatePostCode();
+
+    /**
     * 新增岗位表
     *
     * @param postDTO 岗位表

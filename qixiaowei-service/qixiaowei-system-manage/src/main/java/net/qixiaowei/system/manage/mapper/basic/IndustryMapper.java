@@ -41,6 +41,13 @@ public interface IndustryMapper {
     List<IndustryDTO> selectIndustryList(@Param("industry") Industry industry);
 
     /**
+     * 查询行业编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 行业编码集合
+     */
+    List<String> getIndustryCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+    /**
      * 新增行业
      *
      * @param industry 行业

@@ -72,6 +72,17 @@ public class IndicatorController extends BaseController {
     }
 
     /**
+     * 生成指标编码
+     *
+     * @return 指标编码
+     */
+    @RequiresPermissions(value = {"system:manage:indicator:add", "system:manage:indicator:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/indicatorCode")
+    public AjaxResult generateIndicatorCode(@RequestParam(value = "indicatorType", required = false, defaultValue = "1") Integer indicatorType) {
+        return AjaxResult.success(indicatorService.generateIndicatorCode(indicatorType));
+    }
+
+    /**
      * 新增指标表
      */
     @Log(title = "新增指标", businessType = BusinessType.INDICATOR, businessId = "indicatorId", operationType = OperationType.INSERT)

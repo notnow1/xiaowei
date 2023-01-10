@@ -78,6 +78,17 @@ public class EmployeeController extends BaseController {
     }
 
     /**
+     * 生成员工编码
+     *
+     * @return 员工编码
+     */
+    @RequiresPermissions(value = {"system:manage:employee:add", "system:manage:employee:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/employeeCode")
+    public AjaxResult generateEmployeeCode() {
+        return AjaxResult.success(employeeService.generateEmployeeCode());
+    }
+
+    /**
      * 新增员工表
      */
     @Log(title = "新增员工", businessType = BusinessType.EMPLOYEE, businessId = "employeeId", operationType = OperationType.INSERT)

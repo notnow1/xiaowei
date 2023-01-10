@@ -5,6 +5,7 @@ import java.util.List;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayStandingDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.EmployeeAnnualBonusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,17 @@ public class BonusPayApplicationController extends BaseController {
         startPage();
         List<BonusPayApplicationDTO> list = bonusPayApplicationService.selectBonusPayApplicationList(bonusPayApplicationDTO);
         return getDataTable(list);
+    }
+
+    /**
+     * 生成奖项编码
+     *
+     * @return 奖项编码
+     */
+    @RequiresPermissions(value = {"operate:cloud:bonusPayApplication:add", "operate:cloud:bonusPayApplication:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/awardCode")
+    public AjaxResult generateAwardCode() {
+        return AjaxResult.success(bonusPayApplicationService.generateAwardCode());
     }
 
     /**

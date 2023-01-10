@@ -29,6 +29,13 @@ public interface IAreaService {
     List<AreaDTO> selectAreaList(AreaDTO areaDTO);
 
     /**
+     * 生成区域编码
+     *
+     * @return 区域编码
+     */
+    String generateAreaCode();
+
+    /**
      * 新增区域表
      *
      * @param areaDTO 区域表

@@ -6,10 +6,7 @@ import net.qixiaowei.operate.cloud.api.dto.employee.EmployeeBudgetDTO;
 import net.qixiaowei.operate.cloud.api.remote.employee.RemoteEmployeeBudgetService;
 import net.qixiaowei.operate.cloud.service.employee.IEmployeeBudgetService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,5 +34,18 @@ public class RemoteEmployeeBudget implements RemoteEmployeeBudgetService {
     @PostMapping("/selectBySystemIds")
     public R<List<EmployeeBudgetDTO>> selectBySystemIds(@RequestBody List<Long> officialRankSystemIds, String source) {
         return R.ok(employeeBudgetService.selectBySystemIds(officialRankSystemIds));
+    }
+
+    /**
+     * 根据部门ID集合查询预算表
+     * @param departmentId
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/queryDepartmentId")
+    public R<List<EmployeeBudgetDTO>> selectByDepartmentId(@RequestParam("departmentId") Long departmentId, String source) {
+        return R.ok(employeeBudgetService.selectByDepartmentId(departmentId));
     }
 }

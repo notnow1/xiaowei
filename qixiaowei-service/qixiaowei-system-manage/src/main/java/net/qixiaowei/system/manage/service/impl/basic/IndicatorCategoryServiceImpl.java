@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -58,6 +59,44 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);
         return indicatorCategoryMapper.selectIndicatorCategoryList(indicatorCategory);
+    }
+
+    /**
+     * 生成指标分类编码
+     *
+     * @return 指标分类编码
+     */
+    @Override
+    public String generateIndicatorCategoryCode(Integer indicatorType) {
+        String prefixCodeRule = PrefixCodeRule.INDICATOR_CATEGORY_FINANCE.getCode();
+        if (indicatorType.equals(2)) {
+            prefixCodeRule = PrefixCodeRule.INDICATOR_CATEGORY_BUSINESS.getCode();
+        }
+        String indicatorCategoryCode;
+        int number = 1;
+        List<String> indicatorCategoryCodes = indicatorCategoryMapper.getIndicatorCategoryCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(indicatorCategoryCodes)) {
+            for (String code : indicatorCategoryCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 5) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        indicatorCategoryCode = "000" + number;
+        indicatorCategoryCode = prefixCodeRule + indicatorCategoryCode.substring(indicatorCategoryCode.length() - 3);
+        return indicatorCategoryCode;
     }
 
     /**
@@ -257,6 +296,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
      *
      * @param indicatorCategoryDtos 指标分类表对象
      */
+    @Override
     @Transactional
     public int insertIndicatorCategorys(List<IndicatorCategoryDTO> indicatorCategoryDtos) {
         List<IndicatorCategory> indicatorCategoryList = new ArrayList<>();
@@ -278,6 +318,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
      *
      * @param indicatorCategoryDtos 指标分类表对象
      */
+    @Override
     @Transactional
     public int updateIndicatorCategorys(List<IndicatorCategoryDTO> indicatorCategoryDtos) {
         List<IndicatorCategory> indicatorCategoryList = new ArrayList<>();

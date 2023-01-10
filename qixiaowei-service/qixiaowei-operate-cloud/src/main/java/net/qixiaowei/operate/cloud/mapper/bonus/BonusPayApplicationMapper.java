@@ -39,6 +39,13 @@ public interface BonusPayApplicationMapper{
     List<BonusPayApplicationDTO> selectBonusPayApplicationByBonusPayApplicationIds(@Param("bonusPayApplicationIds") List<Long> bonusPayApplicationIds);
 
     /**
+     * 查询奖项编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 奖项编码集合
+     */
+    List<String> getAwardCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+    /**
     * 查询奖金发放申请表列表
     *
     * @param bonusPayApplication 奖金发放申请表

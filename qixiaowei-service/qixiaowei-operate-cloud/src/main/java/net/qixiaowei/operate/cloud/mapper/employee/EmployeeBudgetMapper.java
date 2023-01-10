@@ -141,4 +141,11 @@ public interface EmployeeBudgetMapper {
      * @return
      */
     EmployeeBudgetDTO selectEmployeeBudget(@Param("employeeBudget") EmployeeBudget employeeBudget);
+
+    /**
+     * 远程 根据部门ID集合查询预算表
+     * @param departmentId
+     * @return
+     */
+    List<EmployeeBudgetDTO> selectByDepartmentId(@Param("departmentId") Long departmentId);
 }

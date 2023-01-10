@@ -46,6 +46,13 @@ public interface IIndustryService {
     public List<Tree<Long>> selectIndustryTreeList(IndustryDTO industryDTO);
 
     /**
+     * 生成行业编码
+     *
+     * @return 行业编码
+     */
+    String generateIndustryCode();
+
+    /**
      * 新增行业
      *
      * @param industryDTO 行业

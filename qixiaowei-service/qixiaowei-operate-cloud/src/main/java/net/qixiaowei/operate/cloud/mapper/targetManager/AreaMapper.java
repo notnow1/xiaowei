@@ -114,6 +114,13 @@ public interface AreaMapper {
     List<AreaDTO> selectAreaListByAreaIds(@Param("areaIds") List<Long> areaIds);
 
     /**
+     * 查询区域编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 区域编码集合
+     */
+    List<String> getAreaCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+    /**
      * 根据code集合判断是否存在
      *
      * @param areaCodes

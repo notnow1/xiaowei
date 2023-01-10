@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.impl.bonus;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -379,6 +380,42 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         }
         return StringUtils.isNotEmpty(bonusPayApplicationDTOList) ? bonusPayApplicationDTOList : bonusPayApplicationDTOS;
     }
+
+    /**
+     * 生成奖项编码
+     *
+     * @return 奖项编码
+     */
+    @Override
+    public String generateAwardCode() {
+        String awardCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.BONUS_PAY_APPLICATION.getCode();
+        List<String> awardCodes = bonusPayApplicationMapper.getAwardCodes(prefixCodeRule);
+        if (StringUtils.isNotEmpty(awardCodes)) {
+            for (String code : awardCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 8) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        awardCode = "000000" + number;
+        awardCode = prefixCodeRule + awardCode.substring(awardCode.length() - 6);
+        return awardCode;
+    }
+
     /**
      * 新增奖金发放申请表
      *
@@ -786,6 +823,16 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
     @Override
     public List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(Long employeeId) {
         return bonusPayObjectsMapper.selectBonusPayApplicationByEmployeeId(employeeId);
+    }
+
+    /**
+     * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
+     * @param departmentId
+     * @return
+     */
+    @Override
+    public List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentId(Long departmentId) {
+        return bonusPayObjectsMapper.selectBonusPayApplicationByDepartmentId(departmentId);
     }
 
     /**

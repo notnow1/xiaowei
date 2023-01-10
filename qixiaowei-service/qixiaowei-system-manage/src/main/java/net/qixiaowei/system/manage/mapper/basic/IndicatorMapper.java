@@ -40,6 +40,13 @@ public interface IndicatorMapper {
     List<IndicatorDTO> selectIndicatorTree(@Param("indicator") Indicator indicator);
 
     /**
+     * 查询指标编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 指标编码集合
+     */
+    List<String> getIndicatorCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+    /**
      * 根据父级id查找子级
      *
      * @param indicatorId

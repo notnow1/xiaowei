@@ -96,6 +96,11 @@
         </if>
 
     </select>
+
+    <select id="getDepartmentCodes" resultType="java.lang.String">
+        SELECT department_code FROM department WHERE delete_flag=0 AND department_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY department_code ASC
+    </select>
+
     <!--    根据父级id查询数据-->
     <select id="selectParentDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         select
@@ -317,6 +322,7 @@
     <!--    查询组织关联岗位信息-->
     <select id="selectDeptAndPost" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
         select
+            ord.official_rank_decompose_id,
             p.post_name,
             p.post_code ,
             ors.official_rank_system_name,
@@ -324,6 +330,7 @@
                  when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
             dm.department_name ,
             dm.department_code,
+            ors2.official_rank_system_name as official_rank_decompose_name,
             deptpost.department_post_id,
             deptpost.department_id,
             deptpost.post_id,
@@ -345,6 +352,13 @@
                 left join official_rank_system ors on
                         p.official_rank_system_id = ors.official_rank_system_id
                     and ors.delete_flag = 0
+                left join official_rank_decompose ord
+                on ord.delete_flag=0
+                and ord.rank_decompose_dimension=1
+                and ord.decompose_dimension=#{departmentId}
+                left join official_rank_system ors2 on
+                        ord.official_rank_system_id = ors2.official_rank_system_id
+                    and ors2.delete_flag = 0
         where deptpost.delete_flag =0
           and deptpost.department_id=#{departmentId}
         order by deptpost.post_sort

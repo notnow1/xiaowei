@@ -76,6 +76,13 @@ public interface IEmployeeService {
     EmployeeDTO selectEmployee(EmployeeDTO employeeDTO);
 
     /**
+     * 生成员工编码
+     *
+     * @return 员工编码
+     */
+    String generateEmployeeCode();
+
+    /**
      * 新增员工表
      *
      * @param employeeDTO 员工表

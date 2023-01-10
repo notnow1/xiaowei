@@ -122,6 +122,17 @@ public class ProductController extends BaseController {
     }
 
     /**
+     * 生成产品编码
+     *
+     * @return 产品编码
+     */
+    @RequiresPermissions(value = {"operate:cloud:product:add", "operate:cloud:product:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/productCode")
+    public AjaxResult generateProductCode() {
+        return AjaxResult.success(productService.generateProductCode());
+    }
+
+    /**
      * 新增产品表
      */
     @Log(title = "新增产品", businessType = BusinessType.PRODUCT, businessId = "productId", operationType = OperationType.INSERT)

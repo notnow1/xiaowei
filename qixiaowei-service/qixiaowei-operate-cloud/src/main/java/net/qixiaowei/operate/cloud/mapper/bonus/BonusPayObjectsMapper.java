@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.mapper.bonus;
 
 import java.util.List;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
@@ -137,4 +138,11 @@ public interface BonusPayObjectsMapper{
      * @return
      */
     List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(@Param("employeeId") Long employeeId);
+
+    /**
+     * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
+     * @param departmentId
+     * @return
+     */
+    List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentId(@Param("departmentId")Long departmentId);
 }

@@ -224,6 +224,7 @@ public class CountryServiceImpl implements ICountryService{
     * @param countryDtos 国家表对象
     */
     
+    @Override
     public int insertCountrys(List<CountryDTO> countryDtos){
       List<Country> countryList = new ArrayList();
 
@@ -246,6 +247,7 @@ public class CountryServiceImpl implements ICountryService{
     * @param countryDtos 国家表对象
     */
     
+    @Override
     public int updateCountrys(List<CountryDTO> countryDtos){
      List<Country> countryList = new ArrayList();
 

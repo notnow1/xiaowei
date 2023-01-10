@@ -169,6 +169,7 @@ public class DepartmentPostServiceImpl implements IDepartmentPostService {
      *
      * @param departmentPostDtos 部门岗位关联表对象
      */
+    @Override
     @Transactional
     public int insertDepartmentPosts(List<DepartmentPostDTO> departmentPostDtos) {
         List<DepartmentPost> departmentPostList = new ArrayList();
@@ -191,6 +192,7 @@ public class DepartmentPostServiceImpl implements IDepartmentPostService {
      *
      * @param departmentPostDtos 部门岗位关联表对象
      */
+    @Override
     @Transactional
     public int updateDepartmentPosts(List<DepartmentPostDTO> departmentPostDtos) {
         List<DepartmentPost> departmentPostList = new ArrayList();

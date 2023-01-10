@@ -12,7 +12,7 @@ import java.util.List;
 
 
 /**
- * 服务降级处理
+ * 人力预算服务降级处理
  */
 @Component
 public class RemoteEmployeeBudgetFallbackFactory implements FallbackFactory<RemoteEmployeeBudgetService> {
@@ -26,6 +26,11 @@ public class RemoteEmployeeBudgetFallbackFactory implements FallbackFactory<Remo
             @Override
             public R<List<EmployeeBudgetDTO>> selectBySystemIds(List<Long> officialRankSystemIds, String source) {
                 return R.fail("根据职级体系ID集合查询预算表失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<EmployeeBudgetDTO>> selectByDepartmentId(Long departmentId, String source) {
+                return R.fail("根据部门ID集合查询预算表失败:" + throwable.getMessage());
             }
         };
     }

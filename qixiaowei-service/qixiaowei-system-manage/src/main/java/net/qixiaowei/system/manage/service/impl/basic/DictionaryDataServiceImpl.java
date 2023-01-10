@@ -254,6 +254,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @param dictionaryDataDtos 字典数据表对象
      */
 
+    @Override
     public int insertDictionaryDatas(List<DictionaryDataDTO> dictionaryDataDtos) {
         List<DictionaryData> dictionaryDataList = new ArrayList();
 
@@ -276,6 +277,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
      * @param dictionaryDataDtos 字典数据表对象
      */
 
+    @Override
     public int updateDictionaryDatas(List<DictionaryDataDTO> dictionaryDataDtos) {
         List<DictionaryData> dictionaryDataList = new ArrayList();
 

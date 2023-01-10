@@ -29,6 +29,13 @@ public interface IBonusPayApplicationService{
     List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO);
 
     /**
+     * 生成奖项编码
+     *
+     * @return 奖项编码
+     */
+    String generateAwardCode();
+
+    /**
     * 新增奖金发放申请表
     *
     * @param bonusPayApplicationDTO 奖金发放申请表
@@ -113,4 +120,11 @@ public interface IBonusPayApplicationService{
      * @return
      */
     List<BonusPayObjectsDTO> selectBonusPayApplicationByEmployeeId(Long employeeId);
+
+    /**
+     * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
+     * @param departmentId
+     * @return
+     */
+    List<BonusPayApplicationDTO> selectBonusPayApplicationByDepartmentId(Long departmentId);
 }

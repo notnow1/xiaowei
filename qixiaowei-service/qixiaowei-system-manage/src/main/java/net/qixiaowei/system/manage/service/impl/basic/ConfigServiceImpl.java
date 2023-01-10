@@ -171,6 +171,7 @@ public class ConfigServiceImpl implements IConfigService {
      * @param configDtos 配置表对象
      */
 
+    @Override
     public int insertConfigs(List<ConfigDTO> configDtos) {
         List<Config> configList = new ArrayList();
 
@@ -193,6 +194,7 @@ public class ConfigServiceImpl implements IConfigService {
      * @param configDtos 配置表对象
      */
 
+    @Override
     public int updateConfigs(List<ConfigDTO> configDtos) {
         List<Config> configList = new ArrayList();
 

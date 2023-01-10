@@ -34,8 +34,21 @@ public class RemoteEmployeeAnnualBonus implements RemoteEmployeeAnnualBonusServi
      */
     @Override
     @InnerAuth
-    @GetMapping("/queryEmployeeAnnualBonus")
+    @GetMapping("/queryEmployeeIdEmployeeAnnualBonus")
     public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByEmployeeId(@RequestParam("employeeId")Long employeeId, String source) {
         return R.ok(employeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeId(employeeId));
+    }
+
+    /**
+     * 根据部门id查询个人年终奖 (一级部门,申请部门)
+     * @param departmentId
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/queryDepartmentIdEmployeeAnnualBonus")
+    public R<List<EmployeeAnnualBonus>> selectEmployeeAnnualBonusByDepartmentId(@RequestParam("departmentId")Long departmentId, String source) {
+        return R.ok(employeeAnnualBonusService.selectEmployeeAnnualBonusByDepartmentId(departmentId));
     }
 }

@@ -52,6 +52,13 @@ public interface IDepartmentService {
     List<Integer> selectLevel();
 
     /**
+     * 生成部门编码
+     *
+     * @return 部门编码
+     */
+    String generateDepartmentCode();
+
+    /**
      * 新增部门表
      *
      * @param departmentDTO 部门表

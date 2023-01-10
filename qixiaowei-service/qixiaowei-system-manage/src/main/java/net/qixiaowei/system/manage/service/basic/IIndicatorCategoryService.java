@@ -29,6 +29,13 @@ public interface IIndicatorCategoryService {
     List<IndicatorCategoryDTO> selectIndicatorCategoryList(IndicatorCategoryDTO indicatorCategoryDTO);
 
     /**
+     * 生成指标分类编码
+     *
+     * @return 指标分类编码
+     */
+    String generateIndicatorCategoryCode(Integer indicatorType);
+
+    /**
      * 新增指标分类表
      *
      * @param indicatorCategoryDTO 指标分类表

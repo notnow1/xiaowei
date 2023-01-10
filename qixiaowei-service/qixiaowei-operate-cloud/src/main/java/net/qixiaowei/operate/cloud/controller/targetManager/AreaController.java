@@ -49,6 +49,17 @@ public class AreaController extends BaseController {
     }
 
     /**
+     * 生成区域编码
+     *
+     * @return 区域编码
+     */
+    @RequiresPermissions(value = {"operate:cloud:area:add", "operate:cloud:area:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/areaCode")
+    public AjaxResult generateAreaCode() {
+        return AjaxResult.success(areaService.generateAreaCode());
+    }
+
+    /**
      * 新增区域表
      */
     @RequiresPermissions("operate:cloud:area:add")

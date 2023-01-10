@@ -165,6 +165,35 @@
         WHERE apply_employee_id = #{employeeId}
           and delete_flag = 0
     </select>
+<!--    根据部门id查询个人年终奖 (一级部门,申请部门)-->
+    <select id="selectEmployeeAnnualBonusByDepartmentId"
+            resultType="net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus">
+        SELECT DISTINCT
+            employee_annual_bonus_id,
+               annual_bonus_year,
+               department_id,
+               department_name,
+               apply_department_id,
+               apply_department_name,
+               apply_employee_id,
+               apply_employee_name,
+               distribute_bonus_amount,
+               comment_flag,
+               comment_step,
+               comment_employee_id,
+               comment_employee_name,
+               comment_date,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM employee_annual_bonus
+        WHERE apply_department_id = #{departmentId}
+          or department_id=#{departmentId}
+          and delete_flag = 0
+    </select>
     <!--新增个人年终奖表-->
     <insert id="insertEmployeeAnnualBonus" useGeneratedKeys="true" keyProperty="employeeAnnualBonusId">
         INSERT INTO employee_annual_bonus (annual_bonus_year,department_id,department_name,apply_department_id,apply_department_name,apply_employee_id,apply_employee_name,distribute_bonus_amount,comment_flag,comment_step,comment_employee_id,comment_employee_name,comment_date,status,delete_flag,create_by,create_time,update_by,update_time)

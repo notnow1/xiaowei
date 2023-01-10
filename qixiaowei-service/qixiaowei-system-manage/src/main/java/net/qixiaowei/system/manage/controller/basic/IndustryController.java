@@ -79,6 +79,17 @@ public class IndustryController extends BaseController {
     }
 
     /**
+     * 生成行业编码
+     *
+     * @return 行业编码
+     */
+    @RequiresPermissions(value = {"system:manage:industry:add", "system:manage:industry:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/industryCode")
+    public AjaxResult generateIndustryCode() {
+        return AjaxResult.success(industryService.generateIndustryCode());
+    }
+
+    /**
      * 新增行业
      */
     @RequiresPermissions("system:manage:industry:add")

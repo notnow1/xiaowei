@@ -4,6 +4,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
 import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteBonusPayApplicationService;
 import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteEmployeeAnnualBonusService;
@@ -36,8 +37,21 @@ public class RemoteBonusPayApplication implements RemoteBonusPayApplicationServi
      */
     @Override
     @InnerAuth
-    @GetMapping("/queryBonusPayApplication")
+    @GetMapping("/queryEmployeeIdBonusPayApplication")
     public R<List<BonusPayObjectsDTO>> selectBonusPayApplicationByEmployeeId(@RequestParam("employeeId")Long employeeId, String source) {
         return R.ok(bonusPayApplicationService.selectBonusPayApplicationByEmployeeId(employeeId));
+    }
+
+    /**
+     * 根据部门id查询个人年终奖 (申请部门,预算部门,获奖部门)
+     * @param departmentId
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/queryDepartmentIdBonusPayApplication")
+    public R<List<BonusPayApplicationDTO>> selectBonusPayApplicationByDepartmentId(@RequestParam("departmentId")Long departmentId, String source) {
+        return R.ok(bonusPayApplicationService.selectBonusPayApplicationByDepartmentId(departmentId));
     }
 }

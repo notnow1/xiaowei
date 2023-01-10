@@ -164,6 +164,7 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
     * @param tenantContactsDtos 租户联系人表对象
     */
     
+    @Override
     public int insertTenantContactss(List<TenantContactsDTO> tenantContactsDtos){
       List<TenantContacts> tenantContactsList = new ArrayList();
 
@@ -186,6 +187,7 @@ public class TenantContactsServiceImpl implements ITenantContactsService{
     * @param tenantContactsDtos 租户联系人表对象
     */
     
+    @Override
     public int updateTenantContactss(List<TenantContactsDTO> tenantContactsDtos){
      List<TenantContacts> tenantContactsList = new ArrayList();
 

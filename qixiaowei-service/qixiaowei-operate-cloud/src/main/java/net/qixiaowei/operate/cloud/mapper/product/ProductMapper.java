@@ -43,6 +43,13 @@ public interface ProductMapper {
     List<ProductDTO> selectProductByProductUnitIds(@Param("productUnitIds") List<Long> productUnitIds);
 
     /**
+     * 查询产品编码集合
+     * @param prefixCodeRule 编码前缀
+     * @return 产品编码集合
+     */
+    List<String> getProductCodes(@Param("prefixCodeRule")String prefixCodeRule);
+
+    /**
      * 根据产品编码查询产品表
      *
      * @param productCode 产品表主键
