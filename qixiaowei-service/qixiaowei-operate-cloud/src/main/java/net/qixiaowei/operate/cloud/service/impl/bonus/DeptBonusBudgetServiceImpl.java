@@ -757,7 +757,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                         BigDecimal departmentImportanceFactor = deptImportFactorMap.get(aLong1);
                         if (null != topDeptPay && topDeptPay.compareTo(new BigDecimal("0")) != 0 &&
                                 null != departmentImportanceFactor && departmentImportanceFactor.compareTo(new BigDecimal("0")) != 0) {
-                            topDeptPaySum =topDeptPaySum.add(topDeptPay.multiply(departmentImportanceFactor).setScale(2, RoundingMode.HALF_UP));
+                            topDeptPaySum =topDeptPaySum.add(topDeptPay.multiply(departmentImportanceFactor).setScale(10, BigDecimal.ROUND_HALF_UP));
                         }
 
                     }
@@ -870,7 +870,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                             //平均新增数
                                             BigDecimal amountAverageAdjust = employeeBudgetDetailsDTO.getAverageAdjust();
                                             if (bigDecimal != null && bigDecimal.compareTo(new BigDecimal("0"))!=0 && amountAverageAdjust != null && amountAverageAdjust.compareTo(new BigDecimal("0")) != 0){
-                                                employeeBudgetSum=employeeBudgetSum.add(employeeBudgetSum.add(bigDecimal.multiply(amountAverageAdjust).setScale(10,BigDecimal.ROUND_HALF_UP)));
+                                                employeeBudgetSum=employeeBudgetSum.add(bigDecimal.multiply(amountAverageAdjust).setScale(10,BigDecimal.ROUND_HALF_UP));
                                             }
 
                                         }

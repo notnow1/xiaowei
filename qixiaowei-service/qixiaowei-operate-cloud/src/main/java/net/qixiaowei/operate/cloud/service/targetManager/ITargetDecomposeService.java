@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
+import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
@@ -412,4 +413,12 @@ public interface ITargetDecomposeService {
      * @return R
      */
     List<TargetDecomposeDTO> selectByIndicatorIds(List<Long> indicatorIds);
+
+    /**
+     * 导入解析滚动预测
+     * @param list
+     * @param targetDecomposeDTO
+     * @return
+     */
+    TargetDecomposeDTO importProduct(List<DecomposeDetailCyclesDTO> list, TargetDecomposeDTO targetDecomposeDTO);
 }

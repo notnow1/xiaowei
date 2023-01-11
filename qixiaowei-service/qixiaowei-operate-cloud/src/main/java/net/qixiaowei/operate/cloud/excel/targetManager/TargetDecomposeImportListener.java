@@ -589,13 +589,15 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
 
     /**
      * 滚动预测导入解析数据
-     *
-     * @param row
+     *  @param row
      * @param line
      * @param maps
      * @param list
+     * @param targetDecomposeDTO
      */
-    public static void mapToListModel(int row, int line, List<Map<Integer, String>> maps, List<DecomposeDetailCyclesDTO> list) {
+    public static void mapToListModel(int row, int line, List<Map<Integer, String>> maps, List<DecomposeDetailCyclesDTO> list, TargetDecomposeDTO targetDecomposeDTO) {
+         List<Integer> listNew = new ArrayList<>();
+        List<Integer> listAdd= new ArrayList<>();
         AtomicInteger index = new AtomicInteger();
         for (int i = 0; i < maps.size(); i++) {
             //从第几行开始
@@ -614,8 +616,68 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 for (Integer key : map.keySet()) {
                     //从第几列开始
                     if (key >= index.get()) {
+                        if (StringUtils.isNotNull(targetDecomposeDTO)){
+                            throw new ServiceException("数据不存在  请刷新页面重试");
+                        }
+                        Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+                        if (timeDimension==1){
+                            listNew.add(index.get()+3);
+                        }else if (timeDimension==2){
+                            int index2=0;
+                            for (int i1 = 0; i1 < 2; i1++) {
+                                index2 = index.get()+3;
+                                listNew.add(index2);
+                            }
 
-                        if (key==10){
+                        }else if (timeDimension==3){
+                            int index2=0;
+                            for (int i1 = 0; i1 < 4; i1++) {
+                                index2 = index.get()+3;
+                                listNew.add(index2);
+                            }
+                        }else if (timeDimension==4){
+                            int index2=0;
+                            for (int i1 = 0; i1 < 12; i1++) {
+                                index2 = index.get()+3;
+                                listNew.add(index2);
+                            }
+                        }else if (timeDimension==5   ){
+                            int index2=0;
+                            for (int i1 = 0; i1 < 52; i1++) {
+                                index2 = index.get()+3;
+                                listNew.add(index2);
+                            }
+                        }
+
+                        if (timeDimension==1){
+                            listAdd.add(index.get()+2);
+                        }else if (timeDimension==2){
+                            int index2=0;
+                            for (int i1 = 0; i1 < 2; i1++) {
+                                index2 = index.get()+2;
+                                listNew.add(index2);
+                            }
+
+                        }else if (timeDimension==3){
+                            int index2=0;
+                            for (int i1 = 0; i1 < 4; i1++) {
+                                index2 = index.get()+2;
+                                listNew.add(index2);
+                            }
+                        }else if (timeDimension==4){
+                            int index2=0;
+                            for (int i1 = 0; i1 < 12; i1++) {
+                                index2 = index.get()+2;
+                                listNew.add(index2);
+                            }
+                        }else if (timeDimension==5   ){
+                            int index2=0;
+                            for (int i1 = 0; i1 < 52; i1++) {
+                                index2 = index.get()+2;
+                                listNew.add(index2);
+                            }
+                        }
+                        if (listNew.contains(key)){
                             decomposeDetailCyclesDTO= new DecomposeDetailCyclesDTO();
                         }
                         decomposeDetailCyclesDTO.setCycleForecast(new BigDecimal("0"));
@@ -626,9 +688,8 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         if (StringUtils.isNotBlank(map.get(key))) {
                             decomposeDetailCyclesDTO.setCycleActual(new BigDecimal(map.get(key)));
                         }
-                        if (key==9 || key==12){
+                        if (listAdd.contains(key)){
                             try {
-
                                 //添加list
                                 list.add(decomposeDetailCyclesDTO);
                             } catch (Exception e) {

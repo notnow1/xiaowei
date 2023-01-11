@@ -1368,7 +1368,6 @@
         e.tenant_id
         FROM employee e
         WHERE e.delete_flag=0
-        AND e.employment_status=1
         AND e.employee_department_id
         IN
         <foreach collection="departmentIds" open="(" close=")" separator="," index="index" item="item">

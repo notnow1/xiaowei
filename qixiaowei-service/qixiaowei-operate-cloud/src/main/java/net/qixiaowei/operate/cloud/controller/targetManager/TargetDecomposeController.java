@@ -576,7 +576,8 @@ public class TargetDecomposeController extends BaseController {
      */
 //    @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
-    public AjaxResult importProduct(Long targetDecomposeId ,MultipartFile file) throws IOException {
+    public AjaxResult importProduct(Long targetDecomposeId ,Long backlogId,MultipartFile file) throws IOException {
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId);
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
             throw new RuntimeException("请上传文件!");
@@ -593,9 +594,9 @@ public class TargetDecomposeController extends BaseController {
         List<Map<Integer, String>> listMap = sheet.doReadSync();
 
         //导入解析滚动预测
-        TargetDecomposeImportListener.mapToListModel(3, 0, listMap, list);
+        TargetDecomposeImportListener.mapToListModel(3, 0, listMap, list,targetDecomposeDTO);
         // 调用importer方法
-//        targetDecomposeService.importProduct(list);
+        targetDecomposeService.importProduct(list,targetDecomposeDTO);
 
         return AjaxResult.success();
     }

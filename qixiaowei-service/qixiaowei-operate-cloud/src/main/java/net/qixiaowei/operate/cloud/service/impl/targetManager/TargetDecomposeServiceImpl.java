@@ -2438,6 +2438,27 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     }
 
     /**
+     * 导入解析滚动预测
+     * @param list
+     * @param targetDecomposeDTO
+     * @return
+     */
+    @Override
+    public TargetDecomposeDTO importProduct(List<DecomposeDetailCyclesDTO> list, TargetDecomposeDTO targetDecomposeDTO) {
+        if (StringUtils.isNull(targetDecomposeDTO)){
+            throw new ServiceException("数据不存在 请刷新页面重试！");
+        }
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
+            for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
+
+            }
+        }
+        return null;
+    }
+
+    /**
      * 封装远程调用数据
      *
      * @param targetDecomposeDetailsDTOList 目标分解详情DTO列表
