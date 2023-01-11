@@ -85,7 +85,11 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         List<BonusPayObjectsDTO> bonusPayDeptObjectsDTOS = bonusPayObjectsMapper.selectBonusPayDeptObjectsByBonusPayApplicationId(bonusPayApplicationId);
         //封装获奖部门名称
         this.packbonusPayDeptObjectsName(bonusPayDeptObjectsDTOS);
-        bonusPayApplicationDTO.setAwardYearMonth(bonusPayApplicationDTO.getAwardYear() + "/0" + bonusPayApplicationDTO.getAwardMonth());
+        if (bonusPayApplicationDTO.getAwardMonth() >= 10) {
+            bonusPayApplicationDTO.setAwardYearMonth(bonusPayApplicationDTO.getAwardYear() + "/" + bonusPayApplicationDTO.getAwardMonth());
+        } else {
+            bonusPayApplicationDTO.setAwardYearMonth(bonusPayApplicationDTO.getAwardYear() + "/0" + bonusPayApplicationDTO.getAwardMonth());
+        }
         bonusPayApplicationDTO.setBonusPayBudgetDeptDTOs(bonusPayBudgetDeptDTOS);
         bonusPayApplicationDTO.setBonusPayObjectsEmployeeDTOs(bonusPayEmployeeObjectsDTOS);
         bonusPayApplicationDTO.setBonusPayObjectsDeptDTOs(bonusPayDeptObjectsDTOS);

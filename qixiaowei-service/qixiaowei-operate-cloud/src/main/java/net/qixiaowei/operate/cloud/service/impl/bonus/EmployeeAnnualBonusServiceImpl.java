@@ -158,7 +158,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 //sterm流求和
                 applyBonusAmount = empAnnualBonusObjectsDTOS.stream().map(EmpAnnualBonusObjectsDTO::getCommentValue).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                 //申请年终奖金额
-                annualBonusDTO.setApplyBonusAmount(applyBonusAmount);
+                annualBonusDTO.setApplyBonusAmount(applyBonusAmount.divide(new BigDecimal("10000"),10,BigDecimal.ROUND_HALF_UP));
             }
         }
     }

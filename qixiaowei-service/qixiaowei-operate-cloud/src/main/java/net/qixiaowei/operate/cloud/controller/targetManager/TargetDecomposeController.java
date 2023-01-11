@@ -533,8 +533,10 @@ public class TargetDecomposeController extends BaseController {
                 .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
                     @Override
                     protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> list, Cell cell, Head head, Integer integer, Boolean aBoolean) {
+                        for (WriteCellData<?> writeCellData : list) {
                             Row row = cell.getRow();
-                            row.setHeightInPoints(33);
+                            row.setHeightInPoints(50);
+                        }
                     }
                 })
                 .registerWriteHandler(new AbstractVerticalCellStyleStrategy() {
@@ -596,9 +598,9 @@ public class TargetDecomposeController extends BaseController {
         //导入解析滚动预测
         TargetDecomposeImportListener.mapToListModel(3, 0, listMap, list,targetDecomposeDTO);
         // 调用importer方法
-        targetDecomposeService.importProduct(list,targetDecomposeDTO);
+        TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeService.importProduct(list, targetDecomposeDTO);
 
-        return AjaxResult.success();
+        return AjaxResult.success(targetDecomposeDTO1);
     }
     //==============================其他==================================//
 
@@ -619,6 +621,66 @@ public class TargetDecomposeController extends BaseController {
         return AjaxResult.success(targetDecomposeDTO);
     }
 
+
+    /**
+     * 经营结果分析报表导出详情Excel
+     */
+    @SneakyThrows
+    @GetMapping("/exportResult-details/info/{targetDecomposeId}")
+    public void exportResultTargetDecomposeDetails(@PathVariable Long targetDecomposeId, HttpServletResponse response) {
+        //查询详情
+        TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectResultTargetDecomposeByTargetDecomposeId(targetDecomposeId);
+        if (StringUtils.isNull(targetDecomposeDTO)) {
+            throw new ServiceException("数据不存在！ 请刷新重试！");
+        }
+        List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
+        //自定义表头
+        List<List<String>> head = TargetDecomposeImportListener.headResultDetails(targetDecomposeDTO);
+
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding(CharsetKit.UTF_8);
+        String fileName = URLEncoder.encode("经营结果分析报表详情" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)
+                , CharsetKit.UTF_8);
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream())
+                .head(head)// 设置表头
+                .sheet("经营结果分析报表详情")// 设置 sheet 的名字
+                // 自适应列宽
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .registerWriteHandler(new AbstractVerticalCellStyleStrategy() {
+                    //设置标题栏的列样式
+                    @Override
+                    protected WriteCellStyle headCellStyle(Head head) {
+                        //内容样式策略
+                        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
+                        //居中
+                        contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                        //设置 自动换行
+                        contentWriteCellStyle.setWrapped(true);
+                        // 字体策略
+                        WriteFont contentWriteFont = new WriteFont();
+                        // 字体大小
+                        contentWriteFont.setFontHeightInPoints((short) 15);
+                        contentWriteCellStyle.setWriteFont(contentWriteFont);
+                        contentWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+                        return contentWriteCellStyle;
+                    }
+                })
+                .useDefaultStyle(false)
+                //设置文本
+                .registerWriteHandler(new CellWriteHandler() {
+                    @Override
+                    public void afterCellDispose(CellWriteHandlerContext context) {
+                        // 3.0 设置单元格为文本
+                        WriteCellData<?> cellData = context.getFirstCellData();
+                        WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        DataFormatData dataFormatData = new DataFormatData();
+                        dataFormatData.setIndex((short) 49);
+                        writeCellStyle.setDataFormatData(dataFormatData);
+                    }
+                })
+                .doWrite(TargetDecomposeImportListener.detailsResultDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO,true));
+    }
     /**
      * 修改经营结果分析报表详情
      */

@@ -11,7 +11,6 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.basic.IndicatorCode;
 import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
-import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.enums.message.MessageType;
 import net.qixiaowei.integration.common.enums.targetManager.DecompositionDimension;
 import net.qixiaowei.integration.common.enums.targetManager.TargetDecomposeDimensionCode;
@@ -36,10 +35,7 @@ import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
@@ -2450,12 +2446,59 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
-            for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
-                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
+            for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+                List<List<DecomposeDetailCyclesDTO>> subList = new ArrayList<>();
+                Integer timeDimension = targetDecomposeDTO.getTimeDimension();
+                if (StringUtils.isNotEmpty(list)){
+                    if (timeDimension==1){
+                        subList = getSubList(1, list);
+                    }else if (timeDimension==2){
+                        subList = getSubList(2, list);
 
+                    }else if (timeDimension==3){
+                        subList = getSubList(4, list);
+                    }else if (timeDimension==4){
+                        subList = getSubList(12, list);
+                    }else if (timeDimension==5   ){
+                        subList = getSubList(52, list);
+                    }
+                }
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
+                if (StringUtils.isNotEmpty(subList)){
+                    List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList1 = subList.get(i);
+                    for (int i1 = 0; i1 < decomposeDetailCyclesDTOList1.size(); i1++) {
+                        decomposeDetailCyclesDTOS.get(i1).setCycleForecast(decomposeDetailCyclesDTOList1.get(i1).getCycleForecast());
+                        decomposeDetailCyclesDTOS.get(i1).setCycleActual(decomposeDetailCyclesDTOList1.get(i1).getCycleActual());
+                    }
+                }
+            }
+
+        }
+        return targetDecomposeDTO;
+    }
+    /**
+     * 将list拆分成指定数量的小list
+     * 注: 使用的subList方式,返回的是list的内部类,不可做元素的删除,修改,添加操作
+     * @param length 数量
+     * @param list 大list
+     * @return
+     */
+    public List<List<DecomposeDetailCyclesDTO>> getSubList(int length, List<DecomposeDetailCyclesDTO> list){
+        int size = list.size();
+        int temp = size / length + 1;
+        boolean result = size % length == 0;
+        List<List<DecomposeDetailCyclesDTO>> subList = new ArrayList<>();
+        for (int i = 0; i < temp; i++) {
+            if (i == temp - 1) {
+                if (result) {
+                    break;
+                }
+                subList.add(list.subList(length * i, size)) ;
+            } else {
+                subList.add(list.subList(length * i, length * (i + 1))) ;
             }
         }
-        return null;
+        return subList;
     }
 
     /**
