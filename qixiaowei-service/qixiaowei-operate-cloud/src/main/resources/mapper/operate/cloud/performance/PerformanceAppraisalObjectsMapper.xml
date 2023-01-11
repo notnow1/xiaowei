@@ -209,7 +209,6 @@
         left join performance_appraisal pa
         on pao.performance_appraisal_id = pa.performance_appraisal_id
         and pa.delete_flag =0
-
         left join performance_rank_factor prf
         on prf.performance_rank_factor_id =pao.appraisal_result_id
         and prf.delete_flag =0
@@ -217,6 +216,7 @@
         and pa.appraisal_status=4
         and pa.appraisal_object=2
         and pao.appraisal_object_id =#{employeeId}
+          and  pao.appraisal_result_id is not null
         ORDER BY pao.update_time DESC
         LIMIT 3
     </select>

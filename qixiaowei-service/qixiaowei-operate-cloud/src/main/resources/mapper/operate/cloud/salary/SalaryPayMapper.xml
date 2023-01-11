@@ -474,9 +474,7 @@
         salary_amount AS employeeBasicWage
         FROM
         salary_pay
-        WHERE
-        pay_year = #{payYear}
-        AND delete_flag = 0
+        WHERE delete_flag = 0
         and employee_id in
         <foreach item="item"
                  collection="employeeIds"
@@ -484,7 +482,7 @@
             #{item}
         </foreach>
         group by employee_id
-        order by pay_year desc, pay_month desc) sp4
+        order by pay_year desc, pay_month desc limit 1) sp4
         on sp4.employee_id = sp.employee_id
         WHERE sp.employee_id in
         <foreach item="item"
@@ -501,9 +499,7 @@
         SELECT sum(pay_amount) as paymentBonusSum,
         sum(bonus_amount) as bonusAmountSum
         FROM salary_pay sp
-        where sp.pay_year &lt;= #{payYear}
-        and sp.pay_month &lt; DATE_FORMAT(NOW(), '%m')
-        and sp.employee_id = #{employeeId}
+        where  sp.employee_id = #{employeeId}
         and sp.delete_flag = 0
         ORDER BY sp.pay_year DESC, sp.pay_month DESC limit 12
     </select>
@@ -560,23 +556,20 @@
                sp.update_by,
                sp.update_time
         FROM salary_pay sp
-        where sp.pay_year &lt;= #{payYear}
-          and sp.pay_month != DATE_FORMAT(NOW(), '%m')
-          and sp.employee_id = #{employeeId}
+        where
+           sp.employee_id = #{employeeId}
           and sp.delete_flag = 0
           and (select sum(sp2.bonus_amount) from (SELECT sp.bonus_amount
         FROM salary_pay sp
-        where sp.pay_year &lt;= #{payYear}
-        and sp.pay_month != DATE_FORMAT(NOW(), '%m')
-        and sp.employee_id = #{employeeId}
+        where
+         sp.employee_id = #{employeeId}
         and sp.delete_flag = 0
         and sp.tenant_id=#{tenantId}
         ORDER BY sp.pay_year DESC, sp.pay_month DESC
         limit 12) sp2) > (select sum(sp3.salary_amount)/count(sp3.salary_amount) from (SELECT sp.salary_amount
         FROM salary_pay sp
-        where sp.pay_year &lt;= #{payYear}
-        and sp.pay_month != DATE_FORMAT(NOW(), '%m')
-        and sp.employee_id = #{employeeId}
+        where
+         sp.employee_id = #{employeeId}
         and sp.delete_flag = 0
         and sp.tenant_id=#{tenantId}
         ORDER BY sp.pay_year DESC, sp.pay_month DESC

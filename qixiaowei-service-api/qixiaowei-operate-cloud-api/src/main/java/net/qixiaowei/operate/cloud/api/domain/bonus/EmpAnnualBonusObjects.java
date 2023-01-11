@@ -18,7 +18,15 @@ import java.util.Date;
 public class EmpAnnualBonusObjects extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
+ /**
+  * 部门负责人id
+  */
+ private Long departmentLeaderId;
 
+ /**
+  * 部门负责人名称
+  */
+ private String departmentLeaderName;
      /**
      * ID
      */

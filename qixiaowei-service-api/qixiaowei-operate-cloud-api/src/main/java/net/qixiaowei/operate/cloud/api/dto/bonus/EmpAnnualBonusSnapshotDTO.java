@@ -44,6 +44,16 @@ public class EmpAnnualBonusSnapshotDTO {
     * 个人年终奖ID
     */
     private  Long employeeAnnualBonusId;
+
+    /**
+     * 部门负责人id
+     */
+    private Long departmentLeaderId;
+
+    /**
+     * 部门负责人名称
+     */
+    private String departmentLeaderName;
     /**
     * 个人年终奖发放对象ID
     */

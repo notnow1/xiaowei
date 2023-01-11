@@ -516,6 +516,7 @@
         ee.create_time, ee.update_by,
         ee.update_time,
         u.user_id,
+        u2.user_id as sendUserId,
         u.user_name
         FROM employee ee
         left join post p
@@ -528,6 +529,7 @@
         on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
         LEFT JOIN user u ON u.employee_id = ee.employee_id AND u.delete_flag = 0
+        LEFT JOIN user u2 ON u2.employee_id = d.department_leader_id AND u2.delete_flag = 0
         WHERE ee.delete_flag=0
         AND ee.employee_id in
         <foreach item="item"

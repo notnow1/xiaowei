@@ -73,6 +73,10 @@ public class EmployeeDTO implements Serializable {
      */
     private Long userId;
     /**
+     * 个人年终奖发送的用户id
+     */
+    private Long sendUserId;
+    /**
      * 用户账号
      */
     private String userName;
