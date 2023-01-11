@@ -51,6 +51,16 @@ public interface RemoteUserService {
     R<List<UserDTO>> getUsersByUserIds(@RequestBody Set<Long> userIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
+     * 通过用户ID重置密码
+     *
+     * @param userId   用户ID
+     * @param password 密码
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_USER + "/resetPwdOfUserId")
+    R<?> resetPwdOfUserId(@RequestParam("userId") Long userId, @RequestParam("password") String password, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
      * 注册用户信息
      *
      * @param userVO 用户信息

@@ -47,6 +47,16 @@ public class RemoteUser implements RemoteUserService {
     }
 
     @Override
+    @InnerAuth
+    @PostMapping("/resetPwdOfUserId")
+    public R<?> resetPwdOfUserId(Long userId, String password, String source) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(userId);
+        userDTO.setPassword(password);
+        return R.ok(userService.resetPwd(userDTO));
+    }
+
+    @Override
     public R<Boolean> registerUserInfo(UserVO userVO, String source) {
         return null;
     }

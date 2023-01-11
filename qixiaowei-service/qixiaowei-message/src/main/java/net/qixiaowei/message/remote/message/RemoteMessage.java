@@ -26,7 +26,7 @@ public class RemoteMessage implements RemoteMessageService {
     @Override
     @InnerAuth
     @PostMapping("/sendMessage")
-    public R<?> sendMessage(@Validated @RequestBody MessageSendDTO messageSendDTO, String source) {
+    public R<Boolean> sendMessage(@Validated @RequestBody MessageSendDTO messageSendDTO, String source) {
         Integer messageType = messageSendDTO.getMessageType();
         return R.ok(messageConsumerManager.handleConsumer(messageType, messageSendDTO));
     }
@@ -34,7 +34,7 @@ public class RemoteMessage implements RemoteMessageService {
     @Override
     @InnerAuth
     @PostMapping("/sendMessages")
-    public R<?> sendMessages(@Validated @RequestBody List<MessageSendDTO> messageSendDTOS, String source) {
+    public R<Boolean> sendMessages(@Validated @RequestBody List<MessageSendDTO> messageSendDTOS, String source) {
         boolean sendFlag = true;
         for (MessageSendDTO messageSendDTO : messageSendDTOS) {
             Integer messageType = messageSendDTO.getMessageType();

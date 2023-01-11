@@ -72,6 +72,10 @@ public class MessageSendDTO {
      * 扩展参数
      */
     private String extendParam;
+    /**
+     * 是否html：发送邮件时需要，默认否，即普通文本
+     */
+    private Boolean isHtml = false;
 
 
 }
