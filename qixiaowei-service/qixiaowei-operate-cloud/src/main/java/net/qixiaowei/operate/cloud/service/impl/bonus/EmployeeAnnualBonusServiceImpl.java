@@ -94,6 +94,15 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 }
             }
         }
+        if (StringUtils.isNotNull(inChargeTeamFlag)  && inChargeTeamFlag ==1){
+            List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOListJurisdiction = new ArrayList<>();
+            for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
+                if (!SecurityUtils.getEmployeeId().equals(empAnnualBonusSnapshotDTO.getDepartmentLeaderId())){
+                    empAnnualBonusSnapshotDTOListJurisdiction.add(empAnnualBonusSnapshotDTO);
+                }
+            }
+            empAnnualBonusSnapshotDTOList.removeAll(empAnnualBonusSnapshotDTOListJurisdiction);
+        }
         this.packperformanceDetails(empAnnualBonusSnapshotDTOList);
         employeeAnnualBonusDTO.setEmpAnnualBonusSnapshotDTOs(empAnnualBonusSnapshotDTOList);
         return employeeAnnualBonusDTO;
