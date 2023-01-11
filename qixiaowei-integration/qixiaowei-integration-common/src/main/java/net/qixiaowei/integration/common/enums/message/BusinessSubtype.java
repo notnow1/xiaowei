@@ -11,6 +11,8 @@ public enum BusinessSubtype {
     TENANT_DOMAIN_APPROVAL_PASS(101, BusinessType.TENANT, "域名申请通过"),
     TENANT_DOMAIN_APPROVAL_REFUSE(102, BusinessType.TENANT, "域名申请不通过"),
 
+    RESET_PASSWORD_USER_ID(200, BusinessType.USER, "企小微SaaS平台密码重置"),
+
     TARGET_DECOMPOSE_ORDER_NOTIFY(2300, BusinessType.TARGET_DECOMPOSE_ORDER, "销售订单滚动预测"),
 
     TARGET_DECOMPOSE_INCOME_NOTIFY(2400, BusinessType.TARGET_DECOMPOSE_INCOME, "销售收入滚动预测"),

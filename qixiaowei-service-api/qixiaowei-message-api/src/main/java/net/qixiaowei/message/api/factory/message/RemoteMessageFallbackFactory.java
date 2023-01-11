@@ -23,12 +23,12 @@ public class RemoteMessageFallbackFactory implements FallbackFactory<RemoteMessa
         log.error("消息服务调用失败:{}", throwable.getMessage());
         return new RemoteMessageService() {
             @Override
-            public R<?> sendMessage(MessageSendDTO messageSendDTO, String source) {
+            public R<Boolean> sendMessage(MessageSendDTO messageSendDTO, String source) {
                 return R.fail("发送消息失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<?> sendMessages(List<MessageSendDTO> messageSendDTOS, String source) {
+            public R<Boolean> sendMessages(List<MessageSendDTO> messageSendDTOS, String source) {
                 return R.fail("批量发送消息失败:" + throwable.getMessage());
             }
         };

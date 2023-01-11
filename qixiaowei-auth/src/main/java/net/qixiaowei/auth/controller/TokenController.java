@@ -2,6 +2,7 @@ package net.qixiaowei.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.qixiaowei.auth.form.ResetPasswordBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,5 +61,19 @@ public class TokenController {
         }
         return R.ok();
     }
+
+    /**
+     * @description: 重置密码
+     * @Author: hzk
+     * @date: 2023/1/11 17:09
+     * @param: [request, resetPasswordBody]
+     * @return: net.qixiaowei.integration.common.domain.R<?>
+     **/
+    @PostMapping("/resetPwd")
+    public R<?> resetPwd(HttpServletRequest request, @RequestBody ResetPasswordBody resetPasswordBody) {
+        sysLoginService.resetPwd(request, resetPasswordBody);
+        return R.ok();
+    }
+
 
 }

@@ -31,7 +31,7 @@ public interface RemoteMessageService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_MESSAGE + "/sendMessage")
-    R<?> sendMessage(@Validated @RequestBody MessageSendDTO messageSendDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<Boolean> sendMessage(@Validated @RequestBody MessageSendDTO messageSendDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 批量发送消息
@@ -41,5 +41,5 @@ public interface RemoteMessageService {
      * @return 结果
      */
     @PostMapping(API_PREFIX_MESSAGE + "/sendMessages")
-    R<?> sendMessages(@Validated @RequestBody List<MessageSendDTO> messageSendDTOS, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    R<Boolean> sendMessages(@Validated @RequestBody List<MessageSendDTO> messageSendDTOS, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

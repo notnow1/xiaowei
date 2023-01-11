@@ -49,6 +49,11 @@
             <artifactId>qixiaowei-integration-security</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-message-api</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -41,6 +41,11 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             }
 
             @Override
+            public R<?> resetPwdOfUserId(Long userId, String password, String source) {
+                return R.fail("通过用户ID重置密码失败:" + throwable.getMessage());
+            }
+
+            @Override
             public R<Boolean> registerUserInfo(UserVO userVO, String source) {
                 return R.fail("注册用户失败:" + throwable.getMessage());
             }
