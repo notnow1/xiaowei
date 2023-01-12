@@ -1548,6 +1548,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             }
             if (totalFlag) {
                 List<Object> data = new ArrayList<>();
+                data.add("");
                 data.add("合计");
                 //分解目标
                 data.add(targetDecomposeDetailsDTO1.getAmountTarget());
@@ -1585,7 +1586,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         if (StringUtils.isNotNull(targetDecomposeDTO)) {
             fileNameList = targetDecomposeDTO.getFileNameList();
         }
-
         //写入excel数据集合
         List<List<Object>> list = new ArrayList<List<Object>>();
         if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
@@ -1593,6 +1593,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOAllList = new ArrayList<>();
             List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOSizeList = new ArrayList<>();
             for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO.getDecomposeDetailCyclesDTOS();
                 //分解目标
                 if (null == targetDecomposeDetailsDTO.getAmountTarget()) {
@@ -1606,13 +1607,17 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 if (null == targetDecomposeDetailsDTO.getActualTotal()) {
                     targetDecomposeDetailsDTO.setActualTotal(new BigDecimal("0"));
                 }
-                //累计实际值
-                if (null == targetDecomposeDetailsDTO.getTargetDecomposeDetailsId()) {
-                    targetDecomposeDetailsDTO.setActualTotal(new BigDecimal("0"));
+                //预测与目标偏差率平均值
+                if (null == targetDecomposeDetailsDTO.getForecastDeviationRateAve()) {
+                    targetDecomposeDetailsDTO.setForecastDeviationRateAve(new BigDecimal("0"));
                 }
                 //目标完成率
                 if (null == targetDecomposeDetailsDTO.getTargetPercentageComplete()) {
                     targetDecomposeDetailsDTO.setTargetPercentageComplete(new BigDecimal("0"));
+                }
+                //目标完成率平均值
+                if (null == targetDecomposeDetailsDTO.getTargetPercentageCompleteAve()) {
+                    targetDecomposeDetailsDTO.setTargetPercentageCompleteAve(new BigDecimal("0"));
                 }
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
@@ -1627,6 +1632,15 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         //周期实际值
                         if (null == decomposeDetailCyclesDTO.getCycleActual()) {
                             decomposeDetailCyclesDTO.setCycleActual(new BigDecimal("0"));
+                        }
+
+                        //预测偏差
+                        if (null == decomposeDetailCyclesDTO.getCycleForecastDeviation()) {
+                            decomposeDetailCyclesDTO.setCycleForecastDeviation(new BigDecimal("0"));
+                        }
+                        //目标完成率
+                        if (null == decomposeDetailCyclesDTO.getCyclePercentageComplete()) {
+                            decomposeDetailCyclesDTO.setCyclePercentageComplete(new BigDecimal("0"));
                         }
                     }
                 }
@@ -1657,10 +1671,24 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         BigDecimal cycleActual = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleActual).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                         //周期预测值
                         BigDecimal cycleForecast = decomposeDetailCyclesDTOList.stream().map(DecomposeDetailCyclesDTO::getCycleForecast).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+                        BigDecimal cycleForecastDeviation = new BigDecimal("0");
+                        BigDecimal cyclePercentageComplete = new BigDecimal("0");
+                        if (cycleActual.subtract(cycleForecast).compareTo(new BigDecimal("0")) != 0 && cycleActual.compareTo(new BigDecimal("0")) != 0){
+                            //预测合计
+                             cycleForecastDeviation =cycleActual.subtract(cycleForecast).divide(cycleActual,10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        }
+                        if (cycleActual.subtract(cycleForecast).compareTo(new BigDecimal("0")) != 0 && cycleActual.compareTo(new BigDecimal("0")) != 0){
+                            //目标完成率
+                             cyclePercentageComplete = cycleActual.divide(cycleTarget,10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        }
+
                         decomposeDetailCyclesDTO.setCycleNumber(key);
                         decomposeDetailCyclesDTO.setCycleTarget(cycleTarget);
                         decomposeDetailCyclesDTO.setCycleActual(cycleActual);
                         decomposeDetailCyclesDTO.setCycleForecast(cycleForecast);
+                        decomposeDetailCyclesDTO.setCycleForecastDeviation(cycleForecastDeviation);
+                        decomposeDetailCyclesDTO.setCyclePercentageComplete(cyclePercentageComplete);
+
                         decomposeDetailCyclesDTOSizeList.add(decomposeDetailCyclesDTO);
 
                     }
@@ -1701,8 +1729,12 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 data.add(targetDecomposeDetailsDTO.getForecastYear());
                 //累计实际值
                 data.add(targetDecomposeDetailsDTO.getActualTotal());
+                //平均预测偏差率（%）
+                data.add(targetDecomposeDetailsDTO.getForecastDeviationRateAve());
                 //目标完成率
                 data.add(targetDecomposeDetailsDTO.getTargetPercentageComplete());
+                //平均目标完成率（%）
+                data.add(targetDecomposeDetailsDTO.getTargetPercentageCompleteAve());
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
@@ -1711,12 +1743,18 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         data.add(decomposeDetailCyclesDTO.getCycleForecast());
                         //周期实际值
                         data.add(decomposeDetailCyclesDTO.getCycleActual());
+                        //预测偏差
+                        data.add(decomposeDetailCyclesDTO.getCycleForecastDeviation());
+                        //目标完成率
+                        data.add(decomposeDetailCyclesDTO.getCyclePercentageComplete());
                     }
                 }
                 list.add(data);
             }
             if (totalFlag) {
                 List<Object> data = new ArrayList<>();
+                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO1.getDecomposeDetailCyclesDTOS();
+                data.add("");
                 data.add("合计");
                 //分解目标
                 data.add(targetDecomposeDetailsDTO1.getAmountTarget());
@@ -1724,9 +1762,36 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                 data.add(targetDecomposeDetailsDTO1.getForecastYear());
                 //累计实际值
                 data.add(targetDecomposeDetailsDTO1.getActualTotal());
+                if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
+                    BigDecimal cycleForecastDeviationSum = new BigDecimal("0");
+                    for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
+                        cycleForecastDeviationSum=cycleForecastDeviationSum.add(decomposeDetailCyclesDTO.getCycleForecastDeviation().abs());
+                    }
+                    if (cycleForecastDeviationSum.compareTo(new BigDecimal("0")) != 0){
+                        //平均预测偏差率（%）
+                        data.add(cycleForecastDeviationSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOS.size())),10,BigDecimal.ROUND_HALF_UP));
+                    }else {
+                        //平均预测偏差率（%）
+                        data.add("0");
+                    }
+                }
+
                 //目标完成率
                 data.add(targetDecomposeDetailsDTO1.getTargetPercentageComplete());
-                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTO1.getDecomposeDetailCyclesDTOS();
+                if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
+                    BigDecimal cyclePercentageCompleteSum = new BigDecimal("0");
+                    for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
+                        cyclePercentageCompleteSum=cyclePercentageCompleteSum.add(decomposeDetailCyclesDTO.getCyclePercentageComplete().abs());
+                    }
+                    if (cyclePercentageCompleteSum.compareTo(new BigDecimal("0")) != 0){
+                        //平均预测偏差率（%）
+                        data.add(cyclePercentageCompleteSum.divide(new BigDecimal(String.valueOf(decomposeDetailCyclesDTOS.size())),10,BigDecimal.ROUND_HALF_UP));
+                    }else {
+                        //平均预测偏差率（%）
+                        data.add("0");
+                    }
+                }
+
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOS)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOS) {
                         //周期目标值
@@ -1735,6 +1800,10 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
                         data.add(decomposeDetailCyclesDTO.getCycleForecast());
                         //周期实际值
                         data.add(decomposeDetailCyclesDTO.getCycleActual());
+                        //预测偏差
+                        data.add(decomposeDetailCyclesDTO.getCycleForecastDeviation());
+                        //目标完成率
+                        data.add(decomposeDetailCyclesDTO.getCyclePercentageComplete());
                     }
                 }
                 list.add(data);
