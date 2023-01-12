@@ -246,20 +246,26 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                 List<BonusPayBudgetDeptDTO> bonusPayBudgetDeptDTOS = bonusPayBudgetDeptMapper.selectBonusPayBudgetDeptByBonusPayApplicationId(payApplicationDTO.getBonusPayApplicationId());
                 if (StringUtils.isNotEmpty(bonusPayBudgetDeptDTOS)) {
-                    payApplicationDTO.setBudgetDepartmentIds(bonusPayBudgetDeptDTOS.stream().map(BonusPayBudgetDeptDTO::getDepartmentId).collect(Collectors.toList()));
+                    payApplicationDTO.setBudgetDepartmentIds(bonusPayBudgetDeptDTOS.stream().map(BonusPayBudgetDeptDTO::getDepartmentId).distinct().collect(Collectors.toList()));
                 }
             }
 
             //预算id集合
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                 List<Long> budgetDepartmentIds = payApplicationDTO.getBudgetDepartmentIds();
-
-                if (StringUtils.isNotEmpty(budgetDepartmentIds)) {
-                    //远程部门赋值
-                    R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(budgetDepartmentIds, SecurityConstants.INNER);
-                    List<DepartmentDTO> data = listR.getData();
-                    if (StringUtils.isNotEmpty(data)) {
-                        payApplicationDTO.setBudgetDepartmentList(data.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()));
+                if (budgetDepartmentIds.size()==1 && budgetDepartmentIds.get(0).equals(0L)){
+                    String corporation = "公司";
+                    List<String> budgetDepartmentList = new ArrayList<>();
+                    budgetDepartmentList.add(corporation);
+                    payApplicationDTO.setBudgetDepartmentList(budgetDepartmentList);
+                }else {
+                    if (StringUtils.isNotEmpty(budgetDepartmentIds)) {
+                        //远程部门赋值
+                        R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(budgetDepartmentIds, SecurityConstants.INNER);
+                        List<DepartmentDTO> data = listR.getData();
+                        if (StringUtils.isNotEmpty(data)) {
+                            payApplicationDTO.setBudgetDepartmentList(data.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()));
+                        }
                     }
                 }
             }
