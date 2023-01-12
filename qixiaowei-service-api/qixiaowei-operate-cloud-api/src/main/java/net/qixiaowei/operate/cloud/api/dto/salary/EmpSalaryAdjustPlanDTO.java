@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 个人调薪计划表
@@ -236,6 +237,9 @@ public class EmpSalaryAdjustPlanDTO {
      * 租户ID
      */
     private Long tenantId;
+
+    private Map<String, Object> params;
+
 
 }
 

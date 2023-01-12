@@ -80,24 +80,24 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     @Override
     public EmployeeAnnualBonusDTO selectEmployeeAnnualBonusByEmployeeAnnualBonusId(Long employeeAnnualBonusId, Integer inChargeTeamFlag) {
         EmployeeAnnualBonusDTO employeeAnnualBonusDTO = employeeAnnualBonusMapper.selectEmployeeAnnualBonusByEmployeeAnnualBonusId(employeeAnnualBonusId);
-        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsAndSnapshot(employeeAnnualBonusId,inChargeTeamFlag);
+        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOList = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsAndSnapshot(employeeAnnualBonusId, inChargeTeamFlag);
         //远程查看部门下人员信息
         R<List<EmployeeDTO>> listR = remoteEmployeeService.selectEmployeeByDepts(employeeAnnualBonusDTO.getDepartmentId(), SecurityConstants.INNER);
         List<EmployeeDTO> data = listR.getData();
         if (StringUtils.isNotEmpty(data)) {
             for (EmployeeDTO datum : data) {
                 for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
-                    if (datum.getEmployeeId().equals(empAnnualBonusSnapshotDTO.getEmployeeId())){
+                    if (datum.getEmployeeId().equals(empAnnualBonusSnapshotDTO.getEmployeeId())) {
                         empAnnualBonusSnapshotDTO.setDepartmentLeaderId(datum.getDepartmentLeaderId());
                         empAnnualBonusSnapshotDTO.setDepartmentLeaderName(datum.getDepartmentLeaderName());
                     }
                 }
             }
         }
-        if (StringUtils.isNotNull(inChargeTeamFlag)  && inChargeTeamFlag ==1){
+        if (StringUtils.isNotNull(inChargeTeamFlag) && inChargeTeamFlag == 1) {
             List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOListJurisdiction = new ArrayList<>();
             for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
-                if (!SecurityUtils.getEmployeeId().equals(empAnnualBonusSnapshotDTO.getDepartmentLeaderId())){
+                if (!SecurityUtils.getEmployeeId().equals(empAnnualBonusSnapshotDTO.getDepartmentLeaderId())) {
                     empAnnualBonusSnapshotDTOListJurisdiction.add(empAnnualBonusSnapshotDTO);
                 }
             }
@@ -126,15 +126,15 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         }
         //模糊查询申请年终奖金额
         BigDecimal applyBonusAmount = employeeAnnualBonusDTO.getApplyBonusAmount();
-        if (StringUtils.isNotNull(applyBonusAmount)){
+        if (StringUtils.isNotNull(applyBonusAmount)) {
             List<EmployeeAnnualBonusDTO> emolumentPlanDTOList = new ArrayList<>();
             //模糊查询
             Pattern pattern = Pattern.compile(String.valueOf(employeeAnnualBonusDTO.getApplyBonusAmount()));
             for (EmployeeAnnualBonusDTO annualBonusDTO : employeeAnnualBonusDTOS) {
                 BigDecimal applyBonusAmount1 = annualBonusDTO.getApplyBonusAmount();
-                if (StringUtils.isNotNull(applyBonusAmount1)){
+                if (StringUtils.isNotNull(applyBonusAmount1)) {
                     Matcher matcher = pattern.matcher(String.valueOf(applyBonusAmount1));
-                    if(matcher.find()){  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                    if (matcher.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         emolumentPlanDTOList.add(annualBonusDTO);
                     }
                 }
@@ -158,7 +158,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 //sterm流求和
                 applyBonusAmount = empAnnualBonusObjectsDTOS.stream().map(EmpAnnualBonusObjectsDTO::getCommentValue).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                 //申请年终奖金额
-                annualBonusDTO.setApplyBonusAmount(applyBonusAmount.divide(new BigDecimal("10000"),10,BigDecimal.ROUND_HALF_UP));
+                annualBonusDTO.setApplyBonusAmount(applyBonusAmount.divide(new BigDecimal("10000"), 10, BigDecimal.ROUND_HALF_UP));
             }
         }
     }
@@ -332,7 +332,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             }
         }
         if (employeeAnnualBonus.getStatus() == 1) {
-            this.packaddSubmit(empAnnualBonusObjectsList,employeeAnnualBonus);
+            this.packaddSubmit(empAnnualBonusObjectsList, employeeAnnualBonus);
         }
         employeeAnnualBonusDTO.setEmployeeAnnualBonusId(employeeAnnualBonus.getEmployeeAnnualBonusId());
         return employeeAnnualBonusDTO;
@@ -486,7 +486,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         //部门年终奖
         employeeAnnualBonusDTO.setDistributeBonusAmount(distributeBonusAmount);
         //所有员工的薪酬奖金合计和所有员工的奖金金额合计
-        Map<String,BigDecimal> allMpa = new HashMap<>();
+        Map<String, BigDecimal> allMpa = new HashMap<>();
         //所有员工的薪酬奖金合计
         BigDecimal allPaymentBonusSum = new BigDecimal("0");
         //所有员工的奖金金额合计
@@ -565,9 +565,9 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             packperformance(empAnnualBonusSnapshotDTOList);
 
             //参考值一 二数据计算必须数据
-            packPerformanceRank(employeeAnnualBonusDTO, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOList,allMpa);
-            allPaymentBonusSum=allMpa.get("allPaymentBonusSum");
-            allBonusAmountSum=allMpa.get("allBonusAmountSum");
+            packPerformanceRank(employeeAnnualBonusDTO, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOList, allMpa);
+            allPaymentBonusSum = allMpa.get("allPaymentBonusSum");
+            allBonusAmountSum = allMpa.get("allBonusAmountSum");
             //封装计算参考值
             packReferenceValue(distributeBonusAmount, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOList);
         }
@@ -645,10 +645,10 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 if (null != performanceRankId) {
                     List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
                     if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
-                        Map<String,BigDecimal> map = new HashMap<>();
+                        Map<String, BigDecimal> map = new HashMap<>();
                         empAnnualBonusSnapshotDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
                         for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
-                            map.put(rankFactorDTO.getPerformanceRankName(),rankFactorDTO.getBonusFactor());
+                            map.put(rankFactorDTO.getPerformanceRankName(), rankFactorDTO.getBonusFactor());
                         }
                         empAnnualBonusSnapshotDTO.setPerformanceRankMap(map);
                     }
@@ -680,10 +680,10 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 if (null != performanceRankId) {
                     List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
                     if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
-                        Map<String,BigDecimal> map = new HashMap<>();
+                        Map<String, BigDecimal> map = new HashMap<>();
                         empAnnualBonusSnapshotDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
                         for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
-                            map.put(rankFactorDTO.getPerformanceRankName(),rankFactorDTO.getBonusFactor());
+                            map.put(rankFactorDTO.getPerformanceRankName(), rankFactorDTO.getBonusFactor());
                         }
                         empAnnualBonusSnapshotDTO.setPerformanceRankMap(map);
                     }
@@ -694,7 +694,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
     /**
      * 封装计算参考值一 二数据
-     *  @param employeeAnnualBonusDTO
+     *
+     * @param employeeAnnualBonusDTO
      * @param allPaymentBonusSum
      * @param allBonusAmountSum
      * @param paymentBonusSumMap
@@ -737,8 +738,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 allBonusAmountSum = allBonusAmountSum.add(bonusAmountSum);
             }
         }
-        allMpa.put("allPaymentBonusSum",allPaymentBonusSum);
-        allMpa.put("allBonusAmountSum",allBonusAmountSum);
+        allMpa.put("allPaymentBonusSum", allPaymentBonusSum);
+        allMpa.put("allBonusAmountSum", allBonusAmountSum);
     }
 
     /**
@@ -793,6 +794,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
     /**
      * 封装保存提交 编辑提交发送通知
+     *
      * @param empAnnualBonusObjectsList
      * @param employeeAnnualBonus
      */
@@ -806,12 +808,12 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         List<EmployeeDTO> data = listR.getData();
         if (StringUtils.isNotEmpty(data)) {
             //根据部门id分组
-            Map<Long, List<EmployeeDTO>> employeeMap = data.parallelStream().filter(f ->f.getDepartmentLeaderId() != null).collect(Collectors.groupingBy(EmployeeDTO::getDepartmentLeaderId));
+            Map<Long, List<EmployeeDTO>> employeeMap = data.parallelStream().filter(f -> f.getDepartmentLeaderId() != null).collect(Collectors.groupingBy(EmployeeDTO::getDepartmentLeaderId));
             for (Long key : employeeMap.keySet()) {
                 List<EmployeeDTO> employeeDTOList = employeeMap.get(key);
-                if (StringUtils.isNotEmpty(employeeDTOList)){
+                if (StringUtils.isNotEmpty(employeeDTOList)) {
                     List<Long> collect = employeeDTOList.stream().filter(f -> f.getUserId() != null).map(EmployeeDTO::getSendUserId).collect(Collectors.toList());
-                    if (StringUtils.isNotEmpty(collect)){
+                    if (StringUtils.isNotEmpty(collect)) {
                         //todo 发送给主管通知
                         List<BacklogSendDTO> backlogSendDTOS = new ArrayList<>();
                         BacklogSendDTO backlogSendDTO = new BacklogSendDTO();
@@ -960,7 +962,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
     @Override
     public List<EmpAnnualBonusSnapshotDTO> realTimeDetails(EmployeeAnnualBonusDTO employeeAnnualBonusDTO) {
         //所有员工的薪酬奖金合计和所有员工的奖金金额合计
-        Map<String,BigDecimal> allMpa = new HashMap<>();
+        Map<String, BigDecimal> allMpa = new HashMap<>();
         //所有员工的薪酬奖金合计
         BigDecimal allPaymentBonusSum = new BigDecimal("0");
         //所有员工的奖金金额合计
@@ -973,7 +975,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         //分配年终奖金额
         BigDecimal distributeBonusAmount = employeeAnnualBonusDTO.getDistributeBonusAmount();
         //个人年终奖发放快照信息及发放对象表集合
-        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOsTwo =employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOsTwo();
+        List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOsTwo = employeeAnnualBonusDTO.getEmpAnnualBonusSnapshotDTOsTwo();
         //个人年终奖发放快照信息及发放对象表集合
         List<EmpAnnualBonusSnapshotDTO> empAnnualBonusSnapshotDTOsOne = new ArrayList<>();
         //远程查看部门下人员信息
@@ -1043,8 +1045,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         if (StringUtils.isNotEmpty(empAnnualBonusSnapshotDTOsOne)) {
             //参考值一 二数据计算必须数据
             packPerformanceRank(employeeAnnualBonusDTO, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOsOne, allMpa);
-            allPaymentBonusSum=allMpa.get("allPaymentBonusSum");
-            allBonusAmountSum=allMpa.get("allBonusAmountSum");
+            allPaymentBonusSum = allMpa.get("allPaymentBonusSum");
+            allBonusAmountSum = allMpa.get("allBonusAmountSum");
             //封装计算参考值
             packReferenceValue(distributeBonusAmount, allPaymentBonusSum, allBonusAmountSum, paymentBonusSumMap, bonusAmountSumMap, empAnnualBonusSnapshotDTOsTwo);
         }
@@ -1053,6 +1055,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
     /**
      * 根据人员id查询个人年终奖 申请人id
+     *
      * @param employeeId
      * @return
      */
@@ -1063,6 +1066,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
 
     /**
      * 根据部门id查询个人年终奖 (一级部门,申请部门)
+     *
      * @param departmentId
      * @return
      */

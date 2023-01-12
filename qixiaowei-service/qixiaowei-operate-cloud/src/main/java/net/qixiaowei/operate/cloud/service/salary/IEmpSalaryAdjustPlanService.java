@@ -1,11 +1,10 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
-import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.operate.cloud.api.domain.salary.EmpSalaryAdjustPlan;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.EmpSalaryAdjustPlanExcel;
 
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -114,10 +113,10 @@ public interface IEmpSalaryAdjustPlanService {
     /**
      * 导出Excel
      *
-     * @param empSalaryAdjustPlanDTO 个人调薪DTO
+     * @param empSalaryAdjustPlan 个人调薪DTO
      * @return List
      */
-    List<EmpSalaryAdjustPlanExcel> exportEmpSalaryAdjustPlan(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO);
+    List<EmpSalaryAdjustPlanExcel> exportEmpSalaryAdjustPlan(EmpSalaryAdjustPlan empSalaryAdjustPlan);
 
     /**
      * 根据员工获取个人调薪

@@ -34,10 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -202,7 +199,19 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      */
     @Override
     public List<EmpSalaryAdjustPlanDTO> selectEmpSalaryAdjustPlanList(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
-        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlanDTO);
+        Map<String, Object> params;
+        if (StringUtils.isNotNull(empSalaryAdjustPlanDTO.getParams())) {
+            params = empSalaryAdjustPlanDTO.getParams();
+        } else {
+            params = new HashMap<>();
+        }
+        EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
+        params.put("employeeCode", empSalaryAdjustPlanDTO.getEmployeeCode());
+        params.put("employeeName", empSalaryAdjustPlanDTO.getEmployeeName());
+        params.put("departmentName", empSalaryAdjustPlanDTO.getDepartmentName());
+        params.put("departmentLeaderName", empSalaryAdjustPlanDTO.getDepartmentLeaderName());
+        empSalaryAdjustPlan.setParams(params);
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
         for (EmpSalaryAdjustPlanDTO salaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
             String adjustmentType = salaryAdjustPlanDTO.getAdjustmentType();
             List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
@@ -742,12 +751,12 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
     /**
      * 导出Excel
      *
-     * @param empSalaryAdjustPlanDTO 隔热膜调薪计划dto
+     * @param empSalaryAdjustPlan 隔热膜调薪计划dto
      * @return List
      */
     @Override
-    public List<EmpSalaryAdjustPlanExcel> exportEmpSalaryAdjustPlan(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
-        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOList = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlanDTO);
+    public List<EmpSalaryAdjustPlanExcel> exportEmpSalaryAdjustPlan(EmpSalaryAdjustPlan empSalaryAdjustPlan) {
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOList = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
         return new ArrayList<>();
     }
 
@@ -815,19 +824,20 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      */
     @Override
     public List<EmpSalaryAdjustPlanDTO> selectByDepartmentId(Long departmentId) {
-        EmpSalaryAdjustPlanDTO empSalaryAdjustPlan = new EmpSalaryAdjustPlanDTO();
+        EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
         empSalaryAdjustPlan.setAdjustDepartmentId(departmentId);
         return empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
     }
 
     /**
      * 根据岗位ID集合获取个人调薪
+     *
      * @param postId
      * @return
      */
     @Override
     public List<EmpSalaryAdjustPlanDTO> selectByPostId(Long postId) {
-        EmpSalaryAdjustPlanDTO empSalaryAdjustPlan = new EmpSalaryAdjustPlanDTO();
+        EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
         empSalaryAdjustPlan.setAdjustPostId(postId);
         return empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
     }

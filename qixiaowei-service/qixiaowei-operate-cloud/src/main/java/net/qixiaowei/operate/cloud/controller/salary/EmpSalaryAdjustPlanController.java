@@ -13,6 +13,7 @@ import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
+import net.qixiaowei.operate.cloud.api.domain.salary.EmpSalaryAdjustPlan;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.excel.salary.EmpSalaryAdjustPlanExcel;
 import net.qixiaowei.operate.cloud.excel.salary.EmpSalaryAdjustPlanImportListener;
@@ -154,7 +155,10 @@ public class EmpSalaryAdjustPlanController extends BaseController {
     @SneakyThrows
     @GetMapping("export")
     public void exportEmpSalaryAdjustPlan(@RequestParam Map<String, Object> empSalaryAdjustPlan, EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO, HttpServletResponse response) {
-        List<EmpSalaryAdjustPlanExcel> empSalaryAdjustPlanExcelList = empSalaryAdjustPlanService.exportEmpSalaryAdjustPlan(empSalaryAdjustPlanDTO);
+        Map<String, Object> params = empSalaryAdjustPlanDTO.getParams();
+        EmpSalaryAdjustPlan empSalaryAdjustPlan1 = new EmpSalaryAdjustPlan();
+        empSalaryAdjustPlan1.setParams(params);
+        List<EmpSalaryAdjustPlanExcel> empSalaryAdjustPlanExcelList = empSalaryAdjustPlanService.exportEmpSalaryAdjustPlan(empSalaryAdjustPlan1);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding(CharsetKit.UTF_8);
         String fileName = URLEncoder.encode("个人调薪计划表" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Math.round((Math.random() + 1) * 1000)

@@ -39,7 +39,7 @@ public interface EmpSalaryAdjustPlanMapper {
      * @param empSalaryAdjustPlan 个人调薪计划表
      * @return 个人调薪计划表集合
      */
-    List<EmpSalaryAdjustPlanDTO> selectEmpSalaryAdjustPlanList(@Param("empSalaryAdjustPlan") EmpSalaryAdjustPlanDTO empSalaryAdjustPlan);
+    List<EmpSalaryAdjustPlanDTO> selectEmpSalaryAdjustPlanList(@Param("empSalaryAdjustPlan") EmpSalaryAdjustPlan empSalaryAdjustPlan);
 
     /**
      * 新增个人调薪计划表
