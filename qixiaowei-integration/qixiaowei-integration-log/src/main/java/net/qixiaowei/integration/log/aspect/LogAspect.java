@@ -75,7 +75,6 @@ public class LogAspect {
         try {
             Date nowDate = DateUtils.getNowDate();
             OperationLogDTO operationLogDTO = new OperationLogDTO();
-            Long businessId;
             //设置操作时间
             operationLogDTO.setOperationTime(nowDate);
             //设置操作用户信息

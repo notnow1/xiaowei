@@ -404,6 +404,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             empSalaryAdjustPlan.setStatus(0);
         }
         addEmpSalaryAdjustPlan(empSalaryAdjustPlan);
+        empSalaryAdjustPlanDTO.setEmpSalaryAdjustPlanId(empSalaryAdjustPlan.getEmpSalaryAdjustPlanId());
         Long empSalaryAdjustPlanId = empSalaryAdjustPlan.getEmpSalaryAdjustPlanId();
         List<EmpSalaryAdjustSnapDTO> empSalaryAdjustSnapDTOS = empSalaryAdjustSnapService.selectEmpSalaryAdjustSnapByEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
         if (StringUtils.isNotEmpty(empSalaryAdjustSnapDTOS)) {
