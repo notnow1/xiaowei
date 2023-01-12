@@ -15,7 +15,7 @@ import java.util.Map;
 
 
 /**
- * 服务降级处理
+ * 绩效考核服务降级处理
  */
 @Component
 public class RemotePerformanceAppraisalFallbackFactory implements FallbackFactory<RemotePerformanceAppraisalService> {

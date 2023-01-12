@@ -5,7 +5,6 @@ import java.util.List;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
-import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -146,8 +145,9 @@ public interface IProductService {
      * 查询上级产品
      *
      * @return
+     * @param productId
      */
-    List<ProductDTO> queryparent();
+    List<ProductDTO> queryparent(Long productId);
 
     /**
      * 根据产品IDS获取产品列表

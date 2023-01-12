@@ -95,8 +95,8 @@ public class ProductController extends BaseController {
      */
     @RequiresPermissions(value = {"operate:cloud:product:list", "operate:cloud:product:pageList"}, logical = Logical.OR)
     @GetMapping("/queryparent")
-    public AjaxResult queryparent() {
-        List<ProductDTO> list = productService.queryparent();
+    public AjaxResult queryparent(@RequestParam(required = false) Long productId) {
+        List<ProductDTO> list = productService.queryparent(productId);
         return AjaxResult.success(list);
     }
 
@@ -174,7 +174,7 @@ public class ProductController extends BaseController {
      * 导出模板
      */
     @SneakyThrows
-//    @RequiresPermissions("system:manage:employee:import")
+    @RequiresPermissions("system:manage:employee:import")
     @GetMapping("/export-template")
     public void exportProductTemplate(HttpServletResponse response) {
         List<String> dictionaryLabels = new ArrayList<>();

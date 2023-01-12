@@ -52,7 +52,7 @@ public class OfficialRankDecomposeDTO {
     /**
      * 职级体系名称
      */
-    private Long officialRankSystemName;
+    private String officialRankSystemName;
     /**
      * 职级分解维度:1部门;2区域;3省份;4产品
      */

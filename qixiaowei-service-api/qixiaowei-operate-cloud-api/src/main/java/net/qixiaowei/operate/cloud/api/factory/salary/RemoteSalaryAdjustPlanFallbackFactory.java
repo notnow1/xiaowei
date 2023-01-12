@@ -40,6 +40,11 @@ public class RemoteSalaryAdjustPlanFallbackFactory implements FallbackFactory<Re
                 return R.fail("根据部门ID集合获取个人调薪失败:" + throwable.getMessage());
             }
 
+            @Override
+            public R<List<EmpSalaryAdjustPlanDTO>> selectByPostId(Long postId, String source) {
+                return R.fail("根据岗位ID集合获取个人调薪失败:" + throwable.getMessage());
+            }
+
         };
     }
 }

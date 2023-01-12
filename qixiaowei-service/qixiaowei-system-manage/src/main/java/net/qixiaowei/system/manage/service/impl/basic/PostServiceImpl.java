@@ -1,12 +1,16 @@
 package net.qixiaowei.system.manage.service.impl.basic;
 
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
+import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
 import net.qixiaowei.system.manage.api.domain.basic.Post;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -46,7 +51,8 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
-
+    @Autowired
+    private RemoteSalaryAdjustPlanService remoteSalaryAdjustPlanService;
 
     /**
      * 查询岗位表
@@ -308,31 +314,15 @@ public class PostServiceImpl implements IPostService {
         StringBuffer employeeErreo = new StringBuffer();
         //组织引用
         StringBuffer deptPostErreo = new StringBuffer();
+        // 个人调薪引用
+        StringBuffer empSalaryAdjustPlanErreo = new StringBuffer();
         //错误信息
         StringBuffer postErreo = new StringBuffer();
         for (Long postId : postIds) {
-            //查询是否被人员引用
-            List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeePostId(postId);
-            String s1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
-            String postname1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
-            if (!StringUtils.isEmpty(employeeDTOS)) {
-                employeeErreo.append("该岗位" + postname1 + "已被" + s1 + "人员引用" + "\n");
-            }
-            //查询是否被组织引用
-            List<DepartmentDTO> departmentDTOList = departmentPostMapper.selectDepartmentPostId(postId);
-            String s = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
-            String postname2 = departmentDTOList.stream().map(DepartmentDTO::getDepartmentLeaderPostName).distinct().collect(Collectors.toList()).toString();
-            if (!StringUtils.isEmpty(departmentDTOList)) {
-                deptPostErreo.append("岗位" + postname2 + "已被组织" + s + "引用" + "\n");
-            }
+            //引用关系
+            this.quotePost(postId, employeeErreo, deptPostErreo,empSalaryAdjustPlanErreo);
         }
-        // todo 还有暂未确定
-        if (employeeErreo.length() > 1) {
-            postErreo.append(employeeErreo).append("\n");
-        }
-        if (deptPostErreo.length() > 1) {
-            postErreo.append(deptPostErreo).append("\n");
-        }
+        postErreo.append(employeeErreo).append(deptPostErreo).append(empSalaryAdjustPlanErreo);
         if (postErreo.length() > 1) {
             throw new ServiceException(postErreo.toString());
         }
@@ -381,34 +371,52 @@ public class PostServiceImpl implements IPostService {
         StringBuffer employeeErreo = new StringBuffer();
         //组织引用
         StringBuffer deptPostErreo = new StringBuffer();
+        // 个人调薪应用
+        StringBuffer empSalaryAdjustPlanErreo = new StringBuffer();
         //错误信息
         StringBuffer postErreo = new StringBuffer();
-        //查询是否被人员引用
-        List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeePostId(post.getPostId());
-        String s = employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()).toString();
-        String postname1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeePostName).distinct().collect(Collectors.toList()).toString();
-        if (!StringUtils.isEmpty(employeeDTOS)) {
-            employeeErreo.append("岗位" + postname1 + "被" + s + "人员引用  无法删除！\n");
-        }
-        //查询是否被组织引用
-        List<DepartmentDTO> departmentDTOList = departmentPostMapper.selectDepartmentPostId(post.getPostId());
-        String s2 = departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()).toString();
-        String postname2 = departmentDTOList.stream().map(DepartmentDTO::getDepartmentLeaderPostName).distinct().collect(Collectors.toList()).toString();
-        if (!StringUtils.isEmpty(departmentDTOList)) {
-            deptPostErreo.append("岗位" + postname2 + "被" + s2 + "组织引用 无法删除！\n");
+        //引用关系
+        this.quotePost(post.getPostId(), employeeErreo, deptPostErreo, empSalaryAdjustPlanErreo);
+        postErreo.append(employeeErreo).append(deptPostErreo).append(empSalaryAdjustPlanErreo);
 
-        }
-        // todo 还有暂未确定
-        if (employeeErreo.length() > 1) {
-            postErreo.append(employeeErreo).append("\n");
-        }
-        if (deptPostErreo.length() > 1) {
-            postErreo.append(deptPostErreo).append("\n");
-        }
         if (postErreo.length() > 1) {
             throw new ServiceException(postErreo.toString());
         }
         return postMapper.logicDeletePostByPostId(post);
+    }
+
+    /**
+     * 删除引用关系
+     *  @param postId
+     * @param employeeErreo
+     * @param deptPostErreo
+     * @param empSalaryAdjustPlanErreo
+     */
+    private void quotePost(Long postId, StringBuffer employeeErreo, StringBuffer deptPostErreo, StringBuffer empSalaryAdjustPlanErreo) {
+        //查询是否被人员引用
+        List<EmployeeDTO> employeeDTOS = employeeMapper.selectEmployeePostId(postId);
+        String employeeNames = StringUtils.join(",",employeeDTOS.stream().map(EmployeeDTO::getEmployeeName).filter(Objects::nonNull).distinct().collect(Collectors.toList()));
+        String employeeDepartmentNames = StringUtils.join(",",employeeDTOS.stream().map(EmployeeDTO::getEmployeeDepartmentName).filter(Objects::nonNull).distinct().collect(Collectors.toList()));
+        String postname1 = employeeDTOS.stream().map(EmployeeDTO::getEmployeePostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        if (!StringUtils.isEmpty(employeeNames)) {
+            employeeErreo.append("岗位" + postname1 + "被" + employeeNames + "人员引用  无法删除！\n");
+        }
+        if (!StringUtils.isEmpty(employeeDepartmentNames)) {
+            employeeErreo.append("岗位" + postname1 + "被" + employeeDepartmentNames + "组织 负责人岗位引用  无法删除！\n");
+        }
+        //查询是否被组织引用
+        List<DepartmentDTO> departmentDTOList = departmentPostMapper.selectDepartmentPostId(postId);
+        String departmentNames = StringUtils.join(",",departmentDTOList.stream().map(DepartmentDTO::getDepartmentName).filter(Objects::nonNull).collect(Collectors.toList()));
+        String postname2 = departmentDTOList.stream().map(DepartmentDTO::getDepartmentLeaderPostName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
+        if (!StringUtils.isEmpty(departmentDTOList)) {
+            deptPostErreo.append("岗位" + postname2 + "被" + departmentNames + "组织 组织岗位信息-岗位名称引用 无法删除！\n");
+        }
+        //远程查询个人调薪 岗位引用
+        R<List<EmpSalaryAdjustPlanDTO>> empSalaryAdjustPlanList = remoteSalaryAdjustPlanService.selectByPostId(postId, SecurityConstants.INNER);
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanData = empSalaryAdjustPlanList.getData();
+        if (StringUtils.isNotEmpty(empSalaryAdjustPlanData)){
+            empSalaryAdjustPlanErreo.append("岗位" + postname2 + "被[" + StringUtils.join(",",empSalaryAdjustPlanData.stream().map(EmpSalaryAdjustPlanDTO::getEmployeeName).filter(Objects::nonNull).collect(Collectors.toList())) + "]个人调薪引用 无法删除！\n");
+        }
     }
 
     /**

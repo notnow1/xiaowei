@@ -22,7 +22,7 @@ public class RemoteDeptSalaryAdjustPlanFactory implements FallbackFactory<Remote
         return new RemoteDeptSalaryAdjustPlanService() {
 
             @Override
-            public R<List<DeptSalaryAdjustItemDTO>> selectByDepartmentId(@RequestParam("departmentId") Long departmentId, String source) {
+            public R<List<DeptSalaryAdjustItemDTO>> selectByDepartmentId(Long departmentId, String source) {
                 return R.fail("根据部门ID集合查询部门调薪:" + throwable.getMessage());
             }
 

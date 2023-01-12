@@ -31,7 +31,7 @@ public class RemoteDeptSalaryAdjustPlan implements RemoteDeptSalaryAdjustPlanSer
      */
     @Override
     @InnerAuth
-    @PostMapping("/selectByDepartmentIds")
+    @GetMapping("/selectByDepartmentId")
     public R<List<DeptSalaryAdjustItemDTO>> selectByDepartmentId(@RequestParam("departmentId") Long departmentId, String source) {
         return R.ok(deptSalaryAdjustItemMapper.selectByDepartmentId(departmentId));
     }

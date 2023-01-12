@@ -13,18 +13,15 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.product.*;
-import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.product.*;
 import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
 import net.qixiaowei.operate.cloud.excel.product.ProductExportExcel;
 import net.qixiaowei.operate.cloud.mapper.product.*;
 import net.qixiaowei.operate.cloud.service.product.IProductService;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.DictionaryDataDTO;
-import net.qixiaowei.system.manage.api.dto.basic.DictionaryTypeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDictionaryDataService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +57,8 @@ public class ProductServiceImpl implements IProductService {
     private RemoteDictionaryDataService remoteDictionaryDataService;
     @Autowired
     private RemoteIndicatorService remoteIndicatorService;
-
+    @Autowired
+    private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
     /**
      * 查询产品表
      *
@@ -213,7 +211,29 @@ public class ProductServiceImpl implements IProductService {
         }
         return tree;
     }
-
+    /**
+     * 删除自己及下级树形结构
+     *
+     * @param productDTOList
+     * @param productId
+     * @return
+     */
+    private void remoteTree(List<ProductDTO> productDTOList, Long productId) {
+        for (int i = productDTOList.size()-1; i >=0; i--) {
+            List<ProductDTO> children = productDTOList.get(i).getChildren();
+            if (children != null && children.size() > 0) {
+                if (productDTOList.get(i).getProductId().equals(productId)){
+                    productDTOList.remove(productDTOList.get(i));
+                }else {
+                    remoteTree(children, productId);
+                }
+            }else {
+                if (productDTOList.get(i).getProductId().equals(productId)){
+                    productDTOList.remove(productDTOList.get(i));
+                }
+            }
+        }
+    }
     /**
      * 树形数据转list
      *
@@ -535,7 +555,7 @@ public class ProductServiceImpl implements IProductService {
             throw new ServiceException("产品不存在！");
         }
         Product product = new Product();
-        if (null == productDTO.getParentProductId()) {
+        if (null == productDTO.getParentProductId() || productDTO.getParentProductId().equals(0L)) {
             BeanUtils.copyProperties(productDTO, product);
             productDTO.setParentProductId(Constants.TOP_PARENT_ID);
         } else {
@@ -925,21 +945,36 @@ public class ProductServiceImpl implements IProductService {
             productDTOS.addAll(productMapper.selectAncestors(productId));
         }
         if (StringUtils.isNotEmpty(productDTOS) && productDTOS.get(0) != null) {
-            List<Long> productList = productDTOS.stream().map(ProductDTO::getProductId).distinct().collect(Collectors.toList());
-            for (Long productId : productList) {
-                // todo 是否被引用
-                List<ProductDTO> productDTOList = productMapper.selectProductQuote(productId);
+            List<ProductDTO> productDTOList = productDTOS.stream().distinct().collect(Collectors.toList());
+            for (ProductDTO productDTO : productDTOList) {
+                //远程职级分解
+                List<Long> productIdList = new ArrayList<>();
+                productIdList.add(productDTO.getProductId());
+                R<List<OfficialRankDecomposeDTO>> officialRankDecomposeDTOList = remoteOfficialRankSystemService.selectOfficialDecomposeByDimensions(productIdList, 4, SecurityConstants.INNER);
+                List<OfficialRankDecomposeDTO> officialRankDecomposeData = officialRankDecomposeDTOList.getData();
+                if (StringUtils.isNotEmpty(officialRankDecomposeData)){
+                    List<String> officialRankSystemNames = new ArrayList<>();
+                    for (OfficialRankDecomposeDTO officialRankDecomposeDatum : officialRankDecomposeData) {
+                        if (officialRankDecomposeDatum.getDecomposeDimension().equals(productDTO.getProductId())){
+                            officialRankSystemNames.add(officialRankDecomposeDatum.getOfficialRankSystemName());
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(officialRankSystemNames)) {
+                        decomposeErreo.append("产品" + productDTO.getProductName() + "已被职级体系名称[" + StringUtils.join(",",officialRankSystemNames) + "] 职级分解引用\n");
+                    }
+                }
+                //是否被目标分解引用
+                List<ProductDTO> productDTOList1 = productMapper.selectProductQuote(productDTO.getProductId());
                 //指标名称 远程调用
-                if (StringUtils.isNotEmpty(productDTOList)) {
-                    List<Long> indicatorIds = productDTOList.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(productDTOList1)) {
+                    List<Long> indicatorIds = productDTOList1.stream().map(ProductDTO::getIndicatorId).collect(Collectors.toList());
 
                     R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
                     List<IndicatorDTO> data = listR.getData();
                     if (StringUtils.isNotEmpty(data)) {
-                        String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
                         String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
                         if (StringUtils.isNotBlank(indicatorName)) {
-                            decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
+                            decomposeErreo.append("产品" + productDTO.getProductName() + "已被目标分解" + indicatorName + "引用\n");
                         }
                     }
                 }
@@ -1025,11 +1060,19 @@ public class ProductServiceImpl implements IProductService {
      * 查询上级产品
      *
      * @return
+     * @param productId
      */
     @Override
-    public List<ProductDTO> queryparent() {
+    public List<ProductDTO> queryparent(Long productId) {
         Product product = new Product();
-        return this.createTree(productMapper.selectProductList(product), 0);
+        List<ProductDTO> tree = this.createTree(productMapper.selectProductList(product), 0);
+        if (StringUtils.isNotNull(productId)){
+            if (StringUtils.isNotEmpty(tree)){
+                 this.remoteTree(tree, productId);
+            }
+
+        }
+        return tree;
 
     }
 
@@ -1538,7 +1581,24 @@ public class ProductServiceImpl implements IProductService {
             throw new ServiceException("数据不存在！ 请刷新页面重试!");
         }
         for (ProductDTO dto : productDTOS) {
-            //todo 是否被引用
+            //远程职级分解
+            List<Long> productIds = new ArrayList<>();
+            productIds.add(dto.getProductId());
+            R<List<OfficialRankDecomposeDTO>> officialRankDecomposeDTOList = remoteOfficialRankSystemService.selectOfficialDecomposeByDimensions(productIds, 4, SecurityConstants.INNER);
+            List<OfficialRankDecomposeDTO> officialRankDecomposeData = officialRankDecomposeDTOList.getData();
+            if (StringUtils.isNotEmpty(officialRankDecomposeData)){
+                List<String> officialRankSystemNames = new ArrayList<>();
+                for (OfficialRankDecomposeDTO officialRankDecomposeDatum : officialRankDecomposeData) {
+                    if (officialRankDecomposeDatum.getDecomposeDimension().equals(dto.getProductId())){
+                        officialRankSystemNames.add(officialRankDecomposeDatum.getOfficialRankSystemName());
+                    }
+                }
+                if (StringUtils.isNotEmpty(officialRankSystemNames)) {
+                    decomposeErreo.append("产品" + dto.getProductName() + "已被职级体系名称[" + StringUtils.join(",",officialRankSystemNames) + "] 职级分解引用\n");
+                }
+            }
+
+            //是否引用
             List<ProductDTO> productDTOList = productMapper.selectProductQuote(dto.getProductId());
             //指标名称远程调用
             if (StringUtils.isNotEmpty(productDTOList)) {
@@ -1547,44 +1607,43 @@ public class ProductServiceImpl implements IProductService {
                 List<IndicatorDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
-                    String indicatorName = data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()).toString();
+                    String indicatorName = StringUtils.join(",",data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()));
                     if (StringUtils.isNotBlank(indicatorName)) {
                         decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
                     }
                 }
             }
-            productErreo.append(decomposeErreo);
-            if (productErreo.length() > 0) {
-                throw new ServiceException(productErreo.toString());
-            }
-            i = productMapper.logicDeleteProductByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
-            //规格表
-            try {
-                productSpecificationMapper.logicDeleteProductSpecificationByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
-            } catch (Exception e) {
-                throw new ServiceException("删除规格表失败");
-            }
-            //参数表
-            try {
-                productSpecificationParamMapper.logicDeleteProductSpecificationParamByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
-            } catch (Exception e) {
-                throw new ServiceException("删除规格参数失败");
-            }
-
-            //数据表
-            try {
-                productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
-            } catch (Exception e) {
-                throw new ServiceException("删除产品数据失败");
-            }
-            //删除文件
-            try {
-                productFileMapper.logicDeleteProductFileByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
-            } catch (Exception e) {
-                throw new ServiceException("删除产品文件表失败");
-            }
+        }
+        productErreo.append(decomposeErreo);
+        if (productErreo.length() > 0) {
+            throw new ServiceException(productErreo.toString());
+        }
+        i = productMapper.logicDeleteProductByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+        //规格表
+        try {
+            productSpecificationMapper.logicDeleteProductSpecificationByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除规格表失败");
+        }
+        //参数表
+        try {
+            productSpecificationParamMapper.logicDeleteProductSpecificationParamByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除规格参数失败");
         }
 
+        //数据表
+        try {
+            productSpecificationDataMapper.logicDeleteProductSpecificationDataByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除产品数据失败");
+        }
+        //删除文件
+        try {
+            productFileMapper.logicDeleteProductFileByProductIds(productDTOS.stream().map(ProductDTO::getProductId).collect(Collectors.toList()), SecurityUtils.getUserId(), DateUtils.getNowDate());
+        } catch (Exception e) {
+            throw new ServiceException("删除产品文件表失败");
+        }
         return i;
     }
 

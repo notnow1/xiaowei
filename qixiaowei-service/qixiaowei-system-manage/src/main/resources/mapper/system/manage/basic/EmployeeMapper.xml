@@ -562,29 +562,33 @@
     <!--    查询是否被引用-->
     <select id="selectEmployeePostId" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select p.post_name as employee_post_name,
-        ee.employee_id,
-        ee.employee_code,
-        ee.employee_name,
-        ee.employee_gender,
-        ee.identity_type,
-        ee.identity_card,
-        ee.employee_birthday,
-        ee.employee_mobile,
-        ee.employee_email,
-        ee.employee_department_id,
-        ee.employee_post_id,
-        ee.employee_rank,
-        ee.employee_basic_wage,
-        ee.employment_date,
-        ee.departure_date,
-        ee.employment_status,
-        ee.status
-        from employee ee
-        left join post p
-        on ee.employee_post_id = p.post_id
+               ee.employee_id,
+               d.department_name as employee_department_name,
+               ee.employee_code,
+               ee.employee_name,
+               ee.employee_gender,
+               ee.identity_type,
+               ee.identity_card,
+               ee.employee_birthday,
+               ee.employee_mobile,
+               ee.employee_email,
+               ee.employee_department_id,
+               ee.employee_post_id,
+               ee.employee_rank,
+               ee.employee_basic_wage,
+               ee.employment_date,
+               ee.departure_date,
+               ee.employment_status,
+               ee.status
+        from  post p
+                  left join  employee ee
+                             on ee.employee_post_id = p.post_id
+                                 and ee.delete_flag = 0
+                  left join department d
+                            on d.department_leader_post_id = p.post_id
+                                and d.delete_flag = 0
+        where p.post_id = #{employeePostId}
         and p.delete_flag = 0
-        where ee.employee_post_id = #{employeePostId}
-        and ee.delete_flag = 0
     </select>
     <!--    根据code批量查询人员休息-->
     <select id="selectEmployeeByEmployeeCodes"

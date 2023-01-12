@@ -143,8 +143,9 @@ public interface IDepartmentService {
      * 查询上级组织
      *
      * @return
+     * @param departmentId
      */
-    List<DepartmentDTO> queryparent();
+    List<DepartmentDTO> queryparent(Long departmentId);
 
     /**
      * 部门岗位详情

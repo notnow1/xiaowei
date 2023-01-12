@@ -184,6 +184,7 @@
     <!--    产品是否被引用-->
     <select id="selectProductQuote" resultType="net.qixiaowei.operate.cloud.api.dto.product.ProductDTO">
         SELECT  p.product_id,
+                td.indicator_id ,
                 p.parent_product_id,
                 p.ancestors,
                 p.product_code,

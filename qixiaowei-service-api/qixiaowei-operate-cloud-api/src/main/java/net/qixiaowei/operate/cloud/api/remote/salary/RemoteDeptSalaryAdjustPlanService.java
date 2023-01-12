@@ -6,10 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.salary.DeptSalaryAdjustItemDTO;
 import net.qixiaowei.operate.cloud.api.factory.salary.RemoteDeptSalaryAdjustPlanFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,7 +19,7 @@ public interface RemoteDeptSalaryAdjustPlanService {
     /**
      * 根据部门ID集合查询部门调薪
      */
-    @PostMapping(API_PREFIX_SALARY_ITEM + "/selectByDepartmentId")
+    @GetMapping(API_PREFIX_SALARY_ITEM + "/selectByDepartmentId")
     R<List<DeptSalaryAdjustItemDTO>> selectByDepartmentId(@RequestParam("departmentId") Long departmentId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
 }

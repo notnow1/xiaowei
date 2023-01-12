@@ -159,4 +159,11 @@ public interface IEmpSalaryAdjustPlanService {
      * @return R
      */
     List<EmpSalaryAdjustPlanDTO> selectByDepartmentId(Long departmentId);
+
+    /**
+     * 根据岗位ID集合获取个人调薪
+     * @param postId
+     * @return
+     */
+    List<EmpSalaryAdjustPlanDTO> selectByPostId(Long postId);
 }

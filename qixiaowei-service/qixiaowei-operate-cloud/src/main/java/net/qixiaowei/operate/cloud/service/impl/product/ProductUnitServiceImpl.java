@@ -5,6 +5,8 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
+import net.qixiaowei.operate.cloud.api.factory.bonus.RemoteEmployeeAnnualBonusFallbackFactory;
+import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -32,7 +34,6 @@ public class ProductUnitServiceImpl implements IProductUnitService {
 
     @Autowired
     private ProductMapper productMapper;
-
     /**
      * 查询产品单位表
      *
@@ -157,7 +158,7 @@ public class ProductUnitServiceImpl implements IProductUnitService {
         productUnit.setUpdateTime(DateUtils.getNowDate());
         productUnit.setUpdateBy(SecurityUtils.getUserId());
         ProductUnitDTO productUnitDTO1 = productUnitMapper.selectProductUnitByProductUnitId(productUnitDTO.getProductUnitId());
-        //todo 是否被引用
+        //是否被引用
         List<ProductDTO> productDTOList = productMapper.selectProductByProductUnitId(productUnitDTO.getProductUnitId());
         // 产品引用
         StringBuffer productErreo = new StringBuffer();

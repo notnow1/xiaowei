@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 用户服务
+ * 绩效考核服务
  */
 @FeignClient(contextId = "remotePerformanceAppraisalService", value = ServiceNameConstants.OPERATE_CLOUD_SERVICE, fallbackFactory = RemotePerformanceAppraisalFallbackFactory.class)
 public interface RemotePerformanceAppraisalService {
@@ -43,7 +43,7 @@ public interface RemotePerformanceAppraisalService {
     R<List<PerformanceAppraisalItemsDTO>> selectByIndicatorIds(@RequestBody Map<Integer, List<Long>> map, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
-     * 根据指标ID集合查询绩效
+     * 根据部门ID集合查询绩效
      *
      * @param departmentIds 部门ID集合
      * @return List

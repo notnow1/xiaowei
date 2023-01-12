@@ -149,6 +149,5 @@ public class ProductDTO {
      * 组织子节点信息
      */
     private List<ProductDTO> children;
-
 }
 

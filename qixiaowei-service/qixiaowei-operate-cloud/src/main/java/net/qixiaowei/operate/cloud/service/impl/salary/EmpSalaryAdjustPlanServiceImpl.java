@@ -819,5 +819,17 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         empSalaryAdjustPlan.setAdjustDepartmentId(departmentId);
         return empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
     }
+
+    /**
+     * 根据岗位ID集合获取个人调薪
+     * @param postId
+     * @return
+     */
+    @Override
+    public List<EmpSalaryAdjustPlanDTO> selectByPostId(Long postId) {
+        EmpSalaryAdjustPlanDTO empSalaryAdjustPlan = new EmpSalaryAdjustPlanDTO();
+        empSalaryAdjustPlan.setAdjustPostId(postId);
+        return empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
+    }
 }
 
