@@ -116,7 +116,7 @@
         <if test="operationLog.updateTime != null">
             and update_time=#{operationLog.updateTime}
         </if>
-        ORDER BY operation_time DESC
+        ORDER BY operation_time DESC,create_time DESC
     </select>
     <!--新增操作日志表-->
     <insert id="insertOperationLog" useGeneratedKeys="true" keyProperty="operationLogId">

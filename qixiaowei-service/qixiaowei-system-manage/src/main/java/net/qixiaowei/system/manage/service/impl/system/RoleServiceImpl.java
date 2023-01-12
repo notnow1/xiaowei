@@ -207,6 +207,8 @@ public class RoleServiceImpl implements IRoleService {
             userRoleDTOS.forEach(userRoleDTO -> userRoleSet.add(userRoleDTO.getUserId() + Constants.COLON_EN + userRoleDTO.getRoleId()));
         }
         List<UserRole> userRoles = new ArrayList<>();
+        Date nowDate = DateUtils.getNowDate();
+        Long userIdOfLogin = SecurityUtils.getUserId();
         for (Long userId : userIds) {
             //仅添加不存在的用户角色
             if (!userRoleSet.contains(userId + Constants.COLON_EN + roleId)) {
@@ -214,6 +216,10 @@ public class RoleServiceImpl implements IRoleService {
                 userRole.setRoleId(roleId);
                 userRole.setUserId(userId);
                 userRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                userRole.setCreateBy(userIdOfLogin);
+                userRole.setCreateTime(nowDate);
+                userRole.setUpdateBy(userIdOfLogin);
+                userRole.setUpdateTime(nowDate);
                 userRoles.add(userRole);
             }
         }

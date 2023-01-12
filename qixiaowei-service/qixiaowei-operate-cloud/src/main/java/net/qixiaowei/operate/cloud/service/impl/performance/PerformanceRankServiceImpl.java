@@ -100,7 +100,9 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         performanceRank.setUpdateTime(DateUtils.getNowDate());
         performanceRank.setUpdateBy(SecurityUtils.getUserId());
         performanceRank.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        return performanceRankMapper.insertPerformanceRank(performanceRank);
+        int i = performanceRankMapper.insertPerformanceRank(performanceRank);
+        performanceRankDTO.setPerformanceRankId(performanceRank.getPerformanceRankId());
+        return i;
     }
 
     /**
