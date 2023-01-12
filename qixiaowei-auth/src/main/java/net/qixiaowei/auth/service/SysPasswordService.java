@@ -1,12 +1,16 @@
 package net.qixiaowei.auth.service;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
+import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import net.qixiaowei.integration.common.constant.CacheConstants;
-import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
@@ -21,6 +25,8 @@ public class SysPasswordService {
 
     private int maxRetryCount = CacheConstants.PASSWORD_MAX_RETRY_COUNT;
 
+    private int maxResetRetryCount = CacheConstants.PASSWORD_MAX_RESET_COUNT;
+
     private Long lockTime = CacheConstants.PASSWORD_LOCK_TIME;
 
     @Autowired
@@ -29,17 +35,51 @@ public class SysPasswordService {
     /**
      * 登录账户密码错误次数缓存键名
      *
-     * @param userAccount 用户名
+     * @param userAccount 用户帐号
      * @return 缓存键key
      */
-    private String getCacheKey(String userAccount) {
+    private String getLoginCacheKey(String userAccount) {
         return CacheConstants.PWD_ERR_CNT_KEY + userAccount;
+    }
+
+    /**
+     * 重置密码错误次数缓存键名
+     *
+     * @param userAccount 用户帐号
+     * @return 缓存键key
+     */
+    private String getResetCacheKey(String userAccount) {
+        return CacheConstants.PWD_RESET_ERR_CNT_KEY + userAccount;
+    }
+
+    /**
+     * 登录账户密码错误次数缓存键名
+     *
+     * @param userAccount 用户名
+     * @param tenantId    租户ID
+     * @return 缓存键key
+     */
+    private String getLoginCacheKeyContainTenantId(String userAccount, Long tenantId) {
+        return this.getLoginCacheKey(userAccount) + ":" + tenantId;
+    }
+
+    /**
+     * 重置密码错误次数缓存键名
+     *
+     * @param userAccount 用户名
+     * @param tenantId    租户ID
+     * @return 缓存键key
+     */
+    private String getResetCacheKeyContainTenantId(String userAccount, Long tenantId) {
+        return this.getResetCacheKey(userAccount) + ":" + tenantId;
     }
 
     public void validate(UserDTO user, String password) {
         String userAccount = user.getUserAccount();
+        Long tenantId = user.getTenantId();
+        String cacheKey = this.getLoginCacheKeyContainTenantId(userAccount, tenantId);
 
-        Integer retryCount = redisService.getCacheObject(getCacheKey(userAccount));
+        Integer retryCount = redisService.getCacheObject(cacheKey);
 
         if (retryCount == null) {
             retryCount = 0;
@@ -54,10 +94,37 @@ public class SysPasswordService {
         if (!matches(user, password)) {
             retryCount = retryCount + 1;
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, String.format("密码输入错误%s次", retryCount));
-            redisService.setCacheObject(getCacheKey(userAccount), retryCount, lockTime, TimeUnit.MINUTES);
-            throw new ServiceException("用户不存在/密码错误");
+            redisService.setCacheObject(cacheKey, retryCount, lockTime, TimeUnit.MINUTES);
+            throw new ServiceException("账号或密码有误，请重新输入！");
         } else {
-            clearLoginRecordCache(userAccount);
+            clearLoginRecordCache(cacheKey);
+        }
+    }
+
+    /**
+     * @description: 重置密码校验
+     * @Author: hzk
+     * @date: 2023/1/12 11:59
+     * @param: [userAccount, tenantId]
+     * @return: void
+     **/
+    public void validateOfReset(String userAccount, Long tenantId) {
+        String cacheKey = this.getResetCacheKey(userAccount);
+        if (StringUtils.isNotNull(tenantId)) {
+            cacheKey = this.getResetCacheKeyContainTenantId(userAccount, tenantId);
+        }
+        Integer resetRetryCount = redisService.getCacheObject(cacheKey);
+        if (resetRetryCount == null) {
+            resetRetryCount = 0;
+        }
+        if (resetRetryCount >= Integer.valueOf(maxResetRetryCount).intValue()) {
+            throw new ServiceException("今日忘记密码次数已用完。");
+        } else {
+            resetRetryCount = resetRetryCount + 1;
+            Date nowDate = DateUtils.getNowDate();
+            Date endOfDay = DateUtil.endOfDay(nowDate);
+            long betweenMinute = DateUtil.between(nowDate, endOfDay, DateUnit.MINUTE);
+            redisService.setCacheObject(cacheKey, resetRetryCount, betweenMinute, TimeUnit.MINUTES);
         }
     }
 
@@ -65,9 +132,9 @@ public class SysPasswordService {
         return SecurityUtils.matchesPassword(rawPassword, user.getPassword());
     }
 
-    public void clearLoginRecordCache(String loginName) {
-        if (redisService.hasKey(getCacheKey(loginName))) {
-            redisService.deleteObject(getCacheKey(loginName));
+    public void clearLoginRecordCache(String cacheKey) {
+        if (redisService.hasKey(cacheKey)) {
+            redisService.deleteObject(cacheKey);
         }
     }
 }

@@ -70,7 +70,7 @@ public class SysLoginService {
         R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
         if (StringUtils.isNull(userResult) || StringUtils.isNull(userResult.getData())) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "登录用户不存在");
-            throw new ServiceException("您输入的账号与邮箱不匹配，请重新填写。");
+            throw new ServiceException("账号或密码有误，请重新输入！");
         }
         if (R.FAIL == userResult.getCode()) {
             throw new ServiceException(userResult.getMsg());
@@ -79,17 +79,24 @@ public class SysLoginService {
         UserDTO user = userInfo.getUserDTO();
         if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag())) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "对不起，您的账号已被删除");
-            throw new ServiceException("您输入的账号与邮箱不匹配，请重新填写。");
+            throw new ServiceException("账号或密码有误，请重新输入！");
         }
         if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "用户已停用，请联系管理员");
-            throw new ServiceException("您输入的账号与邮箱不匹配，请重新填写。");
+            throw new ServiceException("账号或密码有误，请重新输入！");
         }
         passwordService.validate(user, password);
 //        recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_SUCCESS, "登录成功");
         return userInfo;
     }
 
+    /**
+     * @description: 重置密码
+     * @Author: hzk
+     * @date: 2023/1/12 11:09
+     * @param: [request, resetPasswordBody]
+     * @return: void
+     **/
     public void resetPwd(HttpServletRequest request, ResetPasswordBody resetPasswordBody) {
         String userAccount = resetPasswordBody.getUserAccount();
         String email = resetPasswordBody.getEmail();
@@ -105,13 +112,16 @@ public class SysLoginService {
         String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
         R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
         if (StringUtils.isNull(userResult) || StringUtils.isNull(userResult.getData())) {
+            passwordService.validateOfReset(userAccount, null);
             throw new ServiceException("您输入的账号与邮箱不匹配，请重新填写。");
         }
         if (R.FAIL == userResult.getCode()) {
+            passwordService.validateOfReset(userAccount, null);
             throw new ServiceException(userResult.getMsg());
         }
         LoginUserVO userInfo = userResult.getData();
         UserDTO user = userInfo.getUserDTO();
+        passwordService.validateOfReset(userAccount, user.getTenantId());
         if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag())) {
             throw new ServiceException("您输入的账号与邮箱不匹配，请重新填写。");
         }
@@ -123,7 +133,7 @@ public class SysLoginService {
             throw new ServiceException("您输入的账号与邮箱不匹配，请重新填写。");
         }
         Long userId = user.getUserId();
-        //密码随机生成
+        //密码随机生成，6位数的数字、字母组合
         String password = RandomUtil.randomString(6);
         R<?> resetPwdOfUserId = remoteUserService.resetPwdOfUserId(userId, password, SecurityConstants.INNER);
         if (R.SUCCESS != resetPwdOfUserId.getCode()) {

@@ -20,6 +20,11 @@ public interface CacheConstants {
     int PASSWORD_MAX_RETRY_COUNT = 5;
 
     /**
+     * 密码重置最大错误次数
+     */
+    int PASSWORD_MAX_RESET_COUNT = 5;
+
+    /**
      * 密码锁定时间，默认10（分钟）
      */
     long PASSWORD_LOCK_TIME = 10;
@@ -48,6 +53,11 @@ public interface CacheConstants {
      * 登录账户密码错误次数 redis key
      */
     String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * 重置账户密码错误次数 redis key
+     */
+    String PWD_RESET_ERR_CNT_KEY = "pwd_reset_err_cnt:";
 
     /**
      * 租户ID集合 redis key
