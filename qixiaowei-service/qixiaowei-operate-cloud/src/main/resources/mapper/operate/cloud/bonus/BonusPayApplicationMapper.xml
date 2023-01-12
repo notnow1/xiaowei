@@ -150,7 +150,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        group by bpa.award_month
+        group by bpa.award_month ,bpa.salary_item_id
         order by bpa.award_month
     </select>
 <!--    查询奖金发放台账预算部门-->
@@ -174,7 +174,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        group by bpa.award_month
+        group by bpa.award_month ,bpa.salary_item_id
         order by bpa.award_month
     </select>
 <!--    查询奖金发放台账受益部门-->
@@ -197,7 +197,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        group by bpa.award_month
+        group by bpa.award_month ,bpa.salary_item_id
         order by bpa.award_month
     </select>
 <!--    根据code查询奖金发放申请表-->
