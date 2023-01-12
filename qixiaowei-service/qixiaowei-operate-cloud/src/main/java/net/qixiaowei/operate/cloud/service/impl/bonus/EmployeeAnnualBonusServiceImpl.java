@@ -605,7 +605,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             }
             if (null != distributeBonusAmount && distributeBonusAmount.compareTo(new BigDecimal("0")) != 0 &&
                     bonusPercentageOne.compareTo(new BigDecimal("0")) != 0) {
-                referenceValueOne = distributeBonusAmount.multiply(new BigDecimal("10000")).multiply(bonusPercentageOne).setScale(10, BigDecimal.ROUND_HALF_UP);
+                referenceValueOne = distributeBonusAmount.multiply(new BigDecimal("10000")).multiply(bonusPercentageOne.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP)).setScale(10, BigDecimal.ROUND_HALF_UP);
             }
             if (null != bonusAmountSum && bonusAmountSum.compareTo(new BigDecimal("0")) != 0 &&
                     allBonusAmountSum.compareTo(new BigDecimal("0")) != 0) {
@@ -613,7 +613,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
             }
             if (null != distributeBonusAmount && distributeBonusAmount.compareTo(new BigDecimal("0")) != 0 &&
                     bonusPercentageTwo.compareTo(new BigDecimal("0")) != 0) {
-                referenceValueTwo = distributeBonusAmount.multiply(new BigDecimal("10000")).multiply(bonusPercentageTwo).setScale(10, BigDecimal.ROUND_HALF_UP);;
+                referenceValueTwo = distributeBonusAmount.multiply(new BigDecimal("10000")).multiply(bonusPercentageTwo.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP)).setScale(10, BigDecimal.ROUND_HALF_UP);;
             }
             empAnnualBonusSnapshotDTO.setBonusPercentageOne(bonusPercentageOne);
             empAnnualBonusSnapshotDTO.setReferenceValueOne(referenceValueOne);
