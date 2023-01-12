@@ -303,7 +303,6 @@ public class DepartmentServiceImpl implements IDepartmentService {
         department.setUpdateTime(DateUtils.getNowDate());
         department.setUpdateBy(SecurityUtils.getUserId());
         department.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        department.setStatus(1);
         return department;
     }
 
@@ -339,29 +338,43 @@ public class DepartmentServiceImpl implements IDepartmentService {
             } else {
                 department.setAncestors(departmentDTO1.getAncestors() + "," + departmentDTO1.getParentDepartmentId());
             }
-            List<DepartmentDTO> departmentDTOList = departmentMapper.selectAncestors(departmentDTO.getParentDepartmentId());
-            if (StringUtils.isNotEmpty(departmentDTOList) && departmentDTOList.size()>1) {
-                    for (int i1 = 1; i1 < departmentDTOList.size(); i1++) {
-                        Department department2 = new Department();
-                        //父级
-                        DepartmentDTO departmentDTO2 = departmentDTOList.get(i1 - 1);
-                        //自己
-                        DepartmentDTO departmentDTO3 = departmentDTOList.get(i1);
-
-                        if (StringUtils.isBlank(departmentDTO2.getAncestors())) {
-                            departmentDTO3.setAncestors(departmentDTO2.getParentDepartmentId() + "," + departmentDTO2.getDepartmentId());
-                        } else {
-                            departmentDTO3.setAncestors(departmentDTO2.getAncestors() + "," + departmentDTO2.getParentDepartmentId());
-                        }
-                        departmentDTO3.setLevel(departmentDTO2.getLevel()+1);
-                        BeanUtils.copyProperties(departmentDTO3, department2);
-                        department2.setUpdateTime(DateUtils.getNowDate());
-                        department2.setUpdateBy(SecurityUtils.getUserId());
-                        departmentUpdateList.add(department2);
+        }
+        List<DepartmentDTO> departmentDTOList = departmentMapper.selectAncestors(department.getDepartmentId());
+        if (StringUtils.isNotEmpty(departmentDTOList) && departmentDTOList.size()>1) {
+            for (int i1 = 1; i1 < departmentDTOList.size(); i1++) {
+                if (i1 == 1){
+                    Department department2 = new Department();
+                    if (StringUtils.isBlank(department.getAncestors())) {
+                        departmentDTOList.get(i1).setAncestors(department.getParentDepartmentId() + "," + department.getDepartmentId());
+                    } else {
+                        departmentDTOList.get(i1).setAncestors(department.getAncestors() + "," + department.getDepartmentId());
                     }
+                    departmentDTOList.get(i1).setLevel(department.getLevel()+1);
+                    departmentDTOList.get(i1).setStatus(department.getStatus());
+                    departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                    departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                    departmentDTOList.get(i1).setParentDepartmentId(department.getDepartmentId());
+                    BeanUtils.copyProperties(departmentDTOList.get(i1),department2);
+                    departmentUpdateList.add(department2);
+                }else {
+                    Department department2 = new Department();
+                    //父级
+                    DepartmentDTO departmentDTO2 = departmentDTOList.get(i1 - 1);
+                    if (StringUtils.isBlank(departmentDTO2.getAncestors())) {
+                        departmentDTOList.get(i1).setAncestors(departmentDTO2.getParentDepartmentId() + "," + departmentDTO2.getDepartmentId());
+                    } else {
+                        departmentDTOList.get(i1).setAncestors(departmentDTO2.getAncestors() + "," + departmentDTO2.getDepartmentId());
+                    }
+                    departmentDTOList.get(i1).setLevel(departmentDTO2.getLevel()+1);
+                    departmentDTOList.get(i1).setStatus(departmentDTO2.getStatus());
+                    departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                    departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                    departmentDTOList.get(i1).setParentDepartmentId(departmentDTO2.getDepartmentId());
+                    BeanUtils.copyProperties(departmentDTOList.get(i1),department2);
+                    departmentUpdateList.add(department2);
+                }
             }
         }
-
 
         //接收部门岗位关联表参数
         List<DepartmentPostDTO> departmentPostDTOList = departmentDTO.getDepartmentPostDTOList();
@@ -594,6 +607,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
             departmentDTO.setParentDepartmentName(departmentDTO1.getDepartmentName());
             departmentDTO.setParentDepartmentStatus(departmentDTO1.getStatus());
+        }else {
+            departmentDTO.setParentDepartmentStatus(1);
         }
         //查询组织关联岗位信息
         List<DepartmentPostDTO> departmentPostDTOList = departmentMapper.selectDeptAndPost(departmentId);
