@@ -39,6 +39,10 @@ public class BonusBudgetParametersDTO {
      */
     private  Long bonusBudgetParametersId;
     /**
+     * 预算年度
+     */
+    private  Integer budgetYear;
+    /**
      * 总奖金包预算
      */
     private BigDecimal amountBonusBudget;

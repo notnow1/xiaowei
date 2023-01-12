@@ -140,6 +140,7 @@
     <select id="selectBonusBudgetByIndicatorId"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
         SELECT
+            bb.bonus_budget
             bbp.bonus_budget_parameters_id,
             bbp.bonus_budget_id,
             bbp.indicator_id,
