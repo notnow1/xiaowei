@@ -96,7 +96,7 @@ public class DepartmentController extends BaseController {
     /**
      * 分页查询部门表列表
      */
-//    @RequiresPermissions("system:manage:department:pageList")
+    @RequiresPermissions("system:manage:department:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(DepartmentDTO departmentDTO) {
         startPage();
