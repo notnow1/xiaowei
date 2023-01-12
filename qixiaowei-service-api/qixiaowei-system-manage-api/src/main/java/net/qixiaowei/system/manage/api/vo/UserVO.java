@@ -27,6 +27,10 @@ public class UserVO {
      */
     private Long employeeId;
     /**
+     * 员工姓名
+     */
+    private String employeeName;
+    /**
      * 用户帐号
      */
     @Xss(message = "用户账号不能包含脚本字符")

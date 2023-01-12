@@ -440,7 +440,6 @@ public class TargetDecomposeController extends BaseController {
     /**
      * 移交预测负责人
      */
-    @Log(title = "移交预测负责人", businessType = BusinessType.TARGET_DECOMPOSE_ROLL, businessId = "targetDecomposeId", operationType = OperationType.UPDATE)
     @RequiresPermissions("operate:cloud:targetDecompose:roll:turnOver")
     @PostMapping("/turnOver/edit")
     public AjaxResult turnOverPrincipalEmployee(@RequestBody @Validated(TargetDecomposeDTO.RollUpdateTargetDecomposeDTO.class) TargetDecomposeDTO targetDecomposeDTO) {

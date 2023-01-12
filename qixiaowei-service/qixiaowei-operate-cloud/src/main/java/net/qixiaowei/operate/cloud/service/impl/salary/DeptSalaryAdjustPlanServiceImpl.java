@@ -262,6 +262,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         }
         DeptSalaryAdjustPlan deptSalaryAdjustPlan = addDeptSalaryAdjustPlan(deptSalaryAdjustPlanDTO);
         Long deptSalaryAdjustPlanId = deptSalaryAdjustPlan.getDeptSalaryAdjustPlanId();
+        deptSalaryAdjustPlanDTO.setDeptSalaryAdjustPlanId(deptSalaryAdjustPlanId);
         List<DeptSalaryAdjustItemDTO> deptSalaryAdjustItemDTOSAfter = deptSalaryAdjustPlanDTO.getDeptSalaryAdjustItemDTOS();
         if (StringUtils.isEmpty(deptSalaryAdjustItemDTOSAfter)) {
             return 1;
