@@ -10,12 +10,15 @@ import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
+import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
+import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayDetailsMapper;
+import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
@@ -54,6 +57,9 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
 
     @Autowired
     private RemoteEmployeeService employeeService;
+
+    @Autowired
+    private BonusPayApplicationMapper bonusPayApplicationMapper;
 
     /**
      * 查询工资项
@@ -254,6 +260,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
      */
     private void isQuote(List<Long> salaryItemIds, List<SalaryItemDTO> salaryItemDTOS) {
         StringBuilder quoteReminder = new StringBuilder("");
+        // 工资条
         List<SalaryPayDetailsDTO> salaryPayDetailsDTOS = salaryPayDetailsMapper.selectSalaryPayDetailsByItemIds(salaryItemIds);
         if (StringUtils.isNotEmpty(salaryPayDetailsDTOS)) {
             Set<Long> employeeIds = new HashSet<>();
@@ -286,6 +293,28 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
                         .append(employeeNames)
                         .append("】引用 无法删除\n");
             }
+        }
+        // 奖金发放申请
+        List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationBySalaryItemId(salaryItemIds);
+        if (StringUtils.isNotEmpty(bonusPayApplicationDTOS)) {
+            StringBuilder salaryItemName = new StringBuilder("");
+            for (SalaryItemDTO salaryItemDTO : salaryItemDTOS) {
+                if (StringUtils.isNull(salaryItemDTO.getSalaryItemId())) {
+                    continue;
+                }
+                for (BonusPayApplicationDTO bonusPayApplicationDTO : bonusPayApplicationDTOS) {
+                    if (StringUtils.isNull(bonusPayApplicationDTO.getSalaryItemId())) {
+                        continue;
+                    }
+                    if (bonusPayApplicationDTO.getSalaryItemId().equals(salaryItemDTO.getSalaryItemId())) {
+                        salaryItemName.append(salaryItemDTO.getThirdLevelItem()).append(",");
+                        break;
+                    }
+                }
+            }
+            quoteReminder.append("薪酬类别【三级工资项目】的【")
+                    .append(salaryItemName.deleteCharAt(salaryItemName.length() - 1))
+                    .append("】已被奖金发放申请中的【奖项类别】引用 无法删除\n");
         }
         if (quoteReminder.length() != 0) {
             throw new ServiceException(quoteReminder.toString());
@@ -408,17 +437,19 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     public int logicDeleteSalaryItemBySalaryItemId(SalaryItemDTO salaryItemDTO) {
         Long salaryItemId = salaryItemDTO.getSalaryItemId();
-        SalaryItemDTO salaryItemBySalaryItemId = salaryItemMapper.selectSalaryItemBySalaryItemId(salaryItemId);
-
+//        SalaryItemDTO salaryItemBySalaryItemId = salaryItemMapper.selectSalaryItemBySalaryItemId(salaryItemId);
         if (StringUtils.isNull(salaryItemId)) {
             throw new ServiceException("工资条ID不能为空");
         }
-        if (ThirdLevelSalaryCode.containThirdItems(salaryItemBySalaryItemId.getThirdLevelItem())) {
-            throw new ServiceException(salaryItemBySalaryItemId.getThirdLevelItem() + "为预置配置，不可以删除");
-        }
-        SalaryItem salaryItem = new SalaryItem();
-        BeanUtils.copyProperties(salaryItemDTO, salaryItem);
-        return salaryItemMapper.logicDeleteSalaryItemBySalaryItemId(salaryItem, SecurityUtils.getUserId(), DateUtils.getNowDate());
+//        if (ThirdLevelSalaryCode.containThirdItems(salaryItemBySalaryItemId.getThirdLevelItem())) {
+//            throw new ServiceException(salaryItemBySalaryItemId.getThirdLevelItem() + "为预置配置，不可以删除");
+//        }
+        ArrayList<Long> salaryItems = new ArrayList<>();
+        salaryItems.add(salaryItemId);
+        return logicDeleteSalaryItemBySalaryItemIds(salaryItems);
+//        SalaryItem salaryItem = new SalaryItem();
+//        BeanUtils.copyProperties(salaryItemDTO, salaryItem);
+//        return salaryItemMapper.logicDeleteSalaryItemBySalaryItemId(salaryItem, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
     /**

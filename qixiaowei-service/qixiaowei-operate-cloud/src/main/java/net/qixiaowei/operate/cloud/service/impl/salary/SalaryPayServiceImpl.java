@@ -1263,25 +1263,27 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     @Override
     public void salarySetName(SalaryPayDetailsDTO salaryPayDetailsDTO) {
         Integer secondLevelItem = salaryPayDetailsDTO.getSecondLevelItem();
-        switch (secondLevelItem) {
-            case 1:
-                salaryPayDetailsDTO.setSecondLevelItemValue("工资");
-                break;
-            case 2:
-                salaryPayDetailsDTO.setSecondLevelItemValue("津贴");
-                break;
-            case 3:
-                salaryPayDetailsDTO.setSecondLevelItemValue("福利");
-                break;
-            case 4:
-                salaryPayDetailsDTO.setSecondLevelItemValue("奖金");
-                break;
-            case 5:
-                salaryPayDetailsDTO.setSecondLevelItemValue("代扣代缴");
-                break;
-            case 6:
-                salaryPayDetailsDTO.setSecondLevelItemValue("其他扣款");
-                break;
+        if (StringUtils.isNotNull(secondLevelItem)) {
+            switch (secondLevelItem) {
+                case 1:
+                    salaryPayDetailsDTO.setSecondLevelItemValue("工资");
+                    break;
+                case 2:
+                    salaryPayDetailsDTO.setSecondLevelItemValue("津贴");
+                    break;
+                case 3:
+                    salaryPayDetailsDTO.setSecondLevelItemValue("福利");
+                    break;
+                case 4:
+                    salaryPayDetailsDTO.setSecondLevelItemValue("奖金");
+                    break;
+                case 5:
+                    salaryPayDetailsDTO.setSecondLevelItemValue("代扣代缴");
+                    break;
+                case 6:
+                    salaryPayDetailsDTO.setSecondLevelItemValue("其他扣款");
+                    break;
+            }
         }
     }
 
