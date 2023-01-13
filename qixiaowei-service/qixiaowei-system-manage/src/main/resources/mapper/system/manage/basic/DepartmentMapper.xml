@@ -110,6 +110,7 @@
             dm.department_id,
             dm.parent_department_id,
             dm.ancestors,
+            dm.status,
             dm.department_code,
             dm.department_name,
             dm.level,
@@ -305,7 +306,6 @@
         on e.employee_id = d.department_leader_id
         and e.delete_flag = 0
         where d.delete_flag = 0
-        and d.status=1
     </select>
     <!--    查询code编码是否已经存在-->
     <select id="selectDepartmentCode" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
