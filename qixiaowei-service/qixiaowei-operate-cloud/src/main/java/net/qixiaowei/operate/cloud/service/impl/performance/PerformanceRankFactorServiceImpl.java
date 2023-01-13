@@ -240,7 +240,7 @@ public class PerformanceRankFactorServiceImpl implements IPerformanceRankFactorS
             }
             BigDecimal bonusFactor = performanceRankFactorDTO.getBonusFactor();
             if (StringUtils.isNull(bonusFactor)) {
-                throw new ServiceException("绩效等级系数名称不能为空");
+                performanceRankFactorDTO.setBonusFactor(BigDecimal.ZERO);
             }
             performanceRankFactorDTO.setPerformanceRankId(performanceRankId);
             performanceRankFactorNames.add(performanceRankName);
