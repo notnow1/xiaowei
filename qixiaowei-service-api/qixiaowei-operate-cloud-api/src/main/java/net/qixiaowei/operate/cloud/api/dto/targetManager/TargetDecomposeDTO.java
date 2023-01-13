@@ -117,7 +117,14 @@ public class TargetDecomposeDTO {
     * 分解目标值
     */
     private BigDecimal decomposeTarget;
-
+    /**
+     * 已分解
+     */
+    private BigDecimal decomposed;
+    /**
+     * 未分解
+     */
+    private BigDecimal undecomposed;
     /**
     * 年度预测值
     */

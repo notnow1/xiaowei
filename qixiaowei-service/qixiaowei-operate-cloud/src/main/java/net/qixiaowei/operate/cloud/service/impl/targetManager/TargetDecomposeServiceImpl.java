@@ -718,6 +718,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      * @return
      */
     public TargetDecomposeDTO packSelectTargetDecomposeByTargetDecomposeId(Long targetDecomposeId) {
+        //分解目标值
+        BigDecimal decomposeTarget = new BigDecimal("0");
+        //已分解
+        BigDecimal decomposed = new BigDecimal("0");
         //目标分解主表数据
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeId);
         if (StringUtils.isNotNull(targetDecomposeDTO)) {
@@ -726,6 +730,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             if (StringUtils.isNotNull(data)) {
                 targetDecomposeDTO.setIndicatorName(data.getIndicatorName());
             }
+             decomposeTarget = targetDecomposeDTO.getDecomposeTarget();
         }
         this.packDecompositionDimension(targetDecomposeDTO);
         //目标分解详情数据
@@ -736,8 +741,17 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 //目标分解周欺数据集合
                 targetDecomposeDetailsDTO.setDecomposeDetailCyclesDTOS(decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId()));
             }
+            decomposed = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
+            //已分解
+            targetDecomposeDTO.setDecomposed(decomposed);
+            //未分解
+            targetDecomposeDTO.setUndecomposed(decomposeTarget.subtract(decomposed));
             return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
         } else {
+            //已分解
+            targetDecomposeDTO.setDecomposed(decomposed);
+            //未分解
+            targetDecomposeDTO.setUndecomposed(new BigDecimal("0"));
             return targetDecomposeDTO;
         }
     }
@@ -943,7 +957,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public TargetDecomposeDTO insertOrderTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
-       // validTargetDecomposeData(targetDecomposeDTO);
+        validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //分解类型
@@ -990,7 +1004,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public TargetDecomposeDTO insertIncomeTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
-        //validTargetDecomposeData(targetDecomposeDTO);
+        validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //分解类型
@@ -1037,7 +1051,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public TargetDecomposeDTO insertReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
-        //validTargetDecomposeData(targetDecomposeDTO);
+        validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.RECEIVABLE.getCode());
@@ -1084,7 +1098,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public TargetDecomposeDTO insertCustomTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
-        //validTargetDecomposeData(targetDecomposeDTO);
+        validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.CUSTOM.getCode());
