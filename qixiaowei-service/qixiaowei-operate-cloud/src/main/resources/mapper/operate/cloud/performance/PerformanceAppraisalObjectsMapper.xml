@@ -309,11 +309,11 @@
         LEFT JOIN performance_appraisal pa
         ON pao.performance_appraisal_id = pa.performance_appraisal_id
         AND pa.delete_flag = 0
-        WHERE pao.perform_appraisal_objects_id = #{performAppraisalObjectsId}
+        WHERE
+        pao.appraisal_object_id = #{performAppraisalObjectsId}
         AND pa.appraisal_object = 2
         AND pa.appraisal_status = 4
-        AND pa.filing_date &lt;&gt; NULL
-        AND pa.filing_date &lt; DATE_FORMAT(NOW(), '%m')
+        AND pa.filing_date is not null
         AND pao.delete_flag = 0
         ORDER BY pa.filing_date DESC
         limit 3

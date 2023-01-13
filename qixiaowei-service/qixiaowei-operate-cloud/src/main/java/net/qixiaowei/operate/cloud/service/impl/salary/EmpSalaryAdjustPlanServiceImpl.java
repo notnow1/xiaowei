@@ -352,6 +352,9 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         if (StringUtils.isNull(empSalaryAdjustPlanDTO)) {
             throw new ServiceException("请传入个人调薪计划表");
         }
+        if (empSalaryAdjustPlanDTO.getStatus() != 0) {
+            throw new ServiceException("当前个人调薪已提交 不可修改");
+        }
         Long employeeId = empSalaryAdjustPlanDTO.getEmployeeId();
         Integer isSubmit = empSalaryAdjustPlanDTO.getIsSubmit();
         Date effectiveDate = empSalaryAdjustPlanDTO.getEffectiveDate();
