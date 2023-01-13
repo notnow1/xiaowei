@@ -996,18 +996,6 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     Map<Integer, List<BonusPayApplicationDTO>> bonusPayApplicationMonthMap = bonusPayApplicationDTOS.parallelStream().filter(f -> null != f.getAwardMonth()).collect(Collectors.groupingBy(BonusPayApplicationDTO::getAwardMonth));
                     for (Integer integer : bonusPayApplicationMonthMap.keySet()) {
                         List<BonusPayApplicationDTO> bonusPayApplicationDTOS1 = bonusPayApplicationMonthMap.get(integer);
-                        for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS1) {
-                            BigDecimal bigDecimal = new BigDecimal("0");
-                            //奖项总金额
-                            BigDecimal awardTotalAmount = payApplicationDTO.getAwardTotalAmount();
-                            //奖金比例
-                            BigDecimal bonusPercentage = payApplicationDTO.getBonusPercentage();
-                            if (null != awardTotalAmount && awardTotalAmount.compareTo(new BigDecimal("0")) != 0 &&
-                                    null != bonusPercentage && bonusPercentage.compareTo(new BigDecimal("0")) != 0) {
-                                bigDecimal = awardTotalAmount.multiply(bonusPercentage.divide(new BigDecimal("100"))).setScale(10, RoundingMode.HALF_UP);
-                            }
-                            payApplicationDTO.setAwardTotalAmount(bigDecimal);
-                        }
                         //封装月份金额
                         this.packAmoutMonth(bonusPayStandingDTO, integer, bonusPayApplicationDTOS1);
                     }

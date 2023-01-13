@@ -160,7 +160,7 @@
             DISTINCT
             bpa.salary_item_id ,
             bpa.award_month,
-            ifnull(sum(bpa.award_total_amount * (bonus_percentage/100)),0) as award_total_amount,
+            ifnull(sum(bpa.award_total_amount * (bpbd.bonus_percentage/100)),0) as award_total_amount,
             bpbd.bonus_percentage
         FROM  bonus_pay_budget_dept bpbd
                   left join bonus_pay_application bpa
@@ -183,7 +183,7 @@
         select distinct
             bpa.salary_item_id ,
             bpa.award_month,
-            bpo.award_amount as awardTotalAmount
+        ifnull(sum(bpo.award_amount),0) AS awardTotalAmount
         FROM  bonus_pay_objects bpo
                   left join bonus_pay_application bpa
                             on bpa.bonus_pay_application_id = bpo .bonus_pay_application_id
