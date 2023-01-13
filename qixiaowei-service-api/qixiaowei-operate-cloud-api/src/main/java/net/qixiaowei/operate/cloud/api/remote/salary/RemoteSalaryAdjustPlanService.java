@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+/**
+ * 个人调薪
+ */
 @FeignClient(contextId = "remoteSalaryAdjustPlanService", value = ServiceNameConstants.OPERATE_CLOUD_SERVICE, fallbackFactory = RemoteSalaryAdjustPlanFallbackFactory.class)
 public interface RemoteSalaryAdjustPlanService {
 
@@ -45,4 +47,10 @@ public interface RemoteSalaryAdjustPlanService {
      */
     @GetMapping(API_PREFIX_SALARY_ITEM + "/selectByPostId")
     R<List<EmpSalaryAdjustPlanDTO>> selectByPostId(@RequestParam("postId") Long postId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 个人调薪到达生效日期更新员工信息
+     */
+    @GetMapping(API_PREFIX_SALARY_ITEM + "/empAdjustUpdate")
+    R<Integer> empAdjustUpdate(@RequestHeader(SecurityConstants.INNER) String source);
 }

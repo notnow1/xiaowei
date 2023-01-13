@@ -80,7 +80,7 @@ public class EmpSalaryAdjustPlan extends TenantEntity {
      */
     private String adjustExplain;
     /**
-     * 状态(0草稿;1生效)
+     * 状态(0草稿;1生效;2已调薪)
      */
     private Integer status;
 

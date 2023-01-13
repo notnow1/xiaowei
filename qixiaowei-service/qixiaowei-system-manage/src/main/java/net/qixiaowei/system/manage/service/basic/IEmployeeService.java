@@ -4,10 +4,10 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
-import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.excel.basic.EmployeeExcel;
 import org.apache.ibatis.annotations.Param;
 
@@ -269,4 +269,21 @@ public interface IEmployeeService {
      * @return
      */
     List<EmployeeDTO> selectUserList(EmployeeDTO employeeDTO);
+
+    /**
+     * 根据调整策略进行更新人员薪资，岗位，职级
+     *
+     * @param employeeSalarySnapVO 计划VO
+     * @return int
+     */
+    int empAdjustUpdate(EmployeeSalarySnapVO employeeSalarySnapVO);
+
+    /**
+     * 根据调整策略进行更新人员薪资，岗位，职级
+     *
+     * @param employeeSalarySnapVOS 计划VO集合
+     * @return int
+     */
+    int empAdjustUpdates(List<EmployeeSalarySnapVO> employeeSalarySnapVOS);
+
 }

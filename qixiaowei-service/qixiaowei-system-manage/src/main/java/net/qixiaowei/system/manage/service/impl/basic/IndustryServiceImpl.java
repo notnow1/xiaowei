@@ -19,6 +19,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsD
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndustryMapper;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -241,33 +243,131 @@ public class IndustryServiceImpl implements IIndustryService {
                 throw new ServiceException("更新行业" + industryDTO.getIndustryName() + "失败,行业编码重复");
             }
         }
-        Long parentIndustryId = industryDTO.getParentIndustryId();
-        if (StringUtils.isNotNull(parentIndustryId) && parentIndustryId != 0) {// 一级行业
+        Long parentIndustryId = 0L;
+        String ancestors = "";//仅在非一级指标时有用
+        int parentLevel = 1;
+        if (StringUtils.isNotNull(industryDTO.getParentIndustryId())) {
+            parentIndustryId = industryDTO.getParentIndustryId();
             IndustryDTO parentIndustry = industryMapper.selectIndustryByIndustryId(parentIndustryId);
-            if (parentIndustry == null) {
+            if (StringUtils.isNull(parentIndustry) && !parentIndustryId.equals(0L)) {
                 throw new ServiceException("该上级行业不存在");
             }
-            Integer status = parentIndustry.getStatus();
+            Integer status = industryDTO.getStatus();
             // 如果父节点不为正常状态,则不允许新增子节点
-            if (BusinessConstants.DISABLE.equals(status)) {
+            if (StringUtils.isNotNull(parentIndustry) && BusinessConstants.DISABLE.equals(parentIndustry.getStatus())) {
                 throw new ServiceException("上级行业失效，不允许编辑子节点");
             }
-        }
-        Integer status = industryDTO.getStatus();
-        if (BusinessConstants.DISABLE.equals(status)) {//失效会影响子级
-            //先查再批量更新
-            List<Long> industryIds = industryMapper.selectSon(industryId);
-            if (StringUtils.isEmpty(industryIds)) {
-                industryIds = new ArrayList<>();
+            // 路径修改
+            if (!industryById.getParentIndustryId().equals(parentIndustryId) && !parentIndustryId.equals(0L)) {
+                ancestors = parentIndustry.getAncestors();
+                if (StringUtils.isNotEmpty(ancestors)) {
+                    ancestors = ancestors + ",";
+                }
+                ancestors = ancestors + parentIndustryId;
+                parentLevel = parentIndustry.getLevel() + 1;
             }
-            industryIds.add(industryId);
-            industryMapper.updateStatus(status, SecurityUtils.getUserId(), DateUtils.getNowDate(), industryIds);
+            changeSonStatus(industryId, status);
+            changeSonIndustry(industryId, industryById, parentIndustryId, parentIndustry);
         }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
+        industry.setAncestors(ancestors);
+        industry.setLevel(parentLevel);
+        industry.setParentIndustryId(parentIndustryId);
         industry.setUpdateTime(DateUtils.getNowDate());
         industry.setUpdateBy(SecurityUtils.getUserId());
         return industryMapper.updateIndustry(industry);
+    }
+
+    /**
+     * 批量修改子级的祖级列表ID
+     *
+     * @param industryId       行业ID
+     * @param industryById     行业DTO
+     * @param parentIndustryId 父级行业ID
+     * @param parentIndustry   父级行业DTO
+     */
+    private void changeSonIndustry(Long industryId, IndustryDTO industryById, Long parentIndustryId, IndustryDTO parentIndustry) {
+        if (!industryById.getParentIndustryId().equals(parentIndustryId)) {
+            List<IndustryDTO> sonIndustryDTOS = industryMapper.selectSon(industryId);
+            if (StringUtils.isNotEmpty(sonIndustryDTOS)) {
+                List<Industry> industries = new ArrayList<>();
+                for (IndustryDTO sonIndustryDTO : sonIndustryDTOS) {
+                    String[] ancestorsArray = sonIndustryDTO.getAncestors().split(",");
+                    StringBuilder sonAncestors = new StringBuilder("");
+                    if (sonIndustryDTO.getLevel() > 2) {
+                        if (industryById.getLevel() > 1) {
+                            for (int i = industryById.getLevel() - 2; i < ancestorsArray.length; i++) {
+                                sonAncestors.append(ancestorsArray[i]).append(",");
+                            }
+                        } else {
+                            sonAncestors.append(sonIndustryDTO.getAncestors()).append(",");
+                        }
+                    }
+                    Industry sonIndustry = new Industry();
+                    if (parentIndustryId.equals(0L)) {
+                        if (sonIndustryDTO.getLevel() > 2) {
+                            sonIndustry.setAncestors(industryById.getIndustryId() + ","
+                                    + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
+                        } else {
+                            sonIndustry.setAncestors(sonIndustryDTO.getAncestors());
+                        }
+                        sonIndustry.setLevel(sonIndustryDTO.getLevel() - industryById.getLevel() + 1);
+                    } else {
+                        if (sonIndustryDTO.getLevel() > 2) {
+                            if (parentIndustry.getParentIndustryId().equals(0L)) {
+                                sonIndustry.setAncestors(parentIndustry.getIndustryId()
+//                                        + "," + industryById.getIndustryId()
+                                        + "," + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
+                            } else {
+                                sonIndustry.setAncestors(parentIndustry.getAncestors()
+                                        + "," + parentIndustry.getIndustryId()
+//                                        + "," + industryById.getIndustryId()
+                                        + "," + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
+                            }
+                        } else {
+                            if (parentIndustry.getParentIndustryId().equals(0L)) {
+                                sonIndustry.setAncestors(parentIndustry.getIndustryId()
+                                        + "," + industryById.getIndustryId());
+                            } else {
+                                sonIndustry.setAncestors(parentIndustry.getAncestors()
+                                        + "," + parentIndustry.getIndustryId()
+                                        + "," + industryById.getIndustryId());
+                            }
+                        }
+                        sonIndustry.setLevel(sonIndustryDTO.getLevel() - industryById.getLevel() + parentIndustry.getLevel() + 2);
+                    }
+                    sonIndustry.setIndustryId(sonIndustryDTO.getIndustryId());
+                    industries.add(sonIndustry);
+                }
+                industryMapper.updateIndustrys(industries);
+            }
+        }
+    }
+
+    /**
+     * 修改状态
+     *
+     * @param industryId 行业ID
+     * @param status     状态
+     */
+    private void changeSonStatus(Long industryId, Integer status) {
+        if (BusinessConstants.DISABLE.equals(status)) {//失效会影响子级
+            //先查再批量更新
+            List<IndustryDTO> industryDTOS = industryMapper.selectSon(industryId);
+            List<Long> industryIds = industryDTOS.stream().map(IndustryDTO::getIndustryId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(industryIds)) {
+                industryIds.add(industryId);
+                List<IndustryDTO> industryDTOList = new ArrayList<>();
+                for (Long id : industryIds) {
+                    IndustryDTO industry = new IndustryDTO();
+                    industry.setIndustryId(id);
+                    industry.setStatus(status);
+                    industryDTOList.add(industry);
+                }
+                updateIndustrys(industryDTOList);
+            }
+        }
     }
 
     /**
@@ -424,8 +524,6 @@ public class IndustryServiceImpl implements IIndustryService {
         for (IndustryDTO industryDTO : industryDtos) {
             Industry industry = new Industry();
             BeanUtils.copyProperties(industryDTO, industry);
-            industry.setCreateBy(SecurityUtils.getUserId());
-            industry.setCreateTime(DateUtils.getNowDate());
             industry.setUpdateTime(DateUtils.getNowDate());
             industry.setUpdateBy(SecurityUtils.getUserId());
             industryList.add(industry);
@@ -543,6 +641,53 @@ public class IndustryServiceImpl implements IIndustryService {
     @Override
     public List<IndustryDTO> selectIndustryByIndustryIds(List<Long> industryIds) {
         return industryMapper.selectIndustryByIndustryIds(industryIds);
+    }
+
+    /**
+     * 获取上级行业
+     *
+     * @param industryId 行业DTO
+     * @return Tree
+     */
+    @Override
+    public List<Tree<Long>> getSuperIndustry(Long industryId) {
+        if (StringUtils.isNull(industryId)) {
+            throw new ServiceException("请传入行业ID");
+        }
+        IndustryDTO industryById = industryMapper.selectIndustryByIndustryId(industryId);
+        if (StringUtils.isNull(industryById)) {
+            throw new ServiceException("当前行业已不存在");
+        }
+        List<IndustryDTO> industryDTOS = industryMapper.selectIndustryList(new Industry());
+        List<IndustryDTO> sonIndustryDTOS = industryMapper.selectSon(industryId);
+        ArrayList<IndustryDTO> removeIndustryDTOS = new ArrayList<>();
+        for (IndustryDTO industryDTO : industryDTOS) {
+            if (industryDTO.getIndustryId().equals(industryId)) {
+                removeIndustryDTOS.add(industryDTO);
+            }
+            for (IndustryDTO sonIndustryDTO : sonIndustryDTOS) {
+                if (industryDTO.getIndustryId().equals(sonIndustryDTO.getIndustryId())) {
+                    removeIndustryDTOS.add(industryDTO);
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(removeIndustryDTOS)) {
+            industryDTOS.removeAll(removeIndustryDTOS);
+        }
+        //自定义属性名
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("industryId");
+        treeNodeConfig.setNameKey("industryName");
+        treeNodeConfig.setParentIdKey("parentIndustryId");
+        return TreeUtil.build(industryDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getIndustryId());
+            tree.setParentId(treeNode.getParentIndustryId());
+            tree.setName(treeNode.getIndustryName());
+            tree.putExtra("parentIndustryName", treeNode.getParentIndustryName());
+            tree.putExtra("level", treeNode.getLevel());
+            tree.putExtra("industryCode", treeNode.getIndustryCode());
+            tree.putExtra("status", treeNode.getStatus());
+        });
     }
 }
 

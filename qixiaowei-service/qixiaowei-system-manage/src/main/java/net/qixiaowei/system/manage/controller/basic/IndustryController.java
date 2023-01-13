@@ -51,6 +51,15 @@ public class IndustryController extends BaseController {
     }
 
     /**
+     * 获取上级行业
+     */
+    @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)
+    @GetMapping("/getSuperIndustry/{industryId}")
+    public AjaxResult getSuperIndustry(@PathVariable Long industryId) {
+        return AjaxResult.success(industryService.getSuperIndustry(industryId));
+    }
+
+    /**
      * 获取启用行业列表
      */
     @RequiresPermissions(value = {"system:manage:industry:treeList", "system:manage:industry:pageList"}, logical = Logical.OR)

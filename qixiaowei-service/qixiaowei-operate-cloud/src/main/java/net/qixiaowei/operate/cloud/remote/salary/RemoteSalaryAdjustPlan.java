@@ -60,6 +60,7 @@ public class RemoteSalaryAdjustPlan implements RemoteSalaryAdjustPlanService {
 
     /**
      * 根据岗位ID集合获取个人调薪
+     *
      * @param postId
      * @param source
      * @return
@@ -67,7 +68,21 @@ public class RemoteSalaryAdjustPlan implements RemoteSalaryAdjustPlanService {
     @Override
     @InnerAuth
     @GetMapping("/selectByPostId")
-    public R<List<EmpSalaryAdjustPlanDTO>> selectByPostId(@RequestParam("postId")Long postId, String source) {
+    public R<List<EmpSalaryAdjustPlanDTO>> selectByPostId(@RequestParam("postId") Long postId, String source) {
         return R.ok(empSalaryAdjustPlanService.selectByPostId(postId));
+    }
+
+    /**
+     * 个人调薪到达生效日期更新员工信息
+     *
+     * @param inner 内部
+     * @return R
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/empAdjustUpdate")
+    public R<Integer> empAdjustUpdate(String source) {
+        empSalaryAdjustPlanService.empAdjustUpdate();
+        return R.ok();
     }
 }

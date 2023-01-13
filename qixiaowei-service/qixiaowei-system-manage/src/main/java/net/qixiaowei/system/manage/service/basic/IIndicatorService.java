@@ -194,4 +194,12 @@ public interface IIndicatorService {
      * @return
      */
     List<Tree<Long>> performanceTreeList(IndicatorDTO indicatorDTO);
+
+    /**
+     * 获取上级指标
+     *
+     * @param indicatorId 指标ID
+     * @return List
+     */
+    List<Tree<Long>> getSuperIndicator(Long indicatorId);
 }

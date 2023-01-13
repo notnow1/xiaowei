@@ -71,6 +71,16 @@ public class IndicatorController extends BaseController {
         return AjaxResult.success(indicatorService.performanceTreeList(indicatorDTO));
     }
 
+
+    /**
+     * 获取上级指标
+     */
+    @RequiresPermissions(value = {"system:manage:indicator:treeList", "system:manage:indicator:pageList"}, logical = Logical.OR)
+    @GetMapping("/getSuperIndicator/{indicatorId}")
+    public AjaxResult getSuperIndicator(@PathVariable Long indicatorId) {
+        return AjaxResult.success(indicatorService.getSuperIndicator(indicatorId));
+    }
+
     /**
      * 生成指标编码
      *

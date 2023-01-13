@@ -52,7 +52,7 @@ public interface IndicatorMapper {
      * @param indicatorId
      * @return
      */
-    List<Long> selectSon(@Param("indicatorId") Long indicatorId);
+    List<IndicatorDTO> selectSon(@Param("indicatorId") Long indicatorId);
 
     /**
      * 根据父级id查找子级的最大排序值

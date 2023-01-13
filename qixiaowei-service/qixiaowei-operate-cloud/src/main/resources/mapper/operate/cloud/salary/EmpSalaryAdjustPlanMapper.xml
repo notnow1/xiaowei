@@ -106,6 +106,9 @@
         <if test="empSalaryAdjustPlan.employeeId != null">
             and esa.employee_id=#{empSalaryAdjustPlan.employeeId}
         </if>
+        <if test="empSalaryAdjustPlan.params.nowDate != null and empSalaryAdjustPlan.params.nowDate != null">
+            and esa.effective_date &lt;= #{empSalaryAdjustPlan.params.nowDate}
+        </if>
         <if test="empSalaryAdjustPlan.params.effectiveDateStart != null and empSalaryAdjustPlan.params.effectiveDateEnd != null">
             and esa.effective_date &gt;= #{empSalaryAdjustPlan.params.effectiveDateStart}
             and esa.effective_date &lt;= #{empSalaryAdjustPlan.params.effectiveDateEnd}

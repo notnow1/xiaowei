@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+/**
+ * 部门调薪
+ */
 @FeignClient(contextId = "remoteDeptSalaryAdjustPlanService", value = ServiceNameConstants.OPERATE_CLOUD_SERVICE, fallbackFactory = RemoteDeptSalaryAdjustPlanFactory.class)
 public interface RemoteDeptSalaryAdjustPlanService {
 

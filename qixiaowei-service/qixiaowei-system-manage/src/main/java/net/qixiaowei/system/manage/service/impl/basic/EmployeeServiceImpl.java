@@ -1029,7 +1029,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 for (EmployeeDTO dto : employeeDTOList) {
                     if (StringUtils.equals(rankSystemDTO.getRankCodeName(), dto.getEmployeeRankName())) {
                         rankSystemDTO.setAmountLastYear(dto.getAmountLastYear());
-                        if (null  != dto.getAmountLastYear()){
+                        if (null != dto.getAmountLastYear()) {
                             rankSystemDTO.setAnnualAverageNum(new BigDecimal(String.valueOf(dto.getAmountLastYear())));
                         }
                         rankSystemDTO.setEndYearSum(dto.getAmountLastYear());
@@ -1151,6 +1151,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 是否被引用
+     *
      * @param employeeId
      * @return
      */
@@ -1204,10 +1205,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //目标分解指标名称(滚动预测负责人是否有人员引用)
         String indicatorName2 = employeeDTOList2.stream().map(EmployeeDTO::getIndicatorName).filter(Objects::nonNull).distinct().collect(Collectors.toList()).toString();
         if (StringUtils.isNotBlank(indicatorName) && !StringUtils.equals(indicatorName, "[]")) {
-            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被"+indicatorName+"目标分解" + "引用  无法删除！\n");
+            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被" + indicatorName + "目标分解" + "引用  无法删除！\n");
         }
         if (StringUtils.isNotBlank(indicatorName2) && !StringUtils.equals(indicatorName2, "[]")) {
-            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被"+indicatorName2+"目标分解滚动预测负责人" + "引用  无法删除！\n");
+            decomposeErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被" + indicatorName2 + "目标分解滚动预测负责人" + "引用  无法删除！\n");
         }
         if (StringUtils.isNotBlank(username) && !StringUtils.equals(username, "[]")) {
             userErreo.append("人员" + employeeDTOList.get(0).getEmployeeName() + "已被用户" + username + "引用  无法删除！\n");
@@ -1221,13 +1222,13 @@ public class EmployeeServiceImpl implements IEmployeeService {
         //远程查看根据人员id查询个人年终奖 申请人id
         R<List<EmployeeAnnualBonus>> employeeAnnualBonusData = remoteEmployeeAnnualBonusService.selectEmployeeAnnualBonusByEmployeeId(employeeId, SecurityConstants.INNER);
         List<EmployeeAnnualBonus> employeeAnnualBonusList = employeeAnnualBonusData.getData();
-        if (StringUtils.isNotEmpty(employeeAnnualBonusList)){
+        if (StringUtils.isNotEmpty(employeeAnnualBonusList)) {
             employeeAnnualBonusErreo.append("人员被个人年终奖引用 无法删除！\n");
         }
         //根据人员id查询个人年终奖 奖金发放对象ID(员工id)
         R<List<BonusPayObjectsDTO>> bonusPayObjectsDTOData = remoteBonusPayApplicationService.selectBonusPayApplicationByEmployeeId(employeeId, SecurityConstants.INNER);
         List<BonusPayObjectsDTO> bonusPayObjectsDTOList = bonusPayObjectsDTOData.getData();
-        if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)){
+        if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)) {
             bonusPayObjectsErreo.append("人员被奖金发放申请引用 无法删除！\n");
         }
         erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo).append(employeeAnnualBonusErreo).append(bonusPayObjectsErreo);
@@ -1239,6 +1240,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 是否引用目标分解
+     *
      * @param employeeDTOList
      * @param targetDecomposeDetailsDTO
      */
@@ -1412,6 +1414,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 setPlanValue(empSalaryAdjustPlanDTO);
                 EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
                 BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
+                employeeSalarySnapVOS.add(employeeSalarySnapVO);
             }
         }
         employeeSalaryPlanVO.setEmployeeSalarySnapVOS(employeeSalarySnapVOS);
@@ -1422,13 +1425,105 @@ public class EmployeeServiceImpl implements IEmployeeService {
      * 远程查询用户数据
      *
      * @param employeeDTO 员工DTO
-     * @return
+     * @return List
      */
     @Override
     public List<EmployeeDTO> selectUserList(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         return employeeMapper.selectUserList(employee);
+    }
+
+    /**
+     * 根据调整策略进行更新人员薪资，岗位，职级
+     *
+     * @param employeeSalarySnapVO 计划VO
+     * @return int
+     */
+    @Override
+    public int empAdjustUpdate(EmployeeSalarySnapVO employeeSalarySnapVO) {
+        List<Integer> adjustmentTypeList = employeeSalarySnapVO.getAdjustmentTypeList();
+        Long employeeId = employeeSalarySnapVO.getEmployeeId();
+        if (StringUtils.isNull(employeeId)) {
+            throw new ServiceException("系统异常 人员ID为空");
+        }
+        //查询人员主表
+        EmployeeDTO employeeById = employeeMapper.selectEmployeeByEmployeeId(employeeId);
+        if (StringUtils.isNull(employeeById)) {
+            throw new ServiceException("人员信息不存在 请检查人员配置");
+        }
+        Employee employee = new Employee();
+        employee.setEmployeeId(employeeId);
+        if (StringUtils.isEmpty(adjustmentTypeList)) {
+            return 1;
+        }
+        setAdjustValue(employeeSalarySnapVO, adjustmentTypeList, employeeById, employee);
+        return employeeMapper.updateEmployee(employee);
+    }
+
+    /**
+     * 批量根据调整策略进行更新人员薪资，岗位，职级
+     *
+     * @param employeeSalarySnapVOS 计划VO集合
+     * @return int
+     */
+    @Override
+    public int empAdjustUpdates(List<EmployeeSalarySnapVO> employeeSalarySnapVOS) {
+        List<Employee> employees = new ArrayList<>();
+        for (EmployeeSalarySnapVO employeeSalarySnapVO : employeeSalarySnapVOS) {
+            List<Integer> adjustmentTypeList = employeeSalarySnapVO.getAdjustmentTypeList();
+            Long employeeId = employeeSalarySnapVO.getEmployeeId();
+            if (StringUtils.isNull(employeeId)) {
+                throw new ServiceException("系统异常 人员ID为空");
+            }
+            //查询人员主表
+            EmployeeDTO employeeById = employeeMapper.selectEmployeeByEmployeeId(employeeId);
+            if (StringUtils.isNull(employeeById)) {
+                throw new ServiceException("人员信息不存在 请检查人员配置");
+            }
+            Employee employee = new Employee();
+            employee.setEmployeeId(employeeId);
+            if (StringUtils.isEmpty(adjustmentTypeList)) {
+                return 1;
+            }
+            setAdjustValue(employeeSalarySnapVO, adjustmentTypeList, employeeById, employee);
+            employees.add(employee);
+        }
+        return employeeMapper.updateEmployees(employees);
+    }
+
+    /**
+     * 根据调整类型赋值
+     *
+     * @param employeeSalarySnapVO VO快照
+     * @param adjustmentTypeList   类型集合
+     * @param employeeById         员工ID
+     * @param employee             员工
+     */
+    private static void setAdjustValue(EmployeeSalarySnapVO employeeSalarySnapVO, List<Integer> adjustmentTypeList,
+                                       EmployeeDTO employeeById, Employee employee) {
+        for (Integer adjustmentType : adjustmentTypeList) {
+            switch (adjustmentType) {
+                case 1:// 调岗
+                    Long adjustPostId = employeeSalarySnapVO.getAdjustPostId();
+                    if (StringUtils.isNotNull(adjustPostId) && !employeeById.getEmployeePostId().equals(adjustPostId)) {
+                        employee.setEmployeePostId(adjustPostId);
+                    }
+                    break;
+                case 2:// 调级
+                    Integer adjustOfficialRank = employeeSalarySnapVO.getAdjustOfficialRank();
+                    if (StringUtils.isNotNull(adjustOfficialRank) && !employeeById.getEmployeeRank().equals(adjustOfficialRank)) {
+                        employee.setEmployeeRank(adjustOfficialRank);
+                    }
+                    break;
+                case 3:// 调薪
+                    BigDecimal adjustEmolument = employeeSalarySnapVO.getAdjustEmolument();
+                    if (StringUtils.isNotNull(adjustEmolument) && employeeById.getEmployeeBasicWage().compareTo(adjustEmolument) != 0) {
+                        employee.setEmployeeBasicWage(adjustEmolument);
+                    }
+                    break;
+            }
+        }
     }
 
     /**

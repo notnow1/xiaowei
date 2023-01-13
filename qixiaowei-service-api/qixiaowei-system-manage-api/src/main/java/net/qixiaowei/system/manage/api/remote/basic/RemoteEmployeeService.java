@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.factory.basic.RemoteEmployeeFallbackFactory;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -150,4 +151,21 @@ public interface RemoteEmployeeService {
     @PostMapping(API_PREFIX_EMPLOYEE + "/empSalaryAdjustPlan")
     R<EmployeeSalaryPlanVO> empSalaryAdjustPlan(@RequestBody EmployeeDTO employeeDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
+    /**
+     * 根据调整策略进行更新人员薪资，岗位，职级
+     *
+     * @param employeeSalarySnapVO 计划VO
+     * @return R
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/empAdjustUpdate")
+    R<Integer> empAdjustUpdate(@RequestBody EmployeeSalarySnapVO employeeSalarySnapVO);
+
+    /**
+     * 根据调整策略进行更新人员薪资，岗位，职级
+     *
+     * @param employeeSalarySnapVOS 计划VO集合
+     * @return R
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/empAdjustUpdates")
+    R<Integer> empAdjustUpdates(@RequestBody List<EmployeeSalarySnapVO> employeeSalarySnapVOS);
 }

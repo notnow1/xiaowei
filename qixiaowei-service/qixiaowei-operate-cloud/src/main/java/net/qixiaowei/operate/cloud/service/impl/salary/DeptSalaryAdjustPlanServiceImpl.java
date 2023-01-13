@@ -149,7 +149,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
             BigDecimal addSalary;
             if (lastSalary.compareTo(BigDecimal.ZERO) != 0 && adjustmentPercentage.compareTo(BigDecimal.ZERO) != 0 && coveragePercentage.compareTo(BigDecimal.ZERO) != 0) {
                 addSalary = lastSalary.multiply(adjustmentPercentage).multiply(coveragePercentage)
-                        .multiply(new BigDecimal(12).subtract(new BigDecimal(month))).divide(new BigDecimal(120000), 2, RoundingMode.HALF_UP);
+                        .multiply(new BigDecimal(13).subtract(new BigDecimal(month))).divide(new BigDecimal(120000), 2, RoundingMode.HALF_UP);
             } else {
                 addSalary = BigDecimal.ZERO;
             }

@@ -30,6 +30,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteOfficialRankSystemService;
 import net.qixiaowei.system.manage.api.remote.basic.RemotePostService;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -362,6 +363,15 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         if (StringUtils.isNull(empSalaryAdjustPlanDTO.getEmpSalaryAdjustPlanId())) {
             throw new ServiceException("调薪计划ID不可以为空");
         }
+        EmpSalaryAdjustPlan checkPlan = new EmpSalaryAdjustPlan();
+        checkPlan.setEffectiveDate(effectiveDate);
+        checkPlan.setEmployeeId(employeeId);
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(checkPlan);
+        if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS) &&
+                !empSalaryAdjustPlanDTOS.get(0).getEmpSalaryAdjustPlanId()
+                        .equals(empSalaryAdjustPlanDTO.getEmpSalaryAdjustPlanId())) {
+            throw new ServiceException("该员工在此生效日期下已存在个人调薪计划 请勿重复创建");
+        }
         planCheck(employeeId, isSubmit, effectiveDate, adjustmentTypeList);
         // 调薪计划表
         EmpSalaryAdjustPlan empSalaryAdjustPlan = operateEmpSalaryAdjustPlan(empSalaryAdjustPlanDTO, adjustmentTypeList);
@@ -371,14 +381,28 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             throw new ServiceException("调薪快照数据异常 请联系管理员");
         }
         if (isSubmit == 1) {
-            empSalaryAdjustPlan.setStatus(1);
+            EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
+            BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
+            if (empSalaryAdjustPlanDTO.getEffectiveDate().compareTo(DateUtils.getNowDate()) <= 0) {
+                R<Integer> integerR = employeeService.empAdjustUpdate(employeeSalarySnapVO);
+                if (integerR.getCode() != 200) {
+                    throw new ServiceException("远程根据调整策略进行更新人员薪资，岗位，职级失败 请联系管理员");
+                }
+            }
+            if (effectiveDate.compareTo(DateUtils.getNowDate()) <= 0) {
+                empSalaryAdjustPlan.setStatus(2);
+            } else {
+                empSalaryAdjustPlan.setStatus(1);
+            }
         } else {
             empSalaryAdjustPlan.setStatus(0);
         }
         empSalaryAdjustPlan.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanId);
         empSalaryAdjustPlan.setUpdateTime(DateUtils.getNowDate());
         empSalaryAdjustPlan.setUpdateBy(SecurityUtils.getUserId());
-        return empSalaryAdjustPlanMapper.updateEmpSalaryAdjustPlan(empSalaryAdjustPlan);
+        empSalaryAdjustPlanMapper.updateEmpSalaryAdjustPlan(empSalaryAdjustPlan);
+
+        return 1;
     }
 
     /**
@@ -836,14 +860,47 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
     /**
      * 根据岗位ID集合获取个人调薪
      *
-     * @param postId
-     * @return
+     * @param postId 岗位ID
+     * @return List
      */
     @Override
     public List<EmpSalaryAdjustPlanDTO> selectByPostId(Long postId) {
         EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
         empSalaryAdjustPlan.setAdjustPostId(postId);
         return empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
+    }
+
+    /**
+     * 个人调薪到达生效日期更新员工信息
+     *
+     * @return int
+     */
+    @Override
+    public int empAdjustUpdate() {
+        EmpSalaryAdjustPlan selectSalaryAdjustPlan = new EmpSalaryAdjustPlan();
+        Map<String, Object> params = new HashMap<>();
+        params.put("nowDate", DateUtils.getNowDate());
+        params.put("employeeCode", null);
+        params.put("employeeName", null);
+        params.put("departmentName", null);
+        params.put("departmentLeaderName", null);
+        selectSalaryAdjustPlan.setParams(params);
+        selectSalaryAdjustPlan.setStatus(1);
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(selectSalaryAdjustPlan);
+        if (StringUtils.isEmpty(empSalaryAdjustPlanDTOS)) {
+            return 1;
+        }
+        List<EmployeeSalarySnapVO> employeeSalarySnapVOS = new ArrayList<>();
+        for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
+            EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
+            BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
+            employeeSalarySnapVOS.add(employeeSalarySnapVO);
+        }
+        R<Integer> empAdjustR = employeeService.empAdjustUpdates(employeeSalarySnapVOS);
+        if (empAdjustR.getCode() != 200) {
+            throw new ServiceException("远程根据调整策略进行更新人员薪资，岗位，职级失败 请联系管理员");
+        }
+        return 1;
     }
 }
 

@@ -13,7 +13,8 @@
     </select>
     <!--根据id集合判断是否存在-->
     <select id="isExist" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
-        SELECT industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        SELECT industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag,
+        create_by,
         create_time, update_by, update_time
         FROM industry WHERE industry_id IN
         <foreach item="item"
@@ -37,7 +38,8 @@
         i1.create_time,
         i1.update_by,
         i1.update_time,
-        (select i2.industry_name from industry i2 where i1.parent_industry_id = i2.industry_id and i2.delete_flag=0) as parent_industry_name
+        (select i2.industry_name from industry i2 where i1.parent_industry_id = i2.industry_id and i2.delete_flag=0) as
+        parent_industry_name
         FROM industry i1
         WHERE i1.delete_flag=0
         <if test="industry.industryId != null and industry.industryId != ''">
@@ -73,7 +75,8 @@
     </select>
 
     <select id="getIndustryCodes" resultType="java.lang.String">
-        SELECT industry_code FROM industry WHERE delete_flag=0 AND industry_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY industry_code ASC
+        SELECT industry_code FROM industry WHERE delete_flag=0 AND industry_code LIKE CONCAT(#{prefixCodeRule},'%')
+        ORDER BY industry_code ASC
     </select>
 
     <!--新增行业-->
@@ -91,7 +94,7 @@
         <if test="industry.industryId != null and industry.industryId != ''">
             industry_id=#{industry.industryId},
         </if>
-        <if test="industry.parentIndustryId != null and industry.parentIndustryId != ''">
+        <if test="industry.parentIndustryId != null">
             parent_industry_id=#{industry.parentIndustryId},
         </if>
         <if test="industry.ancestors != null and industry.ancestors != ''">
@@ -103,22 +106,22 @@
         <if test="industry.industryName != null and industry.industryName != ''">
             industry_name=#{industry.industryName},
         </if>
-        <if test="industry.level != null and industry.level != ''">
+        <if test="industry.level != null">
             level=#{industry.level},
         </if>
-        <if test="industry.status != null and industry.status != ''">
+        <if test="industry.status != null">
             status=#{industry.status},
         </if>
-        <if test="industry.deleteFlag != null and industry.deleteFlag != ''">
+        <if test="industry.deleteFlag != null">
             delete_flag=#{industry.deleteFlag},
         </if>
-        <if test="industry.createBy != null and industry.createBy != ''">
+        <if test="industry.createBy != null">
             create_by=#{industry.createBy},
         </if>
         <if test="industry.createTime != null">
             create_time=#{industry.createTime},
         </if>
-        <if test="industry.updateBy != null and industry.updateBy != ''">
+        <if test="industry.updateBy != null">
             update_by=#{industry.updateBy},
         </if>
         <if test="industry.updateTime != null">
@@ -171,12 +174,13 @@
     </update>
 
     <!-- 根据父级查找子级-->
-    <select id="selectSon" resultType="java.lang.Long">
+    <select id="selectSon" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
         SELECT
-        industry_id
+        industry_id, parent_industry_id, ancestors, industry_code, industry_name, level, status, delete_flag, create_by,
+        create_time, update_by, update_time
         FROM industry
-        WHERE
-        FIND_IN_SET(#{industryId},ancestors)
+        WHERE FIND_IN_SET(#{industryId},ancestors)
+        AND delete_flag = 0
     </select>
 
     <!-- 根据list批量查找子级-->
@@ -274,7 +278,7 @@
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="parent_industry_id=case" suffix="end,">
                 <foreach collection="industryList" item="item" index="index">
-                    <if test="item.parentIndustryId != null and item.parentIndustryId != ''">
+                    <if test="item.parentIndustryId != null">
                         when industry_id=#{item.industryId} then #{item.parentIndustryId}
                     </if>
                 </foreach>
@@ -302,28 +306,28 @@
             </trim>
             <trim prefix="level=case" suffix="end,">
                 <foreach collection="industryList" item="item" index="index">
-                    <if test="item.level != null and item.level != ''">
+                    <if test="item.level != null">
                         when industry_id=#{item.industryId} then #{item.level}
                     </if>
                 </foreach>
             </trim>
             <trim prefix="status=case" suffix="end,">
                 <foreach collection="industryList" item="item" index="index">
-                    <if test="item.status != null and item.status != ''">
+                    <if test="item.status != null">
                         when industry_id=#{item.industryId} then #{item.status}
                     </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="industryList" item="item" index="index">
-                    <if test="item.deleteFlag != null and item.deleteFlag != ''">
+                    <if test="item.deleteFlag != null">
                         when industry_id=#{item.industryId} then #{item.deleteFlag}
                     </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="industryList" item="item" index="index">
-                    <if test="item.createBy != null and item.createBy != ''">
+                    <if test="item.createBy != null">
                         when industry_id=#{item.industryId} then #{item.createBy}
                     </if>
                 </foreach>
@@ -337,7 +341,7 @@
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="industryList" item="item" index="index">
-                    <if test="item.updateBy != null and item.updateBy != ''">
+                    <if test="item.updateBy != null">
                         when industry_id=#{item.industryId} then #{item.updateBy}
                     </if>
                 </foreach>
@@ -354,21 +358,6 @@
         <foreach collection="industryList" separator="or" item="item" index="index">
             industry_id=#{item.industryId}
         </foreach>
-    </update>
-    <!--根据ids更新子级状态-->
-    <update id="updateStatus">
-        UPDATE industry
-        SET
-        status = #{status},
-        update_by = #{updateBy},
-        update_time = #{updateTime}
-        WHERE industry_id IN
-        <foreach item="item"
-                 collection="industryIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-        AND delete_flag = 0
     </update>
 
 

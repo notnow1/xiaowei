@@ -176,4 +176,12 @@ public interface IIndustryService {
      * @return
      */
     List<IndustryDTO> selectIndustryByIndustryIds(List<Long> industryIds);
+
+    /**
+     * 获取上级行业
+     *
+     * @param industryId 行业Id
+     * @return Tree
+     */
+    List<Tree<Long>> getSuperIndustry(Long industryId);
 }

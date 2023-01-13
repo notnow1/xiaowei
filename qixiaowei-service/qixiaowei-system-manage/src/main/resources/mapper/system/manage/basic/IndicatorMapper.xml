@@ -123,7 +123,8 @@
     </select>
 
     <select id="getIndicatorCodes" resultType="java.lang.String">
-        SELECT indicator_code FROM indicator WHERE delete_flag=0 AND indicator_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY indicator_code ASC
+        SELECT indicator_code FROM indicator WHERE delete_flag=0 AND indicator_code LIKE CONCAT(#{prefixCodeRule},'%')
+        ORDER BY indicator_code ASC
     </select>
 
     <!--级联查询子菜单-->
@@ -162,12 +163,15 @@
                     column="indicator_id" select="findIndicatorTreeByPid"/>
     </resultMap>
     <!--根据父级查找子级-->
-    <select id="selectSon" resultType="java.lang.Long">
+    <select id="selectSon" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">
         SELECT
-        indicator_id
+        indicator_id, parent_indicator_id, ancestors, indicator_type, indicator_code, indicator_name, sort, level,
+        indicator_category_id, indicator_value_type, choice_flag, examine_direction, indicator_definition,
+        indicator_formula, driving_factor_flag, remark, delete_flag, create_by, create_time, update_by, update_time
         FROM indicator
         WHERE
         FIND_IN_SET(#{indicatorId},ancestors)
+        AND delete_flag = 0
     </select>
     <!--根据父级id查找子级的最大排序值-->
     <select id="selectSortByIndicatorId" resultType="java.lang.Integer">
@@ -176,6 +180,7 @@
         FROM indicator
         WHERE
         FIND_IN_SET(#{indicatorId},ancestors)
+        AND delete_flag = 0
     </select>
     <!-- 根据父级list批量查找子级-->
     <select id="selectSons" resultType="java.lang.Long">
@@ -188,6 +193,7 @@
                  separator="or">
             FIND_IN_SET(#{item},ancestors)
         </foreach>
+        AND delete_flag = 0
     </select>
     <!--新增指标表-->
     <insert id="insertIndicator" useGeneratedKeys="true" keyProperty="indicatorId">
@@ -262,6 +268,7 @@
         </if>
         WHERE
         indicator_id=#{indicator.indicatorId}
+        AND delete_flag = 0
     </update>
     <!--逻辑删除指标表-->
     <update id="logicDeleteIndicatorByIndicatorId">
@@ -271,6 +278,7 @@
         update_time=#{updateTime}
         WHERE
         indicator_id=#{indicator.indicatorId}
+        AND delete_flag = 0
     </update>
     <!--逻辑批量删除指标表-->
     <update id="logicDeleteIndicatorByIndicatorIds">
@@ -589,6 +597,7 @@
         </if>
         WHERE
         indicator_id=#{indicator.indicatorId}
+        AND delete_flag = 0
     </update>
 </mapper>
 

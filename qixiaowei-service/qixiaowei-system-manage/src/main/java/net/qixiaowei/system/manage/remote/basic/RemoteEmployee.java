@@ -5,6 +5,7 @@ import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalaryPlanVO;
+import net.qixiaowei.system.manage.api.vo.basic.EmployeeSalarySnapVO;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -191,6 +192,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
      * @return
      */
     @Override
+    @InnerAuth
     @PostMapping("/selectEmployeeByDepartmentIds")
     public R<List<EmployeeDTO>> selectEmployeeByDepartmentIds(@RequestBody List<Long> departmentIds, String source) {
         return R.ok(employeeService.selectEmployeeByDepartmentIds(departmentIds));
@@ -200,12 +202,37 @@ public class RemoteEmployee implements RemoteEmployeeService {
      * 远程个人调薪计划员工信息
      *
      * @param employeeDTO 员工信息
-     * @param source
-     * @return
+     * @param source      根源
+     * @return R
      */
     @Override
+    @InnerAuth
     @PostMapping("/empSalaryAdjustPlan")
     public R<EmployeeSalaryPlanVO> empSalaryAdjustPlan(EmployeeDTO employeeDTO, String source) {
         return R.ok(employeeService.empSalaryAdjustPlan(employeeDTO));
+    }
+
+    /**
+     * 根据调整策略进行更新人员薪资，岗位，职级
+     *
+     * @param employeeSalarySnapVO 计划VO
+     * @return R
+     */
+    @Override
+    @PostMapping("/empAdjustUpdate")
+    public R<Integer> empAdjustUpdate(@RequestBody EmployeeSalarySnapVO employeeSalarySnapVO) {
+        return R.ok(employeeService.empAdjustUpdate(employeeSalarySnapVO));
+    }
+
+    /**
+     * 根据调整策略进行更新人员薪资，岗位，职级
+     *
+     * @param employeeSalarySnapVOS 计划VO集合
+     * @return int
+     */
+    @Override
+    @PostMapping("/empAdjustUpdates")
+    public R<Integer> empAdjustUpdates(@RequestBody List<EmployeeSalarySnapVO> employeeSalarySnapVOS) {
+        return R.ok(employeeService.empAdjustUpdates(employeeSalarySnapVOS));
     }
 }

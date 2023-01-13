@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 行业服务
+ * 职级体系服务
  */
 @FeignClient(contextId = "remoteOfficialRankSystemService", value = ServiceNameConstants.SYSTEM_MANAGE_SERVICE, fallbackFactory = RemoteOfficialRankSystemFallbackFactory.class)
 public interface RemoteOfficialRankSystemService {

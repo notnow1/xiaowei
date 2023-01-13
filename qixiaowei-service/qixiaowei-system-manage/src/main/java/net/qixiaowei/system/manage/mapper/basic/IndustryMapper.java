@@ -3,6 +3,7 @@ package net.qixiaowei.system.manage.mapper.basic;
 import java.util.List;
 
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -93,7 +94,7 @@ public interface IndustryMapper {
      * @param industryId
      * @return
      */
-    List<Long> selectSon(@Param("industryId") Long industryId);
+    List<IndustryDTO> selectSon(@Param("industryId") Long industryId);
 
     /**
      * 根据父级id批量查找子级
@@ -134,15 +135,6 @@ public interface IndustryMapper {
      * @return 结果
      */
     int batchIndustry(@Param("industrys") List<Industry> industrys);
-
-    /**
-     * 根据ids批量修改子级
-     *
-     * @param status
-     * @param industryIds
-     * @return
-     */
-    int updateStatus(@Param("status") Integer status, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime, @Param("industryIds") List<Long> industryIds);
 
     /**
      * todo 获取启用行业类型

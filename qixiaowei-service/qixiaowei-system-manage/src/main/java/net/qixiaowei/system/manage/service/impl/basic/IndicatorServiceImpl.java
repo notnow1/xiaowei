@@ -13,6 +13,9 @@ import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.common.web.domain.AjaxResult;
+import net.qixiaowei.integration.security.annotation.Logical;
+import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO;
@@ -24,14 +27,18 @@ import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppra
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteSettingService;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
+import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorCategoryMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.service.basic.IIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
 
@@ -279,22 +286,108 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         IndicatorDTO indicatorById = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
         if (StringUtils.isNull(indicatorById)) {
-            throw new ServiceException("该行业不存在");
+            throw new ServiceException("该指标不存在");
         }
-//        if (IndicatorCode.contains(indicatorById.getIndicatorCode())) {
-//            throw new ServiceException(indicatorById.getIndicatorName() + "指标属于系统内置指标，不允许修改");
-//        }
         IndicatorDTO indicatorByCode = indicatorMapper.getIndicatorByCode(indicatorCode);
         if (StringUtils.isNotNull(indicatorByCode)) {
             if (!indicatorByCode.getIndicatorId().equals(indicatorId)) {
                 throw new ServiceException("更新指标" + indicatorDTO.getIndicatorName() + "失败,指标编码重复");
             }
         }
+        String ancestors = "";//仅在非一级指标时有用
+        int parentLevel = 1;
+        Long parentIndicatorId = 0L;
+        if (StringUtils.isNotNull(indicatorDTO.getParentIndicatorId())) {
+            parentIndicatorId = indicatorDTO.getParentIndicatorId();
+            IndicatorDTO parentIndicator = indicatorMapper.selectIndicatorByIndicatorId(parentIndicatorId);
+            if (parentIndicator == null && !parentIndicatorId.equals(0L)) {
+                throw new ServiceException("上级指标不存在");
+            }
+            if (!indicatorById.getParentIndicatorId().equals(parentIndicatorId) && !parentIndicatorId.equals(0L)) {
+                // 路径修改
+                ancestors = parentIndicator.getAncestors();
+                if (StringUtils.isNotEmpty(ancestors)) {
+                    ancestors = ancestors + ",";
+                }
+                ancestors = ancestors + parentIndicatorId;
+                parentLevel = parentIndicator.getLevel() + 1;
+            }
+            changeSonAncestor(indicatorId, indicatorById, parentIndicatorId, parentIndicator);
+        }
         Indicator indicator = new Indicator();
         BeanUtils.copyProperties(indicatorDTO, indicator);
+        indicator.setAncestors(ancestors);
+        indicator.setLevel(parentLevel);
+        indicator.setParentIndicatorId(parentIndicatorId);
         indicator.setUpdateTime(DateUtils.getNowDate());
         indicator.setUpdateBy(SecurityUtils.getUserId());
         return indicatorMapper.updateIndicator(indicator);
+    }
+
+    /**
+     * 批量修改子级的祖级列表ID
+     *
+     * @param indicatorId       指标ID
+     * @param indicatorById     当前指标DTO
+     * @param parentIndicatorId 父级指标ID
+     * @param parentIndicator   父级指标DTO
+     */
+    private void changeSonAncestor(Long indicatorId, IndicatorDTO indicatorById, Long parentIndicatorId, IndicatorDTO parentIndicator) {
+        if (!indicatorById.getParentIndicatorId().equals(parentIndicatorId)) {
+            List<IndicatorDTO> sonIndicatorDTOS = indicatorMapper.selectSon(indicatorId);
+            if (StringUtils.isNotEmpty(sonIndicatorDTOS)) {
+                List<Indicator> indicators = new ArrayList<>();
+                for (IndicatorDTO sonIndicatorDTO : sonIndicatorDTOS) {
+                    String[] ancestorsArray = sonIndicatorDTO.getAncestors().split(",");
+                    StringBuilder sonAncestors = new StringBuilder("");
+                    if (sonIndicatorDTO.getLevel() > 2) {
+                        if (indicatorById.getLevel() > 1) {
+                            for (int i = indicatorById.getLevel() - 2; i < ancestorsArray.length; i++) {
+                                sonAncestors.append(ancestorsArray[i]).append(",");
+                            }
+                        } else {
+                            sonAncestors.append(sonIndicatorDTO.getAncestors()).append(",");
+                        }
+                    }
+                    Indicator sonIndicator = new Indicator();
+                    if (parentIndicatorId.equals(0L)) {
+                        if (sonIndicatorDTO.getLevel() > 2) {
+                            sonIndicator.setAncestors(indicatorById.getIndicatorId() + ","
+                                    + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
+                        } else {
+                            sonIndicator.setAncestors(sonIndicatorDTO.getAncestors());
+                        }
+                        sonIndicator.setLevel(sonIndicatorDTO.getLevel() - indicatorById.getLevel() + 1);
+                    } else {
+                        if (sonIndicatorDTO.getLevel() > 2) {
+                            if (parentIndicator.getParentIndicatorId().equals(0L)) {
+                                sonIndicator.setAncestors(parentIndicator.getIndicatorId()
+//                                        + "," + indicatorById.getIndicatorId()
+                                        + "," + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
+                            } else {
+                                sonIndicator.setAncestors(parentIndicator.getAncestors()
+                                        + "," + parentIndicator.getIndicatorId()
+//                                        + "," + indicatorById.getIndicatorId()
+                                        + "," + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
+                            }
+                        } else {
+                            if (parentIndicator.getParentIndicatorId().equals(0L)) {
+                                sonIndicator.setAncestors(parentIndicator.getIndicatorId()
+                                        + "," + indicatorById.getIndicatorId());
+                            } else {
+                                sonIndicator.setAncestors(parentIndicator.getAncestors()
+                                        + "," + parentIndicator.getIndicatorId()
+                                        + "," + indicatorById.getIndicatorId());
+                            }
+                        }
+                        sonIndicator.setLevel(sonIndicatorDTO.getLevel() - indicatorById.getLevel() + parentIndicator.getLevel() + 1);
+                    }
+                    sonIndicator.setIndicatorId(sonIndicatorDTO.getIndicatorId());
+                    indicators.add(sonIndicator);
+                }
+                indicatorMapper.updateIndicators(indicators);
+            }
+        }
     }
 
     /**
@@ -460,9 +553,33 @@ public class IndicatorServiceImpl implements IIndicatorService {
         }
         BonusBudgetDTO bonusBudget = bonusBudgetDTOR.getData();
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudget.getBonusBudgetParametersDTOS();
-        // todo 总奖金包预算-奖金驱动因素，引用校验
-        if (StringUtils.isNotEmpty(bonusBudgetParametersDTOS)){
-
+        if (StringUtils.isNotNull(bonusBudgetParametersDTOS) && StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
+            StringBuilder indicatorNames = new StringBuilder("");
+            for (IndicatorDTO indicatorById : indicatorByIds) {
+                for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+                    if (indicatorById.getIndicatorId().equals(bonusBudgetParametersDTO.getIndicatorId())) {
+                        indicatorNames.append(indicatorById.getIndicatorName()).append(",");
+                        break;
+                    }
+                }
+            }
+            StringBuilder bonusBudgetParameterName = new StringBuilder("");
+            Set<String> bonusBudgetParametersSet = new HashSet<>();
+            for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+                for (IndicatorDTO indicatorById : indicatorByIds) {
+                    if (indicatorById.getIndicatorId().equals(bonusBudgetParametersDTO.getIndicatorId())) {
+                        bonusBudgetParametersSet.add(bonusBudgetParametersDTO.getBudgetYear().toString());
+                    }
+                }
+            }
+            for (String performance : bonusBudgetParametersSet) {
+                bonusBudgetParameterName.append(performance).append(",");
+            }
+            quoteReminder.append("指标配置【")
+                    .append(indicatorNames.deleteCharAt(indicatorNames.length() - 1))
+                    .append("】已被总奖金包预算中的【奖金驱动因素】【")
+                    .append(bonusBudgetParameterName.deleteCharAt(bonusBudgetParameterName.length() - 1))
+                    .append("】引用 无法删除\n");
         }
         if (quoteReminder.length() != 0) {
             throw new ServiceException(quoteReminder.toString());
@@ -598,6 +715,51 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.putExtra("indicatorCategoryId", treeNode.getIndicatorCategoryId());
             tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
             tree.putExtra("isPreset", treeNode.getIsPreset());
+        });
+    }
+
+    /**
+     * 获取上级指标
+     *
+     * @param indicatorId 指标ID
+     * @return List
+     */
+    @Override
+    public List<Tree<Long>> getSuperIndicator(Long indicatorId) {
+        if (StringUtils.isNull(indicatorId)) {
+            throw new ServiceException("请传入指标ID");
+        }
+        IndicatorDTO indicatorById = indicatorMapper.selectIndicatorByIndicatorId(indicatorId);
+        if (StringUtils.isNull(indicatorById)) {
+            throw new ServiceException("当前指标已不存在");
+        }
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(new IndicatorDTO());
+        List<IndicatorDTO> sonIndicatorDTOS = indicatorMapper.selectSon(indicatorId);
+        ArrayList<IndicatorDTO> removeIndicatorDTOS = new ArrayList<>();
+        for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+            if (indicatorDTO.getIndicatorId().equals(indicatorId)) {
+                removeIndicatorDTOS.add(indicatorDTO);
+            }
+            for (IndicatorDTO sonIndicatorDTO : sonIndicatorDTOS) {
+                if (indicatorDTO.getIndicatorId().equals(sonIndicatorDTO.getIndicatorId())) {
+                    removeIndicatorDTOS.add(indicatorDTO);
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(removeIndicatorDTOS)) {
+            indicatorDTOS.removeAll(removeIndicatorDTOS);
+        }
+        //自定义属性名
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("indicatorId");
+        treeNodeConfig.setNameKey("indicatorName");
+        treeNodeConfig.setParentIdKey("parentIndicatorId");
+        return TreeUtil.build(indicatorDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getIndicatorId());
+            tree.setParentId(treeNode.getParentIndicatorId());
+            tree.setName(treeNode.getIndicatorName());
+            tree.putExtra("level", treeNode.getLevel());
+            tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
         });
     }
 
