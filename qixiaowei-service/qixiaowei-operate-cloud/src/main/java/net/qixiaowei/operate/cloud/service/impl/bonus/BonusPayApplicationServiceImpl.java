@@ -361,15 +361,15 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 Matcher bonusPayObjectName1 = null;
                 if (StringUtils.isNotBlank(applyDepartmentName)) {
                     //申请部门名称
-                    applyDepartmentName1 = pattern.matcher(bonusPayApplicationDTO.getApplyDepartmentName());
+                    applyDepartmentName1 = pattern.matcher(payApplicationDTO.getApplyDepartmentName());
                 }
                 if (StringUtils.isNotBlank(budgetDepartmentNames)) {
                     //预算部门名称
-                    budgetDepartmentNames1 = pattern1.matcher(bonusPayApplicationDTO.getBudgetDepartmentNames());
+                    budgetDepartmentNames1 = pattern1.matcher(StringUtils.join(",",payApplicationDTO.getBudgetDepartmentList()));
                 }
                 if (StringUtils.isNotBlank(bonusPayObjectName)) {
                     //奖金发放对象名称
-                    bonusPayObjectName1 = pattern2.matcher(bonusPayApplicationDTO.getBonusPayObjectName());
+                    bonusPayObjectName1 = pattern2.matcher(payApplicationDTO.getBonusPayObjectName());
                 }
                 if (StringUtils.isNotBlank(applyDepartmentName) && StringUtils.isNotBlank(budgetDepartmentNames) && StringUtils.isNotBlank(bonusPayObjectName)) {
                     if (applyDepartmentName1.find() || budgetDepartmentNames1.find() || bonusPayObjectName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
