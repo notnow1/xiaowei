@@ -632,6 +632,8 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         for (EmpAnnualBonusSnapshotDTO empAnnualBonusSnapshotDTO : empAnnualBonusSnapshotDTOList) {
             //考勤系数
             empAnnualBonusSnapshotDTO.setAttendanceFactor(new BigDecimal("1"));
+            //考勤系数
+            empAnnualBonusSnapshotDTO.setPerformanceBonusFactor(new BigDecimal("1"));
             //绩效
             List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByEmployeeId(empAnnualBonusSnapshotDTO.getEmployeeId());
             if (StringUtils.isNotEmpty(performanceRankFactorDTOS)) {
@@ -656,8 +658,11 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 //绩效等级系数ID
                 empAnnualBonusSnapshotDTO.setPerformanceRankFactorId(performanceRankFactorDTO.getPerformanceRankFactorId());
 
-                //绩效奖金系数
-                empAnnualBonusSnapshotDTO.setPerformanceBonusFactor(performanceRankFactorDTO.getBonusFactor());
+                if (null != performanceRankFactorDTO.getBonusFactor()){
+                    //绩效奖金系数
+                    empAnnualBonusSnapshotDTO.setPerformanceBonusFactor(performanceRankFactorDTO.getBonusFactor());
+                }
+
                 //最近绩效结果
                 empAnnualBonusSnapshotDTO.setLastPerformanceResulted(performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(StringUtils::isNotBlank).collect(Collectors.toList()).toString());
             }
