@@ -659,9 +659,7 @@
         <if test="department.parentDepartmentId != null">
             parent_department_id=#{department.parentDepartmentId},
         </if>
-        <if test="department.ancestors != null and department.ancestors != ''">
             ancestors=#{department.ancestors},
-        </if>
         <if test="department.departmentCode != null and department.departmentCode != ''">
             department_code=#{department.departmentCode},
         </if>

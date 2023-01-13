@@ -298,6 +298,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
      * @return
      */
     public Department packDepartment(Department department) {
+        if (StringUtils.isNotNull(department)){
+            if (null == department.getStatus()){
+                department.setStatus(1);
+            }
+        }
         department.setCreateBy(SecurityUtils.getUserId());
         department.setCreateTime(DateUtils.getNowDate());
         department.setUpdateTime(DateUtils.getNowDate());
@@ -326,8 +331,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
         if (departmentDTO.getParentDepartmentId() == 0) {
             BeanUtils.copyProperties(departmentDTO, department);
             department.setUpdateTime(DateUtils.getNowDate());
+            department.setAncestors("");
             department.setUpdateBy(SecurityUtils.getUserId());
-            departmentDTO.setParentDepartmentId(Constants.TOP_PARENT_ID);
+            department.setParentDepartmentId(Constants.TOP_PARENT_ID);
         } else {
             DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentByDepartmentId(departmentDTO.getParentDepartmentId());
             BeanUtils.copyProperties(departmentDTO, department);
@@ -350,7 +356,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
                         departmentDTOList.get(i1).setAncestors(department.getAncestors() + "," + department.getDepartmentId());
                     }
                     departmentDTOList.get(i1).setLevel(department.getLevel()+1);
-                    departmentDTOList.get(i1).setStatus(department.getStatus());
+                    if(null != department.getStatus() && department.getStatus() == 0){
+                        departmentDTOList.get(i1).setStatus(department.getStatus());
+                    }
                     departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                     departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                     departmentDTOList.get(i1).setParentDepartmentId(department.getDepartmentId());
@@ -366,7 +374,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
                         departmentDTOList.get(i1).setAncestors(departmentDTO2.getAncestors() + "," + departmentDTO2.getDepartmentId());
                     }
                     departmentDTOList.get(i1).setLevel(departmentDTO2.getLevel()+1);
-                    departmentDTOList.get(i1).setStatus(departmentDTO2.getStatus());
+                    if(null != department.getStatus() && department.getStatus() == 0){
+                        departmentDTOList.get(i1).setParentDepartmentId(department.getDepartmentId());
+                    }
                     departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
                     departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
                     departmentDTOList.get(i1).setParentDepartmentId(departmentDTO2.getDepartmentId());
