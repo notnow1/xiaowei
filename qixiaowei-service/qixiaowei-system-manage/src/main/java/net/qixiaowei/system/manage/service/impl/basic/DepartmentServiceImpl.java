@@ -39,9 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -345,7 +343,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 department.setAncestors(departmentDTO1.getAncestors() + "," + departmentDTO1.getParentDepartmentId());
             }
         }
+        Map<Long,Integer> map = new HashMap<>();
         List<DepartmentDTO> departmentDTOList = departmentMapper.selectAncestors(department.getDepartmentId());
+        for (int i1 = 0; i1 < departmentDTOList.size(); i1++) {
+            map.put(departmentDTOList.get(i1).getDepartmentId(),i1);
+        }
         if (StringUtils.isNotEmpty(departmentDTOList) && departmentDTOList.size()>1) {
             for (int i1 = 1; i1 < departmentDTOList.size(); i1++) {
                 if (i1 == 1){
@@ -365,23 +367,43 @@ public class DepartmentServiceImpl implements IDepartmentService {
                     BeanUtils.copyProperties(departmentDTOList.get(i1),department2);
                     departmentUpdateList.add(department2);
                 }else {
-                    Department department2 = new Department();
-                    //父级
-                    DepartmentDTO departmentDTO2 = departmentDTOList.get(i1 - 1);
-                    if (StringUtils.isBlank(departmentDTO2.getAncestors())) {
-                        departmentDTOList.get(i1).setAncestors(departmentDTO2.getParentDepartmentId() + "," + departmentDTO2.getDepartmentId());
-                    } else {
-                        departmentDTOList.get(i1).setAncestors(departmentDTO2.getAncestors() + "," + departmentDTO2.getDepartmentId());
+                    if (departmentDTOList.get(i1 - 1).getDepartmentId().equals(departmentDTOList.get(i1).getParentDepartmentId())){
+                        Department department2 = new Department();
+                        //父级
+                        DepartmentDTO departmentDTO2 = departmentDTOList.get(i1 - 1);
+                        if (StringUtils.isBlank(departmentDTO2.getAncestors())) {
+                            departmentDTOList.get(i1).setAncestors(departmentDTO2.getParentDepartmentId() + "," + departmentDTO2.getDepartmentId());
+                        } else {
+                            departmentDTOList.get(i1).setAncestors(departmentDTO2.getAncestors() + "," + departmentDTO2.getDepartmentId());
+                        }
+                        departmentDTOList.get(i1).setLevel(departmentDTO2.getLevel()+1);
+                        if(null != department.getStatus() && department.getStatus() == 0){
+                            departmentDTOList.get(i1).setParentDepartmentId(department.getDepartmentId());
+                        }
+                        departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                        departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                        departmentDTOList.get(i1).setParentDepartmentId(departmentDTO2.getDepartmentId());
+                        BeanUtils.copyProperties(departmentDTOList.get(i1),department2);
+                        departmentUpdateList.add(department2);
+                    }else {
+                        Department department2 = new Department();
+                        //父级
+                        DepartmentDTO departmentDTO2 = departmentDTOList.get(map.get(departmentDTOList.get(i1).getParentDepartmentId()));
+                        if (StringUtils.isBlank(departmentDTO2.getAncestors())) {
+                            departmentDTOList.get(i1).setAncestors(departmentDTO2.getParentDepartmentId() + "," + departmentDTO2.getDepartmentId());
+                        } else {
+                            departmentDTOList.get(i1).setAncestors(departmentDTO2.getAncestors() + "," + departmentDTO2.getDepartmentId());
+                        }
+                        departmentDTOList.get(i1).setLevel(departmentDTO2.getLevel()+1);
+                        if(null != department.getStatus() && department.getStatus() == 0){
+                            departmentDTOList.get(i1).setParentDepartmentId(department.getDepartmentId());
+                        }
+                        departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                        departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                        departmentDTOList.get(i1).setParentDepartmentId(departmentDTO2.getDepartmentId());
+                        BeanUtils.copyProperties(departmentDTOList.get(i1),department2);
+                        departmentUpdateList.add(department2);
                     }
-                    departmentDTOList.get(i1).setLevel(departmentDTO2.getLevel()+1);
-                    if(null != department.getStatus() && department.getStatus() == 0){
-                        departmentDTOList.get(i1).setParentDepartmentId(department.getDepartmentId());
-                    }
-                    departmentDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
-                    departmentDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
-                    departmentDTOList.get(i1).setParentDepartmentId(departmentDTO2.getDepartmentId());
-                    BeanUtils.copyProperties(departmentDTOList.get(i1),department2);
-                    departmentUpdateList.add(department2);
                 }
             }
         }

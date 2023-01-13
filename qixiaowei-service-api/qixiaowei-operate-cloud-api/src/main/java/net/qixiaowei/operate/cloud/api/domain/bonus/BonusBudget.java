@@ -37,6 +37,10 @@ public class BonusBudget extends TenantEntity {
      */
     private BigDecimal bonusBeforeOne;
     /**
+     * 总工资包预算
+     */
+    private BigDecimal basicWageBonusBudget;
+    /**
      * 指标id集合
      */
     private List<Long> indicatorIds;

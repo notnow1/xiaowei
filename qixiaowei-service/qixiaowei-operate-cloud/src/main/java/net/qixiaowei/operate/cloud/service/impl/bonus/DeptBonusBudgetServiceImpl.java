@@ -127,7 +127,9 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                                 BigDecimal bonusAmount = new BigDecimal("0");
                                 //奖金占比
                                 BigDecimal bonusPercentage = deptBonusBudgetItemsDTO.getBonusPercentage();
-                                bonusAmount = deptBonusSum.multiply(bonusPercentage.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP));
+                                if (null != bonusPercentage){
+                                    bonusAmount = deptBonusSum.multiply(bonusPercentage.divide(new BigDecimal("100"),10, BigDecimal.ROUND_HALF_UP));
+                                }
                                 deptBonusBudgetItemsDTO.setBonusAmount(bonusAmount);
                             }
                         }
@@ -848,7 +850,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
                             List<SalaryPayDTO> salaryPayDTOS = salaryPayMapper.selectDeptBonusBudgetPay(employeeDTO.getEmployeeId(), budgetYear, DateUtils.getYear(), SecurityUtils.getTenantId());
                             if (StringUtils.isNotEmpty(salaryPayDTOS)){
                                 //sterm流求和 总薪酬包 公式= 工资+津贴+福利+奖金
-                                 paymentBonus = paymentBonus.add(salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
+                                paymentBonus = paymentBonus.add(salaryPayDTOS.stream().map(SalaryPayDTO::getPaymentBonus).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add));
                             }
                         }
 

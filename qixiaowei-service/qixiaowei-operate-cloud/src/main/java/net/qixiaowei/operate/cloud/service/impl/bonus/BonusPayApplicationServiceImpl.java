@@ -234,15 +234,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      */
     @Override
     public List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO) {
-        String awardYearMonth = bonusPayApplicationDTO.getAwardYearMonth();
-        if (StringUtils.isNotBlank(awardYearMonth)) {
-            String year = awardYearMonth.substring(0, 4);
-            String month = awardYearMonth.substring(4, 6);
-            if (Integer.parseInt(month) < 10) {
-                String month2 = month.replaceAll("0", "");
-                bonusPayApplicationDTO.setAwardYearMonth(year + month2);
-            }
-        }
+
+
         BonusPayApplication bonusPayApplication = new BonusPayApplication();
         BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
         List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationList(bonusPayApplication);

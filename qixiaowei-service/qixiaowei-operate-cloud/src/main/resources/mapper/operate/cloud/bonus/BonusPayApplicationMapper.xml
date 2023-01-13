@@ -74,7 +74,8 @@
         and si.delete_flag =0
         WHERE  bpa.delete_flag=0
         <if test="bonusPayApplication.awardYearMonth != null and bonusPayApplication.awardYearMonth != ''">
-            and CONCAT(award_year,"/",award_month) = #{bonusPayApplication.awardYearMonth}
+            and  (case when award_month &gt; 9  then CONCAT(award_year,"/",award_month)
+            when award_month &lt; 10 then CONCAT(award_year,"/0",award_month)  end) = #{bonusPayApplication.awardYearMonth}
         </if>
         <if test="bonusPayApplication.thirdLevelItem != null and bonusPayApplication.thirdLevelItem != ''">
             and  si.third_level_item like '%${bonusPayApplication.thirdLevelItem}%'
