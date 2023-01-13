@@ -13,9 +13,6 @@ import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
 import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-
-
 /**
  * UserService接口
  *

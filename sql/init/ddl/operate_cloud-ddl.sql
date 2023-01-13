@@ -694,6 +694,7 @@ CREATE TABLE bonus_budget(
     bonus_budget_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     budget_year SMALLINT UNSIGNED NOT NULL   COMMENT '预算年度' ,
     amount_bonus_budget DECIMAL(14,2)    COMMENT '总奖金包预算' ,
+    amount_wage_budget DECIMAL(14,2)    COMMENT '总工资包预算' ,
     bonus_before_one DECIMAL(14,2)    COMMENT '预算年度前一年的总奖金包' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
@@ -703,7 +704,6 @@ CREATE TABLE bonus_budget(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (bonus_budget_id)
 )  COMMENT = '奖金预算表';
-
 
 CREATE TABLE bonus_budget_parameters(
     bonus_budget_parameters_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,

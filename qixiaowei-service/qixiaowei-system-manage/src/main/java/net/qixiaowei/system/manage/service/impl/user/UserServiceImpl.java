@@ -49,8 +49,6 @@ import net.qixiaowei.system.manage.service.user.IUserService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-
 
 /**
  * UserService业务层处理
