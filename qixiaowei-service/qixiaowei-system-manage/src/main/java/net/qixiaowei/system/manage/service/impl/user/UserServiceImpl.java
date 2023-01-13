@@ -2,12 +2,19 @@ package net.qixiaowei.system.manage.service.impl.user;
 
 import java.util.*;
 
+import net.qixiaowei.file.api.RemoteFileService;
+import net.qixiaowei.file.api.dto.FileDTO;
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
+import net.qixiaowei.integration.common.constant.SecurityConstants;
+import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.common.utils.file.FileTypeUtils;
+import net.qixiaowei.integration.common.utils.file.MimeTypeUtils;
+import net.qixiaowei.integration.security.service.TokenService;
 import net.qixiaowei.integration.tenant.annotation.IgnoreTenant;
 import net.qixiaowei.system.manage.api.domain.system.UserRole;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
@@ -15,9 +22,11 @@ import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.system.UserRoleDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserUpdatePasswordDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
+import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
@@ -38,6 +47,7 @@ import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -76,6 +86,12 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private FileConfig fileConfig;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private RemoteFileService remoteFileService;
 
 
     @Override
@@ -127,6 +143,81 @@ public class UserServiceImpl implements IUserService {
         userInfoVO.setRoles(roles);
         userInfoVO.setPermissions(permissions);
         return userInfoVO;
+    }
+
+    /**
+     * 查询用户资料
+     *
+     * @return 用户个人信息对象
+     */
+    @Override
+    public UserProfileVO getProfile() {
+        Long userId = SecurityUtils.getUserId();
+        UserDTO userDTO = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userDTO)) {
+            throw new ServiceException("当前用户不存在");
+        }
+        UserProfileVO userProfileVO = new UserProfileVO();
+        BeanUtils.copyProperties(userDTO, userProfileVO);
+        userProfileVO.setTenantLogo(fileConfig.getFullDomain(userProfileVO.getTenantLogo()));
+        userProfileVO.setAvatar(fileConfig.getFullDomain(userProfileVO.getAvatar()));
+        return userProfileVO;
+    }
+
+    /**
+     * 修改用户资料
+     *
+     * @param avatarFile 头像文件
+     * @param userDTO    用户修改对象
+     * @return 结果
+     */
+    @Override
+    public UserProfileVO editProfile(MultipartFile avatarFile, UserDTO userDTO) {
+        Long userId = SecurityUtils.getUserId();
+        UserDTO userOfDB = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userOfDB)) {
+            throw new ServiceException("当前用户不存在");
+        }
+        Date nowDate = DateUtils.getNowDate();
+        User user = new User();
+        user.setUserId(userId);
+        String userName = userDTO.getUserName();
+        user.setUserName(userName);
+        String avatar = null;
+        if (StringUtils.isNotNull(avatarFile) && !avatarFile.isEmpty()) {
+            String extension = FileTypeUtils.getExtension(avatarFile);
+            if (!StringUtils.equalsAnyIgnoreCase(extension, MimeTypeUtils.IMAGE_EXTENSION)) {
+                throw new ServiceException("文件格式不正确，请上传" + Arrays.toString(MimeTypeUtils.IMAGE_EXTENSION) + "格式");
+            }
+            R<FileDTO> fileResult = remoteFileService.upLoad(avatarFile, "user/avatar", SecurityConstants.INNER);
+            if (StringUtils.isNull(fileResult) || StringUtils.isNull(fileResult.getData())) {
+                throw new ServiceException("文件服务异常，请联系管理员");
+            }
+            avatar = fileResult.getData().getFilePath();
+        }
+        if (StringUtils.isNotEmpty(avatar)) {
+            user.setAvatar(avatar);
+        }
+        user.setUpdateBy(userId);
+        user.setUpdateTime(nowDate);
+        int i = userMapper.updateUser(user);
+        // 更新缓存用户信息
+        if (i > 0) {
+            LoginUserVO loginUser = SecurityUtils.getLoginUser();
+            UserProfileVO userProfileVO = new UserProfileVO();
+            BeanUtils.copyProperties(userOfDB, userProfileVO);
+            userProfileVO.setUserName(userName);
+            loginUser.getUserDTO().setUserName(userName);
+            if (StringUtils.isNotEmpty(user.getAvatar())) {
+                loginUser.getUserDTO().setAvatar(user.getAvatar());
+                userProfileVO.setAvatar(user.getAvatar());
+            }
+            userProfileVO.setAvatar(fileConfig.getFullDomain(userProfileVO.getAvatar()));
+            tokenService.setLoginUser(loginUser);
+            return userProfileVO;
+        } else {
+            throw new ServiceException("修改失败，请联系管理员。");
+        }
     }
 
     /**
@@ -342,6 +433,44 @@ public class UserServiceImpl implements IUserService {
         user.setUpdateTime(nowDate);
         user.setUpdateBy(operateUserId);
         return userMapper.updateUser(user);
+    }
+
+    /**
+     * 重置用户密码
+     *
+     * @param userUpdatePasswordDTO 用户更新密码实体
+     * @return 结果
+     */
+    @Override
+    public int resetUserPwd(UserUpdatePasswordDTO userUpdatePasswordDTO) {
+        String oldPassword = userUpdatePasswordDTO.getOldPassword();
+        String newPassword = userUpdatePasswordDTO.getNewPassword();
+        Long userId = SecurityUtils.getUserId();
+        UserDTO userDTO = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userDTO)) {
+            throw new ServiceException("修改密码失败，找不到该用户。");
+        }
+        String password = userDTO.getPassword();
+        if (!SecurityUtils.matchesPassword(oldPassword, password)) {
+            throw new ServiceException("原密码错误，请重新输入");
+        }
+        if (SecurityUtils.matchesPassword(newPassword, password)) {
+            throw new ServiceException("新密码与原密码相同，请重新输入");
+        }
+        newPassword = SecurityUtils.encryptPassword(newPassword);
+        User user = new User();
+        user.setUserId(userId);
+        user.setPassword(newPassword);
+        user.setUpdateBy(userId);
+        user.setUpdateTime(DateUtils.getNowDate());
+        int i = userMapper.updateUser(user);
+        //更新成功则更新缓存用户密码
+        if (i > 0) {
+            LoginUserVO loginUser = SecurityUtils.getLoginUser();
+            loginUser.getUserDTO().setPassword(newPassword);
+            tokenService.setLoginUser(loginUser);
+        }
+        return i;
     }
 
     /**

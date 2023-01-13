@@ -23,9 +23,9 @@ public class RemoteFile implements RemoteFileService {
 
     @InnerAuth
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public R<FileDTO> upLoad(@RequestPart(value = "file") MultipartFile file, @RequestParam(name = "source", required = false, defaultValue = "common") String source) {
+    public R<FileDTO> upLoad(@RequestPart(value = "file") MultipartFile file, String uploadSource, @RequestParam(name = "source", required = false, defaultValue = "common") String source) {
         try {
-            return R.ok(fileService.uploadFile(file, source));
+            return R.ok(fileService.uploadFile(file, uploadSource));
         } catch (Exception e) {
             return R.fail(e.getMessage());
         }

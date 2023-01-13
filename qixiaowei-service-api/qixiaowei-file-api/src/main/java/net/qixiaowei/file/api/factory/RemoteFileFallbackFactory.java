@@ -31,7 +31,7 @@ public class RemoteFileFallbackFactory implements FallbackFactory<RemoteFileServ
              */
             @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
             @Override
-            public R<FileDTO> upLoad(MultipartFile file, String source) {
+            public R<FileDTO> upLoad(MultipartFile file, String uploadSource, String source) {
                 return R.fail("上传文件失败:" + throwable.getMessage());
             }
         };

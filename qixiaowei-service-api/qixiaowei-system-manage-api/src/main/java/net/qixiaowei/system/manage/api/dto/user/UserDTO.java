@@ -95,6 +95,7 @@ public class UserDTO {
      * 密码
      */
     @NotBlank(message = "密码不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
+    @Size(min =6, max = 120, message = "密码长度最低6位，且不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
     private String password;
     /**
      * 用户名称
