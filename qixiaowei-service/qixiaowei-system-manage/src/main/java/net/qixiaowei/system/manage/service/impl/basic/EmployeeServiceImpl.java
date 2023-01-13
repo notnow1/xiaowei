@@ -950,6 +950,10 @@ public class EmployeeServiceImpl implements IEmployeeService {
                         }
                     }
                 }
+                //基本工资
+                if (null != dto.getEmployeeBasicWage()) {
+                    employeeExcel.setEmployeeBasicWage(String.valueOf(dto.getEmployeeBasicWage()));
+                }
                 //通信地址
                 if (null != dto.getContactAddress()) {
                     if (StringUtils.isNotEmpty(regionProvinceNameAndCityNameAndDistrictNames)) {
