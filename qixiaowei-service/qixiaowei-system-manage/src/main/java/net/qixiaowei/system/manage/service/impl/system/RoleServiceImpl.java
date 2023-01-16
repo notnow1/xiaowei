@@ -259,6 +259,7 @@ public class RoleServiceImpl implements IRoleService {
      * @param roleIds 需要删除的角色表主键
      * @return 结果
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int logicDeleteRoleByRoleIds(List<Long> roleIds) {
         for (Long roleId : roleIds) {
@@ -300,6 +301,7 @@ public class RoleServiceImpl implements IRoleService {
      * @param roleDTO 角色表
      * @return 结果
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int logicDeleteRoleByRoleId(RoleDTO roleDTO) {
         Long roleId = roleDTO.getRoleId();
@@ -316,9 +318,7 @@ public class RoleServiceImpl implements IRoleService {
             List<Long> delRoleMenuIds = roleMenuDTOS.stream().map(RoleMenuDTO::getRoleMenuId).collect(Collectors.toList());
             roleMenuMapper.logicDeleteRoleMenuByRoleMenuIds(delRoleMenuIds, userId, nowDate);
         }
-        Role role = new Role();
-        BeanUtils.copyProperties(roleDTO, role);
-        return roleMapper.logicDeleteRoleByRoleId(role, userId, nowDate);
+        return roleMapper.logicDeleteRoleByRoleId(roleId, userId, nowDate);
     }
 
     /**

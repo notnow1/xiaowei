@@ -157,15 +157,17 @@
         WHERE
         role_id=#{role.roleId}
     </update>
+
     <!--逻辑删除角色表-->
     <update id="logicDeleteRoleByRoleId">
         UPDATE role
         SET delete_flag= 1,
-        update_by=#{role.updateBy},
-        update_time=#{role.updateTime}
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-        role_id=#{role.roleId}
+        role_id=#{roleId}
     </update>
+
     <!--逻辑批量删除角色表-->
     <update id="logicDeleteRoleByRoleIds">
         UPDATE role
@@ -180,6 +182,7 @@
             #{item}
         </foreach>
     </update>
+
     <!--批量新增角色表-->
     <insert id="batchRole">
         INSERT INTO role

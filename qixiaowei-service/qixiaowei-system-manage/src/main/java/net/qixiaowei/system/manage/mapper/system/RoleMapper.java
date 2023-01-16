@@ -100,10 +100,10 @@ public interface RoleMapper {
     /**
      * 逻辑删除角色表
      *
-     * @param role
+     * @param roleId
      * @return 结果
      */
-    int logicDeleteRoleByRoleId(@Param("role") Role role, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
+    int logicDeleteRoleByRoleId(@Param("roleId") Long roleId, @Param("updateBy") Long updateBy, @Param("updateTime") Date updateTime);
 
     /**
      * 逻辑批量删除角色表
