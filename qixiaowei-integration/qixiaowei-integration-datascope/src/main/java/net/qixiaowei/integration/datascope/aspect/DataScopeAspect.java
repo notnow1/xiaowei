@@ -8,7 +8,6 @@ import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.datascope.annotation.DataScope;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
-import net.qixiaowei.system.manage.api.domain.SysRole;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;

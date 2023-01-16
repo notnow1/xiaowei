@@ -31,5 +31,11 @@ public class TenantConfig {
     @Value("${tenant.existedDomains:file}")
     private Set<String> existedDomains;
 
+    /**
+     * 管理租户的主域名前缀
+     */
+    @Value("${tenant.adminDomainPrefix:}")
+    private String adminDomainPrefix;
+
 
 }

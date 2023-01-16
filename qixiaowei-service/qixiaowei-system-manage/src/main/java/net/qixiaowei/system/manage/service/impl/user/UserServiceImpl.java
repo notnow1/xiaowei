@@ -96,18 +96,28 @@ public class UserServiceImpl implements IUserService {
     @IgnoreTenant
     public LoginUserVO getUserByUserAccount(String userAccount, String domain) {
         Long tenantId = 0L;
+        if (StringUtils.isEmpty(domain)) {
+            throw new ServiceException("域名不能为空。");
+        }
         if (StringUtils.isNotEmpty(domain)) {
             domain = domain.replace("." + tenantConfig.getMainDomain(), "");
             if (StringUtils.isNotEmpty(domain) && !"www".equals(domain)) {
-                TenantDTO tenantDTO = tenantMapper.selectTenantByDomain(domain);
-                if (StringUtils.isNotNull(tenantDTO)) {
-                    tenantId = tenantDTO.getTenantId();
+                String adminDomainPrefix = tenantConfig.getAdminDomainPrefix();
+                if (!domain.equals(adminDomainPrefix)) {
+                    TenantDTO tenantDTO = tenantMapper.selectTenantByDomain(domain);
+                    if (StringUtils.isNotNull(tenantDTO)) {
+                        tenantId = tenantDTO.getTenantId();
+                    } else {
+                        throw new ServiceException("不存在该域名的租户。");
+                    }
                 }
+            } else {
+                throw new ServiceException("域名不能为空。");
             }
         }
         UserDTO userDTO = userMapper.selectUserByUserAccountAndTenantId(userAccount, tenantId);
         if (StringUtils.isNull(userDTO)) {
-            throw new ServiceException("用户名或密码错误");
+            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
         //角色集合
         Set<String> roles = userRoleService.getRoleCodes(userDTO);

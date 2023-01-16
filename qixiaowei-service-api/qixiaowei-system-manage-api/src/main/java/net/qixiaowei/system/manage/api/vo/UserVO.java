@@ -7,8 +7,6 @@ import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import net.qixiaowei.integration.common.xss.Xss;
-import net.qixiaowei.system.manage.api.domain.SysDept;
-import net.qixiaowei.system.manage.api.domain.SysRole;
 
 /**
  * 用户对象 UserVO
@@ -92,16 +90,6 @@ public class UserVO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
-
-    /**
-     * 部门ID
-     */
-    private Long deptId;
-
-    /**
-     * 部门对象
-     */
-    private SysDept dept;
     /**
      * 部门ID
      */
@@ -118,11 +106,6 @@ public class UserVO {
      * 岗位名称
      */
     private  String  postName;
-    /**
-     * 角色对象
-     */
-    private List<SysRole> roles;
-
     /**
      * 角色组
      */

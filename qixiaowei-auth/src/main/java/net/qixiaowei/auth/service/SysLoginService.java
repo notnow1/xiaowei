@@ -70,7 +70,7 @@ public class SysLoginService {
         R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
         if (StringUtils.isNull(userResult) || StringUtils.isNull(userResult.getData())) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "登录用户不存在");
-            throw new ServiceException("账号或密码有误，请重新输入！");
+            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
         if (R.FAIL == userResult.getCode()) {
             throw new ServiceException(userResult.getMsg());
@@ -79,11 +79,11 @@ public class SysLoginService {
         UserDTO user = userInfo.getUserDTO();
         if (DBDeleteFlagConstants.DELETE_FLAG_ONE.equals(user.getDeleteFlag())) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "对不起，您的账号已被删除");
-            throw new ServiceException("账号或密码有误，请重新输入！");
+            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
         if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "用户已停用，请联系管理员");
-            throw new ServiceException("账号或密码有误，请重新输入！");
+            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
         passwordService.validate(user, password);
 //        recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_SUCCESS, "登录成功");
