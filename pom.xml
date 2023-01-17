@@ -25,12 +25,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <spring-boot.version>2.7.3</spring-boot.version>
-        <spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-boot.version>2.7.7</spring-boot.version>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
         <alibaba.nacos.version>2.1.2</alibaba.nacos.version>
         <alibaba.seata.version>1.5.2</alibaba.seata.version>
-        <spring-boot-admin.version>2.7.5</spring-boot-admin.version>
+        <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <spring-boot.mybatis>2.2.2</spring-boot.mybatis>
         <swagger.fox.version>3.0.0</swagger.fox.version>
         <swagger.core.version>1.6.2</swagger.core.version>
@@ -38,16 +38,15 @@
         <kaptcha.version>2.3.2</kaptcha.version>
         <pagehelper.boot.version>1.4.5</pagehelper.boot.version>
         <druid.version>1.2.15</druid.version>
-        <dynamic-ds.version>3.5.2</dynamic-ds.version>
+        <dynamic-ds.version>3.6.0</dynamic-ds.version>
         <commons.io.version>2.11.0</commons.io.version>
         <commons.fileupload.version>1.4</commons.fileupload.version>
         <velocity.version>2.3</velocity.version>
-        <fastjson.version>2.0.18</fastjson.version>
+        <fastjson.version>2.0.22</fastjson.version>
         <jjwt.version>0.9.1</jjwt.version>
         <minio.version>8.2.2</minio.version>
         <poi.version>4.1.2</poi.version>
-        <commons-collections.version>3.2.2</commons-collections.version>
-        <transmittable-thread-local.version>2.13.2</transmittable-thread-local.version>
+        <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <hutool.version>5.8.8</hutool.version>
         <easyexcel.version>3.1.2</easyexcel.version>
         <xxl-job.version>2.3.1</xxl-job.version>
@@ -164,13 +163,6 @@
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${velocity.version}</version>
-            </dependency>
-
-            <!-- Collection 增强Java集合框架 -->
-            <dependency>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-                <version>${commons-collections.version}</version>
             </dependency>
 
             <!-- JSON 解析器和生成器 -->
