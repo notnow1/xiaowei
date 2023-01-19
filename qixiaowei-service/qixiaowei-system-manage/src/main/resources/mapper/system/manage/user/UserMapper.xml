@@ -31,8 +31,10 @@
     <select id="selectUserByUserAccountAndTenantId"
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark, u.status,
-        u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name,e.employee_code,u.tenant_id,
+        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.status,
+        u.delete_flag, u.create_by, u.create_time, u.update_by,
+        u.update_time,e.employee_name,e.employee_code,u.tenant_id,
         p.post_id,
         p.post_name,
         d.department_id,
@@ -48,7 +50,8 @@
     <select id="selectUserByUserAccount"
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark, u.status,
+        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
         FROM user u
         LEFT JOIN employee e ON e.employee_id = u.employee_id AND e.delete_flag = 0
@@ -60,7 +63,8 @@
     <select id="selectUserByUserId"
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark, u.status,
+        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,
         e.employee_name,
         p.post_id,
@@ -82,24 +86,25 @@
     <select id="selectAllocatedList"
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT distinct
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark, u.status,
+        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
         FROM user u
         LEFT JOIN employee e ON e.employee_id=u.employee_id AND e.delete_flag = 0
         LEFT JOIN user_role ur on ur.user_id = u.user_id AND ur.delete_flag = 0
         LEFT JOIN role r on ur.role_id = r.role_id AND r.delete_flag = 0
-        WHERE u.delete_flag = 0 AND  r.role_id = #{user.params.roleId}
+        WHERE u.delete_flag = 0 AND r.role_id = #{user.params.roleId}
         <if test="user.userAccount != null and user.userAccount != ''">
-            and  u.user_account LIKE concat('%', #{user.userAccount}, '%')
+            and u.user_account LIKE concat('%', #{user.userAccount}, '%')
         </if>
         <if test="user.mobilePhone != null and user.mobilePhone != ''">
-            and  u.mobile_phone LIKE concat('%', #{user.mobilePhone}, '%')
+            and u.mobile_phone LIKE concat('%', #{user.mobilePhone}, '%')
         </if>
         <if test="user.email != null and user.email != ''">
-            and  u.email=#{user.email}
+            and u.email=#{user.email}
         </if>
         <if test="user.status != null">
-            and  u.status=#{user.status}
+            and u.status=#{user.status}
         </if>
         <if test="user.params.employeeName != null and user.params.employeeName != ''">
             AND e.employee_name LIKE concat('%', #{user.params.employeeName}, '%')
@@ -109,28 +114,244 @@
     <!--    查询用户表列表-->
     <select id="selectUserList" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark, u.status,
+        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
         FROM user u
         LEFT JOIN employee e ON e.employee_id=u.employee_id AND e.delete_flag = 0
-        WHERE  u.delete_flag=0
+        WHERE u.delete_flag=0
         <if test="user.userId != null">
-            and  u.user_id=#{user.userId}
+            and u.user_id=#{user.userId}
         </if>
         <if test="user.userAccount != null and user.userAccount != ''">
-            and  u.user_account LIKE concat('%', #{user.userAccount}, '%')
+            and u.user_account LIKE concat('%', #{user.userAccount}, '%')
         </if>
         <if test="user.mobilePhone != null and user.mobilePhone != ''">
-            and  u.mobile_phone LIKE concat('%', #{user.mobilePhone}, '%')
+            and u.mobile_phone LIKE concat('%', #{user.mobilePhone}, '%')
         </if>
         <if test="user.email != null and user.email != ''">
-            and  u.email LIKE concat('%', #{user.email}, '%')
+            and u.email LIKE concat('%', #{user.email}, '%')
         </if>
         <if test="user.status != null">
-            and  u.status=#{user.status}
+            and u.status=#{user.status}
         </if>
         <if test="user.params.employeeName != null and user.params.employeeName != ''">
             AND e.employee_name LIKE concat('%', #{user.params.employeeName}, '%')
+        </if>
+        <!-- 员工姓名过滤  -->
+        <if test="user.params.employeeNameEqual != null and user.params.employeeNameEqual.size() > 0">
+            AND e.employee_name IN
+            <foreach item="item"
+                     collection="user.params.employeeNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.params.employeeNameNotEqual != null and user.params.employeeNameNotEqual.size() > 0">
+            AND (e.employee_name NOT IN
+            <foreach item="item"
+                     collection="user.params.employeeNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.employee_name IS NULL
+            )
+        </if>
+        <!-- 帐号过滤  -->
+        <if test="user.params.userAccountEqual != null and user.params.userAccountEqual.size() > 0">
+            AND u.user_account IN
+            <foreach item="item"
+                     collection="user.params.userAccountEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.params.userAccountNotEqual != null and user.params.userAccountNotEqual.size() > 0">
+            AND u.user_account NOT IN
+            <foreach item="item"
+                     collection="user.params.userAccountNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.params.userAccountLike != null and user.params.userAccountLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="user.params.userAccountLike"
+                     index="index" open="(" separator="OR" close=")">
+                u.user_account LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="user.params.userAccountNotLike != null and user.params.userAccountNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="user.params.userAccountNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                u.user_account NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 手机号码过滤  -->
+        <if test="user.params.mobilePhoneEqual != null and user.params.mobilePhoneEqual.size() > 0">
+            AND u.mobile_phone IN
+            <foreach item="item"
+                     collection="user.params.mobilePhoneEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.params.mobilePhoneNotEqual != null and user.params.mobilePhoneNotEqual.size() > 0">
+            AND (u.mobile_phone NOT IN
+            <foreach item="item"
+                     collection="user.params.mobilePhoneNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR u.mobile_phone IS NULL
+            )
+        </if>
+        <if test="user.params.mobilePhoneLike != null and user.params.mobilePhoneLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="user.params.mobilePhoneLike"
+                     index="index" open="(" separator="OR" close=")">
+                u.mobile_phone LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="user.params.mobilePhoneNotLike != null and user.params.mobilePhoneNotLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="user.params.mobilePhoneNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                u.mobile_phone NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+            OR u.mobile_phone IS NULL
+            )
+        </if>
+        <!-- 邮箱过滤  -->
+        <if test="user.params.emailEqual != null and user.params.emailEqual.size() > 0">
+            AND u.email IN
+            <foreach item="item"
+                     collection="user.params.emailEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.params.emailNotEqual != null and user.params.emailNotEqual.size() > 0">
+            AND ( u.email NOT IN
+            <foreach item="item"
+                     collection="user.params.emailNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR u.email IS NULL
+            )
+        </if>
+        <if test="user.params.emailLike != null and user.params.emailLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="user.params.emailLike"
+                     index="index" open="(" separator="OR" close=")">
+                u.email LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="user.params.emailNotLike != null and user.params.emailNotLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="user.params.emailNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                u.email NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+            OR u.email IS NULL
+            )
+        </if>
+        <!-- 用户姓名过滤  -->
+        <if test="user.params.userNameEqual != null and user.params.userNameEqual.size() > 0">
+            AND u.user_name IN
+            <foreach item="item"
+                     collection="user.params.userNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.params.userNameNotEqual != null and user.params.userNameNotEqual.size() > 0">
+            AND (u.user_name NOT IN
+            <foreach item="item"
+                     collection="user.params.userNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR u.user_name IS NULL
+            )
+        </if>
+        <if test="user.params.userNameLike != null and user.params.userNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="user.params.userNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                u.user_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="user.params.userNameNotLike != null and user.params.userNameNotLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="user.params.userNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                u.user_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+            OR u.user_name IS NULL
+            )
+        </if>
+        <if test="user.params.userNameNull != null">
+            and u.user_name IS NULL
+        </if>
+        <if test="user.params.userNameNotNull != null">
+            and u.user_name IS NOT NULL
+        </if>
+        <!-- 状态过滤  -->
+        <if test="user.params.statusEqual != null and user.params.statusEqual.size() > 0">
+            AND u.status IN
+            <foreach item="item"
+                     collection="user.params.statusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.params.statusNotEqual != null and user.params.statusNotEqual.size() > 0">
+            AND u.status NOT IN
+            <foreach item="item"
+                     collection="user.params.statusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 创建时间过滤  -->
+        <if test="user.params.createTimeEqual != null and user.params.createTimeEqual.size() > 0">
+            AND date_format(u.create_time,'%y%m%d') IN
+            <foreach item="item"
+                     collection="user.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                date_format(#{item},'%y%m%d')
+            </foreach>
+        </if>
+        <if test="user.params.createTimeNotEqual != null and user.params.createTimeNotEqual.size() > 0">
+            AND date_format(u.create_time,'%y%m%d') NOT IN
+            <foreach item="item"
+                     collection="user.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                date_format(#{item},'%y%m%d')
+            </foreach>
+        </if>
+        <if test="user.params.createTimeBefore != null and user.params.createTimeBefore != ''">
+            AND date_format(u.create_time,'%y%m%d') &lt; date_format(#{user.params.createTimeBefore},'%y%m%d')
+        </if>
+        <if test="user.params.createTimeNotBefore != null and user.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{user.params.createTimeNotBefore},'%y%m%d')
+        </if>
+        <if test="user.params.createTimeAfter != null and user.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &gt; date_format(#{user.params.createTimeAfter},'%y%m%d')
+        </if>
+        <if test="user.params.createTimeNotAfter != null and user.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{user.params.createTimeNotAfter},'%y%m%d')
         </if>
         <if test="user.params.createTimeStart != null and user.params.createTimeStart != ''"><!-- 开始时间检索 -->
             AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{user.params.createTimeStart},'%y%m%d')
@@ -142,11 +363,12 @@
 
     <select id="selectUserListByUserIds" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark, u.status,
+        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
         FROM user u
         LEFT JOIN employee e ON e.employee_id=u.employee_id AND e.delete_flag = 0
-        WHERE  u.delete_flag = 0
+        WHERE u.delete_flag = 0
         AND u.user_id IN
         <foreach item="item"
                  collection="userIds"
@@ -154,14 +376,14 @@
             #{item}
         </foreach>
     </select>
-<!--    根据人员查询用户表-->
+    <!--    根据人员查询用户表-->
     <select id="selectUserByEmployeeId" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-            user_id, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status,
-            delete_flag, create_by, create_time, update_by, update_time
+        user_id, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status,
+        delete_flag, create_by, create_time, update_by, update_time
         FROM user
         WHERE employee_id=#{employeeId}
-          and delete_flag=0
+        and delete_flag=0
     </select>
 
     <!--新增用户表-->
