@@ -16,6 +16,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
 * 租户表
@@ -170,5 +171,9 @@ public class TenantDTO {
      * 申请状态:0待审核;1审核通过;2审核驳回
      */
     private  Integer approvalStatus;
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }
 

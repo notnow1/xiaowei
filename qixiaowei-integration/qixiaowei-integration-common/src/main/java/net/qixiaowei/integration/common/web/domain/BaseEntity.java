@@ -1,11 +1,12 @@
 package net.qixiaowei.integration.common.web.domain;
 
+import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.enums.PageSearchCondition;
+import net.qixiaowei.integration.common.utils.StringUtils;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Entity基类
@@ -14,7 +15,7 @@ public class BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 搜索值
+     * 搜索值:多个字段共用一个查询值
      */
     private String searchValue;
 
@@ -48,7 +49,7 @@ public class BaseEntity implements Serializable {
     /**
      * 删除标记:0未删除;1已删除
      */
-    private  Integer  deleteFlag;
+    private Integer deleteFlag;
 
     /**
      * 请求参数
@@ -120,6 +121,29 @@ public class BaseEntity implements Serializable {
     }
 
     public void setParams(Map<String, Object> params) {
+        if (null != params) {
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                String key = entry.getKey();
+                if (PageSearchCondition.endsWithCodeOfList(key)) {
+                    Object value = entry.getValue();
+                    if (value instanceof String) {
+                        String StringValue = (String) value;
+                        List<String> newValue;
+                        if (StringUtils.isEmpty(StringValue)) {
+                            newValue = new ArrayList<>();
+                            entry.setValue(newValue);
+                            continue;
+                        }
+                        //处理中文分号，统计替换为英文分号
+                        if (StringValue.contains("；")) {
+                            StringValue = StringValue.replace("；", ";");
+                        }
+                        newValue = StrUtil.splitTrim(StringValue, ";", -1);
+                        entry.setValue(newValue);
+                    }
+                }
+            }
+        }
         this.params = params;
     }
 }
