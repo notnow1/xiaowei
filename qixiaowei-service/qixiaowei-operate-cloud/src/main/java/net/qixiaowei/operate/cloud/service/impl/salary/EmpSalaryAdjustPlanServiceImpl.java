@@ -426,7 +426,19 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         // 调薪计划表
         EmpSalaryAdjustPlan empSalaryAdjustPlan = operateEmpSalaryAdjustPlan(empSalaryAdjustPlanDTO, adjustmentTypeList);
         if (isSubmit == 1) {
-            empSalaryAdjustPlan.setStatus(1);
+            EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
+            BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
+            if (empSalaryAdjustPlanDTO.getEffectiveDate().compareTo(DateUtils.getNowDate()) <= 0) {
+                R<Integer> integerR = employeeService.empAdjustUpdate(employeeSalarySnapVO);
+                if (integerR.getCode() != 200) {
+                    throw new ServiceException("远程根据调整策略进行更新人员薪资，岗位，职级失败 请联系管理员");
+                }
+            }
+            if (effectiveDate.compareTo(DateUtils.getNowDate()) <= 0) {
+                empSalaryAdjustPlan.setStatus(2);
+            } else {
+                empSalaryAdjustPlan.setStatus(1);
+            }
         } else {
             empSalaryAdjustPlan.setStatus(0);
         }
@@ -885,7 +897,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         params.put("departmentName", null);
         params.put("departmentLeaderName", null);
         selectSalaryAdjustPlan.setParams(params);
-        selectSalaryAdjustPlan.setStatus(1);
+        selectSalaryAdjustPlan.setStatus(2);
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(selectSalaryAdjustPlan);
         if (StringUtils.isEmpty(empSalaryAdjustPlanDTOS)) {
             return 1;

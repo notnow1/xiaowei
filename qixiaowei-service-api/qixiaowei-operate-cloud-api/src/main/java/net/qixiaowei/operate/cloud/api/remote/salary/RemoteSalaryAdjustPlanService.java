@@ -52,5 +52,5 @@ public interface RemoteSalaryAdjustPlanService {
      * 个人调薪到达生效日期更新员工信息
      */
     @GetMapping(API_PREFIX_SALARY_ITEM + "/empAdjustUpdate")
-    R<Integer> empAdjustUpdate(@RequestHeader(SecurityConstants.INNER) String source);
+    R<Integer> empAdjustUpdate(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }
