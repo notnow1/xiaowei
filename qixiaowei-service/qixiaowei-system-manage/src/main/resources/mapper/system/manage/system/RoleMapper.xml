@@ -5,8 +5,7 @@
     <select id="selectRoleByRoleId"
             resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT
-        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by,
-        create_time, update_by, update_time
+        role_id,role_type,role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time
         FROM role
         WHERE role_id=#{roleId}
         and delete_flag=0
@@ -15,7 +14,8 @@
     <select id="selectRoleByRoleCode"
             resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT
-        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by,
+        role_id,role_type, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag,
+        create_by,
         create_time, update_by, update_time
         FROM role
         WHERE role_code = #{roleCode}
@@ -24,7 +24,8 @@
 
     <select id="selectRolesByUserId" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT distinct
-        r.role_id, r.role_code, r.role_name, r.data_scope, r.product_package, r.sort, r.remark, r.status, r.delete_flag,
+        r.role_id,r.role_type, r.role_code, r.role_name, r.data_scope, r.product_package, r.sort, r.remark, r.status,
+        r.delete_flag,
         r.create_by, r.create_time, r.update_by, r.update_time
         FROM role r
         LEFT JOIN user_role ur on ur.role_id = r.role_id AND ur.delete_flag = 0
@@ -32,16 +33,17 @@
         WHERE r.delete_flag=0 and ur.user_id = #{userId}
     </select>
 
-
     <!--    查询角色表列表-->
     <select id="selectRoleList" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT
-        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by,
-        create_time, update_by, update_time
+        role_id,role_type,role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time
         FROM role
         WHERE delete_flag=0
         <if test="role.roleId != null">
             and role_id=#{role.roleId}
+        </if>
+        <if test="role.roleType != null">
+            and role_type=#{role.roleType}
         </if>
         <if test="role.roleCode != null and role.roleCode != ''">
             and role_code LIKE concat('%', #{role.roleCode}, '%')
@@ -81,13 +83,16 @@
         </if>
     </select>
 
+
     <select id="getRoleCodes" resultType="java.lang.String">
-        SELECT role_code FROM role WHERE delete_flag=0  AND  role_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY role_code ASC
+        SELECT role_code FROM role WHERE delete_flag=0 AND role_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY
+        role_code ASC
     </select>
 
     <select id="selectRolesByRoleIds" resultType="net.qixiaowei.system.manage.api.dto.system.RoleDTO">
         SELECT
-        role_id, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by,
+        role_id,role_type, role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag,
+        create_by,
         create_time, update_by, update_time
         FROM role
         WHERE delete_flag=0 AND
@@ -102,16 +107,9 @@
     <!--新增角色表-->
     <insert id="insertRole" useGeneratedKeys="true" keyProperty="roleId">
         INSERT INTO role
-        (role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        (role_type,role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{role.roleCode},#{role.roleName},#{role.dataScope},#{role.productPackage},#{role.sort},#{role.remark},#{role.status},#{role.deleteFlag},#{role.createBy},#{role.createTime},#{role.updateBy},#{role.updateTime})
-    </insert>
-
-    <!--初始化租户角色表-->
-    <insert id="initTenantRole" useGeneratedKeys="true" keyProperty="roleId">
-        INSERT INTO role (role_code,role_name,data_scope,product_package,sort,remark,status,tenant_id)
-        VALUES
-        (#{role.roleCode},#{role.roleName},#{role.dataScope},#{role.productPackage},#{role.sort},#{role.remark},#{role.status},#{role.tenantId})
+        (#{role.roleType},#{role.roleCode},#{role.roleName},#{role.dataScope},#{role.productPackage},#{role.sort},#{role.remark},#{role.status},#{role.deleteFlag},#{role.createBy},#{role.createTime},#{role.updateBy},#{role.updateTime})
     </insert>
 
     <!--修改角色表-->
@@ -186,12 +184,12 @@
     <!--批量新增角色表-->
     <insert id="batchRole">
         INSERT INTO role
-        (role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        (role_type,role_code,role_name,data_scope,product_package,sort,remark,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="roles"
                  separator=",">
-            (#{item.roleCode},#{item.roleName},#{item.dataScope},#{item.productPackage},#{item.sort},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.roleType},#{item.roleCode},#{item.roleName},#{item.dataScope},#{item.productPackage},#{item.sort},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -201,6 +199,7 @@
         WHERE role_id=#{role}
 
     </delete>
+
     <!--物理批量删除角色表-->
     <delete id="deleteRoleByRoleIds">
         DELETE FROM role
@@ -211,12 +210,11 @@
             #{item}
         </foreach>
     </delete>
+
     <!--批量修改角色表-->
     <update id="updateRoles">
         update role
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="role_id=case" suffix="end,">
-            </trim>
             <trim prefix="role_code=case" suffix="end,">
                 <foreach collection="roleList" item="item" index="index">
                     <if test="item.roleCode != null and item.roleCode != ''">

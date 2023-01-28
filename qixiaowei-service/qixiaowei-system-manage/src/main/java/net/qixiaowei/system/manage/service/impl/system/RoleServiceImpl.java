@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
+import net.qixiaowei.integration.common.enums.system.RoleType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -147,6 +148,7 @@ public class RoleServiceImpl implements IRoleService {
         }
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
+        role.setRoleType(RoleType.CUSTOM.getCode());
         role.setCreateBy(SecurityUtils.getUserId());
         role.setCreateTime(DateUtils.getNowDate());
         role.setUpdateTime(DateUtils.getNowDate());
@@ -171,11 +173,17 @@ public class RoleServiceImpl implements IRoleService {
     public int updateRole(RoleDTO roleDTO) {
         Long roleId = roleDTO.getRoleId();
         Set<Long> menuIds = roleDTO.getMenuIds();
-        this.checkRoleAllowed(roleDTO);
         String roleCode = roleDTO.getRoleCode();
         RoleDTO roleByCode = roleMapper.selectRoleByRoleCode(roleCode);
         if (StringUtils.isNotNull(roleByCode) && !roleByCode.getRoleId().equals(roleId)) {
             throw new ServiceException("修改角色" + roleDTO.getRoleName() + "失败，角色编码已存在");
+        }
+        RoleDTO roleByRoleId = roleMapper.selectRoleByRoleId(roleId);
+        if (StringUtils.isNull(roleByRoleId)) {
+            throw new ServiceException("修改角色失败，角色不存在");
+        }
+        if (roleByRoleId.isAdmin()) {
+            throw new ServiceException("系统管理员角色不可操作。");
         }
         //查找当前角色菜单
         List<RoleMenuDTO> roleMenuDTOS = roleMenuMapper.selectRoleMenuListByRoleId(roleId);
@@ -262,13 +270,15 @@ public class RoleServiceImpl implements IRoleService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int logicDeleteRoleByRoleIds(List<Long> roleIds) {
-        for (Long roleId : roleIds) {
-            this.checkRoleAllowed(new RoleDTO(roleId));
-        }
         List<RoleDTO> roleDTOS = roleMapper.selectRolesByRoleIds(roleIds);
         if (StringUtils.isEmpty(roleDTOS)) {
             throw new ServiceException("删除失败，角色不存在");
         }
+        roleDTOS.forEach(roleDTO -> {
+            if (roleDTO.isAdmin()) {
+                throw new ServiceException("系统管理员角色不可删除，请重新勾选。");
+            }
+        });
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         if (roleIds.size() != roleDTOS.size()) {
@@ -306,10 +316,12 @@ public class RoleServiceImpl implements IRoleService {
     public int logicDeleteRoleByRoleId(RoleDTO roleDTO) {
         Long roleId = roleDTO.getRoleId();
         Long userId = SecurityUtils.getUserId();
-        this.checkRoleAllowed(roleDTO);
         RoleDTO roleByRoleId = roleMapper.selectRoleByRoleId(roleId);
         if (StringUtils.isNull(roleByRoleId)) {
-            throw new ServiceException("删除失败，当前角色不存在");
+            throw new ServiceException("删除失败，当前角色不存在。");
+        }
+        if (roleByRoleId.isAdmin()) {
+            throw new ServiceException("系统管理员角色不可删除。");
         }
         Date nowDate = DateUtils.getNowDate();
         List<RoleMenuDTO> roleMenuDTOS = roleMenuMapper.selectRoleMenuListByRoleId(roleId);
@@ -376,17 +388,6 @@ public class RoleServiceImpl implements IRoleService {
         }
         if (list.size() > 0) {
             roleMenuMapper.batchRoleMenu(list);
-        }
-    }
-
-    /**
-     * 校验角色是否允许操作
-     *
-     * @param roleDTO 角色信息
-     */
-    public void checkRoleAllowed(RoleDTO roleDTO) {
-        if (StringUtils.isNotNull(roleDTO.getRoleId()) && roleDTO.isAdmin()) {
-            throw new ServiceException("不允许操作超级管理员角色");
         }
     }
 

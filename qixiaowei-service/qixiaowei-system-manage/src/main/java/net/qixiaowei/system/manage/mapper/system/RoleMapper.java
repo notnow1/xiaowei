@@ -60,10 +60,11 @@ public interface RoleMapper {
 
     /**
      * 查询角色编码集合
+     *
      * @param prefixCodeRule 编码前缀
      * @return 角色编码集合
      */
-    List<String> getRoleCodes(@Param("prefixCodeRule")String prefixCodeRule);
+    List<String> getRoleCodes(@Param("prefixCodeRule") String prefixCodeRule);
 
     /**
      * 新增角色表
@@ -72,14 +73,6 @@ public interface RoleMapper {
      * @return 结果
      */
     int insertRole(@Param("role") Role role);
-
-    /**
-     * 初始化租户角色表
-     *
-     * @param role 角色表
-     * @return 结果
-     */
-    int initTenantRole(@Param("role") Role role);
 
     /**
      * 修改角色表
