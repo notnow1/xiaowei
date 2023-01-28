@@ -12,6 +12,7 @@ import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
 import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
+import net.qixiaowei.integration.common.enums.system.RoleType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -193,6 +194,7 @@ public class TenantLogic {
         boolean userSuccess = userMapper.insertUser(user) > 0;
         //新增租户角色
         Role role = new Role();
+        role.setRoleType(RoleType.BUILT_IN.getCode());
         role.setDataScope(RoleDataScope.ALL.getCode());
         role.setRoleCode(RoleCode.TENANT_ADMIN.getCode());
         role.setRoleName(RoleCode.TENANT_ADMIN.getInfo());

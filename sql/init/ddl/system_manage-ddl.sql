@@ -135,6 +135,7 @@ CREATE TABLE user(
 
 CREATE TABLE role(
     role_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    role_type TINYINT UNSIGNED NOT NULL  DEFAULT 1 COMMENT '角色类型:0内置角色;1自定义角色' ,
     role_code VARCHAR(64) NOT NULL   COMMENT '角色编码' ,
     role_name VARCHAR(64)    COMMENT '角色名称' ,
     data_scope TINYINT UNSIGNED NOT NULL   COMMENT '数据范围:1全公司;2本部门及下属部门;3本部门;4本人及下属;5本人' ,

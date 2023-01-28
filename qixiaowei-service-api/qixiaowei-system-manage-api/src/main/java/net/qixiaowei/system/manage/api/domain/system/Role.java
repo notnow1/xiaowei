@@ -22,6 +22,10 @@ public class Role extends TenantEntity {
      */
     private Long roleId;
     /**
+     * 角色类型:0内置角色;1自定义角色
+     */
+    private Integer roleType;
+    /**
      * 角色编码
      */
     private String roleCode;
