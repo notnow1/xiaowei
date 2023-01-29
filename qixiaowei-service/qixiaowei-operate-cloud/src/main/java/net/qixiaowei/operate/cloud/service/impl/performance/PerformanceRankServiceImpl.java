@@ -190,7 +190,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         }
         // 个人绩效等级
         List<PerformancePercentageDTO> perPerformancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageByRankIdAndCategory(performanceRankIds, null);
-        if (StringUtils.isEmpty(perPerformancePercentageDTOS)) {
+        if (StringUtils.isNotEmpty(perPerformancePercentageDTOS)) {
             StringBuilder performanceRankNames = new StringBuilder("");
             for (PerformanceRankDTO performanceRankDTO : performanceRankDTOByIds) {
                 for (PerformancePercentageDTO performancePercentageDTO : perPerformancePercentageDTOS) {
@@ -206,7 +206,7 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         }
         // 组织绩效等级
         List<PerformancePercentageDTO> orgPerformancePercentageDTOS = performancePercentageMapper.selectPerformancePercentageByRankIdAndCategory(null, performanceRankIds);
-        if (StringUtils.isEmpty(orgPerformancePercentageDTOS)) {
+        if (StringUtils.isNotEmpty(orgPerformancePercentageDTOS)) {
             StringBuilder performanceRankNames = new StringBuilder("");
             for (PerformanceRankDTO performanceRankDTO : performanceRankDTOByIds) {
                 for (PerformancePercentageDTO performancePercentageDTO : orgPerformancePercentageDTOS) {
