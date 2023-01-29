@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.xss.Xss;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
 
@@ -46,7 +47,13 @@ public class UserDTO {
 
     }
 
+    //重置密码校验
     public interface ResetPwdRUserDTO extends Default {
+
+    }
+
+    //自己修改信息校验
+    public interface UpdateUserOfSelfDTO extends Default {
 
     }
 
@@ -55,6 +62,10 @@ public class UserDTO {
      */
     @NotNull(message = "用户ID不能为空", groups = {UserDTO.UpdateUserDTO.class, UserDTO.DeleteUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
     private Long userId;
+    /**
+     * 用户类型:0其他;1系统管理员
+     */
+    private Integer userType;
     /**
      * 员工ID
      */
@@ -78,11 +89,11 @@ public class UserDTO {
     /**
      * 岗位ID
      */
-    private  Long  postId;
+    private Long postId;
     /**
      * 岗位名称
      */
-    private  String  postName;
+    private String postName;
 
     /**
      * 用户帐号
@@ -95,7 +106,7 @@ public class UserDTO {
      * 密码
      */
     @NotBlank(message = "密码不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.ResetPwdRUserDTO.class})
-    @Size(min =6, max = 120, message = "密码长度最低6位，且不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
+    @Size(min = 6, max = 120, message = "密码长度最低6位，且不能超过120个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
     private String password;
     /**
      * 用户名称
@@ -106,13 +117,15 @@ public class UserDTO {
     /**
      * 手机号码
      */
-    @Size(min = 0, max = 30, message = "手机号码长度不能超过30个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
+    @NotBlank(message = "手机号码不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
+    @Size(min = 0, max = 30, message = "手机号码长度不能超过30个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
     private String mobilePhone;
     /**
      * 邮箱
      */
+    @NotBlank(message = "邮箱不能为空", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
     @Email(message = "邮箱格式不正确")
-    @Size(min = 0, max = 60, message = "邮箱长度不能超过60个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class})
+    @Size(min = 0, max = 60, message = "邮箱长度不能超过60个字符", groups = {UserDTO.AddUserDTO.class, UserDTO.UpdateUserDTO.class, UserDTO.UpdateUserOfSelfDTO.class})
     private String email;
     /**
      * 头像
@@ -129,7 +142,7 @@ public class UserDTO {
     /**
      * 删除标记:0未删除;1已删除
      */
-    private  Integer  deleteFlag;
+    private Integer deleteFlag;
     /**
      * 创建人
      */
@@ -165,11 +178,11 @@ public class UserDTO {
     private Long roleId;
 
     public boolean isAdmin() {
-        return isAdmin(this.userId);
+        return isAdmin(this.userType);
     }
 
-    public static boolean isAdmin(Long userId) {
-        return userId != null && 1L == userId;
+    public static boolean isAdmin(Integer userType) {
+        return UserType.SYSTEM.getCode().equals(userType);
     }
 
     /**
@@ -183,11 +196,11 @@ public class UserDTO {
     /**
      * 租户名称
      */
-    private  String tenantName;
+    private String tenantName;
     /**
      * 租户logo图片URL
      */
-    private  String tenantLogo;
+    private String tenantLogo;
 
 
 }

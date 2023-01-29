@@ -19,19 +19,26 @@
 
     <select id="checkUserUnique" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        user_id, employee_id, user_account, mobile_phone, email
+        user_id, user_type, employee_id, user_account, mobile_phone, email
         FROM user
-        WHERE delete_flag=0 and ( employee_id = #{user.employeeId}
-        or user_account=#{user.userAccount}
-        or mobile_phone=#{user.mobilePhone}
-        or email=#{user.email}
+        WHERE delete_flag=0
+        AND (
+        mobile_phone=#{user.mobilePhone}
+        OR email=#{user.email}
+        <if test="user.employeeId != null">
+            OR  employee_id = #{user.employeeId}
+        </if>
+        <if test="user.userAccount != null and user.userAccount != ''">
+            OR user_account = #{user.userAccount}
+        </if>
         )
     </select>
 
     <select id="selectUserByUserAccountAndTenantId"
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.user_id, u.user_type,u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email,
+        u.avatar, u.remark,
         u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by,
         u.update_time,e.employee_name,e.employee_code,u.tenant_id,
@@ -50,7 +57,7 @@
     <select id="selectUserByUserAccount"
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.user_id, u.user_type, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
         u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
         FROM user u
@@ -63,7 +70,8 @@
     <select id="selectUserByUserId"
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.user_id, u.user_type, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email,
+        u.avatar, u.remark,
         u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,
         e.employee_name,
@@ -86,7 +94,8 @@
     <select id="selectAllocatedList"
             resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT distinct
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.user_id, u.user_type, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email,
+        u.avatar, u.remark,
         u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
         FROM user u
@@ -114,7 +123,8 @@
     <!--    查询用户表列表-->
     <select id="selectUserList" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.user_id, u.user_type ,u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email,
+        u.avatar, u.remark,
         u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
         FROM user u
@@ -363,7 +373,7 @@
 
     <select id="selectUserListByUserIds" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        u.user_id, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
+        u.user_id, u.user_type, u.employee_id, u.user_account, u.password, u.user_name, u.mobile_phone, u.email, u.avatar, u.remark,
         u.status,
         u.delete_flag, u.create_by, u.create_time, u.update_by, u.update_time,e.employee_name
         FROM user u
@@ -379,7 +389,7 @@
     <!--    根据人员查询用户表-->
     <select id="selectUserByEmployeeId" resultType="net.qixiaowei.system.manage.api.dto.user.UserDTO">
         SELECT
-        user_id, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status,
+        user_id, u.user_type, employee_id, user_account, password, user_name, mobile_phone, email, avatar, remark, status,
         delete_flag, create_by, create_time, update_by, update_time
         FROM user
         WHERE employee_id=#{employeeId}
@@ -389,20 +399,10 @@
     <!--新增用户表-->
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO user
-        (employee_id,user_account,password,user_name,mobile_phone,email,avatar,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        (user_type,employee_id,user_account,password,user_name,mobile_phone,email,avatar,remark,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{user.employeeId},#{user.userAccount},#{user.password},#{user.userName},#{user.mobilePhone},#{user.email},#{user.avatar},#{user.remark},#{user.status},#{user.deleteFlag},#{user.createBy},#{user.createTime},#{user.updateBy},#{user.updateTime})
+        (#{user.userType},#{user.employeeId},#{user.userAccount},#{user.password},#{user.userName},#{user.mobilePhone},#{user.email},#{user.avatar},#{user.remark},#{user.status},#{user.deleteFlag},#{user.createBy},#{user.createTime},#{user.updateBy},#{user.updateTime})
     </insert>
-
-    <!--初始化租户用户表-->
-    <insert id="initTenantUser" useGeneratedKeys="true" keyProperty="userId">
-        INSERT INTO user
-        (employee_id,user_account,password,user_name,mobile_phone,email,avatar,remark,status,tenant_id)
-        VALUES
-        (#{user.employeeId},#{user.userAccount},#{user.password},#{user.userName},#{user.mobilePhone},#{user.email},#{user.avatar},#{user.remark},#{user.status},#{user.tenantId})
-    </insert>
-
-
     <!--修改用户表-->
     <update id="updateUser">
         UPDATE user
@@ -478,12 +478,12 @@
     <!--批量新增用户表-->
     <insert id="batchUser">
         INSERT INTO user
-        (employee_id,user_account,password,user_name,mobile_phone,email,avatar,remark,status,delete_flag,create_by,create_time,update_by,update_time)
+        (user_type,employee_id,user_account,password,user_name,mobile_phone,email,avatar,remark,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="users"
                  separator=",">
-            (#{item.employeeId},#{item.userAccount},#{item.password},#{item.userName},#{item.mobilePhone},#{item.email},#{item.avatar},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.userType},#{item.employeeId},#{item.userAccount},#{item.password},#{item.userName},#{item.mobilePhone},#{item.email},#{item.avatar},#{item.remark},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 

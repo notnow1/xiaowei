@@ -13,6 +13,7 @@ import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
 import net.qixiaowei.integration.common.enums.system.RoleType;
+import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -182,6 +183,7 @@ public class TenantLogic {
         Date nowDate = DateUtils.getNowDate();
         //新增用户
         User user = new User();
+        user.setUserType(UserType.SYSTEM.getCode());
         user.setUserAccount(tenant.getAdminAccount());
         user.setPassword(SecurityUtils.encryptPassword(tenant.getAdminPassword()));
         user.setStatus(BusinessConstants.NORMAL);
