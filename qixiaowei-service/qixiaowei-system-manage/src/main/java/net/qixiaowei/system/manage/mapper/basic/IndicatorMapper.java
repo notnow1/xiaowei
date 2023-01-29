@@ -26,10 +26,10 @@ public interface IndicatorMapper {
     /**
      * 查询指标表列表
      *
-     * @param indicatorDTO 指标表
+     * @param indicator 指标表
      * @return 指标表集合
      */
-    List<IndicatorDTO> selectIndicatorList(@Param("indicator") IndicatorDTO indicatorDTO);
+    List<IndicatorDTO> selectIndicatorList(@Param("indicator") Indicator indicator);
 
     /**
      * 查询指标树状表

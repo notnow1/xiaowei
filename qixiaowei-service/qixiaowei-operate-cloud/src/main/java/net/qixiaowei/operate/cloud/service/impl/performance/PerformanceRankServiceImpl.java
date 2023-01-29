@@ -93,6 +93,10 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         if (count > 0) {
             throw new ServiceException("绩效等级名称不能重复");
         }
+        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceRankDTO.getPerformanceRankFactorDTOS();
+        if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
+            throw new ServiceException("等级系数信息不可以为空");
+        }
         PerformanceRank performanceRank = new PerformanceRank();
         BeanUtils.copyProperties(performanceRankDTO, performanceRank);
         performanceRank.setCreateBy(SecurityUtils.getUserId());
@@ -100,9 +104,9 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
         performanceRank.setUpdateTime(DateUtils.getNowDate());
         performanceRank.setUpdateBy(SecurityUtils.getUserId());
         performanceRank.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        int i = performanceRankMapper.insertPerformanceRank(performanceRank);
-        performanceRankDTO.setPerformanceRankId(performanceRank.getPerformanceRankId());
-        return i;
+        performanceRankMapper.insertPerformanceRank(performanceRank);
+        Long performanceRankId = performanceRank.getPerformanceRankId();
+        return performanceRankFactorService.operatePerformanceRankFactor(performanceRankFactorDTOS, performanceRankId);
     }
 
     /**
@@ -115,13 +119,18 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
     @Override
     public int updatePerformanceRank(PerformanceRankDTO performanceRankDTO) {
         Long performanceRankId = performanceRankDTO.getPerformanceRankId();
-        List<PerformanceRankFactorDTO> performanceRankFactorDTOS
-                = performanceRankDTO.getPerformanceRankFactorDTOS();
+        String performanceRankName = performanceRankDTO.getPerformanceRankName();
+        Integer performanceRankCategory = performanceRankDTO.getPerformanceRankCategory();
+        List<PerformanceRankFactorDTO> performanceRankFactorDTOS = performanceRankDTO.getPerformanceRankFactorDTOS();
         if (StringUtils.isNull(performanceRankId)) {
             throw new ServiceException("绩效等级配置id不能为空");
         }
         if (StringUtils.isEmpty(performanceRankFactorDTOS)) {
             throw new ServiceException("等级系数信息不可以为空");
+        }
+        int count = performanceRankMapper.checkUniqueName(performanceRankName, performanceRankCategory);
+        if (count > 0) {
+            throw new ServiceException("绩效等级名称不能重复");
         }
         PerformanceRank performanceRank = new PerformanceRank();
         BeanUtils.copyProperties(performanceRankDTO, performanceRank);

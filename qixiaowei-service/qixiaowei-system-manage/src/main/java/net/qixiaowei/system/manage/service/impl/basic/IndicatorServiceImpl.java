@@ -85,7 +85,15 @@ public class IndicatorServiceImpl implements IIndicatorService {
      */
     @Override
     public List<IndicatorDTO> selectIndicatorList(IndicatorDTO indicatorDTO) {
-        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
+        Indicator indicator = new Indicator();
+        BeanUtils.copyProperties(indicatorDTO, indicator);
+        String indicatorCategoryName = indicatorDTO.getIndicatorCategoryName();
+        Map<String, Object> params = indicatorDTO.getParams();
+        if (StringUtils.isNotNull(indicatorCategoryName)) {
+            params.put("indicatorCategoryName", indicatorCategoryName);
+        }
+        indicator.setParams(params);
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicator);
         for (IndicatorDTO dto : indicatorDTOS) {
             Integer isPreset = IndicatorCode.selectIsPreset(dto.getIndicatorCode());
             if (isPreset == 1 || isPreset == 2) {
@@ -130,7 +138,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
      */
     @Override
     public List<Tree<Long>> selectTreeList(IndicatorDTO indicatorDTO) {
-        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
+        Indicator indicator = new Indicator();
+        BeanUtils.copyProperties(indicatorDTO, indicator);
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicator);
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         treeNodeConfig.setIdKey("indicatorId");
         treeNodeConfig.setNameKey("indicatorName");
@@ -679,7 +689,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
 
     @Override
     public List<IndicatorDTO> selectIsDriverList() {
-        IndicatorDTO indicatorDTO = new IndicatorDTO();
+        Indicator indicatorDTO = new Indicator();
         indicatorDTO.setDrivingFactorFlag(1);
         return indicatorMapper.selectIndicatorList(indicatorDTO);
     }
@@ -692,7 +702,9 @@ public class IndicatorServiceImpl implements IIndicatorService {
      */
     @Override
     public List<Tree<Long>> performanceTreeList(IndicatorDTO indicatorDTO) {
-        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicatorDTO);
+        Indicator indicator = new Indicator();
+        BeanUtils.copyProperties(indicatorDTO, indicator);
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(indicator);
         for (IndicatorDTO dto : indicatorDTOS) {
             if (dto.getIndicatorValueType() == 2) {
                 dto.setIndicatorName(dto.getIndicatorName() + "(%)");
@@ -735,7 +747,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
         if (StringUtils.isNull(indicatorById)) {
             throw new ServiceException("当前指标已不存在");
         }
-        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(new IndicatorDTO());
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(new Indicator());
         List<IndicatorDTO> sonIndicatorDTOS = indicatorMapper.selectSon(indicatorId);
         ArrayList<IndicatorDTO> removeIndicatorDTOS = new ArrayList<>();
         for (IndicatorDTO indicatorDTO : indicatorDTOS) {

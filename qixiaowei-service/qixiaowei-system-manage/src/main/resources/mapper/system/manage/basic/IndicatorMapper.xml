@@ -108,7 +108,7 @@
         <if test="indicator.updateTime != null">
             and t1.update_time=#{indicator.updateTime}
         </if>
-        <if test="indicator.indicatorCategoryName != null">
+        <if test="indicator.params.indicatorCategoryName != null">
             and t2.indicator_category_name=#{indicator.indicatorCategoryName}
         </if>
     </select>
