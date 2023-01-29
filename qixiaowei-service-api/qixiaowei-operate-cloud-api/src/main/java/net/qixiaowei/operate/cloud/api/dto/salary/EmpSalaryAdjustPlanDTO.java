@@ -134,11 +134,11 @@ public class EmpSalaryAdjustPlanDTO {
     /**
      * 近三次绩效结果
      */
-    List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDTOS;
+    private List<Map<String, String>> performanceResultList;
     /**
      * 个人调薪记录
      */
-    List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS;
+    private  List<EmpSalaryAdjustPlanDTO> employeeSalarySnapVOS;
 
     //==============================员工调整前的数据==================================//
 

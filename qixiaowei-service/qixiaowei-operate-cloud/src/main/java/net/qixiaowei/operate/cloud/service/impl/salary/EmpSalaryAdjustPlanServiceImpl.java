@@ -98,20 +98,66 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
         empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
         Long employeeId = empSalaryAdjustPlanDTO.getEmployeeId();
-        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = selectByEmployeeId(employeeId);
-        if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS)) {
-            for (EmpSalaryAdjustPlanDTO empDTO : empSalaryAdjustPlanDTOS) {
-                setHistoryPlanValue(empDTO);
+        // 最近三次绩效结果
+        List<Map<String, String>> performanceResultList = new ArrayList<>();
+        List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOS = performanceAppraisalObjectsService.performanceResult(employeeId);
+        if (StringUtils.isNotEmpty(performanceAppraisalObjectsDTOS)) {
+            for (PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO : performanceAppraisalObjectsDTOS) {
+                setObjectFieldName(performanceAppraisalObjectsDTO);
+                HashMap<String, String> map = new HashMap<>();
+                map.put("appraisalResult", performanceAppraisalObjectsDTO.getAppraisalResult());
+                map.put("cycleNumberName", performanceAppraisalObjectsDTO.getCycleNumberName());
+                map.put("filingDate", DateUtils.localToString(performanceAppraisalObjectsDTO.getFilingDate()));
+                performanceResultList.add(map);
             }
-            empSalaryAdjustPlanDTO.setEmpSalaryAdjustPlanDTOS(empSalaryAdjustPlanDTOS);
         }
-        List<EmpSalaryAdjustPerformDTO> empSalaryAdjustPerformDTOS = empSalaryAdjustPerformService.selectEmpSalaryAdjustPerformByPlanId(empSalaryAdjustPlanId);
-        if (StringUtils.isNotEmpty(empSalaryAdjustPerformDTOS)) {
-            for (EmpSalaryAdjustPerformDTO empSalaryAdjustPerformDTO : empSalaryAdjustPerformDTOS) {
-                setPerformName(empSalaryAdjustPerformDTO);
+        empSalaryAdjustPlanDTO.setPerformanceResultList(performanceResultList);
+        // 个人调薪计划
+        List<EmpSalaryAdjustPlanDTO> empHistoryPlanDTOS = empSalaryAdjustPlanMapper.selectByEmployeeId(employeeId);
+        List<EmpSalaryAdjustPlanDTO> employeeSalarySnapVOS = new ArrayList<>();
+        if (StringUtils.isNotEmpty(empHistoryPlanDTOS)) {
+            for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO1 : empHistoryPlanDTOS) {
+                setPlanValue(empSalaryAdjustPlanDTO1);
+                EmpSalaryAdjustPlanDTO employeeSalarySnapVO = new EmpSalaryAdjustPlanDTO();
+                BeanUtils.copyProperties(empSalaryAdjustPlanDTO1, employeeSalarySnapVO);
+                employeeSalarySnapVOS.add(employeeSalarySnapVO);
             }
         }
+        empSalaryAdjustPlanDTO.setEmployeeSalarySnapVOS(employeeSalarySnapVOS);
         return empSalaryAdjustPlanDTO;
+    }
+
+    /**
+     * 给岗位类型赋值
+     *
+     * @param empSalaryAdjustPlanDTO 个人调薪计划DTO
+     */
+    private void setPlanValue(EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO) {
+        if (StringUtils.isNotNull(empSalaryAdjustPlanDTO) && StringUtils.isNotNull(empSalaryAdjustPlanDTO.getAdjustmentType())) {
+            String adjustmentType = empSalaryAdjustPlanDTO.getAdjustmentType();
+            List<String> adjustmentTypeList = Arrays.asList(adjustmentType.split(","));
+            if (StringUtils.isNotEmpty(adjustmentTypeList)) {
+                List<String> adjustmentList = new ArrayList<>();
+                for (String adjustment : adjustmentTypeList) {
+                    switch (adjustment) {//调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开
+                        case "1":
+                            adjustmentList.add("调岗");
+                            break;
+                        case "2":
+                            adjustmentList.add("调级");
+                            break;
+                        case "3":
+                            adjustmentList.add("调薪");
+                            break;
+                    }
+                }
+                StringBuilder adjustment = new StringBuilder();
+                for (String adjust : adjustmentList) {
+                    adjustment.append(adjust);
+                }
+                empSalaryAdjustPlanDTO.setAdjustmentType(adjustment.toString());
+            }
+        }
     }
 
     /**
