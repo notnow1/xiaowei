@@ -692,7 +692,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             throw new ServiceException("远程调用人力预算调控失败 请联系管理员");
         }
         List<EmployeeBudgetDTO> employeeBudgetDTOS = employeeBudgetR.getData();
-        if (StringUtils.isEmpty(employeeBudgetDTOS)) {
+        if (StringUtils.isNotEmpty(employeeBudgetDTOS)) {
             StringBuilder officialNames = new StringBuilder("");
             for (EmployeeBudgetDTO employeeBudgetDTO : employeeBudgetDTOS) {
                 for (OfficialRankSystemDTO officialRankSystemDTO : existByOfficialRankSystemDTOS) {
@@ -710,7 +710,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             throw new ServiceException("远程调用个人调薪失败 请联系管理员");
         }
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = listR.getData();
-        if (StringUtils.isEmpty(empSalaryAdjustPlanDTOS)) {
+        if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS)) {
             StringBuilder officialNames = new StringBuilder("");
             for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
                 for (OfficialRankSystemDTO officialRankSystemDTO : existByOfficialRankSystemDTOS) {
