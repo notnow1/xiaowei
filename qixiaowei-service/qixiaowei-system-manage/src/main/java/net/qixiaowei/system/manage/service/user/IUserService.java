@@ -42,6 +42,14 @@ public interface IUserService {
     UserProfileVO editProfile(MultipartFile avatarFile, UserDTO userDTO);
 
     /**
+     * 修改用户资料
+     *
+     * @param userDTO    用户修改对象
+     * @return 结果
+     */
+    int editProfile(UserDTO userDTO);
+
+    /**
      * 查询用户表
      *
      * @param userId 用户表主键

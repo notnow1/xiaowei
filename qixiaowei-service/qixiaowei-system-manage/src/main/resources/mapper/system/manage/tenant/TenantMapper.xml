@@ -48,6 +48,7 @@
         FROM tenant t
         WHERE t.domain = #{domain}
         and t.delete_flag = 0
+        LIMIT 1
     </select>
 
     <select id="selectTenantByTenantCode"

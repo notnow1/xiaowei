@@ -114,6 +114,7 @@ CREATE TABLE tenant_domain_approval(
 
 CREATE TABLE user(
     user_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    user_type TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '用户类型:0其他;1系统管理员' ,
     employee_id BIGINT UNSIGNED    COMMENT '员工ID' ,
     user_account VARCHAR(128)    COMMENT '用户帐号' ,
     password VARCHAR(128)    COMMENT '密码' ,

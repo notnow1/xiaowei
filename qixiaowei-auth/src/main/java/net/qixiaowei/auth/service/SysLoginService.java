@@ -16,7 +16,7 @@ import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.UserConstants;
 import net.qixiaowei.integration.common.domain.R;
-import net.qixiaowei.integration.common.enums.UserStatus;
+import net.qixiaowei.integration.common.enums.user.UserStatus;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;

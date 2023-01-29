@@ -47,7 +47,7 @@ public class LocalFileServiceImpl implements IFileService {
     @Override
     public FileDTO uploadFile(MultipartFile file, String source) throws Exception {
         //前面用租户id区分
-        String name = FileLogic.PREFIX + SecurityUtils.getTenantId() + "/" + source + "/" + FileUploadUtils.upload(localFilePath, file);
+        String name = FileLogic.PREFIX + SecurityUtils.getTenantId() + "/" + source + "/" + SecurityUtils.getUserId() + "/" + FileUploadUtils.upload(localFilePath, file);
         String url = domain + localFilePrefix + name;
         return fileLogic.saveFileRecord(file, source, url);
     }

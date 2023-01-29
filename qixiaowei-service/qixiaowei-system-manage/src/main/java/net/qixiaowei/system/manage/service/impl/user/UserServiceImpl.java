@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -229,6 +230,50 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 修改用户资料
+     *
+     * @param userDTO 用户修改对象
+     * @return 结果
+     */
+    @Override
+    public int editProfile(UserDTO userDTO) {
+        Long userId = SecurityUtils.getUserId();
+        UserDTO userOfDB = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userOfDB)) {
+            throw new ServiceException("当前用户不存在");
+        }
+        userDTO.setUserId(userId);
+        this.checkUserUnique(userDTO);
+        Date nowDate = DateUtils.getNowDate();
+        String userName = userDTO.getUserName();
+        String mobilePhone = userDTO.getMobilePhone();
+        String email = userDTO.getEmail();
+        User user = new User();
+        user.setUserId(userId);
+        user.setAvatar(userDTO.getAvatar());
+        user.setEmail(email);
+        user.setMobilePhone(mobilePhone);
+        user.setUserName(userName);
+        user.setUpdateBy(userId);
+        user.setUpdateTime(nowDate);
+        int i = userMapper.updateUser(user);
+        // 更新缓存用户信息
+        if (i > 0) {
+            LoginUserVO loginUser = SecurityUtils.getLoginUser();
+            loginUser.getUserDTO().setUserName(userName);
+            if (StringUtils.isNotEmpty(user.getAvatar())) {
+                loginUser.getUserDTO().setAvatar(user.getAvatar());
+            }
+            loginUser.getUserDTO().setMobilePhone(mobilePhone);
+            loginUser.getUserDTO().setEmail(email);
+            tokenService.setLoginUser(loginUser);
+            return i;
+        } else {
+            throw new ServiceException("修改失败，请联系管理员。");
+        }
+    }
+
+    /**
      * 查询用户表
      *
      * @param userId 用户表主键
@@ -254,7 +299,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public List<RoleDTO> selectUserRolesByUserId(Long userId) {
         List<RoleDTO> roleDTOS = roleMapper.selectRolesByUserId(userId);
-        return SecurityUtils.isAdmin(userId) ? roleDTOS : roleDTOS.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList());
+        return SecurityUtils.isAdmin(userId) ? roleDTOS.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()) : roleDTOS;
     }
 
     /**
@@ -299,6 +344,7 @@ public class UserServiceImpl implements IUserService {
         this.checkUserUnique(userDTO);
         User user = new User();
         BeanUtils.copyProperties(userDTO, user);
+        user.setUserType(UserType.OTHER.getCode());
         user.setCreateBy(SecurityUtils.getUserId());
         user.setCreateTime(DateUtils.getNowDate());
         user.setUpdateTime(DateUtils.getNowDate());
@@ -327,11 +373,13 @@ public class UserServiceImpl implements IUserService {
     @Transactional
     @Override
     public int updateUser(UserDTO userDTO) {
-        this.checkUserAllowed(userDTO);
         Long userId = userDTO.getUserId();
         UserDTO userByUserId = userMapper.selectUserByUserId(userId);
         if (StringUtils.isNull(userByUserId)) {
             throw new ServiceException("修改失败，当前用户不存在");
+        }
+        if (userByUserId.isAdmin()) {
+            throw new ServiceException("系统管理员帐号不可操作。");
         }
         this.checkUserUnique(userDTO);
         //数据权限 todo
@@ -374,6 +422,11 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isEmpty(userDTOS)) {
             throw new ServiceException("删除失败，用户不存在");
         }
+        userDTOS.forEach(userDTO -> {
+            if (userDTO.isAdmin()) {
+                throw new ServiceException("系统管理员帐号不可删除，请重新勾选。");
+            }
+        });
         if (userIds.size() != userDTOS.size()) {
             userIds = userDTOS.stream().map(UserDTO::getUserId).collect(Collectors.toSet());
         }
@@ -400,7 +453,7 @@ public class UserServiceImpl implements IUserService {
         Long userId = userDTO.getUserId();
         Long operateUserId = SecurityUtils.getUserId();
         if (SecurityUtils.isAdmin(userId)) {
-            throw new ServiceException("不允许删除超级管理员用户");
+            throw new ServiceException("不允许删除超级管理员用户。");
         }
         if (operateUserId.equals(userId)) {
             throw new ServiceException("当前用户不能删除");
@@ -408,6 +461,9 @@ public class UserServiceImpl implements IUserService {
         UserDTO userByUserId = userMapper.selectUserByUserId(userId);
         if (StringUtils.isNull(userByUserId)) {
             throw new ServiceException("删除失败，当前用户不存在");
+        }
+        if (userByUserId.isAdmin()) {
+            throw new ServiceException("系统管理员帐号不可删除。");
         }
         Date nowDate = DateUtils.getNowDate();
         List<UserRoleDTO> userRoleDTOS = userRoleMapper.selectUserRoleListByUserId(userId);
@@ -434,7 +490,13 @@ public class UserServiceImpl implements IUserService {
         Long userId = userDTO.getUserId();
         Date nowDate = DateUtils.getNowDate();
         Long operateUserId = SecurityUtils.getUserId();
-        this.checkUserAllowed(userDTO);
+        UserDTO userByUserId = userMapper.selectUserByUserId(userId);
+        if (StringUtils.isNull(userByUserId)) {
+            throw new ServiceException("重置密码失败，当前用户不存在");
+        }
+        if (userByUserId.isAdmin()) {
+            throw new ServiceException("重置密码失败，系统管理员帐号不可操作。");
+        }
         User user = new User();
         user.setUserId(userId);
         user.setPassword(SecurityUtils.encryptPassword(userDTO.getPassword()));
@@ -582,8 +644,8 @@ public class UserServiceImpl implements IUserService {
             }
             if (StringUtils.isNotEmpty(userDTOS)) {
                 StringBuilder resultMessage = new StringBuilder();
-                resultMessage.append(addFlag ? "新增用户'" : "修改用户'");
-                resultMessage.append(userDTO.getUserAccount()).append("'失败，已存在:");
+                resultMessage.append(addFlag ? "新增用户" : "修改用户");
+                resultMessage.append("失败，已存在:");
                 userDTOS.forEach(user -> {
                     Long employeeId = user.getEmployeeId();
                     String userAccount = user.getUserAccount();
@@ -640,17 +702,6 @@ public class UserServiceImpl implements IUserService {
                 list.add(ur);
             }
             userRoleMapper.batchUserRole(list);
-        }
-    }
-
-    /**
-     * 校验用户是否允许操作
-     *
-     * @param user 用户信息
-     */
-    public void checkUserAllowed(UserDTO user) {
-        if (StringUtils.isNotNull(user.getUserId()) && user.isAdmin()) {
-            throw new ServiceException("不允许操作超级管理员用户");
         }
     }
 
