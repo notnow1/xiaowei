@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -216,6 +217,10 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         for (EmpSalaryAdjustPlanDTO salaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
             String adjustmentType = salaryAdjustPlanDTO.getAdjustmentType();
             List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
+            BigDecimal adjustEmolument = salaryAdjustPlanDTO.getAdjustEmolument();
+            if (StringUtils.isNull(adjustEmolument)) {
+                salaryAdjustPlanDTO.setAdjustEmolument(salaryAdjustPlanDTO.getBasicWage());
+            }
             empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
         }
         return empSalaryAdjustPlanDTOS;
