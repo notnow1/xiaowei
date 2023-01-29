@@ -245,6 +245,64 @@
             #{item}
         </foreach>
     </select>
+    <!--根据id查询所有子级数据-->
+    <select id="selectAncestors" resultType="net.qixiaowei.system.manage.api.dto.basic.IndustryDTO">
+        SELECT
+        industry_id,
+        parent_industry_id,
+        ancestors,
+        industry_code,
+        industry_name,
+        LEVEL,
+        STATUS,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM (
+        SELECT
+        industry_id,
+        parent_industry_id,
+        ancestors,
+        industry_code,
+        industry_name,
+        LEVEL,
+        STATUS,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        industry
+        WHERE
+        delete_flag = 0
+        <if test="industryId != null">
+            and industry_id=#{industryId}
+        </if>
+        UNION
+        SELECT
+        industry_id,
+        parent_industry_id,
+        ancestors,
+        industry_code,
+        industry_name,
+        LEVEL,
+        STATUS,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        industry
+        <if test="industryId != null">
+            WHERE find_in_set( #{industryId}, ancestors )
+        </if>
+        AND delete_flag = 0
+        ) AS ancestors
+    </select>
     <!--批量新增行业-->
     <insert id="batchIndustry">
         INSERT INTO industry

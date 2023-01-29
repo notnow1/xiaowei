@@ -19,7 +19,6 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsD
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import net.qixiaowei.system.manage.mapper.basic.IndustryMapper;
@@ -266,8 +265,7 @@ public class IndustryServiceImpl implements IIndustryService {
                 ancestors = ancestors + parentIndustryId;
                 parentLevel = parentIndustry.getLevel() + 1;
             }
-            changeSonStatus(industryId, status);
-            changeSonIndustry(industryId, industryById, parentIndustryId, parentIndustry);
+            this.changeSonStatus(industryId, status);
         }
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
@@ -276,73 +274,91 @@ public class IndustryServiceImpl implements IIndustryService {
         industry.setParentIndustryId(parentIndustryId);
         industry.setUpdateTime(DateUtils.getNowDate());
         industry.setUpdateBy(SecurityUtils.getUserId());
-        return industryMapper.updateIndustry(industry);
+        int num = industryMapper.updateIndustry(industry);
+        List<Industry> industryUpdateList = this.changeSonIndustry(industryId, industry);
+        if (StringUtils.isNotEmpty(industryUpdateList)) {
+            try {
+                industryMapper.updateIndustrys(industryUpdateList);
+            } catch (Exception e) {
+                throw new ServiceException("批量修改行业子级信息失败");
+            }
+        }
+        return num;
     }
 
     /**
      * 批量修改子级的祖级列表ID
      *
-     * @param industryId       行业ID
-     * @param industryById     行业DTO
-     * @param parentIndustryId 父级行业ID
-     * @param parentIndustry   父级行业DTO
+     * @param industryId 行业ID
+     * @param industry   寒夜
      */
-    private void changeSonIndustry(Long industryId, IndustryDTO industryById, Long parentIndustryId, IndustryDTO parentIndustry) {
-        if (!industryById.getParentIndustryId().equals(parentIndustryId)) {
-            List<IndustryDTO> sonIndustryDTOS = industryMapper.selectSon(industryId);
-            if (StringUtils.isNotEmpty(sonIndustryDTOS)) {
-                List<Industry> industries = new ArrayList<>();
-                for (IndustryDTO sonIndustryDTO : sonIndustryDTOS) {
-                    String[] ancestorsArray = sonIndustryDTO.getAncestors().split(",");
-                    StringBuilder sonAncestors = new StringBuilder("");
-                    if (sonIndustryDTO.getLevel() > 2) {
-                        if (industryById.getLevel() > 1) {
-                            for (int i = industryById.getLevel() - 2; i < ancestorsArray.length; i++) {
-                                sonAncestors.append(ancestorsArray[i]).append(",");
-                            }
-                        } else {
-                            sonAncestors.append(sonIndustryDTO.getAncestors()).append(",");
-                        }
-                    }
-                    Industry sonIndustry = new Industry();
-                    if (parentIndustryId.equals(0L)) {
-                        if (sonIndustryDTO.getLevel() > 2) {
-                            sonIndustry.setAncestors(industryById.getIndustryId() + ","
-                                    + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
-                        } else {
-                            sonIndustry.setAncestors(sonIndustryDTO.getAncestors());
-                        }
-                        sonIndustry.setLevel(sonIndustryDTO.getLevel() - industryById.getLevel() + 1);
+    private List<Industry> changeSonIndustry(Long industryId, Industry industry) {
+        List<Industry> industryUpdateList = new ArrayList<>();
+        Map<Long, Integer> map = new HashMap<>();
+        List<IndustryDTO> industryDTOList = industryMapper.selectAncestors(industryId);
+        for (int i1 = 0; i1 < industryDTOList.size(); i1++) {
+            map.put(industryDTOList.get(i1).getIndustryId(), i1);
+        }
+        if (StringUtils.isNotEmpty(industryDTOList) && industryDTOList.size() > 1) {
+            for (int i1 = 1; i1 < industryDTOList.size(); i1++) {
+                if (i1 == 1) {
+                    Industry industry2 = new Industry();
+                    if (StringUtils.isBlank(industry.getAncestors())) {
+                        industryDTOList.get(i1).setAncestors(industry.getParentIndustryId() + "," + industry.getIndustryId());
                     } else {
-                        if (sonIndustryDTO.getLevel() > 2) {
-                            if (parentIndustry.getParentIndustryId().equals(0L)) {
-                                sonIndustry.setAncestors(parentIndustry.getIndustryId()
-//                                        + "," + industryById.getIndustryId()
-                                        + "," + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
-                            } else {
-                                sonIndustry.setAncestors(parentIndustry.getAncestors()
-                                        + "," + parentIndustry.getIndustryId()
-//                                        + "," + industryById.getIndustryId()
-                                        + "," + sonAncestors.deleteCharAt(sonAncestors.length() - 1));
-                            }
-                        } else {
-                            if (parentIndustry.getParentIndustryId().equals(0L)) {
-                                sonIndustry.setAncestors(parentIndustry.getIndustryId()
-                                        + "," + industryById.getIndustryId());
-                            } else {
-                                sonIndustry.setAncestors(parentIndustry.getAncestors()
-                                        + "," + parentIndustry.getIndustryId()
-                                        + "," + industryById.getIndustryId());
-                            }
-                        }
-                        sonIndustry.setLevel(sonIndustryDTO.getLevel() - industryById.getLevel() + parentIndustry.getLevel() + 2);
+                        industryDTOList.get(i1).setAncestors(industry.getAncestors() + "," + industry.getIndustryId());
                     }
-                    sonIndustry.setIndustryId(sonIndustryDTO.getIndustryId());
-                    industries.add(sonIndustry);
+                    industryDTOList.get(i1).setLevel(industry.getLevel() + 1);
+                    if (null != industry.getStatus() && industry.getStatus() == 0) {
+                        industryDTOList.get(i1).setStatus(industry.getStatus());
+                    }
+                    industryDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                    industryDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                    industryDTOList.get(i1).setParentIndustryId(industry.getIndustryId());
+                    BeanUtils.copyProperties(industryDTOList.get(i1), industry2);
+                    industryUpdateList.add(industry2);
+                } else {
+                    if (industryDTOList.get(i1 - 1).getIndustryId().equals(industryDTOList.get(i1).getParentIndustryId())) {
+                        Industry industry2 = new Industry();
+                        //父级
+                        IndustryDTO industryDTO2 = industryDTOList.get(i1 - 1);
+                        if (StringUtils.isBlank(industryDTO2.getAncestors())) {
+                            industryDTOList.get(i1).setAncestors(industryDTO2.getParentIndustryId() + "," + industryDTO2.getIndustryId());
+                        } else {
+                            industryDTOList.get(i1).setAncestors(industryDTO2.getAncestors() + "," + industryDTO2.getIndustryId());
+                        }
+                        industryDTOList.get(i1).setLevel(industryDTO2.getLevel() + 1);
+                        if (null != industry.getStatus() && industry.getStatus() == 0) {
+                            industryDTOList.get(i1).setParentIndustryId(industry.getIndustryId());
+                        }
+                        industryDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                        industryDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                        industryDTOList.get(i1).setParentIndustryId(industryDTO2.getIndustryId());
+                        BeanUtils.copyProperties(industryDTOList.get(i1), industry2);
+                        industryUpdateList.add(industry2);
+                    } else {
+                        Industry industry2 = new Industry();
+                        //父级
+                        IndustryDTO industryDTO2 = industryDTOList.get(map.get(industryDTOList.get(i1).getParentIndustryId()));
+                        if (StringUtils.isBlank(industryDTO2.getAncestors())) {
+                            industryDTOList.get(i1).setAncestors(industryDTO2.getParentIndustryId() + "," + industryDTO2.getIndustryId());
+                        } else {
+                            industryDTOList.get(i1).setAncestors(industryDTO2.getAncestors() + "," + industryDTO2.getIndustryId());
+                        }
+                        industryDTOList.get(i1).setLevel(industryDTO2.getLevel() + 1);
+                        if (null != industry.getStatus() && industry.getStatus() == 0) {
+                            industryDTOList.get(i1).setParentIndustryId(industry.getIndustryId());
+                        }
+                        industryDTOList.get(i1).setUpdateTime(DateUtils.getNowDate());
+                        industryDTOList.get(i1).setUpdateBy(SecurityUtils.getUserId());
+                        industryDTOList.get(i1).setParentIndustryId(industryDTO2.getIndustryId());
+                        BeanUtils.copyProperties(industryDTOList.get(i1), industry2);
+                        industryUpdateList.add(industry2);
+                    }
                 }
-                industryMapper.updateIndustrys(industries);
             }
         }
+        return industryUpdateList;
     }
 
     /**

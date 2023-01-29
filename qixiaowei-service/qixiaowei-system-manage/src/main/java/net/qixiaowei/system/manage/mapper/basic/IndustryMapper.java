@@ -43,10 +43,11 @@ public interface IndustryMapper {
 
     /**
      * 查询行业编码集合
+     *
      * @param prefixCodeRule 编码前缀
      * @return 行业编码集合
      */
-    List<String> getIndustryCodes(@Param("prefixCodeRule")String prefixCodeRule);
+    List<String> getIndustryCodes(@Param("prefixCodeRule") String prefixCodeRule);
 
     /**
      * 新增行业
@@ -95,6 +96,14 @@ public interface IndustryMapper {
      * @return
      */
     List<IndustryDTO> selectSon(@Param("industryId") Long industryId);
+
+    /**
+     * 根据id查询所有子级数据
+     *
+     * @param industryId 行业ID
+     * @return List
+     */
+    List<IndustryDTO> selectAncestors(@Param("industryId") Long industryId);
 
     /**
      * 根据父级id批量查找子级

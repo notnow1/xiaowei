@@ -41,10 +41,11 @@ public interface IndicatorMapper {
 
     /**
      * 查询指标编码集合
+     *
      * @param prefixCodeRule 编码前缀
      * @return 指标编码集合
      */
-    List<String> getIndicatorCodes(@Param("prefixCodeRule")String prefixCodeRule);
+    List<String> getIndicatorCodes(@Param("prefixCodeRule") String prefixCodeRule);
 
     /**
      * 根据父级id查找子级
@@ -196,4 +197,11 @@ public interface IndicatorMapper {
      */
     List<IndicatorDTO> selectIndicatorByNames(@Param("indicatorNames") List<String> indicatorNames);
 
+    /**
+     * 根据id查询所有子级数据
+     *
+     * @param indicatorId 指标ID
+     * @return
+     */
+    List<IndicatorDTO> selectAncestors(@Param("indicatorId") Long indicatorId);
 }
