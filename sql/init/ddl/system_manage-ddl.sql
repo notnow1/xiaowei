@@ -44,6 +44,7 @@ CREATE TABLE tenant(
     domain VARCHAR(128)    COMMENT '域名' ,
     admin_account VARCHAR(32)    COMMENT '管理员帐号' ,
     admin_password VARCHAR(32)    COMMENT '管理员密码' ,
+    admin_email VARCHAR(64)    COMMENT '管理员邮箱' ,
     support_staff VARCHAR(2048)    COMMENT '客服人员' ,
     login_background VARCHAR(512)    COMMENT '租户登录背景图片URL' ,
     tenant_logo VARCHAR(512)    COMMENT '租户logo图片URL' ,
@@ -54,7 +55,7 @@ CREATE TABLE tenant(
     update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
     update_time DATETIME NOT NULL   COMMENT '更新时间' ,
     PRIMARY KEY (tenant_id)
-) AUTO_INCREMENT = 999 COMMENT = '租户表';
+)  COMMENT = '租户表';
 
 
 CREATE TABLE tenant_contacts(

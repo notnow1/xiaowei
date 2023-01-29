@@ -12,6 +12,7 @@
         t.domain,
         t.admin_account,
         t.admin_password,
+        t.admin_email,
         t.support_staff,
         t.login_background,
         t.tenant_logo,
@@ -36,6 +37,7 @@
         t.domain,
         t.admin_account,
         t.admin_password,
+        t.admin_email,
         t.support_staff,
         t.login_background,
         t.tenant_logo,
@@ -61,6 +63,7 @@
         t.domain,
         t.admin_account,
         t.admin_password,
+        t.admin_email,
         t.support_staff,
         t.login_background,
         t.tenant_logo,
@@ -88,6 +91,7 @@
         t.domain,
         t.admin_account,
         t.admin_password,
+        t.admin_email,
         t.support_staff,
         t.login_background,
         t.tenant_logo,
@@ -315,7 +319,8 @@
     </select>
 
     <select id="getTenantCodes" resultType="java.lang.String">
-        SELECT tenant_code FROM tenant WHERE delete_flag=0 AND tenant_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY tenant_code ASC
+        SELECT tenant_code FROM tenant WHERE delete_flag=0 AND tenant_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY
+        tenant_code ASC
     </select>
 
     <select id="getTenantIds" resultType="java.lang.Long">
@@ -328,13 +333,10 @@
 
     <!--新增租户表-->
     <insert id="insertTenant" useGeneratedKeys="true" keyProperty="tenantId">
-        INSERT INTO tenant (tenant_code, tenant_name, tenant_address, tenant_industry, domain, admin_account,
-        admin_password, support_staff, login_background, tenant_logo, tenant_status, delete_flag,
-        create_by, create_time, update_by, update_time)
-        VALUES (#{tenant.tenantCode}, #{tenant.tenantName}, #{tenant.tenantAddress}, #{tenant.tenantIndustry},
-        #{tenant.domain}, #{tenant.adminAccount}, #{tenant.adminPassword}, #{tenant.supportStaff},
-        #{tenant.loginBackground}, #{tenant.tenantLogo}, #{tenant.tenantStatus}, #{tenant.deleteFlag},
-        #{tenant.createBy}, #{tenant.createTime}, #{tenant.updateBy}, #{tenant.updateTime})
+        INSERT INTO tenant
+        (tenant_code,tenant_name,tenant_address,tenant_industry,domain,admin_account,admin_password,admin_email,support_staff,login_background,tenant_logo,tenant_status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{tenant.tenantCode},#{tenant.tenantName},#{tenant.tenantAddress},#{tenant.tenantIndustry},#{tenant.domain},#{tenant.adminAccount},#{tenant.adminPassword},#{tenant.adminEmail},#{tenant.supportStaff},#{tenant.loginBackground},#{tenant.tenantLogo},#{tenant.tenantStatus},#{tenant.deleteFlag},#{tenant.createBy},#{tenant.createTime},#{tenant.updateBy},#{tenant.updateTime})
     </insert>
     <!--修改租户表-->
     <update id="updateTenant">
@@ -360,6 +362,9 @@
         </if>
         <if test="tenant.adminPassword != null and tenant.adminPassword != ''">
             admin_password=#{tenant.adminPassword},
+        </if>
+        <if test="tenant.adminEmail != null and tenant.adminEmail != ''">
+            admin_email=#{tenant.adminEmail},
         </if>
         <if test="tenant.supportStaff != null and tenant.supportStaff != ''">
             support_staff=#{tenant.supportStaff},
@@ -416,20 +421,19 @@
     <!--批量新增租户表-->
     <insert id="batchTenant">
         INSERT INTO tenant
-        (tenant_code,tenant_name,tenant_address,tenant_industry,domain,admin_account,admin_password,support_staff,login_background,tenant_logo,tenant_status,delete_flag,create_by,create_time,update_by,update_time)
+        (tenant_code,tenant_name,tenant_address,tenant_industry,domain,admin_account,admin_password,admin_email,support_staff,login_background,tenant_logo,tenant_status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="tenants"
                  separator=",">
-            (#{item.tenantCode},#{item.tenantName},#{item.tenantAddress},#{item.tenantIndustry},#{item.domain},#{item.adminAccount},#{item.adminPassword},#{item.supportStaff},#{item.loginBackground},#{item.tenantLogo},#{item.tenantStatus},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.tenantCode},#{item.tenantName},#{item.tenantAddress},#{item.tenantIndustry},#{item.domain},#{item.adminAccount},#{item.adminPassword},#{item.adminEmail},#{item.supportStaff},#{item.loginBackground},#{item.tenantLogo},#{item.tenantStatus},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
     <!--物理删除租户表-->
     <delete id="deleteTenantByTenantId">
-        DELETE
-        FROM tenant
-        WHERE tenant_id = #{tenant}
+        DELETE FROM tenant
+        WHERE tenant_id=#{tenant}
 
     </delete>
     <!--物理批量删除租户表-->
@@ -492,6 +496,13 @@
                 <foreach collection="tenantList" item="item" index="index">
                     <if test="item.adminPassword != null and item.adminPassword != ''">
                         when tenant_id=#{item.tenantId} then #{item.adminPassword}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="admin_email=case" suffix="end,">
+                <foreach collection="tenantList" item="item" index="index">
+                    <if test="item.adminEmail != null and item.adminEmail != ''">
+                        when tenant_id=#{item.tenantId} then #{item.adminEmail}
                     </if>
                 </foreach>
             </trim>
