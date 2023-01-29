@@ -163,11 +163,15 @@
         update_by,
         update_time
         FROM salary_pay
-        WHERE pay_year = #{payYear}
-        AND pay_month
-        BETWEEN #{startMonth}
-        AND #{endMonth}
-        AND delete_flag = 0
+        WHERE delete_flag = 0
+        <if test="payYear != null">
+            AND pay_year = #{payYear}
+        </if>
+        <if test="startMonth != null and endMonth != null ">
+            AND pay_month
+            BETWEEN #{startMonth}
+            AND #{endMonth}
+        </if>
     </select>
     <!--多个年份的所有-->
     <select id="selectSalaryPayBySomeYear"
@@ -499,7 +503,7 @@
         SELECT sum(pay_amount) as paymentBonusSum,
         sum(bonus_amount) as bonusAmountSum
         FROM salary_pay sp
-        where  sp.employee_id = #{employeeId}
+        where sp.employee_id = #{employeeId}
         and sp.delete_flag = 0
         ORDER BY sp.pay_year DESC, sp.pay_month DESC limit 12
     </select>
@@ -534,42 +538,42 @@
         WHERE pay_year = #{budgetYear} -1
         and delete_flag = 0
     </select>
-<!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，对于当前及未来年份取数范围为倒推12个月的数据（年工资）  对于历史年份取一整年数据-->
+    <!--    部门奖金预算 某职级的平均薪酬：从月度工资管理取数，对于当前及未来年份取数范围为倒推12个月的数据（年工资）  对于历史年份取一整年数据-->
     <select id="selectDeptBonusBudgetPay" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT sp.salary_amount + sp.allowance_amount + sp.welfare_amount + sp.bonus_amount as paymentBonus,
-               sp.salary_amount + sp.allowance_amount + sp.welfare_amount as salaryPackageBonus,
-               bonus_amount as amountBonus,
-               sp.salary_pay_id,
-               sp.employee_id,
-               sp.pay_year,
-               sp.pay_month,
-               sp.salary_amount,
-               sp.allowance_amount,
-               sp.welfare_amount,
-               sp.bonus_amount,
-               sp.withhold_remit_tax,
-               sp.other_deductions,
-               sp.pay_amount,
-               sp.delete_flag,
-               sp.create_by,
-               sp.create_time,
-               sp.update_by,
-               sp.update_time
+        sp.salary_amount + sp.allowance_amount + sp.welfare_amount as salaryPackageBonus,
+        bonus_amount as amountBonus,
+        sp.salary_pay_id,
+        sp.employee_id,
+        sp.pay_year,
+        sp.pay_month,
+        sp.salary_amount,
+        sp.allowance_amount,
+        sp.welfare_amount,
+        sp.bonus_amount,
+        sp.withhold_remit_tax,
+        sp.other_deductions,
+        sp.pay_amount,
+        sp.delete_flag,
+        sp.create_by,
+        sp.create_time,
+        sp.update_by,
+        sp.update_time
         FROM salary_pay sp
         where
-           sp.employee_id = #{employeeId}
-          and sp.delete_flag = 0
-          and (select sum(sp2.bonus_amount) from (SELECT sp.bonus_amount
+        sp.employee_id = #{employeeId}
+        and sp.delete_flag = 0
+        and (select sum(sp2.bonus_amount) from (SELECT sp.bonus_amount
         FROM salary_pay sp
         where
-         sp.employee_id = #{employeeId}
+        sp.employee_id = #{employeeId}
         and sp.delete_flag = 0
         and sp.tenant_id=#{tenantId}
         ORDER BY sp.pay_year DESC, sp.pay_month DESC
         limit 12) sp2) > (select sum(sp3.salary_amount)/count(sp3.salary_amount) from (SELECT sp.salary_amount
         FROM salary_pay sp
         where
-         sp.employee_id = #{employeeId}
+        sp.employee_id = #{employeeId}
         and sp.delete_flag = 0
         and sp.tenant_id=#{tenantId}
         ORDER BY sp.pay_year DESC, sp.pay_month DESC

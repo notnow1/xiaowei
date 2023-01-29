@@ -1328,6 +1328,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         BigDecimal allowanceAmountSum = BigDecimal.ZERO;
         BigDecimal welfareAmountSum = BigDecimal.ZERO;
         BigDecimal bonusAmountSum = BigDecimal.ZERO;
+        BigDecimal totalCompensationSum;
         // 获取工资，津贴，福利，奖金合计
         for (SalaryPayDTO salaryPayDTO : salaryPayDTOList) {
             salaryAmountSum = salaryAmountSum.add(salaryPayDTO.getSalaryAmount());
@@ -1335,10 +1336,12 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             welfareAmountSum = welfareAmountSum.add(salaryPayDTO.getWelfareAmount());
             bonusAmountSum = bonusAmountSum.add(salaryPayDTO.getBonusAmount());
         }
+        totalCompensationSum = salaryAmountSum.add(allowanceAmountSum).add(welfareAmountSum).add(bonusAmountSum);
         salaryStructure.setSalaryAmountSum(salaryAmountSum);
         salaryStructure.setAllowanceAmountSum(allowanceAmountSum);
         salaryStructure.setWelfareAmountSum(welfareAmountSum);
         salaryStructure.setBonusAmountSum(bonusAmountSum);
+        salaryStructure.setTotalCompensationSum(totalCompensationSum);
         return salaryStructure;
     }
 
@@ -1400,9 +1403,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             timeEnd = DateUtils.parseDate(salaryStructureDTO.getParams().get("timeEnd"));
         }
         if (StringUtils.isNull(timeStart) || StringUtils.isNull(timeEnd)) {
-            int month = DateUtils.getMonth();
-            int year = DateUtils.getYear();
-            salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(year, 0, month);
+            salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(null, null, null);
         } else {
             int startYear = DateUtils.getYear(timeStart);
             int endYear = DateUtils.getYear(timeEnd);
@@ -1455,12 +1456,12 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                 BigDecimal allowanceAmountValue = BigDecimal.ZERO;// 津贴金额
                 BigDecimal welfareAmountValue = BigDecimal.ZERO;// 福利金额
                 BigDecimal bonusAmountValue = BigDecimal.ZERO;// 奖金金额
-                SalaryPayDTO salaryPay;
-                if (StringUtils.isEmpty(salaryPayDTOList1)) {
-                    salaryPay = new SalaryPayDTO();
-                } else {
-                    salaryPay = salaryPayDTOList1.get(0);
-                }
+//                SalaryPayDTO salaryPay;
+//                if (StringUtils.isEmpty(salaryPayDTOList1)) {
+//                    salaryPay = new SalaryPayDTO();
+//                } else {
+//                    salaryPay = salaryPayDTOList1.get(0);
+//                }
                 for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
                     salaryAmountValue = salaryAmountValue.add(salaryPayDTO.getSalaryAmount());
                     allowanceAmountValue = allowanceAmountValue.add(salaryPayDTO.getAllowanceAmount());
