@@ -406,7 +406,6 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         empSalaryAdjustPlan.setUpdateTime(DateUtils.getNowDate());
         empSalaryAdjustPlan.setUpdateBy(SecurityUtils.getUserId());
         empSalaryAdjustPlanMapper.updateEmpSalaryAdjustPlan(empSalaryAdjustPlan);
-
         return 1;
     }
 
