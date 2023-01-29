@@ -186,6 +186,7 @@ public class TenantLogic {
         user.setUserType(UserType.SYSTEM.getCode());
         user.setUserAccount(tenant.getAdminAccount());
         user.setPassword(SecurityUtils.encryptPassword(tenant.getAdminPassword()));
+        user.setEmail(tenant.getAdminEmail());
         user.setStatus(BusinessConstants.NORMAL);
         user.setUserName(RoleCode.TENANT_ADMIN.getInfo());
         user.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
