@@ -1524,6 +1524,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
                     break;
             }
         }
+        employee.setUpdateBy(SecurityUtils.getUserId());
+        employee.setUpdateTime(DateUtils.getNowDate());
     }
 
     /**
