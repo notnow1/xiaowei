@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 import javax.validation.groups.Default;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 指标表
@@ -141,6 +142,9 @@ public class IndicatorDTO {
      * 是否在targetSetting被选中了（1-选中，0-未选中）
      */
     private Integer isTarget;
-
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }
 
