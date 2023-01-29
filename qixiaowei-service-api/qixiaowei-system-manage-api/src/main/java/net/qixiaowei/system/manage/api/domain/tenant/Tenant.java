@@ -57,6 +57,10 @@ public class Tenant extends BaseEntity {
      */
     private String adminPassword;
     /**
+     * 管理员邮箱
+     */
+    private String adminEmail;
+    /**
      * 客服人员
      */
     private String supportStaff;

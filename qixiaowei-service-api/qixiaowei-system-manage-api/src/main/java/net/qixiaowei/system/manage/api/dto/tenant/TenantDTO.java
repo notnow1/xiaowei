@@ -5,152 +5,159 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import javax.validation.groups.Default;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
-* 租户表
-* @author TANGMICHI
-* @since 2022-09-24
-*/
+ * 租户表
+ *
+ * @author TANGMICHI
+ * @since 2022-09-24
+ */
 @Data
 @Accessors(chain = true)
 public class TenantDTO {
+
     //查询检验
-    public interface QueryTenantDTO extends Default{
+    public interface QueryTenantDTO extends Default {
 
     }
+
     //新增检验
-    public interface AddTenantDTO extends Default{
+    public interface AddTenantDTO extends Default {
 
     }
 
     //删除检验
-    public interface DeleteTenantDTO extends Default{
+    public interface DeleteTenantDTO extends Default {
 
     }
+
     //修改检验
-    public interface UpdateTenantDTO extends Default{
+    public interface UpdateTenantDTO extends Default {
 
     }
+
     //修改检验
-    public interface UpdateTenantInfoDTO extends Default{
+    public interface UpdateTenantInfoDTO extends Default {
 
     }
+
     /**
-    * 租户ID
-    */
-    @NotNull(message = "租户ID不能为空",groups = {TenantDTO.DeleteTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
-    private  Long tenantId;
+     * 租户ID
+     */
+    @NotNull(message = "租户ID不能为空", groups = {TenantDTO.DeleteTenantDTO.class, TenantDTO.UpdateTenantDTO.class, TenantDTO.UpdateTenantInfoDTO.class})
+    private Long tenantId;
     /**
      * 租户ID集合
      */
-    private  List<Long> tenantIds;
+    private List<Long> tenantIds;
     /**
-    * 租户编码
-    */
-    private  String tenantCode;
+     * 租户编码
+     */
+    private String tenantCode;
     /**
-    * 租户名称
-    */
-    @NotBlank(message = "租户名称不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
-    private  String tenantName;
+     * 租户名称
+     */
+    @NotBlank(message = "租户名称不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class, TenantDTO.UpdateTenantInfoDTO.class})
+    private String tenantName;
     /**
-    * 租户地址
-    */
-    private  String tenantAddress;
+     * 租户地址
+     */
+    private String tenantAddress;
     /**
-    * 租户行业
-    */
-    @NotNull(message = "租户行业不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
-    private  Long tenantIndustry;
+     * 租户行业
+     */
+    @NotNull(message = "租户行业不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class, TenantDTO.UpdateTenantInfoDTO.class})
+    private Long tenantIndustry;
 
     /**
      * 租户行业名称
      */
-    private  String tenantIndustryName;
+    private String tenantIndustryName;
     /**
-    * 域名
-    */
-    @NotBlank(message = "域名不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class,TenantDTO.UpdateTenantInfoDTO.class})
-    private  String domain;
+     * 域名
+     */
+    @NotBlank(message = "域名不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class, TenantDTO.UpdateTenantInfoDTO.class})
+    private String domain;
     /**
-    * 管理员帐号
-    */
-    @NotBlank(message = "管理员帐号不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
-    private  String adminAccount;
+     * 管理员帐号
+     */
+    @NotBlank(message = "管理员帐号不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class})
+    private String adminAccount;
     /**
-    * 管理员密码
-    */
-    @NotBlank(message = "管理员密码不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
-    private  String adminPassword;
+     * 管理员密码
+     */
+    @NotBlank(message = "管理员密码不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class})
+    private String adminPassword;
     /**
-    * 客服人员
-    */
-    @NotBlank(message = "客服人员不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
-    private  String supportStaff;
+     * 管理员邮箱
+     */
+    @NotBlank(message = "邮箱不能为空", groups = {TenantDTO.AddTenantDTO.class})
+    @Email(message = "邮箱格式不正确")
+    @Size(min = 0, max = 60, message = "邮箱长度不能超过60个字符", groups = {TenantDTO.AddTenantDTO.class})
+    private String adminEmail;
+    /**
+     * 客服人员
+     */
+    @NotBlank(message = "客服人员不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class})
+    private String supportStaff;
 
 
     /**
      * 客服人员名称
      */
-    private  String supportStaffName;
+    private String supportStaffName;
     /**
-    * 租户登录背景图片URL
-    */
-    private  String loginBackground;
+     * 租户登录背景图片URL
+     */
+    private String loginBackground;
     /**
-    * 租户logo图片URL
-    */
-    private  String tenantLogo;
+     * 租户logo图片URL
+     */
+    private String tenantLogo;
     /**
-    * 状态（0待初始化 1正常 2禁用 3过期）
-    */
-    @NotNull(message = "租户状态不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
-    private  Integer tenantStatus;
+     * 状态（0待初始化 1正常 2禁用 3过期）
+     */
+    @NotNull(message = "租户状态不能为空", groups = {TenantDTO.AddTenantDTO.class, TenantDTO.UpdateTenantDTO.class})
+    private Integer tenantStatus;
     /**
-    * 删除标记:0未删除;1已删除
-    */
-    private  Integer deleteFlag;
+     * 删除标记:0未删除;1已删除
+     */
+    private Integer deleteFlag;
     /**
-    * 创建人
-    */
-    private  Long createBy;
+     * 创建人
+     */
+    private Long createBy;
     /**
-    * 创建时间
-    */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  createTime;
+     * 创建时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
     /**
-    * 更新人
-    */
-    private  Long updateBy;
+     * 更新人
+     */
+    private Long updateBy;
     /**
-    * 更新时间
-    */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private  Date  updateTime;
+     * 更新时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 
     /**
      * 合同开始时间
      */
-    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
-    private  Date  contractStartTime;
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date contractStartTime;
     /**
      * 合同结束时间
      */
-    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
-    private  Date  contractEndTime;
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private Date contractEndTime;
 
     /**
      * 租户联系人表
@@ -159,7 +166,7 @@ public class TenantDTO {
     /**
      * 租户合同信息表
      */
-    @NotEmpty(message = "租户合同信息不能为空",groups = {TenantDTO.AddTenantDTO.class})
+    @NotEmpty(message = "租户合同信息不能为空", groups = {TenantDTO.AddTenantDTO.class})
     @Valid
     private List<TenantContractDTO> tenantContractDTOList;
     /**
@@ -170,7 +177,7 @@ public class TenantDTO {
     /**
      * 申请状态:0待审核;1审核通过;2审核驳回
      */
-    private  Integer approvalStatus;
+    private Integer approvalStatus;
     /**
      * 请求参数
      */

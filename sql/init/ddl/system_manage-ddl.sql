@@ -44,6 +44,7 @@ CREATE TABLE tenant(
     domain VARCHAR(128)    COMMENT '域名' ,
     admin_account VARCHAR(32)    COMMENT '管理员帐号' ,
     admin_password VARCHAR(32)    COMMENT '管理员密码' ,
+    admin_email VARCHAR(64)    COMMENT '管理员邮箱' ,
     support_staff VARCHAR(2048)    COMMENT '客服人员' ,
     login_background VARCHAR(512)    COMMENT '租户登录背景图片URL' ,
     tenant_logo VARCHAR(512)    COMMENT '租户logo图片URL' ,
@@ -54,7 +55,7 @@ CREATE TABLE tenant(
     update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
     update_time DATETIME NOT NULL   COMMENT '更新时间' ,
     PRIMARY KEY (tenant_id)
-) AUTO_INCREMENT = 999 COMMENT = '租户表';
+)  COMMENT = '租户表';
 
 
 CREATE TABLE tenant_contacts(
@@ -114,6 +115,7 @@ CREATE TABLE tenant_domain_approval(
 
 CREATE TABLE user(
     user_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    user_type TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '用户类型:0其他;1系统管理员' ,
     employee_id BIGINT UNSIGNED    COMMENT '员工ID' ,
     user_account VARCHAR(128)    COMMENT '用户帐号' ,
     password VARCHAR(128)    COMMENT '密码' ,
@@ -135,6 +137,7 @@ CREATE TABLE user(
 
 CREATE TABLE role(
     role_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    role_type TINYINT UNSIGNED NOT NULL  DEFAULT 1 COMMENT '角色类型:0内置角色;1自定义角色' ,
     role_code VARCHAR(64) NOT NULL   COMMENT '角色编码' ,
     role_name VARCHAR(64)    COMMENT '角色名称' ,
     data_scope TINYINT UNSIGNED NOT NULL   COMMENT '数据范围:1全公司;2本部门及下属部门;3本部门;4本人及下属;5本人' ,

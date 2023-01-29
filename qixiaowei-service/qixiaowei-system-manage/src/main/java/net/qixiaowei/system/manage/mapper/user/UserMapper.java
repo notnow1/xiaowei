@@ -115,14 +115,6 @@ public interface UserMapper {
     int insertUser(@Param("user") User user);
 
     /**
-     * 初始化租户用户表
-     *
-     * @param user 用户表
-     * @return 结果
-     */
-    int initTenantUser(@Param("user") User user);
-
-    /**
      * 修改用户表
      *
      * @param user 用户表

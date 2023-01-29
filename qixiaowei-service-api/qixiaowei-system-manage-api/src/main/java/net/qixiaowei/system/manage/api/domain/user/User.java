@@ -22,6 +22,10 @@ public class User extends TenantEntity {
      */
     private Long userId;
     /**
+     * 用户类型:0其他;1系统管理员
+     */
+    private Integer userType;
+    /**
      * 员工ID
      */
     private Long employeeId;
@@ -53,7 +57,6 @@ public class User extends TenantEntity {
      * 状态:0失效;1生效
      */
     private Integer status;
-
 
 }
 

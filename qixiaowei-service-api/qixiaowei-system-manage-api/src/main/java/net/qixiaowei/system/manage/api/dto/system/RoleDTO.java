@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.enums.system.RoleType;
 
 /**
  * 角色表
@@ -53,6 +54,10 @@ public class RoleDTO {
      */
     @NotNull(message = "角色ID不能为空", groups = {RoleDTO.UpdateRoleDTO.class, RoleDTO.DeleteRoleDTO.class})
     private Long roleId;
+    /**
+     * 角色类型:0内置角色;1自定义角色
+     */
+    private Integer roleType;
     /**
      * 角色编码
      */
@@ -105,18 +110,17 @@ public class RoleDTO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
-
     /**
      * 菜单组
      */
     private Set<Long> menuIds;
 
     public boolean isAdmin() {
-        return isAdmin(this.roleId);
+        return isAdmin(this.roleType);
     }
 
-    public static boolean isAdmin(Long roleId) {
-        return roleId != null && 1L == roleId;
+    public static boolean isAdmin(Integer roleType) {
+        return RoleType.BUILT_IN.getCode().equals(roleType);
     }
 
 }

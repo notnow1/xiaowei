@@ -12,6 +12,8 @@ import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
 import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
+import net.qixiaowei.integration.common.enums.system.RoleType;
+import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -181,8 +183,10 @@ public class TenantLogic {
         Date nowDate = DateUtils.getNowDate();
         //新增用户
         User user = new User();
+        user.setUserType(UserType.SYSTEM.getCode());
         user.setUserAccount(tenant.getAdminAccount());
         user.setPassword(SecurityUtils.encryptPassword(tenant.getAdminPassword()));
+        user.setEmail(tenant.getAdminEmail());
         user.setStatus(BusinessConstants.NORMAL);
         user.setUserName(RoleCode.TENANT_ADMIN.getInfo());
         user.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
@@ -193,6 +197,7 @@ public class TenantLogic {
         boolean userSuccess = userMapper.insertUser(user) > 0;
         //新增租户角色
         Role role = new Role();
+        role.setRoleType(RoleType.BUILT_IN.getCode());
         role.setDataScope(RoleDataScope.ALL.getCode());
         role.setRoleCode(RoleCode.TENANT_ADMIN.getCode());
         role.setRoleName(RoleCode.TENANT_ADMIN.getInfo());
