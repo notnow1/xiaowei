@@ -486,7 +486,7 @@
             #{item}
         </foreach>
         group by employee_id
-        order by pay_year desc, pay_month desc limit 1) sp4
+        order by pay_year desc, pay_month desc) sp4
         on sp4.employee_id = sp.employee_id
         WHERE sp.employee_id in
         <foreach item="item"

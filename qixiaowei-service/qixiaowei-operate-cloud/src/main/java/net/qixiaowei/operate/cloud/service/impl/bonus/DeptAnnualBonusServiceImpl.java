@@ -1041,7 +1041,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
             //绩效奖金系数
             deptAnnualBonusFactorDTO.setPerformanceBonusFactor(performanceRankFactorDTO.getBonusFactor());
             //最近绩效结果
-            deptAnnualBonusFactorDTO.setLastPerformanceResulted(performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(StringUtils::isNotBlank).collect(Collectors.toList()).toString());
+            deptAnnualBonusFactorDTO.setLastPerformanceResulted(StringUtils.join(performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(StringUtils::isNotBlank).collect(Collectors.toList()),","));
         }
     }
 

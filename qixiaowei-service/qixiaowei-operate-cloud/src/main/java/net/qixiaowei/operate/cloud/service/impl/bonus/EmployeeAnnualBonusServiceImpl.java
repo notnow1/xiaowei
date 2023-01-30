@@ -664,7 +664,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 }
 
                 //最近绩效结果
-                empAnnualBonusSnapshotDTO.setLastPerformanceResulted(performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(StringUtils::isNotBlank).collect(Collectors.toList()).toString());
+                empAnnualBonusSnapshotDTO.setLastPerformanceResulted(StringUtils.join(performanceRankFactorDTOS.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(StringUtils::isNotBlank).collect(Collectors.toList()),","));
             }
         }
     }
@@ -686,7 +686,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                     List<PerformanceRankFactorDTO> performanceRankFactorDTOS1 = performanceAppraisalObjectsMapper.selectPerformanceRankFactorByPerformanceRankId(performanceRankId);
                     if (StringUtils.isNotEmpty(performanceRankFactorDTOS1)) {
                         Map<String, BigDecimal> map = new HashMap<>();
-                        empAnnualBonusSnapshotDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).collect(Collectors.toList()));
+                        empAnnualBonusSnapshotDTO.setPerformanceRanks(performanceRankFactorDTOS1.stream().map(PerformanceRankFactorDTO::getPerformanceRankName).filter(Objects::nonNull).collect(Collectors.toList()));
                         for (PerformanceRankFactorDTO rankFactorDTO : performanceRankFactorDTOS1) {
                             map.put(rankFactorDTO.getPerformanceRankName(), rankFactorDTO.getBonusFactor());
                         }

@@ -189,7 +189,6 @@
         <if test="empSalaryAdjustPlan.params.basicWage != null">
             and ess.basic_wage=#{empSalaryAdjustPlan.params.basicWage}
         </if>
-        ORDER BY esa.update_time
     </select>
     <!--根据员工ID获取个人调薪计划表-->
     <select id="selectByEmployeeId"

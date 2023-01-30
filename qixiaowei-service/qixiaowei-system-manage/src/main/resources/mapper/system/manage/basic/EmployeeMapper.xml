@@ -969,10 +969,10 @@
         left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
         where
-        e.delete_flag = 0
         <if test="departmentId != null">
-            and find_in_set(#{departmentId}, d.ancestors) or d.department_id=#{departmentId}
+             find_in_set(#{departmentId}, d.ancestors) or d.department_id=#{departmentId}
         </if>
+        and  e.delete_flag = 0
     </select>
     <!--    根据部门id查询员工表列表-->
     <select id="queryEmployeeByDept" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">

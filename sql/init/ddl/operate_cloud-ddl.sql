@@ -916,6 +916,8 @@ CREATE TABLE emp_annual_bonus_objects(
     employee_annual_bonus_id BIGINT UNSIGNED NOT NULL   COMMENT '个人年终奖ID' ,
     employee_id BIGINT UNSIGNED NOT NULL   COMMENT '员工ID' ,
     choice_flag TINYINT UNSIGNED NOT NULL   COMMENT '选中标记:0否;1是' ,
+    responsible_employee_id BIGINT UNSIGNED    COMMENT '主管负责人ID' ,
+    responsible_employee_name VARCHAR(64)    COMMENT '主管负责人' ,
     performance_rank_id BIGINT UNSIGNED    COMMENT '绩效等级ID' ,
     performance_rank_factor_id BIGINT UNSIGNED    COMMENT '绩效等级系数ID' ,
     performance_rank VARCHAR(16)    COMMENT '绩效' ,
