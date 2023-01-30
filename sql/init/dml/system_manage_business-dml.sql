@@ -12,6 +12,12 @@ INSERT INTO `user` (user_id,user_type, employee_id, user_account, password, user
 
 
 -- ----------------------------
+-- init of user_config
+-- ----------------------------
+INSERT INTO user_config (user_config_id,user_id,user_config_type,status,remark,create_by,create_time,update_by,update_time) VALUES (1,1,1,1,'启用待办通知',1,sysdate(),1,sysdate());
+
+
+-- ----------------------------
 -- init of role
 -- ----------------------------
 INSERT INTO `role` (role_id, role_type , role_code, role_name, data_scope, product_package, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time) VALUES(1,0 ,'admin', '超级管理员', 1, NULL, 1, '超级管理员', 1, 0, 0, sysdate(), 0, sysdate());

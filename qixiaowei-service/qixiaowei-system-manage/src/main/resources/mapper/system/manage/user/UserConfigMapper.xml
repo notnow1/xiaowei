@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.user.UserConfigMapper">
+    <!--    查询用户配置表-->
+    <select id="selectUserConfigByUserConfigId"
+            resultType="net.qixiaowei.system.manage.api.dto.user.UserConfigDTO">
+        SELECT
+        user_config_id,user_id,user_config_type,user_config_value,status,remark,delete_flag,create_by,create_time,update_by,update_time
+        FROM user_config
+        WHERE user_config_id=#{userConfigId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询用户配置表-->
+    <select id="selectUserConfigByUserConfigIds"
+            resultType="net.qixiaowei.system.manage.api.dto.user.UserConfigDTO">
+        SELECT
+        user_config_id,user_id,user_config_type,user_config_value,status,remark,delete_flag,create_by,create_time,update_by,update_time
+        FROM user_config
+        WHERE user_config_id in
+        <foreach item="item"
+                 collection="userConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询用户配置表列表-->
+    <select id="selectUserConfigList" resultType="net.qixiaowei.system.manage.api.vo.user.UserConfigVO">
+        SELECT
+        user_config_id,user_config_type,user_config_value,status,remark
+        FROM user_config
+        WHERE delete_flag=0
+        <if test="userConfig.userConfigId != null">
+            and user_config_id=#{userConfig.userConfigId}
+        </if>
+        <if test="userConfig.userId != null">
+            and user_id=#{userConfig.userId}
+        </if>
+        <if test="userConfig.userConfigType != null">
+            and user_config_type=#{userConfig.userConfigType}
+        </if>
+        <if test="userConfig.userConfigValue != null and userConfig.userConfigValue != ''">
+            and user_config_value=#{userConfig.userConfigValue}
+        </if>
+        <if test="userConfig.status != null">
+            and status=#{userConfig.status}
+        </if>
+        <if test="userConfig.remark != null and userConfig.remark != ''">
+            and remark=#{userConfig.remark}
+        </if>
+        <if test="userConfig.deleteFlag != null">
+            and delete_flag=#{userConfig.deleteFlag}
+        </if>
+        <if test="userConfig.createBy != null">
+            and create_by=#{userConfig.createBy}
+        </if>
+        <if test="userConfig.createTime != null">
+            and create_time=#{userConfig.createTime}
+        </if>
+        <if test="userConfig.updateBy != null">
+            and update_by=#{userConfig.updateBy}
+        </if>
+        <if test="userConfig.updateTime != null">
+            and update_time=#{userConfig.updateTime}
+        </if>
+    </select>
+    <!--新增用户配置表-->
+    <insert id="insertUserConfig" useGeneratedKeys="true" keyProperty="userConfigId">
+        INSERT INTO user_config
+        (user_id,user_config_type,user_config_value,status,remark,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{userConfig.userId},#{userConfig.userConfigType},#{userConfig.userConfigValue},#{userConfig.status},#{userConfig.remark},#{userConfig.deleteFlag},#{userConfig.createBy},#{userConfig.createTime},#{userConfig.updateBy},#{userConfig.updateTime})
+    </insert>
+    <!--修改用户配置表-->
+    <update id="updateUserConfig">
+        UPDATE user_config
+        SET
+        <if test="userConfig.userId != null">
+            user_id=#{userConfig.userId},
+        </if>
+        <if test="userConfig.userConfigType != null">
+            user_config_type=#{userConfig.userConfigType},
+        </if>
+        <if test="userConfig.userConfigValue != null and userConfig.userConfigValue != ''">
+            user_config_value=#{userConfig.userConfigValue},
+        </if>
+        <if test="userConfig.status != null">
+            status=#{userConfig.status},
+        </if>
+        <if test="userConfig.remark != null and userConfig.remark != ''">
+            remark=#{userConfig.remark},
+        </if>
+        <if test="userConfig.deleteFlag != null">
+            delete_flag=#{userConfig.deleteFlag},
+        </if>
+        <if test="userConfig.createBy != null">
+            create_by=#{userConfig.createBy},
+        </if>
+        <if test="userConfig.createTime != null">
+            create_time=#{userConfig.createTime},
+        </if>
+        <if test="userConfig.updateBy != null">
+            update_by=#{userConfig.updateBy},
+        </if>
+        <if test="userConfig.updateTime != null">
+            update_time=#{userConfig.updateTime}
+        </if>
+        WHERE
+        user_config_id=#{userConfig.userConfigId}
+    </update>
+    <!--逻辑删除用户配置表-->
+    <update id="logicDeleteUserConfigByUserConfigId">
+        UPDATE user_config
+        SET delete_flag= 1,
+        update_by=#{userConfig.updateBy},
+        update_time=#{userConfig.updateTime}
+        WHERE
+        user_config_id=#{userConfig.userConfigId}
+    </update>
+    <!--逻辑批量删除用户配置表-->
+    <update id="logicDeleteUserConfigByUserConfigIds">
+        UPDATE user_config
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        user_config_id IN
+        <foreach item="item"
+                 collection="userConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增用户配置表-->
+    <insert id="batchUserConfig">
+        INSERT INTO user_config
+        (user_id,user_config_type,user_config_value,status,remark,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="userConfigs"
+                 separator=",">
+            (#{item.userId},#{item.userConfigType},#{item.userConfigValue},#{item.status},#{item.remark},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除用户配置表-->
+    <delete id="deleteUserConfigByUserConfigId">
+        DELETE FROM user_config
+        WHERE user_config_id=#{userConfig}
+
+    </delete>
+    <!--物理批量删除用户配置表-->
+    <delete id="deleteUserConfigByUserConfigIds">
+        DELETE FROM user_config
+        WHERE user_config_id IN
+        <foreach item="item"
+                 collection="userConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改用户配置表-->
+    <update id="updateUserConfigs">
+        update user_config
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="user_id=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.userId != null">
+                        when user_config_id=#{item.userConfigId} then #{item.userId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="user_config_type=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.userConfigType != null">
+                        when user_config_id=#{item.userConfigId} then #{item.userConfigType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="user_config_value=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.userConfigValue != null and item.userConfigValue != ''">
+                        when user_config_id=#{item.userConfigId} then #{item.userConfigValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.status != null">
+                        when user_config_id=#{item.userConfigId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="remark=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.remark != null and item.remark != ''">
+                        when user_config_id=#{item.userConfigId} then #{item.remark}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when user_config_id=#{item.userConfigId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when user_config_id=#{item.userConfigId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when user_config_id=#{item.userConfigId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when user_config_id=#{item.userConfigId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="userConfigList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when user_config_id=#{item.userConfigId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="userConfigList" separator="or" item="item" index="index">
+            user_config_id=#{item.userConfigId}
+        </foreach>
+    </update>
+</mapper>
+
+

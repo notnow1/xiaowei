@@ -35,6 +35,7 @@ import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.service.basic.IEmployeeService;
 import net.qixiaowei.system.manage.service.system.IRoleMenuService;
 import net.qixiaowei.system.manage.service.system.IUserRoleService;
+import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -91,6 +92,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private RemoteFileService remoteFileService;
+
+    @Autowired
+    private IUserConfigService userConfigService;
 
 
     @Override
@@ -357,6 +361,8 @@ public class UserServiceImpl implements IUserService {
         }
         //新增用户
         int row = userMapper.insertUser(user);
+        //初始化用户配置
+        userConfigService.initUserConfig(user.getUserId());
         userDTO.setUserId(user.getUserId());
         //新增用户角色
         insertUserRole(userDTO);
