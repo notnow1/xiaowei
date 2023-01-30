@@ -155,4 +155,10 @@ public interface IUserService {
      */
     List<EmployeeDTO> unallocatedEmployees(Long userId);
 
+    /**
+     * 远程 通过人员ID集合查询用户id
+     * @param employeeIds
+     * @return
+     */
+    List<UserDTO> selectByemployeeIds(List<Long> employeeIds);
 }

@@ -69,4 +69,13 @@ public interface RemoteUserService {
      */
     @PostMapping(API_PREFIX_USER + "/user/register")
     R<Boolean> registerUserInfo(@RequestBody UserVO userVO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 通过人员ID集合查询用户id
+     *
+     * @param employeeIds 人员IDs
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_USER + "/selectByemployeeIds")
+    R<List<UserDTO>> selectByemployeeIds(@RequestBody List<Long> employeeIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

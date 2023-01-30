@@ -49,6 +49,11 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             public R<Boolean> registerUserInfo(UserVO userVO, String source) {
                 return R.fail("注册用户失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<UserDTO>> selectByemployeeIds(List<Long> employeeIds, String source) {
+                return R.fail("通过人员ID查询用户id失败:" + throwable.getMessage());
+            }
         };
     }
 }

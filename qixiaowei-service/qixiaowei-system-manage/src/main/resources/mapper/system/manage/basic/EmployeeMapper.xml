@@ -935,6 +935,8 @@
         p.post_code,
         d.department_name as employee_department_name,
         d.department_leader_id,
+        d.examination_leader_id,
+        e2.employee_name as examinationLeaderName,
         d.department_code,
         ors.official_rank_system_name,
         case when ors.rank_prefix_code is null then e.employee_rank
@@ -968,6 +970,9 @@
         and d.delete_flag =0
         left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
         and ors.delete_flag = 0
+        left join  employee e2
+        on d.examination_leader_id =e2.employee_id
+        and e2.delete_flag =0
         where
         <if test="departmentId != null">
              find_in_set(#{departmentId}, d.ancestors) or d.department_id=#{departmentId}

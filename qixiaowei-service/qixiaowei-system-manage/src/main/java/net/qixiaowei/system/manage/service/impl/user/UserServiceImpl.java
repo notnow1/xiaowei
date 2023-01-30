@@ -583,6 +583,16 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 远程 通过人员ID集合查询用户id
+     * @param employeeIds
+     * @return
+     */
+    @Override
+    public List<UserDTO> selectByemployeeIds(List<Long> employeeIds) {
+        return userMapper.selectUserByEmployeeIds(employeeIds);
+    }
+
+    /**
      * 批量新增用户表信息
      *
      * @param userDtos 用户表对象

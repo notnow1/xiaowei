@@ -10,6 +10,8 @@
                choice_flag,
                performance_rank_id,
                performance_rank_factor_id,
+               responsible_employee_id,
+               responsible_employee_name,
                performance_rank,
                performance_bonus_factor,
                attendance_factor,
@@ -30,7 +32,8 @@
     <select id="selectEmpAnnualBonusObjectsByEmpAnnualBonusObjectsIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO">
         SELECT
-        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id,
+        emp_annual_bonus_objects_id,responsible_employee_id,
+        responsible_employee_name,employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id,
         performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value,
         comment_value, status,delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
@@ -47,7 +50,8 @@
     <select id="selectEmpAnnualBonusObjectsList"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO">
         SELECT
-        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id,
+        emp_annual_bonus_objects_id,responsible_employee_id,
+        responsible_employee_name, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id,
         performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value,
         comment_value,status, delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
@@ -57,6 +61,12 @@
         </if>
         <if test="empAnnualBonusObjects.employeeAnnualBonusId != null">
             and employee_annual_bonus_id=#{empAnnualBonusObjects.employeeAnnualBonusId}
+        </if>
+        <if test="empAnnualBonusObjects.responsibleEmployeeId != null">
+            and responsible_employee_id=#{empAnnualBonusObjects.responsibleEmployeeId}
+        </if>
+        <if test="empAnnualBonusObjects.responsibleEmployeeName != null">
+            and responsible_employee_name=#{empAnnualBonusObjects.responsibleEmployeeName}
         </if>
         <if test="empAnnualBonusObjects.employeeId != null">
             and employee_id=#{empAnnualBonusObjects.employeeId}
@@ -113,6 +123,8 @@
                choice_flag,
                performance_rank_id,
                performance_rank_factor_id,
+               responsible_employee_id,
+               responsible_employee_name,
                performance_rank,
                performance_bonus_factor,
                attendance_factor,
@@ -133,7 +145,8 @@
     <select id="selectEmpAnnualBonusObjectsByEmployeeAnnualBonusIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.EmpAnnualBonusObjectsDTO">
         SELECT
-        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id,
+        emp_annual_bonus_objects_id, employee_annual_bonus_id, employee_id, responsible_employee_id,
+        responsible_employee_name,choice_flag, performance_rank_id,
         performance_rank_factor_id, performance_rank, performance_bonus_factor, attendance_factor, recommend_value,
         comment_value, status,delete_flag, create_by, create_time, update_by, update_time
         FROM emp_annual_bonus_objects
@@ -158,6 +171,8 @@
         eabo.attendance_factor,
         eabo.recommend_value,
         eabo.comment_value,
+        eabo.responsible_employee_id,
+        eabo.responsible_employee_name,
         eabs.emp_annual_bonus_snapshot_id,
         eabs.employee_name,
         eabs.employee_code,
@@ -187,12 +202,13 @@
     </select>
     <!--新增个人年终奖发放对象表-->
     <insert id="insertEmpAnnualBonusObjects" useGeneratedKeys="true" keyProperty="empAnnualBonusObjectsId">
-        INSERT INTO emp_annual_bonus_objects (employee_annual_bonus_id, employee_id, choice_flag, performance_rank_id,
+        INSERT INTO emp_annual_bonus_objects (employee_annual_bonus_id, employee_id, choice_flag, responsible_employee_id,
+                                              responsible_employee_name,performance_rank_id,
                                               performance_rank_factor_id, performance_rank, performance_bonus_factor,
                                               attendance_factor, recommend_value, comment_value, status, delete_flag,
                                               create_by, create_time, update_by, update_time)
         VALUES (#{empAnnualBonusObjects.employeeAnnualBonusId}, #{empAnnualBonusObjects.employeeId},
-                #{empAnnualBonusObjects.choiceFlag}, #{empAnnualBonusObjects.performanceRankId},
+                #{empAnnualBonusObjects.choiceFlag},#{empAnnualBonusObjects.responsibleEmployeeId},#{empAnnualBonusObjects.responsibleEmployeeName}, #{empAnnualBonusObjects.performanceRankId},
                 #{empAnnualBonusObjects.performanceRankFactorId}, #{empAnnualBonusObjects.performanceRank},
                 #{empAnnualBonusObjects.performanceBonusFactor}, #{empAnnualBonusObjects.attendanceFactor},
                 #{empAnnualBonusObjects.recommendValue}, #{empAnnualBonusObjects.commentValue},#{empAnnualBonusObjects.status}
@@ -212,6 +228,12 @@
         </if>
         <if test="empAnnualBonusObjects.choiceFlag != null">
             choice_flag=#{empAnnualBonusObjects.choiceFlag},
+        </if>
+        <if test="empAnnualBonusObjects.responsibleEmployeeId != null">
+            responsible_employee_id=#{empAnnualBonusObjects.responsibleEmployeeId},
+        </if>
+        <if test="empAnnualBonusObjects.responsibleEmployeeName != null">
+            responsible_employee_name=#{empAnnualBonusObjects.responsibleEmployeeName},
         </if>
         <if test="empAnnualBonusObjects.performanceRankId != null">
             performance_rank_id=#{empAnnualBonusObjects.performanceRankId},
@@ -280,12 +302,12 @@
     <!--批量新增个人年终奖发放对象表-->
     <insert id="batchEmpAnnualBonusObjects" useGeneratedKeys="true" keyProperty="empAnnualBonusObjectsId">
         INSERT INTO emp_annual_bonus_objects
-        (employee_annual_bonus_id,employee_id,choice_flag,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,attendance_factor,recommend_value,comment_value,status,delete_flag,create_by,create_time,update_by,update_time)
+        (employee_annual_bonus_id,employee_id,choice_flag,responsible_employee_id,responsible_employee_name,performance_rank_id,performance_rank_factor_id,performance_rank,performance_bonus_factor,attendance_factor,recommend_value,comment_value,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="empAnnualBonusObjectss"
                  separator=",">
-            (#{item.employeeAnnualBonusId},#{item.employeeId},#{item.choiceFlag},#{item.performanceRankId},#{item.performanceRankFactorId},#{item.performanceRank},#{item.performanceBonusFactor},#{item.attendanceFactor},#{item.recommendValue},#{item.commentValue},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.employeeAnnualBonusId},#{item.employeeId},#{item.choiceFlag},#{item.responsibleEmployeeId},#{item.responsibleEmployeeName},#{item.performanceRankId},#{item.performanceRankFactorId},#{item.performanceRank},#{item.performanceBonusFactor},#{item.attendanceFactor},#{item.recommendValue},#{item.commentValue},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -329,6 +351,21 @@
                 <foreach collection="empAnnualBonusObjectsList" item="item" index="index">
                     <if test="item.choiceFlag != null">
                         when emp_annual_bonus_objects_id=#{item.empAnnualBonusObjectsId} then #{item.choiceFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="responsible_employee_id=case" suffix="end,">
+                <foreach collection="empAnnualBonusObjectsList" item="item" index="index">
+                    <if test="item.responsibleEmployeeId != null">
+                        when emp_annual_bonus_objects_id=#{item.empAnnualBonusObjectsId} then #{item.responsibleEmployeeId}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="responsible_employee_name=case" suffix="end,">
+                <foreach collection="empAnnualBonusObjectsList" item="item" index="index">
+                    <if test="item.responsibleEmployeeName != null">
+                        when emp_annual_bonus_objects_id=#{item.empAnnualBonusObjectsId} then #{item.responsibleEmployeeName}
                     </if>
                 </foreach>
             </trim>
