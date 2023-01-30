@@ -60,4 +60,17 @@ public class RemoteUser implements RemoteUserService {
     public R<Boolean> registerUserInfo(UserVO userVO, String source) {
         return null;
     }
+
+    /**
+     *  通过人员ID集合查询用户id
+     * @param employeeIds 人员IDs
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectByemployeeIds")
+    public R<List<UserDTO>> selectByemployeeIds(List<Long> employeeIds, String source) {
+        return R.ok(userService.selectByemployeeIds(employeeIds));
+    }
 }
