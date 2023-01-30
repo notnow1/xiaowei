@@ -117,10 +117,10 @@
                 rank_prefix_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
-        <if test="officialRankSystem.params.rankPrefixCodeLike != null and officialRankSystem.params.rankPrefixCodeLike.size() > 0">
+        <if test="officialRankSystem.params.rankPrefixCodeNotLike != null and officialRankSystem.params.rankPrefixCodeNotLike.size() > 0">
             AND
             <foreach item="item"
-                     collection="officialRankSystem.params.officialRankSystemNameNotLike"
+                     collection="officialRankSystem.params.rankPrefixCodeNotLike"
                      index="index" open="(" separator="OR" close=")">
                 rank_prefix_code NOT LIKE concat('%', #{item}, '%')
             </foreach>

@@ -138,7 +138,7 @@ public class EmpSalaryAdjustPlanDTO {
     /**
      * 个人调薪记录
      */
-    private  List<EmpSalaryAdjustPlanDTO> employeeSalarySnapVOS;
+    private List<EmpSalaryAdjustPlanDTO> employeeSalarySnapVOS;
 
     //==============================员工调整前的数据==================================//
 

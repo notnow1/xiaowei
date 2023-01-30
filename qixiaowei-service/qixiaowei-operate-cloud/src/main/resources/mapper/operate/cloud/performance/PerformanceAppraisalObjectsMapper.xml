@@ -304,7 +304,8 @@
         pa.cycle_number,
         pa.cycle_type,
         pao.appraisal_result,
-        pa.filing_date
+        pa.appraisal_start_date,
+        pa.appraisal_end_date
         FROM performance_appraisal_objects pao
         LEFT JOIN performance_appraisal pa
         ON pao.performance_appraisal_id = pa.performance_appraisal_id

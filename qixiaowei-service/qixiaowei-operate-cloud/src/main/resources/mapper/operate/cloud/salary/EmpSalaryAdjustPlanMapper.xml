@@ -189,6 +189,7 @@
         <if test="empSalaryAdjustPlan.params.basicWage != null">
             and ess.basic_wage=#{empSalaryAdjustPlan.params.basicWage}
         </if>
+        ORDER BY esa.update_time
     </select>
     <!--根据员工ID获取个人调薪计划表-->
     <select id="selectByEmployeeId"
@@ -218,7 +219,7 @@
         ON esp.emp_salary_adjust_plan_id = ess.emp_salary_adjust_plan_id
         AND ess.delete_flag=0
         WHERE esp.delete_flag=0
-        AND esp.status = 2
+        AND esp.status != 0
         AND esp.employee_id = #{employeeId}
     </select>
     <select id="selectByEmployeeIds"

@@ -94,6 +94,8 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         if (StringUtils.isNull(empSalaryAdjustPlanDTO)) {
             throw new ServiceException("当前个人调薪计划已不存在");
         }
+        EmployeeSalaryPlanVO employee = getEmployee(empSalaryAdjustPlanDTO.getEmployeeId());
+        empSalaryAdjustPlanDTO.setBasicWage(employee.getBasicWage());
         String adjustmentType = empSalaryAdjustPlanDTO.getAdjustmentType();
         List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
         empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
@@ -107,7 +109,9 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
                 HashMap<String, String> map = new HashMap<>();
                 map.put("appraisalResult", performanceAppraisalObjectsDTO.getAppraisalResult());
                 map.put("cycleNumberName", performanceAppraisalObjectsDTO.getCycleNumberName());
-                map.put("filingDate", DateUtils.localToString(performanceAppraisalObjectsDTO.getFilingDate()));
+                map.put("filingDate", DateUtils.localToString(performanceAppraisalObjectsDTO.getAppraisalStartDate())
+                        + "~"
+                        + DateUtils.localToString(performanceAppraisalObjectsDTO.getAppraisalEndDate()));
                 performanceResultList.add(map);
             }
         }
@@ -524,7 +528,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
                 empSalaryAdjustPerformDTO.setPerformAppraisalObjectsId(objectsDTO.getPerformAppraisalObjectsId());
                 empSalaryAdjustPerformDTO.setCycleType(objectsDTO.getCycleNumber());
                 empSalaryAdjustPerformDTO.setCycleNumber(objectsDTO.getCycleNumber());
-                empSalaryAdjustPerformDTO.setFilingDate(objectsDTO.getFilingDate());
+                empSalaryAdjustPerformDTO.setFilingDate(objectsDTO.getAppraisalStartDate());
                 empSalaryAdjustPerformDTO.setAppraisalResult(objectsDTO.getAppraisalResult());
                 empSalaryAdjustPerformDTOS.add(empSalaryAdjustPerformDTO);
             }

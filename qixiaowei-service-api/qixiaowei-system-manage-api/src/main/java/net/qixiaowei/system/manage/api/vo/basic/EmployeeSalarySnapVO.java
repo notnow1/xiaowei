@@ -15,7 +15,7 @@ public class EmployeeSalarySnapVO {
     /**
      * 调整时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
     private Date effectiveDate;
     /**
      * 调整类型(1调岗;2调级;3调薪),多个用英文逗号隔开

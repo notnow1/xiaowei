@@ -36,14 +36,35 @@
     <!--    查询指标表列表-->
     <select id="selectIndicatorList" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO">
         SELECT
-        t1.indicator_id, t1.parent_indicator_id, t1.ancestors, t1.indicator_type, t1.indicator_code, t1.indicator_name,
-        t1.sort, t1.level,t2.indicator_category_name,
-        t1.indicator_category_id, t1.indicator_value_type, t1.choice_flag, t1.examine_direction,
+        t1.indicator_id,
+        t1.parent_indicator_id,
+        t1.ancestors,
+        t1.indicator_type,
+        t1.indicator_code,
+        t1.indicator_name,
+        t1.sort, t1.level,
+        t1.indicator_category_id,
+        t1.indicator_value_type,
+        t1.choice_flag,
+        t1.examine_direction,
         t1.indicator_definition,
-        t1.indicator_formula, t1.driving_factor_flag, t1.remark, t1.delete_flag, t1.create_by, t1.create_time,
-        t1.update_by, t1.update_time
-        FROM indicator t1 left join indicator_category t2
+        t1.indicator_formula,
+        t1.driving_factor_flag,
+        t1.remark,
+        t1.delete_flag,
+        t1.create_by,
+        t1.create_time,
+        t1.update_by,
+        t1.update_time,
+        t2.indicator_category_name,
+        t3.indicator_name as parent_indicator_name
+        FROM indicator t1
+        LEFT JOIN indicator_category t2
         ON t1.indicator_category_id = t2.indicator_category_id
+        AND t2.delete_flag=0
+        LEFT JOIN indicator t3
+        ON t1.parent_indicator_id = t3.indicator_id
+        AND t3.delete_flag=0
         WHERE t1.delete_flag=0
         <if test="indicator.indicatorId != null">
             and t1.indicator_id=#{indicator.indicatorId}
@@ -111,8 +132,255 @@
         <if test="indicator.params.indicatorCategoryName != null">
             and t2.indicator_category_name=#{indicator.indicatorCategoryName}
         </if>
+        <!--    指标编码过滤-->
+        <if test="indicator.params.indicatorCodeEqual != null and indicator.params.indicatorCodeEqual.size() > 0">
+            AND t1.indicator_code IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorCodeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.indicatorCodeNotEqual != null and indicator.params.indicatorCodeNotEqual.size() > 0">
+            AND (t1.indicator_code NOT IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorCodeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t1.indicator_code IS NULL
+            )
+        </if>
+        <if test="indicator.params.indicatorCodeLike != null and indicator.params.indicatorCodeLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="indicator.params.indicatorCodeLike"
+                     index="index" open="(" separator="OR" close=")">
+                t1.indicator_code LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="indicator.params.indicatorCodeNotLike != null and indicator.params.indicatorCodeNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="indicator.params.indicatorCodeNotLike"
+                     index="index" open="(" separator="OR" close=")">
+                t1.indicator_code NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--    指标名称过滤-->
+        <if test="indicator.params.indicatorNameEqual != null and indicator.params.indicatorNameEqual.size() > 0">
+            AND t1.indicator_name IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.indicatorNameNotEqual != null and indicator.params.indicatorNameNotEqual.size() > 0">
+            AND (t1.indicator_name NOT IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t1.indicator_name IS NULL
+            )
+        </if>
+        <if test="indicator.params.indicatorNameLike != null and indicator.params.indicatorNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="indicator.params.indicatorNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                t1.indicator_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="indicator.params.indicatorNameNotLike != null and indicator.params.indicatorNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="indicator.params.indicatorNameNotLike"
+                     index="index" open="(" separator="OR" close=")">
+                t1.indicator_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--    指标类型过滤-->
+        <if test="indicator.params.indicatorCategoryNameEqual != null and indicator.params.indicatorCategoryNameEqual.size() > 0">
+            AND t2.indicator_category_name IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorCategoryNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.indicatorCategoryNameNotEqual != null and indicator.params.indicatorCategoryNameNotEqual.size() > 0">
+            AND (t2.indicator_category_name NOT IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorCategoryNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t2.indicator_category_name IS NULL
+            )
+        </if>
+        <if test="indicator.params.indicatorCategoryNameNull != null and indicator.params.indicatorCategoryNameNull.size() > 0">
+            and t2.indicator_category_name IS NULL
+        </if>
+        <if test="indicator.params.indicatorCategoryNameNotNull != null and indicator.params.indicatorCategoryNameNotNull.size() > 0">
+            and t2.indicator_category_name IS NOT NULL
+        </if>
+        <!--    指标值类型过滤-->
+        <if test="indicator.params.indicatorTypeEqual != null and indicator.params.indicatorTypeEqual.size() > 0">
+            AND t1.indicator_type IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorTypeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.indicatorTypeNotEqual != null and indicator.params.indicatorTypeNotEqual.size() > 0">
+            AND (t1.indicator_type NOT IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorTypeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t1.indicator_type IS NULL
+            )
+        </if>
+        <!--    是否必选过滤-->
+        <if test="indicator.params.choiceFlagEqual != null and indicator.params.choiceFlagEqual.size() > 0">
+            AND t1.choice_flag IN
+            <foreach item="item"
+                     collection="indicator.params.choiceFlagEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.choiceFlagNotEqual != null and indicator.params.choiceFlagNotEqual.size() > 0">
+            AND (t1.choice_flag NOT IN
+            <foreach item="item"
+                     collection="indicator.params.choiceFlagNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t1.choice_flag IS NULL
+            )
+        </if>
+        <!--    是否必选过滤-->
+        <if test="indicator.params.examineDirectionEqual != null and indicator.params.examineDirectionEqual.size() > 0">
+            AND t1.examine_direction IN
+            <foreach item="item"
+                     collection="indicator.params.examineDirectionEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.examineDirectionNotEqual != null and indicator.params.examineDirectionNotEqual.size() > 0">
+            AND (t1.examine_direction NOT IN
+            <foreach item="item"
+                     collection="indicator.params.examineDirectionNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t1.examine_direction IS NULL
+            )
+        </if>
+        <!--    上级指标过滤-->
+        <if test="indicator.params.parentIndicatorNameEqual != null and indicator.params.parentIndicatorNameEqual.size() > 0">
+            AND t3.indicator_name IN
+            <foreach item="item"
+                     collection="indicator.params.parentIndicatorNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.parentIndicatorNameNotEqual != null and indicator.params.parentIndicatorNameNotEqual.size() > 0">
+            AND (t3.indicator_name NOT IN
+            <foreach item="item"
+                     collection="indicator.params.parentIndicatorNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t3.indicator_name IS NULL
+            )
+        </if>
+        <if test="indicator.params.parentIndicatorNameNull != null and indicator.params.parentIndicatorNameNull.size() > 0">
+            and t3.indicator_name IS NULL
+        </if>
+        <if test="indicator.params.parentIndicatorNameNotNull != null and indicator.params.parentIndicatorNameNotNull.size() > 0">
+            and t3.indicator_name IS NOT NULL
+        </if>
+        <!--    指标层级过滤-->
+        <if test="indicator.params.levelEqual != null and indicator.params.levelEqual.size() > 0">
+            AND t1.level IN
+            <foreach item="item"
+                     collection="indicator.params.levelEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.levelNotEqual != null and indicator.params.levelNotEqual.size() > 0">
+            AND (t1.level NOT IN
+            <foreach item="item"
+                     collection="indicator.params.levelNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t1.level IS NULL
+            )
+        </if>
+        <if test="indicator.params.levelGreaterThan != null and indicator.params.levelGreaterThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="indicator.params.levelGreaterThan"
+                     index="index" open="(" separator="OR" close=")">
+                t1.level &gt; #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.levelNotGreaterThan != null and indicator.params.levelNotGreaterThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="indicator.params.levelNotGreaterThan"
+                     index="index" open="(" separator="OR" close=")">
+                t1.level &lt;= #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.levelLessThan != null and indicator.params.levelLessThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="indicator.params.levelLessThan"
+                     index="index" open="(" separator="OR" close=")">
+                t1.level &lt; #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.levelNotLessThan != null and indicator.params.levelNotLessThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="indicator.params.levelNotLessThan"
+                     index="index" open="(" separator="OR" close=")">
+                t1.level &gt;= #{item}
+            </foreach>
+        </if>
+        <!--    是否驱动因素过滤-->
+        <if test="indicator.params.drivingFactorFlagEqual != null and indicator.params.drivingFactorFlagEqual.size() > 0">
+            AND t1.driving_factor_flag IN
+            <foreach item="item"
+                     collection="indicator.params.drivingFactorFlagEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.drivingFactorFlagNotEqual != null and indicator.params.drivingFactorFlagNotEqual.size() > 0">
+            AND (t1.driving_factor_flag NOT IN
+            <foreach item="item"
+                     collection="indicator.params.drivingFactorFlagNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t1.driving_factor_flag IS NULL
+            )
+        </if>
     </select>
-    <!--级联查询父菜单-->
+    <!--    级联查询父菜单-->
     <select id="selectIndicatorTree" resultMap="treeVoMap">
         SELECT
         indicator_id, parent_indicator_id, ancestors, indicator_type, indicator_code, indicator_name, sort, level,

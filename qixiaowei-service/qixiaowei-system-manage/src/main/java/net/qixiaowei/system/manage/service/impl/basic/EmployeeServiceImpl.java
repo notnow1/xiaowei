@@ -1401,7 +1401,9 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 HashMap<String, String> map = new HashMap<>();
                 map.put("appraisalResult", performanceAppraisalObjectsDTO.getAppraisalResult());
                 map.put("cycleNumberName", performanceAppraisalObjectsDTO.getCycleNumberName());
-                map.put("filingDate", DateUtils.localToString(performanceAppraisalObjectsDTO.getFilingDate()));
+                map.put("filingDate", DateUtils.localToString(performanceAppraisalObjectsDTO.getAppraisalStartDate())
+                        + "~"
+                        + DateUtils.localToString(performanceAppraisalObjectsDTO.getAppraisalEndDate()));
                 performanceResultList.add(map);
             }
         }

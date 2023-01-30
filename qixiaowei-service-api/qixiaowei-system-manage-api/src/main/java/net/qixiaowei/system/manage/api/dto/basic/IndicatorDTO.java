@@ -48,6 +48,10 @@ public class IndicatorDTO {
      */
     private Long parentIndicatorId;
     /**
+     * 父级指标名称
+     */
+    private String parentIndicatorName;
+    /**
      * 祖级列表ID，按层级用英文逗号隔开
      */
     private String ancestors;

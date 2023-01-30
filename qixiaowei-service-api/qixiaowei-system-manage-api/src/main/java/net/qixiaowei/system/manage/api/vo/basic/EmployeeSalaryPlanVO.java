@@ -56,6 +56,10 @@ public class EmployeeSalaryPlanVO {
      */
     private BigDecimal basicWage;
     /**
+     * 员工基本工资-调整后
+     */
+    private BigDecimal adjustEmolument;
+    /**
      * 入职日期
      */
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")

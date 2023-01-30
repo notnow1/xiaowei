@@ -326,7 +326,6 @@ public class PostServiceImpl implements IPostService {
         if (postErreo.length() > 1) {
             throw new ServiceException(postErreo.toString());
         }
-
         return postMapper.logicDeletePostByPostIds(postIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 

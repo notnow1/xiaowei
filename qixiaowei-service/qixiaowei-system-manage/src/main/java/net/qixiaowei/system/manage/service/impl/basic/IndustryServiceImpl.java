@@ -95,6 +95,8 @@ public class IndustryServiceImpl implements IIndustryService {
     public List<IndustryDTO> selectIndustryList(IndustryDTO industryDTO) {
         Industry industry = new Industry();
         BeanUtils.copyProperties(industryDTO, industry);
+        Map<String, Object> params = industryDTO.getParams();
+        industry.setParams(params);
         return industryMapper.selectIndustryList(industry);
     }
 

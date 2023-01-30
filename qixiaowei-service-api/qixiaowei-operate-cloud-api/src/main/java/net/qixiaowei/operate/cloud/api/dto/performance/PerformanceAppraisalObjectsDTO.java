@@ -148,10 +148,15 @@ public class PerformanceAppraisalObjectsDTO {
      */
     private String appraisalResult;
     /**
-     * 归档日期
+     * 开始日期
      */
     @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
-    private LocalDate filingDate;
+    private LocalDate appraisalStartDate;
+    /**
+     * 结束日期
+     */
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    private LocalDate appraisalEndDate;
     /**
      * 绩效等级ID
      */
