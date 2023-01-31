@@ -27,6 +27,47 @@
     </select>
 
     <!--    查询用户配置表列表-->
+    <select id="selectUserConfigs" resultType="net.qixiaowei.system.manage.api.dto.user.UserConfigDTO">
+        SELECT
+        user_config_id,user_id,user_config_type,user_config_value,status,remark,delete_flag,create_by,create_time,update_by,update_time
+        FROM user_config
+        WHERE delete_flag=0
+        <if test="userConfig.userConfigId != null">
+            and user_config_id=#{userConfig.userConfigId}
+        </if>
+        <if test="userConfig.userId != null">
+            and user_id=#{userConfig.userId}
+        </if>
+        <if test="userConfig.userConfigType != null">
+            and user_config_type=#{userConfig.userConfigType}
+        </if>
+        <if test="userConfig.userConfigValue != null and userConfig.userConfigValue != ''">
+            and user_config_value=#{userConfig.userConfigValue}
+        </if>
+        <if test="userConfig.status != null">
+            and status=#{userConfig.status}
+        </if>
+        <if test="userConfig.remark != null and userConfig.remark != ''">
+            and remark=#{userConfig.remark}
+        </if>
+        <if test="userConfig.deleteFlag != null">
+            and delete_flag=#{userConfig.deleteFlag}
+        </if>
+        <if test="userConfig.createBy != null">
+            and create_by=#{userConfig.createBy}
+        </if>
+        <if test="userConfig.createTime != null">
+            and create_time=#{userConfig.createTime}
+        </if>
+        <if test="userConfig.updateBy != null">
+            and update_by=#{userConfig.updateBy}
+        </if>
+        <if test="userConfig.updateTime != null">
+            and update_time=#{userConfig.updateTime}
+        </if>
+    </select>
+
+    <!--    查询用户配置表列表-->
     <select id="selectUserConfigList" resultType="net.qixiaowei.system.manage.api.vo.user.UserConfigVO">
         SELECT
         user_config_id,user_config_type,user_config_value,status,remark

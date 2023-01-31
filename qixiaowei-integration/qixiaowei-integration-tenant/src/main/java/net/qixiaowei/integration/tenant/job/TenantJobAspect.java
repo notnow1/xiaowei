@@ -18,6 +18,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,8 +54,10 @@ public class TenantJobAspect {
         // 获得正常的租户列表
         List<Long> tenantIds = tenantService.getTenantIds();
         if (StringUtils.isEmpty(tenantIds)) {
-            return;
+            tenantIds = new ArrayList<>();
         }
+        //加入租户管理平台
+        tenantIds.add(0L);
         //循环租户执行
         Map<Long, String> results = new ConcurrentHashMap<>();
         tenantIds.forEach(tenantId -> {
