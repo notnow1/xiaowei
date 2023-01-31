@@ -383,6 +383,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         Map<String, Object> params = performanceAppraisal.getParams();
+        getEmployeeId(params);
+        getDepartmentId(params);
         performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
@@ -390,6 +392,96 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
         return performanceAppraisalDTOS;
+    }
+
+    /**
+     * 获取高级搜索后的人员ID传入params
+     *
+     * @param params 请求参数
+     */
+    private void getEmployeeId(Map<String, Object> params) {
+        Map<String, Object> params2 = new HashMap<>();
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "employeeNameEqual":
+                    params2.put("employeeNameEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeNameNotEqual":
+                    params2.put("employeeNameNotEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeCodeEqual":
+                    params2.put("employeeCodeEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeCodeNotEqual":
+                    params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
+                    break;
+            }
+        }
+        List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
+        if (StringUtils.isNotEmpty(employeeDTOS)) {
+            List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+            params.put("employeeIds", employeeIds);
+        }
+    }
+
+    /**
+     * 获取高级搜索后的人员ID传入params
+     *
+     * @param params 请求参数
+     */
+    private void getDepartmentId(Map<String, Object> params) {
+        Map<String, Object> params2 = new HashMap<>();
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "departmentNameEqual":
+                    params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentNameNotEqual":
+                    params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentCodeEqual":
+                    params2.put("departmentCodeEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentCodeNotEqual":
+                    params2.put("departmentCodeNotEqual", params.get("departmentCodeNotEqual"));
+                    break;
+            }
+        }
+        List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
+        if (StringUtils.isNotEmpty(departmentDTOS)) {
+            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            params.put("departmentIds", departmentIds);
+        }
+    }
+
+    /**
+     * 人员远程高级搜索
+     *
+     * @param params 请求参数
+     * @return List
+     */
+    private List<EmployeeDTO> empAdvancedSearch(Map<String, Object> params) {
+        R<List<EmployeeDTO>> listR = employeeService.empAdvancedSearch(params, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("人员远程高级搜索失败 请联系管理员");
+        }
+        return employeeDTOS;
+    }
+
+    /**
+     * 组织远程高级搜索
+     *
+     * @param params 请求参数
+     * @return List
+     */
+    private List<DepartmentDTO> depAdvancedSearch(Map<String, Object> params) {
+        R<List<DepartmentDTO>> listR = departmentService.depAdvancedSearch(params, SecurityConstants.INNER);
+        List<DepartmentDTO> departmentDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("组织远程高级搜索失败 请联系管理员");
+        }
+        return departmentDTOS;
     }
 
     /**
@@ -2083,17 +2175,16 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalDevelopList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        List<Long> performanceAppraisalIds = new ArrayList<>();
         PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(1);
         appraisalDTO.setAppraisalStatus(1);
+        Map<String, Object> params = performanceAppraisalObjectsDTO.getParams();
+        appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
             return new ArrayList<>();
         }
-        for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
-            performanceAppraisalIds.add(performanceAppraisalDTO.getPerformanceAppraisalId());
-        }
+        List<Long> performanceAppraisalIds = performanceAppraisalDTOS.stream().map(PerformanceAppraisalDTO::getPerformanceAppraisalId).collect(Collectors.toList());
         Integer appraisalObjectStatus = performanceAppraisalObjectsDTO.getAppraisalObjectStatus();
         List<Integer> appraisalObjectStatuses = new ArrayList<>();
         if (StringUtils.isNull(appraisalObjectStatus)) {
@@ -2104,6 +2195,36 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
+        Map<String, Object> params2 = new HashMap<>();
+        Map<String, Object> params3 = new HashMap<>();
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "departmentNameEqual":
+                    params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentNameNotEqual":
+                    params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "examinationLeaderNameEqual":
+                    params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
+                    break;
+                case "examinationLeaderNameNotEqual":
+                    params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
+                    break;
+                case "appraisalObjectStatusEqual":
+                    params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
+                    break;
+                case "appraisalObjectStatusNotEqual":
+                    params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
+                    break;
+            }
+        }
+        List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
+        if (StringUtils.isNotEmpty(departmentDTOS)) {
+            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            params3.put("departmentIds", departmentIds);
+        }
+        performanceAppraisalObjectsDTO.setParams(params3);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
         performanceAppraisalObjectsDTOList.forEach(PerformanceAppraisalServiceImpl::setObjectFieldName);
         return performanceAppraisalObjectsDTOList;
@@ -2362,16 +2483,15 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      */
     @Override
     public List<PerformanceAppraisalObjectsDTO> selectOrgAppraisalReviewList(PerformanceAppraisalObjectsDTO performanceAppraisalObjectsDTO) {
-        List<Long> performanceAppraisalIds = new ArrayList<>();
         PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(1);
+        Map<String, Object> params = performanceAppraisalObjectsDTO.getParams();
+        appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
-
+            return new ArrayList<>();
         }
-        for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
-            performanceAppraisalIds.add(performanceAppraisalDTO.getPerformanceAppraisalId());
-        }
+        List<Long> performanceAppraisalIds = performanceAppraisalDTOS.stream().map(PerformanceAppraisalDTO::getPerformanceAppraisalId).collect(Collectors.toList());
         Integer appraisalObjectStatus = performanceAppraisalObjectsDTO.getAppraisalObjectStatus();
         List<Integer> appraisalObjectStatuses = new ArrayList<>();
         if (StringUtils.isNull(appraisalObjectStatus)) {
@@ -2382,6 +2502,42 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
+        Map<String, Object> params2 = new HashMap<>();
+        Map<String, Object> params3 = new HashMap<>();
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "departmentNameEqual":
+                    params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentNameNotEqual":
+                    params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "examinationLeaderNameEqual":
+                    params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
+                    break;
+                case "examinationLeaderNameNotEqual":
+                    params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
+                    break;
+                case "appraisalObjectStatusEqual":
+                    params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
+                    break;
+                case "appraisalObjectStatusNotEqual":
+                    params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
+                    break;
+                case "evaluationScoreEqual":
+                    params3.put("evaluationScoreEqual", params.get("evaluationScoreEqual"));
+                    break;
+                case "evaluationScoreNotEqual":
+                    params3.put("evaluationScoreNotEqual", params.get("evaluationScoreNotEqual"));
+                    break;
+            }
+        }
+        List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
+        if (StringUtils.isNotEmpty(departmentDTOS)) {
+            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            params3.put("departmentIds", departmentIds);
+        }
+        performanceAppraisalObjectsDTO.setParams(params3);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
         performanceAppraisalObjectsDTOList.forEach(PerformanceAppraisalServiceImpl::setObjectFieldName);
         return performanceAppraisalObjectsDTOList;
@@ -2713,6 +2869,8 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         performanceAppraisal.setAppraisalObject(1);
         performanceAppraisal.setAppraisalStatus(3);
+        Map<String, Object> params = performanceAppraisal.getParams();
+        performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
         performanceAppraisalDTOS.forEach(PerformanceAppraisalServiceImpl::setFieldName);
         for (PerformanceAppraisalDTO appraisalDTO : performanceAppraisalDTOS) {

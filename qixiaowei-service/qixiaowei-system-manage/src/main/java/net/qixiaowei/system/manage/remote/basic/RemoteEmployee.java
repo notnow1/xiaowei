@@ -1,6 +1,8 @@
 package net.qixiaowei.system.manage.remote.basic;
 
+import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
@@ -220,7 +222,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
      */
     @Override
     @PostMapping("/empAdjustUpdate")
-    public R<Integer> empAdjustUpdate(@RequestBody EmployeeSalarySnapVO employeeSalarySnapVO) {
+    public R<Integer> empAdjustUpdate(@RequestBody EmployeeSalarySnapVO employeeSalarySnapVO, String source) {
         return R.ok(employeeService.empAdjustUpdate(employeeSalarySnapVO));
     }
 
@@ -232,7 +234,23 @@ public class RemoteEmployee implements RemoteEmployeeService {
      */
     @Override
     @PostMapping("/empAdjustUpdates")
-    public R<Integer> empAdjustUpdates(@RequestBody List<EmployeeSalarySnapVO> employeeSalarySnapVOS) {
+    public R<Integer> empAdjustUpdates(@RequestBody List<EmployeeSalarySnapVO> employeeSalarySnapVOS, String source) {
         return R.ok(employeeService.empAdjustUpdates(employeeSalarySnapVOS));
+    }
+
+    /**
+     * 人员远程高级搜索
+     *
+     * @param params 请求参数
+     * @return int
+     */
+    @Override
+    @PostMapping("/empAdvancedSearch")
+    public R<List<EmployeeDTO>> empAdvancedSearch(@RequestBody Map<String, Object> params, String source) {
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        if (StringUtils.isNotNull(params)) {
+            employeeDTO.setParams(params);
+        }
+        return R.ok(employeeService.selectEmployeeList(employeeDTO));
     }
 }

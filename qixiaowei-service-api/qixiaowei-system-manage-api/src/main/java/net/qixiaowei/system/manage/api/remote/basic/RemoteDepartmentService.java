@@ -9,6 +9,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 部门服务
@@ -91,4 +92,13 @@ public interface RemoteDepartmentService {
      */
     @GetMapping(API_PREFIX_DEPARTMEN + "/selectByLevel")
     R<List<DepartmentDTO>> selectDepartmentByLevel(@RequestParam("level") Integer level, @RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
+
+    /**
+     * 组织远程高级搜索
+     *
+     * @param params 查询条件
+     * @return
+     */
+    @PostMapping(API_PREFIX_DEPARTMEN + "/selectByLevel")
+    R<List<DepartmentDTO>> depAdvancedSearch(@RequestBody Map<String, Object> params, @RequestHeader(SecurityConstants.FROM_SOURCE) String inner);
 }

@@ -158,7 +158,7 @@ public interface RemoteEmployeeService {
      * @return R
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/empAdjustUpdate")
-    R<Integer> empAdjustUpdate(@RequestBody EmployeeSalarySnapVO employeeSalarySnapVO);
+    R<Integer> empAdjustUpdate(@RequestBody EmployeeSalarySnapVO employeeSalarySnapVO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 根据调整策略进行更新人员薪资，岗位，职级
@@ -167,5 +167,14 @@ public interface RemoteEmployeeService {
      * @return R
      */
     @PostMapping(API_PREFIX_EMPLOYEE + "/empAdjustUpdates")
-    R<Integer> empAdjustUpdates(@RequestBody List<EmployeeSalarySnapVO> employeeSalarySnapVOS);
+    R<Integer> empAdjustUpdates(@RequestBody List<EmployeeSalarySnapVO> employeeSalarySnapVOS, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 人员远程高级搜索
+     *
+     * @param params 请求参数
+     * @return int
+     */
+    @PostMapping(API_PREFIX_EMPLOYEE + "/empAdvancedSearch")
+    R<List<EmployeeDTO>> empAdvancedSearch(@RequestBody Map<String, Object> params, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

@@ -11,6 +11,7 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 部门服务降级处理
@@ -62,6 +63,11 @@ public class RemoteDepartmentFallbackFactory implements FallbackFactory<RemoteDe
             @Override
             public R<List<DepartmentDTO>> selectDepartmentByLevel(Integer level, String inner) {
                 return R.fail("根据等级查看所有部门失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<DepartmentDTO>> depAdvancedSearch(Map<String, Object> params, String inner) {
+                return R.fail("组织远程高级搜索失败:" + throwable.getMessage());
             }
         };
     }

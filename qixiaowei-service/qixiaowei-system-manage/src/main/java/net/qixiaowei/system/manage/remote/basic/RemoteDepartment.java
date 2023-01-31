@@ -1,14 +1,17 @@
 package net.qixiaowei.system.manage.remote.basic;
 
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.service.basic.IDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/department")
@@ -111,7 +114,24 @@ public class RemoteDepartment implements RemoteDepartmentService {
      * @return
      */
     @Override
+    @GetMapping("/selectByLevel")
     public R<List<DepartmentDTO>> selectDepartmentByLevel(@RequestParam("level") Integer level, String inner) {
         return R.ok(departmentService.selectDepartmentByLevel(level));
+    }
+
+    /**
+     * 组织远程高级搜索
+     *
+     * @param params 查询条件
+     * @return R
+     */
+    @Override
+    @PostMapping("/selectByLevel")
+    public R<List<DepartmentDTO>> depAdvancedSearch(@RequestBody Map<String, Object> params, String inner) {
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        if (StringUtils.isNotNull(params)) {
+            departmentDTO.setParams(params);
+        }
+        return R.ok(departmentService.selectDepartmentList(departmentDTO));
     }
 }

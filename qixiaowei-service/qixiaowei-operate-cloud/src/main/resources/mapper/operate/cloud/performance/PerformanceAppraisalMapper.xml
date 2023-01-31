@@ -57,6 +57,12 @@
         pa.update_by,
         pa.update_time
         FROM performance_appraisal pa
+        LEFT JOIN performance_rank pr
+        ON pa.performance_rank_id = pr.performance_rank_id
+        AND pr.delete_flag=0
+        LEFT JOIN performance_appraisal_objects pao
+        ON pa.performance_appraisal_id = pao.performance_appraisal_id
+        AND pao.delete_flag = 0
         WHERE pa.delete_flag=0
         <if test="performanceAppraisal.performanceAppraisalId != null">
             and pa.performance_appraisal_id=#{performanceAppraisal.performanceAppraisalId}
@@ -81,18 +87,6 @@
         </if>
         <if test="performanceAppraisal.cycleNumber != null">
             and pa.cycle_number=#{performanceAppraisal.cycleNumber}
-        </if>
-        <if test="performanceAppraisal.params.appraisalStartDateStart != null and performanceAppraisal.params.appraisalStartDateEnd != null ">
-            and pa.appraisal_start_date &gt;= #{performanceAppraisal.params.appraisalStartDateStart}
-            and pa.appraisal_start_date &lt;= #{performanceAppraisal.params.appraisalStartDateEnd}
-        </if>
-        <if test="performanceAppraisal.params.appraisalEndDateStart != null and performanceAppraisal.params.appraisalEndDateEnd != null ">
-            and pa.appraisal_end_date &gt;= #{performanceAppraisal.params.appraisalEndDateStart}
-            and pa.appraisal_end_date &lt;= #{performanceAppraisal.params.appraisalEndDateEnd}
-        </if>
-        <if test="performanceAppraisal.params.filingDateStart != null and performanceAppraisal.params.filingDateEnd != null ">
-            and pa.filing_date &gt;= #{performanceAppraisal.params.filingDateStart}
-            and pa.filing_date &lt;= #{performanceAppraisal.params.filingDateEnd}
         </if>
         <if test="performanceAppraisal.appraisalFlow != null">
             and pa.appraisal_flow=#{performanceAppraisal.appraisalFlow}
@@ -120,6 +114,361 @@
         </if>
         <if test="performanceAppraisal.updateTime != null">
             and pa.update_time=#{performanceAppraisal.updateTime}
+        </if>
+        <!--    考核任务名称过滤-->
+        <if test="performanceAppraisal.params.performanceRankNameEqual != null and performanceAppraisal.params.performanceRankNameEqual.size() > 0">
+            AND pa.performance_rank_name IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.performanceRankNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.performanceRankNameNotEqual != null and performanceAppraisal.params.performanceRankNameNotEqual.size() > 0">
+            AND (pa.performance_rank_name NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.performanceRankNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.performance_rank_name IS NULL
+            )
+        </if>
+        <if test="performanceAppraisal.params.performanceRankNameLike != null and performanceAppraisal.params.performanceRankNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="performanceAppraisal.params.performanceRankNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                pa.performance_rank_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.performanceRankNameNotLike != null and performanceAppraisal.params.performanceRankNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="performanceAppraisal.params.performanceRankNameNotLike"
+                     index="index" open="(" separator="OR" close=")">
+                pa.performance_rank_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--    考核年度过滤-->
+        <if test="performanceAppraisal.params.appraisalYearEqual != null and performanceAppraisal.params.appraisalYearEqual.size() > 0">
+            AND pa.appraisal_year IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.appraisalYearNotEqual != null and performanceAppraisal.params.appraisalYearNotEqual.size() > 0">
+            AND (pa.appraisal_year NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.appraisal_year IS NULL
+            )
+        </if>
+        <if test="performanceAppraisal.params.appraisalYearBefore != null and performanceAppraisal.params.appraisalYearBefore != ''">
+            AND pa.appraisal_year &lt; #{performanceAppraisal.params.appraisalYearBefore}
+        </if>
+        <if test="performanceAppraisal.params.appraisalYearNotBefore != null and performanceAppraisal.params.appraisalYearNotBefore != ''">
+            AND pa.appraisal_year &gt;= #{performanceAppraisal.params.appraisalYearNotBefore}
+        </if>
+        <if test="performanceAppraisal.params.appraisalYearAfter != null and performanceAppraisal.params.appraisalYearAfter != ''">
+            AND pa.appraisal_year &gt; #{performanceAppraisal.params.appraisalYearAfter}
+        </if>
+        <if test="performanceAppraisal.params.appraisalYearNotAfter != null and performanceAppraisal.params.appraisalYearNotAfter != ''">
+            AND pa.appraisal_year &lt;= #{performanceAppraisal.params.appraisalYearNotAfter}
+        </if>
+        <if test="performanceAppraisal.params.appraisalYearStart != null and performanceAppraisal.params.appraisalYearStart != ''">
+            AND pa.appraisal_year &gt;= #{performanceAppraisal.params.appraisalYearStart}
+        </if>
+        <if test="performanceAppraisal.params.appraisalYearEnd != null and performanceAppraisal.params.appraisalYearEnd != ''">
+            AND pa.appraisal_year &lt;= #{performanceAppraisal.params.appraisalYearEnd}
+        </if>
+        <!--    周期类型-->
+        <if test="performanceAppraisal.params.cycleTypeEqual != null and performanceAppraisal.params.cycleTypeEqual.size() > 0">
+            AND pa.cycle_type IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.cycleTypeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.cycleTypeNotEqual != null and performanceAppraisal.params.cycleTypeNotEqual.size() > 0">
+            AND (pa.cycle_type NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.cycleTypeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.cycle_type IS NULL
+            )
+        </if>
+        <!--    是否周期性考核-->
+        <if test="performanceAppraisal.params.cycleFlagEqual != null and performanceAppraisal.params.cycleFlagEqual.size() > 0">
+            AND pa.cycle_flag IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.cycleFlagEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.cycleFlagNotEqual != null and performanceAppraisal.params.cycleFlagNotEqual.size() > 0">
+            AND (pa.cycle_flag NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.cycleFlagNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.cycle_flag IS NULL
+            )
+        </if>
+        <!--    考核周期-->
+        <if test="performanceAppraisal.params.cycleNumberEqual != null and performanceAppraisal.params.cycleNumberEqual.size() > 0">
+            AND pa.cycle_number IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.cycleNumberEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.cycleNumberNotEqual != null and performanceAppraisal.params.cycleNumberNotEqual.size() > 0">
+            AND (pa.cycle_number NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.cycleNumberNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.cycle_number IS NULL
+            )
+        </if>
+        <!--    考核开始日期-->
+        <if test="performanceAppraisal.params.appraisalStartDateEqual != null and performanceAppraisal.params.appraisalStartDateEqual.size() > 0">
+            AND pa.appraisal_start_date IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalStartDateEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.appraisalStartDateNotEqual != null and performanceAppraisal.params.appraisalStartDateNotEqual.size() > 0">
+            AND (pa.appraisal_start_date NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalStartDateNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.appraisal_start_date IS NULL
+            )
+        </if>
+        <if test="performanceAppraisal.params.appraisalStartDateBefore != null and performanceAppraisal.params.appraisalStartDateBefore != ''">
+            AND date_format(pa.appraisal_start_date,'%y%m%d') &lt;
+            date_format(#{performanceAppraisal.params.appraisalStartDateBefore},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalStartDateNotBefore != null and performanceAppraisal.params.appraisalStartDateNotBefore != ''">
+            AND date_format(pa.appraisal_start_date,'%y%m%d') &gt;=
+            date_format(#{performanceAppraisal.params.appraisalStartDateNotBefore},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalStartDateAfter != null and performanceAppraisal.params.appraisalStartDateAfter != ''">
+            AND date_format(pa.appraisal_start_date,'%y%m%d') &gt;
+            date_format(#{performanceAppraisal.params.appraisalStartDateAfter},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalStartDateNotAfter != null and performanceAppraisal.params.appraisalStartDateNotAfter != ''">
+            AND date_format(pa.appraisal_start_date,'%y%m%d') &lt;=
+            date_format(#{performanceAppraisal.params.appraisalStartDateNotAfter},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalStartDateStart != null and performanceAppraisal.params.appraisalStartDateStart != ''">
+            -->
+            AND date_format(pa.appraisal_start_date,'%y%m%d') &gt;=
+            date_format(#{performanceAppraisal.params.appraisalStartDateStart},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalStartDateEnd != null and performanceAppraisal.params.appraisalStartDateEnd != ''">
+            AND date_format(pa.appraisal_start_date,'%y%m%d') &lt;=
+            date_format(#{performanceAppraisal.params.appraisalStartDateEnd},'%y%m%d')
+        </if>
+        <!--    考核结束日期-->
+        <if test="performanceAppraisal.params.appraisalEndDateEqual != null and performanceAppraisal.params.appraisalEndDateEqual.size() > 0">
+            AND pa.appraisal_end_date IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalEndDateEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.appraisalEndDateNotEqual != null and performanceAppraisal.params.appraisalEndDateNotEqual.size() > 0">
+            AND (pa.appraisal_end_date NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalEndDateNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.appraisal_end_date IS NULL
+            )
+        </if>
+        <if test="performanceAppraisal.params.appraisalEndDateBefore != null and performanceAppraisal.params.appraisalEndDateBefore != ''">
+            AND date_format(pa.appraisal_end_date,'%y%m%d') &lt;
+            date_format(#{performanceAppraisal.params.appraisalEndDateBefore},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalEndDateNotBefore != null and performanceAppraisal.params.appraisalEndDateNotBefore != ''">
+            AND date_format(pa.appraisal_end_date,'%y%m%d') &gt;=
+            date_format(#{performanceAppraisal.params.appraisalEndDateNotBefore},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalEndDateAfter != null and performanceAppraisal.params.appraisalEndDateAfter != ''">
+            AND date_format(pa.appraisal_end_date,'%y%m%d') &gt;
+            date_format(#{performanceAppraisal.params.appraisalEndDateAfter},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalEndDateNotAfter != null and performanceAppraisal.params.appraisalEndDateNotAfter != ''">
+            AND date_format(pa.appraisal_end_date,'%y%m%d') &lt;=
+            date_format(#{performanceAppraisal.params.appraisalEndDateNotAfter},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalEndDateStart != null and performanceAppraisal.params.appraisalEndDateStart != ''">
+            AND date_format(pa.appraisal_end_date,'%y%m%d') &gt;=
+            date_format(#{performanceAppraisal.params.appraisalEndDateStart},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.appraisalEndDateEnd != null and performanceAppraisal.params.appraisalEndDateEnd != ''">
+            AND date_format(pa.appraisal_end_date,'%y%m%d') &lt;=
+            date_format(#{performanceAppraisal.params.appraisalEndDateEnd},'%y%m%d')
+        </if>
+        <!--    归档日期过滤-->
+        <if test="performanceAppraisal.params.filingDateEqual != null and performanceAppraisal.params.filingDateEqual.size() > 0">
+            AND pa.filing_date IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.filingDateEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.filingDateNotEqual != null and performanceAppraisal.params.filingDateNotEqual.size() > 0">
+            AND (pa.filing_date NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.filingDateNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.filing_date IS NULL
+            )
+        </if>
+        <if test="performanceAppraisal.params.filingDateBefore != null and performanceAppraisal.params.filingDateBefore != ''">
+            AND date_format(pa.filing_date,'%y%m%d') &lt;
+            date_format(#{performanceAppraisal.params.filingDateBefore},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.filingDateNotBefore != null and performanceAppraisal.params.filingDateNotBefore != ''">
+            AND date_format(pa.filing_date,'%y%m%d') &gt;=
+            date_format(#{performanceAppraisal.params.filingDateNotBefore},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.filingDateAfter != null and performanceAppraisal.params.filingDateAfter != ''">
+            AND date_format(pa.filing_date,'%y%m%d') &gt;
+            date_format(#{performanceAppraisal.params.filingDateAfter},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.filingDateNotAfter != null and performanceAppraisal.params.filingDateNotAfter != ''">
+            AND date_format(pa.filing_date,'%y%m%d') &lt;=
+            date_format(#{performanceAppraisal.params.filingDateNotAfter},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.filingDateStart != null and performanceAppraisal.params.filingDateStart != ''">
+            AND date_format(pa.filing_date,'%y%m%d') &gt;=
+            date_format(#{performanceAppraisal.params.filingDateStart},'%y%m%d')
+        </if>
+        <if test="performanceAppraisal.params.filingDateEnd != null and performanceAppraisal.params.filingDateEnd != ''">
+            AND date_format(pa.filing_date,'%y%m%d') &lt;=
+            date_format(#{performanceAppraisal.params.filingDateEnd},'%y%m%d')
+        </if>
+        <!--    考核对象-->
+        <if test="performanceAppraisal.params.appraisalObjectEqual != null and performanceAppraisal.params.appraisalObjectEqual.size() > 0">
+            AND pa.appraisal_object IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalObjectEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.appraisalObjectNotEqual != null and performanceAppraisal.params.appraisalObjectNotEqual.size() > 0">
+            AND (pa.appraisal_object NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalObjectNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.appraisal_object IS NULL
+            )
+        </if>
+        <!--    绩效等级-->
+        <if test="performanceAppraisal.params.performanceRankNameEqual != null and performanceAppraisal.params.performanceRankNameEqual.size() > 0">
+            AND pr.performance_rank_name IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.performanceRankNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.performanceRankNameNotEqual != null and performanceAppraisal.params.performanceRankNameNotEqual.size() > 0">
+            AND (pr.performance_rank_name NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.performanceRankNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pr.performance_rank_name IS NULL
+            )
+        </if>
+        <!--    考核流程-->
+        <if test="performanceAppraisal.params.appraisalFlowEqual != null and performanceAppraisal.params.appraisalFlowEqual.size() > 0">
+            AND pa.appraisal_flow IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalFlowEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.appraisalFlowNotEqual != null and performanceAppraisal.params.appraisalFlowNotEqual.size() > 0">
+            AND (pa.appraisal_flow NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalFlowNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.appraisal_flow IS NULL
+            )
+        </if>
+        <!--    任务阶段-->
+        <if test="performanceAppraisal.params.appraisalStatusEqual != null and performanceAppraisal.params.appraisalStatusEqual.size() > 0">
+            AND pa.appraisal_status IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalStatusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisal.params.appraisalStatusNotEqual != null and performanceAppraisal.params.appraisalStatusNotEqual.size() > 0">
+            AND (pa.appraisal_status NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.appraisalStatusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pa.appraisal_status IS NULL
+            )
+        </if>
+        <!--    组织高级搜索-->
+        <if test="performanceAppraisal.params.departmentIds != null and performanceAppraisal.params.departmentIds.size() > 0">
+            AND pa.appraisal_object = 1
+            AND pao.appraisal_object_id IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!--    员工高级搜索-->
+        <if test="performanceAppraisal.params.employeeIds != null and performanceAppraisal.params.employeeIds.size() > 0">
+            AND pa.appraisal_object = 2
+            AND pao.appraisal_object_id IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.employeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
         ORDER BY pa.appraisal_year,pa.cycle_number
     </select>
@@ -237,6 +586,76 @@
             <foreach collection="performanceAppraisalObjectsDTO.performanceAppraisalIds" item="item" index="index"
                      separator="," open="(" close=")">
                 #{item}
+            </foreach>
+        </if>
+        <!--    状态过滤-->
+        <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual.size() > 0">
+            AND pao.appraisal_object_status IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.performanceRankNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual.size() > 0">
+            AND (pao.appraisal_object_status NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pao.appraisal_object_status IS NULL
+            )
+        </if>
+        <!--    评议分数过滤-->
+        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreEqual != null and performanceAppraisalObjectsDTO.params.evaluationScoreEqual.size() > 0">
+            AND pao.evaluation_score IN
+            <foreach item="item"
+                     collection="performanceAppraisal.params.evaluationScoreEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual.size() > 0">
+            AND (pao.evaluation_score NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pao.evaluation_score IS NULL
+            )
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan"
+                     index="index" open="(" separator="OR" close=")">
+                pao.evaluation_score &gt; #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan"
+                     index="index" open="(" separator="OR" close=")">
+                pao.evaluation_score &lt;= #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreLessThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreLessThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreLessThan"
+                     index="index" open="(" separator="OR" close=")">
+                pao.evaluation_score &lt; #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan"
+                     index="index" open="(" separator="OR" close=")">
+                pao.evaluation_score &gt;= #{item}
             </foreach>
         </if>
         ORDER BY

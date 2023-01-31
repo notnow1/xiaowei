@@ -439,7 +439,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
             BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
             if (empSalaryAdjustPlanDTO.getEffectiveDate().compareTo(DateUtils.getNowDate()) <= 0) {
-                R<Integer> integerR = employeeService.empAdjustUpdate(employeeSalarySnapVO);
+                R<Integer> integerR = employeeService.empAdjustUpdate(employeeSalarySnapVO, SecurityConstants.FROM_SOURCE);
                 if (integerR.getCode() != 200) {
                     throw new ServiceException("远程根据调整策略进行更新人员薪资，岗位，职级失败 请联系管理员");
                 }
@@ -483,7 +483,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
             BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
             if (empSalaryAdjustPlanDTO.getEffectiveDate().compareTo(DateUtils.getNowDate()) <= 0) {
-                R<Integer> integerR = employeeService.empAdjustUpdate(employeeSalarySnapVO);
+                R<Integer> integerR = employeeService.empAdjustUpdate(employeeSalarySnapVO, SecurityConstants.FROM_SOURCE);
                 if (integerR.getCode() != 200) {
                     throw new ServiceException("远程根据调整策略进行更新人员薪资，岗位，职级失败 请联系管理员");
                 }
@@ -639,7 +639,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         for (Integer adjust : adjustmentTypeList) {
             adjustmentType.append(adjust).append(",");
         }
-        empSalaryAdjustPlan.setAdjustmentType(adjustmentType.toString().substring(0, adjustmentType.toString().length() - 1));
+        empSalaryAdjustPlan.setAdjustmentType(adjustmentType.substring(0, adjustmentType.toString().length() - 1));
 
         return empSalaryAdjustPlan;
     }
@@ -962,7 +962,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
             employeeSalarySnapVOS.add(employeeSalarySnapVO);
         }
-        R<Integer> empAdjustR = employeeService.empAdjustUpdates(employeeSalarySnapVOS);
+        R<Integer> empAdjustR = employeeService.empAdjustUpdates(employeeSalarySnapVOS, SecurityConstants.FROM_SOURCE);
         if (empAdjustR.getCode() != 200) {
             throw new ServiceException("远程根据调整策略进行更新人员薪资，岗位，职级失败 请联系管理员");
         }

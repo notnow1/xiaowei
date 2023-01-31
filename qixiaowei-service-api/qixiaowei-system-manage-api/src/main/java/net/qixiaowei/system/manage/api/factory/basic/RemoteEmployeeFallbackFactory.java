@@ -96,13 +96,18 @@ public class RemoteEmployeeFallbackFactory implements FallbackFactory<RemoteEmpl
             }
 
             @Override
-            public R<Integer> empAdjustUpdate(EmployeeSalarySnapVO employeeSalaryPlanVO) {
+            public R<Integer> empAdjustUpdate(EmployeeSalarySnapVO employeeSalaryPlanVO, String source) {
                 return R.fail("远程更新员工薪资，岗位，职级信息 集合查询人员失败:" + throwable.getMessage());
             }
 
             @Override
-            public R<Integer> empAdjustUpdates(List<EmployeeSalarySnapVO> employeeSalarySnapVOS) {
+            public R<Integer> empAdjustUpdates(List<EmployeeSalarySnapVO> employeeSalarySnapVOS, String source) {
                 return R.fail("远程更新员工薪资，岗位，职级信息 集合查询人员失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<EmployeeDTO>> empAdvancedSearch(Map<String, Object> params, String source) {
+                return R.fail("人员远程高级搜索失败:" + throwable.getMessage());
             }
         };
     }

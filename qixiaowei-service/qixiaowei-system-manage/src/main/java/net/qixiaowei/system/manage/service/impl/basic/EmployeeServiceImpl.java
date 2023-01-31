@@ -116,6 +116,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     public List<EmployeeDTO> selectEmployeeList(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
+        Map<String, Object> params = employeeDTO.getParams();
+        employee.setParams(params);
         return employeeMapper.selectEmployeeList(employee);
     }
 
