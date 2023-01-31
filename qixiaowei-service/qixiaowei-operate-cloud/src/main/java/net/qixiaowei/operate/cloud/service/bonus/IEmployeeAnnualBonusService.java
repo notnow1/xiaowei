@@ -111,7 +111,7 @@ public interface IEmployeeAnnualBonusService{
     EmployeeAnnualBonusDTO addPrefabricate(EmployeeAnnualBonusDTO employeeAnnualBonusDTO);
 
     /**
-     * 新增提交个人年终奖表
+     * 修改个人年终奖表
      * @param employeeAnnualBonusDTO
      * @return
      */

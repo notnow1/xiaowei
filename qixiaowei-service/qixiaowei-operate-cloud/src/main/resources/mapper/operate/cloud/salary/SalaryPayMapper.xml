@@ -438,7 +438,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by pay_year desc, pay_month desc limit ${employeeIds.size})spOne group by spOne.employee_id ) sp1
+        order by pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size})spOne group by spOne.employee_id ) sp1
         on sp1.employee_id = sp.employee_id
         left join ( select * from (
         SELECT
@@ -458,7 +458,7 @@
             #{item}
         </foreach>
 
-        order by pay_year desc, pay_month desc limit ${employeeIds.size}
+        order by pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size}
         ) spTwo group by spTwo.employee_id) sp2
         on sp2.employee_id = sp.employee_id
         left join (select * from (SELECT
@@ -477,7 +477,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by pay_year desc, pay_month desc limit ${employeeIds.size}) spThree group by spThree.employee_id) sp3
+        order by  pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size}) spThree group by spThree.employee_id) sp3
         on sp3.employee_id = sp.employee_id
         left join (select * from (SELECT
         employee_id,
@@ -493,7 +493,7 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by pay_year desc, pay_month desc limit ${employeeIds.size}) spFour group by spFour.employee_id) sp4
+        order by  pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size}) spFour group by spFour.employee_id) sp4
         on sp4.employee_id = sp.employee_id
         WHERE sp.employee_id in
         <foreach item="item"
