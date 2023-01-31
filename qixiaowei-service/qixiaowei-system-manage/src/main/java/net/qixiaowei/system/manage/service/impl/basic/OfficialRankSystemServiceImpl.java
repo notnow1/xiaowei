@@ -301,10 +301,10 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         }
         List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
         List<DepartmentPostDTO> departmentPostDTOS = departmentPostMapper.selectPostDepartmentIds(departmentIds);
-        List<DepartmentPostDTO> departmentPostDTOList = new ArrayList<>();
         List<String> departmentNames = new ArrayList<>();
         departmentNames.add(performanceName);
         for (DepartmentDTO departmentDTO : departmentDTOS) {
+            List<DepartmentPostDTO> departmentPostDTOList = new ArrayList<>();
             departmentNames.add(departmentDTO.getDepartmentName());
             for (DepartmentPostDTO postDTO : departmentPostDTOS) {
                 if (departmentDTO.getDepartmentId().equals(postDTO.getDepartmentId())) {
@@ -320,7 +320,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             map.put(performanceName, rankMap.get(rank));
             for (DepartmentDTO departmentDTO : departmentDTOS) {
                 List<DepartmentPostDTO> postDTOList = departmentDTO.getDepartmentPostDTOList();
-                List<String> postList = new ArrayList<>();
+                Set<String> postList = new HashSet<>();
                 for (DepartmentPostDTO departmentPostDTO : postDTOList) {
                     if (StringUtils.isNull(departmentPostDTO.getPostRank())) {
                         continue;
