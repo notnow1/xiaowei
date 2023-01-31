@@ -4,9 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 import net.qixiaowei.integration.common.constant.BusinessConstants;
+import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.message.api.vo.backlog.BacklogCountVO;
 import net.qixiaowei.message.mapper.message.MessageReceiveMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,9 @@ public class BacklogServiceImpl implements IBacklogService {
     @Autowired
     private MessageReceiveMapper messageReceiveMapper;
 
+    @Autowired
+    private RedisService redisService;
+
     /**
      * 查询待办事项表
      *
@@ -60,8 +65,15 @@ public class BacklogServiceImpl implements IBacklogService {
     public BacklogCountVO count() {
         boolean havingBacklog = false;
         Long userId = SecurityUtils.getUserId();
-        Integer countBacklog = backlogMapper.countBacklog(userId);
-        Integer countUnreadMessage = messageReceiveMapper.countUnreadMessage(userId);
+        String cacheKey = CacheConstants.USER_CONFIG_KEY + userId;
+        Integer countBacklog = 0;
+        Integer countUnreadMessage = 0;
+        //如果有配置缓存，说明用户设置了不启用通知
+        Boolean hasKey = redisService.hasKey(cacheKey);
+        if (!hasKey) {
+            countBacklog = backlogMapper.countBacklog(userId);
+            countUnreadMessage = messageReceiveMapper.countUnreadMessage(userId);
+        }
         int totalBacklog = countBacklog + countUnreadMessage;
         if (totalBacklog > 0) {
             havingBacklog = true;

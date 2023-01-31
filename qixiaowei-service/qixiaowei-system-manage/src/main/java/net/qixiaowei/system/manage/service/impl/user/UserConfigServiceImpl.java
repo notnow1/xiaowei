@@ -1,14 +1,19 @@
 package net.qixiaowei.system.manage.service.impl.user;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import net.qixiaowei.integration.common.constant.BusinessConstants;
+import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.enums.user.UserConfigType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.integration.redis.service.RedisService;
+import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.system.manage.api.vo.user.UserConfigVO;
+import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,8 @@ import net.qixiaowei.system.manage.mapper.user.UserConfigMapper;
 import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 
+import javax.annotation.PostConstruct;
+
 
 /**
  * UserConfigService业务层处理
@@ -31,8 +38,62 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
  */
 @Service
 public class UserConfigServiceImpl implements IUserConfigService {
+
+    private static final List<Integer> statusList = Arrays.asList(0, 1);
+
     @Autowired
     private UserConfigMapper userConfigMapper;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private ITenantService tenantService;
+
+
+    /**
+     * 项目启动时，初始化用户配置到缓存
+     */
+    @PostConstruct
+    public void init() {
+        //处理待办消息
+        UserConfig userConfig = new UserConfig();
+        userConfig.setUserConfigType(UserConfigType.BACKUP_LOG_NOTICE.getCode());
+        userConfig.setStatus(0);
+        List<Long> tenantIds = tenantService.getTenantIds();
+        if (StringUtils.isEmpty(tenantIds)) {
+            tenantIds = new ArrayList<>();
+        }
+        tenantIds.add(0L);
+        tenantIds.forEach(tenantId -> TenantUtils.execute(tenantId, () -> {
+            List<UserConfigDTO> UserConfigDTOS = userConfigMapper.selectUserConfigs(userConfig);
+            if (StringUtils.isNotEmpty(UserConfigDTOS)) {
+                for (UserConfigDTO UserConfigDTO : UserConfigDTOS) {
+                    Long userId = UserConfigDTO.getUserId();
+                    this.setUserConfigCache(userId);
+                }
+            }
+        }));
+    }
+
+    /**
+     * 设置用户配置缓存
+     */
+    private void setUserConfigCache(Long userId) {
+        String cacheKey = CacheConstants.USER_CONFIG_KEY + userId;
+        redisService.setCacheObject(cacheKey, "");
+    }
+
+    /**
+     * 清除用户配置缓存
+     */
+    private void clearUserConfigCache(Long userId) {
+        String cacheKey = CacheConstants.USER_CONFIG_KEY + userId;
+        Boolean hasKey = redisService.hasKey(cacheKey);
+        if (hasKey) {
+            redisService.deleteObject(cacheKey);
+        }
+    }
 
     /**
      * 查询用户配置表
@@ -110,6 +171,10 @@ public class UserConfigServiceImpl implements IUserConfigService {
     @Override
     public int updateUserConfig(UserConfigDTO userConfigDTO) {
         Long userConfigId = userConfigDTO.getUserConfigId();
+        Integer status = userConfigDTO.getStatus();
+        if (!statusList.contains(status)) {
+            throw new ServiceException("状态值异常。");
+        }
         UserConfigDTO userConfigByUserConfigId = userConfigMapper.selectUserConfigByUserConfigId(userConfigId);
         if (StringUtils.isNull(userConfigByUserConfigId)) {
             throw new ServiceException("用户配置不存在。");
@@ -122,10 +187,20 @@ public class UserConfigServiceImpl implements IUserConfigService {
         UserConfig userConfig = new UserConfig();
         userConfig.setUserConfigId(userConfigId);
         userConfig.setUserConfigValue(userConfigDTO.getUserConfigValue());
-        userConfig.setStatus(userConfigDTO.getStatus());
+        userConfig.setStatus(status);
         userConfig.setUpdateTime(nowDate);
         userConfig.setUpdateBy(userId);
-        return userConfigMapper.updateUserConfig(userConfig);
+        int i = userConfigMapper.updateUserConfig(userConfig);
+        if (i > 0) {
+            if (UserConfigType.BACKUP_LOG_NOTICE.getCode().equals(userConfigByUserConfigId.getUserConfigType())) {
+                if (BusinessConstants.DISABLE.equals(status)) {
+                    this.setUserConfigCache(userId);
+                } else {
+                    this.clearUserConfigCache(userId);
+                }
+            }
+        }
+        return i;
     }
 
     /**

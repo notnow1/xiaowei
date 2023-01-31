@@ -38,6 +38,7 @@ import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
 import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,7 +82,7 @@ public class TenantServiceImpl implements ITenantService {
 
     @Autowired
     private TenantConfig tenantConfig;
-
+    @Lazy
     @Autowired
     private TenantLogic tenantLogic;
 
@@ -707,7 +708,11 @@ public class TenantServiceImpl implements ITenantService {
     public List<Long> setTenantIdsCache() {
         List<Long> tenantIds = tenantMapper.getTenantIds();
         if (StringUtils.isNotEmpty(tenantIds)) {
-            redisService.setCacheList(CacheConstants.TENANT_IDS_KEY, tenantIds);
+            String cacheKey = CacheConstants.TENANT_IDS_KEY;
+            if (redisService.hasKey(cacheKey)) {
+                redisService.deleteObject(cacheKey);
+            }
+            redisService.setCacheList(cacheKey, tenantIds);
         }
         return tenantIds;
     }

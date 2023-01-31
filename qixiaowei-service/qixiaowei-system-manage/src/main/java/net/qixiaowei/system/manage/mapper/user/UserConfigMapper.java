@@ -34,6 +34,15 @@ public interface UserConfigMapper {
      */
     List<UserConfigDTO> selectUserConfigByUserConfigIds(@Param("userConfigIds") List<Long> userConfigIds);
 
+
+    /**
+     * 查询用户配置表列表
+     *
+     * @param userConfig 用户配置表
+     * @return 用户配置表集合
+     */
+    List<UserConfigDTO> selectUserConfigs(@Param("userConfig") UserConfig userConfig);
+
     /**
      * 查询用户配置表列表
      *

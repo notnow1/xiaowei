@@ -63,4 +63,9 @@ public interface CacheConstants {
      * 租户ID集合 redis key
      */
     String TENANT_IDS_KEY = "tenant_ids:";
+
+    /**
+     * 用户配置 redis key
+     */
+    String USER_CONFIG_KEY = "user_config:";
 }
