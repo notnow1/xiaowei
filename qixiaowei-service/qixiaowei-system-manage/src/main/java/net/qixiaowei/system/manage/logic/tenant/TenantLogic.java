@@ -44,6 +44,7 @@ import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
+import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -138,13 +139,16 @@ public class TenantLogic {
     @Autowired
     private RemoteEmployeeService remoteEmployeeService;
 
+    @Autowired
+    private IUserConfigService userConfigService;
+
 
     @IgnoreTenant
     public Boolean initTenantData(Tenant tenant) {
         AtomicReference<Boolean> initSuccess = new AtomicReference<>(true);
         Long tenantId = tenant.getTenantId();
         TenantUtils.execute(tenantId, () -> {
-            //1、初始化用户---user
+            //1、初始化用户、用户配置---user
             //2、初始化用户角色+用户关联角色---role、user_role
             //3、角色赋权---role_menu
             boolean initUserInfo = this.initUserInfo(tenant);
@@ -155,16 +159,7 @@ public class TenantLogic {
             //6、初始化预置指标---indicator
             boolean initIndicator = this.initIndicator();
             //7、初始化工资条---salary_item
-            boolean initSalaryItem = true;
-            R<Boolean> booleanR = remoteSalaryItemService.initSalaryItem(SecurityConstants.INNER);
-            if (R.SUCCESS != booleanR.getCode()) {
-                initSalaryItem = false;
-            } else {
-                Boolean data = booleanR.getData();
-                if (!data) {
-                    initSalaryItem = false;
-                }
-            }
+            boolean initSalaryItem = this.initSalaryItem();
             initSuccess.set(initUserInfo && initConfig && initDictionary && initIndicator && initSalaryItem);
             //continue...
         });
@@ -195,6 +190,8 @@ public class TenantLogic {
         user.setCreateTime(nowDate);
         user.setUpdateTime(nowDate);
         boolean userSuccess = userMapper.insertUser(user) > 0;
+        //新增用户配置
+        userConfigService.initUserConfig(user.getUserId());
         //新增租户角色
         Role role = new Role();
         role.setRoleType(RoleType.BUILT_IN.getCode());
@@ -358,6 +355,27 @@ public class TenantLogic {
         //初始化指标
         boolean indicatorsSuccess = indicatorMapper.batchIndicator(indicators) > 0;
         return indicatorSuccess && indicatorsSuccess;
+    }
+
+    /**
+     * @description: 初始化工资条
+     * @Author: hzk
+     * @date: 2022/12/13 10:47
+     * @param: []
+     * @return: boolean
+     **/
+    public boolean initSalaryItem() {
+        boolean initSalaryItem = true;
+        R<Boolean> booleanR = remoteSalaryItemService.initSalaryItem(SecurityConstants.INNER);
+        if (R.SUCCESS != booleanR.getCode()) {
+            initSalaryItem = false;
+        } else {
+            Boolean data = booleanR.getData();
+            if (!data) {
+                initSalaryItem = false;
+            }
+        }
+        return initSalaryItem;
     }
 
     /**

@@ -91,6 +91,14 @@ public class EmpAnnualBonusObjectsDTO {
      */
     private  Integer status;
     /**
+     * 主管ID
+     */
+    private  Long   responsibleEmployeeId;
+    /**
+     * 主管ID名称
+     */
+    private  String responsibleEmployeeName;
+    /**
     * 创建时间
     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")

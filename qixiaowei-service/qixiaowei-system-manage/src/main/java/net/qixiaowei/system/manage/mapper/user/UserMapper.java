@@ -75,6 +75,14 @@ public interface UserMapper {
     UserDTO selectUserByEmployeeId(@Param("employeeId") Long employeeId);
 
     /**
+     * 根据人员id集合批量查询用户表
+     *
+     * @param employeeIds 人员id集合
+     * @return 用户表
+     */
+    List<UserDTO> selectUserByEmployeeIds(@Param("employeeIds") List<Long> employeeIds);
+
+    /**
      * 根据人员查询用户表
      *
      * @param userId 用户表主键
