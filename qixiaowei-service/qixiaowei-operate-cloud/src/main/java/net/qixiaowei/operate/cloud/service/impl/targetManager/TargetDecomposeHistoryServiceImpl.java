@@ -837,9 +837,10 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 List<TargetDecomposeHistoryDTO> targetDecomposeHistoryData= targetDecomposeHistoryMap.get(key);
                 if (StringUtils.isNotEmpty(targetDecomposeHistoryData)){
                     for (int i1 = 0; i1 < targetDecomposeHistoryData.size(); i1++) {
+                        if (targetDecomposeHistoryData.size()>1){
                             targetDecomposeHistoryData.get(i1).setDeleteFlag(1);
                             targetDecomposeHistoryDataDelete.add(targetDecomposeHistoryData.get(i1));
-
+                        }
                     }
                 }
             }
