@@ -723,19 +723,19 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     public void packHistoryRemote(List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS) {
         if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)) {
             //人员id集合
-            List<Long> employeeIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getEmployeeId).distinct().filter(r -> r != null).collect(Collectors.toList());
+            List<Long> employeeIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
 
             //人员id集合滚动预测负责人
-            List<Long> principalEmployeeIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getPrincipalEmployeeId).distinct().filter(r -> r != null).collect(Collectors.toList());
+            List<Long> principalEmployeeIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getPrincipalEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
 
             //部门id集合
-            List<Long> departmentIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDepartmentId).distinct().filter(d -> d != null).collect(Collectors.toList());
+            List<Long> departmentIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDepartmentId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
 
             //省份id集合
-            Set<Long> regionIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getRegionId).distinct().filter(r -> r != null).collect(Collectors.toSet());
+            Set<Long> regionIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getRegionId).distinct().filter(Objects::nonNull).collect(Collectors.toSet());
 
             //行业id集合
-            List<Long> industryIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getIndustryId).distinct().filter(x -> x != null).collect(Collectors.toList());
+            List<Long> industryIdCollect = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getIndustryId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
             //人员远程
             if (StringUtils.isNotEmpty(employeeIdCollect)) {
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(employeeIdCollect, SecurityConstants.INNER);
