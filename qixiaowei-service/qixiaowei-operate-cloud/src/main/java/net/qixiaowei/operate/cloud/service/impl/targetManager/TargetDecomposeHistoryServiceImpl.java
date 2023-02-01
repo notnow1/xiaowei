@@ -35,6 +35,7 @@ import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -412,6 +413,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      * 定时任务生成目标分解历史数据
      */
     @Override
+    @Transactional
     public void cronCreateHistoryList(int timeDimension) {
         //历史目标分解集合
         List<TargetDecomposeHistory> targetDecomposeHistories = new ArrayList<>();
@@ -420,6 +422,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         //历史目标分解详情周期集合
         List<DetailCyclesSnapshot> detailCyclesSnapshots = new ArrayList<>();
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectCronCreateHistoryList(timeDimension);
+
 
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
@@ -460,8 +463,8 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 }
             }
             //人员id集合滚动预测负责人
-            List<Long> principalEmployeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getPrincipalEmployeeId).distinct().filter(p -> p != null).collect(Collectors.toList());
-            List<Long> createBys = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getCreateBy).distinct().filter(p -> p != null).collect(Collectors.toList());
+            List<Long> principalEmployeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getPrincipalEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+            List<Long> createBys = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getCreateBy).distinct().filter(Objects::nonNull).collect(Collectors.toList());
             List<UserDTO> userDTOS = getUserByCreateBys(createBys);
             List<EmployeeDTO> employeeDTOS = getEmployeeDTOS(principalEmployeeIdCollect);
             for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
@@ -823,17 +826,75 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      */
     private void packTargetDecomposeHistory(TargetDecomposeDTO targetDecomposeDTO, List<TargetDecomposeHistory> targetDecomposeHistories, int i) {
         String verNum = null;
+        //历史数据集合
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOList = new ArrayList<>();
         //查询是否有生成之前的历史数据 取得版本号
-        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
-        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
-            TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryDTOS.get(targetDecomposeHistoryDTOS.size() - 1);
+        List<TargetDecomposeHistoryDTO>  targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)){
+            //删除重复数据
+            List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDataDelete = new ArrayList<>();
+            //分组数据 判断是否重复
+            Map<String, List<TargetDecomposeHistoryDTO>> targetDecomposeHistoryMap = targetDecomposeHistoryDTOS.parallelStream().collect(Collectors.groupingBy(TargetDecomposeHistoryDTO::getVersion));
+            for (String key : targetDecomposeHistoryMap.keySet()) {
+                List<TargetDecomposeHistoryDTO> targetDecomposeHistoryData= targetDecomposeHistoryMap.get(key);
+                if (StringUtils.isNotEmpty(targetDecomposeHistoryData)){
+                    for (int i1 = 0; i1 < targetDecomposeHistoryData.size(); i1++) {
+                        if (i1 == targetDecomposeHistoryData.size()-1){
+                            targetDecomposeHistoryDTOList.add(targetDecomposeHistoryData.get(i1));
+                        }
+                        if (i1 < targetDecomposeHistoryData.size()-1){
+                            targetDecomposeHistoryData.get(i1).setDeleteFlag(1);
+                            targetDecomposeHistoryDataDelete.add(targetDecomposeHistoryData.get(i1));
+                        }
+                    }
+                }
+            }
+            if (StringUtils.isNotEmpty(targetDecomposeHistoryDataDelete)){
+                List<Long> targetDecomposeHistoryIds = targetDecomposeHistoryDataDelete.stream().map(TargetDecomposeHistoryDTO::getTargetDecomposeHistoryId).filter(Objects::nonNull).collect(Collectors.toList());
+                //删除重复数据
+                List<TargetDecomposeHistory> targetDecomposeHistoryList = new ArrayList<>();
+                for (TargetDecomposeHistoryDTO targetDecomposeHistoryDTO : targetDecomposeHistoryDataDelete) {
+                    TargetDecomposeHistory targetDecomposeHistory = new TargetDecomposeHistory();
+                    BeanUtils.copyProperties(targetDecomposeHistoryDTO,targetDecomposeHistory);
+                    targetDecomposeHistoryList.add(targetDecomposeHistory);
+                }
+                try {
+                    targetDecomposeHistoryMapper.updateTargetDecomposeHistorys(targetDecomposeHistoryList);
+                } catch (Exception e) {
+                    throw new ServiceException("删除历史目标分解重复数据失败");
+                }
+
+                if (StringUtils.isNotEmpty(targetDecomposeHistoryIds)){
+                    List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(targetDecomposeHistoryIds);
+                    if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+                        List<Long> decomposeDetailsSnapshotIds = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDecomposeDetailsSnapshotId).filter(Objects::nonNull).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotIds)){
+                            try {
+                                decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByDecomposeDetailsSnapshotIds(decomposeDetailsSnapshotIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                            } catch (Exception e) {
+                                throw new ServiceException("删除历史目标分解详情重复数据失败");
+                            }
+                            try {
+                                detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(decomposeDetailsSnapshotIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                            } catch (Exception e) {
+                                throw new ServiceException("删除历史目标分解周期重复数据失败");
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOList)) {
+            TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryDTOList.get(targetDecomposeHistoryDTOList.size() - 1);
             String version = targetDecomposeHistoryDTO.getVersion();
             String substring = version.substring(1, 2);
             int veri = Integer.parseInt(substring);
             verNum = String.valueOf(veri + 1);
         }
 
-        if (StringUtils.isEmpty(targetDecomposeHistoryDTOS)) {
+        if (StringUtils.isEmpty(targetDecomposeHistoryDTOList)) {
             String forecastCycleFlag = this.packForecastCycleFlag(targetDecomposeDTO);
             int versionFlag = Integer.parseInt(forecastCycleFlag);
             if (StringUtils.equals(forecastCycleFlag, "下半年")) {
