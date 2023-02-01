@@ -2222,10 +2222,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 }
             }
         }
-        List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
-        if (StringUtils.isNotEmpty(departmentDTOS)) {
-            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            params3.put("departmentIds", departmentIds);
+        if (StringUtils.isNotEmpty(params2)) {
+            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
+            if (StringUtils.isNotEmpty(departmentDTOS)) {
+                List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                params3.put("departmentIds", departmentIds);
+            }
         }
         performanceAppraisalObjectsDTO.setParams(params3);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
@@ -2537,10 +2539,12 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 }
             }
         }
-        List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
-        if (StringUtils.isNotEmpty(departmentDTOS)) {
-            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            params3.put("departmentIds", departmentIds);
+        if (StringUtils.isNotEmpty(params2)) {
+            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
+            if (StringUtils.isNotEmpty(departmentDTOS)) {
+                List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                params3.put("departmentIds", departmentIds);
+            }
         }
         performanceAppraisalObjectsDTO.setParams(params3);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
