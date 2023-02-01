@@ -1086,11 +1086,11 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 forecastCycle = "下半年";
             }
         } else if (targetDecomposeDTO.getTimeDimension() == 3) {
-            forecastCycle = String.valueOf(DateUtils.getQuarter());
+            forecastCycle = String.valueOf(DateUtils.getQuarter()>1?(DateUtils.getQuarter()-1):DateUtils.getQuarter());
         } else if (targetDecomposeDTO.getTimeDimension() == 4) {
-            forecastCycle = String.valueOf(DateUtils.getMonth());
+            forecastCycle = String.valueOf(DateUtils.getMonth()>1?(DateUtils.getMonth()-1):DateUtils.getMonth());
         } else if (targetDecomposeDTO.getTimeDimension() == 5) {
-            forecastCycle = String.valueOf(DateUtils.getDayOfWeek());
+            forecastCycle = String.valueOf(DateUtils.getDayOfWeek()>1?(DateUtils.getDayOfWeek()-1):DateUtils.getDayOfWeek());
         }
         return forecastCycle;
     }
