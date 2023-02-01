@@ -826,8 +826,6 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      */
     private void packTargetDecomposeHistory(TargetDecomposeDTO targetDecomposeDTO, List<TargetDecomposeHistory> targetDecomposeHistories, int i) {
         String verNum = null;
-        //历史数据集合
-        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOList = new ArrayList<>();
         //查询是否有生成之前的历史数据 取得版本号
         List<TargetDecomposeHistoryDTO>  targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
         if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)){
@@ -839,13 +837,9 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 List<TargetDecomposeHistoryDTO> targetDecomposeHistoryData= targetDecomposeHistoryMap.get(key);
                 if (StringUtils.isNotEmpty(targetDecomposeHistoryData)){
                     for (int i1 = 0; i1 < targetDecomposeHistoryData.size(); i1++) {
-                        if (i1 == targetDecomposeHistoryData.size()-1){
-                            targetDecomposeHistoryDTOList.add(targetDecomposeHistoryData.get(i1));
-                        }
-                        if (i1 < targetDecomposeHistoryData.size()-1){
                             targetDecomposeHistoryData.get(i1).setDeleteFlag(1);
                             targetDecomposeHistoryDataDelete.add(targetDecomposeHistoryData.get(i1));
-                        }
+
                     }
                 }
             }
@@ -884,17 +878,19 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     }
                 }
             }
+            //删除重复数据
+            targetDecomposeHistoryDTOS.removeAll(targetDecomposeHistoryDataDelete);
         }
 
-        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOList)) {
-            TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryDTOList.get(targetDecomposeHistoryDTOList.size() - 1);
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
+            TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryDTOS.get(targetDecomposeHistoryDTOS.size() - 1);
             String version = targetDecomposeHistoryDTO.getVersion();
             String substring = version.substring(1, 2);
             int veri = Integer.parseInt(substring);
             verNum = String.valueOf(veri + 1);
         }
 
-        if (StringUtils.isEmpty(targetDecomposeHistoryDTOList)) {
+        if (StringUtils.isEmpty(targetDecomposeHistoryDTOS)) {
             String forecastCycleFlag = this.packForecastCycleFlag(targetDecomposeDTO);
             int versionFlag = Integer.parseInt(forecastCycleFlag);
             if (StringUtils.equals(forecastCycleFlag, "下半年")) {
