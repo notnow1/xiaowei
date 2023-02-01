@@ -893,11 +893,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
 
         if (StringUtils.isEmpty(targetDecomposeHistoryDTOS)) {
             String forecastCycleFlag = this.packForecastCycleFlag(targetDecomposeDTO);
-            int versionFlag = Integer.parseInt(forecastCycleFlag);
             if (StringUtils.equals(forecastCycleFlag, "下半年")) {
                 this.packTargetDecomposeHistoryYear(targetDecomposeDTO, verNum, targetDecomposeHistories);
-            } else if (versionFlag > 1) {
-                this.packTargetDecomposeHistoryNum(targetDecomposeDTO, verNum, targetDecomposeHistories, versionFlag);
+            }else if (!StringUtils.equals(forecastCycleFlag, "下半年")){
+                int versionFlag = Integer.parseInt(forecastCycleFlag);
+                if (versionFlag > 1) {
+                    this.packTargetDecomposeHistoryNum(targetDecomposeDTO, verNum, targetDecomposeHistories, versionFlag);
+                }
             }
         } else {
             TargetDecomposeHistory targetDecomposeHistory = new TargetDecomposeHistory();
