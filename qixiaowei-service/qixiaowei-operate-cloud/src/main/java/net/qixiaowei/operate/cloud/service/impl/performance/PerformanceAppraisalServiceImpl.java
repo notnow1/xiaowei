@@ -383,8 +383,10 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         PerformanceAppraisal performanceAppraisal = new PerformanceAppraisal();
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         Map<String, Object> params = performanceAppraisal.getParams();
-        getEmployeeId(params);
-        getDepartmentId(params);
+        if (StringUtils.isNotEmpty(params)) {
+            getEmployeeId(params);
+            getDepartmentId(params);
+        }
         performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
@@ -535,7 +537,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         return performanceAppraisalDTOS;
     }
-
 
     /**
      * 为字段命名
@@ -2197,32 +2198,36 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
         Map<String, Object> params2 = new HashMap<>();
         Map<String, Object> params3 = new HashMap<>();
-        for (String key : params.keySet()) {
-            switch (key) {
-                case "departmentNameEqual":
-                    params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
-                    break;
-                case "departmentNameNotEqual":
-                    params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
-                    break;
-                case "examinationLeaderNameEqual":
-                    params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
-                    break;
-                case "examinationLeaderNameNotEqual":
-                    params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
-                    break;
-                case "appraisalObjectStatusEqual":
-                    params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
-                    break;
-                case "appraisalObjectStatusNotEqual":
-                    params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
-                    break;
+        if (StringUtils.isNotNull(params)) {
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "departmentNameEqual":
+                        params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
+                        break;
+                    case "departmentNameNotEqual":
+                        params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
+                        break;
+                    case "examinationLeaderNameEqual":
+                        params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
+                        break;
+                    case "examinationLeaderNameNotEqual":
+                        params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
+                        break;
+                    case "appraisalObjectStatusEqual":
+                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
+                        break;
+                    case "appraisalObjectStatusNotEqual":
+                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
+                        break;
+                }
             }
         }
-        List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
-        if (StringUtils.isNotEmpty(departmentDTOS)) {
-            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            params3.put("departmentIds", departmentIds);
+        if (StringUtils.isNotEmpty(params2)) {
+            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
+            if (StringUtils.isNotEmpty(departmentDTOS)) {
+                List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                params3.put("departmentIds", departmentIds);
+            }
         }
         performanceAppraisalObjectsDTO.setParams(params3);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
@@ -2504,38 +2509,42 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
         Map<String, Object> params2 = new HashMap<>();
         Map<String, Object> params3 = new HashMap<>();
-        for (String key : params.keySet()) {
-            switch (key) {
-                case "departmentNameEqual":
-                    params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
-                    break;
-                case "departmentNameNotEqual":
-                    params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
-                    break;
-                case "examinationLeaderNameEqual":
-                    params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
-                    break;
-                case "examinationLeaderNameNotEqual":
-                    params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
-                    break;
-                case "appraisalObjectStatusEqual":
-                    params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
-                    break;
-                case "appraisalObjectStatusNotEqual":
-                    params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
-                    break;
-                case "evaluationScoreEqual":
-                    params3.put("evaluationScoreEqual", params.get("evaluationScoreEqual"));
-                    break;
-                case "evaluationScoreNotEqual":
-                    params3.put("evaluationScoreNotEqual", params.get("evaluationScoreNotEqual"));
-                    break;
+        if (StringUtils.isNotNull(params)) {
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "departmentNameEqual":
+                        params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
+                        break;
+                    case "departmentNameNotEqual":
+                        params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
+                        break;
+                    case "examinationLeaderNameEqual":
+                        params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
+                        break;
+                    case "examinationLeaderNameNotEqual":
+                        params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
+                        break;
+                    case "appraisalObjectStatusEqual":
+                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
+                        break;
+                    case "appraisalObjectStatusNotEqual":
+                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
+                        break;
+                    case "evaluationScoreEqual":
+                        params3.put("evaluationScoreEqual", params.get("evaluationScoreEqual"));
+                        break;
+                    case "evaluationScoreNotEqual":
+                        params3.put("evaluationScoreNotEqual", params.get("evaluationScoreNotEqual"));
+                        break;
+                }
             }
         }
-        List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
-        if (StringUtils.isNotEmpty(departmentDTOS)) {
-            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            params3.put("departmentIds", departmentIds);
+        if (StringUtils.isNotEmpty(params2)) {
+            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
+            if (StringUtils.isNotEmpty(departmentDTOS)) {
+                List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                params3.put("departmentIds", departmentIds);
+            }
         }
         performanceAppraisalObjectsDTO.setParams(params3);
         List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList = performanceAppraisalMapper.selectOrgAppraisalObjectList(performanceAppraisalObjectsDTO);
