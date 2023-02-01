@@ -744,8 +744,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             decomposed = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
             //已分解
             targetDecomposeDTO.setDecomposed(decomposed);
-            //未分解
-            targetDecomposeDTO.setUndecomposed(decomposeTarget.subtract(decomposed));
+            if (decomposeTarget.compareTo(new BigDecimal("0")) != 0){
+                //未分解
+                targetDecomposeDTO.setUndecomposed(decomposeTarget.subtract(decomposed));
+            }
+
             return targetDecomposeDTO.setTargetDecomposeDetailsDTOS(targetDecomposeDetailsDTOList);
         } else {
             //已分解
@@ -957,7 +960,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public TargetDecomposeDTO insertOrderTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
-        validTargetDecomposeData(targetDecomposeDTO);
+        //validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //分解类型
@@ -1004,7 +1007,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public TargetDecomposeDTO insertIncomeTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
-        validTargetDecomposeData(targetDecomposeDTO);
+        //validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         //分解类型
@@ -1051,7 +1054,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public TargetDecomposeDTO insertReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
-        validTargetDecomposeData(targetDecomposeDTO);
+        //validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.RECEIVABLE.getCode());
@@ -1098,7 +1101,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Transactional
     public TargetDecomposeDTO insertCustomTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         //校检数据
-        validTargetDecomposeData(targetDecomposeDTO);
+        //validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setTargetDecomposeType(TargetDecomposeType.CUSTOM.getCode());
