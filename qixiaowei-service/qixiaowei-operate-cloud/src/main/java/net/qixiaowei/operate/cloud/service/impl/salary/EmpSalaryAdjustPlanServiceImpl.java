@@ -962,6 +962,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      * @return int
      */
     @Override
+    @Transactional
     public int empAdjustUpdate() {
         EmpSalaryAdjustPlan selectSalaryAdjustPlan = new EmpSalaryAdjustPlan();
         Map<String, Object> params = new HashMap<>();
@@ -972,6 +973,18 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         if (StringUtils.isEmpty(empSalaryAdjustPlanDTOS)) {
             return 1;
         }
+        Map<Long, List<EmpSalaryAdjustPlanDTO>> map = empSalaryAdjustPlanDTOS.stream().collect(Collectors.groupingBy(EmpSalaryAdjustPlanDTO::getEmployeeId));
+        // 更新状态
+        ArrayList<EmpSalaryAdjustPlan> updateEmpSalaryAdjustPlan = new ArrayList<>();
+        for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
+            EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
+            empSalaryAdjustPlan.setEmpSalaryAdjustPlanId(empSalaryAdjustPlanDTO.getEmpSalaryAdjustPlanId());
+            empSalaryAdjustPlan.setStatus(2);
+            empSalaryAdjustPlan.setUpdateBy(SecurityUtils.getUserId());
+            empSalaryAdjustPlan.setUpdateTime(DateUtils.getNowDate());
+            updateEmpSalaryAdjustPlan.add(empSalaryAdjustPlan);
+        }
+        empSalaryAdjustPlanMapper.updateEmpSalaryAdjustPlans(updateEmpSalaryAdjustPlan);
         List<EmployeeSalarySnapVO> employeeSalarySnapVOS = new ArrayList<>();
         for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
             EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
