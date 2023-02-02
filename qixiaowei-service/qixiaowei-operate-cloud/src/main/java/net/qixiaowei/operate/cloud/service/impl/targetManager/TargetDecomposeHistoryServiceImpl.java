@@ -449,10 +449,12 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             }
             List<Long> collect = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getTargetDecomposeId).collect(Collectors.toList());
             List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeIds(collect);
-            if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
-                for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+
+
+            if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList) && StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
+                for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
                     //插入历史目标分解详情周期集合
-                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTO, detailCyclesSnapshots, decomposeDetailsSnapshots);
+                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList.get(i), detailCyclesSnapshots, decomposeDetailsSnapshots,i);
                 }
             }
             if (StringUtils.isNotEmpty(detailCyclesSnapshots)) {
@@ -467,13 +469,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             List<Long> createBys = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getCreateBy).distinct().filter(Objects::nonNull).collect(Collectors.toList());
             List<UserDTO> userDTOS = getUserByCreateBys(createBys);
             List<EmployeeDTO> employeeDTOS = getEmployeeDTOS(principalEmployeeIdCollect);
-            for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
-                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
-                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                        sendMessage(targetDecomposeDetailsDTO, targetDecomposeDTO, employeeDTOS, userDTOS, timeDimension);
-                    }
-                }
-            }
+//            for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
+//                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+//                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+//                        sendMessage(targetDecomposeDetailsDTO, targetDecomposeDTO, employeeDTOS, userDTOS, timeDimension);
+//                    }
+//                }
+//            }
         }
     }
 
@@ -557,20 +559,21 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     /**
      * 封装历史目标分解详情周期集合
      *
+     * @param targetDecomposeDetailsDTO
      * @param detailCyclesSnapshots
      * @param decomposeDetailsSnapshots
+     * @param i
      */
-    private void pacgkDetailCyclesSnapshot(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, List<DetailCyclesSnapshot> detailCyclesSnapshots, List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots) {
+    private void pacgkDetailCyclesSnapshot(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, List<DetailCyclesSnapshot> detailCyclesSnapshots, List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots, int i) {
         //详情快照表不能为空
         if (StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
-            for (DecomposeDetailsSnapshot decomposeDetailsSnapshot : decomposeDetailsSnapshots) {
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
                 if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList)) {
                     for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
                         DetailCyclesSnapshot detailCyclesSnapshot = new DetailCyclesSnapshot();
                         BeanUtils.copyProperties(decomposeDetailCyclesDTO, detailCyclesSnapshot);
                         //目标分解详情快照ID
-                        detailCyclesSnapshot.setDecomposeDetailsSnapshotId(decomposeDetailsSnapshot.getDecomposeDetailsSnapshotId());
+                        detailCyclesSnapshot.setDecomposeDetailsSnapshotId(decomposeDetailsSnapshots.get(i).getDecomposeDetailsSnapshotId());
                         detailCyclesSnapshot.setCreateBy(SecurityUtils.getUserId());
                         detailCyclesSnapshot.setCreateTime(DateUtils.getNowDate());
                         detailCyclesSnapshot.setUpdateTime(DateUtils.getNowDate());
@@ -579,7 +582,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                         detailCyclesSnapshots.add(detailCyclesSnapshot);
                     }
                 }
-            }
+
         }
 
     }
@@ -595,22 +598,25 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         if (StringUtils.isNotEmpty(targetDecomposeHistories)) {
             //循环添加
             for (TargetDecomposeHistory targetDecomposeHistory : targetDecomposeHistories) {
-                List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
-                this.packRemote(targetDecomposeDetailsDTOList);
-                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
-                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                        DecomposeDetailsSnapshot decomposeDetailsSnapshot = new DecomposeDetailsSnapshot();
-                        BeanUtils.copyProperties(targetDecomposeDetailsDTO, decomposeDetailsSnapshot);
-                        //目标分解历史版本ID
-                        decomposeDetailsSnapshot.setTargetDecomposeHistoryId(targetDecomposeHistory.getTargetDecomposeHistoryId());
-                        decomposeDetailsSnapshot.setCreateBy(SecurityUtils.getUserId());
-                        decomposeDetailsSnapshot.setCreateTime(DateUtils.getNowDate());
-                        decomposeDetailsSnapshot.setUpdateTime(DateUtils.getNowDate());
-                        decomposeDetailsSnapshot.setUpdateBy(SecurityUtils.getUserId());
-                        decomposeDetailsSnapshot.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                        decomposeDetailsSnapshots.add(decomposeDetailsSnapshot);
+                if (targetDecomposeHistory.getTargetDecomposeId().equals(targetDecomposeDTO.getTargetDecomposeId())){
+                    List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+                    this.packRemote(targetDecomposeDetailsDTOList);
+                    if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+                        for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+                            DecomposeDetailsSnapshot decomposeDetailsSnapshot = new DecomposeDetailsSnapshot();
+                            BeanUtils.copyProperties(targetDecomposeDetailsDTO, decomposeDetailsSnapshot);
+                            //目标分解历史版本ID
+                            decomposeDetailsSnapshot.setTargetDecomposeHistoryId(targetDecomposeHistory.getTargetDecomposeHistoryId());
+                            decomposeDetailsSnapshot.setCreateBy(SecurityUtils.getUserId());
+                            decomposeDetailsSnapshot.setCreateTime(DateUtils.getNowDate());
+                            decomposeDetailsSnapshot.setUpdateTime(DateUtils.getNowDate());
+                            decomposeDetailsSnapshot.setUpdateBy(SecurityUtils.getUserId());
+                            decomposeDetailsSnapshot.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                            decomposeDetailsSnapshots.add(decomposeDetailsSnapshot);
+                        }
                     }
                 }
+
             }
         }
     }
@@ -894,8 +900,10 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         if (StringUtils.isEmpty(targetDecomposeHistoryDTOS)) {
             String forecastCycleFlag = this.packForecastCycleFlag(targetDecomposeDTO);
             if (StringUtils.equals(forecastCycleFlag, "下半年")) {
+                this.packTargetDecomposeHistoryHalfYear(targetDecomposeDTO, verNum, targetDecomposeHistories);
+            }else if (StringUtils.equals(forecastCycleFlag, "年度")){
                 this.packTargetDecomposeHistoryYear(targetDecomposeDTO, verNum, targetDecomposeHistories);
-            }else if (!StringUtils.equals(forecastCycleFlag, "下半年") && !StringUtils.equals(forecastCycleFlag, "上半年")){
+            }else if (!StringUtils.equals(forecastCycleFlag, "下半年") && !StringUtils.equals(forecastCycleFlag, "上半年")&& !StringUtils.equals(forecastCycleFlag, "年度")){
                 int versionFlag = Integer.parseInt(forecastCycleFlag);
                 if (versionFlag >= 1) {
                     this.packTargetDecomposeHistoryNum(targetDecomposeDTO, verNum, targetDecomposeHistories, versionFlag);
@@ -978,7 +986,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      * @param verNum
      * @param targetDecomposeHistories
      */
-    private void packTargetDecomposeHistoryYear(TargetDecomposeDTO targetDecomposeDTO, String verNum, List<TargetDecomposeHistory> targetDecomposeHistories) {
+    private void packTargetDecomposeHistoryHalfYear(TargetDecomposeDTO targetDecomposeDTO, String verNum, List<TargetDecomposeHistory> targetDecomposeHistories) {
         if (verNum != null) {
             TargetDecomposeHistory targetDecomposeHistory = new TargetDecomposeHistory();
             //目标分解id
@@ -1026,6 +1034,30 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
 
     }
 
+    /**
+     * 封装年数据
+     *
+     * @param targetDecomposeDTO
+     * @param verNum
+     * @param targetDecomposeHistories
+     */
+    private void packTargetDecomposeHistoryYear(TargetDecomposeDTO targetDecomposeDTO, String verNum, List<TargetDecomposeHistory> targetDecomposeHistories) {
+        if (verNum == null) {
+            TargetDecomposeHistory targetDecomposeHistory = new TargetDecomposeHistory();
+            //目标分解id
+            targetDecomposeHistory.setTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+            //版本号
+            targetDecomposeHistory.setVersion("V1.0");
+            //预测周期
+            targetDecomposeHistory.setForecastCycle(this.packForecastCycle(targetDecomposeDTO));
+            targetDecomposeHistory.setCreateBy(SecurityUtils.getUserId());
+            targetDecomposeHistory.setCreateTime(DateUtils.getNowDate());
+            targetDecomposeHistory.setUpdateTime(DateUtils.getNowDate());
+            targetDecomposeHistory.setUpdateBy(SecurityUtils.getUserId());
+            targetDecomposeHistory.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            targetDecomposeHistories.add(targetDecomposeHistory);
+        }
+    }
     /**
      * 返回预测周期字段
      *
@@ -1079,6 +1111,9 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      */
     private String packForecastCycleFlag(TargetDecomposeDTO targetDecomposeDTO) {
         String forecastCycle = null;
+        if (targetDecomposeDTO.getTimeDimension() == 1) {
+            forecastCycle = "年度";
+        }
         if (targetDecomposeDTO.getTimeDimension() == 2) {
             if (DateUtils.getMonth() <= 6) {
                 forecastCycle = "上半年";

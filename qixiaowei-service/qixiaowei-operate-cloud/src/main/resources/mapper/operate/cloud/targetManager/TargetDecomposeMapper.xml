@@ -251,7 +251,6 @@
         FROM target_decompose
         where time_dimension = #{timeDimension}
           and target_decompose_type in (1, 2, 3)
-            for update
     </select>
     <!--    查询经营结果分析报表列表-->
     <select id="selectResultList"
