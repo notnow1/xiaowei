@@ -29,204 +29,204 @@
         i2.industry_name as parent_industry_name
         FROM industry_default i1
         LEFT JOIN industry_default i2
-        AND i2.delete_flag=0
         ON i1.parent_industry_id = i2.industry_id
+        AND i2.delete_flag=0
         WHERE i1.delete_flag=0
-<!--        <if test="industryDefault.industryId != null and industryDefault.industryId != ''">-->
-<!--            and i1.industry_id=#{industryDefault.industryId}-->
-<!--        </if>-->
-<!--        <if test="industryDefault.parentIndustryId != null and industryDefault.parentIndustryId != ''">-->
-<!--            and i1.parent_industry_id=#{industryDefault.parentIndustryId}-->
-<!--        </if>-->
-<!--        <if test="industryDefault.ancestors != null and industryDefault.ancestors != ''">-->
-<!--            and i1.ancestors=#{industryDefault.ancestors}-->
-<!--        </if>-->
-<!--        <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">-->
-<!--            and i1.industry_code like concat('%', #{industryDefault.industryCode}, '%')-->
-<!--        </if>-->
-<!--        <if test="industryDefault.industryName != null and industryDefault.industryName != ''">-->
-<!--            and i1.industry_name like concat('%', #{industryDefault.industryName}, '%')-->
-<!--        </if>-->
-<!--        <if test="industryDefault.level != null">-->
-<!--            and i1.level=#{industryDefault.level}-->
-<!--        </if>-->
-<!--        <if test="industryDefault.status != null">-->
-<!--            and i1.status=#{industryDefault.status}-->
-<!--        </if>-->
-<!--        <if test="industryDefault.deleteFlag != null">-->
-<!--            and i1.delete_flag=#{industryDefault.deleteFlag}-->
-<!--        </if>-->
-<!--        <if test="industryDefault.createBy != null">-->
-<!--            and i1.create_by=#{industryDefault.createBy}-->
-<!--        </if>-->
-<!--        <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">-->
-<!--            and i1.update_by=#{industryDefault.updateBy}-->
-<!--        </if>-->
-<!--        &lt;!&ndash;    行业编码过滤&ndash;&gt;-->
-<!--        <if test="industryDefault.params.industryCodeEqual != null and industryDefault.params.industryCodeEqual.size() > 0">-->
-<!--            AND i1.industry_code IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.industryCodeEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.industryCodeNotEqual != null and industryDefault.params.industryCodeNotEqual.size() > 0">-->
-<!--            AND (i1.industry_code NOT IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.industryCodeNotEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--            OR i1.industry_code IS NULL-->
-<!--            )-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.industryCodeLike != null and industryDefault.params.industryCodeLike.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.industryCodeLike"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                i1.industry_code LIKE concat('%', #{item}, '%')-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.industryCodeNotLike != null and industryDefault.params.industryCodeNotLike.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.industryCodeNotLike"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                i1.industry_code NOT LIKE concat('%', #{item}, '%')-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        &lt;!&ndash;    行业名称过滤&ndash;&gt;-->
-<!--        <if test="industryDefault.params.industryNameEqual != null and industryDefault.params.industryNameEqual.size() > 0">-->
-<!--            AND i1.industry_name IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.industryNameEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.industryNameNotEqual != null and industryDefault.params.industryNameNotEqual.size() > 0">-->
-<!--            AND (i1.industry_name NOT IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.industryNameNotEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--            OR i1.industry_name IS NULL-->
-<!--            )-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.industryNameLike != null and industryDefault.params.industryNameLike.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.industryNameLike"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                i1.industry_name LIKE concat('%', #{item}, '%')-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.industryNameNotLike != null and industryDefault.params.industryNameNotLike.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.industryNameNotLike"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                i1.industry_name NOT LIKE concat('%', #{item}, '%')-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        &lt;!&ndash;    上级行业过滤&ndash;&gt;-->
-<!--        <if test="industryDefault.params.parentIndustryNameEqual != null and industryDefault.params.parentIndustryNameEqual.size() > 0">-->
-<!--            AND i2.industry_name IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.parentIndustryNameEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.parentIndustryNameNotEqual != null and industryDefault.params.parentIndustryNameNotEqual.size() > 0">-->
-<!--            AND (i2.industry_name NOT IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.parentIndustryNameNotEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--            OR i2.industry_name IS NULL-->
-<!--            )-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.parentIndustryNameNull != null and industryDefault.params.parentIndustryNameNull.size() > 0">-->
-<!--            and i2.industry_name IS NULL-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.parentIndustryNameNotNull != null and industryDefault.params.parentIndustryNameNotNull.size() > 0">-->
-<!--            and i2.industry_name IS NOT NULL-->
-<!--        </if>-->
-<!--        &lt;!&ndash;    行业层级过滤&ndash;&gt;-->
-<!--        <if test="industryDefault.params.levelEqual != null and industryDefault.params.levelEqual.size() > 0">-->
-<!--            AND i1.level IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.levelEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.levelNotEqual != null and industryDefault.params.levelNotEqual.size() > 0">-->
-<!--            AND (i1.level NOT IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.levelNotEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--            OR i1.level IS NULL-->
-<!--            )-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.levelGreaterThan != null and industryDefault.params.levelGreaterThan.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.levelGreaterThan"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                i1.level &gt; #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.levelNotGreaterThan != null and industryDefault.params.levelNotGreaterThan.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.levelNotGreaterThan"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                i1.level &lt;= #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.levelLessThan != null and industryDefault.params.levelLessThan.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.levelLessThan"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                i1.level &lt; #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.levelNotLessThan != null and industryDefault.params.levelNotLessThan.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.levelNotLessThan"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                i1.level &gt;= #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        &lt;!&ndash;    行业状态过滤&ndash;&gt;-->
-<!--        <if test="industryDefault.params.statusEqual != null and industryDefault.params.statusEqual.size() > 0">-->
-<!--            AND i1.status IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.statusEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="industryDefault.params.statusNotEqual != null and industryDefault.params.statusNotEqual.size() > 0">-->
-<!--            AND (i1.status NOT IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="industryDefault.params.statusNotEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--            OR i1.status IS NULL-->
-<!--            )-->
-<!--        </if>-->
+        <if test="industryDefault.industryId != null and industryDefault.industryId != ''">
+            and i1.industry_id=#{industryDefault.industryId}
+        </if>
+        <if test="industryDefault.parentIndustryId != null and industryDefault.parentIndustryId != ''">
+            and i1.parent_industry_id=#{industryDefault.parentIndustryId}
+        </if>
+        <if test="industryDefault.ancestors != null and industryDefault.ancestors != ''">
+            and i1.ancestors=#{industryDefault.ancestors}
+        </if>
+        <if test="industryDefault.industryCode != null and industryDefault.industryCode != ''">
+            and i1.industry_code like concat('%', #{industryDefault.industryCode}, '%')
+        </if>
+        <if test="industryDefault.industryName != null and industryDefault.industryName != ''">
+            and i1.industry_name like concat('%', #{industryDefault.industryName}, '%')
+        </if>
+        <if test="industryDefault.level != null">
+            and i1.level=#{industryDefault.level}
+        </if>
+        <if test="industryDefault.status != null">
+            and i1.status=#{industryDefault.status}
+        </if>
+        <if test="industryDefault.deleteFlag != null">
+            and i1.delete_flag=#{industryDefault.deleteFlag}
+        </if>
+        <if test="industryDefault.createBy != null">
+            and i1.create_by=#{industryDefault.createBy}
+        </if>
+        <if test="industryDefault.updateBy != null and industryDefault.updateBy != ''">
+            and i1.update_by=#{industryDefault.updateBy}
+        </if>
+        <!--    行业编码过滤-->
+        <if test="industryDefault.params.industryCodeEqual != null and industryDefault.params.industryCodeEqual.size() > 0">
+            AND i1.industry_code IN
+            <foreach item="item"
+                     collection="industryDefault.params.industryCodeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="industryDefault.params.industryCodeNotEqual != null and industryDefault.params.industryCodeNotEqual.size() > 0">
+            AND (i1.industry_code NOT IN
+            <foreach item="item"
+                     collection="industryDefault.params.industryCodeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR i1.industry_code IS NULL
+            )
+        </if>
+        <if test="industryDefault.params.industryCodeLike != null and industryDefault.params.industryCodeLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="industryDefault.params.industryCodeLike"
+                     index="index" open="(" separator="OR" close=")">
+                i1.industry_code LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="industryDefault.params.industryCodeNotLike != null and industryDefault.params.industryCodeNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="industryDefault.params.industryCodeNotLike"
+                     index="index" open="(" separator="OR" close=")">
+                i1.industry_code NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--    行业名称过滤-->
+        <if test="industryDefault.params.industryNameEqual != null and industryDefault.params.industryNameEqual.size() > 0">
+            AND i1.industry_name IN
+            <foreach item="item"
+                     collection="industryDefault.params.industryNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="industryDefault.params.industryNameNotEqual != null and industryDefault.params.industryNameNotEqual.size() > 0">
+            AND (i1.industry_name NOT IN
+            <foreach item="item"
+                     collection="industryDefault.params.industryNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR i1.industry_name IS NULL
+            )
+        </if>
+        <if test="industryDefault.params.industryNameLike != null and industryDefault.params.industryNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="industryDefault.params.industryNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                i1.industry_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="industryDefault.params.industryNameNotLike != null and industryDefault.params.industryNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="industryDefault.params.industryNameNotLike"
+                     index="index" open="(" separator="OR" close=")">
+                i1.industry_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--    上级行业过滤-->
+        <if test="industryDefault.params.parentIndustryNameEqual != null and industryDefault.params.parentIndustryNameEqual.size() > 0">
+            AND i2.industry_name IN
+            <foreach item="item"
+                     collection="industryDefault.params.parentIndustryNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="industryDefault.params.parentIndustryNameNotEqual != null and industryDefault.params.parentIndustryNameNotEqual.size() > 0">
+            AND (i2.industry_name NOT IN
+            <foreach item="item"
+                     collection="industryDefault.params.parentIndustryNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR i2.industry_name IS NULL
+            )
+        </if>
+        <if test="industryDefault.params.parentIndustryNameNull != null and industryDefault.params.parentIndustryNameNull.size() > 0">
+            and i2.industry_name IS NULL
+        </if>
+        <if test="industryDefault.params.parentIndustryNameNotNull != null and industryDefault.params.parentIndustryNameNotNull.size() > 0">
+            and i2.industry_name IS NOT NULL
+        </if>
+        <!--    行业层级过滤-->
+        <if test="industryDefault.params.levelEqual != null and industryDefault.params.levelEqual.size() > 0">
+            AND i1.level IN
+            <foreach item="item"
+                     collection="industryDefault.params.levelEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="industryDefault.params.levelNotEqual != null and industryDefault.params.levelNotEqual.size() > 0">
+            AND (i1.level NOT IN
+            <foreach item="item"
+                     collection="industryDefault.params.levelNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR i1.level IS NULL
+            )
+        </if>
+        <if test="industryDefault.params.levelGreaterThan != null and industryDefault.params.levelGreaterThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="industryDefault.params.levelGreaterThan"
+                     index="index" open="(" separator="OR" close=")">
+                i1.level &gt; #{item}
+            </foreach>
+        </if>
+        <if test="industryDefault.params.levelNotGreaterThan != null and industryDefault.params.levelNotGreaterThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="industryDefault.params.levelNotGreaterThan"
+                     index="index" open="(" separator="OR" close=")">
+                i1.level &lt;= #{item}
+            </foreach>
+        </if>
+        <if test="industryDefault.params.levelLessThan != null and industryDefault.params.levelLessThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="industryDefault.params.levelLessThan"
+                     index="index" open="(" separator="OR" close=")">
+                i1.level &lt; #{item}
+            </foreach>
+        </if>
+        <if test="industryDefault.params.levelNotLessThan != null and industryDefault.params.levelNotLessThan.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="industryDefault.params.levelNotLessThan"
+                     index="index" open="(" separator="OR" close=")">
+                i1.level &gt;= #{item}
+            </foreach>
+        </if>
+        <!--    行业状态过滤-->
+        <if test="industryDefault.params.statusEqual != null and industryDefault.params.statusEqual.size() > 0">
+            AND i1.status IN
+            <foreach item="item"
+                     collection="industryDefault.params.statusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="industryDefault.params.statusNotEqual != null and industryDefault.params.statusNotEqual.size() > 0">
+            AND (i1.status NOT IN
+            <foreach item="item"
+                     collection="industryDefault.params.statusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR i1.status IS NULL
+            )
+        </if>
     </select>
     <!--默认行业唯一性校验-->
 
