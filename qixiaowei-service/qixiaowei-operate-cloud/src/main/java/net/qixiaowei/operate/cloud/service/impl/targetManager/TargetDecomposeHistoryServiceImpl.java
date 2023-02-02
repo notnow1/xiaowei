@@ -469,13 +469,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             List<Long> createBys = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getCreateBy).distinct().filter(Objects::nonNull).collect(Collectors.toList());
             List<UserDTO> userDTOS = getUserByCreateBys(createBys);
             List<EmployeeDTO> employeeDTOS = getEmployeeDTOS(principalEmployeeIdCollect);
-//            for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
-//                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
-//                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-//                        sendMessage(targetDecomposeDetailsDTO, targetDecomposeDTO, employeeDTOS, userDTOS, timeDimension);
-//                    }
-//                }
-//            }
+            for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
+                if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
+                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
+                        sendMessage(targetDecomposeDetailsDTO, targetDecomposeDTO, employeeDTOS, userDTOS, timeDimension);
+                    }
+                }
+            }
         }
     }
 
@@ -835,6 +835,10 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         //查询是否有生成之前的历史数据 取得版本号
         List<TargetDecomposeHistoryDTO>  targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
         if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)){
+            String version1 = targetDecomposeHistoryDTOS.get(targetDecomposeHistoryDTOS.size() - 1).getVersion();
+            if (StringUtils.equals(String.valueOf(DateUtils.getMonth()>1?(DateUtils.getMonth()-1):DateUtils.getMonth()), version1.substring(0, version1.indexOf(".")).replaceAll("V",""))){
+                    return;
+            }
             //删除重复数据
             List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDataDelete = new ArrayList<>();
             //分组数据 判断是否重复
@@ -892,7 +896,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
             TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryDTOS.get(targetDecomposeHistoryDTOS.size() - 1);
             String version = targetDecomposeHistoryDTO.getVersion();
-            String substring = version.substring(1, 2);
+            String substring = version.substring(0, version.indexOf(".")).replaceAll("V","");
             int veri = Integer.parseInt(substring);
             verNum = String.valueOf(veri + 1);
         }
