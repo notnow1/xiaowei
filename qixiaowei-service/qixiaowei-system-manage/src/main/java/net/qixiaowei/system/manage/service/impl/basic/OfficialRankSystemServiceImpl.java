@@ -301,11 +301,18 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         }
         List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
         List<DepartmentPostDTO> departmentPostDTOS = departmentPostMapper.selectPostDepartmentIds(departmentIds);
-        List<String> departmentNames = new ArrayList<>();
-        departmentNames.add(performanceName);
-        for (DepartmentDTO departmentDTO : departmentDTOS) {
+        List<Map<String, Object>> departmentNames = new ArrayList<>();
+        Map<String, Object> objectMap = new HashMap<>();
+        objectMap.put("label", 1);
+        objectMap.put("value", performanceName);
+        departmentNames.add(objectMap);
+        for (int i = 0; i < departmentDTOS.size(); i++) {
+            DepartmentDTO departmentDTO = departmentDTOS.get(i);
             List<DepartmentPostDTO> departmentPostDTOList = new ArrayList<>();
-            departmentNames.add(departmentDTO.getDepartmentName());
+            objectMap = new HashMap<>();
+            objectMap.put("label", i + 2);
+            objectMap.put("value", departmentDTO.getDepartmentName());
+            departmentNames.add(objectMap);
             for (DepartmentPostDTO postDTO : departmentPostDTOS) {
                 if (departmentDTO.getDepartmentId().equals(postDTO.getDepartmentId())) {
                     departmentPostDTOList.add(postDTO);
@@ -314,11 +321,12 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             departmentDTO.setDepartmentPostDTOList(departmentPostDTOList);
         }
         Map<String, Object> maps = new HashMap<>();
-        List<Map<String, Object>> list = new ArrayList<>();
+        List<Map<Integer, Object>> list = new ArrayList<>();
         for (Integer rank : rankList) {
-            Map<String, Object> map = new LinkedHashMap<>();
-            map.put(performanceName, rankMap.get(rank));
-            for (DepartmentDTO departmentDTO : departmentDTOS) {
+            Map<Integer, Object> map = new LinkedHashMap<>();
+            map.put(1, rankMap.get(rank));
+            for (int i = 0; i < departmentDTOS.size(); i++) {
+                DepartmentDTO departmentDTO = departmentDTOS.get(i);
                 List<DepartmentPostDTO> postDTOList = departmentDTO.getDepartmentPostDTOList();
                 Set<String> postList = new HashSet<>();
                 for (DepartmentPostDTO departmentPostDTO : postDTOList) {
@@ -329,7 +337,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
                         postList.add(departmentPostDTO.getPostName());
                     }
                 }
-                map.put(departmentDTO.getDepartmentName(), postList);
+                map.put(i + 2, postList);
             }
             list.add(map);
         }

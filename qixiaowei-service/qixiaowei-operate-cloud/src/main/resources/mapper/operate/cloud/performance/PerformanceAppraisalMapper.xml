@@ -470,6 +470,7 @@
                 #{item}
             </foreach>
         </if>
+        GROUP BY pa.performance_appraisal_id
         ORDER BY pa.appraisal_year,pa.cycle_number
     </select>
     <select id="selectRankFactorByAppraisalId"

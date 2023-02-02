@@ -1487,7 +1487,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
             }
             Employee employee = new Employee();
             employee.setEmployeeId(employeeId);
-            if (StringUtils.isEmpty(adjustmentTypeList)) {
+            String adjustmentType = employeeSalarySnapVO.getAdjustmentType();
+            if (StringUtils.isNull(adjustmentType)) {
                 return 1;
             }
             setAdjustValue(employeeSalarySnapVO, adjustmentTypeList, employeeById, employee);
@@ -1508,10 +1509,14 @@ public class EmployeeServiceImpl implements IEmployeeService {
                                        EmployeeDTO employeeById, Employee employee) {
         for (Integer adjustmentType : adjustmentTypeList) {
             switch (adjustmentType) {
-                case 1:// 调岗
+                case 1:// 调岗-调部门
                     Long adjustPostId = employeeSalarySnapVO.getAdjustPostId();
                     if (StringUtils.isNotNull(adjustPostId) && !employeeById.getEmployeePostId().equals(adjustPostId)) {
                         employee.setEmployeePostId(adjustPostId);
+                    }
+                    Long adjustDepartmentId = employeeSalarySnapVO.getAdjustDepartmentId();
+                    if (StringUtils.isNotNull(adjustDepartmentId) && !employeeById.getEmployeeDepartmentId().equals(adjustDepartmentId)) {
+                        employee.setEmployeeDepartmentId(adjustDepartmentId);
                     }
                     break;
                 case 2:// 调级

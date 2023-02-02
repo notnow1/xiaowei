@@ -95,7 +95,15 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             throw new ServiceException("当前个人调薪计划已不存在");
         }
         EmployeeSalaryPlanVO employee = getEmployee(empSalaryAdjustPlanDTO.getEmployeeId());
-        empSalaryAdjustPlanDTO.setBasicWage(employee.getBasicWage());
+        empSalaryAdjustPlanDTO.setEmployeeBasicWage(employee.getBasicWage());
+        empSalaryAdjustPlanDTO.setEmployeeDepartmentId(employee.getDepartmentId());
+        empSalaryAdjustPlanDTO.setEmployeeDepartmentName(employee.getDepartmentName());
+        empSalaryAdjustPlanDTO.setEmployeePostId(employee.getPostId());
+        empSalaryAdjustPlanDTO.setEmployeePostName(employee.getPostName());
+        empSalaryAdjustPlanDTO.setEmployeeOfficialRank(employee.getOfficialRank());
+        empSalaryAdjustPlanDTO.setEmployeeOfficialRankName(employee.getOfficialRankName());
+        empSalaryAdjustPlanDTO.setEmployeeDepartmentLeaderId(employee.getDepartmentLeaderId());
+        empSalaryAdjustPlanDTO.setEmployeeDepartmentLeaderName(employee.getDepartmentLeaderName());
         String adjustmentType = empSalaryAdjustPlanDTO.getAdjustmentType();
         List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
         empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
@@ -268,8 +276,20 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             String adjustmentType = salaryAdjustPlanDTO.getAdjustmentType();
             List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
             BigDecimal adjustEmolument = salaryAdjustPlanDTO.getAdjustEmolument();
+            Long adjustPostId = salaryAdjustPlanDTO.getAdjustPostId();
+            Long adjustOfficialRankSystemId = salaryAdjustPlanDTO.getAdjustOfficialRankSystemId();//职级体系
+            Integer adjustOfficialRank = salaryAdjustPlanDTO.getAdjustOfficialRank();
             if (StringUtils.isNull(adjustEmolument)) {
                 salaryAdjustPlanDTO.setAdjustEmolument(salaryAdjustPlanDTO.getBasicWage());
+            }
+            if (StringUtils.isNull(adjustPostId)) {
+                salaryAdjustPlanDTO.setAdjustPostName(salaryAdjustPlanDTO.getPostName());
+            }
+            if (StringUtils.isNull(adjustOfficialRankSystemId)) {
+                salaryAdjustPlanDTO.setAdjustOfficialRankSystemName(salaryAdjustPlanDTO.getOfficialRankSystemName());
+            }
+            if (StringUtils.isNull(adjustOfficialRank)) {
+                salaryAdjustPlanDTO.setAdjustOfficialRankName(salaryAdjustPlanDTO.getOfficialRankName());
             }
             empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
         }
@@ -946,12 +966,8 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         EmpSalaryAdjustPlan selectSalaryAdjustPlan = new EmpSalaryAdjustPlan();
         Map<String, Object> params = new HashMap<>();
         params.put("nowDate", DateUtils.getNowDate());
-        params.put("employeeCode", null);
-        params.put("employeeName", null);
-        params.put("departmentName", null);
-        params.put("departmentLeaderName", null);
         selectSalaryAdjustPlan.setParams(params);
-        selectSalaryAdjustPlan.setStatus(2);
+        selectSalaryAdjustPlan.setStatus(1);
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(selectSalaryAdjustPlan);
         if (StringUtils.isEmpty(empSalaryAdjustPlanDTOS)) {
             return 1;
@@ -960,6 +976,10 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         for (EmpSalaryAdjustPlanDTO empSalaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
             EmployeeSalarySnapVO employeeSalarySnapVO = new EmployeeSalarySnapVO();
             BeanUtils.copyProperties(empSalaryAdjustPlanDTO, employeeSalarySnapVO);
+            String adjustmentType = empSalaryAdjustPlanDTO.getAdjustmentType();
+            List<String> adjustmentTypeList = Arrays.asList(adjustmentType.split(","));
+            List<Integer> adjustmentTypeList2 = adjustmentTypeList.stream().map(Integer::parseInt).collect(Collectors.toList());
+            employeeSalarySnapVO.setAdjustmentTypeList(adjustmentTypeList2);
             employeeSalarySnapVOS.add(employeeSalarySnapVO);
         }
         R<Integer> empAdjustR = employeeService.empAdjustUpdates(employeeSalarySnapVOS, SecurityConstants.FROM_SOURCE);

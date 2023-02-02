@@ -42,6 +42,14 @@ public class EmployeeSalarySnapVO {
      */
     private String adjustPostName;
     /**
+     * 调整部门ID
+     */
+    private Long adjustDepartmentId;
+    /**
+     * 调整部门名称
+     */
+    private String adjustDepartmentName;
+    /**
      * 调整职级体系ID
      */
     private Long adjustOfficialRankSystemId;

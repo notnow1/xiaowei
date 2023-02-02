@@ -238,6 +238,51 @@ public class EmpSalaryAdjustPlanDTO {
      */
     private Long tenantId;
 
+    /**
+     * 当前员工工资
+     */
+    private BigDecimal employeeBasicWage;
+
+    /**
+     * 当前员工部门
+     */
+    private Long employeeDepartmentId;
+
+    /**
+     * 当前员工部门
+     */
+    private String employeeDepartmentName;
+
+    /**
+     * 当前部门主管
+     */
+    private Long employeeDepartmentLeaderId;
+
+    /**
+     * 当前部门主管
+     */
+    private String employeeDepartmentLeaderName;
+
+    /**
+     * 当前岗位
+     */
+    private Long employeePostId;
+
+    /**
+     * 当前岗位
+     */
+    private String employeePostName;
+
+    /**
+     * 当前职级
+     */
+    private Integer employeeOfficialRank;
+
+    /**
+     * 当前职级名称
+     */
+    private String employeeOfficialRankName;
+
     private Map<String, Object> params;
 
 
