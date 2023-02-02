@@ -28,7 +28,7 @@
         i1.update_time,
         i2.industry_name as parent_industry_name
         FROM industry_default i1
-        LEFT JOIN industry i2
+        LEFT JOIN industry_default i2
         AND i2.delete_flag=0
         ON i1.parent_industry_id = i2.industry_id
         WHERE i1.delete_flag=0
