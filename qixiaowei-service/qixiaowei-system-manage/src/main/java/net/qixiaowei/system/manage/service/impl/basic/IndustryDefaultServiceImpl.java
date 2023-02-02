@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -57,6 +58,8 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     public List<IndustryDefaultDTO> selectIndustryDefaultList(IndustryDefaultDTO industryDefaultDTO) {
         IndustryDefault industryDefault = new IndustryDefault();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
+        Map<String, Object> params = industryDefault.getParams();
+        industryDefault.setParams(params);
         return industryDefaultMapper.selectIndustryDefaultList(industryDefault);
     }
 
