@@ -142,16 +142,22 @@ public class TenantLogic {
     @Autowired
     private IUserConfigService userConfigService;
 
-
+    /**
+     * @description: 初始化租户数据
+     * @Author: hzk
+     * @date: 2023/2/2 15:13
+     * @param: [tenant, initMenuIds]
+     * @return: java.lang.Boolean
+     **/
     @IgnoreTenant
-    public Boolean initTenantData(Tenant tenant) {
+    public Boolean initTenantData(Tenant tenant, Set<Long> initMenuIds) {
         AtomicReference<Boolean> initSuccess = new AtomicReference<>(true);
         Long tenantId = tenant.getTenantId();
         TenantUtils.execute(tenantId, () -> {
             //1、初始化用户、用户配置---user
             //2、初始化用户角色+用户关联角色---role、user_role
             //3、角色赋权---role_menu
-            boolean initUserInfo = this.initUserInfo(tenant);
+            boolean initUserInfo = this.initUserInfo(tenant, initMenuIds);
             //4、配置，如启用行业配置---config
             boolean initConfig = this.initConfig();
             //5、初始化产品类别---dictionary_type、dictionary_data
@@ -167,13 +173,65 @@ public class TenantLogic {
     }
 
     /**
+     * @description: 更新租户授权菜单
+     * @Author: hzk
+     * @date: 2023/2/2 15:14
+     * @param: [tenantId, initMenuIds]
+     * @return: void
+     **/
+    @IgnoreTenant
+    public void updateTenantAuth(Long tenantId, Set<Long> initMenuIds) {
+        TenantUtils.execute(tenantId, () -> {
+            //更新租户用户授权
+            this.updateTenantAuth(initMenuIds);
+        });
+    }
+
+    /**
+     * @description: 更新租户用户授权
+     * @Author: hzk
+     * @date: 2023/2/3 15:30
+     * @param: [initMenuIds]
+     * @return: void
+     **/
+    public void updateTenantAuth(Set<Long> initMenuIds) {
+        //更新租户用户授权
+        //找到租户管理员目前的权限。
+        Long roleIdOfAdmin = roleMapper.selectRoleIdOfAdmin();
+        if (StringUtils.isNull(roleIdOfAdmin)) {
+            return;
+        }
+        Set<Long> nowMenuIds = roleMenuMapper.selectMenuIdsByRoleId(roleIdOfAdmin);
+        //新增权限。只给管理员角色。
+        if (StringUtils.isEmpty(nowMenuIds)) {
+            this.initRoleMenu(initMenuIds, roleIdOfAdmin);
+            return;
+        }
+        Set<Long> addMenuIds = new HashSet<>();
+        if (StringUtils.isNotEmpty(initMenuIds)) {
+            for (Long initMenuId : initMenuIds) {
+                if (nowMenuIds.contains(initMenuId)) {
+                    nowMenuIds.remove(initMenuId);
+                } else {
+                    addMenuIds.add(initMenuId);
+                }
+            }
+        }
+        //新增权限。只给管理员角色。
+        this.initRoleMenu(addMenuIds, roleIdOfAdmin);
+        //取消权限。改租户所有角色。
+        this.cancelRoleMenu(nowMenuIds);
+    }
+
+
+    /**
      * @description: 初始化租户用户相关信息
      * @Author: hzk
      * @date: 2022/12/13 10:46
-     * @param: [tenant]
+     * @param: [tenant, initMenuIds]
      * @return: boolean
      **/
-    public boolean initUserInfo(Tenant tenant) {
+    public boolean initUserInfo(Tenant tenant, Set<Long> initMenuIds) {
         Long userId = SecurityUtils.getUserId();
         Date nowDate = DateUtils.getNowDate();
         //新增用户
@@ -190,8 +248,9 @@ public class TenantLogic {
         user.setCreateTime(nowDate);
         user.setUpdateTime(nowDate);
         boolean userSuccess = userMapper.insertUser(user) > 0;
+        Long userIdOfInit = user.getUserId();
         //新增用户配置
-        userConfigService.initUserConfig(user.getUserId());
+        userConfigService.initUserConfig(userIdOfInit);
         //新增租户角色
         Role role = new Role();
         role.setRoleType(RoleType.BUILT_IN.getCode());
@@ -205,30 +264,79 @@ public class TenantLogic {
         role.setCreateTime(nowDate);
         role.setUpdateTime(nowDate);
         boolean roleSuccess = roleMapper.insertRole(role) > 0;
-        //角色赋权 todo
+        //角色赋权
         Long roleId = role.getRoleId();
-        List<RoleMenu> list = new ArrayList<>();
-//        for (Long menuId : menuIds) {
-//            RoleMenu rm = new RoleMenu();
-//            rm.setTenantId(tenantId);
-//            rm.setRoleId(roleId);
-//            rm.setMenuId(menuId);
-//            list.add(rm);
-//        }
-        if (list.size() > 0) {
-            roleMenuMapper.batchInitTenantRoleMenu(list);
-        }
+        boolean initRoleMenuSuccess = this.initRoleMenu(initMenuIds, roleId);
         //新增用户角色关联
+        boolean userRoleSuccess = this.initUserRole(userId, nowDate, userIdOfInit, roleId);
+        return userSuccess && roleSuccess && initRoleMenuSuccess && userRoleSuccess;
+    }
+
+    /**
+     * @description: 初始化用户角色
+     * @Author: hzk
+     * @date: 2023/1/31 17:49
+     * @param: [userId, nowDate, userIdOfInit, roleId]
+     * @return: boolean
+     **/
+    private boolean initUserRole(Long userId, Date nowDate, Long userIdOfInit, Long roleId) {
         UserRole userRole = new UserRole();
-        userRole.setUserId(user.getUserId());
+        userRole.setUserId(userIdOfInit);
         userRole.setRoleId(roleId);
         userRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         userRole.setCreateBy(userId);
         userRole.setUpdateBy(userId);
         userRole.setCreateTime(nowDate);
         userRole.setUpdateTime(nowDate);
-        boolean userRoleSuccess = userRoleMapper.insertUserRole(userRole) > 0;
-        return userSuccess && roleSuccess && userRoleSuccess;
+        return userRoleMapper.insertUserRole(userRole) > 0;
+    }
+
+    /**
+     * @description: 初始化角色菜单
+     * @Author: hzk
+     * @date: 2023/1/31 17:45
+     * @param: [initMenuIds, roleId]
+     * @return: boolean
+     **/
+    private boolean initRoleMenu(Set<Long> initMenuIds, Long roleId) {
+        if (StringUtils.isEmpty(initMenuIds)) {
+            return true;
+        }
+        boolean initRoleMenu = true;
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        List<RoleMenu> list = new ArrayList<>();
+        for (Long menuId : initMenuIds) {
+            RoleMenu rm = new RoleMenu();
+            rm.setRoleId(roleId);
+            rm.setMenuId(menuId);
+            rm.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            rm.setCreateBy(userId);
+            rm.setCreateTime(nowDate);
+            rm.setUpdateBy(userId);
+            rm.setUpdateTime(nowDate);
+            list.add(rm);
+        }
+        if (list.size() > 0) {
+            initRoleMenu = roleMenuMapper.batchRoleMenu(list) > 0;
+        }
+        return initRoleMenu;
+    }
+
+    /**
+     * @description: 取消授权菜单
+     * @Author: hzk
+     * @date: 2023/2/2 15:12
+     * @param: [initMenuIds]
+     * @return: boolean
+     **/
+    private boolean cancelRoleMenu(Set<Long> initMenuIds) {
+        if (StringUtils.isEmpty(initMenuIds)) {
+            return true;
+        }
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        return roleMenuMapper.cancelRoleMenu(initMenuIds, userId, nowDate) > 0;
     }
 
     /**

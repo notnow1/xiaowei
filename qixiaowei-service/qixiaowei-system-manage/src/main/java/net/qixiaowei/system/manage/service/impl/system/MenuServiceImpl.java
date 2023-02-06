@@ -123,8 +123,19 @@ public class MenuServiceImpl implements IMenuService {
      * @return 选中菜单列表
      */
     @Override
-    public List<Long> selectMenuListByRoleId(Long roleId) {
+    public Set<Long> selectMenuListByRoleId(Long roleId) {
         return menuMapper.selectMenuListByRoleId(roleId);
+    }
+
+    /**
+     * 根据租户合同ID查询菜单树信息
+     *
+     * @param tenantContractId 角色ID
+     * @return 选中菜单列表
+     */
+    @Override
+    public Set<Long> selectMenuListByTenantContractId(Long tenantContractId) {
+        return menuMapper.selectMenuListByTenantContractId(tenantContractId);
     }
 
     /**

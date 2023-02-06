@@ -3,7 +3,7 @@
 <mapper namespace="net.qixiaowei.system.manage.mapper.system.RoleMenuMapper">
 
     <select id="checkMenuExistRole" resultType="Integer">
-        select count(1) from role_menu where menu_id = #{menuId}  and delete_flag = 0
+        select count(1) from role_menu where menu_id = #{menuId} and delete_flag = 0
     </select>
     <!--    查询角色菜单表-->
     <select id="selectRoleMenuByRoleMenuId"
@@ -11,7 +11,7 @@
         SELECT
         role_menu_id, role_id, menu_id, delete_flag, create_by, create_time, update_by, update_time
         FROM role_menu
-        WHERE  role_menu_id=#{roleMenuId}
+        WHERE role_menu_id=#{roleMenuId}
         and delete_flag=0
     </select>
 
@@ -20,6 +20,21 @@
         role_menu_id, role_id, menu_id, delete_flag, create_by, create_time, update_by, update_time
         FROM role_menu
         WHERE delete_flag = 0 AND role_id=#{roleId}
+    </select>
+
+    <select id="selectMenuIdsByRoleId" resultType="java.lang.Long">
+        SELECT distinct menu_id FROM role_menu WHERE delete_flag = 0
+        AND role_id=#{roleId}
+    </select>
+
+    <select id="selectMenuIdsByRoleIds" resultType="java.lang.Long">
+        SELECT distinct menu_id FROM role_menu WHERE delete_flag = 0
+        AND role_id IN
+        <foreach item="item"
+                 collection="roleIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 
     <select id="selectRoleMenuIdsByRoleIds" resultType="java.lang.Long">
@@ -41,30 +56,30 @@
         role_menu_id, role_id, menu_id, delete_flag, create_by, create_time, update_by, update_time
         FROM role_menu
         WHERE delete_flag=0
-                <if test="roleMenu.roleMenuId != null">
-                    and role_menu_id=#{roleMenu.roleMenuId}
-                </if>
-                <if test="roleMenu.roleId != null">
-                    and role_id=#{roleMenu.roleId}
-                </if>
-                <if test="roleMenu.menuId != null">
-                    and menu_id=#{roleMenu.menuId}
-                </if>
-                <if test="roleMenu.deleteFlag != null">
-                    and delete_flag=#{roleMenu.deleteFlag}
-                </if>
-                <if test="roleMenu.createBy != null">
-                    and create_by=#{roleMenu.createBy}
-                </if>
-                <if test="roleMenu.createTime != null">
-                    and create_time=#{roleMenu.createTime}
-                </if>
-                <if test="roleMenu.updateBy != null">
-                    and update_by=#{roleMenu.updateBy}
-                </if>
-                <if test="roleMenu.updateTime != null">
-                    and update_time=#{roleMenu.updateTime}
-                </if>
+        <if test="roleMenu.roleMenuId != null">
+            and role_menu_id=#{roleMenu.roleMenuId}
+        </if>
+        <if test="roleMenu.roleId != null">
+            and role_id=#{roleMenu.roleId}
+        </if>
+        <if test="roleMenu.menuId != null">
+            and menu_id=#{roleMenu.menuId}
+        </if>
+        <if test="roleMenu.deleteFlag != null">
+            and delete_flag=#{roleMenu.deleteFlag}
+        </if>
+        <if test="roleMenu.createBy != null">
+            and create_by=#{roleMenu.createBy}
+        </if>
+        <if test="roleMenu.createTime != null">
+            and create_time=#{roleMenu.createTime}
+        </if>
+        <if test="roleMenu.updateBy != null">
+            and update_by=#{roleMenu.updateBy}
+        </if>
+        <if test="roleMenu.updateTime != null">
+            and update_time=#{roleMenu.updateTime}
+        </if>
     </select>
     <!--新增角色菜单表-->
     <insert id="insertRoleMenu" useGeneratedKeys="true" keyProperty="roleMenuId">
@@ -76,52 +91,67 @@
     <update id="updateRoleMenu">
         UPDATE role_menu
         SET
-                    <if test="roleMenu.roleId != null">
-                        role_id=#{roleMenu.roleId},
-                    </if>
-                    <if test="roleMenu.menuId != null">
-                        menu_id=#{roleMenu.menuId},
-                    </if>
-                    <if test="roleMenu.deleteFlag != null">
-                        delete_flag=#{roleMenu.deleteFlag},
-                    </if>
-                    <if test="roleMenu.createBy != null">
-                        create_by=#{roleMenu.createBy},
-                    </if>
-                    <if test="roleMenu.createTime != null">
-                        create_time=#{roleMenu.createTime},
-                    </if>
-                    <if test="roleMenu.updateBy != null">
-                        update_by=#{roleMenu.updateBy},
-                    </if>
-                    <if test="roleMenu.updateTime != null">
-                        update_time=#{roleMenu.updateTime}
-                    </if>
+        <if test="roleMenu.roleId != null">
+            role_id=#{roleMenu.roleId},
+        </if>
+        <if test="roleMenu.menuId != null">
+            menu_id=#{roleMenu.menuId},
+        </if>
+        <if test="roleMenu.deleteFlag != null">
+            delete_flag=#{roleMenu.deleteFlag},
+        </if>
+        <if test="roleMenu.createBy != null">
+            create_by=#{roleMenu.createBy},
+        </if>
+        <if test="roleMenu.createTime != null">
+            create_time=#{roleMenu.createTime},
+        </if>
+        <if test="roleMenu.updateBy != null">
+            update_by=#{roleMenu.updateBy},
+        </if>
+        <if test="roleMenu.updateTime != null">
+            update_time=#{roleMenu.updateTime}
+        </if>
         WHERE
-                 role_menu_id=#{roleMenu.roleMenuId}
+        role_menu_id=#{roleMenu.roleMenuId}
     </update>
+
+    <update id="cancelRoleMenu">
+        UPDATE role_menu
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        menu_id IN
+        <foreach item="item"
+                 collection="menuIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
     <!--逻辑删除角色菜单表-->
     <update id="logicDeleteRoleMenuByRoleMenuId">
         UPDATE role_menu
-        SET     delete_flag= 1,
-                update_by=#{roleMenu.updateBy},
-                update_time=#{roleMenu.updateTime}
+        SET delete_flag= 1,
+        update_by=#{roleMenu.updateBy},
+        update_time=#{roleMenu.updateTime}
         WHERE
-                role_menu_id=#{roleMenu.roleMenuId}
+        role_menu_id=#{roleMenu.roleMenuId}
     </update>
     <!--逻辑批量删除角色菜单表-->
     <update id="logicDeleteRoleMenuByRoleMenuIds">
         UPDATE role_menu
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         role_menu_id IN
-            <foreach item="item"
-                     collection="roleMenuIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        role_menu_id IN
+        <foreach item="item"
+                 collection="roleMenuIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增角色菜单表-->
     <insert id="batchRoleMenu">
@@ -134,32 +164,21 @@
         </foreach>
     </insert>
 
-    <!--批量初始化租户角色菜单表-->
-    <insert id="batchInitTenantRoleMenu">
-        INSERT INTO role_menu (role_id,menu_id,tenant_id)
-        VALUES
-        <foreach item="item" index="index"
-                 collection="roleMenus"
-                 separator=",">
-            (#{item.roleId},#{item.menuId},#{item.tenantId})
-        </foreach>
-    </insert>
-
     <!--物理删除角色菜单表-->
     <delete id="deleteRoleMenuByRoleMenuId">
         DELETE FROM role_menu
-        WHERE  role_menu_id=#{roleMenu}
+        WHERE role_menu_id=#{roleMenu}
 
     </delete>
     <!--物理批量删除角色菜单表-->
     <delete id="deleteRoleMenuByRoleMenuIds">
         DELETE FROM role_menu
-        WHERE  role_menu_id IN
-            <foreach item="item"
-                     collection="roleMenuIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE role_menu_id IN
+        <foreach item="item"
+                 collection="roleMenuIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改角色菜单表-->
     <update id="updateRoleMenus">
@@ -169,57 +188,57 @@
             </trim>
             <trim prefix="role_id=case" suffix="end,">
                 <foreach collection="roleMenuList" item="item" index="index">
-                             <if test="item.roleId != null">
-                                 when role_menu_id=#{item.roleMenuId} then #{item.roleId}
-                             </if>
+                    <if test="item.roleId != null">
+                        when role_menu_id=#{item.roleMenuId} then #{item.roleId}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="menu_id=case" suffix="end,">
                 <foreach collection="roleMenuList" item="item" index="index">
-                             <if test="item.menuId != null">
-                                 when role_menu_id=#{item.roleMenuId} then #{item.menuId}
-                             </if>
+                    <if test="item.menuId != null">
+                        when role_menu_id=#{item.roleMenuId} then #{item.menuId}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="delete_flag=case" suffix="end,">
                 <foreach collection="roleMenuList" item="item" index="index">
-                             <if test="item.deleteFlag != null">
-                                 when role_menu_id=#{item.roleMenuId} then #{item.deleteFlag}
-                             </if>
+                    <if test="item.deleteFlag != null">
+                        when role_menu_id=#{item.roleMenuId} then #{item.deleteFlag}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_by=case" suffix="end,">
                 <foreach collection="roleMenuList" item="item" index="index">
-                             <if test="item.createBy != null">
-                                 when role_menu_id=#{item.roleMenuId} then #{item.createBy}
-                             </if>
+                    <if test="item.createBy != null">
+                        when role_menu_id=#{item.roleMenuId} then #{item.createBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="roleMenuList" item="item" index="index">
-                             <if test="item.createTime != null">
-                                 when role_menu_id=#{item.roleMenuId} then #{item.createTime}
-                             </if>
+                    <if test="item.createTime != null">
+                        when role_menu_id=#{item.roleMenuId} then #{item.createTime}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_by=case" suffix="end,">
                 <foreach collection="roleMenuList" item="item" index="index">
-                             <if test="item.updateBy != null">
-                                 when role_menu_id=#{item.roleMenuId} then #{item.updateBy}
-                             </if>
+                    <if test="item.updateBy != null">
+                        when role_menu_id=#{item.roleMenuId} then #{item.updateBy}
+                    </if>
                 </foreach>
             </trim>
             <trim prefix="update_time=case" suffix="end,">
                 <foreach collection="roleMenuList" item="item" index="index">
-                             <if test="item.updateTime != null">
-                                 when role_menu_id=#{item.roleMenuId} then #{item.updateTime}
-                             </if>
+                    <if test="item.updateTime != null">
+                        when role_menu_id=#{item.roleMenuId} then #{item.updateTime}
+                    </if>
                 </foreach>
             </trim>
         </trim>
         where
         <foreach collection="roleMenuList" separator="or" item="item" index="index">
-                    role_menu_id=#{item.roleMenuId}
+            role_menu_id=#{item.roleMenuId}
         </foreach>
     </update>
 </mapper>

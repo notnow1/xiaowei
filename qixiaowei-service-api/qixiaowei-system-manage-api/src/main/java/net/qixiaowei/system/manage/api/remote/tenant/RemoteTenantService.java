@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.system.manage.api.factory.tenant.RemoteTenantFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
@@ -27,4 +28,12 @@ public interface RemoteTenantService {
      */
     @GetMapping(API_PREFIX_TENANT + "/getTenantIds")
     R<List<Long>> getTenantIds(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 维护租户状态
+     *
+     * @return
+     */
+    @PostMapping(API_PREFIX_TENANT + "/maintainTenantStatus")
+    R<?> maintainTenantStatus(@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

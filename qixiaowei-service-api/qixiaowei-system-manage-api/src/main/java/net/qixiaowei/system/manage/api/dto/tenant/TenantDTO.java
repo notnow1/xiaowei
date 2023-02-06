@@ -173,11 +173,6 @@ public class TenantDTO {
      * 租户域名申请表
      */
     private List<TenantDomainApprovalDTO> tenantDomainApprovalDTOList;
-
-    /**
-     * 申请状态:0待审核;1审核通过;2审核驳回
-     */
-    private Integer approvalStatus;
     /**
      * 请求参数
      */

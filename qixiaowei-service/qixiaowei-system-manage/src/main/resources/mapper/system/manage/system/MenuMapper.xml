@@ -146,6 +146,14 @@
         order by m.parent_menu_id, m.sort
     </select>
 
+    <select id="selectMenuListByTenantContractId" resultType="Long">
+        SELECT m.menu_id
+        FROM menu m
+        LEFT JOIN tenant_contract_auth tca on tca.menu_id = m.menu_id AND tca.delete_flag = 0
+        WHERE m.delete_flag = 0 AND tca.tenant_contract_id = #{tenantContractId}
+        order by m.parent_menu_id, m.sort
+    </select>
+
     <!--新增菜单表-->
     <insert id="insertMenu" useGeneratedKeys="true" keyProperty="menuId">
         INSERT INTO menu (parent_menu_id,menu_type,menu_name,product_package_id,sort,path,component,query,external_link_flag,cache_flag,visible_flag,permission_code,icon,status,delete_flag,create_by,create_time,update_by,update_time)

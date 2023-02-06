@@ -25,6 +25,12 @@ public interface RoleMapper {
      */
     List<RoleDTO> selectRolesByUserId(Long userId);
 
+    /**
+     * 查询管理员角色ID
+     *
+     * @return 角色ID
+     */
+    Long selectRoleIdOfAdmin();
 
     /**
      * 查询角色表

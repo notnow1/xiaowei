@@ -323,6 +323,10 @@
         tenant_code ASC
     </select>
 
+    <select id="getNormalTenantIds" resultType="java.lang.Long">
+        SELECT t.tenant_id FROM tenant t WHERE t.delete_flag = 0 AND  t.tenant_status = 1
+    </select>
+
     <select id="getTenantIds" resultType="java.lang.Long">
         select
         t.tenant_id

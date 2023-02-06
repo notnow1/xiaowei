@@ -7,6 +7,7 @@ import net.qixiaowei.system.manage.api.dto.system.MenuDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -57,7 +58,8 @@ public interface MenuMapper {
 
     /**
      * 校验菜单名称是否唯一
-     * @param menuName 菜单名称
+     *
+     * @param menuName     菜单名称
      * @param parentMenuId 父菜单ID
      * @return 结果
      */
@@ -78,7 +80,7 @@ public interface MenuMapper {
      * @param menuId 菜单ID
      * @return 结果
      */
-     int hasChildByMenuId(Long menuId);
+    int hasChildByMenuId(Long menuId);
 
 
     /**
@@ -87,7 +89,15 @@ public interface MenuMapper {
      * @param roleId 角色ID
      * @return 选中菜单列表
      */
-    List<Long> selectMenuListByRoleId(@Param("roleId") Long roleId);
+    Set<Long> selectMenuListByRoleId(@Param("roleId") Long roleId);
+
+    /**
+     * 根据租户合同ID查询菜单树信息
+     *
+     * @param tenantContractId 租户合同ID
+     * @return 选中菜单列表
+     */
+    Set<Long> selectMenuListByTenantContractId(@Param("tenantContractId") Long tenantContractId);
 
 
     /**

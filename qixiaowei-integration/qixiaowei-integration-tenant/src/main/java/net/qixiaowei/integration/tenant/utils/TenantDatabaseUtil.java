@@ -30,6 +30,7 @@ public class TenantDatabaseUtil {
         ignoreTables.add("region");
         ignoreTables.add("industry_default");
         ignoreTables.add("message_content_config");
+        ignoreTables.add("tenant_contract_auth");
     }
 
     /**

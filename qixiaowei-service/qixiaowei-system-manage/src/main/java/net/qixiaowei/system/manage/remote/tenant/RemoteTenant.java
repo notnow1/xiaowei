@@ -6,6 +6,7 @@ import net.qixiaowei.system.manage.api.remote.tenant.RemoteTenantService;
 import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,5 +29,13 @@ public class RemoteTenant implements RemoteTenantService {
     @GetMapping("/getTenantIds")
     public R<List<Long>> getTenantIds(String source) {
         return R.ok(tenantService.getTenantIds());
+    }
+
+    @InnerAuth
+    @Override
+    @PostMapping("/maintainTenantStatus")
+    public R<?> maintainTenantStatus(String source) {
+        tenantService.maintainTenantStatus();
+        return R.ok();
     }
 }

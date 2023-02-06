@@ -20,6 +20,7 @@ import net.qixiaowei.system.manage.mapper.system.MenuMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
+import net.qixiaowei.system.manage.service.system.IMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class RoleServiceImpl implements IRoleService {
     private RoleMenuMapper roleMenuMapper;
 
     @Autowired
-    private MenuMapper menuMapper;
+    private IMenuService menuService;
 
     @Autowired
     private UserMapper userMapper;
@@ -76,10 +77,8 @@ public class RoleServiceImpl implements IRoleService {
     @Override
     public RoleDTO selectRoleByRoleId(Long roleId) {
         RoleDTO roleDTO = roleMapper.selectRoleByRoleId(roleId);
-        List<Long> roleMenuIds = menuMapper.selectMenuListByRoleId(roleId);
-        if (StringUtils.isNotEmpty(roleMenuIds)) {
-            roleDTO.setMenuIds(new HashSet<>(roleMenuIds));
-        }
+        Set<Long> roleMenuIds = menuService.selectMenuListByRoleId(roleId);
+        roleDTO.setMenuIds(roleMenuIds);
         return roleDTO;
     }
 

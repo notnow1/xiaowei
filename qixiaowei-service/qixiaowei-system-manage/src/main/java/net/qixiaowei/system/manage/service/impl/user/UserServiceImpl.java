@@ -9,6 +9,7 @@ import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.Constants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.tenant.TenantStatus;
 import net.qixiaowei.integration.common.enums.user.UserType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -112,6 +113,10 @@ public class UserServiceImpl implements IUserService {
                     TenantDTO tenantDTO = tenantMapper.selectTenantByDomain(domain);
                     if (StringUtils.isNotNull(tenantDTO)) {
                         tenantId = tenantDTO.getTenantId();
+                        Integer tenantStatus = tenantDTO.getTenantStatus();
+                        if (!TenantStatus.NORMAL.getCode().equals(tenantStatus)) {
+                            throw new ServiceException("您的账号状态为异常状态，请联系客服查询。");
+                        }
                     } else {
                         throw new ServiceException("不存在该域名的租户。");
                     }
@@ -590,6 +595,7 @@ public class UserServiceImpl implements IUserService {
 
     /**
      * 远程 通过人员ID集合查询用户id
+     *
      * @param employeeIds
      * @return
      */

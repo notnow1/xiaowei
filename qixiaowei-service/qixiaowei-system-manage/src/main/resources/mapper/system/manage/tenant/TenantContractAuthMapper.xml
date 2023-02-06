@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.tenant.TenantContractAuthMapper">
+    <!--    查询租户合同授权表-->
+    <select id="selectTenantContractAuthByTenantContractAuthId"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractAuthDTO">
+        SELECT
+        tenant_contract_auth_id,tenant_contract_id,menu_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM tenant_contract_auth
+        WHERE tenant_contract_auth_id=#{tenantContractAuthId}
+        and delete_flag=0
+    </select>
+
+
+    <select id="selectTenantContractAuthByTenantContractId"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractAuthDTO">
+        SELECT
+        tenant_contract_auth_id,tenant_contract_id,menu_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM tenant_contract_auth
+        WHERE tenant_contract_id=#{tenantContractId}
+        and delete_flag=0
+    </select>
+
+    <select id="selectTenantContractAuthMenuIdsByTenantContractId"
+            resultType="java.lang.Long">
+        SELECT menu_id FROM tenant_contract_auth WHERE tenant_contract_id = #{tenantContractId} AND delete_flag=0
+    </select>
+
+    <!--    批量查询租户合同授权表-->
+    <select id="selectTenantContractAuthByTenantContractAuthIds"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractAuthDTO">
+        SELECT
+        tenant_contract_auth_id,tenant_contract_id,menu_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM tenant_contract_auth
+        WHERE tenant_contract_auth_id in
+        <foreach item="item"
+                 collection="tenantContractAuthIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询租户合同授权表列表-->
+    <select id="selectTenantContractAuthList"
+            resultType="net.qixiaowei.system.manage.api.dto.tenant.TenantContractAuthDTO">
+        SELECT
+        tenant_contract_auth_id,tenant_contract_id,menu_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM tenant_contract_auth
+        WHERE delete_flag=0
+        <if test="tenantContractAuth.tenantContractAuthId != null">
+            and tenant_contract_auth_id=#{tenantContractAuth.tenantContractAuthId}
+        </if>
+        <if test="tenantContractAuth.tenantContractId != null">
+            and tenant_contract_id=#{tenantContractAuth.tenantContractId}
+        </if>
+        <if test="tenantContractAuth.menuId != null">
+            and menu_id=#{tenantContractAuth.menuId}
+        </if>
+        <if test="tenantContractAuth.deleteFlag != null">
+            and delete_flag=#{tenantContractAuth.deleteFlag}
+        </if>
+        <if test="tenantContractAuth.createBy != null">
+            and create_by=#{tenantContractAuth.createBy}
+        </if>
+        <if test="tenantContractAuth.createTime != null">
+            and create_time=#{tenantContractAuth.createTime}
+        </if>
+        <if test="tenantContractAuth.updateBy != null">
+            and update_by=#{tenantContractAuth.updateBy}
+        </if>
+    </select>
+    <!--新增租户合同授权表-->
+    <insert id="insertTenantContractAuth" useGeneratedKeys="true" keyProperty="tenantContractAuthId">
+        INSERT INTO tenant_contract_auth
+        (tenant_contract_id,menu_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{tenantContractAuth.tenantContractId},#{tenantContractAuth.menuId},#{tenantContractAuth.deleteFlag},#{tenantContractAuth.createBy},#{tenantContractAuth.createTime},#{tenantContractAuth.updateBy},#{tenantContractAuth.updateTime})
+    </insert>
+    <!--修改租户合同授权表-->
+    <update id="updateTenantContractAuth">
+        UPDATE tenant_contract_auth
+        SET
+        <if test="tenantContractAuth.tenantContractId != null">
+            tenant_contract_id=#{tenantContractAuth.tenantContractId},
+        </if>
+        <if test="tenantContractAuth.menuId != null">
+            menu_id=#{tenantContractAuth.menuId},
+        </if>
+        <if test="tenantContractAuth.deleteFlag != null">
+            delete_flag=#{tenantContractAuth.deleteFlag},
+        </if>
+        <if test="tenantContractAuth.createBy != null">
+            create_by=#{tenantContractAuth.createBy},
+        </if>
+        <if test="tenantContractAuth.createTime != null">
+            create_time=#{tenantContractAuth.createTime},
+        </if>
+        <if test="tenantContractAuth.updateBy != null">
+            update_by=#{tenantContractAuth.updateBy},
+        </if>
+        <if test="tenantContractAuth.updateTime != null">
+            update_time=#{tenantContractAuth.updateTime}
+        </if>
+        WHERE
+        tenant_contract_auth_id=#{tenantContractAuth.tenantContractAuthId}
+    </update>
+    <!--逻辑删除租户合同授权表-->
+    <update id="logicDeleteTenantContractAuthByTenantContractAuthId">
+        UPDATE tenant_contract_auth
+        SET delete_flag= 1,
+        update_by=#{tenantContractAuth.updateBy},
+        update_time=#{tenantContractAuth.updateTime}
+        WHERE
+        tenant_contract_auth_id=#{tenantContractAuth.tenantContractAuthId}
+    </update>
+    <!--逻辑批量删除租户合同授权表-->
+    <update id="logicDeleteTenantContractAuthByTenantContractAuthIds">
+        UPDATE tenant_contract_auth
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        tenant_contract_auth_id IN
+        <foreach item="item"
+                 collection="tenantContractAuthIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增租户合同授权表-->
+    <insert id="batchTenantContractAuth">
+        INSERT INTO tenant_contract_auth
+        (tenant_contract_id,menu_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="tenantContractAuths"
+                 separator=",">
+            (#{item.tenantContractId},#{item.menuId},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除租户合同授权表-->
+    <delete id="deleteTenantContractAuthByTenantContractAuthId">
+        DELETE FROM tenant_contract_auth
+        WHERE tenant_contract_auth_id=#{tenantContractAuth}
+
+    </delete>
+    <!--物理批量删除租户合同授权表-->
+    <delete id="deleteTenantContractAuthByTenantContractAuthIds">
+        DELETE FROM tenant_contract_auth
+        WHERE tenant_contract_auth_id IN
+        <foreach item="item"
+                 collection="tenantContractAuthIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改租户合同授权表-->
+    <update id="updateTenantContractAuths">
+        update tenant_contract_auth
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="tenant_contract_id=case" suffix="end,">
+                <foreach collection="tenantContractAuthList" item="item" index="index">
+                    <if test="item.tenantContractId != null">
+                        when tenant_contract_auth_id=#{item.tenantContractAuthId} then #{item.tenantContractId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="menu_id=case" suffix="end,">
+                <foreach collection="tenantContractAuthList" item="item" index="index">
+                    <if test="item.menuId != null">
+                        when tenant_contract_auth_id=#{item.tenantContractAuthId} then #{item.menuId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="tenantContractAuthList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when tenant_contract_auth_id=#{item.tenantContractAuthId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="tenantContractAuthList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when tenant_contract_auth_id=#{item.tenantContractAuthId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="tenantContractAuthList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when tenant_contract_auth_id=#{item.tenantContractAuthId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="tenantContractAuthList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when tenant_contract_auth_id=#{item.tenantContractAuthId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="tenantContractAuthList" separator="or" item="item" index="index">
+            tenant_contract_auth_id=#{item.tenantContractAuthId}
+        </foreach>
+    </update>
+</mapper>
+
+

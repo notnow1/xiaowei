@@ -159,4 +159,11 @@ public interface ITenantService {
      */
     List<Long> getTenantIds();
 
+    /**
+     * 维护租户状态
+     *
+     * @return
+     */
+    void maintainTenantStatus();
+
 }

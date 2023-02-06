@@ -25,6 +25,11 @@ public class RemoteTenantFallbackFactory implements FallbackFactory<RemoteTenant
             public R<List<Long>> getTenantIds(String source) {
                 return R.fail("获取租户ID集合失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<?> maintainTenantStatus(String source) {
+                return R.fail("维护租户状态失败:" + throwable.getMessage());
+            }
         };
     }
 }

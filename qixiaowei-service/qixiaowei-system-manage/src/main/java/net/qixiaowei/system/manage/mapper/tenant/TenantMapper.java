@@ -53,6 +53,13 @@ public interface TenantMapper{
     List<String> getTenantCodes(@Param("prefixCodeRule")String prefixCodeRule);
 
     /**
+     * 查询正常的租户ID集合
+     *
+     * @return 租户ID集合
+     */
+    List<Long> getNormalTenantIds();
+
+    /**
      * 查询有效的租户ID集合
      *
      * @return 租户ID集合

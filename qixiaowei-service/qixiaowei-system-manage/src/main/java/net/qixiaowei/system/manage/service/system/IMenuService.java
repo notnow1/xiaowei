@@ -57,7 +57,15 @@ public interface IMenuService {
      * @param roleId 角色ID
      * @return 选中菜单列表
      */
-    List<Long> selectMenuListByRoleId(Long roleId);
+    Set<Long> selectMenuListByRoleId(Long roleId);
+
+    /**
+     * 根据租户合同ID查询菜单树信息
+     *
+     * @param tenantContractId 角色ID
+     * @return 选中菜单列表
+     */
+    Set<Long> selectMenuListByTenantContractId(Long tenantContractId);
 
     /**
      * 校验菜单名称是否唯一

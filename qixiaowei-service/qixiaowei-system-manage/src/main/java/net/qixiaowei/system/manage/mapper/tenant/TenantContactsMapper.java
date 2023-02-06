@@ -5,6 +5,7 @@ import net.qixiaowei.system.manage.api.domain.tenant.TenantContacts;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import org.apache.ibatis.annotations.Param;
 import java.util.Date;
+import java.util.Set;
 
 
 /**
@@ -20,6 +21,14 @@ public interface TenantContactsMapper{
     * @return 租户联系人表
     */
     TenantContactsDTO selectTenantContactsByTenantContactsId(@Param("tenantContactsId")Long tenantContactsId);
+
+    /**
+     * 根据租户id查询租户联系人表
+     *
+     * @param tenantId 租户联系人表
+     * @return 租户联系人表
+     */
+    Set<Long> selectTenantContactsIdsByTenantId(@Param("tenantId")Long tenantId);
 
     /**
      * 根据租户id查询租户联系人表

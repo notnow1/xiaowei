@@ -5,6 +5,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -48,34 +49,39 @@ public class TenantContractDTO {
     /**
     * 销售合同编号
     */
-    @NotBlank(message = "销售合同编号不能为空",groups = {TenantDTO.AddTenantDTO.class})
+    @NotBlank(message = "销售合同编号不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private  String salesContractNo;
     /**
     * 销售人员
     */
-    @NotBlank(message = "销售合同编号不能为空",groups = {TenantDTO.AddTenantDTO.class})
+    @NotBlank(message = "销售人员不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private  String salesPersonnel;
     /**
     * 合同金额
     */
-    @NotNull(message = "合同金额不能为空",groups = {TenantDTO.AddTenantDTO.class})
+    @NotNull(message = "合同金额不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private BigDecimal contractAmount;
     /**
     * 合同开始时间
     */
     @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
-    @NotNull(message = "合同开始时间不能为空",groups = {TenantDTO.AddTenantDTO.class})
+    @NotNull(message = "合同开始时间不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private  Date  contractStartTime;
     /**
     * 合同结束时间
     */
     @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
-    @NotNull(message = "合同结束时间不能为空",groups = {TenantDTO.AddTenantDTO.class})
+    @NotNull(message = "合同结束时间不能为空",groups = {TenantDTO.AddTenantDTO.class,TenantDTO.UpdateTenantDTO.class})
     private  Date  contractEndTime;
     /**
     * 开通的产品包
     */
     private  String productPackage;
+
+    /**
+     * 菜单组
+     */
+    private Set<Long> menuIds;
 
     /**
      * 开通的产品包名称

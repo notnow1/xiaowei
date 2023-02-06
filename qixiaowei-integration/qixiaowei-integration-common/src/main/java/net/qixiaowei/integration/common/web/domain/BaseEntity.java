@@ -134,7 +134,7 @@ public class BaseEntity implements Serializable {
                             entry.setValue(newValue);
                             continue;
                         }
-                        //处理中文分号，统计替换为英文分号
+                        //处理中文分号，统一替换为英文分号
                         if (StringValue.contains("；")) {
                             StringValue = StringValue.replace("；", ";");
                         }

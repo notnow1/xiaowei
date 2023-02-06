@@ -1,10 +1,12 @@
 package net.qixiaowei.system.manage.service.impl.tenant;
 
+import cn.hutool.core.date.DateUtil;
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.CacheConstants;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
+import net.qixiaowei.integration.common.enums.tenant.TenantStatus;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -17,12 +19,10 @@ import net.qixiaowei.system.manage.api.domain.tenant.TenantContract;
 import net.qixiaowei.system.manage.api.domain.tenant.TenantDomainApproval;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
-import net.qixiaowei.system.manage.api.dto.productPackage.ProductPackageDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
-import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantInfoVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantLoginFormVO;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
@@ -36,6 +36,8 @@ import net.qixiaowei.system.manage.mapper.tenant.TenantContractMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantDomainApprovalMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
+import net.qixiaowei.system.manage.service.system.IMenuService;
+import net.qixiaowei.system.manage.service.tenant.ITenantContractAuthService;
 import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -43,10 +45,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -89,6 +88,12 @@ public class TenantServiceImpl implements ITenantService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private ITenantContractAuthService tenantContractAuthService;
+
+    @Autowired
+    private IMenuService menuService;
+
     /**
      * 查询租户表
      *
@@ -108,7 +113,7 @@ public class TenantServiceImpl implements ITenantService {
         //行业
         IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantDTO.getTenantIndustry());
         //客服人员
-        List<Long> collect1 = Arrays.asList(tenantDTO.getSupportStaff().split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        List<Long> collect1 = Arrays.stream(tenantDTO.getSupportStaff().split(",")).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         //人员表
         List<EmployeeDTO> employeeDTOList = employeeMapper.selectEmployeeByEmployeeIds(collect1);
         if (StringUtils.isNotNull(industryDefaultDTO)) {
@@ -120,33 +125,16 @@ public class TenantServiceImpl implements ITenantService {
             tenantDTO.setSupportStaffName(StringUtils.join(employeeDTOList.stream().map(EmployeeDTO::getEmployeeName).collect(Collectors.toList()), ","));
         }
         //租户联系人
-        tenantDTO.setTenantContactsDTOList(tenantContactsMapper.selectTenantContactsByTenantId(tenantId));
+        List<TenantContactsDTO> tenantContactsDTOS = tenantContactsMapper.selectTenantContactsByTenantId(tenantId);
+        tenantDTO.setTenantContactsDTOList(tenantContactsDTOS);
         //租赁模块
         List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
-        for (TenantContractDTO tenantContractDTO : tenantContractDTOS) {
-            String productPackage = tenantContractDTO.getProductPackage();
-            List<Long> collect = Arrays.asList(productPackage.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
-            List<ProductPackageDTO> productPackageDTOList = productPackageMapper.selectProductPackageByProductPackageIds(collect);
-            if (!StringUtils.isEmpty(productPackageDTOList)) {
-                tenantContractDTO.setProductPackage(StringUtils.join(productPackageDTOList.stream().map(ProductPackageDTO::getProductPackageName).collect(Collectors.toList()), ","));
-            }
-        }
-        //合同时间
-        if (StringUtils.isNotEmpty(tenantContractDTOS)) {
-            //合同开始时间
-            tenantDTO.setContractStartTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractStartTime());
-            //合同结束时间
-            tenantDTO.setContractEndTime(tenantContractDTOS.get(tenantContractDTOS.size() - 1).getContractEndTime());
-        }
+        this.handleResponseOfTenantContract(tenantContractDTOS);
         //租户合同
         tenantDTO.setTenantContractDTOList(tenantContractDTOS);
         //租户域名申请表
         List<TenantDomainApprovalDTO> tenantDomainApprovalDTOS = tenantDomainApprovalMapper.selectTenantDomainApprovalByTenantId(tenantId);
         tenantDTO.setTenantDomainApprovalDTOList(tenantDomainApprovalDTOS);
-        if (!StringUtils.isEmpty(tenantDomainApprovalDTOS)) {
-            //申请状态:0待审核;1审核通过;2审核驳回
-            tenantDTO.setApprovalStatus(tenantDomainApprovalDTOS.get(tenantDomainApprovalDTOS.size() - 1).getApprovalStatus());
-        }
         return tenantDTO;
     }
 
@@ -219,61 +207,33 @@ public class TenantServiceImpl implements ITenantService {
         }
         //租户
         Tenant tenant = new Tenant();
-        //租户联系人
-        List<TenantContacts> tenantContactsList = new ArrayList<>();
-        //租户合同
-        List<TenantContract> tenantContractList = new ArrayList<>();
-        //copy
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
         BeanUtils.copyProperties(tenantDTO, tenant);
-//        //拼接本人用户id
-//        tenant.setSupportStaff(tenant.getSupportStaff() + "," + userDTO.getEmployeeId());
         tenant.setSupportStaff(tenant.getSupportStaff());
-        tenant.setCreateBy(SecurityUtils.getUserId());
-        tenant.setUpdateBy(SecurityUtils.getUserId());
-        tenant.setCreateTime(DateUtils.getNowDate());
-        tenant.setUpdateTime(DateUtils.getNowDate());
+        tenant.setCreateBy(userId);
+        tenant.setUpdateBy(userId);
+        tenant.setCreateTime(nowDate);
+        tenant.setUpdateTime(nowDate);
         tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        //1、插入租户
+        //插入租户
         tenantMapper.insertTenant(tenant);
-        //copy租户联系人
-        tenantContactsList = tenantDTO.getTenantContactsDTOList().stream().distinct().map(info -> {
-            TenantContacts tenantContacts = new TenantContacts();
-            BeanUtils.copyProperties(info, tenantContacts);
-            //租户id
-            tenantContacts.setTenantId(tenant.getTenantId());
-            tenantContacts.setCreateTime(DateUtils.getNowDate());
-            tenantContacts.setUpdateTime(DateUtils.getNowDate());
-            tenantContacts.setCreateBy(SecurityUtils.getUserId());
-            tenantContacts.setUpdateBy(SecurityUtils.getUserId());
-            tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            return tenantContacts;
-        }).collect(Collectors.toList());
-        //2、插入租户联系人
-        tenantContactsMapper.batchTenantContacts(tenantContactsList);
-        //copy租户合同人
-        tenantContractList = tenantDTO.getTenantContractDTOList().stream().distinct().map(info -> {
-            TenantContract tenantContract = new TenantContract();
-            BeanUtils.copyProperties(info, tenantContract);
-            //租户id
-            tenantContract.setTenantId(tenant.getTenantId());
-            tenantContract.setCreateTime(DateUtils.getNowDate());
-            tenantContract.setUpdateTime(DateUtils.getNowDate());
-            tenantContract.setCreateBy(SecurityUtils.getUserId());
-            tenantContract.setUpdateBy(SecurityUtils.getUserId());
-            tenantContract.setDeleteFlag(0);
-            return tenantContract;
-        }).collect(Collectors.toList());
-        //3、插入租户合同
-        tenantContractMapper.batchTenantContract(tenantContractList);
-        //4、初始化租户数据
-        Boolean initSuccess = tenantLogic.initTenantData(tenant);
+        Long tenantId = tenant.getTenantId();
+        //保存租户联系人
+        List<TenantContactsDTO> tenantContactsDTOList = tenantDTO.getTenantContactsDTOList();
+        this.saveTenantContacts(tenantContactsDTOList, tenantId, userId, nowDate);
+        //保存租户合同
+        List<TenantContractDTO> tenantContractDTOList = tenantDTO.getTenantContractDTOList();
+        Set<Long> initMenuIds = this.saveTenantContract(tenantContractDTOList, tenantId, userId, nowDate);
+        //初始化租户数据
+        Boolean initSuccess = tenantLogic.initTenantData(tenant, initMenuIds);
         if (initSuccess) {
             tenant.setTenantStatus(BusinessConstants.NORMAL);
             tenantMapper.updateTenant(tenant);
         }
-        //返回数据
-        tenantDTO.setTenantId(tenant.getTenantId());
         this.setTenantIdsCache();
+        //返回数据
+        tenantDTO.setTenantId(tenantId);
         return tenantDTO;
     }
 
@@ -316,87 +276,103 @@ public class TenantServiceImpl implements ITenantService {
         if (tenantConfig.getExistedDomains().contains(domain)) {
             throw new ServiceException("修改租户失败:域名[" + domain + "]已经被占用!");
         }
-        int i = 0;
-        Tenant tenant = new Tenant();
-        //租户联系人
-        TenantContacts tenantContactsQuery = new TenantContacts();
-        //数据库原本数据
-        List<TenantContactsDTO> tenantContactsDTOList = new ArrayList<>();
-        //接收数据
-        List<TenantContactsDTO> tenantContactsDTOList1 = tenantDTO.getTenantContactsDTOList();
-        //要删除的差集
-        List<Long> tenantContactsIds = new ArrayList<>();
-        BeanUtils.copyProperties(tenantDTO, tenant);
-        tenant.setCreateTime(DateUtils.getNowDate());
-        tenant.setUpdateTime(DateUtils.getNowDate());
-        try {
-            i = tenantMapper.updateTenant(tenant);
-        } catch (Exception e) {
-            throw new ServiceException("修改租户失败" + e);
+        Long tenantId = tenantDTO.getTenantId();
+        TenantDTO tenantOfDB = tenantMapper.selectTenantByTenantId(tenantId);
+        if (StringUtils.isNull(tenantOfDB)) {
+            throw new ServiceException("修改租户失败:找不到该租户!");
         }
-        //查询租户联系人
-        tenantContactsQuery.setTenantId(tenant.getTenantId());
-        //拿到租户联系人信息 可以赋值创建人创建时间
-        tenantContactsDTOList = tenantContactsMapper.selectTenantContactsList(tenantContactsQuery);
-        //sterm流求差集
-        tenantContactsIds = tenantContactsDTOList.stream().filter(a ->
-                !tenantContactsDTOList1.stream().map(TenantContactsDTO::getTenantContactsId).collect(Collectors.toList()).contains(a.getTenantContactsId())
-        ).collect(Collectors.toList()).stream().map(TenantContactsDTO::getTenantContactsId).collect(Collectors.toList());
-
-        if (!StringUtils.isEmpty(tenantContactsIds)) {
-            //逻辑删除
-            try {
-                tenantContactsMapper.logicDeleteTenantContactsByTenantContactsIds(tenantContactsIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
-            } catch (Exception e) {
-                throw new ServiceException("删除租户联系人失败" + e);
+        String tenantCode = tenantDTO.getTenantCode();
+        if (StringUtils.isNotEmpty(tenantCode) && !tenantCode.equals(tenantOfDB.getTenantCode())) {
+            TenantDTO selectTenantByTenantCode = tenantMapper.selectTenantByTenantCode(tenantCode);
+            if (StringUtils.isNotNull(selectTenantByTenantCode)) {
+                throw new ServiceException("修改租户失败:租户编码[" + tenantCode + "]已存在。");
             }
         }
-        //去除已经删除的id
-        for (int i1 = 0; i1 < tenantContactsDTOList1.size(); i1++) {
-            if (tenantContactsIds.contains(tenantContactsDTOList1.get(i1).getTenantContactsId())) {
-                tenantContactsDTOList1.remove(i1);
-            }
+        Integer tenantStatus = tenantDTO.getTenantStatus();
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        //编辑租户联系人
+        this.handleEditTenantContacts(tenantDTO, userId, nowDate);
+        //编辑合同
+        Set<Long> initMenuIds = this.handleEditTenantContract(tenantDTO, userId, nowDate);
+        //权限变更，需要处理
+        if (!TenantStatus.DISABLE.getCode().equals(tenantStatus)) {
+            tenantLogic.updateTenantAuth(tenantId, initMenuIds);
         }
-        //新增集合
-        List<TenantContacts> tenantContactsAddList = new ArrayList<>();
-        //修改集合
-        List<TenantContacts> tenantContactsUpdateList = new ArrayList<>();
-        //copy租户联系人
-        for (TenantContactsDTO tenantContactsDTO : tenantContactsDTOList1) {
-            TenantContacts tenantContacts = new TenantContacts();
-            BeanUtils.copyProperties(tenantContactsDTO, tenantContacts);
-            //租户id
-            tenantContacts.setTenantId(tenant.getTenantId());
-            tenantContacts.setCreateBy(tenantContactsDTOList.get(0).getCreateBy());
-            tenantContacts.setCreateTime(tenantContactsDTOList.get(0).getCreateTime());
-            tenantContacts.setUpdateBy(SecurityUtils.getUserId());
-            tenantContacts.setUpdateTime(DateUtils.getNowDate());
-            tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            //没有id回显 表示为新增数据
-            if (null == tenantContactsDTO.getTenantContactsId()) {
-                tenantContactsAddList.add(tenantContacts);
-            } else {
-                //修改
-                tenantContacts.setTenantContactsId(tenantContactsDTO.getTenantContactsId());
-                tenantContactsUpdateList.add(tenantContacts);
-            }
+        int i;
+        //更新租户信息
+        Tenant updateTenant = new Tenant();
+        BeanUtils.copyProperties(tenantDTO, updateTenant);
+        //如果当前租户状态是过期。新增加目前能使用的合同，则将租户的状态修改为正常
+        if (TenantStatus.OVERDUE.getCode().equals(tenantOfDB.getTenantStatus()) && null != initMenuIds) {
+            updateTenant.setTenantStatus(TenantStatus.NORMAL.getCode());
         }
-        if (!StringUtils.isEmpty(tenantContactsAddList)) {
-            try {
-                tenantContactsMapper.batchTenantContacts(tenantContactsAddList);
-            } catch (Exception e) {
-                throw new ServiceException("新增租户联系人失败" + e);
-            }
-        }
-        if (!StringUtils.isEmpty(tenantContactsUpdateList)) {
-            try {
-                tenantContactsMapper.updateTenantContactss(tenantContactsUpdateList);
-            } catch (Exception e) {
-                throw new ServiceException("修改租户联系人失败" + e);
-            }
-        }
+        updateTenant.setUpdateBy(userId);
+        updateTenant.setUpdateTime(nowDate);
+        i = tenantMapper.updateTenant(updateTenant);
         this.setTenantIdsCache();
         return i;
+    }
+
+    /**
+     * @description: 处理编辑租户合同
+     * @Author: hzk
+     * @date: 2023/2/1 17:12
+     * @param: [tenantDTO, userId, nowDate]
+     * @return: void
+     **/
+    private Set<Long> handleEditTenantContract(TenantDTO tenantDTO, Long userId, Date nowDate) {
+        Set<Long> initMenuIds = null;
+        List<TenantContractDTO> tenantContractDTOList = tenantDTO.getTenantContractDTOList();
+        Long tenantId = tenantDTO.getTenantId();
+        if (StringUtils.isNotEmpty(tenantContractDTOList)) {
+            List<TenantContractDTO> addTenantContractList = new ArrayList<>();
+            for (TenantContractDTO tenantContractDTO : tenantContractDTOList) {
+                Long tenantContractId = tenantContractDTO.getTenantContractId();
+                Set<Long> menuIds = tenantContractDTO.getMenuIds();
+                String productPackage = tenantContractDTO.getProductPackage();
+                if (StringUtils.isNull(tenantContractId)) {
+                    //添加到新增租户合同
+                    addTenantContractList.add(tenantContractDTO);
+                } else {
+                    //编辑租户合同
+                    TenantContract tenantContract = new TenantContract();
+                    tenantContract.setTenantContractId(tenantContractId);
+                    tenantContract.setProductPackage(productPackage);
+                    tenantContract.setUpdateBy(userId);
+                    tenantContract.setUpdateTime(nowDate);
+                    tenantContractMapper.updateTenantContract(tenantContract);
+                    //更新授权
+                    tenantContractAuthService.updateTenantContractAuth(tenantContractId, menuIds);
+                    Date contractStartTime = tenantContractDTO.getContractStartTime();
+                    Date contractEndTime = tenantContractDTO.getContractEndTime();
+                    //合同结束时间大于现在且合同开始时间小于现在的，才初始化菜单
+                    if (this.containContractTime(nowDate, contractStartTime, contractEndTime)) {
+                        if (StringUtils.isEmpty(initMenuIds)) {
+                            initMenuIds = new HashSet<>();
+                        }
+                        if (StringUtils.isNotEmpty(menuIds)) {
+                            if (null != initMenuIds) {
+                                initMenuIds.addAll(menuIds);
+                            }
+                        }
+                    }
+                }
+            }
+            if (StringUtils.isNotEmpty(addTenantContractList)) {
+                //新增租户合同
+                Set<Long> addMenuIds = this.saveTenantContract(addTenantContractList, tenantId, userId, nowDate);
+                if (StringUtils.isEmpty(initMenuIds)) {
+                    initMenuIds = new HashSet<>();
+                }
+                if (null != initMenuIds) {
+                    if (StringUtils.isNotEmpty(addMenuIds)) {
+                        initMenuIds.addAll(addMenuIds);
+                    }
+                }
+            }
+        }
+        return initMenuIds;
     }
 
     /**
@@ -699,6 +675,60 @@ public class TenantServiceImpl implements ITenantService {
     }
 
     /**
+     * 维护租户状态
+     *
+     * @return
+     */
+    @Override
+    public void maintainTenantStatus() {
+        //找到正常的租户数据
+        List<Long> normalTenantIds = tenantMapper.getNormalTenantIds();
+        if (StringUtils.isEmpty(normalTenantIds)) {
+            return;
+        }
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        for (Long tenantId : normalTenantIds) {
+            //找到租户的合同
+            List<TenantContractDTO> tenantContractDTOS = tenantContractMapper.selectTenantContractByTenantId(tenantId);
+            if (StringUtils.isEmpty(tenantContractDTOS)) {
+                return;
+            }
+            Set<Long> initMenuIds = null;
+            boolean handleTenantStatus = true;
+            for (TenantContractDTO tenantContractDTO : tenantContractDTOS) {
+                Long tenantContractId = tenantContractDTO.getTenantContractId();
+                Date contractStartTime = tenantContractDTO.getContractStartTime();
+                Date contractEndTime = tenantContractDTO.getContractEndTime();
+                if (this.containContractTime(nowDate, contractStartTime, contractEndTime)) {
+                    //查找合同授权菜单
+                    Set<Long> menuIds = tenantContractAuthService.selectTenantContractAuthMenuIdsByTenantContractId(tenantContractId);
+                    handleTenantStatus = false;
+                    if (StringUtils.isEmpty(initMenuIds)) {
+                        initMenuIds = new HashSet<>();
+                    }
+                    if (StringUtils.isNotEmpty(menuIds)) {
+                        if (null != initMenuIds) {
+                            initMenuIds.addAll(menuIds);
+                        }
+                    }
+                }
+            }
+            //处理租户状态
+            if (handleTenantStatus) {
+                Tenant updateTenant = new Tenant();
+                updateTenant.setTenantId(tenantId);
+                updateTenant.setTenantStatus(TenantStatus.OVERDUE.getCode());
+                updateTenant.setUpdateBy(userId);
+                updateTenant.setUpdateTime(nowDate);
+                tenantMapper.updateTenant(updateTenant);
+            }
+            //处理租户合同授权
+            tenantLogic.updateTenantAuth(tenantId, initMenuIds);
+        }
+    }
+
+    /**
      * @description: 设置租户ID集合的缓存
      * @Author: hzk
      * @date: 2022/12/16 20:01
@@ -715,6 +745,164 @@ public class TenantServiceImpl implements ITenantService {
             redisService.setCacheList(cacheKey, tenantIds);
         }
         return tenantIds;
+    }
+
+    /**
+     * @description: 保存租户联系人
+     * @Author: hzk
+     * @date: 2023/1/31 16:58
+     * @param: [tenantContactsDTOList, tenantId, userId, nowDate]
+     * @return: void
+     **/
+    private void saveTenantContacts(List<TenantContactsDTO> tenantContactsDTOList, Long tenantId, Long userId, Date nowDate) {
+        //租户联系人
+        List<TenantContacts> tenantContactsList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(tenantContactsDTOList)) {
+            for (TenantContactsDTO tenantContactsDTO : tenantContactsDTOList) {
+                TenantContacts tenantContacts = new TenantContacts();
+                BeanUtils.copyProperties(tenantContactsDTO, tenantContacts);
+                //租户id
+                tenantContacts.setTenantId(tenantId);
+                tenantContacts.setCreateTime(nowDate);
+                tenantContacts.setUpdateTime(nowDate);
+                tenantContacts.setCreateBy(userId);
+                tenantContacts.setUpdateBy(userId);
+                tenantContacts.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                tenantContactsList.add(tenantContacts);
+            }
+        }
+        if (StringUtils.isNotEmpty(tenantContactsList)) {
+            //插入租户联系人
+            tenantContactsMapper.batchTenantContacts(tenantContactsList);
+        }
+    }
+
+    /**
+     * @description: 保存租户合同信息
+     * @Author: hzk
+     * @date: 2023/1/31 18:08
+     * @param: [tenantContractDTOList, tenantId, userId, nowDate]
+     * @return: void
+     **/
+    private Set<Long> saveTenantContract(List<TenantContractDTO> tenantContractDTOList, Long tenantId, Long userId, Date nowDate) {
+        Set<Long> initMenuIds = null;
+        //租户合同
+        if (StringUtils.isNotEmpty(tenantContractDTOList)) {
+            for (TenantContractDTO tenantContractDTO : tenantContractDTOList) {
+                TenantContract tenantContract = new TenantContract();
+                BeanUtils.copyProperties(tenantContractDTO, tenantContract);
+                //租户id
+                tenantContract.setTenantId(tenantId);
+                tenantContract.setCreateTime(nowDate);
+                tenantContract.setUpdateTime(nowDate);
+                tenantContract.setCreateBy(userId);
+                tenantContract.setUpdateBy(userId);
+                tenantContract.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                tenantContractMapper.insertTenantContract(tenantContract);
+                Long tenantContractId = tenantContract.getTenantContractId();
+                //保存合同授权
+                Set<Long> menuIds = tenantContractDTO.getMenuIds();
+                tenantContractAuthService.insertTenantContractAuth(tenantContractId, menuIds);
+                Date contractStartTime = tenantContractDTO.getContractStartTime();
+                Date contractEndTime = tenantContractDTO.getContractEndTime();
+                //合同结束时间大于现在且合同开始时间小于现在的，才初始化菜单
+                if (this.containContractTime(nowDate, contractStartTime, contractEndTime)) {
+                    if (StringUtils.isEmpty(initMenuIds)) {
+                        initMenuIds = new HashSet<>();
+                    }
+                    if (StringUtils.isNotEmpty(menuIds)) {
+                        if (null != initMenuIds) {
+                            initMenuIds.addAll(menuIds);
+                        }
+                    }
+                }
+            }
+        }
+        return initMenuIds;
+    }
+
+    /**
+     * @description: 处理返回的租户合同
+     * @Author: hzk
+     * @date: 2023/2/1 11:00
+     * @param: [tenantContractDTOS]
+     * @return: void
+     **/
+    private void handleResponseOfTenantContract(List<TenantContractDTO> tenantContractDTOS) {
+        if (StringUtils.isNotEmpty(tenantContractDTOS)) {
+            for (TenantContractDTO tenantContractDTO : tenantContractDTOS) {
+                Long tenantContractId = tenantContractDTO.getTenantContractId();
+                Set<Long> selectMenuListByTenantContractId = menuService.selectMenuListByTenantContractId(tenantContractId);
+                tenantContractDTO.setMenuIds(selectMenuListByTenantContractId);
+            }
+        }
+    }
+
+    /**
+     * @description: 处理编辑租户联系人信息
+     * @Author: hzk
+     * @date: 2023/2/1 16:27
+     * @param: [tenantDTO, userId, nowDate]
+     * @return: void
+     **/
+    private void handleEditTenantContacts(TenantDTO tenantDTO, Long userId, Date nowDate) {
+        List<TenantContactsDTO> tenantContactsDTOList = tenantDTO.getTenantContactsDTOList();
+        Long tenantId = tenantDTO.getTenantId();
+        //新增集合
+        List<TenantContactsDTO> tenantContactsAddList = new ArrayList<>();
+        //修改集合
+        List<TenantContacts> tenantContactsUpdateList = new ArrayList<>();
+        //查找旧的合同ID集合
+        Set<Long> tenantContactsIds = tenantContactsMapper.selectTenantContactsIdsByTenantId(tenantId);
+        if (StringUtils.isNotEmpty(tenantContactsIds) && StringUtils.isNotEmpty(tenantContactsDTOList)) {
+            for (TenantContactsDTO tenantContactsDTO : tenantContactsDTOList) {
+                Long tenantContactsId = tenantContactsDTO.getTenantContactsId();
+                if (StringUtils.isNull(tenantContactsId)) {
+                    //添加进新增集合
+                    tenantContactsAddList.add(tenantContactsDTO);
+                } else {
+                    if (tenantContactsIds.contains(tenantContactsId)) {
+                        TenantContacts tenantContacts = new TenantContacts();
+                        BeanUtils.copyProperties(tenantContactsDTO, tenantContacts);
+                        tenantContacts.setUpdateBy(userId);
+                        tenantContacts.setUpdateTime(nowDate);
+                        //添加进修改集合
+                        tenantContactsUpdateList.add(tenantContacts);
+                        //删除的集合去掉编辑的ID
+                        tenantContactsIds.remove(tenantContactsId);
+                    }
+                }
+            }
+        }
+        //新增
+        this.saveTenantContacts(tenantContactsAddList, tenantId, userId, nowDate);
+        //编辑
+        if (StringUtils.isNotEmpty(tenantContactsUpdateList)) {
+            tenantContactsMapper.updateTenantContactss(tenantContactsUpdateList);
+        }
+        //删除
+        if (StringUtils.isNotEmpty(tenantContactsIds)) {
+            tenantContactsMapper.logicDeleteTenantContactsByTenantContactsIds(new ArrayList<>(tenantContactsIds), userId, nowDate);
+        }
+    }
+
+    /**
+     * @description: 当前时间是否在合同时间内
+     * @Author: hzk
+     * @date: 2023/2/3 15:07
+     * @param: [nowDate, contractStartTime, contractEndTime]
+     * @return: boolean
+     **/
+    private boolean containContractTime(Date nowDate, Date contractStartTime, Date contractEndTime) {
+        boolean containContractTime = false;
+        if (StringUtils.isNotNull(contractEndTime) && StringUtils.isNotNull(contractStartTime)) {
+            //结束时间为当天23:59:59
+            contractEndTime = DateUtil.endOfDay(contractEndTime);
+            if (!contractEndTime.before(nowDate) && !contractStartTime.after(nowDate)) {
+                containContractTime = true;
+            }
+        }
+        return containContractTime;
     }
 }
 

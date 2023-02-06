@@ -68,7 +68,7 @@ public class SysLoginService {
         // 查询用户信息
         String serverName = StringUtils.isNotEmpty(request.getHeader("proxyHost")) ? request.getHeader("proxyHost") : request.getServerName();
         R<LoginUserVO> userResult = remoteUserService.getUserInfo(userAccount, serverName, SecurityConstants.INNER);
-        if (StringUtils.isNull(userResult) || StringUtils.isNull(userResult.getData())) {
+        if (StringUtils.isNull(userResult)) {
 //            recordLogService.recordLoginInfo(userAccount, Constants.LOGIN_FAIL, "登录用户不存在");
             throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
