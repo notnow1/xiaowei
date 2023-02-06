@@ -33,8 +33,8 @@ public class MenuController extends BaseController {
      */
     @RequiresPermissions("system:manage:menu:list")
     @GetMapping("/list")
-    public AjaxResult list(MenuDTO menuDTO) {
-        List<MenuDTO> list = menuService.selectMenuList(menuDTO);
+    public AjaxResult list(MenuDTO menuDTO, @RequestHeader(required = false) boolean filterAdmin) {
+        List<MenuDTO> list = menuService.selectMenuList(menuDTO, filterAdmin);
         return AjaxResult.success(list);
     }
 
@@ -51,8 +51,8 @@ public class MenuController extends BaseController {
      * 获取菜单下拉树列表
      */
     @GetMapping("/treeSelect")
-    public AjaxResult treeSelect(MenuDTO menuDTO) {
-        List<MenuDTO> menus = menuService.selectMenuList(menuDTO);
+    public AjaxResult treeSelect(MenuDTO menuDTO, @RequestHeader(required = false) boolean filterAdmin) {
+        List<MenuDTO> menus = menuService.selectMenuList(menuDTO, filterAdmin);
         return AjaxResult.success(menuService.buildMenuTree(menus));
     }
 

@@ -330,6 +330,7 @@ public class TenantServiceImpl implements ITenantService {
             for (TenantContractDTO tenantContractDTO : tenantContractDTOList) {
                 Long tenantContractId = tenantContractDTO.getTenantContractId();
                 Set<Long> menuIds = tenantContractDTO.getMenuIds();
+                menuIds = this.removeAdminMenu(menuIds);
                 String productPackage = tenantContractDTO.getProductPackage();
                 if (StringUtils.isNull(tenantContractId)) {
                     //添加到新增租户合同
@@ -362,12 +363,14 @@ public class TenantServiceImpl implements ITenantService {
             if (StringUtils.isNotEmpty(addTenantContractList)) {
                 //新增租户合同
                 Set<Long> addMenuIds = this.saveTenantContract(addTenantContractList, tenantId, userId, nowDate);
-                if (StringUtils.isEmpty(initMenuIds)) {
-                    initMenuIds = new HashSet<>();
-                }
-                if (null != initMenuIds) {
-                    if (StringUtils.isNotEmpty(addMenuIds)) {
-                        initMenuIds.addAll(addMenuIds);
+                if (null != addMenuIds) {
+                    if (StringUtils.isEmpty(initMenuIds)) {
+                        initMenuIds = new HashSet<>();
+                    }
+                    if (null != initMenuIds) {
+                        if (StringUtils.isNotEmpty(addMenuIds)) {
+                            initMenuIds.addAll(addMenuIds);
+                        }
                     }
                 }
             }
@@ -802,6 +805,7 @@ public class TenantServiceImpl implements ITenantService {
                 Long tenantContractId = tenantContract.getTenantContractId();
                 //保存合同授权
                 Set<Long> menuIds = tenantContractDTO.getMenuIds();
+                menuIds = this.removeAdminMenu(menuIds);
                 tenantContractAuthService.insertTenantContractAuth(tenantContractId, menuIds);
                 Date contractStartTime = tenantContractDTO.getContractStartTime();
                 Date contractEndTime = tenantContractDTO.getContractEndTime();
@@ -819,6 +823,21 @@ public class TenantServiceImpl implements ITenantService {
             }
         }
         return initMenuIds;
+    }
+
+    /**
+     * @description: 去除管理员菜单
+     * @Author: hzk
+     * @date: 2023/2/6 14:16
+     * @param: [menuIds]
+     * @return: java.util.Set<java.lang.Long>
+     **/
+    private Set<Long> removeAdminMenu(Set<Long> menuIds) {
+        if (StringUtils.isNotEmpty(menuIds)) {
+            Set<Long> adminMenuIds = tenantConfig.getAdminMenuIds();
+            menuIds = menuIds.stream().filter(menuId -> !adminMenuIds.contains(menuId)).collect(Collectors.toSet());
+        }
+        return menuIds;
     }
 
     /**

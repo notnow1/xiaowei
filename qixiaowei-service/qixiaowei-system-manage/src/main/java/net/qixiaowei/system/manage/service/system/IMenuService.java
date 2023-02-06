@@ -21,9 +21,10 @@ public interface IMenuService {
      * 查询菜单表列表
      *
      * @param menuDTO 菜单表
+     * @param filterAdmin 过滤管理菜单
      * @return 菜单表集合
      */
-    List<MenuDTO> selectMenuList(MenuDTO menuDTO);
+    List<MenuDTO> selectMenuList(MenuDTO menuDTO, boolean filterAdmin);
 
     /**
      * 查询菜单表
@@ -47,9 +48,6 @@ public interface IMenuService {
      * @return 下拉树结构列表
      */
     List<RouterVO> getRouters();
-
-
-    List<Tree<Long>> roleMenuTreeSelect();
 
     /**
      * 根据角色ID查询菜单树信息

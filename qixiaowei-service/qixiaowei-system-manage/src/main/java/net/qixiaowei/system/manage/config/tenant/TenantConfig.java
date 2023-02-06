@@ -37,5 +37,11 @@ public class TenantConfig {
     @Value("${tenant.adminDomainPrefix:}")
     private String adminDomainPrefix;
 
+    /**
+     * 属于管理平台的菜单集合
+     */
+    @Value("${tenant.adminMenuIds:1,2,11,19,49,48,356}")
+    private Set<Long> adminMenuIds;
+
 
 }

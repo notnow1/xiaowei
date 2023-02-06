@@ -15,6 +15,7 @@ import net.qixiaowei.system.manage.api.domain.system.Menu;
 import net.qixiaowei.system.manage.api.dto.system.MenuDTO;
 import net.qixiaowei.system.manage.api.vo.system.MetaVO;
 import net.qixiaowei.system.manage.api.vo.system.RouterVO;
+import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.mapper.system.MenuMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.service.system.IMenuService;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -38,15 +40,19 @@ public class MenuServiceImpl implements IMenuService {
     @Autowired
     private RoleMenuMapper roleMenuMapper;
 
+    @Autowired
+    private TenantConfig tenantConfig;
+
 
     /**
      * 查询菜单表列表
      *
-     * @param menuDTO 菜单表
+     * @param menuDTO     菜单表
+     * @param filterAdmin 过滤管理菜单
      * @return 菜单表
      */
     @Override
-    public List<MenuDTO> selectMenuList(MenuDTO menuDTO) {
+    public List<MenuDTO> selectMenuList(MenuDTO menuDTO, boolean filterAdmin) {
         List<MenuDTO> menuList;
         Menu menu = new Menu();
         BeanUtils.copyProperties(menuDTO, menu);
@@ -56,6 +62,10 @@ public class MenuServiceImpl implements IMenuService {
         } else {
             menu.getParams().put("userId", userId);
             menuList = menuMapper.selectMenuListByUserId(menu);
+        }
+        if (StringUtils.isNotEmpty(menuList) && filterAdmin) {
+            Set<Long> adminMenuIds = tenantConfig.getAdminMenuIds();
+            menuList = menuList.stream().filter(m -> !adminMenuIds.contains(m.getMenuId())).collect(Collectors.toList());
         }
         return menuList;
     }
@@ -107,13 +117,6 @@ public class MenuServiceImpl implements IMenuService {
         }
         List<MenuDTO> childPerms = this.getChildPerms(menuList, 0);
         return this.buildMenuRouters(childPerms);
-    }
-
-    @Override
-    public List<Tree<Long>> roleMenuTreeSelect() {
-        MenuDTO menuDTO = new MenuDTO();
-        List<MenuDTO> menus = this.selectMenuList(menuDTO);
-        return this.buildMenuTree(menus);
     }
 
     /**
