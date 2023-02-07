@@ -431,7 +431,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     break;
             }
         }
-        if (StringUtils.isNotEmpty(params2)){
+        if (StringUtils.isNotEmpty(params2)) {
             List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
             if (StringUtils.isNotEmpty(employeeDTOS)) {
                 List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
@@ -463,7 +463,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     break;
             }
         }
-        if (StringUtils.isNotEmpty(params2)){
+        if (StringUtils.isNotEmpty(params2)) {
             List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
             if (StringUtils.isNotEmpty(departmentDTOS)) {
                 List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
@@ -2196,6 +2196,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         appraisalDTO.setAppraisalObject(1);
         appraisalDTO.setAppraisalStatus(1);
         Map<String, Object> params = performanceAppraisalObjectsDTO.getParams();
+        if (StringUtils.isNull(params)) {
+            params = new HashMap<>();
+        }
         appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
@@ -2213,29 +2216,27 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
         Map<String, Object> params2 = new HashMap<>();
-        Map<String, Object> params3 = new HashMap<>();
-        if (StringUtils.isNotNull(params)) {
-            for (String key : params.keySet()) {
-                switch (key) {
-                    case "departmentNameEqual":
-                        params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
-                        break;
-                    case "departmentNameNotEqual":
-                        params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
-                        break;
-                    case "examinationLeaderNameEqual":
-                        params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
-                        break;
-                    case "examinationLeaderNameNotEqual":
-                        params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
-                        break;
+        
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "departmentNameEqual":
+                    params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentNameNotEqual":
+                    params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "examinationLeaderNameEqual":
+                    params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
+                    break;
+                case "examinationLeaderNameNotEqual":
+                    params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
+                    break;
 //                    case "appraisalObjectStatusEqual":
 //                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
 //                        break;
 //                    case "appraisalObjectStatusNotEqual":
 //                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
 //                        break;
-                }
             }
         }
         if (StringUtils.isNotEmpty(params2)) {
@@ -2264,6 +2265,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         appraisalDTO.setAppraisalObject(2);
         appraisalDTO.setAppraisalStatus(1);
         Map<String, Object> params = performanceAppraisalObjectsDTO.getParams();
+        if (StringUtils.isNull(params)) {
+            params = new HashMap<>();
+        }
         appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
@@ -2283,35 +2287,33 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
         Map<String, Object> params2 = new HashMap<>();
-        Map<String, Object> params3 = new HashMap<>();
-        if (StringUtils.isNotNull(params)) {
-            for (String key : params.keySet()) {
-                switch (key) {
-                    case "employeeNameEqual":
-                        params2.put("employeeNameEqual", params.get("employeeCodeNotEqual"));
-                        break;
-                    case "employeeNameNotEqual":
-                        params2.put("employeeNameNotEqual", params.get("employeeCodeNotEqual"));
-                        break;
-                    case "employeeCodeEqual":
-                        params2.put("employeeCodeEqual", params.get("employeeCodeEqual"));
-                        break;
-                    case "employeeCodeNotEqual":
-                        params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
-                        break;
-                    case "employeePostNameEqual":
-                        params2.put("employeePostNameEqual", params.get("employeePostNameEqual"));
-                        break;
-                    case "employeePostNameNotEqual":
-                        params2.put("employeePostNameNotEqual", params.get("employeePostNameNotEqual"));
-                        break;
-                    case "employeeDepartmentEqual":
-                        params2.put("employeeDepartmentEqual", params.get("employeeDepartmentEqual"));
-                        break;
-                    case "employeeDepartmentNotEqual":
-                        params2.put("employeeDepartmentNotEqual", params.get("employeeDepartmentNotEqual"));
-                        break;
-                }
+        
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "employeeNameEqual":
+                    params2.put("employeeNameEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeNameNotEqual":
+                    params2.put("employeeNameNotEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeCodeEqual":
+                    params2.put("employeeCodeEqual", params.get("employeeCodeEqual"));
+                    break;
+                case "employeeCodeNotEqual":
+                    params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeePostNameEqual":
+                    params2.put("employeePostNameEqual", params.get("employeePostNameEqual"));
+                    break;
+                case "employeePostNameNotEqual":
+                    params2.put("employeePostNameNotEqual", params.get("employeePostNameNotEqual"));
+                    break;
+                case "employeeDepartmentEqual":
+                    params2.put("employeeDepartmentEqual", params.get("employeeDepartmentEqual"));
+                    break;
+                case "employeeDepartmentNotEqual":
+                    params2.put("employeeDepartmentNotEqual", params.get("employeeDepartmentNotEqual"));
+                    break;
             }
         }
         if (StringUtils.isNotEmpty(params2)) {
@@ -2549,11 +2551,16 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(1);
         Map<String, Object> params = performanceAppraisalObjectsDTO.getParams();
+        if (StringUtils.isNull(params)) {
+            params = new HashMap<>();
+        }
         appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
             return new ArrayList<>();
         }
+        params.put("evaluationScoreEqual", null);
+        params.put("evaluationScoreNotEqual", null);
         List<Long> performanceAppraisalIds = performanceAppraisalDTOS.stream().map(PerformanceAppraisalDTO::getPerformanceAppraisalId).collect(Collectors.toList());
         Integer appraisalObjectStatus = performanceAppraisalObjectsDTO.getAppraisalObjectStatus();
         List<Integer> appraisalObjectStatuses = new ArrayList<>();
@@ -2566,35 +2573,33 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
         Map<String, Object> params2 = new HashMap<>();
-        Map<String, Object> params3 = new HashMap<>();
-        if (StringUtils.isNotNull(params)) {
-            for (String key : params.keySet()) {
-                switch (key) {
-                    case "departmentNameEqual":
-                        params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
-                        break;
-                    case "departmentNameNotEqual":
-                        params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
-                        break;
-                    case "examinationLeaderNameEqual":
-                        params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
-                        break;
-                    case "examinationLeaderNameNotEqual":
-                        params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
-                        break;
+        
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "departmentNameEqual":
+                    params2.put("departmentNameEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentNameNotEqual":
+                    params2.put("departmentNameNotEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "examinationLeaderNameEqual":
+                    params2.put("examinationLeaderNameEqual", params.get("examinationLeaderNameEqual"));
+                    break;
+                case "examinationLeaderNameNotEqual":
+                    params2.put("examinationLeaderNameNotEqual", params.get("examinationLeaderNameNotEqual"));
+                    break;
 //                    case "appraisalObjectStatusEqual":
 //                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
 //                        break;
 //                    case "appraisalObjectStatusNotEqual":
 //                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
 //                        break;
-//                    case "evaluationScoreEqual":
-//                        params3.put("evaluationScoreEqual", params.get("evaluationScoreEqual"));
-//                        break;
-//                    case "evaluationScoreNotEqual":
-//                        params3.put("evaluationScoreNotEqual", params.get("evaluationScoreNotEqual"));
-//                        break;
-                }
+                case "evaluationScoreEqual":
+                    params.put("evaluationScoreEqual", params.get("evaluationScoreEqual"));
+                    break;
+                case "evaluationScoreNotEqual":
+                    params.put("evaluationScoreNotEqual", params.get("evaluationScoreNotEqual"));
+                    break;
             }
         }
         if (StringUtils.isNotEmpty(params2)) {
@@ -2622,11 +2627,16 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         PerformanceAppraisal appraisalDTO = new PerformanceAppraisal();
         appraisalDTO.setAppraisalObject(2);
         Map<String, Object> params = performanceAppraisalObjectsDTO.getParams();
+        if (StringUtils.isNull(params)) {
+            params = new HashMap<>();
+        }
         appraisalDTO.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(appraisalDTO);
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
             return new ArrayList<>();
         }
+        params.put("evaluationScoreEqual", null);
+        params.put("evaluationScoreNotEqual", null);
         for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
             performanceAppraisalIds.add(performanceAppraisalDTO.getPerformanceAppraisalId());
         }
@@ -2641,41 +2651,39 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
         Map<String, Object> params2 = new HashMap<>();
-        Map<String, Object> params3 = new HashMap<>();
-        if (StringUtils.isNotNull(params)) {
-            for (String key : params.keySet()) {
-                switch (key) {
-                    case "employeeNameEqual":
-                        params2.put("employeeNameEqual", params.get("employeeCodeNotEqual"));
-                        break;
-                    case "employeeNameNotEqual":
-                        params2.put("employeeNameNotEqual", params.get("employeeCodeNotEqual"));
-                        break;
-                    case "employeeCodeEqual":
-                        params2.put("employeeCodeEqual", params.get("employeeCodeEqual"));
-                        break;
-                    case "employeeCodeNotEqual":
-                        params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
-                        break;
-                    case "employeePostNameEqual":
-                        params2.put("employeePostNameEqual", params.get("employeePostNameEqual"));
-                        break;
-                    case "employeePostNameNotEqual":
-                        params2.put("employeePostNameNotEqual", params.get("employeePostNameNotEqual"));
-                        break;
-                    case "employeeDepartmentEqual":
-                        params2.put("employeeDepartmentEqual", params.get("employeeDepartmentEqual"));
-                        break;
-                    case "employeeDepartmentNotEqual":
-                        params2.put("employeeDepartmentNotEqual", params.get("employeeDepartmentNotEqual"));
-                        break;
+        
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "employeeNameEqual":
+                    params2.put("employeeNameEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeNameNotEqual":
+                    params2.put("employeeNameNotEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeCodeEqual":
+                    params2.put("employeeCodeEqual", params.get("employeeCodeEqual"));
+                    break;
+                case "employeeCodeNotEqual":
+                    params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeePostNameEqual":
+                    params2.put("employeePostNameEqual", params.get("employeePostNameEqual"));
+                    break;
+                case "employeePostNameNotEqual":
+                    params2.put("employeePostNameNotEqual", params.get("employeePostNameNotEqual"));
+                    break;
+                case "employeeDepartmentEqual":
+                    params2.put("employeeDepartmentEqual", params.get("employeeDepartmentEqual"));
+                    break;
+                case "employeeDepartmentNotEqual":
+                    params2.put("employeeDepartmentNotEqual", params.get("employeeDepartmentNotEqual"));
+                    break;
 //                    case "appraisalObjectStatusEqual":
 //                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
 //                        break;
 //                    case "appraisalObjectStatusNotEqual":
 //                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
 //                        break;
-                }
             }
         }
         if (StringUtils.isNotEmpty(params2)) {

@@ -1266,8 +1266,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     /**
      * 是否引用目标分解
      *
-     * @param employeeDTOList
-     * @param targetDecomposeDetailsDTO
+     * @param employeeDTOList           员工列表
+     * @param targetDecomposeDetailsDTO 目标分解详情
      */
     private void quoteTargetDecompose(List<EmployeeDTO> employeeDTOList, TargetDecomposeDetailsDTO targetDecomposeDetailsDTO) {
         //远程调用查看目标分解详情数据 获取目标分解主表id
