@@ -25,6 +25,7 @@
         ei.wechat_code,
         ei.emergency_contact,
         ei.emergency_mobile,
+        ors.rank_prefix_code,
         case
         when ors.rank_prefix_code is null then e.employee_rank
         when ors.rank_prefix_code is not null
@@ -186,7 +187,6 @@
             on r.district_code=SUBSTRING_INDEX(ei.contact_address ,',',-1)
             and r.delete_flag =0
         </if>
-
         where
         e.delete_flag = 0
         <if test="employee.employeeIds  != null and employee.employeeIds.size()!=0">
@@ -197,6 +197,589 @@
                 #{item}
             </foreach>
         </if>
+        <!-- 员工工号过滤  -->
+        <if test="employee.params.employeeCodeEqual != null and employee.params.employeeCodeEqual.size() > 0">
+            AND e.employee_code IN
+            <foreach item="item"
+                     collection="employee.params.employeeCodeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeCodeNotEqual != null and employee.params.employeeCodeNotEqual.size() > 0">
+            AND (e.employee_code NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeCodeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.employee_code IS NULL
+            )
+        </if>
+        <if test="employee.params.employeeCodeLike != null and employee.params.employeeCodeLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeCodeLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.employee_code  LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="employee.params.employeeCodeNotLike != null and employee.params.employeeCodeNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeCodeNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.employee_code  NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 员工姓名过滤  -->
+        <if test="employee.params.employeeNameEqual != null and employee.params.employeeNameEqual.size() > 0">
+            AND e.employee_name IN
+            <foreach item="item"
+                     collection="employee.params.employeeNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeNameNotEqual != null and employee.params.employeeNameNotEqual.size() > 0">
+            AND (e.employee_name NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.employee_name IS NULL
+            )
+        </if>
+        <if test="employee.params.employeeNameLike != null and employee.params.employeeNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeNameLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.employee_name  LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="employee.params.employeeNameNotLike != null and employee.params.employeeNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.employee_name  NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 员工用工关系状态过滤  -->
+        <if test="employee.params.employeeemploymentStatusEqual != null and employee.params.employeeemploymentStatusEqual.size() > 0">
+            AND e.employment_status IN
+            <foreach item="item"
+                     collection="employee.params.employeeemploymentStatusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeemploymentStatusNotEqual != null and employee.params.employeeemploymentStatusNotEqual.size() > 0">
+            AND (e.employment_status NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeemploymentStatusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.employment_status IS NULL
+            )
+        </if>
+        <!-- 员工性别过滤  -->
+        <if test="employee.params.employeeGenderEqual != null and employee.params.employeeGenderEqual.size() > 0">
+            AND e.employee_gender IN
+            <foreach item="item"
+                     collection="employee.params.employeeGenderEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeGenderNotEqual != null and employee.params.employeeGenderNotEqual.size() > 0">
+            AND (e.employee_gender NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeGenderNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.employee_gender IS NULL
+            )
+        </if>
+        <!-- 员工身份证号过滤  -->
+        <if test="employee.params.identityCardEqual != null and employee.params.identityCardEqual.size() > 0">
+            AND e.identity_card IN
+            <foreach item="item"
+                     collection="employee.params.identityCardEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.identityCardNotEqual != null and employee.params.identityCardNotEqual.size() > 0">
+            AND (e.identity_card NOT IN
+            <foreach item="item"
+                     collection="employee.params.identityCardNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.identity_card IS NULL
+            )
+        </if>
+        <if test="employee.params.identityCardLike != null and employee.params.identityCardLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.identityCardLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.identity_card  LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="employee.params.identityCardNotLike != null and employee.params.identityCardNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.identityCardNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.identity_card  NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 出生日期过滤  -->
+        <if test="employee.params.employeeBirthdayEqual != null and employee.params.employeeBirthdayEqual.size() > 0">
+            AND e.employee_birthday IN
+            <foreach item="item"
+                     collection="employee.params.employeeBirthdayEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeBirthdayNotEqual != null and employee.params.employeeBirthdayNotEqual.size() > 0">
+            AND e.employee_birthday NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeBirthdayNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeBirthdayBefore != null and employee.params.employeeBirthdayBefore != ''">
+            AND e.employee_birthday &lt; #{employee.params.employeeBirthdayBefore}
+        </if>
+        <if test="employee.params.employeeBirthdayNotBefore != null and employee.params.employeeBirthdayNotBefore != ''"><!-- 开始时间检索 -->
+            AND e.employee_birthday &gt;= #{employee.params.employeeBirthdayNotBefore}
+        </if>
+        <if test="employee.params.employeeBirthdayAfter != null and employee.params.employeeBirthdayAfter != ''"><!-- 开始时间检索 -->
+            AND e.employee_birthday &gt; #{employee.params.employeeBirthdayAfter}
+        </if>
+        <if test="employee.params.employeeBirthdayNotAfter != null and employee.params.employeeBirthdayNotAfter != ''"><!-- 结束时间检索 -->
+            AND e.employee_birthday &lt;= #{employee.params.employeeBirthdayNotAfter}
+        </if>
+        <if test="employee.params.employeeBirthdayStart != null and employee.params.employeeBirthdayStart != ''"><!-- 开始时间检索 -->
+            AND e.employee_birthday &gt;= #{employee.params.employeeBirthdayStart}
+        </if>
+        <if test="employee.params.employeeBirthdayEnd != null and employee.params.employeeBirthdayEnd != ''"><!-- 结束时间检索 -->
+            AND e.employee_birthday &lt;= #{employee.params.employeeBirthdayEnd}
+        </if>
+        <!-- 员工婚姻状态过滤  -->
+        <if test="employee.params.maritalStatusEqual != null and employee.params.maritalStatusEqual.size() > 0">
+            AND ei.marital_status IN
+            <foreach item="item"
+                     collection="employee.params.maritalStatusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.maritalStatusNotEqual != null and employee.params.maritalStatusNotEqual.size() > 0">
+            AND (ei.marital_status NOT IN
+            <foreach item="item"
+                     collection="employee.params.maritalStatusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ei.marital_status IS NULL
+            )
+        </if>
+        <!-- 员工国籍过滤  -->
+        <if test="employee.params.nationalityNameEqual != null and employee.params.nationalityNameEqual.size() > 0">
+            AND c.country_name IN
+            <foreach item="item"
+                     collection="employee.params.nationalityNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.nationalityNameNotEqual != null and employee.params.nationalityNameNotEqual.size() > 0">
+            AND (c.country_name NOT IN
+            <foreach item="item"
+                     collection="employee.params.nationalityNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR c.country_name IS NULL
+            )
+        </if>
+        <!-- 员工民族过滤  -->
+        <if test="employee.params.nationNameEqual != null and employee.params.nationNameEqual.size() > 0">
+            AND n.nation_name IN
+            <foreach item="item"
+                     collection="employee.params.nationNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.nationNameNotEqual != null and employee.params.nationNameNotEqual.size() > 0">
+            AND (n.nation_name NOT IN
+            <foreach item="item"
+                     collection="employee.params.nationNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR n.nation_name IS NULL
+            )
+        </if>
+        <!-- 入职日期过滤  -->
+        <if test="employee.params.employmentDateEqual != null and employee.params.employmentDateEqual.size() > 0">
+            AND e.employment_date IN
+            <foreach item="item"
+                     collection="employee.params.employmentDateEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employmentDateNotEqual != null and employee.params.employmentDateNotEqual.size() > 0">
+            AND e.employment_date NOT IN
+            <foreach item="item"
+                     collection="employee.params.employmentDateNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employmentDateBefore != null and employee.params.employmentDateBefore != ''">
+            AND e.employment_date &lt; #{employee.params.employmentDateBefore}
+        </if>
+        <if test="employee.params.employmentDateNotBefore != null and employee.params.employmentDateNotBefore != ''"><!-- 开始时间检索 -->
+            AND e.employment_date &gt;= #{employee.params.employmentDateNotBefore}
+        </if>
+        <if test="employee.params.employmentDateAfter != null and employee.params.employmentDateAfter != ''"><!-- 开始时间检索 -->
+            AND e.employment_date &gt; #{employee.params.employmentDateAfter}
+        </if>
+        <if test="employee.params.employmentDateNotAfter != null and employee.params.employmentDateNotAfter != ''"><!-- 结束时间检索 -->
+            AND e.employment_date &lt;= #{employee.params.employmentDateNotAfter}
+        </if>
+        <if test="employee.params.employmentDateStart != null and employee.params.employmentDateStart != ''"><!-- 开始时间检索 -->
+            AND e.employment_date &gt;= #{employee.params.employmentDateStart}
+        </if>
+        <if test="employee.params.employmentDateEnd != null and employee.params.employmentDateEnd != ''"><!-- 结束时间检索 -->
+            AND e.employment_date &lt;= #{employee.params.employmentDateEnd}
+        </if>
+        <!-- 员工状态过滤  -->
+        <if test="employee.params.statusEqual != null and employee.params.statusEqual.size() > 0">
+            AND e.status IN
+            <foreach item="item"
+                     collection="employee.params.statusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.statusNotEqual != null and employee.params.statusNotEqual.size() > 0">
+            AND (e.status NOT IN
+            <foreach item="item"
+                     collection="employee.params.statusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.status IS NULL
+            )
+        </if>
+        <!-- 员工部门过滤  -->
+        <if test="employee.params.employeeDepartmentNameEqual != null and employee.params.employeeDepartmentNameEqual.size() > 0">
+            AND d.department_name IN
+            <foreach item="item"
+                     collection="employee.params.employeeDepartmentNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeDepartmentNameNotEqual != null and employee.params.employeeDepartmentNameNotEqual.size() > 0">
+            AND (d.department_name NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeDepartmentNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR d.department_name IS NULL
+            )
+        </if>
+        <!-- 员工岗位过滤  -->
+        <if test="employee.params.employeePostNameEqual != null and employee.params.employeePostNameEqual.size() > 0">
+            AND p.post_name IN
+            <foreach item="item"
+                     collection="employee.params.employeePostNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeePostNameNotEqual != null and employee.params.employeePostNameNotEqual.size() > 0">
+            AND (p.post_name NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeePostNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR p.post_name IS NULL
+            )
+        </if>
+        <!-- 员工职级体系名称过滤  -->
+        <if test="employee.params.officialRankSystemNameEqual != null and employee.params.officialRankSystemNameEqual.size() > 0">
+            AND ors.official_rank_system_name IN
+            <foreach item="item"
+                     collection="employee.params.officialRankSystemNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.officialRankSystemNameNotEqual != null and employee.params.officialRankSystemNameNotEqual.size() > 0">
+            AND (ors.official_rank_system_name NOT IN
+            <foreach item="item"
+                     collection="employee.params.officialRankSystemNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ors.official_rank_system_name IS NULL
+            )
+        </if>
+        <!-- 员工岗位职级过滤  -->
+        <if test="employee.params.postRankNameEqual != null and employee.params.postRankNameEqual.size() > 0">
+            AND case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank) end IN
+            <foreach item="item"
+                     collection="employee.params.postRankNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.postRankNameNotEqual != null and employee.params.postRankNameNotEqual.size() > 0">
+            AND (case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank) end NOT IN
+            <foreach item="item"
+                     collection="employee.params.postRankNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank)  end IS NULL
+            )
+        </if>
+        <if test="employee.params.postRankNameLike != null and employee.params.postRankNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.postRankNameLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then p.post_rank
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank) end LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="employee.params.postRankNameNotLike != null and employee.params.postRankNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.postRankNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then p.post_rank
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank) end NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 员工个人职级过滤  -->
+        <if test="employee.params.employeeRankNameEqual != null and employee.params.employeeRankNameEqual.size() > 0">
+            AND case when ors.rank_prefix_code is null then e.employee_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end IN
+            <foreach item="item"
+                     collection="employee.params.employeeRankNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeRankNameNotEqual != null and employee.params.employeeRankNameNotEqual.size() > 0">
+            AND (case when ors.rank_prefix_code is null then e.employee_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeRankNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR case when ors.rank_prefix_code is null then e.employee_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end IS NULL
+            )
+        </if>
+        <if test="employee.params.employeeRankNameLike != null and employee.params.employeeRankNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeRankNameLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then e.employee_rank
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end  LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="employee.params.employeeRankNameNotLike != null and employee.params.employeeRankNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeRankNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then e.employee_rank
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end  NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 基本工资过滤  -->
+        <if test="employee.params.employeeBasicWageEqual != null and employee.params.employeeBasicWageEqual.size() > 0">
+            AND e.employee_basic_wage IN
+            <foreach item="item"
+                     collection="employee.params.employeeBasicWageEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeBasicWageNotEqual != null and employee.params.employeeBasicWageNotEqual.size() > 0">
+            AND e.employee_basic_wage NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeBasicWageNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeBasicWageNull != null">
+            AND e.employee_basic_wage is null
+        </if>
+        <if test="employee.params.employeeBasicWageNotNull != null">
+            AND e.employee_basic_wage is not null
+        </if>
+        <if test="employee.params.employeeBasicWageGreaterThan != null ">
+            AND e.employee_basic_wage &gt;#{employee.params..employeeBasicWageGreaterThan}
+        </if>
+        <if test="employee.params.employeeBasicWageNotGreaterThan != null ">
+            AND e.employee_basic_wage &lt;=#{employee.params..employeeBasicWageNotGreaterThan}
+        </if>
+        <if test="employee.params.employeeBasicWageLessThan != null ">
+            AND e.employee_basic_wage &lt;#{employee.params..employeeBasicWageLessThan}
+        </if>
+        <if test="employee.params.employeeBasicWageNotLessThan != null ">
+            AND e.employee_basic_wage &gt;=#{employee.params..employeeBasicWageNotLessThan}
+        </if>
+        <!-- 员工手机过滤  -->
+        <if test="employee.params.employeeMobileEqual != null and employee.params.employeeMobileEqual.size() > 0">
+            AND e.employee_mobile IN
+            <foreach item="item"
+                     collection="employee.params.employeeMobileEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeMobileNotEqual != null and employee.params.employeeMobileNotEqual.size() > 0">
+            AND (e.employee_mobile NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeMobileNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.employee_mobile IS NULL
+            )
+        </if>
+        <if test="employee.params.employeeMobileLike != null and employee.params.employeeMobileLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeMobileLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.employee_mobile  LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="employee.params.employeeMobileNotLike != null and employee.params.employeeMobileNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeMobileNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.employee_mobile  NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 邮箱过滤  -->
+        <if test="employee.params.employeeEmailEqual != null and employee.params.employeeEmailEqual.size() > 0">
+            AND e.employee_email IN
+            <foreach item="item"
+                     collection="employee.params.employeeEmailEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.employeeEmailNotEqual != null and employee.params.employeeEmailNotEqual.size() > 0">
+            AND ( e.employee_email NOT IN
+            <foreach item="item"
+                     collection="employee.params.employeeEmailNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR e.employee_email = ''
+            )
+        </if>
+        <if test="employee.params.employeeEmailLike != null and employee.params.employeeEmailLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.employeeEmailLike"
+                     index="index" open="(" separator="OR" close=")">
+                e.employee_email LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="employee.params.employeeEmailNotLike != null and employee.params.employeeEmailNotLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="employee.params.employeeEmailNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                e.employee_email NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+            OR e.employee_email = ''
+            )
+        </if>
+        <if test="employee.params.employeeEmailNull != null">
+            AND e.employee_email = ''
+        </if>
+        <if test="employee.params.employeeEmailNotNull != null">
+            AND e.employee_email != ''
+        </if>
+        <!-- 员工微信过滤  -->
+        <if test="employee.params.wechatCodeEqual != null and employee.params.wechatCodeEqual.size() > 0">
+            AND ei.wechat_code IN
+            <foreach item="item"
+                     collection="employee.params.wechatCodeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employee.params.wechatCodeNotEqual != null and employee.params.wechatCodeNotEqual.size() > 0">
+            AND ( ei.wechat_code NOT IN
+            <foreach item="item"
+                     collection="employee.params.wechatCodeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ei.wechat_code = ''
+            )
+        </if>
+        <if test="employee.params.wechatCodeLike != null and employee.params.wechatCodeLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="employee.params.wechatCodeLike"
+                     index="index" open="(" separator="OR" close=")">
+                ei.wechat_code LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="employee.params.wechatCodeNotLike != null and employee.params.wechatCodeNotLike.size() > 0">
+            AND (
+            <foreach item="item"
+                     collection="employee.params.wechatCodeNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                ei.wechat_code NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+            OR ei.wechat_code = ''
+            )
+        </if>
+        <if test="employee.params.wechatCodeNull != null">
+            AND ei.wechat_code = ''
+        </if>
+        <if test="employee.params.wechatCodeNotNull != null">
+            AND ei.wechat_code != ''
+        </if>
+
         <if test="employee.residentCityName != null and employee.residentCityName != ''">
             and concat(r.province_name, r.city_name, r.district_name) like '%${employee.residentCityName}%'
         </if>
@@ -208,12 +791,6 @@
         </if>
         <if test="employee.contactAddressName != null and employee.contactAddressName != ''">
             and concat(r.province_name, r.city_name, r.district_name) like '%${employee.contactAddressName}%'
-        </if>
-        <if test="employee.nationalityName != null and employee.nationalityName != ''">
-            and c.country_name like '%${employee.nationalityName}%'
-        </if>
-        <if test="employee.nationName != null and employee.nationName != ''">
-            and n.nation_name like '%${employee.nationName}%'
         </if>
         <if test="employee.employeeDepartmentName != null and employee.employeeDepartmentName != ''">
             and d.department_name like '%${employee.employeeDepartmentName}%'
@@ -240,24 +817,6 @@
         <if test="employee.employeeName != null and employee.employeeName != ''">
             and e.employee_name like '%${employee.employeeName}%'
         </if>
-        <if test="employee.employeeGender != null">
-            and e.employee_gender like '%${employee.employeeGender}%'
-        </if>
-        <if test="employee.identityType != null">
-            and e.identity_type like '%${employee.identityType}%'
-        </if>
-        <if test="employee.identityCard != null and employee.identityCard != ''">
-            and e.identity_card like '%${employee.identityCard}%'
-        </if>
-
-        <if test="employee.params.employeeBirthdayStart != null">
-            AND date_format(e.employee_birthday,'%y%m%d') &gt;=
-            date_format(#{employee.params.employeeBirthdayStart},'%y%m%d')
-        </if>
-        <if test="employee.params.employeeBirthdayEnd != null">
-            AND date_format(e.employee_birthday,'%y%m%d') &lt;=
-            date_format(#{employee.params.employeeBirthdayEnd},'%y%m%d')
-        </if>
         <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
             and e.employee_mobile like '%${employee.employeeMobile}%'
         </if>
@@ -277,17 +836,17 @@
             and e.employee_basic_wage like '%${employee.employeeBasicWage}%'
         </if>
         <if test="employee.params.employmentDateStart != null">
-            AND date_format(e.employment_date,'%y%m%d') &gt;=
-            date_format(#{employee.params.employmentDateStart},'%y%m%d')
+            AND e.employment_date &gt;=
+            #{employee.params.employmentDateStart}
         </if>
         <if test="employee.params.employmentDateEnd != null">
-            AND date_format(e.employment_date,'%y%m%d') &lt;= date_format(#{employee.params.employmentDateEnd},'%y%m%d')
+            AND e.employment_date &lt;= #{employee.params.employmentDateEnd}
         </if>
         <if test="employee.params.departureDateStart != null">
-            AND date_format(e.departure_date,'%y%m%d') &gt;= date_format(#{employee.params.departureDateStart},'%y%m%d')
+            AND e.departure_date &gt;= #{employee.params.departureDateStart}
         </if>
         <if test="employee.params.departureDateEnd != null">
-            AND date_format(e.departure_date,'%y%m%d') &lt;= date_format(#{employee.params.departureDateEnd},'%y%m%d')
+            AND e.departure_date &lt;= #{employee.params.departureDateEnd}
         </if>
         <if test="employee.employmentStatus != null">
             and e.employment_status like '%${employee.employmentStatus}%'
@@ -746,14 +1305,14 @@
         when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
         as employeeRankName,
         case
-        when date_format(now(), '%Y') &lt; #{employee.planYear} then ifnull(sum(employment_status = 1),0)
-        when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 0 and
-        date_format(now(), '%m') &lt; 7 then
+        when now(), '%Y') &lt; #{employee.planYear} then ifnull(sum(employment_status = 1),0)
+        when now(), '%Y') = #{employee.planYear} and now(), '%m') &gt; 0 and
+        now(), '%m') &lt; 7 then
         ifnull(sum(case
-        when date_format(employment_date, '%Y') = (#{employee.planYear} - 1)
+        when employment_date, '%Y') = (#{employee.planYear} - 1)
         then employment_status = 1 end),0)
-        when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 6 and
-        date_format(now(), '%m') &lt; 13 then ifnull(sum(employment_status = 1),0)
+        when now(), '%Y') = #{employee.planYear} and now(), '%m') &gt; 6 and
+        now(), '%m') &lt; 13 then ifnull(sum(employment_status = 1),0)
         end as amountLastYear
         FROM employee e
         left join post p
@@ -1166,13 +1725,13 @@
             and e.identity_card like '%${employee.identityCard}%'
         </if>
 
-        <if test="employee.params.employeeBirthdayStart != null">
-            AND date_format(e.employee_birthday,'%y%m%d') &gt;=
-            date_format(#{employee.params.employeeBirthdayStart},'%y%m%d')
+        <if test="employee.params.employmentDateStart != null">
+            AND e.employee_birthday &gt;=
+            #{employee.params.employeeBirthdayStart}
         </if>
         <if test="employee.params.employeeBirthdayEnd != null">
-            AND date_format(e.employee_birthday,'%y%m%d') &lt;=
-            date_format(#{employee.params.employeeBirthdayEnd},'%y%m%d')
+            AND e.employee_birthday &lt;=
+            #{employee.params.employeeBirthdayEnd}
         </if>
         <if test="employee.employeeMobile != null and employee.employeeMobile != ''">
             and e.employee_mobile like '%${employee.employeeMobile}%'
@@ -1193,17 +1752,17 @@
             and e.employee_basic_wage like '%${employee.employeeBasicWage}%'
         </if>
         <if test="employee.params.employmentDateStart != null">
-            AND date_format(e.employment_date,'%y%m%d') &gt;=
-            date_format(#{employee.params.employmentDateStart},'%y%m%d')
+            AND e.employment_date &gt;=
+            #{employee.params.employmentDateStart}
         </if>
         <if test="employee.params.employmentDateEnd != null">
-            AND date_format(e.employment_date,'%y%m%d') &lt;= date_format(#{employee.params.employmentDateEnd},'%y%m%d')
+            AND e.employment_date &lt;= #{employee.params.employmentDateEnd}
         </if>
         <if test="employee.params.departureDateStart != null">
-            AND date_format(e.departure_date,'%y%m%d') &gt;= date_format(#{employee.params.departureDateStart},'%y%m%d')
+            AND e.departure_date &gt;= #{employee.params.departureDateStart}
         </if>
         <if test="employee.params.departureDateEnd != null">
-            AND date_format(e.departure_date,'%y%m%d') &lt;= date_format(#{employee.params.departureDateEnd},'%y%m%d')
+            AND e.departure_date &lt;= #{employee.params.departureDateEnd}
         </if>
         <if test="employee.employmentStatus != null">
             and e.employment_status like '%${employee.employmentStatus}%'
@@ -1410,7 +1969,7 @@
         #{employee.employeeMobile}, #{employee.employeeEmail}, #{employee.employeeDepartmentId},
         #{employee.employeePostId}, #{employee.employeeRank}, #{employee.employeeBasicWage},
         #{employee.employmentDate}, #{employee.departureDate}, #{employee.employmentStatus}, #{employee.status},
-        #{employee.deleteFlag}, #{employee.createBy}, #{employee.createTime}, #{employee.updateBy},
+        #{employee.deleteFlag}, #{employee.createBy}, #{employee.employeeBirthday}, #{employee.updateBy},
         #{employee.updateTime})
     </insert>
     <!--修改员工表-->
@@ -1471,8 +2030,8 @@
         <if test="employee.createBy != null">
             create_by=#{employee.createBy},
         </if>
-        <if test="employee.createTime != null">
-            create_time=#{employee.createTime},
+        <if test="employee.employeeBirthday != null">
+            create_time=#{employee.employeeBirthday},
         </if>
         <if test="employee.updateBy != null">
             update_by=#{employee.updateBy},
@@ -1513,7 +2072,7 @@
         <foreach item="item" index="index"
                  collection="employees"
                  separator=",">
-            (#{item.employeeCode},#{item.employeeName},#{item.employeeGender},#{item.identityType},#{item.identityCard},#{item.employeeBirthday},#{item.employeeMobile},#{item.employeeEmail},#{item.employeeDepartmentId},#{item.employeePostId},#{item.employeeRank},#{item.employeeBasicWage},#{item.employmentDate},#{item.departureDate},#{item.employmentStatus},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.employeeCode},#{item.employeeName},#{item.employeeGender},#{item.identityType},#{item.identityCard},#{item.employeeBirthday},#{item.employeeMobile},#{item.employeeEmail},#{item.employeeDepartmentId},#{item.employeePostId},#{item.employeeRank},#{item.employeeBasicWage},#{item.employmentDate},#{item.departureDate},#{item.employmentStatus},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.employeeBirthday},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -1666,8 +2225,8 @@
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                    <if test="item.createTime != null">
-                        when employee_id=#{item.employeeId} then #{item.createTime}
+                    <if test="item.employeeBirthday != null">
+                        when employee_id=#{item.employeeId} then #{item.employeeBirthday}
                     </if>
                 </foreach>
             </trim>

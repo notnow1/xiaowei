@@ -347,5 +347,9 @@ public class EmployeeDTO implements Serializable {
      * 考核负责人名称
      */
     private  String examinationLeaderName;
+    /**
+     * 级别前缀编码
+     */
+    private String rankPrefixCode;
 }
 
