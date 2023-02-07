@@ -1201,16 +1201,12 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         // 第六列
         List<String> head5 = new ArrayList<String>();
         head5.add("分解目标");
-        // 第七列
-        List<String> head6 = new ArrayList<String>();
-        head6.add("目标差异");
         list.add(head0);
         list.add(head1);
         list.add(head2);
         list.add(head3);
         list.add(head4);
         list.add(head5);
-        list.add(head6);
         return list;
     }
 
@@ -1236,8 +1232,6 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
             data.add(targetDecomposeExcel.getTargetValue());
             //分解目标
             data.add(targetDecomposeExcel.getDecomposeTarget());
-            //目标差异
-            data.add(targetDecomposeExcel.getTargetDifference());
             list.add(data);
         }
         return list;

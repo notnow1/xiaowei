@@ -157,4 +157,19 @@ public interface TargetSettingMapper {
      * @return
      */
     List<TargetSettingDTO> selectSetDrivingFactor(@Param("targetSetting") TargetSetting targetSetting);
+
+    /**
+     * 二期优化查询经营分析报表列表
+     * @param targetSetting
+     * @return
+     */
+    List<TargetSettingDTO> selectAnalyseLists(@Param("targetSetting")TargetSetting targetSetting);
+
+
+    /**
+     * 二期优化查询经营分析指标列表
+     * @param targetSetting
+     * @return
+     */
+    List<TargetSettingDTO> selectanalyseIndicator(@Param("targetSetting")TargetSetting targetSetting);
 }

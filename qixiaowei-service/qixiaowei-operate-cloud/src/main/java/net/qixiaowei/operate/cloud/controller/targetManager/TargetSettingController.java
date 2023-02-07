@@ -299,6 +299,16 @@ public class TargetSettingController extends BaseController {
         return AjaxResult.success(list);
     }
 
+    /**
+     * 查询经营分析报表指标列表
+     */
+    //@RequiresPermissions("operate:cloud:targetSetting:analyse")
+    @GetMapping("/analyseIndicator/list")
+    public AjaxResult analyseIndicator(TargetSettingDTO targetSettingDTO) {
+        List<TargetSettingDTO> list = targetSettingService.analyseIndicator(targetSettingDTO);
+        return AjaxResult.success(list);
+    }
+
     //==============================其他==============================//
 
     /**

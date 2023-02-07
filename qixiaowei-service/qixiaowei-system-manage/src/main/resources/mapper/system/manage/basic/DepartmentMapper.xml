@@ -57,6 +57,9 @@
         left join post p
         on  p.post_id = dm.department_leader_post_id
         and p.delete_flag =0
+        left join department dm2
+        on dm.parent_department_id = dm2.department_id
+        and dm2.delete_flag =0
         where dm.delete_flag =0
         <if test="department.examinationLeaderName != null and department.examinationLeaderName != ''">
             and ee2.employee_name like '%${department.examinationLeaderName}%'
@@ -69,6 +72,9 @@
         </if>
         <if test="department.departmentName != null and department.departmentName != ''">
             and dm.department_name like '%${department.departmentName}%'
+        </if>
+        <if test="department.departmentName != null and department.departmentName != ''">
+            and dm2.department_name like '%${department.parentDepartmentName}%'
         </if>
         <if test="department.level != null">
             and dm.level like '%${department.level}%'

@@ -219,4 +219,11 @@ public interface ITargetSettingService {
      * @return List
      */
     List<TargetSettingDTO> selectByIndicatorIds(List<Long> indicatorIds);
+
+    /**
+     * 查询经营分析报表指标列表
+     * @param targetSettingDTO
+     * @return
+     */
+    List<TargetSettingDTO> analyseIndicator(TargetSettingDTO targetSettingDTO);
 }

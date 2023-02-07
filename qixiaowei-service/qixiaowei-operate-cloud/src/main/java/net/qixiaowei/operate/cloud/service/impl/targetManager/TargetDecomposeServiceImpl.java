@@ -2630,7 +2630,20 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //excelList
         List<TargetDecomposeExcel> targetDecomposeExcelList = new ArrayList<>();
         List<TargetDecomposeDTO> targetDecomposeDTOList = targetDecomposeMapper.selectTargetDecomposeList(targetDecompose);
+
         if (StringUtils.isNotEmpty(targetDecomposeDTOList)) {
+            List<Long> indicatorIds = targetDecomposeDTOList.stream().map(TargetDecomposeDTO::getIndicatorId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+            R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+            List<IndicatorDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)){
+                for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOList) {
+                    for (IndicatorDTO datum : data) {
+                        if (decomposeDTO.getIndicatorId().equals(datum.getIndicatorId())){
+                            decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                        }
+                    }
+                }
+            }
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOList) {
                 //excel实体类
                 TargetDecomposeExcel targetDecomposeExcel = new TargetDecomposeExcel();
@@ -2646,12 +2659,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     targetDecomposeExcel.setTimeDimensionName("月度");
                 } else if (5 == targetDecomposeExcel.getTimeDimension()) {
                     targetDecomposeExcel.setTimeDimensionName("周");
-                }
-                BigDecimal decomposeTarget = targetDecomposeExcel.getDecomposeTarget();
-                BigDecimal targetValue = targetDecomposeExcel.getTargetValue();
-                if (null != decomposeTarget && null != targetValue) {
-                    //目标差异
-                    targetDecomposeExcel.setTargetDifference(decomposeTarget.subtract(targetValue));
                 }
                 targetDecomposeExcelList.add(targetDecomposeExcel);
             }

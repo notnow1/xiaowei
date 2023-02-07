@@ -1,7 +1,9 @@
 package net.qixiaowei.system.manage.service.basic;
 
+import java.text.ParseException;
 import java.util.List;
 import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
+import net.qixiaowei.system.manage.excel.post.PostExcel;
 import org.apache.ibatis.annotations.Param;
 
 
@@ -119,4 +121,11 @@ public interface IPostService{
      * @return List
      */
     List<PostDTO> selectPostListByOfficialRank(@Param("officialRankSystemId") Long officialRankSystemId);
+
+    /**
+     * 岗位导入Excel
+     * @param list
+     * @throws ParseException
+     */
+    void importPost(List<PostExcel> list) throws ParseException;
 }

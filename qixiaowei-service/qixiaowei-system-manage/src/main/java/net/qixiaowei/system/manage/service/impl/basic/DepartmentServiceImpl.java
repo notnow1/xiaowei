@@ -128,6 +128,11 @@ public class DepartmentServiceImpl implements IDepartmentService {
         return parentDepartmentExcelNames;
     }
 
+    /**
+     * 查询部门名称附加父级名称
+     * @param departmentDTO
+     * @return
+     */
     @Override
     public List<DepartmentDTO> selectDepartmentListName(DepartmentDTO departmentDTO) {
         //查询数据

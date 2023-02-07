@@ -361,6 +361,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<PostDTO> postDTOS = postMapper.selectPostList(post);
         //查询部门名称附加父级名称
         DepartmentDTO departmentDTO = new DepartmentDTO();
+        //查询部门名称附加父级名称
         List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(departmentDTO);
         Map<String, Long> parentDepartmentNameMap = new HashMap<>();
         if (StringUtils.isNotEmpty(departmentDTOList)) {

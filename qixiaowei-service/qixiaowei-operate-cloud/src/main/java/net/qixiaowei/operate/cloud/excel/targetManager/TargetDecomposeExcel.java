@@ -94,11 +94,6 @@ public class TargetDecomposeExcel {
     @ExcelProperty("分解目标")
     private BigDecimal decomposeTarget;
 
-    /**
-     * 目标差异
-     */
-    @ExcelProperty("目标差异")
-    private BigDecimal targetDifference;
 
     /**
      * 年度预测值

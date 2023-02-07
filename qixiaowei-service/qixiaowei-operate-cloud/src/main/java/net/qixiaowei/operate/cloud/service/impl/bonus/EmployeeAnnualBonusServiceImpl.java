@@ -133,6 +133,12 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
      */
     private void packApplyBonusAmount(List<EmployeeAnnualBonusDTO> employeeAnnualBonusDTOS) {
         for (EmployeeAnnualBonusDTO annualBonusDTO : employeeAnnualBonusDTOS) {
+            BigDecimal distributeBonusAmount = annualBonusDTO.getDistributeBonusAmount();
+            if (null != distributeBonusAmount && distributeBonusAmount.compareTo(new BigDecimal("0"))!=0){
+                annualBonusDTO.setDistributeBonusAmount(distributeBonusAmount.multiply(new BigDecimal("10000")));
+            }else {
+                annualBonusDTO.setDistributeBonusAmount(new BigDecimal("0"));
+            }
             List<EmpAnnualBonusObjectsDTO> empAnnualBonusObjectsDTOS = empAnnualBonusObjectsMapper.selectEmpAnnualBonusObjectsByEmployeeAnnualBonusId(annualBonusDTO.getEmployeeAnnualBonusId());
             if (StringUtils.isNotEmpty(empAnnualBonusObjectsDTOS)) {
                 //申请年终奖金额
@@ -140,7 +146,7 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
                 //sterm流求和
                 applyBonusAmount = empAnnualBonusObjectsDTOS.stream().map(EmpAnnualBonusObjectsDTO::getCommentValue).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
                 //申请年终奖金额
-                annualBonusDTO.setApplyBonusAmount(applyBonusAmount.divide(new BigDecimal("10000"), 10, BigDecimal.ROUND_HALF_UP));
+                annualBonusDTO.setApplyBonusAmount(applyBonusAmount);
             }
         }
     }

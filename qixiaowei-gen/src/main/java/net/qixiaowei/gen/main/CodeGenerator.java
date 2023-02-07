@@ -17,17 +17,17 @@ public class CodeGenerator {
 
     private static final String projectPath = System.getProperties().getProperty("user.dir");
     //项目名称
-    private static final String module_name = "operate-cloud";
+    private static final String module_name = "system-manage";
     //项目路径
-    private static final String module_path = "operate/cloud";
+    private static final String module_path = "system/manage";
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
-    private static final String extend_Package = "/product" ;
+    private static final String extend_Package = "/post" ;
     //表名
-    private static final String tables = "product" ;
+    private static final String tables = "post" ;
     //生成文件的作者名
     private static final String author ="TANGMICHI" ;
     //数据库配置
-    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/operate_cloud";
+    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/system_manage";
     private static final String username = "qxwopr";
     private static final String password = "7fpJR7i2";
 

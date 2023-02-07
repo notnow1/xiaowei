@@ -499,6 +499,66 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         return null;
     }
 
+    /**
+     *查询经营分析报表指标列表
+     * @param targetSettingDTO
+     * @return
+     */
+    @Override
+    public List<TargetSettingDTO> analyseIndicator(TargetSettingDTO targetSettingDTO) {
+        TargetSetting targetSetting = new TargetSetting();
+        targetSetting.setTargetYear(targetSettingDTO.getTargetYear());
+        targetSetting.setTenantId(SecurityUtils.getTenantId());
+        //指标集合
+        List<Long> indicatorIds = new ArrayList<>();
+        //指标code集合
+        List<String> list = new ArrayList<>();
+        //订单（不含税）
+        list.add(IndicatorCode.ORDER.getCode());
+        //销售收入
+        list.add(IndicatorCode.INCOME.getCode());
+        //回款金额（含税）
+        list.add(IndicatorCode.RECEIVABLE.getCode());
+        //销售毛利
+        list.add(IndicatorCode.GROSS.getCode());
+        //净利润
+        list.add(IndicatorCode.PROFITS.getCode());
+        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
+        if (StringUtils.isEmpty(listR.getData())) {
+            throw new ServiceException("指标不存在 请联系管理员！");
+        } else {
+            indicatorIds = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+            targetSetting.setIndicatorIds(indicatorIds);
+        }
+
+        List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectanalyseIndicator(targetSetting);
+        if (StringUtils.isNotEmpty(indicatorIds)){
+            for (Long indicatorId : indicatorIds) {
+                TargetSettingDTO targetSettingDTO1 = new TargetSettingDTO();
+                targetSettingDTO1.setIndicatorId(indicatorId);
+                targetSettingDTOS.add(targetSettingDTO1);
+            }
+        }
+        if (StringUtils.isNotEmpty(targetSettingDTOS)){
+            List<Long> collect = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                R<List<IndicatorDTO>> indicatorData = indicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
+                List<IndicatorDTO> data = indicatorData.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+                        for (IndicatorDTO datum : data) {
+                            if (settingDTO.getIndicatorId().equals(datum.getIndicatorId())){
+                                settingDTO.setIndicatorName(datum.getIndicatorName());
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        return targetSettingDTOS;
+    }
+
 
     /**
      * 更新操作
@@ -743,28 +803,31 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         TargetSetting targetSetting = new TargetSetting();
         targetSetting.setTargetYear(targetSettingDTO.getTargetYear());
         targetSetting.setTenantId(SecurityUtils.getTenantId());
-        //指标code集合
-        List<String> list = new ArrayList<>();
-        //订单（不含税）
-        list.add(IndicatorCode.ORDER.getCode());
-        //销售收入
-        list.add(IndicatorCode.INCOME.getCode());
-        //回款金额（含税）
-        list.add(IndicatorCode.RECEIVABLE.getCode());
-        //销售毛利
-        list.add(IndicatorCode.GROSS.getCode());
-        //净利润
-        list.add(IndicatorCode.PROFITS.getCode());
-        R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
-        if (StringUtils.isEmpty(listR.getData())) {
-            throw new ServiceException("指标不存在 请联系管理员！");
-        } else {
-            List<Long> collect = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
-            targetSetting.setIndicatorIds(collect);
+
+        List<Long> indicatorIds = targetSettingDTO.getIndicatorIds();
+        if (StringUtils.isEmpty(indicatorIds)){
+            //指标code集合
+            List<String> list = new ArrayList<>();
+            //订单（不含税）
+            list.add(IndicatorCode.ORDER.getCode());
+            //销售收入
+            list.add(IndicatorCode.INCOME.getCode());
+            //回款金额（含税）
+            list.add(IndicatorCode.RECEIVABLE.getCode());
+            //销售毛利
+            list.add(IndicatorCode.GROSS.getCode());
+            //净利润
+            list.add(IndicatorCode.PROFITS.getCode());
+            R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByCodeList(list, SecurityConstants.INNER);
+            if (StringUtils.isEmpty(listR.getData())) {
+                throw new ServiceException("指标不存在 请联系管理员！");
+            } else {
+                indicatorIds = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+            }
         }
-        List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
-
-
+        targetSetting.setIndicatorIds(indicatorIds);
+        //List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseList(targetSetting);
+        List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectAnalyseLists(targetSetting);
         if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             for (TargetSettingDTO settingDTO : targetSettingDTOS) {
                 //年度目标值
@@ -791,6 +854,56 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     }
                 }
                 settingDTO.setOnBasis(onBasis);
+            }
+
+
+            List<Long> indicatorIdsData = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(indicatorIdsData)){
+                indicatorIds.removeAll(indicatorIdsData);
+            }
+            if (StringUtils.isNotEmpty(indicatorIds)){
+                for (Long indicatorId : indicatorIds) {
+                    TargetSettingDTO targetSettingDTO1 = new TargetSettingDTO();
+                    targetSettingDTO1.setIndicatorId(indicatorId);
+                    targetSettingDTO1.setChallengeValue(new BigDecimal("0"));
+                    targetSettingDTO1.setTargetValue(new BigDecimal("0"));
+                    targetSettingDTO1.setGuaranteedValue(new BigDecimal("0"));
+                    targetSettingDTO1.setActualTotal(new BigDecimal("0"));
+                    targetSettingDTO1.setTargetPercentageComplete(new BigDecimal("0"));
+                    targetSettingDTO1.setOnBasis(new BigDecimal("0"));
+                    targetSettingDTOS.add(targetSettingDTO1);
+                }
+            }
+        }else {
+            if (StringUtils.isNotEmpty(indicatorIds)){
+                for (Long indicatorId : indicatorIds) {
+                    TargetSettingDTO targetSettingDTO1 = new TargetSettingDTO();
+                    targetSettingDTO1.setIndicatorId(indicatorId);
+                    targetSettingDTO1.setChallengeValue(new BigDecimal("0"));
+                    targetSettingDTO1.setTargetValue(new BigDecimal("0"));
+                    targetSettingDTO1.setGuaranteedValue(new BigDecimal("0"));
+                    targetSettingDTO1.setActualTotal(new BigDecimal("0"));
+                    targetSettingDTO1.setTargetPercentageComplete(new BigDecimal("0"));
+                    targetSettingDTO1.setOnBasis(new BigDecimal("0"));
+                    targetSettingDTOS.add(targetSettingDTO1);
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(targetSettingDTOS)){
+            List<Long> collect = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(collect)){
+                R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
+                List<IndicatorDTO> data = listR.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (TargetSettingDTO settingDTO : targetSettingDTOS) {
+                        for (IndicatorDTO datum : data) {
+                            if (settingDTO.getIndicatorId().equals(datum.getIndicatorId())){
+                                settingDTO.setIndicatorName(datum.getIndicatorName());
+                            }
+                        }
+                    }
+                }
+
             }
         }
         return targetSettingDTOS;
