@@ -8,6 +8,7 @@ import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 员工表
@@ -178,9 +179,12 @@ public class Employee extends TenantEntity {
      */
     private  Long officialRankSystemId;
     /**
+     * 职级体系名称
+     */
+    private  String officialRankSystemName;
+    /**
      * 预算年度
      */
     private int planYear;
-
 }
 
