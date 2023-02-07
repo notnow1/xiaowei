@@ -14,12 +14,14 @@ import net.qixiaowei.operate.cloud.api.domain.bonus.EmployeeAnnualBonus;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteBonusPayApplicationService;
 import net.qixiaowei.operate.cloud.api.remote.bonus.RemoteEmployeeAnnualBonusService;
 import net.qixiaowei.operate.cloud.api.remote.performance.RemotePerformanceAppraisalService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
+import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.*;
 import net.qixiaowei.system.manage.api.dto.basic.*;
@@ -88,6 +90,8 @@ public class EmployeeServiceImpl implements IEmployeeService {
     private RemoteEmployeeAnnualBonusService remoteEmployeeAnnualBonusService;
     @Autowired
     private RemoteBonusPayApplicationService remoteBonusPayApplicationService;
+    @Autowired
+    private RemoteSalaryItemService salaryPayService;
 
 
     /**
@@ -1245,6 +1249,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanR.getData();
         if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS)) {
             bonusPayObjectsErreo.append("人员被个人调薪计划引用 无法删除！\n");
+        }
+        //根据人员id查询工资条
+        R<List<SalaryPayDTO>> salaryPayR = salaryPayService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
+        List<SalaryPayDTO> salaryPayDTOList = salaryPayR.getData();
+        if (StringUtils.isNotEmpty(salaryPayDTOList)) {
+            bonusPayObjectsErreo.append("人员被工资条引用 无法删除！\n");
         }
         erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo).append(employeeAnnualBonusErreo).append(bonusPayObjectsErreo);
         if (erreoEmp.length() > 0) {

@@ -155,4 +155,14 @@ public interface ISalaryPayService {
      * @param salaryPayDetailsDTO 发薪详情表
      */
     void salarySetName(SalaryPayDetailsDTO salaryPayDetailsDTO);
+
+
+
+    /**
+     * 根据员工ID查询工资条
+     *
+     * @param employeeId 员工ID
+     * @return List
+     */
+    List<SalaryPayDTO> selectByEmployeeId(Long employeeId);
 }

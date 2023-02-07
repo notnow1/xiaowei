@@ -1373,6 +1373,18 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         }
     }
 
+
+    /**
+     * 根据员工ID查询工资条
+     *
+     * @param employeeId 员工ID
+     * @return List
+     */
+    @Override
+    public List<SalaryPayDTO> selectByEmployeeId(Long employeeId) {
+        return salaryPayMapper.selectByEmployeeId(employeeId);
+    }
+
     /**
      * 给发薪表赋值
      *

@@ -2,10 +2,14 @@ package net.qixiaowei.operate.cloud.remote.salary;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
+import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -19,6 +23,9 @@ public class RemoteSalary implements RemoteSalaryItemService {
 
     @Autowired
     private ISalaryItemService salaryItemService;
+
+    @Autowired
+    private ISalaryPayService salaryPayService;
 
 
     @Override
@@ -37,7 +44,7 @@ public class RemoteSalary implements RemoteSalaryItemService {
     @Override
     @InnerAuth
     @GetMapping("/selectByEmployeeId")
-    public R<Boolean> selectByEmployeeId(@RequestParam("employeeId") Long employeeId, String source) {
-        return R.ok(salaryItemService.initSalaryItem());
+    public R<List<SalaryPayDTO>> selectByEmployeeId(@RequestParam("employeeId") Long employeeId, String source) {
+        return R.ok(salaryPayService.selectByEmployeeId(employeeId));
     }
 }

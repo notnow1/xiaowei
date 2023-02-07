@@ -200,7 +200,7 @@ public interface SalaryPayMapper {
      *
      * @param employeeId 员工ID
      * @param payYear    发薪年份
-     * @param tenantId    租户id
+     * @param tenantId   租户id
      * @return
      */
     List<SalaryPayDTO> selectDeptAnnualBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear, @Param("tenantId") Long tenantId);
@@ -210,10 +210,11 @@ public interface SalaryPayMapper {
      *
      * @param employeeId 员工ID
      * @param payYear    发薪年份
-     * @param tenantId    租户id
+     * @param tenantId   租户id
      * @return
      */
-    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear,@Param("nowYear") Integer nowYear,@Param("tenantId") Long tenantId);
+    List<SalaryPayDTO> selectDeptBonusBudgetPay(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear, @Param("nowYear") Integer nowYear, @Param("tenantId") Long tenantId);
+
     /**
      * 根据员工ID和发薪年份查找员工发薪记录
      *
@@ -255,9 +256,17 @@ public interface SalaryPayMapper {
     /**
      * 员工倒推12个月的薪酬合计和奖金合计
      *
-     * @param employeeId
-     * @param payYear
+     * @param employeeId 员工ID
+     * @param payYear    年份
      * @return
      */
     SalaryPayDTO selectSalaryPaySumAndBonusSum(@Param("employeeId") Long employeeId, @Param("payYear") Integer payYear);
+
+    /**
+     * 根据员工ID查询工资条
+     *
+     * @param employeeId 员工ID
+     * @return List
+     */
+    List<SalaryPayDTO> selectByEmployeeId(@Param("employeeId") Long employeeId);
 }

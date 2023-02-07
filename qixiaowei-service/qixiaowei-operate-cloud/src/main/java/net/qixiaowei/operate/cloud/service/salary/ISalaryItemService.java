@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.service.salary;
 
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
+import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import org.springframework.web.bind.annotation.RequestBody;
 
