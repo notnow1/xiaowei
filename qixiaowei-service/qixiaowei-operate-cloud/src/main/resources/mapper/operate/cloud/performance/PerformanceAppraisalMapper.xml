@@ -588,25 +588,6 @@
                 #{item}
             </foreach>
         </if>
-        <!--    状态过滤-->
-        <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual.size() > 0">
-            AND pao.appraisal_object_status IN
-            <foreach item="item"
-                     collection="performanceAppraisal.params.appraisalObjectStatusEqual"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual.size() > 0">
-            AND (pao.appraisal_object_status NOT IN
-            <foreach item="item"
-                     collection="performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-            OR pao.appraisal_object_status IS NULL
-            )
-        </if>
         <!--    评议分数过滤-->
         <if test="performanceAppraisalObjectsDTO.params.evaluationScoreEqual != null and performanceAppraisalObjectsDTO.params.evaluationScoreEqual.size() > 0">
             AND pao.evaluation_score IN

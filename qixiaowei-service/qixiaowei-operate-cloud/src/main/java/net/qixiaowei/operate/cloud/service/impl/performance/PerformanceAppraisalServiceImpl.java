@@ -2311,12 +2311,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     case "employeeDepartmentNotEqual":
                         params2.put("employeeDepartmentNotEqual", params.get("employeeDepartmentNotEqual"));
                         break;
-//                    case "appraisalObjectStatusEqual":
-//                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
-//                        break;
-//                    case "appraisalObjectStatusNotEqual":
-//                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
-//                        break;
                 }
             }
         }
