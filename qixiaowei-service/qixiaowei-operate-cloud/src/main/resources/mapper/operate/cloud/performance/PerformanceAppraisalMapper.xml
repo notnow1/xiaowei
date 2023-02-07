@@ -116,22 +116,22 @@
             and pa.update_time=#{performanceAppraisal.updateTime}
         </if>
         <!--    考核任务名称过滤-->
-        <if test="performanceAppraisal.params.performanceRankNameEqual != null and performanceAppraisal.params.performanceRankNameEqual.size() > 0">
-            AND pa.performance_rank_name IN
+        <if test="performanceAppraisal.params.appraisalNameEqual != null and performanceAppraisal.params.appraisalNameEqual.size() > 0">
+            AND pa.appraisal_name IN
             <foreach item="item"
-                     collection="performanceAppraisal.params.performanceRankNameEqual"
+                     collection="performanceAppraisal.params.appraisalNameEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="performanceAppraisal.params.performanceRankNameNotEqual != null and performanceAppraisal.params.performanceRankNameNotEqual.size() > 0">
-            AND (pa.performance_rank_name NOT IN
+        <if test="performanceAppraisal.params.appraisalNameNotEqual != null and performanceAppraisal.params.appraisalNameNotEqual.size() > 0">
+            AND (pa.appraisal_name NOT IN
             <foreach item="item"
-                     collection="performanceAppraisal.params.performanceRankNameNotEqual"
+                     collection="performanceAppraisal.params.appraisalNameNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR pa.performance_rank_name IS NULL
+            OR pa.appraisal_name IS NULL
             )
         </if>
         <if test="performanceAppraisal.params.performanceRankNameLike != null and performanceAppraisal.params.performanceRankNameLike.size() > 0">
@@ -280,7 +280,6 @@
             date_format(#{performanceAppraisal.params.appraisalStartDateNotAfter},'%y%m%d')
         </if>
         <if test="performanceAppraisal.params.appraisalStartDateStart != null and performanceAppraisal.params.appraisalStartDateStart != ''">
-            -->
             AND date_format(pa.appraisal_start_date,'%y%m%d') &gt;=
             date_format(#{performanceAppraisal.params.appraisalStartDateStart},'%y%m%d')
         </if>
@@ -593,7 +592,7 @@
         <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual.size() > 0">
             AND pao.appraisal_object_status IN
             <foreach item="item"
-                     collection="performanceAppraisal.params.performanceRankNameEqual"
+                     collection="performanceAppraisal.params.appraisalObjectStatusEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>

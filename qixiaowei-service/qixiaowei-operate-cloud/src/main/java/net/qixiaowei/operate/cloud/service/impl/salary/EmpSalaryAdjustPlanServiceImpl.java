@@ -266,10 +266,9 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             params = new HashMap<>();
         }
         EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
-        params.put("employeeCode", empSalaryAdjustPlanDTO.getEmployeeCode());
-        params.put("employeeName", empSalaryAdjustPlanDTO.getEmployeeName());
-        params.put("departmentName", empSalaryAdjustPlanDTO.getDepartmentName());
-        params.put("departmentLeaderName", empSalaryAdjustPlanDTO.getDepartmentLeaderName());
+        if (StringUtils.isNotEmpty(params)) {
+            getRemoteIds(params);
+        }
         empSalaryAdjustPlan.setParams(params);
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
         for (EmpSalaryAdjustPlanDTO salaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
@@ -294,6 +293,162 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
         }
         return empSalaryAdjustPlanDTOS;
+    }
+
+    /**
+     * 获取高级搜索后的ID传入params
+     *
+     * @param params 请求参数
+     */
+    private void getRemoteIds(Map<String, Object> params) {
+        Map<String, Object> params2 = new HashMap<>();
+        Map<String, Object> params3 = new HashMap<>();
+        Map<String, Object> params4 = new HashMap<>();
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "employeeCodeEqual":
+                    params2.put("employeeCodeEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeCodeNotEqual":
+                    params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeCodeLike":
+                    params2.put("employeeCodeLike", params.get("employeeCodeLike"));
+                    break;
+                case "employeeCodeNotLike":
+                    params2.put("employeeCodeNotLike", params.get("employeeCodeNotLike"));
+                    break;
+////                司龄——当前的司龄2
+//                case "workingAgeEqual":
+//                    params2.put("workingAgeEqual", params.get("workingAgeEqual"));
+//                    break;
+//                case "workingAgeNotEqual":
+//                    params2.put("workingAgeNotEqual", params.get("workingAgeNotEqual"));
+//                    break;
+//                部门名称
+                case "departmentNameEqual":
+                    params3.put("departmentNameEqual", params.get("departmentNameEqual"));
+                    break;
+                case "departmentNameNotEqual":
+                    params3.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
+                    break;
+                case "departmentNameLike":
+                    params3.put("departmentNameLike", params.get("departmentNameLike"));
+                    break;
+                case "departmentNameNotLike":
+                    params3.put("departmentNameNotLike", params.get("departmentNameNotLike"));
+                    break;
+//                    部门编码
+                case "departmentCodeEqual":
+                    params3.put("departmentCodeEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentCodeNotEqual":
+                    params3.put("departmentCodeNotEqual", params.get("departmentCodeNotEqual"));
+                    break;
+                case "departmentCodeLike":
+                    params3.put("departmentCodeLike", params.get("departmentCodeLike"));
+                    break;
+                case "departmentCodeNotLike":
+                    params3.put("departmentCodeNotLike", params.get("departmentCodeNotLike"));
+                    break;
+//                调整部门主管
+                case "departmentLeaderNameEqual":
+                    params3.put("departmentLeaderNameEqual", params.get("departmentLeaderNameEqual"));
+                    break;
+                case "departmentLeaderNameNotEqual":
+                    params3.put("departmentLeaderNameNotEqual", params.get("departmentLeaderNameNotEqual"));
+                    break;
+                case "departmentLeaderNameLike":
+                    params3.put("departmentLeaderNameLike", params.get("departmentLeaderNameLike"));
+                    break;
+                case "departmentLeaderNameNotLike":
+                    params3.put("departmentLeaderNameNotLike", params.get("departmentLeaderNameNotLike"));
+                    break;
+//                调整岗位
+                case "postNameEqual":
+                    params4.put("postNameEqual", params.get("postNameEqual"));
+                    break;
+                case "postNameNotEqual":
+                    params4.put("postNameNotEqual", params.get("postNameNotEqual"));
+                    break;
+//                调整职级体系
+                case "officialRankSystemNameEqual":
+                    params4.put("officialRankSystemNameEqual", params.get("officialRankSystemNameEqual"));
+                    break;
+                case "officialRankSystemNameNotEqual":
+                    params4.put("officialRankSystemNameNotEqual", params.get("officialRankSystemNameNotEqual"));
+                    break;
+            }
+        }
+        // 人员
+        if (StringUtils.isEmpty(params2)) {
+            List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
+            if (StringUtils.isNotEmpty(employeeDTOS)) {
+                List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+                params.put("employeeIds", employeeIds);
+            }
+        }
+        // 组织
+        if (StringUtils.isEmpty(params3)) {
+            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params3);
+            if (StringUtils.isNotEmpty(departmentDTOS)) {
+                List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+                params.put("adjustDepartmentIds", departmentIds);
+            }
+        }
+        // 岗位
+        if (StringUtils.isEmpty(params4)) {
+            List<PostDTO> postDTOS = postAdvancedSearch(params4);
+            if (StringUtils.isEmpty(postDTOS)) {
+                List<Long> postIds = postDTOS.stream().map(PostDTO::getPostId).collect(Collectors.toList());
+                params.put("adjustPostIds", postIds);
+            }
+        }
+    }
+
+    /**
+     * 人员远程高级搜索
+     *
+     * @param params 请求参数
+     * @return List
+     */
+    private List<EmployeeDTO> empAdvancedSearch(Map<String, Object> params) {
+        R<List<EmployeeDTO>> listR = employeeService.empAdvancedSearch(params, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("人员远程高级搜索失败 请联系管理员");
+        }
+        return employeeDTOS;
+    }
+
+    /**
+     * 组织远程高级搜索
+     *
+     * @param params 请求参数
+     * @return List
+     */
+    private List<DepartmentDTO> depAdvancedSearch(Map<String, Object> params) {
+        R<List<DepartmentDTO>> listR = departmentService.depAdvancedSearch(params, SecurityConstants.INNER);
+        List<DepartmentDTO> departmentDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("组织远程高级搜索失败 请联系管理员");
+        }
+        return departmentDTOS;
+    }
+
+    /**
+     * 岗位远程高级搜索
+     *
+     * @param params 请求参数
+     * @return List
+     */
+    private List<PostDTO> postAdvancedSearch(Map<String, Object> params) {
+        R<List<PostDTO>> listR = postService.postAdvancedSearch(params, SecurityConstants.INNER);
+        List<PostDTO> postDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("组织远程高级搜索失败 请联系管理员");
+        }
+        return postDTOS;
     }
 
     /**

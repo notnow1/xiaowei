@@ -147,4 +147,12 @@ public interface TargetOutcomeMapper {
      * @return List
      */
     List<TargetOutcomeDTO> selectTargetOutcomeByCreateBys(@Param("targetOutcome") TargetOutcome targetOutcome);
+
+    /**
+     * 查询结果应用详情列表
+     *
+     * @param targetOutcome 目标年度
+     * @return List
+     */
+    List<TargetOutcomeDTO> selectTargetOutcomeDetailList(@Param("targetOutcome") TargetOutcome targetOutcome);
 }

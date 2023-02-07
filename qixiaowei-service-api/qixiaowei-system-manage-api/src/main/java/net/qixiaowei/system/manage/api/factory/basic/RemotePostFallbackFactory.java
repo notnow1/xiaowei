@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 
 import java.util.List;
+import java.util.Map;
 
 public class RemotePostFallbackFactory implements FallbackFactory<RemotePostService> {
     private static final Logger log = LoggerFactory.getLogger(RemoteIndustryFallbackFactory.class);
@@ -25,6 +26,11 @@ public class RemotePostFallbackFactory implements FallbackFactory<RemotePostServ
             @Override
             public R<PostDTO> selectPostByPostId(Long postId, String source) {
                 return R.fail("查找部门根据部门ID失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<List<PostDTO>> postAdvancedSearch(Map<String, Object> params, String source) {
+                return R.fail("查询岗位高级搜索:" + throwable.getMessage());
             }
         };
     }

@@ -35,7 +35,10 @@ import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
-import net.qixiaowei.system.manage.api.dto.basic.*;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
@@ -43,6 +46,7 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import net.qixiaowei.system.manage.api.remote.system.RemoteRegionService;
+import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,6 +105,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
     @Autowired
     private RemoteMessageService remoteMessageService;
+    @Autowired
+    private RemoteUserService userService;
 
     /**
      * 查询经营结果分析报表详情
@@ -730,7 +736,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             if (StringUtils.isNotNull(data)) {
                 targetDecomposeDTO.setIndicatorName(data.getIndicatorName());
             }
-             decomposeTarget = targetDecomposeDTO.getDecomposeTarget();
+            decomposeTarget = targetDecomposeDTO.getDecomposeTarget();
         }
         this.packDecompositionDimension(targetDecomposeDTO);
         //目标分解详情数据
@@ -744,7 +750,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             decomposed = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getAmountTarget).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
             //已分解
             targetDecomposeDTO.setDecomposed(decomposed);
-            if (decomposeTarget.compareTo(new BigDecimal("0")) != 0){
+            if (decomposeTarget.compareTo(new BigDecimal("0")) != 0) {
                 //未分解
                 targetDecomposeDTO.setUndecomposed(decomposeTarget.subtract(decomposed));
             }
@@ -993,8 +999,128 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
+        this.sendMessage(targetDecomposeDTO, 1);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param targetDecomposeDTO    主表DTO
+     * @param TARGET_DECOMPOSE_CODE 编码及
+     */
+    private void sendMessage(TargetDecomposeDTO targetDecomposeDTO, int TARGET_DECOMPOSE_CODE) {
+        Integer isSubmit = targetDecomposeDTO.getIsSubmit();
+        if (StringUtils.isNotNull(isSubmit)) {
+            if (isSubmit == 1) {
+                List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
+                List<Long> principalEmployeeIdCollect =
+                        targetDecomposeDetailsDTOS.stream().map(TargetDecomposeDetailsDTO::getPrincipalEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
+                List<UserDTO> userDTOS = getUserByCreateBys(SecurityUtils.getUserId());
+                List<EmployeeDTO> employeeDTOS = getEmployeeDTOS(principalEmployeeIdCollect);
+                if (StringUtils.isNotEmpty(employeeDTOS) && StringUtils.isNotEmpty(userDTOS)) {
+                    List<MessageSendDTO> messageSendDTOS = new ArrayList<>();
+                    for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
+                        for (EmployeeDTO employeeDTO : employeeDTOS) {
+                            if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(employeeDTO.getEmployeeId())) {
+                                UserDTO user = userDTOS.get(0);
+                                Long targetDecomposeId = targetDecomposeDTO.getTargetDecomposeId();
+                                MessageSendDTO messageSendDTO = new MessageSendDTO();
+                                messageSendDTO.setMessageType(MessageType.PRIVATE_MESSAGE.getCode());
+                                switch (TARGET_DECOMPOSE_CODE) {
+                                    case 1:
+                                        messageSendDTO.setBusinessType(BusinessSubtype.TARGET_DECOMPOSE_ORDER_NOTIFY.getParentBusinessType().getCode());
+                                        messageSendDTO.setBusinessSubtype(BusinessSubtype.TARGET_DECOMPOSE_ORDER_NOTIFY.getCode());
+                                        messageSendDTO.setMessageTitle(BusinessSubtype.TARGET_DECOMPOSE_ORDER_NOTIFY.getInfo());
+                                        break;
+                                    case 2:
+                                        messageSendDTO.setBusinessType(BusinessSubtype.TARGET_DECOMPOSE_INCOME_NOTIFY.getParentBusinessType().getCode());
+                                        messageSendDTO.setBusinessSubtype(BusinessSubtype.TARGET_DECOMPOSE_INCOME_NOTIFY.getCode());
+                                        messageSendDTO.setMessageTitle(BusinessSubtype.TARGET_DECOMPOSE_INCOME_NOTIFY.getInfo());
+                                        break;
+                                    case 3:
+                                        messageSendDTO.setBusinessType(BusinessSubtype.TARGET_DECOMPOSE_RECOVERY_NOTIFY.getParentBusinessType().getCode());
+                                        messageSendDTO.setBusinessSubtype(BusinessSubtype.TARGET_DECOMPOSE_RECOVERY_NOTIFY.getCode());
+                                        messageSendDTO.setMessageTitle(BusinessSubtype.TARGET_DECOMPOSE_RECOVERY_NOTIFY.getInfo());
+                                        break;
+                                    case 4:
+                                        messageSendDTO.setBusinessType(BusinessSubtype.TARGET_DECOMPOSE_CUSTOM_NOTIFY.getParentBusinessType().getCode());
+                                        messageSendDTO.setBusinessSubtype(BusinessSubtype.TARGET_DECOMPOSE_CUSTOM_NOTIFY.getCode());
+                                        messageSendDTO.setMessageTitle(BusinessSubtype.TARGET_DECOMPOSE_CUSTOM_NOTIFY.getInfo());
+                                        break;
+                                }
+
+                                messageSendDTO.setBusinessId(targetDecomposeId);
+
+                                messageSendDTO.setHandleContent(true);
+                                Map<String, Object> paramMap = new HashMap<>();
+                                //员工姓名
+                                paramMap.put("employee_name", StringUtils.isEmpty(user.getEmployeeName()) ? "" : user.getEmployeeName());
+                                //员工工号
+                                paramMap.put("employee_code", StringUtils.isEmpty(user.getEmployeeCode()) ? "" : user.getEmployeeCode());
+                                //目标年度
+                                paramMap.put("target_year", targetDecomposeDTO.getTargetYear());
+                                //分解维度
+                                paramMap.put("decomposition_dimension", targetDecomposeDTO.getDecompositionDimension());
+                                //时间维度
+                                paramMap.put("time_dimension", TimeDimension.getInfo(targetDecomposeDTO.getTimeDimension()));
+                                String messageParam = JSONUtil.toJsonStr(paramMap);
+                                messageSendDTO.setMessageParam(messageParam);
+                                messageSendDTO.setSendUserId(user.getUserId());
+                                List<MessageReceiverDTO> messageReceivers = new ArrayList<>();
+                                MessageReceiverDTO messageReceiverDTO = new MessageReceiverDTO();
+                                messageReceiverDTO.setUserId(targetDecomposeDetailsDTO.getPrincipalEmployeeId());
+                                messageReceivers.add(messageReceiverDTO);
+                                messageSendDTO.setMessageReceivers(messageReceivers);
+                                messageSendDTOS.add(messageSendDTO);
+                                break;
+                            }
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(messageSendDTOS)) {
+                        R<?> r = remoteMessageService.sendMessages(messageSendDTOS, SecurityConstants.INNER);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据创建人获取用户信息
+     *
+     * @param createBy 创建人
+     * @return List
+     */
+    private List<UserDTO> getUserByCreateBys(Long createBy) {
+        Set<Long> createBySets = new HashSet<>();
+        createBySets.add(createBy);
+        R<List<UserDTO>> usersByUserIds = userService.getUsersByUserIds(createBySets, SecurityConstants.INNER);
+        List<UserDTO> userDTOS = usersByUserIds.getData();
+        if (usersByUserIds.getCode() != 200) {
+            throw new ServiceException("远程访问用户信息失败");
+        }
+        if (StringUtils.isEmpty(userDTOS)) {
+            throw new ServiceException("部分用户信息已被删除 请检查用户配置");
+        }
+        return userDTOS;
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @return userDTO
+     */
+    private List<EmployeeDTO> getEmployeeDTOS(List<Long> principalEmployeeIdCollect) {
+        R<List<EmployeeDTO>> listR = remoteEmployeeService.selectByEmployeeIds(principalEmployeeIdCollect, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("远程访问用户信息失败");
+        }
+        if (StringUtils.isEmpty(employeeDTOS)) {
+            throw new ServiceException("当前滚动预测负责人已被删除 请检查员工配置");
+        }
+        return employeeDTOS;
     }
 
     /**
@@ -1040,6 +1166,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
+        this.sendMessage(targetDecomposeDTO, 2);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
     }
@@ -1087,6 +1214,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
+        this.sendMessage(targetDecomposeDTO, 3);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
     }
@@ -1125,6 +1253,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
+        this.sendMessage(targetDecomposeDTO, 4);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
     }
@@ -1488,6 +1617,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             throw new ServiceException("修改目标分解主表失败");
         }
         // todo 发送通知
+        this.sendMessage(targetDecomposeDTO, 1);
         return i;
     }
 
@@ -1518,6 +1648,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             throw new ServiceException("修改目标分解主表失败");
         }
         //todo 发送通知
+        this.sendMessage(targetDecomposeDTO, 2);
         return i;
     }
 
@@ -1548,6 +1679,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             throw new ServiceException("修改目标分解主表失败");
         }
         //todo 发送通知
+        this.sendMessage(targetDecomposeDTO, 3);
         return i;
     }
 
@@ -1578,6 +1710,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             throw new ServiceException("修改目标分解主表失败");
         }
         //todo 发送通知
+        this.sendMessage(targetDecomposeDTO, 4);
         return i;
     }
 
@@ -2452,36 +2585,37 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
     /**
      * 导入解析滚动预测
+     *
      * @param list
      * @param targetDecomposeDTO
      * @return
      */
     @Override
     public TargetDecomposeDTO importProduct(List<DecomposeDetailCyclesDTO> list, TargetDecomposeDTO targetDecomposeDTO) {
-        if (StringUtils.isNull(targetDecomposeDTO)){
+        if (StringUtils.isNull(targetDecomposeDTO)) {
             throw new ServiceException("数据不存在 请刷新页面重试！");
         }
         List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS = targetDecomposeDTO.getTargetDecomposeDetailsDTOS();
-        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 List<List<DecomposeDetailCyclesDTO>> subList = new ArrayList<>();
                 Integer timeDimension = targetDecomposeDTO.getTimeDimension();
-                if (StringUtils.isNotEmpty(list)){
-                    if (timeDimension==1){
+                if (StringUtils.isNotEmpty(list)) {
+                    if (timeDimension == 1) {
                         subList = getSubList(1, list);
-                    }else if (timeDimension==2){
+                    } else if (timeDimension == 2) {
                         subList = getSubList(2, list);
 
-                    }else if (timeDimension==3){
+                    } else if (timeDimension == 3) {
                         subList = getSubList(4, list);
-                    }else if (timeDimension==4){
+                    } else if (timeDimension == 4) {
                         subList = getSubList(12, list);
-                    }else if (timeDimension==5   ){
+                    } else if (timeDimension == 5) {
                         subList = getSubList(52, list);
                     }
                 }
                 List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOS = targetDecomposeDetailsDTOS.get(i).getDecomposeDetailCyclesDTOS();
-                if (StringUtils.isNotEmpty(subList)){
+                if (StringUtils.isNotEmpty(subList)) {
                     List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList1 = subList.get(i);
                     for (int i1 = 0; i1 < decomposeDetailCyclesDTOList1.size(); i1++) {
                         decomposeDetailCyclesDTOS.get(i1).setCycleForecast(decomposeDetailCyclesDTOList1.get(i1).getCycleForecast());
@@ -2493,14 +2627,16 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         return targetDecomposeDTO;
     }
+
     /**
      * 将list拆分成指定数量的小list
      * 注: 使用的subList方式,返回的是list的内部类,不可做元素的删除,修改,添加操作
+     *
      * @param length 数量
-     * @param list 大list
+     * @param list   大list
      * @return
      */
-    public List<List<DecomposeDetailCyclesDTO>> getSubList(int length, List<DecomposeDetailCyclesDTO> list){
+    public List<List<DecomposeDetailCyclesDTO>> getSubList(int length, List<DecomposeDetailCyclesDTO> list) {
         int size = list.size();
         int temp = size / length + 1;
         boolean result = size % length == 0;
@@ -2510,9 +2646,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 if (result) {
                     break;
                 }
-                subList.add(list.subList(length * i, size)) ;
+                subList.add(list.subList(length * i, size));
             } else {
-                subList.add(list.subList(length * i, length * (i + 1))) ;
+                subList.add(list.subList(length * i, length * (i + 1)));
             }
         }
         return subList;

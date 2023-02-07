@@ -28,7 +28,9 @@ import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
+import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,7 +186,16 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         } else {
             return salaryPayDTOList;
         }
-        salaryPayDTOList = salaryPayMapper.selectSalaryPayByEmployeeIds(employeeIds);
+        SalaryPay salaryPay = new SalaryPay();
+        BeanUtils.copyProperties(salaryPayDTO, salaryPay);
+        Map<String, Object> params = salaryPayDTO.getParams();
+        if (StringUtils.isNotEmpty(params)) {
+            getRemoteIds(params, employeeIds);
+        } else {
+            params.put("employeeIds", employeeIds);
+        }
+        salaryPay.setParams(params);
+        salaryPayDTOList = salaryPayMapper.selectSalaryPayList(salaryPay);
         if (StringUtils.isNotEmpty(salaryPayDTOList)) {
             for (SalaryPayDTO payDTO : salaryPayDTOList) {
                 for (EmployeeDTO dto : employeeDTOS) {
@@ -201,6 +212,81 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             }
         }
         return salaryPayDTOList;
+    }
+
+    /**
+     * 获取高级搜索后的ID传入params
+     *
+     * @param params      请求参数
+     * @param employeeIds 员工ID集合
+     */
+    private void getRemoteIds(Map<String, Object> params, List<Long> employeeIds) {
+        Map<String, Object> params2 = new HashMap<>();
+        Map<String, Object> params3 = new HashMap<>();
+        Map<String, Object> params4 = new HashMap<>();
+        for (String key : params.keySet()) {
+            switch (key) {
+                case "employeeNameEqual":
+                    params2.put("employeeNameEqual", params.get("employeeNameNotEqual"));
+                    break;
+                case "employeeNameNotEqual":
+                    params2.put("employeeNameNotEqual", params.get("employeeNameNotEqual"));
+                    break;
+                case "employeeNameLike":
+                    params2.put("employeeNameLike", params.get("employeeNameLike"));
+                    break;
+                case "employeeNameNotLike":
+                    params2.put("employeeNameNotLike", params.get("employeeNameNotLike"));
+                    break;
+                case "employeeCodeEqual":
+                    params2.put("employeeCodeEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeCodeNotEqual":
+                    params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
+                    break;
+                case "employeeCodeLike":
+                    params2.put("employeeCodeLike", params.get("employeeCodeLike"));
+                    break;
+                case "employeeCodeNotLike":
+                    params2.put("employeeCodeNotLike", params.get("employeeCodeNotLike"));
+                    break;
+                case "employeeDepartmentNameEqual":
+                    params2.put("employeeDepartmentNameEqual", params.get("employeeDepartmentNameEqual"));
+                    break;
+                case "employeeDepartmentNameNotEqual":
+                    params2.put("employeeDepartmentNameNotEqual", params.get("employeeDepartmentNameNotEqual"));
+                    break;
+                case "employeePostNameEqual":
+                    params2.put("employeePostNameEqual", params.get("employeePostNameEqual"));
+                    break;
+                case "employeePostNameNotEqual":
+                    params2.put("employeePostNameNotEqual", params.get("employeePostNameNotEqual"));
+                    break;
+            }
+        }
+        // 人员
+        if (StringUtils.isEmpty(params2)) {
+            List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
+            if (StringUtils.isNotEmpty(employeeDTOS)) {
+                employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+                params.put("employeeIds", employeeIds);
+            }
+        }
+    }
+
+    /**
+     * 人员远程高级搜索
+     *
+     * @param params 请求参数
+     * @return List
+     */
+    private List<EmployeeDTO> empAdvancedSearch(Map<String, Object> params) {
+        R<List<EmployeeDTO>> listR = employeeService.empAdvancedSearch(params, SecurityConstants.INNER);
+        List<EmployeeDTO> employeeDTOS = listR.getData();
+        if (listR.getCode() != 200) {
+            throw new ServiceException("人员远程高级搜索失败 请联系管理员");
+        }
+        return employeeDTOS;
     }
 
     /**
@@ -1445,52 +1531,56 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @param salaryPayDTOList 子表DTO
      */
     private static List<SalaryPayDTO> calculateAmount(List<SalaryPayDTO> salaryPayDTOList) {
-        Map<String, List<SalaryPayDTO>> salaryPayMap = salaryPayDTOList.stream()
-                .collect(Collectors.groupingBy(SalaryPayDTO::getEmployeeDepartmentName));
+        Map<String, Map<String, List<SalaryPayDTO>>> salaryPayMap = salaryPayDTOList.stream()
+                .collect(Collectors.groupingBy(SalaryPayDTO::getEmployeeDepartmentName, Collectors.groupingBy(SalaryPayDTO::getPostRankName)));
         List<SalaryPayDTO> salaryPayDTOS = new ArrayList<>(10);
         for (String departmentName : salaryPayMap.keySet()) {
-            List<SalaryPayDTO> salaryPayDTOList1 = salaryPayMap.get(departmentName);
-            BigDecimal salaryAmountValue = BigDecimal.ZERO;// 工资金额
-            BigDecimal allowanceAmountValue = BigDecimal.ZERO;// 津贴金额
-            BigDecimal welfareAmountValue = BigDecimal.ZERO;// 福利金额
-            BigDecimal bonusAmountValue = BigDecimal.ZERO;// 奖金金额
+            Map<String, List<SalaryPayDTO>> stringListMap = salaryPayMap.get(departmentName);
+            for (String rankName : stringListMap.keySet()) {
+                List<SalaryPayDTO> salaryPayDTOList1 = stringListMap.get(rankName);
+                BigDecimal salaryAmountValue = BigDecimal.ZERO;// 工资金额
+                BigDecimal allowanceAmountValue = BigDecimal.ZERO;// 津贴金额
+                BigDecimal welfareAmountValue = BigDecimal.ZERO;// 福利金额
+                BigDecimal bonusAmountValue = BigDecimal.ZERO;// 奖金金额
 //                SalaryPayDTO salaryPay;
 //                if (StringUtils.isEmpty(salaryPayDTOList1)) {
 //                    salaryPay = new SalaryPayDTO();
 //                } else {
 //                    salaryPay = salaryPayDTOList1.get(0);
 //                }
-            for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
-                salaryAmountValue = salaryAmountValue.add(salaryPayDTO.getSalaryAmount());
-                allowanceAmountValue = allowanceAmountValue.add(salaryPayDTO.getAllowanceAmount());
-                welfareAmountValue = welfareAmountValue.add(salaryPayDTO.getWelfareAmount());
-                bonusAmountValue = bonusAmountValue.add(salaryPayDTO.getBonusAmount());
+                for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
+                    salaryAmountValue = salaryAmountValue.add(salaryPayDTO.getSalaryAmount());
+                    allowanceAmountValue = allowanceAmountValue.add(salaryPayDTO.getAllowanceAmount());
+                    welfareAmountValue = welfareAmountValue.add(salaryPayDTO.getWelfareAmount());
+                    bonusAmountValue = bonusAmountValue.add(salaryPayDTO.getBonusAmount());
+                }
+                //固定值
+                BigDecimal fixedValue = salaryAmountValue.add(allowanceAmountValue).add(welfareAmountValue);
+                //总计
+                BigDecimal paymentBonus = fixedValue.add(bonusAmountValue);
+                //固定占比（%）
+                BigDecimal fixedProportion;
+                //浮动占比（%）
+                BigDecimal floatProportion;
+                if (paymentBonus.compareTo(BigDecimal.ZERO) != 0) {
+                    fixedProportion = fixedValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                    floatProportion = bonusAmountValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                } else {
+                    fixedProportion = BigDecimal.ZERO;
+                    floatProportion = BigDecimal.ZERO;
+                }
+                SalaryPayDTO salaryPayDTO = new SalaryPayDTO();
+                salaryPayDTO.setPostRankName(rankName);
+                salaryPayDTO.setEmployeeDepartmentName(departmentName);
+                salaryPayDTO.setSalaryAmount(salaryAmountValue);
+                salaryPayDTO.setAllowanceAmount(allowanceAmountValue);
+                salaryPayDTO.setWelfareAmount(welfareAmountValue);
+                salaryPayDTO.setBonusAmount(bonusAmountValue);
+                salaryPayDTO.setFixedProportion(fixedProportion);
+                salaryPayDTO.setFloatProportion(floatProportion);
+                salaryPayDTO.setPaymentBonus(paymentBonus);// 总计
+                salaryPayDTOS.add(salaryPayDTO);
             }
-            //固定值
-            BigDecimal fixedValue = salaryAmountValue.add(allowanceAmountValue).add(welfareAmountValue);
-            //总计
-            BigDecimal paymentBonus = fixedValue.add(bonusAmountValue);
-            //固定占比（%）
-            BigDecimal fixedProportion;
-            //浮动占比（%）
-            BigDecimal floatProportion;
-            if (paymentBonus.compareTo(BigDecimal.ZERO) != 0) {
-                fixedProportion = fixedValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
-                floatProportion = bonusAmountValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
-            } else {
-                fixedProportion = BigDecimal.ZERO;
-                floatProportion = BigDecimal.ZERO;
-            }
-            SalaryPayDTO salaryPayDTO = new SalaryPayDTO();
-            salaryPayDTO.setEmployeeDepartmentName(departmentName);
-            salaryPayDTO.setSalaryAmount(salaryAmountValue);
-            salaryPayDTO.setAllowanceAmount(allowanceAmountValue);
-            salaryPayDTO.setWelfareAmount(welfareAmountValue);
-            salaryPayDTO.setBonusAmount(bonusAmountValue);
-            salaryPayDTO.setFixedProportion(fixedProportion);
-            salaryPayDTO.setFloatProportion(floatProportion);
-            salaryPayDTO.setPaymentBonus(paymentBonus);// 总计
-            salaryPayDTOS.add(salaryPayDTO);
         }
         return salaryPayDTOS;
     }

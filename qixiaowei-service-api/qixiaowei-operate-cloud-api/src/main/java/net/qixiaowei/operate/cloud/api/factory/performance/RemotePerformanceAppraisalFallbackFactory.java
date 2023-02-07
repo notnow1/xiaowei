@@ -46,6 +46,11 @@ public class RemotePerformanceAppraisalFallbackFactory implements FallbackFactor
                 return R.fail("根据部门ID查询绩效考核是否被引用失败:" + throwable.getMessage());
             }
 
+            @Override
+            public R<List<PerformanceAppraisalObjectsDTO>> queryQuoteEmployeeByIds(List<Long> employeeIds, String source) {
+                return R.fail("根据人员id集合查询考核绩效失败:" + throwable.getMessage());
+            }
+
         };
     }
 }

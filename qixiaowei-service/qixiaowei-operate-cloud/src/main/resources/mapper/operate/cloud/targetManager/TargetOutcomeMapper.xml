@@ -54,6 +54,7 @@
             and create_time &gt; #{targetOutcome.params.createTimeStart}
             and create_time &lt; #{targetOutcome.params.createTimeEnd}
         </if>
+        ORDER BY target_year ASC
     </select>
     <!--通过targetYear查找Target Outcome DTO-->
     <select id="selectTargetOutcomeByTargetYear"
@@ -166,6 +167,21 @@
                 #{item}
             </foreach>
         </if>
+        ORDER BY tao.target_year ASC
+    </select>
+    <!--    查询结果应用详情列表-->
+    <select id="selectTargetOutcomeDetailList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO">
+        SELECT
+        come.target_outcome_id,
+        come.target_year,
+        detail.actual_total
+        FROM target_outcome come
+        LEFT JOIN target_outcome_details detail
+        ON come.target_outcome_id = detail.target_outcome_id
+        WHERE detail.delete_flag = 0
+        AND come.delete_flag = 0
+        AND come.target_year =#{targetOutcome.targetYear}
     </select>
     <!--新增目标结果表-->
     <insert id="insertTargetOutcome" useGeneratedKeys="true" keyProperty="targetOutcomeId">

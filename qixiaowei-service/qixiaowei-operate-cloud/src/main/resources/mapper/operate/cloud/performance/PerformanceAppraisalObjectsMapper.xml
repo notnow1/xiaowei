@@ -216,7 +216,7 @@
         and pa.appraisal_status=4
         and pa.appraisal_object=2
         and pao.appraisal_object_id =#{employeeId}
-          and  pao.appraisal_result_id is not null
+        and pao.appraisal_result_id is not null
         ORDER BY pao.update_time DESC
         LIMIT 3
     </select>
@@ -291,7 +291,7 @@
         and pa.appraisal_status=4
         and pa.appraisal_object=1
         and pao.appraisal_object_id =#{departmentId}
-        and  pao.appraisal_result_id is not null
+        and pao.appraisal_result_id is not null
         ORDER BY pao.update_time DESC
         LIMIT 3
     </select>
@@ -351,6 +351,24 @@
         WHERE pao.delete_flag = 0
         AND pao.appraisal_object_id IN
         <foreach collection="departmentIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+    <!--根据人员id集合查询考核绩效-->
+    <select id="queryQuoteEmployeeByIds"
+            resultType="net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO">
+        SELECT
+        pa.performance_appraisal_id,
+        pa.appraisal_name,
+        pao.perform_appraisal_objects_id
+        FROM performance_appraisal_objects pao
+        LEFT JOIN performance_appraisal pa
+        ON pao.performance_appraisal_id = pa.performance_appraisal_id
+        AND pa.delete_flag = 0
+        WHERE pa.appraisal_object = 2
+        AND pao.delete_flag = 0
+        AND pao.appraisal_object_id IN
+        <foreach collection="employeeIds" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>
     </select>

@@ -198,5 +198,9 @@ public class TargetDecomposeDTO {
      * 待办任务id
      */
     private Long backlogId;
+    /**
+     * 是否提交（0-保存/1-提交通知）
+     */
+    private Integer isSubmit;
 }
 

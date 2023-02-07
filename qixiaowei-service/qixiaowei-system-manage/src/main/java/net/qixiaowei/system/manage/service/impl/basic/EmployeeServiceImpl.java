@@ -1234,6 +1234,18 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)) {
             bonusPayObjectsErreo.append("人员被奖金发放申请引用 无法删除！\n");
         }
+        //根据人员id查询个人绩效考核
+        R<List<PerformanceAppraisalObjectsDTO>> performanceAppraisalObjectsR = performanceAppraisalService.queryQuoteEmployeeById(employeeId, SecurityConstants.INNER);
+        List<PerformanceAppraisalObjectsDTO> appraisalObjectsData = performanceAppraisalObjectsR.getData();
+        if (StringUtils.isNotEmpty(bonusPayObjectsDTOList)) {
+            bonusPayObjectsErreo.append("人员被个人绩效考核引用 无法删除！\n");
+        }
+        //根据人员id查询个人调薪计划
+        R<List<EmpSalaryAdjustPlanDTO>> empSalaryAdjustPlanR = salaryAdjustPlanService.selectByEmployeeId(employeeId, SecurityConstants.INNER);
+        List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanR.getData();
+        if (StringUtils.isNotEmpty(empSalaryAdjustPlanDTOS)) {
+            bonusPayObjectsErreo.append("人员被个人调薪计划引用 无法删除！\n");
+        }
         erreoEmp.append(deptErreo).append(userErreo).append(decomposeErreo).append(employeeAnnualBonusErreo).append(bonusPayObjectsErreo);
         if (erreoEmp.length() > 0) {
             throw new ServiceException(erreoEmp.toString());

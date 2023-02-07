@@ -145,4 +145,12 @@ public interface TargetDecomposeMapper {
      * @return List
      */
     List<TargetDecomposeDTO> selectByIndicatorIds(List<Long> indicatorIds);
+
+    /**
+     * 获取目标分解的指标数据
+     *
+     * @return List
+     */
+    List<TargetDecomposeDTO> selectTargetDecomposeIndicator();
+
 }

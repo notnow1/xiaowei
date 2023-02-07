@@ -159,6 +159,14 @@ public interface TargetSettingMapper {
     List<TargetSettingDTO> selectSetDrivingFactor(@Param("targetSetting") TargetSetting targetSetting);
 
     /**
+     * 查询目标值与实际值列表
+     *
+     * @param targetSetting 目标制定
+     * @return List
+     */
+    List<TargetSettingDTO> selectTargetAndOutSettingList(@Param("targetSetting") TargetSetting targetSetting);
+
+    /**
      * 二期优化查询经营分析报表列表
      * @param targetSetting
      * @return

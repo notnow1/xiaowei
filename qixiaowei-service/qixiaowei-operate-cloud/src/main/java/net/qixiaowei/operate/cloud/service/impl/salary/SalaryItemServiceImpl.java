@@ -13,12 +13,10 @@ import net.qixiaowei.operate.cloud.api.domain.salary.SalaryItem;
 import net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDetailsDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.excel.salary.SalaryItemExcel;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayDetailsMapper;
-import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
@@ -82,6 +80,8 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     @Override
     public List<SalaryItemDTO> selectSalaryItemList(SalaryItemDTO salaryItemDTO) {
         SalaryItem salaryItem = new SalaryItem();
+        Map<String, Object> params = salaryItemDTO.getParams();
+        salaryItem.setParams(params);
         BeanUtils.copyProperties(salaryItemDTO, salaryItem);
         List<SalaryItemDTO> salaryItemDTOS = salaryItemMapper.selectSalaryItemList(salaryItem);
         for (SalaryItemDTO itemDTO : salaryItemDTOS) {

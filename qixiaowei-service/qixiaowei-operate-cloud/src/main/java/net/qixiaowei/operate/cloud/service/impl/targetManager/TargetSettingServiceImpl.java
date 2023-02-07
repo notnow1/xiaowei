@@ -1804,7 +1804,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             targetSettingTypeDTOS.add(targetSettingRecoveriesDTO);
 //                DSO
             targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
-            targetSettingRecoveriesDTO.setPrefixType("DSO（天）");
+            targetSettingRecoveriesDTO.setPrefixType("应收账款周转天数（DSO）");
             targetSettingRecoveriesDTO.setChallengeValue(DSOValue);
             targetSettingRecoveriesDTO.setTargetValue(DSOValue);
             targetSettingRecoveriesDTO.setGuaranteedValue(DSOValue);
@@ -1984,7 +1984,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             }
         }
         targetSettingRecoveriesDTO = new TargetSettingRecoveriesDTO();
-        targetSettingRecoveriesDTO.setPrefixType("DSO（天）");
+        targetSettingRecoveriesDTO.setPrefixType("应收账款周转天数（DSO）");
         setRecoveriesValue(targetSettingRecoveriesDTO, baselineValue);
         targetSettingIndicatorDTOS.add(targetSettingRecoveriesDTO);
 //        【期末应收账款余额】：公式=（销售收入目标*DSO）/180-上年年末应收账款余额

@@ -126,4 +126,11 @@ public interface DepartmentPostMapper{
      */
     List<DepartmentPostDTO> selectPostDepartmentIds(@Param("departmentIds") List<Long> departmentIds);
 
+    /**
+     * 根据部门id批量查询出数据库的数据(岗位信息)
+     *
+     * @return List
+     */
+    List<DepartmentPostDTO> selectPostByRankSystemId(@Param("departmentIds") List<Long> departmentIds, @Param("officialRankSystemId") Long officialRankSystemId);
+
 }

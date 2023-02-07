@@ -50,4 +50,11 @@ public interface RemotePerformanceAppraisalService {
      */
     @PostMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/selectByDepartmentIds")
     R<List<PerformanceAppraisalObjectsDTO>> selectByDepartmentIds(@RequestBody List<Long> departmentIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据员工ID查询绩效考核是否被引用
+     */
+    @PostMapping(API_PREFIX_PERFORMANCE_APPRAISAL + "/queryQuoteEmployeeByIds")
+    R<List<PerformanceAppraisalObjectsDTO>> queryQuoteEmployeeByIds(@RequestBody List<Long> employeeIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
 }

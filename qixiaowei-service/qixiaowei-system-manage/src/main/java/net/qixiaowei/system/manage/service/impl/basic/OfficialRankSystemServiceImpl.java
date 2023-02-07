@@ -300,7 +300,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
             return null;
         }
         List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-        List<DepartmentPostDTO> departmentPostDTOS = departmentPostMapper.selectPostDepartmentIds(departmentIds);
+        List<DepartmentPostDTO> departmentPostDTOS = departmentPostMapper.selectPostByRankSystemId(departmentIds, officialRankSystemId);
         List<Map<String, Object>> departmentNames = new ArrayList<>();
         Map<String, Object> objectMap = new HashMap<>();
         objectMap.put("label", 1);

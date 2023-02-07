@@ -127,8 +127,15 @@
         update_by,
         update_time from (
         SELECT
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[0]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[0]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[0]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear} AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[0]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear}-1 AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS
+        lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -152,8 +159,15 @@
         </if>
         union
         SELECT
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[1]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[1]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[1]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear} AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[1]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear}-1 AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS
+        lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -177,8 +191,15 @@
         </if>
         union
         SELECT
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[2]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[2]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[2]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear} AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[2]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear}-1 AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS
+        lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -202,8 +223,15 @@
         </if>
         union
         SELECT
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[3]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[3]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[3]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear} AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[3]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear}-1 AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS
+        lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -227,8 +255,15 @@
         </if>
         union
         SELECT
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[4]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0 and  toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON #{targetSetting.indicatorIds[4]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[4]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear} AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON
+        #{targetSetting.indicatorIds[4]} = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND
+        tod.delete_flag = 0 and tod.tenant_id=#{targetSetting.tenantId} where toe.target_year =
+        #{targetSetting.targetYear}-1 AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS
+        lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -340,23 +375,54 @@
         </foreach>
         ORDER BY target_year
     </select>
-<!--    根据年份指标id查询数据-->
+    <!--    根据年份指标id查询数据-->
     <select id="selectSetDrivingFactor"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         select
-            IFNULL(ts.challenge_value,0) as challenge_value,
-            IFNULL(ts.target_value,0) as target_value,
-            IFNULL(ts.guaranteed_value,0) as guaranteed_value,
-            ts.indicator_id
+        IFNULL(ts.challenge_value,0) as challenge_value,
+        IFNULL(ts.target_value,0) as target_value,
+        IFNULL(ts.guaranteed_value,0) as guaranteed_value,
+        ts.indicator_id
         from target_setting ts
         where ts.target_year =#{targetSetting.targetYear}
-          and ts.indicator_id in
+        and ts.indicator_id in
         <foreach item="item"
                  collection="targetSetting.indicatorIds"
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-          and ts.delete_flag =0
+        and ts.delete_flag =0
+    </select>
+    <!--    查询目标值与实际值列表-->
+    <select id="selectTargetAndOutSettingList"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT
+        ts.target_setting_id,
+        ts.target_setting_type,
+        ts.indicator_id,
+        ts.target_year,
+        ts.percentage,
+        ts.challenge_value,
+        ts.target_value,
+        ts.guaranteed_value,
+        ts.sort,
+        tod.indicator_id,
+        tom.target_outcome_id,
+        tod.target_outcome_details_id,
+        tod.actual_total
+        FROM target_setting ts
+        LEFT JOIN target_outcome tom
+        ON ts.target_year = tom.target_year
+        AND tom.delete_flag = 0
+        LEFT JOIN target_outcome_details tod
+        ON tom.target_outcome_id = tod.target_outcome_id
+        AND ts.indicator_id = tod.indicator_id
+        AND tod.delete_flag = 0
+        WHERE ts.delete_flag=0
+        <if test="targetSetting.targetYear != null">
+            and ts.target_year=#{targetSetting.targetYear}
+        </if>
+        ORDER BY ts.sort ASC
     </select>
 <!--    二期优化查询经营分析报表列表-->
     <select id="selectAnalyseLists"

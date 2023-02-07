@@ -8,6 +8,7 @@ import javax.validation.groups.Default;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 工资发薪表
@@ -189,6 +190,10 @@ public class SalaryPayDTO {
      * 是否勾选（0-仅勾选数据,1-所有符合条件数据）
      */
     private Integer isSelect;
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 
 }
 

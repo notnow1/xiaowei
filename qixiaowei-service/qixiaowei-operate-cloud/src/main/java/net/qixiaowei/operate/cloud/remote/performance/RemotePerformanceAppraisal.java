@@ -69,4 +69,16 @@ public class RemotePerformanceAppraisal implements RemotePerformanceAppraisalSer
         return R.ok(performanceAppraisalObjectsService.selectByDepartmentIds(departmentIds));
     }
 
+    /**
+     *
+     * @param employeeIds 人员ID集合
+     * @return R
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/queryQuoteEmployeeByIds")
+    public R<List<PerformanceAppraisalObjectsDTO>> queryQuoteEmployeeByIds(@RequestBody List<Long> employeeIds, String source) {
+        return R.ok(performanceAppraisalObjectsService.queryQuoteEmployeeByIds(employeeIds));
+    }
+
 }

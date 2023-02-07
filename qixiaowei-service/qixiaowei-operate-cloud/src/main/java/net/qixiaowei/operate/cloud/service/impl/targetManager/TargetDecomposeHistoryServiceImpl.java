@@ -472,7 +472,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             for (TargetDecomposeDTO targetDecomposeDTO : targetDecomposeDTOS) {
                 if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOList) {
-                        sendMessage(targetDecomposeDetailsDTO, targetDecomposeDTO, employeeDTOS, userDTOS, timeDimension);
+                        sendMessage(targetDecomposeDetailsDTO, targetDecomposeDTO, employeeDTOS, userDTOS);
                     }
                 }
             }
@@ -486,10 +486,9 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      * @param targetDecomposeDTO        主表DTO
      * @param employeeDTOS              员工列表
      * @param userDTOS                  用户列表
-     * @param timeDimension             时间维度:1年度;2半年度;3季度;4月度;5周
      */
     private void sendMessage(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, TargetDecomposeDTO targetDecomposeDTO,
-                             List<EmployeeDTO> employeeDTOS, List<UserDTO> userDTOS, int timeDimension) {
+                             List<EmployeeDTO> employeeDTOS, List<UserDTO> userDTOS) {
         if (StringUtils.isNotEmpty(employeeDTOS)) {
             for (EmployeeDTO employeeDTO : employeeDTOS) {
                 if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(employeeDTO.getEmployeeId())) {

@@ -127,6 +127,15 @@
         <if test="salaryPay.updateTime != null">
             and update_time=#{salaryPay.updateTime}
         </if>
+        <!--    员工高级搜索-->
+        <if test="salaryPay.params.employeeIds != null and salaryPay.params.employeeIds.size() > 0">
+            AND employee_id IN
+            <foreach item="item"
+                     collection="salaryPay.params.employeeIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         ORDER BY pay_year,pay_month
     </select>
     <!--根据人员ID集合查找工资发薪信息-->
@@ -438,7 +447,8 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size})spOne group by spOne.employee_id ) sp1
+        order by pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size})spOne group by
+        spOne.employee_id ) sp1
         on sp1.employee_id = sp.employee_id
         left join ( select * from (
         SELECT
@@ -477,7 +487,8 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by  pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size}) spThree group by spThree.employee_id) sp3
+        order by pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size}) spThree group by
+        spThree.employee_id) sp3
         on sp3.employee_id = sp.employee_id
         left join (select * from (SELECT
         employee_id,
@@ -493,7 +504,8 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by  pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size}) spFour group by spFour.employee_id) sp4
+        order by pay_year desc, pay_month desc,employee_id asc limit ${employeeIds.size}) spFour group by
+        spFour.employee_id) sp4
         on sp4.employee_id = sp.employee_id
         WHERE sp.employee_id in
         <foreach item="item"
