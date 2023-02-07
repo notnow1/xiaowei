@@ -192,6 +192,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         if (StringUtils.isNotEmpty(params)) {
             getRemoteIds(params, employeeIds);
         } else {
+            params = new HashMap<>();
             params.put("employeeIds", employeeIds);
         }
         salaryPay.setParams(params);
