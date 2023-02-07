@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.mapper.performance;
 
 import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisal;
+import net.qixiaowei.operate.cloud.api.domain.performance.PerformanceAppraisalObjects;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceAppraisalObjectsDTO;
 import net.qixiaowei.operate.cloud.api.dto.performance.PerformanceRankFactorDTO;

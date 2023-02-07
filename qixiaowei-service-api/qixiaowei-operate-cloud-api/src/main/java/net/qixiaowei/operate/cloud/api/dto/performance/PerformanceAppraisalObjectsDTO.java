@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 /**
  * 绩效考核对象表
