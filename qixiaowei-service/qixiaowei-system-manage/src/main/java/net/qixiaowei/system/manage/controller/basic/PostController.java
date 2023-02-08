@@ -163,7 +163,7 @@ public class PostController extends BaseController {
      * 导出模板
      */
     @SneakyThrows
-    //@RequiresPermissions("system:manage:post:import")
+   @RequiresPermissions("system:manage:post:import")
     @GetMapping("/export-template")
     public void exportEmployeeTemplate(HttpServletResponse response) {
         //部门名称集合
@@ -215,7 +215,7 @@ public class PostController extends BaseController {
     /**
      * 导入岗位
      */
-    //@RequiresPermissions("system:manage:post:import")
+    @RequiresPermissions("system:manage:post:import")
     @PostMapping("import")
     public AjaxResult importEmployee(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
