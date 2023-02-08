@@ -12,6 +12,7 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.DepartmentPost;
 import net.qixiaowei.system.manage.api.domain.basic.Employee;
 import net.qixiaowei.system.manage.api.domain.basic.Post;
@@ -526,7 +527,7 @@ public class PostServiceImpl implements IPostService {
         //查询岗位已有的数据
         List<PostDTO> postDTOS = postMapper.selectPostList(new Post());
         //查询部门已有数据
-        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(new DepartmentDTO());
+        List<DepartmentDTO> departmentDTOList = departmentService.selectDepartmentListName(new Department());
         //职级体系集合
         List<OfficialRankSystemDTO> officialRankSystemDTOS = officialRankSystemService.selectOfficialRankSystemList(new OfficialRankSystemDTO());
         //岗位名称集合

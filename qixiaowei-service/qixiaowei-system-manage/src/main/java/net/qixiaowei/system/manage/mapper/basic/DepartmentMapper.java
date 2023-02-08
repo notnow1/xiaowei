@@ -35,10 +35,10 @@ public interface DepartmentMapper{
     /**
     * 查询部门表列表
     *
-    * @param departmentDTO 部门表
+    * @param department 部门表
     * @return 部门表集合
     */
-    List<DepartmentDTO> selectDepartmentList(@Param("department")DepartmentDTO departmentDTO);
+    List<DepartmentDTO> selectDepartmentList(@Param("department")Department department);
 
     /**
      * 查询部门编码集合

@@ -58,21 +58,28 @@ public class Post extends TenantEntity {
      */
     private String officialRankSystemName;
     /**
-     * 岗位职级下限
+     * 岗位职级下限名称
      */
     private String postRankLowerName;
     /**
-     * 岗位职级上限
+     * 岗位职级上限名称
      */
     private String postRankUpperName;
     /**
-     * 岗位职级
+     * 岗位职级名称
      */
     private String postRankName;
     /**
      * 部门ID
      */
     private Long departmentId;
-
+    /**
+     * 部门编码
+     */
+    private  String departmentCode;
+    /**
+     * 部门名称
+     */
+    private  String departmentName;
 }
 

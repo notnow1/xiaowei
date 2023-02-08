@@ -16,6 +16,7 @@ import net.qixiaowei.operate.cloud.api.remote.employee.RemoteEmployeeBudgetServi
 import net.qixiaowei.operate.cloud.api.remote.product.RemoteProductService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryAdjustPlanService;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankDecompose;
 import net.qixiaowei.system.manage.api.domain.basic.OfficialRankSystem;
 import net.qixiaowei.system.manage.api.dto.basic.*;
@@ -129,8 +130,7 @@ public class OfficialRankSystemServiceImpl implements IOfficialRankSystemService
         List<Map<String, String>> dropList = new ArrayList<>();
         switch (rankDecomposeDimension) {
             case 1:// todo 1部门
-                DepartmentDTO departmentDTO = new DepartmentDTO();
-                List<DepartmentDTO> listDepartment = departmentService.dropList(departmentDTO);
+                List<DepartmentDTO> listDepartment = departmentService.dropList(new Department());
                 if (StringUtils.isNotEmpty(listDepartment)) {
                     for (DepartmentDTO department : listDepartment) {
                         HashMap<String, String> departmentMap = new HashMap<>();

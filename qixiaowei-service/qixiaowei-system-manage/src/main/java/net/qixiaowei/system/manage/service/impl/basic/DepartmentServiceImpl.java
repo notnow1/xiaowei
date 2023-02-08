@@ -93,10 +93,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<DepartmentDTO> selectDepartmentList(DepartmentDTO departmentDTO) {
+        Department department = new Department();
+        BeanUtils.copyProperties(departmentDTO,department);
         //返回数据
         List<DepartmentDTO> tree = new ArrayList<>();
         //查询数据
-        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
+        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         if (!CheckObjectIsNullUtils.isNull(departmentDTO)) {
             return departmentDTOList;
         } else {
@@ -117,9 +119,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Override
     public List<String> selectDepartmentListName() {
         List<String> parentDepartmentExcelNames = new ArrayList<>();
-        DepartmentDTO departmentDTO = new DepartmentDTO();
+        Department department= new Department();
         //查询数据
-        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
+        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0);
         List<DepartmentDTO> natureGroups = treeToList(tree);
         if (StringUtils.isNotEmpty(natureGroups)) {
@@ -130,13 +132,13 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     /**
      * 查询部门名称附加父级名称
-     * @param departmentDTO
+     * @param department
      * @return
      */
     @Override
-    public List<DepartmentDTO> selectDepartmentListName(DepartmentDTO departmentDTO) {
+    public List<DepartmentDTO> selectDepartmentListName(Department department) {
         //查询数据
-        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(departmentDTO);
+        List<DepartmentDTO> departmentDTOList = departmentMapper.selectDepartmentList(department);
         List<DepartmentDTO> tree = this.createTree(departmentDTOList, 0);
         List<DepartmentDTO> natureGroups = treeToList(tree);
         return natureGroups;
@@ -244,6 +246,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Transactional
     @Override
     public DepartmentDTO insertDepartment(DepartmentDTO departmentDTO) {
+        List<DepartmentPost> departmentPostList = new ArrayList<>();
+        List<DepartmentPostDTO> departmentPostDTOList = departmentDTO.getDepartmentPostDTOList();
         //查询code编码是否已经存在
         DepartmentDTO departmentDTO1 = departmentMapper.selectDepartmentCode(departmentDTO.getDepartmentCode());
         if (null != departmentDTO1) {
@@ -271,6 +275,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             department.setAncestors("");
             departmentMapper.insertDepartment(department);
             departmentDTO.setDepartmentId(department.getDepartmentId());
+            this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
             return departmentDTO;
         } else {
             department = this.packDepartment(department);
@@ -290,8 +295,33 @@ public class DepartmentServiceImpl implements IDepartmentService {
             department.setAncestors(ancestors);
             departmentMapper.insertDepartment(department);
             departmentDTO.setDepartmentId(department.getDepartmentId());
+            this.packageInsertDepartmentPost(departmentDTO, departmentPostList, departmentPostDTOList);
+
             return departmentDTO;
 
+        }
+    }
+
+    private void packageInsertDepartmentPost(DepartmentDTO departmentDTO, List<DepartmentPost> departmentPostList, List<DepartmentPostDTO> departmentPostDTOList) {
+        if (StringUtils.isNotEmpty(departmentPostDTOList)){
+            for (int i = 0; i < departmentPostDTOList.size(); i++) {
+                //部门岗位关联表
+                DepartmentPost departmentPost = new DepartmentPost();
+                BeanUtils.copyProperties(departmentPostDTOList.get(i), departmentPost);
+                //部门id(组织)
+                departmentPost.setDepartmentId(departmentDTO.getDepartmentId());
+                //岗位排序
+                departmentPost.setPostSort(i);
+                departmentPost.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                departmentPost.setCreateBy(SecurityUtils.getUserId());
+                departmentPost.setCreateTime(DateUtils.getNowDate());
+                departmentPost.setUpdateBy(SecurityUtils.getUserId());
+                departmentPost.setUpdateTime(DateUtils.getNowDate());
+                departmentPostList.add(departmentPost);
+            }
+        }
+        if (StringUtils.isNotEmpty(departmentPostList)){
+            departmentPostMapper.batchDepartmentPost(departmentPostList);
         }
     }
 
@@ -667,12 +697,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
     /**
      * 获取部门列表
      *
-     * @param departmentDTO
+     * @param department
      * @return
      */
     @Override
-    public List<DepartmentDTO> dropList(DepartmentDTO departmentDTO) {
-        return departmentMapper.selectDepartmentList(departmentDTO);
+    public List<DepartmentDTO> dropList(Department department) {
+        return departmentMapper.selectDepartmentList(department);
     }
 
     /**
@@ -705,7 +735,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<DepartmentDTO> selectDepartmentAll(DepartmentDTO departmentDTO) {
-        return departmentMapper.selectDepartmentList(departmentDTO);
+        Department department = new Department();
+        BeanUtils.copyProperties(departmentDTO,department);
+        return departmentMapper.selectDepartmentList(department);
     }
 
     /**
@@ -747,9 +779,9 @@ public class DepartmentServiceImpl implements IDepartmentService {
      */
     @Override
     public List<DepartmentDTO> selectDepartmentByLevel(Integer level) {
-        DepartmentDTO departmentDTO = new DepartmentDTO();
-        departmentDTO.setLevel(level);
-        return departmentMapper.selectDepartmentList(departmentDTO);
+        Department department = new Department();
+        department.setLevel(level);
+        return departmentMapper.selectDepartmentList(department);
     }
 
 

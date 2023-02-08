@@ -8,68 +8,85 @@ import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import java.math.BigDecimal;
 
 /**
-* 部门表
-* @author TANGMICHI
-* @since 2022-09-27
-*/
+ * 部门表
+ *
+ * @author TANGMICHI
+ * @since 2022-09-27
+ */
 @Data
 @Accessors(chain = true)
 public class Department extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
-     /**
+    /**
      * 部门ID
      */
-     private  Long  departmentId;
-     /**
+    private Long departmentId;
+    /**
      * 父级部门ID
      */
-     private  Long  parentDepartmentId;
-     /**
+    private Long parentDepartmentId;
+    /**
+     * 父级部门名称
+     */
+    private String parentDepartmentName;
+    /**
      * 祖级列表ID，按层级用英文逗号隔开
      */
-     private  String  ancestors;
-     /**
+    private String ancestors;
+    /**
      * 部门编码
      */
-     private  String  departmentCode;
-     /**
+    private String departmentCode;
+    /**
      * 部门名称
      */
-     private  String  departmentName;
-     /**
+    private String departmentName;
+    /**
      * 部门层级
      */
-     private  Integer  level;
-     /**
+    private Integer level;
+    /**
      * 部门负责人ID
      */
-     private  Long  departmentLeaderId;
-     /**
+    private Long departmentLeaderId;
+    /**
      * 部门负责人岗位ID
      */
-     private  Long  departmentLeaderPostId;
-     /**
+    private Long departmentLeaderPostId;
+    /**
      * 考核负责人ID
      */
-     private  Long  examinationLeaderId;
-     /**
+    private Long examinationLeaderId;
+    /**
      * 部门重要性系数
      */
-     private BigDecimal departmentImportanceFactor;
-     /**
+    private BigDecimal departmentImportanceFactor;
+    /**
      * 部门描述
      */
-     private  String  departmentDescription;
-     /**
+    private String departmentDescription;
+    /**
      * 排序
      */
-     private  Integer  sort;
-     /**
+    private Integer sort;
+    /**
      * 状态:0失效;1生效
      */
-     private  Integer  status;
+    private Integer status;
+    /**
+     * 考核负责人名称
+     */
+    private String examinationLeaderName;
+    /**
+     * 部门负责人名称
+     */
+    private String departmentLeaderName;
+    /**
+     * 部门负责人岗位名称
+     */
+    private String departmentLeaderPostName;
 
 }
 

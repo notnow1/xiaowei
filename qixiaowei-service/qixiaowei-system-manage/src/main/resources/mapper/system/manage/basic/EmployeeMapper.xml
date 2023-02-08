@@ -647,16 +647,16 @@
             AND e.employee_basic_wage is not null
         </if>
         <if test="employee.params.employeeBasicWageGreaterThan != null ">
-            AND e.employee_basic_wage &gt;#{employee.params..employeeBasicWageGreaterThan}
+            AND e.employee_basic_wage &gt;#{employee.params.employeeBasicWageGreaterThan}
         </if>
         <if test="employee.params.employeeBasicWageNotGreaterThan != null ">
-            AND e.employee_basic_wage &lt;=#{employee.params..employeeBasicWageNotGreaterThan}
+            AND e.employee_basic_wage &lt;=#{employee.params.employeeBasicWageNotGreaterThan}
         </if>
         <if test="employee.params.employeeBasicWageLessThan != null ">
-            AND e.employee_basic_wage &lt;#{employee.params..employeeBasicWageLessThan}
+            AND e.employee_basic_wage &lt;#{employee.params.employeeBasicWageLessThan}
         </if>
         <if test="employee.params.employeeBasicWageNotLessThan != null ">
-            AND e.employee_basic_wage &gt;=#{employee.params..employeeBasicWageNotLessThan}
+            AND e.employee_basic_wage &gt;=#{employee.params.employeeBasicWageNotLessThan}
         </if>
         <!-- 员工手机过滤  -->
         <if test="employee.params.employeeMobileEqual != null and employee.params.employeeMobileEqual.size() > 0">
@@ -1301,30 +1301,30 @@
     <!--    新增人力预算上年期末数集合-->
     <select id="selecTamountLastYearList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         SELECT case
-        when ors.rank_prefix_code is null then e.employee_rank
-        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
-        as employeeRankName,
-        case
-        when now(), '%Y') &lt; #{employee.planYear} then ifnull(sum(employment_status = 1),0)
-        when now(), '%Y') = #{employee.planYear} and now(), '%m') &gt; 0 and
-        now(), '%m') &lt; 7 then
-        ifnull(sum(case
-        when employment_date, '%Y') = (#{employee.planYear} - 1)
-        then employment_status = 1 end),0)
-        when now(), '%Y') = #{employee.planYear} and now(), '%m') &gt; 6 and
-        now(), '%m') &lt; 13 then ifnull(sum(employment_status = 1),0)
-        end as amountLastYear
+                   when ors.rank_prefix_code is null then e.employee_rank
+                   when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, e.employee_rank) end
+                       as employeeRankName,
+               case
+                   when date_format(now(), '%Y') &lt; #{employee.planYear} then ifnull(sum(employment_status = 1),0)
+                   when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 0 and
+                        date_format(now(), '%m') &lt; 7 then
+                       ifnull(sum(case
+                                      when date_format(employment_date, '%Y') = (#{employee.planYear} - 1)
+                                          then employment_status = 1 end),0)
+                   when date_format(now(), '%Y') = #{employee.planYear} and date_format(now(), '%m') &gt; 6 and
+                        date_format(now(), '%m') &lt; 13 then ifnull(sum(employment_status = 1),0)
+                   end as amountLastYear
         FROM employee e
-        left join post p
-        on p.post_id = e.employee_post_id
-        and p.delete_flag = 0
-        left join official_rank_system ors
-        on p.official_rank_system_id = ors.official_rank_system_id
-        and ors.delete_flag = 0
-        and p.official_rank_system_id = #{employee.officialRankSystemId}
+                 left join post p
+                           on p.post_id = e.employee_post_id
+                               and p.delete_flag = 0
+                 left join official_rank_system ors
+                           on p.official_rank_system_id = ors.official_rank_system_id
+                               and ors.delete_flag = 0
+                               and p.official_rank_system_id = #{employee.officialRankSystemId}
         where e.employee_department_id = #{employee.employeeDepartmentId}
-        and p.official_rank_system_id = #{employee.officialRankSystemId}
-        and e.delete_flag = 0
+          and p.official_rank_system_id = #{employee.officialRankSystemId}
+          and e.delete_flag = 0
         group by employeeRankName
     </select>
     <!--    根据部门 职级 获取人员信息集合-->
@@ -1969,7 +1969,7 @@
         #{employee.employeeMobile}, #{employee.employeeEmail}, #{employee.employeeDepartmentId},
         #{employee.employeePostId}, #{employee.employeeRank}, #{employee.employeeBasicWage},
         #{employee.employmentDate}, #{employee.departureDate}, #{employee.employmentStatus}, #{employee.status},
-        #{employee.deleteFlag}, #{employee.createBy}, #{employee.employeeBirthday}, #{employee.updateBy},
+        #{employee.deleteFlag}, #{employee.createBy}, #{employee.createTime}, #{employee.updateBy},
         #{employee.updateTime})
     </insert>
     <!--修改员工表-->
@@ -2030,8 +2030,8 @@
         <if test="employee.createBy != null">
             create_by=#{employee.createBy},
         </if>
-        <if test="employee.employeeBirthday != null">
-            create_time=#{employee.employeeBirthday},
+        <if test="employee.createTime != null">
+            create_time=#{employee.createTime},
         </if>
         <if test="employee.updateBy != null">
             update_by=#{employee.updateBy},
@@ -2072,7 +2072,7 @@
         <foreach item="item" index="index"
                  collection="employees"
                  separator=",">
-            (#{item.employeeCode},#{item.employeeName},#{item.employeeGender},#{item.identityType},#{item.identityCard},#{item.employeeBirthday},#{item.employeeMobile},#{item.employeeEmail},#{item.employeeDepartmentId},#{item.employeePostId},#{item.employeeRank},#{item.employeeBasicWage},#{item.employmentDate},#{item.departureDate},#{item.employmentStatus},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.employeeBirthday},#{item.updateBy},#{item.updateTime})
+            (#{item.employeeCode},#{item.employeeName},#{item.employeeGender},#{item.identityType},#{item.identityCard},#{item.employeeBirthday},#{item.employeeMobile},#{item.employeeEmail},#{item.employeeDepartmentId},#{item.employeePostId},#{item.employeeRank},#{item.employeeBasicWage},#{item.employmentDate},#{item.departureDate},#{item.employmentStatus},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -2225,8 +2225,8 @@
             </trim>
             <trim prefix="create_time=case" suffix="end,">
                 <foreach collection="employeeList" item="item" index="index">
-                    <if test="item.employeeBirthday != null">
-                        when employee_id=#{item.employeeId} then #{item.employeeBirthday}
+                    <if test="item.createTime != null">
+                        when employee_id=#{item.employeeId} then #{item.createTime}
                     </if>
                 </foreach>
             </trim>

@@ -4,44 +4,48 @@
     <!--    查询岗位表-->
     <select id="selectPostByPostId"
             resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
-        select
-            ors.official_rank_system_name,
-            ors.rank_prefix_code,
-            p.post_id,
-            p.post_code,
-            p.post_name,
-            p.official_rank_system_id,
-            case when ors.rank_prefix_code is null then p.post_rank_lower
-                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_lower) end as post_rank_lower_name,
-            case when ors.rank_prefix_code is null then p.post_rank_upper
-                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_upper) end as post_rank_upper_name,
-            case when ors.rank_prefix_code is null then p.post_rank
-                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
-            p.post_rank_lower,
-            p.post_rank_upper,
-            p.post_rank,
-            p.post_description,
-            p.status,
-            p.delete_flag,
-            p.create_by,
-            p.create_time,
-            p.update_by,
-            p.update_time
-        from
-        post p
-        left join official_rank_system ors
-        on p.official_rank_system_id = ors .official_rank_system_id
-        and ors .delete_flag = 0
-        where
-        p.delete_flag = 0
-        and p.post_id=#{postId}
+        select ors.official_rank_system_name,
+               ors.rank_prefix_code,
+               p.post_id,
+               p.post_code,
+               p.post_name,
+               p.official_rank_system_id,
+               case
+                   when ors.rank_prefix_code is null then p.post_rank_lower
+                   when ors.rank_prefix_code is not null
+                       then concat(ors.rank_prefix_code, p.post_rank_lower) end as post_rank_lower_name,
+               case
+                   when ors.rank_prefix_code is null then p.post_rank_upper
+                   when ors.rank_prefix_code is not null
+                       then concat(ors.rank_prefix_code, p.post_rank_upper) end as post_rank_upper_name,
+               case
+                   when ors.rank_prefix_code is null then p.post_rank
+                   when ors.rank_prefix_code is not null
+                       then concat(ors.rank_prefix_code, p.post_rank) end       as post_rank_name,
+               p.post_rank_lower,
+               p.post_rank_upper,
+               p.post_rank,
+               p.post_description,
+               p.status,
+               p.delete_flag,
+               p.create_by,
+               p.create_time,
+               p.update_by,
+               p.update_time
+        from post p
+                 left join official_rank_system ors
+                           on p.official_rank_system_id = ors.official_rank_system_id
+                               and ors.delete_flag = 0
+        where p.delete_flag = 0
+          and p.post_id = #{postId}
     </select>
 
     <!--    查询岗位表-->
     <select id="selectPostByPostIds"
             resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
         SELECT
-            post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
+        post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper,
+        post_description, status, delete_flag, create_by, create_time, update_by, update_time
         FROM post
         WHERE post_id in
         <foreach item="item"
@@ -64,11 +68,13 @@
         p.post_rank_upper,
         p.post_rank,
         case when ors.rank_prefix_code is null then p.post_rank_lower
-        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_lower) end as post_rank_lower_name,
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end as
+        post_rank_lower_name,
         case when ors.rank_prefix_code is null then p.post_rank_upper
-        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank_upper) end as post_rank_upper_name,
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end as
+        post_rank_upper_name,
         case when ors.rank_prefix_code is null then p.post_rank
-        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
         p.post_description,
         p.status,
         p.delete_flag,
@@ -81,17 +87,254 @@
         left join official_rank_system ors
         on p.official_rank_system_id = ors .official_rank_system_id
         and ors .delete_flag = 0
-        <if test="post.departmentId != null ">
+<!--        <if test="post.params.departmentNameEqual != null or post.params.departmentNameNotEqual != null
+            or post.params.departmentNameLike != null or post.params.departmentNameNotLike != null
+            post.params.departmentCodeEqual != null or post.params.departmentCodeNotEqual != null
+            or post.params.departmentCodeLike != null or post.params.departmentCodeNotLike != null">
             left join department_post dp
             on dp.post_id = p.post_id
             and dp .delete_flag = 0
-            and dp.department_id =#{post.departmentId}
             left join department d
             on d.department_id = dp.department_id
             and d.delete_flag = 0
-        </if>
+        </if>-->
         where
         p.delete_flag = 0
+        <!-- 岗位编码过滤  -->
+        <if test="post.params.postCodeEqual != null and post.params.postCodeEqual.size() > 0">
+            AND p.post_code IN
+            <foreach item="item"
+                     collection="post.params.postCodeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="post.params.postCodeNotEqual != null and post.params.postCodeNotEqual.size() > 0">
+            AND (p.post_code NOT IN
+            <foreach item="item"
+                     collection="post.params.postCodeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR p.post_code IS NULL
+            )
+        </if>
+        <if test="post.params.postCodeLike != null and post.params.postCodeLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postCodeLike"
+                     index="index" open="(" separator="AND" close=")">
+                p.post_code LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="post.params.postCodeNotLike != null and post.params.postCodeNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postCodeNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                p.post_code NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 岗位名称过滤  -->
+        <if test="post.params.postNameEqual != null and post.params.postNameEqual.size() > 0">
+            AND p.post_name IN
+            <foreach item="item"
+                     collection="post.params.postNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="post.params.postNameNotEqual != null and post.params.postNameNotEqual.size() > 0">
+            AND (p.post_name NOT IN
+            <foreach item="item"
+                     collection="post.params.postNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR p.post_name IS NULL
+            )
+        </if>
+        <if test="post.params.postNameLike != null and post.params.postNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postNameLike"
+                     index="index" open="(" separator="AND" close=")">
+                p.post_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="post.params.postNameNotLike != null and post.params.postNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                p.post_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 职级体系过滤  -->
+        <if test="post.params.officialRankSystemNameEqual != null and post.params.officialRankSystemNameEqual.size() > 0">
+            AND ors.official_rank_system_name IN
+            <foreach item="item"
+                     collection="post.params.officialRankSystemNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="post.params.officialRankSystemNameNotEqual != null and post.params.officialRankSystemNameNotEqual.size() > 0">
+            AND (ors.official_rank_system_name NOT IN
+            <foreach item="item"
+                     collection="post.params.officialRankSystemNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ors.official_rank_system_name IS NULL
+            )
+        </if>
+        <!-- 岗位职级过滤  -->
+        <if test="post.params.postRankNameEqual != null and post.params.postRankNameEqual.size() > 0">
+            AND case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end IN
+            <foreach item="item"
+                     collection="post.params.postRankNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="post.params.postRankNameNotEqual != null and post.params.postRankNameNotEqual.size() > 0">
+            AND (case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end NOT IN
+            <foreach item="item"
+                     collection="post.params.postRankNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR case when ors.rank_prefix_code is null then p.post_rank
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end IS NULL
+            )
+        </if>
+        <if test="post.params.postRankNameLike != null and post.params.postRankNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postRankNameLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then p.post_rank
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end LIKE concat('%',
+                #{item}, '%')
+            </foreach>
+        </if>
+        <if test="post.params.postRankNameNotLike != null and post.params.postRankNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postRankNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then p.post_rank
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end NOT LIKE
+                concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 岗位职级上限过滤  -->
+        <if test="post.params.postRankUpperNameEqual != null and post.params.postRankUpperNameEqual.size() > 0">
+            AND case when ors.rank_prefix_code is null then p.post_rank_upper
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end IN
+            <foreach item="item"
+                     collection="post.params.postRankUpperNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="post.params.postRankUpperNameNotEqual != null and post.params.postRankUpperNameNotEqual.size() > 0">
+            AND (case when ors.rank_prefix_code is null then p.post_rank_upper
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end NOT IN
+            <foreach item="item"
+                     collection="post.params.postRankUpperNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR case when ors.rank_prefix_code is null then p.post_rank_upper
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end IS NULL
+            )
+        </if>
+        <if test="post.params.postRankUpperNameLike != null and post.params.postRankUpperNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postRankUpperNameLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then p.post_rank_upper
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end LIKE
+                concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="post.params.postRankUpperNameNotLike != null and post.params.postRankUpperNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postRankUpperNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then p.post_rank_upper
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end NOT LIKE
+                concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 岗位职级下限过滤  -->
+        <if test="post.params.postRankLowerNameEqual != null and post.params.postRankLowerNameEqual.size() > 0">
+            AND case when ors.rank_prefix_code is null then p.post_rank_lower
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end IN
+            <foreach item="item"
+                     collection="post.params.postRankLowerNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="post.params.postRankLowerNameNotEqual != null and post.params.postRankLowerNameNotEqual.size() > 0">
+            AND (case when ors.rank_prefix_code is null then p.post_rank_lower
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end NOT IN
+            <foreach item="item"
+                     collection="post.params.postRankLowerNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR case when ors.rank_prefix_code is null then p.post_rank_lower
+            when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end IS NULL
+            )
+        </if>
+        <if test="post.params.postRankLowerNameLike != null and post.params.postRankLowerNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postRankLowerNameLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then p.post_rank_lower
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end LIKE
+                concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="post.params.postRankLowerNameNotLike != null and post.params.postRankLowerNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="post.params.postRankLowerNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                case when ors.rank_prefix_code is null then p.post_rank_lower
+                when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end NOT LIKE
+                concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 岗位状态过滤  -->
+        <if test="post.params.statusEqual != null and post.params.statusEqual.size() > 0">
+            AND p.status IN
+            <foreach item="item"
+                     collection="post.params.statusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="post.params.statusNotEqual != null and post.params.statusNotEqual.size() > 0">
+            AND (p.status NOT IN
+            <foreach item="item"
+                     collection="post.params.statusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR p.status IS NULL
+            )
+        </if>
+
         <if test="post.officialRankSystemName != null and post.postDescription != '' ">
             and ors.official_rank_system_name like '%${post.officialRankSystemName}%'
         </if>
@@ -131,16 +374,32 @@
     </select>
 
     <select id="getPostCodes" resultType="java.lang.String">
-        SELECT post_code FROM post WHERE delete_flag=0 AND post_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY post_code ASC
+        SELECT post_code
+        FROM post
+        WHERE delete_flag = 0
+          AND post_code LIKE CONCAT(#{prefixCodeRule}, '%')
+        ORDER BY post_code ASC
     </select>
 
     <!--    查询岗位表Code-->
     <select id="selectPostCode" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
-        SELECT
-            post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
+        SELECT post_id,
+               post_code,
+               post_name,
+               official_rank_system_id,
+               post_rank_lower,
+               post_rank,
+               post_rank_upper,
+               post_description,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM post
-        WHERE post_code=#{postCode}
-        and delete_flag=0
+        WHERE post_code = #{postCode}
+          and delete_flag = 0
     </select>
     <select id="selectPostByOfficialRankSystemIds"
             resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
@@ -155,11 +414,23 @@
     </select>
     <!--    查询岗位表名称-->
     <select id="selectPostName" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
-        SELECT
-            post_id, post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description, status, delete_flag, create_by, create_time, update_by, update_time
+        SELECT post_id,
+               post_code,
+               post_name,
+               official_rank_system_id,
+               post_rank_lower,
+               post_rank,
+               post_rank_upper,
+               post_description,
+               status,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
         FROM post
-        WHERE post_name=#{postName}
-        and delete_flag=0
+        WHERE post_name = #{postName}
+          and delete_flag = 0
     </select>
     <!--    根据部门查询岗位表列表-->
     <select id="selectBydepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
@@ -194,46 +465,49 @@
     </select>
     <!--    查询岗位表列表-->
     <select id="selectPostListByOfficialRank" resultType="net.qixiaowei.system.manage.api.dto.basic.PostDTO">
-        select
-        ors.official_rank_system_name,
-        ors.rank_prefix_code,
-        p.post_id,
-        p.post_code,
-        p.post_name,
-        p.official_rank_system_id,
-        p.post_rank_lower,
-        p.post_rank_upper,
-        p.post_rank,
-        case when ors.rank_prefix_code is null then p.post_rank_lower
-        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_lower) end as
-        post_rank_lower_name,
-        case when ors.rank_prefix_code is null then p.post_rank_upper
-        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank_upper) end as
-        post_rank_upper_name,
-        case when ors.rank_prefix_code is null then p.post_rank
-        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
-        p.post_description,
-        p.status,
-        p.delete_flag,
-        p.create_by,
-        p.create_time,
-        p.update_by,
-        p.update_time
-        from
-        post p
-        left join official_rank_system ors
-        on p.official_rank_system_id = ors .official_rank_system_id
-        and ors .delete_flag = 0
-        where
-        p.delete_flag = 0
-        and p.official_rank_system_id = #{officialRankSystemId}
+        select ors.official_rank_system_name,
+               ors.rank_prefix_code,
+               p.post_id,
+               p.post_code,
+               p.post_name,
+               p.official_rank_system_id,
+               p.post_rank_lower,
+               p.post_rank_upper,
+               p.post_rank,
+               case
+                   when ors.rank_prefix_code is null then p.post_rank_lower
+                   when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank_lower) end as
+                                                                                                                     post_rank_lower_name,
+               case
+                   when ors.rank_prefix_code is null then p.post_rank_upper
+                   when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code, p.post_rank_upper) end as
+                                                                                                                     post_rank_upper_name,
+               case
+                   when ors.rank_prefix_code is null then p.post_rank
+                   when ors.rank_prefix_code is not null
+                       then concat(ors.rank_prefix_code, p.post_rank) end                                         as post_rank_name,
+               p.post_description,
+               p.status,
+               p.delete_flag,
+               p.create_by,
+               p.create_time,
+               p.update_by,
+               p.update_time
+        from post p
+                 left join official_rank_system ors
+                           on p.official_rank_system_id = ors.official_rank_system_id
+                               and ors.delete_flag = 0
+        where p.delete_flag = 0
+          and p.official_rank_system_id = #{officialRankSystemId}
     </select>
     <!--新增岗位表-->
     <insert id="insertPost" useGeneratedKeys="true" keyProperty="postId">
         INSERT INTO post
-        (post_code,post_name,official_rank_system_id,post_rank_lower,post_rank,post_rank_upper,post_description,status,delete_flag,create_by,create_time,update_by,update_time)
-        VALUES
-        (#{post.postCode},#{post.postName},#{post.officialRankSystemId},#{post.postRankLower},#{post.postRank},#{post.postRankUpper},#{post.postDescription},#{post.status},#{post.deleteFlag},#{post.createBy},#{post.createTime},#{post.updateBy},#{post.updateTime})
+        (post_code, post_name, official_rank_system_id, post_rank_lower, post_rank, post_rank_upper, post_description,
+         status, delete_flag, create_by, create_time, update_by, update_time)
+        VALUES (#{post.postCode}, #{post.postName}, #{post.officialRankSystemId}, #{post.postRankLower},
+                #{post.postRank}, #{post.postRankUpper}, #{post.postDescription}, #{post.status}, #{post.deleteFlag},
+                #{post.createBy}, #{post.createTime}, #{post.updateBy}, #{post.updateTime})
     </insert>
     <!--修改岗位表-->
     <update id="updatePost">
@@ -285,10 +559,9 @@
     <update id="logicDeletePostByPostId">
         UPDATE post
         SET delete_flag= 1,
-        update_by=#{post.updateBy},
-        update_time=#{post.updateTime}
-        WHERE
-        post_id=#{post.postId}
+            update_by=#{post.updateBy},
+            update_time=#{post.updateTime}
+        WHERE post_id = #{post.postId}
     </update>
     <!--逻辑批量删除岗位表-->
     <update id="logicDeletePostByPostIds">
@@ -318,8 +591,9 @@
 
     <!--物理删除岗位表-->
     <delete id="deletePostByPostId">
-        DELETE FROM post
-        WHERE post_id=#{post}
+        DELETE
+        FROM post
+        WHERE post_id = #{post}
 
     </delete>
     <!--物理批量删除岗位表-->

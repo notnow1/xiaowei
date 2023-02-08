@@ -2,6 +2,7 @@ package net.qixiaowei.system.manage.service.basic;
 
 import java.util.List;
 
+import net.qixiaowei.system.manage.api.domain.basic.Department;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 
@@ -39,10 +40,11 @@ public interface IDepartmentService {
 
     /**
      * 查询部门名称附加父级名称
-     * @param departmentDTO
+     *
+     * @param department
      * @return部门表集合
      */
-    List<DepartmentDTO> selectDepartmentListName(DepartmentDTO departmentDTO);
+    List<DepartmentDTO> selectDepartmentListName(Department department);
 
     /**
      * 返回组织层级
@@ -142,8 +144,8 @@ public interface IDepartmentService {
     /**
      * 查询上级组织
      *
-     * @return
      * @param departmentId
+     * @return
      */
     List<DepartmentDTO> queryparent(Long departmentId);
 
@@ -166,10 +168,10 @@ public interface IDepartmentService {
     /**
      * 获取部门列表
      *
-     * @param departmentDTO
+     * @param department
      * @return
      */
-    List<DepartmentDTO> dropList(DepartmentDTO departmentDTO);
+    List<DepartmentDTO> dropList(Department department);
 
     /**
      * 通过部门ID获取列表
@@ -197,24 +199,26 @@ public interface IDepartmentService {
 
     /**
      * 查询所有部门
+     *
      * @return
      */
     List<DepartmentDTO> getParentAll();
 
     /**
-     *
      * @return
      */
     List<DepartmentDTO> selectParentDepartment(Long departmentId);
 
     /**
      * 远程查询所有部门
+     *
      * @return
      */
     List<DepartmentDTO> getAll();
 
     /**
      * 根据等级查找部门
+     *
      * @param level 等级
      * @return
      */

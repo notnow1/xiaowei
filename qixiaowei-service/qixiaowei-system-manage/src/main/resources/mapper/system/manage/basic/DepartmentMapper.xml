@@ -51,6 +51,9 @@
         left join employee ee
         on ee.employee_id = dm.department_leader_id
         and ee.delete_flag =0
+        left join post p2
+        on  p2.post_id = ee.employee_post_id
+        and p2.delete_flag =0
         left join employee ee2
         on ee2.employee_id = dm.examination_leader_id
         and ee2.delete_flag =0
@@ -61,6 +64,259 @@
         on dm.parent_department_id = dm2.department_id
         and dm2.delete_flag =0
         where dm.delete_flag =0
+        <!-- 组织编码过滤  -->
+        <if test="department.params.departmentCodeEqual != null and department.params.departmentCodeEqual.size() > 0">
+            AND dm.department_code IN
+            <foreach item="item"
+                     collection="department.params.departmentCodeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.departmentCodeNotEqual != null and department.params.departmentCodeNotEqual.size() > 0">
+            AND (dm.department_code NOT IN
+            <foreach item="item"
+                     collection="department.params.departmentCodeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR dm.department_code IS NULL
+            )
+        </if>
+        <if test="department.params.departmentCodeLike != null and department.params.departmentCodeLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="department.params.departmentCodeLike"
+                     index="index" open="(" separator="AND" close=")">
+                dm.department_code  LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="department.params.departmentCodeNotLike != null and department.params.departmentCodeNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="department.params.departmentCodeNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                dm.department_code  NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 组织名称过滤  -->
+        <if test="department.params.departmentNameEqual != null and department.params.departmentNameEqual.size() > 0">
+            AND dm.department_name IN
+            <foreach item="item"
+                     collection="department.params.departmentNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.departmentNameNotEqual != null and department.params.departmentNameNotEqual.size() > 0">
+            AND (dm.department_name NOT IN
+            <foreach item="item"
+                     collection="department.params.departmentNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR dm.department_name IS NULL
+            )
+        </if>
+        <if test="department.params.departmentNameLike != null and department.params.departmentNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="department.params.departmentNameLike"
+                     index="index" open="(" separator="AND" close=")">
+                dm.department_name  LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="department.params.departmentNameNotLike != null and department.params.departmentNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="department.params.departmentNameNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                dm.department_name  NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!-- 上级组织名称过滤  -->
+        <if test="department.params.parentDepartmentNameEqual != null and department.params.parentDepartmentNameEqual.size() > 0">
+            AND dm2.department_name IN
+            <foreach item="item"
+                     collection="department.params.parentDepartmentNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.parentDepartmentNameNotEqual != null and department.params.parentDepartmentNameNotEqual.size() > 0">
+            AND (dm2.department_name NOT IN
+            <foreach item="item"
+                     collection="department.params.parentDepartmentNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR dm2.department_name IS NULL
+            )
+        </if>
+        <if test="department.params.parentDepartmentNameNull != null">
+            AND dm.parent_department_id = 0
+        </if>
+        <if test="department.params.parentDepartmentNameNotNull != null">
+            AND dm.parent_department_id != 0
+        </if>
+        <!-- 组织层级过滤  -->
+        <if test="department.params.levelEqual != null and department.params.levelEqual.size() > 0">
+            AND dm.level IN
+            <foreach item="item"
+                     collection="department.params.levelEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.levelNotEqual != null and department.params.levelNotEqual.size() > 0">
+            AND dm.level NOT IN
+            <foreach item="item"
+                     collection="department.params.levelNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.levelGreaterThan != null ">
+            AND dm.level &gt;#{department.params.levelGreaterThan}
+        </if>
+        <if test="department.params.levelNotGreaterThan != null ">
+            AND dm.level &lt;=#{department.params.levelNotGreaterThan}
+        </if>
+        <if test="department.params.levelLessThan != null ">
+            AND dm.level &lt;#{department.params.levelLessThan}
+        </if>
+        <if test="department.params.levelNotLessThan != null ">
+            AND dm.level &gt;=#{department.params.levelNotLessThan}
+        </if>
+        <!-- 组织负责人过滤  -->
+        <if test="department.params.departmentLeaderNameEqual != null and department.params.departmentLeaderNameEqual.size() > 0">
+            AND ee.employee_name IN
+            <foreach item="item"
+                     collection="department.params.departmentLeaderNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.departmentLeaderNameNotEqual != null and department.params.departmentLeaderNameNotEqual.size() > 0">
+            AND (ee.employee_name NOT IN
+            <foreach item="item"
+                     collection="department.params.departmentLeaderNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ee.employee_name IS NULL
+            )
+        </if>
+        <if test="department.params.departmentLeaderNameNull != null">
+            AND ee.employee_name IS NULL
+        </if>
+        <if test="department.params.departmentLeaderNameNotNull != null">
+            AND ee.employee_name IS NOT NULL
+        </if>
+        <!-- 组织负责人岗位过滤  -->
+        <if test="department.params.departmentLeaderPostNameEqual != null and department.params.departmentLeaderPostNameEqual.size() > 0">
+            AND p2.post_name IN
+            <foreach item="item"
+                     collection="department.params.departmentLeaderPostNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.departmentLeaderPostNameNotEqual != null and department.params.departmentLeaderPostNameNotEqual.size() > 0">
+            AND (p2.post_name NOT IN
+            <foreach item="item"
+                     collection="department.params.departmentLeaderPostNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR p2.post_name IS NULL
+            )
+        </if>
+        <if test="department.params.departmentLeaderPostNameNull != null">
+            AND p2.post_name IS NULL
+        </if>
+        <if test="department.params.departmentLeaderPostNameNotNull != null">
+            AND p2.post_name IS NOT NULL
+        </if>
+        <!-- 考核负责人过滤  -->
+        <if test="department.params.examinationLeaderNameEqual != null and department.params.examinationLeaderNameEqual.size() > 0">
+            AND ee2.employee_name IN
+            <foreach item="item"
+                     collection="department.params.examinationLeaderNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.examinationLeaderNameNotEqual != null and department.params.examinationLeaderNameNotEqual.size() > 0">
+            AND (ee2.employee_name NOT IN
+            <foreach item="item"
+                     collection="department.params.examinationLeaderNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ee2.employee_name IS NULL
+            )
+        </if>
+        <if test="department.params.examinationLeaderNameNull != null">
+            AND ee2.employee_name IS NULL
+        </if>
+        <if test="department.params.examinationLeaderNameNotNull != null">
+            AND ee2.employee_name IS NOT NULL
+        </if>
+        <!-- 组织重要性系数过滤  -->
+        <if test="department.params.departmentImportanceFactorEqual != null and department.params.departmentImportanceFactorEqual.size() > 0">
+            AND dm.department_importance_factor IN
+            <foreach item="item"
+                     collection="department.params.departmentImportanceFactorEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.departmentImportanceFactorNotEqual != null and department.params.departmentImportanceFactorNotEqual.size() > 0">
+            AND dm.department_importance_factor NOT IN
+            <foreach item="item"
+                     collection="department.params.departmentImportanceFactorNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.departmentImportanceFactorGreaterThan != null ">
+            AND dm.department_importance_factor &gt;#{department.params.departmentImportanceFactorGreaterThan}
+        </if>
+        <if test="department.params.departmentImportanceFactorNotGreaterThan != null ">
+            AND dm.department_importance_factor &lt;=#{department.params.departmentImportanceFactorNotGreaterThan}
+        </if>
+        <if test="department.params.departmentImportanceFactorLessThan != null ">
+            AND dm.department_importance_factor &lt;#{department.params.departmentImportanceFactorLessThan}
+        </if>
+        <if test="department.params.departmentImportanceFactorNotLessThan != null ">
+            AND dm.department_importance_factor &gt;=#{department.params.departmentImportanceFactorNotLessThan}
+        </if>
+        <if test="department.params.departmentImportanceFactorNull != null">
+            AND dm.department_importance_factor IS NULL
+        </if>
+        <if test="department.params.departmentImportanceFactorNotNull != null">
+            AND dm.department_importance_factor IS NOT NULL
+        </if>
+        <!-- 组织状态过滤  -->
+        <if test="department.params.statusEqual != null and department.params.statusEqual.size() > 0">
+            AND dm.status IN
+            <foreach item="item"
+                     collection="department.params.statusEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.statusNotEqual != null and department.params.statusNotEqual.size() > 0">
+            AND (dm.status NOT IN
+            <foreach item="item"
+                     collection="department.params.statusNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR dm.status IS NULL
+            )
+        </if>
         <if test="department.examinationLeaderName != null and department.examinationLeaderName != ''">
             and ee2.employee_name like '%${department.examinationLeaderName}%'
         </if>

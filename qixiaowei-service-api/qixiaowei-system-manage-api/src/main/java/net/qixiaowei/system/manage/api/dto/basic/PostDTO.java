@@ -135,6 +135,14 @@ public class PostDTO {
      */
     private Long departmentId;
     /**
+     * 部门编码
+     */
+    private  String departmentCode;
+    /**
+     * 部门名称
+     */
+    private  String departmentName;
+    /**
      * 请求参数
      */
     private Map<String, Object> params;
