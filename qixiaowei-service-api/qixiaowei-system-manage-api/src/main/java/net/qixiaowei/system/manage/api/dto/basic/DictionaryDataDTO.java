@@ -4,6 +4,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
+import java.util.Map;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -92,6 +93,9 @@ public class DictionaryDataDTO {
     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
-
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }
 

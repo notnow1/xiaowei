@@ -123,4 +123,11 @@ public interface DictionaryDataMapper{
      * @return
      */
     List<DictionaryDataDTO> selectDictionaryDataByProduct(@Param("dictionaryTypeId")Long dictionaryTypeId);
+
+    /**
+     * 根据实体类远程查询字典数据
+     * @param dictionaryData
+     * @return
+     */
+    List<DictionaryDataDTO> remoteDictionaryDataId(@Param("dictionaryData")DictionaryData dictionaryData);
 }

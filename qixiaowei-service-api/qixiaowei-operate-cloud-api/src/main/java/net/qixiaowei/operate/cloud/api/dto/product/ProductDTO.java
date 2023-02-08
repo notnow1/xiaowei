@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
@@ -149,5 +150,9 @@ public class ProductDTO {
      * 组织子节点信息
      */
     private List<ProductDTO> children;
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }
 

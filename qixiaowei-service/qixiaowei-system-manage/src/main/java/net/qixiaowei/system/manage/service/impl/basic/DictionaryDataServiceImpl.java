@@ -165,6 +165,18 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     }
 
     /**
+     * 根据实体类远程查询字典数据
+     * @param dictionaryDataDTO
+     * @return
+     */
+    @Override
+    public List<DictionaryDataDTO> remoteDictionaryDataId(DictionaryDataDTO dictionaryDataDTO) {
+        DictionaryData dictionaryData = new DictionaryData();
+        BeanUtils.copyProperties(dictionaryDataDTO,dictionaryData);
+        return dictionaryDataMapper.remoteDictionaryDataId(dictionaryData);
+    }
+
+    /**
      * 逻辑删除字典数据表信息
      *
      * @param dictionaryDataDTO 字典数据表
