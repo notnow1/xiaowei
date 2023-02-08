@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.field.FieldListConfigMapper">
+
+    <select id="selectFieldHeaderListOfBusinessTypeAndUserId"
+            resultType="net.qixiaowei.system.manage.api.vo.field.FieldListHeaderVO">
+        SELECT
+        flc.field_list_config_id,
+        flc.field_width,
+        flc.fixation_flag ,
+        fc.business_type,
+        fc.field_name,
+        fc.field_label,
+        fc.field_type
+        FROM field_list_config flc
+        LEFT JOIN field_config fc ON fc.field_config_id = flc.field_config_id
+        WHERE flc.delete_flag=0 AND flc.show_flag =1 AND fc.delete_flag =0 AND fc.business_type=#{businessType} AND
+        flc.user_id = #{userId}
+        ORDER BY flc.fixation_force DESC,flc.sort ASC
+    </select>
+
+    <select id="selectFieldListConfigListOfBusinessTypeAndUserId"
+            resultType="net.qixiaowei.system.manage.api.vo.field.FieldListConfigVO">
+        SELECT
+        flc.field_list_config_id,
+        flc.field_width,
+        flc.fixation_flag ,
+        flc.show_flag ,
+        flc.show_force ,
+        flc.fixation_force ,
+        fc.business_type,
+        fc.field_name,
+        fc.field_label,
+        fc.field_type
+        FROM field_list_config flc
+        LEFT JOIN field_config fc ON fc.field_config_id = flc.field_config_id
+        WHERE flc.delete_flag=0 AND fc.delete_flag =0 AND fc.business_type=#{businessType} AND flc.user_id = #{userId}
+        ORDER BY flc.fixation_force DESC,flc.sort ASC
+    </select>
+
+    <!--    查询字段列表配置表-->
+    <select id="selectFieldListConfigByFieldListConfigId"
+            resultType="net.qixiaowei.system.manage.api.dto.field.FieldListConfigDTO">
+        SELECT
+        field_list_config_id,field_config_id,user_id,field_width,sort,show_flag,fixation_flag,show_force,fixation_force,delete_flag,create_by,create_time,update_by,update_time
+        FROM field_list_config
+        WHERE field_list_config_id=#{fieldListConfigId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询字段列表配置表-->
+    <select id="selectFieldListConfigByFieldListConfigIds"
+            resultType="net.qixiaowei.system.manage.api.dto.field.FieldListConfigDTO">
+        SELECT
+        field_list_config_id,field_config_id,user_id,field_width,sort,show_flag,fixation_flag,show_force,fixation_force,delete_flag,create_by,create_time,update_by,update_time
+        FROM field_list_config
+        WHERE field_list_config_id in
+        <foreach item="item"
+                 collection="fieldListConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询字段列表配置表列表-->
+    <select id="selectFieldListConfigList" resultType="net.qixiaowei.system.manage.api.dto.field.FieldListConfigDTO">
+        SELECT
+        field_list_config_id,field_config_id,user_id,field_width,sort,show_flag,fixation_flag,show_force,fixation_force,delete_flag,create_by,create_time,update_by,update_time
+        FROM field_list_config
+        WHERE delete_flag=0
+        <if test="fieldListConfig.fieldListConfigId != null">
+            and field_list_config_id=#{fieldListConfig.fieldListConfigId}
+        </if>
+        <if test="fieldListConfig.fieldConfigId != null">
+            and field_config_id=#{fieldListConfig.fieldConfigId}
+        </if>
+        <if test="fieldListConfig.userId != null">
+            and user_id=#{fieldListConfig.userId}
+        </if>
+        <if test="fieldListConfig.fieldWidth != null">
+            and field_width=#{fieldListConfig.fieldWidth}
+        </if>
+        <if test="fieldListConfig.sort != null">
+            and sort=#{fieldListConfig.sort}
+        </if>
+        <if test="fieldListConfig.showFlag != null">
+            and show_flag=#{fieldListConfig.showFlag}
+        </if>
+        <if test="fieldListConfig.fixationFlag != null">
+            and fixation_flag=#{fieldListConfig.fixationFlag}
+        </if>
+        <if test="fieldListConfig.showForce != null">
+            and show_force=#{fieldListConfig.showForce}
+        </if>
+        <if test="fieldListConfig.fixationForce != null">
+            and fixation_force=#{fieldListConfig.fixationForce}
+        </if>
+        <if test="fieldListConfig.deleteFlag != null">
+            and delete_flag=#{fieldListConfig.deleteFlag}
+        </if>
+        <if test="fieldListConfig.createBy != null">
+            and create_by=#{fieldListConfig.createBy}
+        </if>
+        <if test="fieldListConfig.createTime != null">
+            and create_time=#{fieldListConfig.createTime}
+        </if>
+        <if test="fieldListConfig.updateBy != null">
+            and update_by=#{fieldListConfig.updateBy}
+        </if>
+        <if test="fieldListConfig.updateTime != null">
+            and update_time=#{fieldListConfig.updateTime}
+        </if>
+    </select>
+    <!--新增字段列表配置表-->
+    <insert id="insertFieldListConfig" useGeneratedKeys="true" keyProperty="fieldListConfigId">
+        INSERT INTO field_list_config
+        (field_config_id,user_id,field_width,sort,show_flag,fixation_flag,show_force,fixation_force,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{fieldListConfig.fieldConfigId},#{fieldListConfig.userId},#{fieldListConfig.fieldWidth},#{fieldListConfig.sort},#{fieldListConfig.showFlag},#{fieldListConfig.fixationFlag},#{fieldListConfig.showForce},#{fieldListConfig.fixationForce},#{fieldListConfig.deleteFlag},#{fieldListConfig.createBy},#{fieldListConfig.createTime},#{fieldListConfig.updateBy},#{fieldListConfig.updateTime})
+    </insert>
+    <!--修改字段列表配置表-->
+    <update id="updateFieldListConfig">
+        UPDATE field_list_config
+        SET
+        <if test="fieldListConfig.fieldConfigId != null">
+            field_config_id=#{fieldListConfig.fieldConfigId},
+        </if>
+        <if test="fieldListConfig.userId != null">
+            user_id=#{fieldListConfig.userId},
+        </if>
+        <if test="fieldListConfig.fieldWidth != null">
+            field_width=#{fieldListConfig.fieldWidth},
+        </if>
+        <if test="fieldListConfig.sort != null">
+            sort=#{fieldListConfig.sort},
+        </if>
+        <if test="fieldListConfig.showFlag != null">
+            show_flag=#{fieldListConfig.showFlag},
+        </if>
+        <if test="fieldListConfig.fixationFlag != null">
+            fixation_flag=#{fieldListConfig.fixationFlag},
+        </if>
+        <if test="fieldListConfig.showForce != null">
+            show_force=#{fieldListConfig.showForce},
+        </if>
+        <if test="fieldListConfig.fixationForce != null">
+            fixation_force=#{fieldListConfig.fixationForce},
+        </if>
+        <if test="fieldListConfig.deleteFlag != null">
+            delete_flag=#{fieldListConfig.deleteFlag},
+        </if>
+        <if test="fieldListConfig.createBy != null">
+            create_by=#{fieldListConfig.createBy},
+        </if>
+        <if test="fieldListConfig.createTime != null">
+            create_time=#{fieldListConfig.createTime},
+        </if>
+        <if test="fieldListConfig.updateBy != null">
+            update_by=#{fieldListConfig.updateBy},
+        </if>
+        <if test="fieldListConfig.updateTime != null">
+            update_time=#{fieldListConfig.updateTime}
+        </if>
+        WHERE
+        field_list_config_id=#{fieldListConfig.fieldListConfigId}
+    </update>
+    <!--逻辑删除字段列表配置表-->
+    <update id="logicDeleteFieldListConfigByFieldListConfigId">
+        UPDATE field_list_config
+        SET delete_flag= 1,
+        update_by=#{fieldListConfig.updateBy},
+        update_time=#{fieldListConfig.updateTime}
+        WHERE
+        field_list_config_id=#{fieldListConfig.fieldListConfigId}
+    </update>
+    <!--逻辑批量删除字段列表配置表-->
+    <update id="logicDeleteFieldListConfigByFieldListConfigIds">
+        UPDATE field_list_config
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        field_list_config_id IN
+        <foreach item="item"
+                 collection="fieldListConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增字段列表配置表-->
+    <insert id="batchFieldListConfig">
+        INSERT INTO field_list_config
+        (field_config_id,user_id,field_width,sort,show_flag,fixation_flag,show_force,fixation_force,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="fieldListConfigs"
+                 separator=",">
+            (#{item.fieldConfigId},#{item.userId},#{item.fieldWidth},#{item.sort},#{item.showFlag},#{item.fixationFlag},#{item.showForce},#{item.fixationForce},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除字段列表配置表-->
+    <delete id="deleteFieldListConfigByFieldListConfigId">
+        DELETE FROM field_list_config
+        WHERE field_list_config_id=#{fieldListConfig}
+
+    </delete>
+    <!--物理批量删除字段列表配置表-->
+    <delete id="deleteFieldListConfigByFieldListConfigIds">
+        DELETE FROM field_list_config
+        WHERE field_list_config_id IN
+        <foreach item="item"
+                 collection="fieldListConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改字段列表配置表-->
+    <update id="updateFieldListConfigs">
+        update field_list_config
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="field_config_id=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.fieldConfigId != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.fieldConfigId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="user_id=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.userId != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.userId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="field_width=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.fieldWidth != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.fieldWidth}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="show_flag=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.showFlag != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.showFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="fixation_flag=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.fixationFlag != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.fixationFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="show_force=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.showForce != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.showForce}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="fixation_force=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.fixationForce != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.fixationForce}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="fieldListConfigList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when field_list_config_id=#{item.fieldListConfigId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="fieldListConfigList" separator="or" item="item" index="index">
+            field_list_config_id=#{item.fieldListConfigId}
+        </foreach>
+    </update>
+</mapper>
+
+
