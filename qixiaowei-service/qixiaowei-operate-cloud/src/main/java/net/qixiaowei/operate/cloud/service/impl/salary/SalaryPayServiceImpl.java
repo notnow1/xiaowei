@@ -1544,56 +1544,52 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @param salaryPayDTOList 子表DTO
      */
     private static List<SalaryPayDTO> calculateAmount(List<SalaryPayDTO> salaryPayDTOList) {
-        Map<String, Map<String, List<SalaryPayDTO>>> salaryPayMap = salaryPayDTOList.stream()
-                .collect(Collectors.groupingBy(SalaryPayDTO::getEmployeeDepartmentName, Collectors.groupingBy(SalaryPayDTO::getPostRankName)));
+        Map<String, List<SalaryPayDTO>> salaryPayMap = salaryPayDTOList.stream()
+                .collect(Collectors.groupingBy(SalaryPayDTO::getEmployeeDepartmentName));
         List<SalaryPayDTO> salaryPayDTOS = new ArrayList<>(10);
         for (String departmentName : salaryPayMap.keySet()) {
-            Map<String, List<SalaryPayDTO>> stringListMap = salaryPayMap.get(departmentName);
-            for (String rankName : stringListMap.keySet()) {
-                List<SalaryPayDTO> salaryPayDTOList1 = stringListMap.get(rankName);
-                BigDecimal salaryAmountValue = BigDecimal.ZERO;// 工资金额
-                BigDecimal allowanceAmountValue = BigDecimal.ZERO;// 津贴金额
-                BigDecimal welfareAmountValue = BigDecimal.ZERO;// 福利金额
-                BigDecimal bonusAmountValue = BigDecimal.ZERO;// 奖金金额
+            List<SalaryPayDTO> salaryPayDTOList1 = salaryPayMap.get(departmentName);
+            BigDecimal salaryAmountValue = BigDecimal.ZERO;// 工资金额
+            BigDecimal allowanceAmountValue = BigDecimal.ZERO;// 津贴金额
+            BigDecimal welfareAmountValue = BigDecimal.ZERO;// 福利金额
+            BigDecimal bonusAmountValue = BigDecimal.ZERO;// 奖金金额
 //                SalaryPayDTO salaryPay;
 //                if (StringUtils.isEmpty(salaryPayDTOList1)) {
 //                    salaryPay = new SalaryPayDTO();
 //                } else {
 //                    salaryPay = salaryPayDTOList1.get(0);
 //                }
-                for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
-                    salaryAmountValue = salaryAmountValue.add(salaryPayDTO.getSalaryAmount());
-                    allowanceAmountValue = allowanceAmountValue.add(salaryPayDTO.getAllowanceAmount());
-                    welfareAmountValue = welfareAmountValue.add(salaryPayDTO.getWelfareAmount());
-                    bonusAmountValue = bonusAmountValue.add(salaryPayDTO.getBonusAmount());
-                }
-                //固定值
-                BigDecimal fixedValue = salaryAmountValue.add(allowanceAmountValue).add(welfareAmountValue);
-                //总计
-                BigDecimal paymentBonus = fixedValue.add(bonusAmountValue);
-                //固定占比（%）
-                BigDecimal fixedProportion;
-                //浮动占比（%）
-                BigDecimal floatProportion;
-                if (paymentBonus.compareTo(BigDecimal.ZERO) != 0) {
-                    fixedProportion = fixedValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
-                    floatProportion = bonusAmountValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
-                } else {
-                    fixedProportion = BigDecimal.ZERO;
-                    floatProportion = BigDecimal.ZERO;
-                }
-                SalaryPayDTO salaryPayDTO = new SalaryPayDTO();
-                salaryPayDTO.setPostRankName(rankName);
-                salaryPayDTO.setEmployeeDepartmentName(departmentName);
-                salaryPayDTO.setSalaryAmount(salaryAmountValue);
-                salaryPayDTO.setAllowanceAmount(allowanceAmountValue);
-                salaryPayDTO.setWelfareAmount(welfareAmountValue);
-                salaryPayDTO.setBonusAmount(bonusAmountValue);
-                salaryPayDTO.setFixedProportion(fixedProportion);
-                salaryPayDTO.setFloatProportion(floatProportion);
-                salaryPayDTO.setPaymentBonus(paymentBonus);// 总计
-                salaryPayDTOS.add(salaryPayDTO);
+            for (SalaryPayDTO salaryPayDTO : salaryPayDTOList1) {
+                salaryAmountValue = salaryAmountValue.add(salaryPayDTO.getSalaryAmount());
+                allowanceAmountValue = allowanceAmountValue.add(salaryPayDTO.getAllowanceAmount());
+                welfareAmountValue = welfareAmountValue.add(salaryPayDTO.getWelfareAmount());
+                bonusAmountValue = bonusAmountValue.add(salaryPayDTO.getBonusAmount());
             }
+            //固定值
+            BigDecimal fixedValue = salaryAmountValue.add(allowanceAmountValue).add(welfareAmountValue);
+            //总计
+            BigDecimal paymentBonus = fixedValue.add(bonusAmountValue);
+            //固定占比（%）
+            BigDecimal fixedProportion;
+            //浮动占比（%）
+            BigDecimal floatProportion;
+            if (paymentBonus.compareTo(BigDecimal.ZERO) != 0) {
+                fixedProportion = fixedValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
+                floatProportion = bonusAmountValue.multiply(new BigDecimal(100)).divide(paymentBonus, 2, RoundingMode.HALF_UP);
+            } else {
+                fixedProportion = BigDecimal.ZERO;
+                floatProportion = BigDecimal.ZERO;
+            }
+            SalaryPayDTO salaryPayDTO = new SalaryPayDTO();
+            salaryPayDTO.setEmployeeDepartmentName(departmentName);
+            salaryPayDTO.setSalaryAmount(salaryAmountValue);
+            salaryPayDTO.setAllowanceAmount(allowanceAmountValue);
+            salaryPayDTO.setWelfareAmount(welfareAmountValue);
+            salaryPayDTO.setBonusAmount(bonusAmountValue);
+            salaryPayDTO.setFixedProportion(fixedProportion);
+            salaryPayDTO.setFloatProportion(floatProportion);
+            salaryPayDTO.setPaymentBonus(paymentBonus);// 总计
+            salaryPayDTOS.add(salaryPayDTO);
         }
         return salaryPayDTOS;
     }
