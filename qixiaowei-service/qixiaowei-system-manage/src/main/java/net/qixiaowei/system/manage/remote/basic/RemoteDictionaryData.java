@@ -77,7 +77,7 @@ public class RemoteDictionaryData implements RemoteDictionaryDataService {
     @Override
     @InnerAuth
     @PostMapping("/remoteDictionaryDataId")
-    public R<List<DictionaryDataDTO>> remoteDictionaryDataId(DictionaryDataDTO dictionaryDataDTO, String source) {
+    public R<List<DictionaryDataDTO>> remoteDictionaryDataId(@RequestBody DictionaryDataDTO dictionaryDataDTO, String source) {
         return R.ok(dictionaryDataService.remoteDictionaryDataId(dictionaryDataDTO));
     }
 

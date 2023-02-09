@@ -82,4 +82,12 @@ public interface RemoteOfficialRankSystemService {
     R<List<OfficialRankDecomposeDTO>> selectOfficialDecomposeByDimensions(@RequestBody List<Long> decomposeDimensions,
                                                                           @RequestParam("rankDecomposeDimension") Integer rankDecomposeDimension,
                                                                           @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    /**
+     * 远程查询职级体系表列表
+     *
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_OFFICIAL + "/selectOfficialTab")
+    R<List<OfficialRankSystemDTO>> selectOfficialRankSystemDTOTab(@RequestBody OfficialRankSystemDTO officialRankSystemDTO,
+                                                                          @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

@@ -61,6 +61,12 @@ public class RemoteDepartment implements RemoteDepartmentService {
         return R.ok(departmentService.selectDepartmentByDepartmentIds(departmentIds));
     }
 
+    /**
+     * 远程查找部门列表
+     * @param departmentDTO
+     * @param source
+     * @return
+     */
     @Override
     @InnerAuth
     @PostMapping("/selectAll")

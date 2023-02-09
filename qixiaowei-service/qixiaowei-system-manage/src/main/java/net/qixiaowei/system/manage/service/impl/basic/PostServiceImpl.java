@@ -549,7 +549,7 @@ public class PostServiceImpl implements IPostService {
                 List<DepartmentPost> departmentPostAddList = new ArrayList<>();
                 List<PostExcel> postExcels = postExcelMap.get(key);
                 if (StringUtils.isNotEmpty(postExcels)) {
-
+                    //根据属性去重
                     ArrayList<PostExcel> collect = postExcels.stream().collect(Collectors.collectingAndThen(
                             Collectors.toCollection(() -> new TreeSet<>(
                                     Comparator.comparing(

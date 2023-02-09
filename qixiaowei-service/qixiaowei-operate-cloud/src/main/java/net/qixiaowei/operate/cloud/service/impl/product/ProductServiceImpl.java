@@ -144,8 +144,8 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductDTO> selectProductList(ProductDTO productDTO) {
         Product product = new Product();
-        BeanUtils.copyProperties(productDTO, product);
         this.getDictionaryDataId(productDTO.getParams());
+        BeanUtils.copyProperties(productDTO, product);
         //查询数据
         List<ProductDTO> productDTOList = productMapper.selectProductList(product);
         if (StringUtils.isNotEmpty(productDTOList)) {
@@ -182,7 +182,7 @@ public class ProductServiceImpl implements IProductService {
         }
     }
     /**
-     * 获取高级搜索后的人员ID传入params
+     * 获取高级搜索后的枚举值ID传入params
      *
      * @param params 请求参数
      */

@@ -122,4 +122,17 @@ public class RemoteOfficialRankSystem implements RemoteOfficialRankSystemService
         return R.ok(officialRankDecomposeService.selectOfficialDecomposeByDimensions(decomposeDimensions, rankDecomposeDimension));
     }
 
+    /**
+     * 远程查询职级体系表列表
+     * @param officialRankSystemDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/selectOfficialTab")
+    public R<List<OfficialRankSystemDTO>> selectOfficialRankSystemDTOTab(@RequestBody OfficialRankSystemDTO officialRankSystemDTO, String source) {
+        return R.ok(officialRankSystemService.selectOfficialRankSystemPageList(officialRankSystemDTO));
+    }
+
 }

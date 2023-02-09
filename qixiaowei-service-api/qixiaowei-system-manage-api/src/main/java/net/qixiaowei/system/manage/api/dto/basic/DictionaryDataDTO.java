@@ -96,6 +96,6 @@ public class DictionaryDataDTO {
     /**
      * 请求参数
      */
-    private Map<String, Object> params;
+    public Map<String, Object> params;
 }
 

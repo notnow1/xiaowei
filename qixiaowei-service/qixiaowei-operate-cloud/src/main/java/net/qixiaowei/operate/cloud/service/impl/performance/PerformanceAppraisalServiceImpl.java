@@ -857,6 +857,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      * @return
      */
     private List<DepartmentDTO> getDepartmentData() {
+        //远程查找部门列表
         R<List<DepartmentDTO>> listR = departmentService.selectDepartment(new DepartmentDTO(), SecurityConstants.INNER);
         List<DepartmentDTO> departmentDTOS = listR.getData();
         if (listR.getCode() != 200) {

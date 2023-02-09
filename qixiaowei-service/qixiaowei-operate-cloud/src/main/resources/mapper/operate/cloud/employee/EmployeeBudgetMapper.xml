@@ -32,6 +32,77 @@
         employee_budget_id, budget_year, department_id, official_rank_system_id, budget_cycle, amount_last_year, amount_adjust, amount_average_adjust, delete_flag, create_by, create_time, update_by, update_time
         FROM employee_budget
         WHERE delete_flag=0
+        <!-- 人力预算年度过滤  -->
+        <if test="employeeBudget.params.budgetYearEqual != null and employeeBudget.params.budgetYearEqual.size() > 0">
+            AND budget_year IN
+            <foreach item="item"
+                     collection="employeeBudget.params.budgetYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employeeBudget.params.budgetYearNotEqual != null and employeeBudget.params.budgetYearNotEqual.size() > 0">
+            AND budget_year NOT IN
+            <foreach item="item"
+                     collection="employeeBudget.params.budgetYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employeeBudget.params.budgetYearBefore != null and employeeBudget.params.budgetYearBefore != ''">
+            AND budget_year &lt; #{employeeBudget.params.budgetYearBefore}
+        </if>
+        <if test="employeeBudget.params.budgetYearNotBefore != null and employeeBudget.params.budgetYearNotBefore != ''"><!-- 开始时间检索 -->
+            AND budget_year &gt;= #{employeeBudget.params.budgetYearNotBefore}
+        </if>
+        <if test="employeeBudget.params.budgetYearAfter != null and employeeBudget.params.budgetYearAfter != ''"><!-- 开始时间检索 -->
+            AND budget_year &gt; #{employeeBudget.params.budgetYearAfter}
+        </if>
+        <if test="employeeBudget.params.budgetYearNotAfter != null and employeeBudget.params.budgetYearNotAfter != ''"><!-- 结束时间检索 -->
+            AND budget_year &lt;= #{employeeBudget.params.budgetYearNotAfter}
+        </if>
+        <if test="employeeBudget.params.budgetYearStart != null and employeeBudget.params.budgetYearStart != ''"><!-- 开始时间检索 -->
+            AND budget_year &gt;= #{employeeBudget.params.budgetYearStart}
+        </if>
+        <if test="employeeBudget.params.budgetYearEnd != null and employeeBudget.params.budgetYearEnd != ''"><!-- 结束时间检索 -->
+            AND budget_year &lt;= #{employeeBudget.params.budgetYearEnd}
+        </if>
+        <!-- 预算部门过滤  -->
+        <if test="employeeBudget.params.departmentIds != null and employeeBudget.params.departmentIds.size() > 0">
+            AND department_id IN
+            <foreach item="item"
+                     collection="employeeBudget.params.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 职级体系过滤  -->
+        <if test="employeeBudget.params.officialRankSystemIds != null and employeeBudget.params.officialRankSystemIds.size() > 0">
+            AND official_rank_system_id IN
+            <foreach item="item"
+                     collection="employeeBudget.params.officialRankSystemIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 预算周期过滤  -->
+        <if test="employeeBudget.params.budgetCycleEqual != null and employeeBudget.params.budgetCycleEqual.size() > 0">
+            AND budget_cycle IN
+            <foreach item="item"
+                     collection="employeeBudget.params.budgetCycleEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="employeeBudget.params.budgetCycleNotEqual != null and employeeBudget.params.budgetCycleNotEqual.size() > 0">
+            AND budget_cycle NOT IN
+            <foreach item="item"
+                     collection="employeeBudget.params.budgetCycleNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
         <if test="employeeBudget.employeeBudgetId != null">
             and employee_budget_id=#{employeeBudget.employeeBudgetId}
         </if>

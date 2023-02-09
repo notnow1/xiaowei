@@ -35,10 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -64,6 +61,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     private RemoteDepartmentService remoteDepartmentService;
     @Autowired
     private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
+
     @Autowired
     private RemoteEmployeeService remoteEmployeeService;
     @Autowired
@@ -161,6 +159,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
     @Override
     public List<EmployeeBudgetDTO> selectEmployeeBudgetList(EmployeeBudgetDTO employeeBudgetDTO) {
         EmployeeBudget employeeBudget = new EmployeeBudget();
+        this.getDepartmentIdAndofficialRankSystemId(employeeBudgetDTO.getParams());
         BeanUtils.copyProperties(employeeBudgetDTO, employeeBudget);
         List<EmployeeBudgetDTO> employeeBudgetDTOS = employeeBudgetMapper.selectEmployeeBudgetList(employeeBudget);
         //远程调用部门赋值
@@ -180,18 +179,19 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         }
         //远程调用职级赋值
         List<Long> collect1 = employeeBudgetDTOS.stream().map(EmployeeBudgetDTO::getOfficialRankSystemId).collect(Collectors.toList());
-        R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
-        List<OfficialRankSystemDTO> data = listR.getData();
-        if (StringUtils.isNotEmpty(data)) {
-            for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
-                for (OfficialRankSystemDTO datum : data) {
-                    if (budgetDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())) {
-                        budgetDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+        if (StringUtils.isNotEmpty(collect1)){
+            R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
+            List<OfficialRankSystemDTO> data = listR.getData();
+            if (StringUtils.isNotEmpty(data)) {
+                for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
+                    for (OfficialRankSystemDTO datum : data) {
+                        if (budgetDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())) {
+                            budgetDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
+                        }
                     }
                 }
             }
         }
-
         BigDecimal annualAverageNum = new BigDecimal("0");
         for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
             Integer amountLastYear = budgetDTO.getAmountLastYear();
@@ -206,6 +206,68 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         List<EmployeeBudgetDTO> employeeBudgetDTOList = getEmployeeBudgetDTOS(employeeBudgetDTO, employeeBudgetDTOS);
 
         return employeeBudgetDTOList;
+    }
+
+    /**
+     * 获取高级搜索后的组织ID传入params
+     *
+     * @param params 请求参数
+     */
+    private void getDepartmentIdAndofficialRankSystemId(Map<String, Object> params) {
+        if (StringUtils.isNotEmpty(params)) {
+            DepartmentDTO departmentDTO = new DepartmentDTO();
+            OfficialRankSystemDTO officialRankSystemDTO = new OfficialRankSystemDTO();
+            Map<String, Object> params2 = new HashMap<>();
+
+            Map<String, Object> params3 = new HashMap<>();
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "departmentNameEqual":
+                        params2.put("departmentNameEqual", params.get("departmentNameEqual"));
+                        break;
+                    case "departmentNameNotEqual":
+                        params2.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
+                        break;
+                    case "officialRankSystemNameEqual":
+                        params3.put("officialRankSystemNameEqual", params.get("officialRankSystemNameEqual"));
+                        break;
+                    case "officialRankSystemNameNotEqual":
+                        params3.put("officialRankSystemNameNotEqual", params.get("officialRankSystemNameNotEqual"));
+                        break;
+                }
+            }
+            if (StringUtils.isNotEmpty(params2)) {
+                departmentDTO.setParams(params2);
+                //远程查找部门列表
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectDepartment(departmentDTO, SecurityConstants.INNER);
+                if (listR.getCode() != 200) {
+                    throw new ServiceException("远程调用组织失败 请联系管理员");
+                }
+                List<DepartmentDTO> departmentDataList = listR.getData();
+                List<Long> departmentIds = new ArrayList<>();
+                if (StringUtils.isNotEmpty(departmentDataList)) {
+                    departmentIds = departmentDataList.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList());
+                }
+                params.put("departmentIds", departmentIds);
+
+
+            }
+            if (StringUtils.isNotEmpty(params3)) {
+                officialRankSystemDTO.setParams(params3);
+                //远程查询职级体系表列表
+                R<List<OfficialRankSystemDTO>> listR1 = remoteOfficialRankSystemService.selectOfficialRankSystemDTOTab(officialRankSystemDTO, SecurityConstants.INNER);
+                if (listR1.getCode() != 200) {
+                    throw new ServiceException("远程调用职级体系失败 请联系管理员");
+                }
+                List<OfficialRankSystemDTO> officialRankSystemDataList = listR1.getData();
+
+                List<Long> officialRankSystemIds = new ArrayList<>();
+                if (StringUtils.isNotEmpty(officialRankSystemDataList)) {
+                    officialRankSystemIds = officialRankSystemDataList.stream().map(OfficialRankSystemDTO::getOfficialRankSystemId).distinct().collect(Collectors.toList());
+                }
+                params.put("officialRankSystemIds", officialRankSystemIds);
+            }
+        }
     }
 
     /**
@@ -890,21 +952,22 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
 
     /**
      * 远程 根据部门ID集合查询预算表
+     *
      * @param departmentId
      * @return
      */
     @Override
     public List<EmployeeBudgetDTO> selectByDepartmentId(Long departmentId) {
         List<EmployeeBudgetDTO> employeeBudgetDTOList = employeeBudgetMapper.selectByDepartmentId(departmentId);
-        if (StringUtils.isNotEmpty(employeeBudgetDTOList) ) {
+        if (StringUtils.isNotEmpty(employeeBudgetDTOList)) {
             List<Long> officialRankSystemIds = employeeBudgetDTOList.stream().map(EmployeeBudgetDTO::getOfficialRankSystemId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
 
             R<List<OfficialRankSystemDTO>> officialRankSystemList = remoteOfficialRankSystemService.selectByIds(officialRankSystemIds, SecurityConstants.INNER);
             List<OfficialRankSystemDTO> data = officialRankSystemList.getData();
-            if (StringUtils.isNotEmpty(data)){
+            if (StringUtils.isNotEmpty(data)) {
                 for (EmployeeBudgetDTO employeeBudgetDTO : employeeBudgetDTOList) {
                     for (OfficialRankSystemDTO datum : data) {
-                        if (employeeBudgetDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())){
+                        if (employeeBudgetDTO.getOfficialRankSystemId().equals(datum.getOfficialRankSystemId())) {
                             employeeBudgetDTO.setOfficialRankSystemName(datum.getOfficialRankSystemName());
                         }
                     }

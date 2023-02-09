@@ -49,7 +49,7 @@ public interface RemoteDepartmentService {
     R<List<DepartmentDTO>> selectdepartmentIds(@RequestBody List<Long> departmentIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
-     * 查找部门列表
+     * 远程查找部门列表
      *
      * @param departmentDTO
      * @param source

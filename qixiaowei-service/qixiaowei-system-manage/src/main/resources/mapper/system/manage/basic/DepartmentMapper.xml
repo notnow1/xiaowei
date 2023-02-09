@@ -52,13 +52,13 @@
         on ee.employee_id = dm.department_leader_id
         and ee.delete_flag =0
         left join post p2
-        on  p2.post_id = ee.employee_post_id
+        on p2.post_id = ee.employee_post_id
         and p2.delete_flag =0
         left join employee ee2
         on ee2.employee_id = dm.examination_leader_id
         and ee2.delete_flag =0
         left join post p
-        on  p.post_id = dm.department_leader_post_id
+        on p.post_id = dm.department_leader_post_id
         and p.delete_flag =0
         left join department dm2
         on dm.parent_department_id = dm2.department_id
@@ -88,7 +88,7 @@
             <foreach item="item"
                      collection="department.params.departmentCodeLike"
                      index="index" open="(" separator="AND" close=")">
-                dm.department_code  LIKE concat('%', #{item}, '%')
+                dm.department_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <if test="department.params.departmentCodeNotLike != null and department.params.departmentCodeNotLike.size() > 0">
@@ -96,7 +96,7 @@
             <foreach item="item"
                      collection="department.params.departmentCodeNotLike"
                      index="index" open="(" separator="AND" close=")">
-                dm.department_code  NOT LIKE concat('%', #{item}, '%')
+                dm.department_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!-- 组织名称过滤  -->
@@ -123,7 +123,7 @@
             <foreach item="item"
                      collection="department.params.departmentNameLike"
                      index="index" open="(" separator="AND" close=")">
-                dm.department_name  LIKE concat('%', #{item}, '%')
+                dm.department_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <if test="department.params.departmentNameNotLike != null and department.params.departmentNameNotLike.size() > 0">
@@ -131,7 +131,7 @@
             <foreach item="item"
                      collection="department.params.departmentNameNotLike"
                      index="index" open="(" separator="AND" close=")">
-                dm.department_name  NOT LIKE concat('%', #{item}, '%')
+                dm.department_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!-- 上级组织名称过滤  -->
@@ -336,22 +336,22 @@
             and dm.level like '%${department.level}%'
         </if>
         <if test="department.departmentLeaderId != null">
-            and  dm.department_leader_id like '%${department.departmentLeaderId}%'
+            and dm.department_leader_id like '%${department.departmentLeaderId}%'
         </if>
         <if test="department.departmentLeaderPostId != null">
             and dm.department_leader_post_id like '%${department.departmentLeaderPostId}%'
         </if>
         <if test="department.examinationLeaderId != null">
-            and   dm.examination_leader_id like '%${department.examinationLeaderId}%'
+            and dm.examination_leader_id like '%${department.examinationLeaderId}%'
         </if>
         <if test="department.departmentImportanceFactor != null">
-            and  dm.department_importance_factor like '%${department.departmentImportanceFactor}%'
+            and dm.department_importance_factor like '%${department.departmentImportanceFactor}%'
         </if>
         <if test="department.departmentDescription != null and department.departmentDescription != ''">
-            and  dm.department_description like '%${department.departmentDescription}%'
+            and dm.department_description like '%${department.departmentDescription}%'
         </if>
         <if test="department.sort != null">
-            and  dm.sort like '%${department.sort}%'
+            and dm.sort like '%${department.sort}%'
         </if>
         <if test="department.status != null">
             and dm.status = #{department.status}
@@ -360,42 +360,44 @@
     </select>
 
     <select id="getDepartmentCodes" resultType="java.lang.String">
-        SELECT department_code FROM department WHERE delete_flag=0 AND department_code LIKE CONCAT(#{prefixCodeRule},'%') ORDER BY department_code ASC
+        SELECT department_code
+        FROM department
+        WHERE delete_flag = 0
+          AND department_code LIKE CONCAT(#{prefixCodeRule}, '%')
+        ORDER BY department_code ASC
     </select>
 
     <!--    根据父级id查询数据-->
     <select id="selectParentDepartmentId" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-        select
-            ee.employee_name as department_leader_name,
-            ee2.employee_name as examination_leader_name,
-            p.post_name as department_leader_post_name,
-            dm.department_id,
-            dm.parent_department_id,
-            dm.ancestors,
-            dm.status,
-            dm.department_code,
-            dm.department_name,
-            dm.level,
-            dm.department_leader_id,
-            dm.department_leader_post_id,
-            dm.examination_leader_id,
-            dm.department_importance_factor,
-            dm.department_description,
-            dm.sort,
-            dm.status
-        from
-            department dm
-                left join employee ee
-                          on ee.employee_id = dm.department_leader_id
-                              and ee.delete_flag =0
-                left join employee ee2
-                          on ee2.employee_id = dm.examination_leader_id
-                              and ee2.delete_flag =0
-                left join post p
-                          on  p.post_id = dm.department_leader_post_id
-                              and p.delete_flag =0
-        where dm.delete_flag =0
-          and dm.department_id=#{departmentId}
+        select ee.employee_name  as department_leader_name,
+               ee2.employee_name as examination_leader_name,
+               p.post_name       as department_leader_post_name,
+               dm.department_id,
+               dm.parent_department_id,
+               dm.ancestors,
+               dm.status,
+               dm.department_code,
+               dm.department_name,
+               dm.level,
+               dm.department_leader_id,
+               dm.department_leader_post_id,
+               dm.examination_leader_id,
+               dm.department_importance_factor,
+               dm.department_description,
+               dm.sort,
+               dm.status
+        from department dm
+                 left join employee ee
+                           on ee.employee_id = dm.department_leader_id
+                               and ee.delete_flag = 0
+                 left join employee ee2
+                           on ee2.employee_id = dm.examination_leader_id
+                               and ee2.delete_flag = 0
+                 left join post p
+                           on p.post_id = dm.department_leader_post_id
+                               and p.delete_flag = 0
+        where dm.delete_flag = 0
+          and dm.department_id = #{departmentId}
     </select>
     <!--    根据id查询所有子级数据-->
     <select id="selectAncestors" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
@@ -542,31 +544,29 @@
     </select>
     <!--    查询上级组织-->
     <select id="queryparent" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
-        select
-            distinct
-            e.employee_name as departmentLeaderName,
-            d.department_id,
-            d.parent_department_id,
-            d.ancestors,
-            d.department_code,
-            d.department_name,
-            d.level,
-            d.department_leader_id,
-            d.department_leader_post_id,
-            d.examination_leader_id,
-            d.department_importance_factor,
-            d.department_description,
-            d.sort,
-            d.status,
-            d.delete_flag,
-            d.create_by,
-            d.create_time,
-            d.update_by,
-            d.update_time
+        select distinct e.employee_name as departmentLeaderName,
+                        d.department_id,
+                        d.parent_department_id,
+                        d.ancestors,
+                        d.department_code,
+                        d.department_name,
+                        d.level,
+                        d.department_leader_id,
+                        d.department_leader_post_id,
+                        d.examination_leader_id,
+                        d.department_importance_factor,
+                        d.department_description,
+                        d.sort,
+                        d.status,
+                        d.delete_flag,
+                        d.create_by,
+                        d.create_time,
+                        d.update_by,
+                        d.update_time
         from department d
-        left join employee e
-        on e.employee_id = d.department_leader_id
-        and e.delete_flag = 0
+                 left join employee e
+                           on e.employee_id = d.department_leader_id
+                               and e.delete_flag = 0
         where d.delete_flag = 0
     </select>
     <!--    查询code编码是否已经存在-->
@@ -583,46 +583,46 @@
     </select>
     <!--    查询组织关联岗位信息-->
     <select id="selectDeptAndPost" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentPostDTO">
-        select
-            ord.official_rank_decompose_id,
-            p.post_name,
-            p.post_code ,
-            ors.official_rank_system_name,
-            case when ors.rank_prefix_code is null then p.post_rank
-                 when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,p.post_rank) end as post_rank_name,
-            dm.department_name ,
-            dm.department_code,
-            ors2.official_rank_system_name as official_rank_decompose_name,
-            deptpost.department_post_id,
-            deptpost.department_id,
-            deptpost.post_id,
-            deptpost.department_sort,
-            deptpost.post_sort,
-            deptpost.delete_flag,
-            deptpost.create_by,
-            deptpost.create_time,
-            deptpost.update_by,
-            deptpost.update_time
-        from
-            department_post deptpost
-                left join department dm
-                          on deptpost.department_id = dm.department_id
-                              and dm.delete_flag =0
-                left join post p on
-                        p.post_id = deptpost.post_id
-                    and p.delete_flag = 0
-                left join official_rank_system ors on
-                        p.official_rank_system_id = ors.official_rank_system_id
-                    and ors.delete_flag = 0
-                left join official_rank_decompose ord
-                on ord.delete_flag=0
-                and ord.rank_decompose_dimension=1
-                and ord.decompose_dimension=#{departmentId}
-                left join official_rank_system ors2 on
-                        ord.official_rank_system_id = ors2.official_rank_system_id
-                    and ors2.delete_flag = 0
-        where deptpost.delete_flag =0
-          and deptpost.department_id=#{departmentId}
+        select ord.official_rank_decompose_id,
+               p.post_name,
+               p.post_code,
+               ors.official_rank_system_name,
+               case
+                   when ors.rank_prefix_code is null then p.post_rank
+                   when ors.rank_prefix_code is not null
+                       then concat(ors.rank_prefix_code, p.post_rank) end as post_rank_name,
+               dm.department_name,
+               dm.department_code,
+               ors2.official_rank_system_name                             as official_rank_decompose_name,
+               deptpost.department_post_id,
+               deptpost.department_id,
+               deptpost.post_id,
+               deptpost.department_sort,
+               deptpost.post_sort,
+               deptpost.delete_flag,
+               deptpost.create_by,
+               deptpost.create_time,
+               deptpost.update_by,
+               deptpost.update_time
+        from department_post deptpost
+                 left join department dm
+                           on deptpost.department_id = dm.department_id
+                               and dm.delete_flag = 0
+                 left join post p on
+                    p.post_id = deptpost.post_id
+                and p.delete_flag = 0
+                 left join official_rank_system ors on
+                    p.official_rank_system_id = ors.official_rank_system_id
+                and ors.delete_flag = 0
+                 left join official_rank_decompose ord
+                           on ord.delete_flag = 0
+                               and ord.rank_decompose_dimension = 1
+                               and ord.decompose_dimension = #{departmentId}
+                 left join official_rank_system ors2 on
+                    ord.official_rank_system_id = ors2.official_rank_system_id
+                and ors2.delete_flag = 0
+        where deptpost.delete_flag = 0
+          and deptpost.department_id = #{departmentId}
         order by deptpost.post_sort
     </select>
     <!--    分页查询部门人员表列表-->
@@ -642,8 +642,9 @@
         e.employee_post_id,
         p.post_name as employee_post_name,
         e.employee_rank,
-        case when ors.rank_prefix_code is null then  e.employee_rank
-        when ors.rank_prefix_code is  not null then concat(ors.rank_prefix_code,e.employee_rank) end as employee_rank_name,
+        case when ors.rank_prefix_code is null then e.employee_rank
+        when ors.rank_prefix_code is not null then concat(ors.rank_prefix_code,e.employee_rank) end as
+        employee_rank_name,
         e.employee_basic_wage,
         e.employment_date,
         e.departure_date,
@@ -665,7 +666,7 @@
         on p.post_id = e.employee_post_id
         and p.delete_flag = 0
         left join official_rank_system ors
-        on ors.official_rank_system_id  = p.official_rank_system_id
+        on ors.official_rank_system_id = p.official_rank_system_id
         and ors.delete_flag =0
         where
         dept.delete_flag = 0
@@ -675,43 +676,40 @@
     </select>
     <!--    查询人员是否被部门引用-->
     <select id="deleteFlagEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
-        select
-            distinct
-            u.user_name ,
-            p.post_name as employee_post_name,
-            dm.department_name as department_leader_name,
-            dm2.department_name as examination_leader_name,
-            ee.employee_id,
-            ee.employee_code,
-            ee.employee_name,
-            ee.employee_gender,
-            ee.identity_type,
-            ee.identity_card,
-            ee.employee_birthday,
-            ee.employee_mobile,
-            ee.employee_email,
-            ee.employee_department_id,
-            ee.employee_post_id,
-            ee.employee_rank,
-            ee.employee_basic_wage,
-            ee.employment_date,
-            ee.departure_date,
-            ee.employment_status,
-            ee.status
-        from
-            employee ee
-                left join department dm
-                          on ee.employee_id =dm.department_leader_id
-                              and dm.delete_flag = 0
-                left join department dm2
-                          on ee.employee_id =dm2.examination_leader_id
-                              and dm2.delete_flag = 0
-                left join post p
-                          on p.post_id = ee.employee_post_id
-                              and p.delete_flag =0
-                left join `user` u
-                          on u.employee_id =ee.employee_id
-                              and u.delete_flag =0
+        select distinct u.user_name,
+                        p.post_name         as employee_post_name,
+                        dm.department_name  as department_leader_name,
+                        dm2.department_name as examination_leader_name,
+                        ee.employee_id,
+                        ee.employee_code,
+                        ee.employee_name,
+                        ee.employee_gender,
+                        ee.identity_type,
+                        ee.identity_card,
+                        ee.employee_birthday,
+                        ee.employee_mobile,
+                        ee.employee_email,
+                        ee.employee_department_id,
+                        ee.employee_post_id,
+                        ee.employee_rank,
+                        ee.employee_basic_wage,
+                        ee.employment_date,
+                        ee.departure_date,
+                        ee.employment_status,
+                        ee.status
+        from employee ee
+                 left join department dm
+                           on ee.employee_id = dm.department_leader_id
+                               and dm.delete_flag = 0
+                 left join department dm2
+                           on ee.employee_id = dm2.examination_leader_id
+                               and dm2.delete_flag = 0
+                 left join post p
+                           on p.post_id = ee.employee_post_id
+                               and p.delete_flag = 0
+                 left join `user` u
+                           on u.employee_id = ee.employee_id
+                               and u.delete_flag = 0
         where ee.employee_id = #{employeeId}
           and ee.delete_flag = 0
     </select>
@@ -745,7 +743,8 @@
                  collection="collect"
                  index="index" open="(" separator="," close=")">
             #{item}
-        </foreach> or
+        </foreach>
+        or
         examination_leader_id in
         <foreach item="item"
                  collection="collect"
@@ -772,7 +771,8 @@
             resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT d.department_id, d.parent_department_id, d.ancestors, d.department_code, d.department_name, d.`level`,
         d.department_leader_id, d.department_leader_post_id, d.examination_leader_id, d.department_importance_factor,
-        d.department_description, d.sort, d.status, d.delete_flag, d.create_by, d.create_time, d.update_by, d.update_time,
+        d.department_description, d.sort, d.status, d.delete_flag, d.create_by, d.create_time, d.update_by,
+        d.update_time,
         e.employee_name as department_leader_name,
         ee.employee_name as examination_leader_name
         FROM department d
@@ -797,7 +797,7 @@
         WHERE delete_flag = 0
         group by level
     </select>
-<!--    查询所有一级部门-->
+    <!--    查询所有一级部门-->
     <select id="getParentAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT department_id,
                parent_department_id,
@@ -818,11 +818,11 @@
                update_by,
                update_time
         FROM department
-        where delete_flag =0
-        and status =1
-        and parent_department_id = 0
+        where delete_flag = 0
+          and status = 1
+          and parent_department_id = 0
     </select>
-<!--    远程查询一级部门及子级部门-->
+    <!--    远程查询一级部门及子级部门-->
     <select id="selectParentDepartment" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
         SELECT
         department_id,
@@ -896,7 +896,7 @@
         and delete_flag = 0
         ) AS ancestors
     </select>
-<!--    远程查询所有部门-->
+    <!--    远程查询所有部门-->
     <select id="getAll" resultType="net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO">
 
     </select>
@@ -921,7 +921,7 @@
         <if test="department.parentDepartmentId != null">
             parent_department_id=#{department.parentDepartmentId},
         </if>
-            ancestors=#{department.ancestors},
+        ancestors=#{department.ancestors},
         <if test="department.departmentCode != null and department.departmentCode != ''">
             department_code=#{department.departmentCode},
         </if>
