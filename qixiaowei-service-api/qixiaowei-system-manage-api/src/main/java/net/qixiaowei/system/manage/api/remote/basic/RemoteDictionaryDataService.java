@@ -40,4 +40,10 @@ public interface RemoteDictionaryDataService {
      */
     @GetMapping(API_PREFIX_DICTIONARYDATA+"/selectDictionaryDataByProduct")
     public R<List<DictionaryDataDTO>> selectDictionaryDataByProduct(@RequestParam("dictionaryTypeId") Long dictionaryTypeId,@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据实体类远程查询字典数据
+     */
+    @PostMapping(API_PREFIX_DICTIONARYDATA+"/remoteDictionaryDataId")
+     R<List<DictionaryDataDTO>> remoteDictionaryDataId(DictionaryDataDTO dictionaryDataDTO,@RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

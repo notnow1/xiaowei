@@ -118,4 +118,11 @@ public interface IDictionaryDataService{
      * @param dictionaryTypeId
      */
     List<DictionaryDataDTO> selectDictionaryDataByProduct(Long dictionaryTypeId);
+
+    /**
+     * 根据实体类远程查询字典数据
+     * @param dictionaryDataDTO
+     * @return
+     */
+    List<DictionaryDataDTO> remoteDictionaryDataId(DictionaryDataDTO dictionaryDataDTO);
 }

@@ -145,6 +145,7 @@ public class ProductServiceImpl implements IProductService {
     public List<ProductDTO> selectProductList(ProductDTO productDTO) {
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
+        this.getDictionaryDataId(productDTO.getParams());
         //查询数据
         List<ProductDTO> productDTOList = productMapper.selectProductList(product);
         if (StringUtils.isNotEmpty(productDTOList)) {
@@ -180,7 +181,39 @@ public class ProductServiceImpl implements IProductService {
             }
         }
     }
-
+    /**
+     * 获取高级搜索后的人员ID传入params
+     *
+     * @param params 请求参数
+     */
+    private void getDictionaryDataId(Map<String, Object> params) {
+        if (StringUtils.isNotEmpty(params)){
+            DictionaryDataDTO dictionaryDataDTO =new DictionaryDataDTO();
+            Map<String, Object> params2 = new HashMap<>();
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "dictionaryLabelEqual":
+                        params2.put("dictionaryLabelEqual", params.get("dictionaryLabelEqual"));
+                        break;
+                    case "dictionaryLabelNotEqual":
+                        params2.put("dictionaryLabelNotEqual", params.get("dictionaryLabelNotEqual"));
+                        break;
+                }
+            }
+            if (StringUtils.isNotEmpty(params2)) {
+                dictionaryDataDTO.setParams(params2);
+                R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.remoteDictionaryDataId(dictionaryDataDTO, SecurityConstants.INNER);
+                if (listR.getCode() != 200){
+                    throw new ServiceException("远程查询字典表失败 请联系管理员");
+                }
+                List<DictionaryDataDTO> dictionaryDataDTOList = listR.getData();
+                if (StringUtils.isNotEmpty(dictionaryDataDTOList)) {
+                    List<Long> dictionaryDataIds = dictionaryDataDTOList.stream().map(DictionaryDataDTO::getDictionaryDataId).collect(Collectors.toList());
+                    params.put("dictionaryDataIds", dictionaryDataIds);
+                }
+            }
+        }
+    }
     /**
      * 查询产品表列表-平铺下拉
      *
