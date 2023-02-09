@@ -454,7 +454,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList) && StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
                 for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
                     //插入历史目标分解详情周期集合
-                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList.get(i), detailCyclesSnapshots, decomposeDetailsSnapshots,i);
+                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList.get(i), detailCyclesSnapshots, decomposeDetailsSnapshots, i);
                 }
             }
             if (StringUtils.isNotEmpty(detailCyclesSnapshots)) {
@@ -491,6 +491,9 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                              List<EmployeeDTO> employeeDTOS, List<UserDTO> userDTOS) {
         if (StringUtils.isNotEmpty(employeeDTOS)) {
             for (EmployeeDTO employeeDTO : employeeDTOS) {
+                if (StringUtils.isNull(employeeDTO.getUserId())) {
+                    continue;
+                }
                 if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(employeeDTO.getEmployeeId())) {
                     UserDTO user = new UserDTO();
                     for (UserDTO userDTO : userDTOS) {
@@ -566,21 +569,21 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     private void pacgkDetailCyclesSnapshot(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, List<DetailCyclesSnapshot> detailCyclesSnapshots, List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots, int i) {
         //详情快照表不能为空
         if (StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
-                List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
-                if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList)) {
-                    for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
-                        DetailCyclesSnapshot detailCyclesSnapshot = new DetailCyclesSnapshot();
-                        BeanUtils.copyProperties(decomposeDetailCyclesDTO, detailCyclesSnapshot);
-                        //目标分解详情快照ID
-                        detailCyclesSnapshot.setDecomposeDetailsSnapshotId(decomposeDetailsSnapshots.get(i).getDecomposeDetailsSnapshotId());
-                        detailCyclesSnapshot.setCreateBy(SecurityUtils.getUserId());
-                        detailCyclesSnapshot.setCreateTime(DateUtils.getNowDate());
-                        detailCyclesSnapshot.setUpdateTime(DateUtils.getNowDate());
-                        detailCyclesSnapshot.setUpdateBy(SecurityUtils.getUserId());
-                        detailCyclesSnapshot.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                        detailCyclesSnapshots.add(detailCyclesSnapshot);
-                    }
+            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
+            if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList)) {
+                for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
+                    DetailCyclesSnapshot detailCyclesSnapshot = new DetailCyclesSnapshot();
+                    BeanUtils.copyProperties(decomposeDetailCyclesDTO, detailCyclesSnapshot);
+                    //目标分解详情快照ID
+                    detailCyclesSnapshot.setDecomposeDetailsSnapshotId(decomposeDetailsSnapshots.get(i).getDecomposeDetailsSnapshotId());
+                    detailCyclesSnapshot.setCreateBy(SecurityUtils.getUserId());
+                    detailCyclesSnapshot.setCreateTime(DateUtils.getNowDate());
+                    detailCyclesSnapshot.setUpdateTime(DateUtils.getNowDate());
+                    detailCyclesSnapshot.setUpdateBy(SecurityUtils.getUserId());
+                    detailCyclesSnapshot.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    detailCyclesSnapshots.add(detailCyclesSnapshot);
                 }
+            }
 
         }
 
@@ -597,7 +600,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         if (StringUtils.isNotEmpty(targetDecomposeHistories)) {
             //循环添加
             for (TargetDecomposeHistory targetDecomposeHistory : targetDecomposeHistories) {
-                if (targetDecomposeHistory.getTargetDecomposeId().equals(targetDecomposeDTO.getTargetDecomposeId())){
+                if (targetDecomposeHistory.getTargetDecomposeId().equals(targetDecomposeDTO.getTargetDecomposeId())) {
                     List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOList = targetDecomposeDetailsMapper.selectTargetDecomposeDetailsByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
                     this.packRemote(targetDecomposeDetailsDTOList);
                     if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList)) {
@@ -832,34 +835,34 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     private void packTargetDecomposeHistory(TargetDecomposeDTO targetDecomposeDTO, List<TargetDecomposeHistory> targetDecomposeHistories, int i) {
         String verNum = null;
         //查询是否有生成之前的历史数据 取得版本号
-        List<TargetDecomposeHistoryDTO>  targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
-        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)){
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeDTO.getTargetDecomposeId());
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
             String version1 = targetDecomposeHistoryDTOS.get(targetDecomposeHistoryDTOS.size() - 1).getVersion();
-            if (StringUtils.equals(String.valueOf(DateUtils.getMonth()>1?(DateUtils.getMonth()-1):DateUtils.getMonth()), version1.substring(0, version1.indexOf(".")).replaceAll("V",""))){
-                    return;
+            if (StringUtils.equals(String.valueOf(DateUtils.getMonth() > 1 ? (DateUtils.getMonth() - 1) : DateUtils.getMonth()), version1.substring(0, version1.indexOf(".")).replaceAll("V", ""))) {
+                return;
             }
             //删除重复数据
             List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDataDelete = new ArrayList<>();
             //分组数据 判断是否重复
             Map<String, List<TargetDecomposeHistoryDTO>> targetDecomposeHistoryMap = targetDecomposeHistoryDTOS.parallelStream().collect(Collectors.groupingBy(TargetDecomposeHistoryDTO::getVersion));
             for (String key : targetDecomposeHistoryMap.keySet()) {
-                List<TargetDecomposeHistoryDTO> targetDecomposeHistoryData= targetDecomposeHistoryMap.get(key);
-                if (StringUtils.isNotEmpty(targetDecomposeHistoryData)){
+                List<TargetDecomposeHistoryDTO> targetDecomposeHistoryData = targetDecomposeHistoryMap.get(key);
+                if (StringUtils.isNotEmpty(targetDecomposeHistoryData)) {
                     for (int i1 = 0; i1 < targetDecomposeHistoryData.size(); i1++) {
-                        if (targetDecomposeHistoryData.size()>1 && i1<targetDecomposeHistoryData.size()-1){
+                        if (targetDecomposeHistoryData.size() > 1 && i1 < targetDecomposeHistoryData.size() - 1) {
                             targetDecomposeHistoryData.get(i1).setDeleteFlag(1);
                             targetDecomposeHistoryDataDelete.add(targetDecomposeHistoryData.get(i1));
                         }
                     }
                 }
             }
-            if (StringUtils.isNotEmpty(targetDecomposeHistoryDataDelete)){
+            if (StringUtils.isNotEmpty(targetDecomposeHistoryDataDelete)) {
                 List<Long> targetDecomposeHistoryIds = targetDecomposeHistoryDataDelete.stream().map(TargetDecomposeHistoryDTO::getTargetDecomposeHistoryId).filter(Objects::nonNull).collect(Collectors.toList());
                 //删除重复数据
                 List<TargetDecomposeHistory> targetDecomposeHistoryList = new ArrayList<>();
                 for (TargetDecomposeHistoryDTO targetDecomposeHistoryDTO : targetDecomposeHistoryDataDelete) {
                     TargetDecomposeHistory targetDecomposeHistory = new TargetDecomposeHistory();
-                    BeanUtils.copyProperties(targetDecomposeHistoryDTO,targetDecomposeHistory);
+                    BeanUtils.copyProperties(targetDecomposeHistoryDTO, targetDecomposeHistory);
                     targetDecomposeHistoryList.add(targetDecomposeHistory);
                 }
                 try {
@@ -868,18 +871,18 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     throw new ServiceException("删除历史目标分解重复数据失败");
                 }
 
-                if (StringUtils.isNotEmpty(targetDecomposeHistoryIds)){
+                if (StringUtils.isNotEmpty(targetDecomposeHistoryIds)) {
                     List<DecomposeDetailsSnapshotDTO> decomposeDetailsSnapshotDTOS = decomposeDetailsSnapshotMapper.selectDecomposeDetailsSnapshotByTargetDecomposeHistoryIds(targetDecomposeHistoryIds);
-                    if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)){
+                    if (StringUtils.isNotEmpty(decomposeDetailsSnapshotDTOS)) {
                         List<Long> decomposeDetailsSnapshotIds = decomposeDetailsSnapshotDTOS.stream().map(DecomposeDetailsSnapshotDTO::getDecomposeDetailsSnapshotId).filter(Objects::nonNull).collect(Collectors.toList());
-                        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotIds)){
+                        if (StringUtils.isNotEmpty(decomposeDetailsSnapshotIds)) {
                             try {
-                                decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByDecomposeDetailsSnapshotIds(decomposeDetailsSnapshotIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                                decomposeDetailsSnapshotMapper.logicDeleteDecomposeDetailsSnapshotByDecomposeDetailsSnapshotIds(decomposeDetailsSnapshotIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
                             } catch (Exception e) {
                                 throw new ServiceException("删除历史目标分解详情重复数据失败");
                             }
                             try {
-                                detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(decomposeDetailsSnapshotIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                                detailCyclesSnapshotMapper.logicDeleteDetailCyclesSnapshotByDecomposeDetailsSnapshotIds(decomposeDetailsSnapshotIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
                             } catch (Exception e) {
                                 throw new ServiceException("删除历史目标分解周期重复数据失败");
                             }
@@ -895,7 +898,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)) {
             TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryDTOS.get(targetDecomposeHistoryDTOS.size() - 1);
             String version = targetDecomposeHistoryDTO.getVersion();
-            String substring = version.substring(0, version.indexOf(".")).replaceAll("V","");
+            String substring = version.substring(0, version.indexOf(".")).replaceAll("V", "");
             int veri = Integer.parseInt(substring);
             verNum = String.valueOf(veri + 1);
         }
@@ -904,9 +907,9 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             String forecastCycleFlag = this.packForecastCycleFlag(targetDecomposeDTO);
             if (StringUtils.equals(forecastCycleFlag, "下半年")) {
                 this.packTargetDecomposeHistoryHalfYear(targetDecomposeDTO, verNum, targetDecomposeHistories);
-            }else if (StringUtils.equals(forecastCycleFlag, "年度")){
+            } else if (StringUtils.equals(forecastCycleFlag, "年度")) {
                 this.packTargetDecomposeHistoryYear(targetDecomposeDTO, verNum, targetDecomposeHistories);
-            }else if (!StringUtils.equals(forecastCycleFlag, "下半年") && !StringUtils.equals(forecastCycleFlag, "上半年")&& !StringUtils.equals(forecastCycleFlag, "年度")){
+            } else if (!StringUtils.equals(forecastCycleFlag, "下半年") && !StringUtils.equals(forecastCycleFlag, "上半年") && !StringUtils.equals(forecastCycleFlag, "年度")) {
                 int versionFlag = Integer.parseInt(forecastCycleFlag);
                 if (versionFlag >= 1) {
                     this.packTargetDecomposeHistoryNum(targetDecomposeDTO, verNum, targetDecomposeHistories, versionFlag);
@@ -1061,6 +1064,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             targetDecomposeHistories.add(targetDecomposeHistory);
         }
     }
+
     /**
      * 返回预测周期字段
      *
@@ -1124,11 +1128,11 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 forecastCycle = "下半年";
             }
         } else if (targetDecomposeDTO.getTimeDimension() == 3) {
-            forecastCycle = String.valueOf(DateUtils.getQuarter()>1?(DateUtils.getQuarter()-1):DateUtils.getQuarter());
+            forecastCycle = String.valueOf(DateUtils.getQuarter() > 1 ? (DateUtils.getQuarter() - 1) : DateUtils.getQuarter());
         } else if (targetDecomposeDTO.getTimeDimension() == 4) {
-            forecastCycle = String.valueOf(DateUtils.getMonth()>1?(DateUtils.getMonth()-1):DateUtils.getMonth());
+            forecastCycle = String.valueOf(DateUtils.getMonth() > 1 ? (DateUtils.getMonth() - 1) : DateUtils.getMonth());
         } else if (targetDecomposeDTO.getTimeDimension() == 5) {
-            forecastCycle = String.valueOf(DateUtils.getDayOfWeek()>1?(DateUtils.getDayOfWeek()-1):DateUtils.getDayOfWeek());
+            forecastCycle = String.valueOf(DateUtils.getDayOfWeek() > 1 ? (DateUtils.getDayOfWeek() - 1) : DateUtils.getDayOfWeek());
         }
         return forecastCycle;
     }
