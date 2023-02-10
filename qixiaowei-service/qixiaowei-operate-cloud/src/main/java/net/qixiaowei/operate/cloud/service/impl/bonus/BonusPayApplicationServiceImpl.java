@@ -23,6 +23,7 @@ import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
@@ -234,9 +235,8 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
      */
     @Override
     public List<BonusPayApplicationDTO> selectBonusPayApplicationList(BonusPayApplicationDTO bonusPayApplicationDTO) {
-
-
         BonusPayApplication bonusPayApplication = new BonusPayApplication();
+        this.getDepartmentIdAndofficialRankSystemId(bonusPayApplicationDTO.getParams());
         BeanUtils.copyProperties(bonusPayApplicationDTO, bonusPayApplication);
         List<BonusPayApplicationDTO> bonusPayApplicationDTOS = bonusPayApplicationMapper.selectBonusPayApplicationList(bonusPayApplication);
         if (StringUtils.isNotEmpty(bonusPayApplicationDTOS)) {
@@ -251,25 +251,25 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     payApplicationDTO.setBudgetDepartmentIds(bonusPayBudgetDeptDTOS.stream().map(BonusPayBudgetDeptDTO::getDepartmentId).distinct().collect(Collectors.toList()));
                 }
             }
-
             //预算id集合
             for (BonusPayApplicationDTO payApplicationDTO : bonusPayApplicationDTOS) {
                 List<Long> budgetDepartmentIds = payApplicationDTO.getBudgetDepartmentIds();
-                if (budgetDepartmentIds.size() == 1 && budgetDepartmentIds.get(0).equals(0L)) {
-                    String corporation = "公司";
-                    List<String> budgetDepartmentList = new ArrayList<>();
-                    budgetDepartmentList.add(corporation);
-                    payApplicationDTO.setBudgetDepartmentList(budgetDepartmentList);
-                } else {
-                    if (StringUtils.isNotEmpty(budgetDepartmentIds)) {
-                        //远程部门赋值
-                        R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(budgetDepartmentIds, SecurityConstants.INNER);
-                        List<DepartmentDTO> data = listR.getData();
-                        if (StringUtils.isNotEmpty(data)) {
-                            payApplicationDTO.setBudgetDepartmentList(data.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()));
+                    if (budgetDepartmentIds.size() == 1 && budgetDepartmentIds.get(0).equals(0L)) {
+                        String corporation = "公司";
+                        List<String> budgetDepartmentList = new ArrayList<>();
+                        budgetDepartmentList.add(corporation);
+                        payApplicationDTO.setBudgetDepartmentList(budgetDepartmentList);
+                    } else {
+                        if (StringUtils.isNotEmpty(budgetDepartmentIds)) {
+                            //远程部门赋值
+                            R<List<DepartmentDTO>> listR = remoteDepartmentService.selectdepartmentIds(budgetDepartmentIds, SecurityConstants.INNER);
+                            List<DepartmentDTO> data = listR.getData();
+                            if (StringUtils.isNotEmpty(data)) {
+                                payApplicationDTO.setBudgetDepartmentList(data.stream().map(DepartmentDTO::getDepartmentName).collect(Collectors.toList()));
+                            }
                         }
                     }
-                }
+
             }
 
 
@@ -310,7 +310,41 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
         }
         return this.packQueryBonusBudget(bonusPayApplicationDTO, bonusPayApplicationDTOS);
     }
-
+    /**
+     * 获取高级搜索后的组织ID传入params
+     *
+     * @param params 请求参数
+     */
+    private void getDepartmentIdAndofficialRankSystemId(Map<String, Object> params) {
+        if (StringUtils.isNotEmpty(params)) {
+            DepartmentDTO departmentDTO = new DepartmentDTO();
+            Map<String, Object> params2 = new HashMap<>();
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "applyDepartmentNameEqual":
+                        params2.put("departmentNameEqual", params.get("applyDepartmentNameEqual"));
+                        break;
+                    case "applyDepartmentNameNotEqual":
+                        params2.put("departmentNameNotEqual", params.get("applyDepartmentNameNotEqual"));
+                        break;
+                }
+            }
+            if (StringUtils.isNotEmpty(params2)) {
+                departmentDTO.setParams(params2);
+                //远程查找部门列表
+                R<List<DepartmentDTO>> listR = remoteDepartmentService.selectDepartment(departmentDTO, SecurityConstants.INNER);
+                if (listR.getCode() != 200) {
+                    throw new ServiceException("远程调用组织失败 请联系管理员");
+                }
+                List<DepartmentDTO> departmentDataList = listR.getData();
+                List<Long> departmentIds = new ArrayList<>();
+                if (StringUtils.isNotEmpty(departmentDataList)) {
+                    departmentIds = departmentDataList.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList());
+                }
+                params.put("applyDepartmentIds", departmentIds);
+            }
+        }
+    }
     /**
      * 封装模糊查询
      *

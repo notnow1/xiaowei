@@ -317,6 +317,41 @@
             OR dm.status IS NULL
             )
         </if>
+        <!-- 奖金发放申请预算部门名称过滤  -->
+        <if test="department.params.budgetDepartmentNamesEqual != null and department.params.budgetDepartmentNamesEqual.size() > 0">
+            AND dm.department_name IN
+            <foreach item="item"
+                     collection="department.params.budgetDepartmentNamesEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="department.params.budgetDepartmentNamesNotEqual != null and department.params.budgetDepartmentNamesNotEqual.size() > 0">
+            AND (dm.department_name NOT IN
+            <foreach item="item"
+                     collection="department.params.budgetDepartmentNamesNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR dm.department_name IS NULL
+            )
+        </if>
+        <if test="department.params.budgetDepartmentNamesLike != null and department.params.budgetDepartmentNamesLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="department.params.budgetDepartmentNamesLike"
+                     index="index" open="(" separator="AND" close=")">
+                dm.department_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="department.params.budgetDepartmentNamesNotLike != null and department.params.budgetDepartmentNamesNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="department.params.budgetDepartmentNamesNotLike"
+                     index="index" open="(" separator="AND" close=")">
+                dm.department_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
         <if test="department.examinationLeaderName != null and department.examinationLeaderName != ''">
             and ee2.employee_name like '%${department.examinationLeaderName}%'
         </if>

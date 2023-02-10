@@ -28,7 +28,6 @@ public interface BonusPayBudgetDeptMapper{
      * @return 奖金发放预算部门表
      */
     List<BonusPayBudgetDeptDTO> selectBonusPayBudgetDeptByBonusPayApplicationId(@Param("bonusPayApplicationId")Long bonusPayApplicationId);
-
     /**
     * 批量查询奖金发放预算部门表
     *

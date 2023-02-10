@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -163,6 +164,9 @@ public class BonusPayApplicationDTO {
     * 租户ID
     */
     private  Long tenantId;
-
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }
 

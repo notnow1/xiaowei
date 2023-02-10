@@ -111,6 +111,7 @@
         </foreach>
         and delete_flag=0
     </select>
+
     <!--新增奖金发放预算部门表-->
     <insert id="insertBonusPayBudgetDept" useGeneratedKeys="true" keyProperty="bonusPayBudgetDeptId">
         INSERT INTO bonus_pay_budget_dept (bonus_pay_application_id,department_id,bonus_percentage,delete_flag,create_by,create_time,update_by,update_time)
