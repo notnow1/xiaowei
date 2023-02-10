@@ -97,8 +97,8 @@ public interface ${entity}Mapper{
     /**
     * 批量新增${table.comment!}
     *
-    * @param ${entity}s ${table.comment!}列表
+    * @param ${entity?uncap_first}s ${table.comment!}列表
     * @return 结果
     */
-    int batch${entity}(@Param("${entity?uncap_first}s")List<${entity}> ${entity}s);
+    int batch${entity}(@Param("${entity?uncap_first}s")List<${entity}> ${entity?uncap_first}s);
 }
