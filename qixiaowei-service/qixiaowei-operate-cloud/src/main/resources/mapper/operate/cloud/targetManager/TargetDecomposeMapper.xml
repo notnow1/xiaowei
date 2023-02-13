@@ -183,6 +183,93 @@
                  index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
+        <!-- 目标年度过滤  -->
+        <if test="targetDecompose.params.targetYearEqual != null and targetDecompose.params.targetYearEqual.size() > 0">
+            AND td.target_year IN
+            <foreach item="item"
+                     collection="targetDecompose.params.targetYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="targetDecompose.params.targetYearNotEqual != null and targetDecompose.params.targetYearNotEqual.size() > 0">
+            AND td.target_year NOT IN
+            <foreach item="item"
+                     collection="targetDecompose.params.targetYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="targetDecompose.params.targetYearBefore != null and targetDecompose.params.targetYearBefore != ''">
+            AND td.target_year &lt; #{targetDecompose.params.targetYearBefore}
+        </if>
+        <if test="targetDecompose.params.targetYearNotBefore != null and targetDecompose.params.targetYearNotBefore != ''"><!-- 开始时间检索 -->
+            AND td.target_year &gt;= #{targetDecompose.params.targetYearNotBefore}
+        </if>
+        <if test="targetDecompose.params.targetYearAfter != null and targetDecompose.params.targetYearAfter != ''"><!-- 开始时间检索 -->
+            AND td.target_year &gt; #{targetDecompose.params.targetYearAfter}
+        </if>
+        <if test="targetDecompose.params.targetYearNotAfter != null and targetDecompose.params.targetYearNotAfter != ''"><!-- 结束时间检索 -->
+            AND td.target_year &lt;= #{targetDecompose.params.targetYearNotAfter}
+        </if>
+        <if test="targetDecompose.params.targetYearStart != null and targetDecompose.params.targetYearStart != ''"><!-- 开始时间检索 -->
+            AND td.target_year &gt;= #{targetDecompose.params.targetYearStart}
+        </if>
+        <if test="targetDecompose.params.targetYearEnd != null and targetDecompose.params.targetYearEnd != ''"><!-- 结束时间检索 -->
+            AND td.target_year &lt;= #{targetDecompose.params.annualBonusYearEnd}
+        </if>
+        <!-- 指标名称过滤  -->
+        <if test="targetDecompose.params.indicatorIdsEqual != null and targetDecompose.params.indicatorIdsEqual.size() > 0">
+            AND td.indicator_id IN
+            <foreach item="item"
+                     collection="targetDecompose.params.indicatorIdsEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="targetDecompose.params.indicatorIdsNotEqual != null and targetDecompose.params.indicatorIdsNotEqual.size() > 0">
+            AND td.indicator_id NOT IN
+            <foreach item="item"
+                     collection="targetDecompose.params.indicatorIdsNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 分解维度过滤  -->
+        <if test="targetDecompose.params.targetDecomposeDimensionIdEqual != null and targetDecompose.params.targetDecomposeDimensionIdEqual.size() > 0">
+            AND td.target_decompose_dimension_id IN
+            <foreach item="item"
+                     collection="targetDecompose.params.targetDecomposeDimensionIdEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="targetDecompose.params.targetDecomposeDimensionIdNotEqual != null and targetDecompose.params.targetDecomposeDimensionIdNotEqual.size() > 0">
+            AND td.target_decompose_dimension_id NOT IN
+            <foreach item="item"
+                     collection="targetDecompose.params.targetDecomposeDimensionIdNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 时间维度过滤  -->
+        <if test="targetDecompose.params.timeDimensionEqual != null and targetDecompose.params.timeDimensionEqual.size() > 0">
+            AND td.time_dimension IN
+            <foreach item="item"
+                     collection="targetDecompose.params.timeDimensionEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="targetDecompose.params.timeDimensionNotEqual != null and targetDecompose.params.timeDimensionNotEqual.size() > 0">
+            AND td.time_dimension NOT IN
+            <foreach item="item"
+                     collection="targetDecompose.params.timeDimensionNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
         </if>

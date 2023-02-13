@@ -320,5 +320,13 @@ public class EmployeeController extends BaseController {
         return AjaxResult.success(employeeService.empSalaryAdjustPlan(employeeDTO));
     }
 
+    /**
+     * 查询有账号的员工
+     */
+    @RequiresPermissions("system:manage:employee:getUseEmployeeUser")
+    @GetMapping("/getUseEmployeeUser")
+    public AjaxResult getUseEmployeeUser() {
+        return AjaxResult.success(employeeService.getUseEmployeeUser());
+    }
 
 }

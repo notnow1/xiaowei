@@ -287,4 +287,10 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> selectUserList(@Param("employee") Employee employee);
+
+    /**
+     * 查询有账号的员工
+     * @return
+     */
+    List<EmployeeDTO> getUseEmployeeUser();
 }

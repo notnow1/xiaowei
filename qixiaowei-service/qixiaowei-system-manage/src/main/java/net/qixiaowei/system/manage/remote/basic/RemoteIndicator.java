@@ -77,4 +77,17 @@ public class RemoteIndicator implements RemoteIndicatorService {
     public R<List<IndicatorDTO>> selectIndicatorByNames(@RequestBody List<String> indicatorNames, String source) {
         return R.ok(indicatorService.selectIndicatorByNames(indicatorNames));
     }
+
+    /**
+     *远程查询指标列表平铺
+     * @param indicatorDTO 指标
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/getIndicatorAllData")
+    public R<List<IndicatorDTO>> getIndicatorAllData(IndicatorDTO indicatorDTO, String source) {
+        return R.ok(indicatorService.getIndicatorAllData(indicatorDTO));
+    }
 }

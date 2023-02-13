@@ -35,10 +35,7 @@ import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeExcel;
 import net.qixiaowei.operate.cloud.mapper.product.ProductMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.*;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetDecomposeService;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
-import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
-import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
+import net.qixiaowei.system.manage.api.dto.basic.*;
 import net.qixiaowei.system.manage.api.dto.system.RegionDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
@@ -797,7 +794,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     @Override
     public List<TargetDecomposeDTO> rollPageList(TargetDecomposeDTO targetDecomposeDTO) {
         TargetDecompose targetDecompose = new TargetDecompose();
-        BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        this.getIndicatorId(targetDecomposeDTO.getParams());
         //指标code集合
         List<String> list = new ArrayList<>();
         //订单（不含税）
@@ -813,6 +810,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             List<Long> collect = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             targetDecompose.setIndicatorIds(collect);
         }
+        BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectRollPageList(targetDecompose);
 
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
@@ -875,7 +873,43 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         return targetDecomposeDTOS;
     }
+    /**
+     * 获取高级搜索后的组织ID传入params
+     *
+     * @param params 请求参数
+     */
+    private void getIndicatorId(Map<String, Object> params) {
+        if (StringUtils.isNotEmpty(params)) {
+            IndicatorDTO indicatorDTO = new IndicatorDTO();
 
+            Map<String, Object> params2 = new HashMap<>();
+
+            for (String key : params.keySet()) {
+                switch (key) {
+                    case "departmentNameEqual":
+                        params2.put("departmentNameEqual", params.get("departmentNameEqual"));
+                        break;
+                    case "departmentNameNotEqual":
+                        params2.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
+                        break;
+                }
+            }
+            if (StringUtils.isNotEmpty(params2)) {
+                indicatorDTO.setParams(params2);
+                //远程查找指标列表
+                R<List<IndicatorDTO>> indicatorAllData = remoteIndicatorService.getIndicatorAllData(indicatorDTO, SecurityConstants.INNER);
+                if (indicatorAllData.getCode() != 200) {
+                    throw new ServiceException("远程调用组织失败 请联系管理员");
+                }
+                List<IndicatorDTO> data = indicatorAllData.getData();
+                List<Long> indicatorIds = new ArrayList<>();
+                if (StringUtils.isNotEmpty(data)) {
+                    indicatorIds = data.stream().map(IndicatorDTO::getIndicatorId).distinct().collect(Collectors.toList());
+                }
+                params.put("indicatorIds", indicatorIds);
+            }
+        }
+    }
     /**
      * 查询目标分解(销售收入)表列表
      *
