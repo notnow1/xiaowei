@@ -1,19 +1,21 @@
 package net.qixiaowei.system.manage.service.impl.field;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import cn.hutool.core.util.StrUtil;
+import net.qixiaowei.integration.common.enums.field.system.EmployeeField;
+import net.qixiaowei.integration.common.enums.field.system.PostField;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.system.manage.api.dto.field.FieldConfigDTO;
 import net.qixiaowei.system.manage.api.vo.field.FieldListConfigVO;
 import net.qixiaowei.system.manage.api.vo.field.FieldListHeaderVO;
+import net.qixiaowei.system.manage.logic.manager.FieldListConfigManager;
+import net.qixiaowei.system.manage.service.field.IFieldConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.system.manage.api.domain.field.FieldListConfig;
 import net.qixiaowei.system.manage.api.dto.field.FieldListConfigDTO;
@@ -30,8 +32,25 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
  */
 @Service
 public class FieldListConfigServiceImpl implements IFieldListConfigService {
+
+    private static final Set<String> NEED_CONCAT = new HashSet<>();
+
+    static {
+        NEED_CONCAT.add(PostField.POST_RANK.getCode());
+        NEED_CONCAT.add(PostField.POST_RANK_LOWER.getCode());
+        NEED_CONCAT.add(PostField.POST_RANK_UPPER.getCode());
+        NEED_CONCAT.add(EmployeeField.NATIONALITY.getCode());
+        NEED_CONCAT.add(EmployeeField.NATION.getCode());
+        NEED_CONCAT.add(EmployeeField.EMPLOYEE_RANK.getCode());
+    }
+
     @Autowired
     private FieldListConfigMapper fieldListConfigMapper;
+    @Autowired
+    private IFieldConfigService fieldConfigService;
+
+    @Autowired
+    private FieldListConfigManager fieldListConfigManager;
 
     /**
      * 查询字段列表配置表
@@ -53,7 +72,58 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
     @Override
     public List<FieldListHeaderVO> selectHeaderFieldListConfigList(Integer businessType) {
         Long userId = SecurityUtils.getUserId();
-        return fieldListConfigMapper.selectFieldHeaderListOfBusinessTypeAndUserId(businessType, userId);
+        Integer countFieldHeaderListOfBusinessTypeAndUserId = fieldListConfigMapper.countFieldHeaderListOfBusinessTypeAndUserId(businessType, userId);
+        if (countFieldHeaderListOfBusinessTypeAndUserId == 0) {
+            this.initUserFieldList(businessType, userId);
+        }
+        List<FieldListHeaderVO> fieldListHeaderVOS = fieldListConfigMapper.selectFieldHeaderListOfBusinessTypeAndUserId(businessType, userId);
+        for (FieldListHeaderVO fieldListHeaderVO : fieldListHeaderVOS) {
+            String fieldName = fieldListHeaderVO.getFieldName();
+            fieldName = this.parseFieldName(fieldName);
+            fieldListHeaderVO.setFieldName(fieldName);
+        }
+        return fieldListHeaderVOS;
+    }
+
+    /**
+     * @description: 初始化用户字段列表
+     * @Author: hzk
+     * @date: 2023/2/9 20:12
+     * @param: [businessType, userId]
+     * @return: void
+     **/
+    private void initUserFieldList(Integer businessType, Long userId) {
+        //找到字段配置
+        List<FieldConfigDTO> fieldConfigDTOS = fieldConfigService.selectFieldConfigListOfBusinessType(businessType);
+        if (StringUtils.isEmpty(fieldConfigDTOS)) {
+            return;
+        }
+        //初始化用户字段列表。
+        List<FieldListConfig> fieldListConfigs = fieldListConfigManager.initUserFieldListConfig(businessType, fieldConfigDTOS);
+        this.addFieldListConfig(userId, fieldListConfigs);
+    }
+
+    /**
+     * @description: 新增字段列表配置
+     * @Author: hzk
+     * @date: 2023/2/13 11:52
+     * @param: [userId, fieldListConfigs]
+     * @return: void
+     **/
+    private void addFieldListConfig(Long userId, List<FieldListConfig> fieldListConfigs) {
+        if (StringUtils.isNotEmpty(fieldListConfigs)) {
+            Long userIdOfInsert = SecurityUtils.getUserId();
+            Date nowDate = DateUtils.getNowDate();
+            for (FieldListConfig fieldListConfig : fieldListConfigs) {
+                fieldListConfig.setUserId(userId);
+                fieldListConfig.setCreateBy(userIdOfInsert);
+                fieldListConfig.setCreateTime(nowDate);
+                fieldListConfig.setUpdateTime(nowDate);
+                fieldListConfig.setUpdateBy(userIdOfInsert);
+                fieldListConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            }
+            fieldListConfigMapper.batchFieldListConfig(fieldListConfigs);
+        }
     }
 
     /**
@@ -65,7 +135,13 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
     @Override
     public List<FieldListConfigVO> selectFieldListConfigList(Integer businessType) {
         Long userId = SecurityUtils.getUserId();
-        return fieldListConfigMapper.selectFieldListConfigListOfBusinessTypeAndUserId(businessType, userId);
+        List<FieldListConfigVO> fieldListConfigVOS = fieldListConfigMapper.selectFieldListConfigListOfBusinessTypeAndUserId(businessType, userId);
+        for (FieldListConfigVO fieldListConfigVO : fieldListConfigVOS) {
+            String fieldName = fieldListConfigVO.getFieldName();
+            fieldName = this.parseFieldName(fieldName);
+            fieldListConfigVO.setFieldName(fieldName);
+        }
+        return fieldListConfigVOS;
     }
 
     /**
@@ -226,6 +302,24 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
             sort++;
         }
         return fieldListConfigMapper.updateFieldListConfigs(fieldListConfigList);
+    }
+
+    /**
+     * @description: 格式化字段名称
+     * @Author: hzk
+     * @date: 2023/2/10 14:25
+     * @param: [fieldName]
+     * @return: java.lang.String
+     **/
+    private String parseFieldName(String fieldName) {
+        String _id = "_id";
+        if (fieldName.endsWith(_id)) {
+            fieldName = fieldName.substring(0, fieldName.lastIndexOf("_id")).concat("_name");
+        }
+        if (NEED_CONCAT.contains(fieldName)) {
+            fieldName = fieldName.concat("_name");
+        }
+        return StrUtil.toCamelCase(fieldName);
     }
 
 }

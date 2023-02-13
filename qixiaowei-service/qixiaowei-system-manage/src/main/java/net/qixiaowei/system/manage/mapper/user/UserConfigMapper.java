@@ -111,8 +111,8 @@ public interface UserConfigMapper {
     /**
      * 批量新增用户配置表
      *
-     * @param UserConfigs 用户配置表列表
+     * @param userConfigs 用户配置表列表
      * @return 结果
      */
-    int batchUserConfig(@Param("userConfigs") List<UserConfig> UserConfigs);
+    int batchUserConfig(@Param("userConfigs") List<UserConfig> userConfigs);
 }

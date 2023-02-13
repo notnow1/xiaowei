@@ -11,6 +11,22 @@
         and delete_flag=0
     </select>
 
+    <select id="countFieldOfBusinessType"
+            resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM field_config
+        WHERE business_type =#{businessType} AND delete_flag=0
+    </select>
+
+    <select id="selectFieldConfigByBusinessType"
+            resultType="net.qixiaowei.system.manage.api.dto.field.FieldConfigDTO">
+        SELECT
+        field_config_id,business_type,field_name,field_label,field_type,delete_flag,create_by,create_time,update_by,update_time
+        FROM field_config
+        WHERE business_type =#{businessType} AND delete_flag=0
+    </select>
+
     <!--    批量查询字段配置表-->
     <select id="selectFieldConfigByFieldConfigIds"
             resultType="net.qixiaowei.system.manage.api.dto.field.FieldConfigDTO">

@@ -119,8 +119,8 @@ public interface TenantContractAuthMapper {
     /**
      * 批量新增租户合同授权表
      *
-     * @param TenantContractAuths 租户合同授权表列表
+     * @param tenantContractAuths 租户合同授权表列表
      * @return 结果
      */
-    int batchTenantContractAuth(@Param("tenantContractAuths") List<TenantContractAuth> TenantContractAuths);
+    int batchTenantContractAuth(@Param("tenantContractAuths") List<TenantContractAuth> tenantContractAuths);
 }

@@ -2,6 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="net.qixiaowei.system.manage.mapper.field.FieldListConfigMapper">
 
+
+    <select id="countFieldHeaderListOfBusinessTypeAndUserId"
+            resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM field_list_config flc
+        LEFT JOIN field_config fc ON fc.field_config_id = flc.field_config_id
+        WHERE flc.delete_flag=0 AND flc.show_flag =1 AND fc.delete_flag =0 AND fc.business_type=#{businessType} AND
+        flc.user_id = #{userId}
+    </select>
+
     <select id="selectFieldHeaderListOfBusinessTypeAndUserId"
             resultType="net.qixiaowei.system.manage.api.vo.field.FieldListHeaderVO">
         SELECT
@@ -16,7 +25,7 @@
         LEFT JOIN field_config fc ON fc.field_config_id = flc.field_config_id
         WHERE flc.delete_flag=0 AND flc.show_flag =1 AND fc.delete_flag =0 AND fc.business_type=#{businessType} AND
         flc.user_id = #{userId}
-        ORDER BY flc.fixation_force DESC,flc.sort ASC
+        ORDER BY flc.fixation_force DESC,flc.sort ASC,flc.show_flag DESC
     </select>
 
     <select id="selectFieldListConfigListOfBusinessTypeAndUserId"
@@ -35,7 +44,7 @@
         FROM field_list_config flc
         LEFT JOIN field_config fc ON fc.field_config_id = flc.field_config_id
         WHERE flc.delete_flag=0 AND fc.delete_flag =0 AND fc.business_type=#{businessType} AND flc.user_id = #{userId}
-        ORDER BY flc.fixation_force DESC,flc.sort ASC
+        ORDER BY flc.fixation_force DESC,flc.sort ASC,flc.show_flag DESC
     </select>
 
     <!--    查询字段列表配置表-->
