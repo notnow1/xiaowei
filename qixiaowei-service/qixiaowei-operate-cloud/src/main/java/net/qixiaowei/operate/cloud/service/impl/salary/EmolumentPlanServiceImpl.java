@@ -216,15 +216,30 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                 emolumentPlanDTOS.get(i).setEmolumentPackage(multiply);
             }
             if (year >= planYear) {
-                if (i == 0) {
-                    emolumentPlanDTOS.get(i).setEmolumentPracticalRevenueImprove(new BigDecimal("0"));
-                }
-                if (i >0){
-                    //预算年前一年E/R值(%)
-                    BigDecimal erBeforeOne1 = emolumentPlanDTOS.get(i - 1).getErBeforeOne();
+                if (emolumentPlanDTOS.size()>1){
+                    BigDecimal erBeforeOne1 = new BigDecimal("0");
+                    if (i < emolumentPlanDTOS.size()-2){
+                        erBeforeOne1 = emolumentPlanDTOS.get(i +1).getErBeforeOne();
+                    }
                     BigDecimal emolumentPracticalRevenueImprove = new BigDecimal("0");
                     if ((null != erBeforeOne1 && erBeforeOne1.compareTo(new BigDecimal("0")) != 0) && (null != erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0")) != 0)) {
-                        emolumentPracticalRevenueImprove = erBeforeOne1.divide(erBeforeOne.subtract(new BigDecimal("100")),10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                        emolumentPracticalRevenueImprove = erBeforeOne.divide(erBeforeOne1.subtract(new BigDecimal("100")),10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                    }
+                    emolumentPlanDTOS.get(i).setEmolumentPracticalRevenueImprove(emolumentPracticalRevenueImprove);
+                }else {
+                    if (i == 0) {
+                        emolumentPlanDTOS.get(i).setEmolumentPracticalRevenueImprove(new BigDecimal("0"));
+                    }
+                }
+
+                if (i >0){
+                    BigDecimal erBeforeOne1 = new BigDecimal("0");
+                   if (i < emolumentPlanDTOS.size()-2){
+                        erBeforeOne1 = emolumentPlanDTOS.get(i +1).getErBeforeOne();
+                   }
+                    BigDecimal emolumentPracticalRevenueImprove = new BigDecimal("0");
+                    if ((null != erBeforeOne1 && erBeforeOne1.compareTo(new BigDecimal("0")) != 0) && (null != erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0")) != 0)) {
+                        emolumentPracticalRevenueImprove = erBeforeOne.divide(erBeforeOne1.subtract(new BigDecimal("100")),10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                     emolumentPlanDTOS.get(i).setEmolumentPracticalRevenueImprove(emolumentPracticalRevenueImprove);
                 }
@@ -359,9 +374,9 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             //预算年前一年总薪酬包
             BigDecimal emolumentPackageBeforeOne = emolumentPlanDTO.getEmolumentPackageBeforeOne();
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0 && null != emolumentPackageBeforeOne && emolumentPackageBeforeOne.compareTo(new BigDecimal("0")) != 0) {
-                BigDecimal er = emolumentPackageBeforeOne.divide(revenueBeforeOne, BigDecimal.ROUND_HALF_UP);
-                if (er.compareTo(new BigDecimal("0")) > 0) {
-                    emolumentPlanDTO.setEr(er);
+                BigDecimal erBeforeOne = emolumentPackageBeforeOne.divide(revenueBeforeOne, BigDecimal.ROUND_HALF_UP);
+                if (erBeforeOne.compareTo(new BigDecimal("0")) > 0) {
+                    emolumentPlanDTO.setErBeforeOne(erBeforeOne);
                 }
             }
         }
