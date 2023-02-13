@@ -199,6 +199,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         salaryPayDTOList = salaryPayMapper.selectSalaryPayList(salaryPay);
         if (StringUtils.isNotEmpty(salaryPayDTOList)) {
             for (SalaryPayDTO payDTO : salaryPayDTOList) {
+                payDTO.setTotalWages(payDTO.getSalaryAmount().add(payDTO.getAllowanceAmount()).add(payDTO.getWelfareAmount()));
+                payDTO.setTotalAmount(payDTO.getTotalWages().add(payDTO.getBonusAmount()));
                 for (EmployeeDTO dto : employeeDTOS) {
                     if (payDTO.getEmployeeId().equals(dto.getEmployeeId())) {
                         payDTO.setEmployeeName(dto.getEmployeeName());

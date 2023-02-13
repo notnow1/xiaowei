@@ -273,8 +273,10 @@
         td.target_decompose_dimension_id,
         IFNULL(td.forecast_year,0) as forecast_year,
         IFNULL((select sum(cycle_actual) from target_decompose_details tdd left join decompose_detail_cycles ddc on
-        ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 and ddc.tenant_id =#{targetDecompose.tenantId} where
-        td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 and tdd.tenant_id =#{targetDecompose.tenantId}),0) as actual_total,
+        ddc.target_decompose_details_id =tdd.target_decompose_details_id and ddc .delete_flag =0 and ddc.tenant_id
+        =#{targetDecompose.tenantId} where
+        td.target_decompose_id = tdd.target_decompose_id and tdd.delete_flag=0 and tdd.tenant_id
+        =#{targetDecompose.tenantId}),0) as actual_total,
         td.status
         FROM target_decompose td
         left join target_setting ts
@@ -418,6 +420,7 @@
     <!--    获取目标分解的指标数据-->
     <select id="selectTargetDecomposeIndicator"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO">
+        SELECT
         td.target_decompose_id,
         td.target_decompose_type,
         td.indicator_id,
@@ -425,18 +428,188 @@
         td.target_decompose_dimension_id,
         td.decomposition_dimension,
         td.time_dimension,
-        IFNULL(td.decompose_target, 0) as decompose_target,
-        IFNULL(td.forecast_year, 0) as forecast_year,
-        IFNULL(td.actual_total, 0) as actual_total,
-        td.status,
+        IFNULL( td.decompose_target, 0 ) AS decompose_target,
+        IFNULL( td.forecast_year, 0 ) AS forecast_year,
+        IFNULL( td.actual_total, 0 ) AS actual_total,
+        td.STATUS,
         td.delete_flag,
         td.create_by,
         td.create_time,
         td.update_by,
         td.update_time
-        FROM target_decompose td
-        WHERE td.delete_flag = 0
-        ORDER BY td.td.create_time ASC
+        FROM
+        target_decompose td
+        WHERE
+        td.delete_flag = 0
+        ORDER BY
+        td.create_time DESC
+    </select>
+    <!--取最近一次分解维度-->
+    <select id="selectRecentDecompose"
+            resultType="net.qixiaowei.operate.cloud.api.dto.dashboard.TargetAchieveAnalysisDTO">
+        SELECT
+        td.target_decompose_id,
+        td.target_year,
+        td.indicator_id,
+        td.update_time,
+        td.target_decompose_dimension_id,
+        td.decomposition_dimension,
+        td.time_dimension,
+        tdd.target_decompose_details_id,
+        ddc.decompose_detail_cycles_id,
+        ddc.cycle_number,
+        IFNULL( ddc.cycle_target, 0 ) as cycle_target,
+        IFNULL( ddc.cycle_forecast, 0 ) as cycle_forecast,
+        IFNULL( ddc.cycle_actual, 0 ) as cycle_actual
+        FROM
+        (
+        SELECT
+        target_decompose_id,
+        target_year,
+        target_decompose_dimension_id,
+        decomposition_dimension,
+        time_dimension,
+        indicator_id,
+        delete_flag,
+        update_time
+        FROM
+        target_decompose
+        WHERE
+        delete_flag = 0
+        ORDER BY
+        update_time DESC
+        LIMIT 1
+        ) td
+        LEFT JOIN target_decompose_details tdd ON td.target_decompose_id = tdd.target_decompose_id
+        AND tdd.delete_flag = 0
+        LEFT JOIN decompose_detail_cycles ddc ON ddc.target_decompose_details_id = tdd.target_decompose_details_id
+        AND ddc.delete_flag = 0
+    </select>
+    <!--获取分解维度数据-->
+    <select id="selectAchieveAnalysisDecompose"
+            resultType="net.qixiaowei.operate.cloud.api.dto.dashboard.TargetAchieveAnalysisDTO">
+        SELECT
+        td.target_decompose_id,
+        td.target_year,
+        td.indicator_id,
+        td.update_time,
+        td.target_decompose_dimension_id,
+        td.decomposition_dimension,
+        td.time_dimension,
+        tdd.target_decompose_details_id,
+        ddc.decompose_detail_cycles_id,
+        ddc.cycle_number,
+        IFNULL( ddc.cycle_target, 0 ) as cycle_target,
+        IFNULL( ddc.cycle_forecast, 0 ) as cycle_forecast,
+        IFNULL( ddc.cycle_actual, 0 ) as cycle_actual
+        FROM
+        (
+        SELECT
+        target_decompose_id,
+        target_year,
+        target_decompose_dimension_id,
+        decomposition_dimension,
+        time_dimension,
+        indicator_id,
+        delete_flag,
+        update_time
+        FROM
+        target_decompose
+        WHERE
+        delete_flag = 0
+        <if test="targetDecomposeDTO.targetYear!= null">
+            AND target_year = #{targetDecomposeDTO.targetYear}
+        </if>
+        <if test="targetDecomposeDTO.timeDimension!= null">
+            AND time_dimension = #{targetDecomposeDTO.timeDimension}
+        </if>
+        <if test="targetDecomposeDTO.indicatorId!= null">
+            AND indicator_id = #{targetDecomposeDTO.indicatorId}
+        </if>
+        <if test="targetDecomposeDTO.targetDecomposeDimensionId!= null">
+            AND target_decompose_dimension_id = #{targetDecomposeDTO.targetDecomposeDimensionId}
+        </if>
+        <if test="targetDecomposeDTO.params.targetYears!= null and targetDecomposeDTO.params.targetYears.size()>0">
+            AND target_year IN
+            <foreach item="item"
+                     collection="targetDecomposeDTO.params.targetYears"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) td
+        LEFT JOIN target_decompose_details tdd ON td.target_decompose_id = tdd.target_decompose_id
+        AND tdd.delete_flag = 0
+        LEFT JOIN decompose_detail_cycles ddc ON ddc.target_decompose_details_id = tdd.target_decompose_details_id
+        AND ddc.delete_flag = 0
+        <if test="targetDecomposeDTO.params.timeStart!=null and targetDecomposeDTO.params.timeEnd!=null">
+            WHERE ddc.cycle_number &lt;= #{targetDecomposeDTO.params.timeEnd}
+            AND ddc.cycle_number &gt;= #{targetDecomposeDTO.params.timeStart}
+        </if>
+        ORDER BY ddc.cycle_number
+    </select>
+    <!--查询关键经营指标排行榜列表-->
+    <select id="selectLeaderboardDecompose"
+            resultType="net.qixiaowei.operate.cloud.api.dto.dashboard.TargetLeaderboardDTO">
+        SELECT
+        td.target_decompose_id,
+        td.target_year,
+        td.indicator_id,
+        td.update_time,
+        td.target_decompose_dimension_id,
+        td.decomposition_dimension,
+        td.time_dimension,
+        tdd.target_decompose_details_id,
+        ddc.decompose_detail_cycles_id,
+        ddc.cycle_number,
+        IFNULL( ddc.cycle_target, 0 ) as cycle_target,
+        IFNULL( ddc.cycle_forecast, 0 ) as cycle_forecast,
+        IFNULL( ddc.cycle_actual, 0 ) as cycle_actual
+        FROM
+        (
+        SELECT
+        target_decompose_id,
+        target_year,
+        target_decompose_dimension_id,
+        decomposition_dimension,
+        time_dimension,
+        indicator_id,
+        delete_flag,
+        update_time
+        FROM
+        target_decompose
+        WHERE
+        delete_flag = 0
+        <if test="targetDecomposeDTO.targetYear!= null">
+            AND target_year = #{targetDecomposeDTO.targetYear}
+        </if>
+        <if test="targetDecomposeDTO.timeDimension!= null">
+            AND time_dimension = #{targetDecomposeDTO.timeDimension}
+        </if>
+        <if test="targetDecomposeDTO.indicatorId!= null">
+            AND indicator_id = #{targetDecomposeDTO.indicatorId}
+        </if>
+        <if test="targetDecomposeDTO.targetDecomposeDimensionId!= null">
+            AND target_decompose_dimension_id = #{targetDecomposeDTO.targetDecomposeDimensionId}
+        </if>
+        <if test="targetDecomposeDTO.params.targetYears!= null and targetDecomposeDTO.params.targetYears.size()>0">
+            AND target_year IN
+            <foreach item="item"
+                     collection="targetDecomposeDTO.params.targetYears"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) td
+        LEFT JOIN target_decompose_details tdd ON td.target_decompose_id = tdd.target_decompose_id
+        AND tdd.delete_flag = 0
+        LEFT JOIN decompose_detail_cycles ddc ON ddc.target_decompose_details_id = tdd.target_decompose_details_id
+        AND ddc.delete_flag = 0
+        <if test="targetDecomposeDTO.params.timeStart!=null and targetDecomposeDTO.params.timeEnd!=null">
+            WHERE ddc.cycle_number &lt;= #{targetDecomposeDTO.params.timeEnd}
+            AND ddc.cycle_number &gt;= #{targetDecomposeDTO.params.timeStart}
+        </if>
+        ORDER BY ddc.cycle_number
     </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">

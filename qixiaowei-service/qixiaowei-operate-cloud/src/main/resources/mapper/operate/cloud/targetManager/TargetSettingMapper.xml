@@ -422,14 +422,36 @@
         <if test="targetSetting.targetYear != null">
             and ts.target_year=#{targetSetting.targetYear}
         </if>
+        <if test="targetSetting.indicatorIds != null">
+            and ts.indicator_id in
+            <foreach item="item"
+                     collection="targetSetting.indicatorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="targetSetting.params.targetSettingTypeList != null">
+            and ts.target_setting_type in
+            <foreach item="item"
+                     collection="targetSetting.params.targetSettingTypeList"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         ORDER BY ts.sort ASC
     </select>
-<!--    二期优化查询经营分析报表列表-->
+    <!--    二期优化查询经营分析报表列表-->
     <select id="selectAnalyseLists"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON ts.indicator_id = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
-        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON ts.indicator_id = tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0  and tod.tenant_id=#{targetSetting.tenantId}  where toe.target_year = #{targetSetting.targetYear}-1 AND toe.delete_flag = 0  and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON ts.indicator_id =
+        tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and
+        tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear} AND toe.delete_flag
+        = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS actualTotal,
+        (select tod.actual_total from target_outcome toe LEFT JOIN target_outcome_details tod ON ts.indicator_id =
+        tod.indicator_id AND toe.target_outcome_id = tod.target_outcome_id AND tod.delete_flag = 0 and
+        tod.tenant_id=#{targetSetting.tenantId} where toe.target_year = #{targetSetting.targetYear}-1 AND
+        toe.delete_flag = 0 and toe.tenant_id=#{targetSetting.tenantId}) AS lastActualTotal,
         ts.target_setting_id,
         ts.target_setting_type,
         ts.indicator_id,
@@ -459,7 +481,7 @@
         </if>
         group by ts.indicator_id
     </select>
-<!--    二期优化查询经营分析指标列表-->
+    <!--    二期优化查询经营分析指标列表-->
     <select id="selectanalyseIndicator"
             resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
         SELECT target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value,
@@ -469,6 +491,15 @@
         <if test="targetSetting.targetYear != null">
             and target_year=#{targetSetting.targetYear}
         </if>
+    </select>
+    <!--查询目标制定list-->
+    <select id="selectTargetSettingListOrderIndicator"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO">
+        SELECT target_setting_id, target_setting_type, indicator_id, target_year, percentage, challenge_value,
+        target_value, guaranteed_value, sort, delete_flag, create_by, create_time, update_by, update_time, tenant_id
+        FROM target_setting
+        WHERE delete_flag = 0
+        ORDER BY indicator_id
     </select>
     <!--新增目标制定-->
     <insert id="insertTargetSetting" useGeneratedKeys="true" keyProperty="targetSettingId">

@@ -145,6 +145,7 @@ public interface TargetSettingMapper {
 
     /**
      * 通过指标ID集合和年份查找
+     *
      * @param indicatorIds
      * @param targetYear
      * @return
@@ -153,6 +154,7 @@ public interface TargetSettingMapper {
 
     /**
      * 根据年份指标id查询数据
+     *
      * @param targetSetting
      * @return
      */
@@ -168,16 +170,26 @@ public interface TargetSettingMapper {
 
     /**
      * 二期优化查询经营分析报表列表
+     *
      * @param targetSetting
      * @return
      */
-    List<TargetSettingDTO> selectAnalyseLists(@Param("targetSetting")TargetSetting targetSetting);
+    List<TargetSettingDTO> selectAnalyseLists(@Param("targetSetting") TargetSetting targetSetting);
 
 
     /**
      * 二期优化查询经营分析指标列表
+     *
      * @param targetSetting
      * @return
      */
-    List<TargetSettingDTO> selectanalyseIndicator(@Param("targetSetting")TargetSetting targetSetting);
+    List<TargetSettingDTO> selectanalyseIndicator(@Param("targetSetting") TargetSetting targetSetting);
+
+    /**
+     * 通过指标Id分组后的目标制定
+     *
+     * @param targetSetting 目标制定
+     * @return List
+     */
+    List<TargetSettingDTO> selectTargetSettingListOrderIndicator(@Param("targetSetting") TargetSetting targetSetting);
 }

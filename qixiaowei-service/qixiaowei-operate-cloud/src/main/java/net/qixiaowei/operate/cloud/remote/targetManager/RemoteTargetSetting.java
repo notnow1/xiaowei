@@ -37,4 +37,18 @@ public class RemoteTargetSetting implements RemoteSettingService {
         return R.ok(targetSettingService.selectByIndicatorIds(indicatorIds));
     }
 
+    /**
+     * 查询目标制定list
+     *
+     * @param targetSettingDTO 目标制定DTO
+     * @param source           source
+     * @return R
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/queryIndicatorSettingList")
+    public R<List<TargetSettingDTO>> queryIndicatorSettingList(@RequestBody TargetSettingDTO targetSettingDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source) {
+        return R.ok(targetSettingService.queryIndicatorSettingList(targetSettingDTO));
+    }
+
 }

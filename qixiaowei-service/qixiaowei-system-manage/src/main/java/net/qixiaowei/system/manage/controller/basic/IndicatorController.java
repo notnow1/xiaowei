@@ -162,5 +162,12 @@ public class IndicatorController extends BaseController {
         return AjaxResult.success(list);
     }
 
+    /**
+     * 查询仪表盘指标表列表
+     */
+    @GetMapping("/dashboard/list")
+    public AjaxResult dashboardList(@RequestParam("targetYear") Integer targetYear) {
+        return AjaxResult.success(indicatorService.selectIndicatorDashboardList(targetYear));
+    }
 
 }

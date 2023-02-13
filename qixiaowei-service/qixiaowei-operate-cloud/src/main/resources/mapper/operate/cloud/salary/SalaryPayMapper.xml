@@ -75,8 +75,22 @@
     <!--    查询工资发薪表列表-->
     <select id="selectSalaryPayList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
-        salary_pay_id, employee_id, pay_year, pay_month, salary_amount, allowance_amount, welfare_amount, bonus_amount,
-        withhold_remit_tax, other_deductions, pay_amount, delete_flag, create_by, create_time, update_by, update_time
+        salary_pay_id,
+        employee_id,
+        pay_year,
+        pay_month,
+        IFNULL(salary_amount, 0) as salary_amount,
+        IFNULL(allowance_amount, 0) as allowance_amount,
+        IFNULL(welfare_amount, 0) as welfare_amount,
+        IFNULL(bonus_amount, 0) as bonus_amount,
+        IFNULL(withhold_remit_tax, 0) as withhold_remit_tax,
+        IFNULL(other_deductions, 0) as other_deductions,
+        IFNULL(pay_amount, 0) as pay_amount,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
         FROM salary_pay
         WHERE delete_flag=0
         <if test="salaryPay.salaryPayId != null">

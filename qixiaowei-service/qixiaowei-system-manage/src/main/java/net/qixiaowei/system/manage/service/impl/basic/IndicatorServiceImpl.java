@@ -564,34 +564,36 @@ public class IndicatorServiceImpl implements IIndicatorService {
             throw new ServiceException("远程调用总奖金包预算失败");
         }
         BonusBudgetDTO bonusBudget = bonusBudgetDTOR.getData();
-        List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudget.getBonusBudgetParametersDTOS();
-        if (StringUtils.isNotNull(bonusBudgetParametersDTOS) && StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
-            StringBuilder indicatorNames = new StringBuilder("");
-            for (IndicatorDTO indicatorById : indicatorByIds) {
-                for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
-                    if (indicatorById.getIndicatorId().equals(bonusBudgetParametersDTO.getIndicatorId())) {
-                        indicatorNames.append(indicatorById.getIndicatorName()).append(",");
-                        break;
-                    }
-                }
-            }
-            StringBuilder bonusBudgetParameterName = new StringBuilder("");
-            Set<String> bonusBudgetParametersSet = new HashSet<>();
-            for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+        if (StringUtils.isNotNull(bonusBudget)) {
+            List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS = bonusBudget.getBonusBudgetParametersDTOS();
+            if (StringUtils.isNotNull(bonusBudgetParametersDTOS) && StringUtils.isNotEmpty(bonusBudgetParametersDTOS)) {
+                StringBuilder indicatorNames = new StringBuilder("");
                 for (IndicatorDTO indicatorById : indicatorByIds) {
-                    if (indicatorById.getIndicatorId().equals(bonusBudgetParametersDTO.getIndicatorId())) {
-                        bonusBudgetParametersSet.add(bonusBudgetParametersDTO.getBudgetYear().toString());
+                    for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+                        if (indicatorById.getIndicatorId().equals(bonusBudgetParametersDTO.getIndicatorId())) {
+                            indicatorNames.append(indicatorById.getIndicatorName()).append(",");
+                            break;
+                        }
                     }
                 }
+                StringBuilder bonusBudgetParameterName = new StringBuilder("");
+                Set<String> bonusBudgetParametersSet = new HashSet<>();
+                for (BonusBudgetParametersDTO bonusBudgetParametersDTO : bonusBudgetParametersDTOS) {
+                    for (IndicatorDTO indicatorById : indicatorByIds) {
+                        if (indicatorById.getIndicatorId().equals(bonusBudgetParametersDTO.getIndicatorId())) {
+                            bonusBudgetParametersSet.add(bonusBudgetParametersDTO.getBudgetYear().toString());
+                        }
+                    }
+                }
+                for (String performance : bonusBudgetParametersSet) {
+                    bonusBudgetParameterName.append(performance).append(",");
+                }
+                quoteReminder.append("指标配置【")
+                        .append(indicatorNames.deleteCharAt(indicatorNames.length() - 1))
+                        .append("】已被总奖金包预算中的【奖金驱动因素】【")
+                        .append(bonusBudgetParameterName.deleteCharAt(bonusBudgetParameterName.length() - 1))
+                        .append("】引用 无法删除\n");
             }
-            for (String performance : bonusBudgetParametersSet) {
-                bonusBudgetParameterName.append(performance).append(",");
-            }
-            quoteReminder.append("指标配置【")
-                    .append(indicatorNames.deleteCharAt(indicatorNames.length() - 1))
-                    .append("】已被总奖金包预算中的【奖金驱动因素】【")
-                    .append(bonusBudgetParameterName.deleteCharAt(bonusBudgetParameterName.length() - 1))
-                    .append("】引用 无法删除\n");
         }
         if (quoteReminder.length() != 0) {
             throw new ServiceException(quoteReminder.toString());
@@ -775,6 +777,47 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("indicatorCode", treeNode.getIndicatorCode());
         });
+    }
+
+    /**
+     * 查询仪表盘列表
+     *
+     * @return list
+     */
+    @Override
+    public List<Map<String, Object>> selectIndicatorDashboardList(Integer targetYear) {
+        if (StringUtils.isNull(targetYear)) {
+            targetYear = DateUtils.getYear();
+        }
+        R<List<TargetSettingDTO>> listR = targetSettingService.queryIndicatorSettingList(new TargetSettingDTO(), SecurityConstants.INNER);
+        List<TargetSettingDTO> targetSettingDTOS = listR.getData();
+        if (StringUtils.isEmpty(targetSettingDTOS)) {
+            return new ArrayList<>();
+        }
+        List<IndicatorDTO> indicatorDTOS = indicatorMapper.selectIndicatorList(new Indicator());
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (IndicatorDTO indicatorDTO : indicatorDTOS) {
+            for (TargetSettingDTO targetSettingDTO : targetSettingDTOS) {
+                if (targetSettingDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())) {
+                    Map<String, Object> map = new HashMap<>();
+                    Integer isPreset = IndicatorCode.selectIsPreset(indicatorDTO.getIndicatorCode());
+                    map.put("indicatorId", indicatorDTO.getIndicatorId());
+                    map.put("indicatorName", indicatorDTO.getIndicatorName());
+                    map.put("indicatorCode", indicatorDTO.getIndicatorCode());
+                    if (isPreset == 1) {
+                        map.put("isPreset", 1);
+                        map.put("isNotPreset", 1);
+                    } else {
+                        map.put("isPreset", 2);
+                        map.put("isNotPreset", 0);
+                    }
+                    list.add(map);
+                    break;
+                }
+            }
+        }
+        list.sort(Comparator.comparing(m -> String.valueOf(m.get("isPreset"))));
+        return list;
     }
 
     /**

@@ -222,8 +222,17 @@ public interface ITargetSettingService {
 
     /**
      * 查询经营分析报表指标列表
-     * @param targetSettingDTO
-     * @return
+     *
+     * @param targetSettingDTO 指标
+     * @return List
      */
     List<TargetSettingDTO> analyseIndicator(TargetSettingDTO targetSettingDTO);
+
+    /**
+     * 查询目标制定list
+     *
+     * @param targetSettingDTO 指标
+     * @return List
+     */
+    List<TargetSettingDTO> queryIndicatorSettingList(TargetSettingDTO targetSettingDTO);
 }

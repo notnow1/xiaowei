@@ -3,6 +3,8 @@ package net.qixiaowei.operate.cloud.mapper.targetManager;
 import java.util.List;
 
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetDecompose;
+import net.qixiaowei.operate.cloud.api.dto.dashboard.TargetAchieveAnalysisDTO;
+import net.qixiaowei.operate.cloud.api.dto.dashboard.TargetLeaderboardDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -144,7 +146,7 @@ public interface TargetDecomposeMapper {
      * @param indicatorIds 指标ID集合
      * @return List
      */
-    List<TargetDecomposeDTO> selectByIndicatorIds(List<Long> indicatorIds);
+    List<TargetDecomposeDTO> selectByIndicatorIds(@Param("indicatorIds") List<Long> indicatorIds);
 
     /**
      * 获取目标分解的指标数据
@@ -153,4 +155,33 @@ public interface TargetDecomposeMapper {
      */
     List<TargetDecomposeDTO> selectTargetDecomposeIndicator();
 
+    /**
+     * 取最近一次分解维度的数据
+     *
+     * @return List
+     */
+    List<TargetAchieveAnalysisDTO> selectRecentDecompose();
+
+    /**
+     * 获取分解维度数据
+     *
+     * @param targetDecomposeDTO 分解DTO
+     * @return List
+     */
+    List<TargetAchieveAnalysisDTO> selectAchieveAnalysisDecompose(@Param("targetDecomposeDTO") TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
+     * 获取仪表盘分解维度列表
+     *
+     * @param targetDecomposeDTO 分解维度DTO
+     * @return List
+     */
+    List<TargetLeaderboardDTO> selectLeaderboardDecompose(@Param("targetDecomposeDTO") TargetDecomposeDTO targetDecomposeDTO);
+
+    /**
+     * 取最近一次分解维度的数据
+     *
+     * @return List
+     */
+    List<TargetLeaderboardDTO> selectRecentDecompose2();
 }

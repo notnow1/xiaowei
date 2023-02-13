@@ -123,8 +123,8 @@ public class RemoteDecompose implements RemoteDecomposeService {
      */
     @Override
     @InnerAuth
-    @GetMapping("/decomposeDetails/selectByIndicatorIds")
-    public R<List<TargetDecomposeDTO>> selectByIndicatorIds(List<Long> indicatorIds, String source) {
+    @PostMapping("/decomposeDetails/selectByIndicatorIds")
+    public R<List<TargetDecomposeDTO>> selectByIndicatorIds(@RequestBody List<Long> indicatorIds, String source) {
         return R.ok(targetDecomposeService.selectByIndicatorIds(indicatorIds));
     }
 

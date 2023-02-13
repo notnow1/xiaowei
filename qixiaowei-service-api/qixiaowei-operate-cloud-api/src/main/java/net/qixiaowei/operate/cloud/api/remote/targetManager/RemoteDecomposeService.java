@@ -87,6 +87,6 @@ public interface RemoteDecomposeService {
      * @param indicatorIds 指标ID集合
      * @return R
      */
-    @GetMapping("/targetDecompose/remote/decomposeDetails/selectByIndicatorIds")
+    @PostMapping("/targetDecompose/remote/decomposeDetails/selectByIndicatorIds")
     R<List<TargetDecomposeDTO>> selectByIndicatorIds(@RequestBody List<Long> indicatorIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

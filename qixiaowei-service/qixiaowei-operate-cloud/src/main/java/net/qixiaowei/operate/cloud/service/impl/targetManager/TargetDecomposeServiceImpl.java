@@ -1023,6 +1023,9 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     List<MessageSendDTO> messageSendDTOS = new ArrayList<>();
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
                         for (EmployeeDTO employeeDTO : employeeDTOS) {
+                            if (StringUtils.isNull(employeeDTO.getUserId())){
+                                continue;
+                            }
                             if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(employeeDTO.getEmployeeId())) {
                                 UserDTO user = userDTOS.get(0);
                                 Long targetDecomposeId = targetDecomposeDTO.getTargetDecomposeId();
@@ -1070,7 +1073,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                                 messageSendDTO.setSendUserId(user.getUserId());
                                 List<MessageReceiverDTO> messageReceivers = new ArrayList<>();
                                 MessageReceiverDTO messageReceiverDTO = new MessageReceiverDTO();
-                                messageReceiverDTO.setUserId(targetDecomposeDetailsDTO.getPrincipalEmployeeId());
+                                messageReceiverDTO.setUserId(employeeDTO.getUserId());
                                 messageReceivers.add(messageReceiverDTO);
                                 messageSendDTO.setMessageReceivers(messageReceivers);
                                 messageSendDTOS.add(messageSendDTO);

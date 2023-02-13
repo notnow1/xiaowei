@@ -649,10 +649,10 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             //总工资包预算
             basicWageBonusBudget = salarySum.add(basicWageBonusBudget);
         }
-        if (null == bonusBudgetDTO.getBasicWageBonusBudget()){
+        if (null == bonusBudgetDTO.getBasicWageBonusBudget()) {
             //总工资包预算
             bonusBudgetDTO.setBasicWageBonusBudget(basicWageBonusBudget.divide(new BigDecimal("10000"), 10, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP));
-        }else {
+        } else {
             //总工资包预算
             bonusBudgetDTO.setBasicWageBonusBudget(bonusBudgetDTO.getBasicWageBonusBudget());
         }
@@ -720,8 +720,8 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 }
 
 
-                if (null != emolumentPackage  && null != bonusBudgetDTOS.get(i).getBasicWageBonusBudget()) {
-                    elasticityBonusBudget = emolumentPackage.subtract( bonusBudgetDTOS.get(i).getBasicWageBonusBudget());
+                if (null != emolumentPackage && null != bonusBudgetDTOS.get(i).getBasicWageBonusBudget()) {
+                    elasticityBonusBudget = emolumentPackage.subtract(bonusBudgetDTOS.get(i).getBasicWageBonusBudget());
                     //弹性薪酬包  公式=总薪酬包预算-总工资包预算
                     bonusBudgetDTOS.get(i).setElasticityBonusBudget(elasticityBonusBudget);
                 }
@@ -789,6 +789,7 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
     /**
      * 新增奖金预算新增指标带出数据
+     *
      * @param bonusBudgetDTO
      * @return
      */
@@ -844,21 +845,21 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
             indicatorIdBonusMap = packMonth(targetOutcomeDetailsDTOS, month);
 
         }
-            if (StringUtils.isNotEmpty(targetSettingDTOS)) {
-                for (int i = 0; i < targetSettingDTOS.size(); i++) {
-                    if (i == 0) {
-                        //目标值
-                        BigDecimal targetValue = targetSettingDTOS.get(i).getTargetValue();
-                        //挑战值
-                        BigDecimal challengeValue = targetSettingDTOS.get(i).getChallengeValue();
-                        //保底值
-                        BigDecimal guaranteedValue = targetSettingDTOS.get(i).getGuaranteedValue();
-                        bonusBudgetParametersDTO.setTargetValue(targetValue);
-                        bonusBudgetParametersDTO.setChallengeValue(challengeValue);
-                        bonusBudgetParametersDTO.setGuaranteedValue(guaranteedValue);
-                    }
+        if (StringUtils.isNotEmpty(targetSettingDTOS)) {
+            for (int i = 0; i < targetSettingDTOS.size(); i++) {
+                if (i == 0) {
+                    //目标值
+                    BigDecimal targetValue = targetSettingDTOS.get(i).getTargetValue();
+                    //挑战值
+                    BigDecimal challengeValue = targetSettingDTOS.get(i).getChallengeValue();
+                    //保底值
+                    BigDecimal guaranteedValue = targetSettingDTOS.get(i).getGuaranteedValue();
+                    bonusBudgetParametersDTO.setTargetValue(targetValue);
+                    bonusBudgetParametersDTO.setChallengeValue(challengeValue);
+                    bonusBudgetParametersDTO.setGuaranteedValue(guaranteedValue);
                 }
             }
+        }
 
 
         BigDecimal bonusProportionStandard = new BigDecimal("0");
@@ -877,17 +878,17 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
 
     /**
      * 远程查询总奖金预算
+     *
      * @param bonusBudgetDTO
      * @return
      */
     @Override
     public BonusBudgetDTO selectBonusBudgetByIndicatorId(BonusBudgetDTO bonusBudgetDTO) {
         BonusBudget bonusBudget = new BonusBudget();
-        BeanUtils.copyProperties(bonusBudgetDTO,bonusBudget);
+        BeanUtils.copyProperties(bonusBudgetDTO, bonusBudget);
         List<BonusBudgetParametersDTO> bonusBudgetParametersDTOS1 = bonusBudgetMapper.selectBonusBudgetByIndicatorId(bonusBudget);
-
-
-        return null;
+        bonusBudgetDTO.setBonusBudgetParametersDTOS(bonusBudgetParametersDTOS1);
+        return bonusBudgetDTO;
     }
 
     /**

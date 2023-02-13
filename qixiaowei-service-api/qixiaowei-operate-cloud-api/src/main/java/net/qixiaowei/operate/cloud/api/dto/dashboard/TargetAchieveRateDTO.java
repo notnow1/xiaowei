@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 关键经营指标目标达成率
@@ -42,6 +43,10 @@ public class TargetAchieveRateDTO {
     /**
      * 指标名称
      */
+    private Long indicatorId;
+    /**
+     * 指标名称
+     */
     private String indicatorName;
     /**
      * 指标编码
@@ -59,4 +64,8 @@ public class TargetAchieveRateDTO {
      * 比例
      */
     private BigDecimal rate;
+    /**
+     * 指标id集合
+     */
+    private List<Long> indicatorIds;
 }

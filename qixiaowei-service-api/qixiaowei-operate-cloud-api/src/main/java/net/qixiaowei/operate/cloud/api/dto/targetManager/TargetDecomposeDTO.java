@@ -202,5 +202,9 @@ public class TargetDecomposeDTO {
      * 是否提交（0-保存/1-提交通知）
      */
     private Integer isSubmit;
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 }
 

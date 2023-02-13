@@ -156,7 +156,7 @@
     <select id="selectBonusBudgetByIndicatorId"
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetParametersDTO">
         SELECT
-        bb.bonus_budget
+        bb.bonus_budget_id,
         bbp.bonus_budget_parameters_id,
         bbp.bonus_budget_id,
         bbp.indicator_id,
@@ -186,12 +186,14 @@
         <if test="bonusBudget.budgetYear != null">
             and bb.budget_year = #{bonusBudget.budgetYear}
         </if>
-        and bbp.indicator_id in
-        <foreach item="item"
-                 collection="bonusBudget.indicatorIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        <if test="bonusBudget.indicatorIds != null">
+            and bbp.indicator_id in
+            <foreach item="item"
+                     collection="bonusBudget.indicatorIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
     <!--新增奖金预算表-->
     <insert id="insertBonusBudget" useGeneratedKeys="true" keyProperty="bonusBudgetId">

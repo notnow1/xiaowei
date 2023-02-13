@@ -32,4 +32,13 @@ public interface RemoteSettingService {
      */
     @PostMapping("/targetSetting/remote/queryIndicatorSetting")
     R<List<TargetSettingDTO>> queryIndicatorSetting(@RequestBody List<Long> indicatorIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 查询目标制定list
+     *
+     * @param source source
+     * @return R
+     */
+    @GetMapping("/targetSetting/remote/queryIndicatorSettingList")
+    R<List<TargetSettingDTO>> queryIndicatorSettingList(@RequestBody TargetSettingDTO targetSettingDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

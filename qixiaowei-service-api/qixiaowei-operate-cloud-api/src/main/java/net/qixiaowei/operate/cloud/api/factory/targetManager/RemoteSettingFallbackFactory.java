@@ -29,6 +29,11 @@ public class RemoteSettingFallbackFactory implements FallbackFactory<RemoteSetti
             public R<List<TargetSettingDTO>> queryIndicatorSetting(List<Long> indicatorIds, String source) {
                 return R.fail("根据指标ID查询目标制定是否引用失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<TargetSettingDTO>> queryIndicatorSettingList(TargetSettingDTO targetSettingDTO, String source) {
+                return R.fail("查询目标制定list引用失败:" + throwable.getMessage());
+            }
         };
     }
 }

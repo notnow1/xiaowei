@@ -1,44 +1,40 @@
 package net.qixiaowei.operate.cloud.api.dto.dashboard;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDTO;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 /**
- * 关键经营指标目标达成率
+ * 关键经营指标排行榜
  *
  * @author Graves
  * @since 2022-11-22
  */
 @Data
 @Accessors(chain = true)
-public class TargetAchieveAnalysisDTO {
-
+public class TargetLeaderboardDTO {
     //查询检验
-    public interface QueryTargetAchieveAnalysisDTO extends Default {
+    public interface QueryTargetLeaderboardDTO extends Default {
 
     }
 
     //新增检验
-    public interface AddTargetAchieveAnalysisDTO extends Default {
+    public interface AddTargetLeaderboardDTO extends Default {
 
     }
 
     //删除检验
-    public interface DeleteTargetAchieveAnalysisDTO extends Default {
+    public interface DeleteTargetLeaderboardDTO extends Default {
 
     }
 
     //修改检验
-    public interface UpdateTargetAchieveAnalysisDTO extends Default {
+    public interface UpdateTargetLeaderboardDTO extends Default {
 
     }
 

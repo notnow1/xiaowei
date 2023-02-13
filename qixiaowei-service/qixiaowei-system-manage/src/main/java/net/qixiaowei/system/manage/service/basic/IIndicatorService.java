@@ -4,6 +4,7 @@ import cn.hutool.core.lang.tree.Tree;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -202,4 +203,11 @@ public interface IIndicatorService {
      * @return List
      */
     List<Tree<Long>> getSuperIndicator(Long indicatorId);
+
+    /**
+     * 查询仪表盘列表
+     *
+     * @return list
+     */
+    List<Map<String, Object>> selectIndicatorDashboardList(Integer targetYear);
 }

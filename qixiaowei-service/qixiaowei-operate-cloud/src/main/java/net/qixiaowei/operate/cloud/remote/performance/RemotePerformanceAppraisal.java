@@ -51,7 +51,7 @@ public class RemotePerformanceAppraisal implements RemotePerformanceAppraisalSer
      */
     @Override
     @InnerAuth
-    @PostMapping("/queryQuoteEmployeeById")
+    @PostMapping("/selectByIndicatorIds")
     public R<List<PerformanceAppraisalItemsDTO>> selectByIndicatorIds(@RequestBody Map<Integer, List<Long>> map, String source) {
         return R.ok(performanceAppraisalItemsService.selectByIndicatorIds(map));
     }

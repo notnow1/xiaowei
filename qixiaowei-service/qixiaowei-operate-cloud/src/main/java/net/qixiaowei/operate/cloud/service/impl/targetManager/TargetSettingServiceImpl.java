@@ -500,7 +500,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
     }
 
     /**
-     *查询经营分析报表指标列表
+     * 查询经营分析报表指标列表
+     *
      * @param targetSettingDTO
      * @return
      */
@@ -533,22 +534,22 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         }
 
         List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectanalyseIndicator(targetSetting);
-        if (StringUtils.isNotEmpty(indicatorIds)){
+        if (StringUtils.isNotEmpty(indicatorIds)) {
             for (Long indicatorId : indicatorIds) {
                 TargetSettingDTO targetSettingDTO1 = new TargetSettingDTO();
                 targetSettingDTO1.setIndicatorId(indicatorId);
                 targetSettingDTOS.add(targetSettingDTO1);
             }
         }
-        if (StringUtils.isNotEmpty(targetSettingDTOS)){
+        if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             List<Long> collect = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(collect)){
+            if (StringUtils.isNotEmpty(collect)) {
                 R<List<IndicatorDTO>> indicatorData = indicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
                 List<IndicatorDTO> data = indicatorData.getData();
-                if (StringUtils.isNotEmpty(data)){
+                if (StringUtils.isNotEmpty(data)) {
                     for (TargetSettingDTO settingDTO : targetSettingDTOS) {
                         for (IndicatorDTO datum : data) {
-                            if (settingDTO.getIndicatorId().equals(datum.getIndicatorId())){
+                            if (settingDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                                 settingDTO.setIndicatorName(datum.getIndicatorName());
                             }
                         }
@@ -563,6 +564,19 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                         Comparator.comparing(
                                 TargetSettingDTO::getIndicatorId))), ArrayList::new));
         return collect;
+    }
+
+    /**
+     * 查询目标制定列表
+     *
+     * @param targetSettingDTO 指标
+     * @return List
+     */
+    @Override
+    public List<TargetSettingDTO> queryIndicatorSettingList(TargetSettingDTO targetSettingDTO) {
+        TargetSetting targetSetting = new TargetSetting();
+        BeanUtils.copyProperties(targetSettingDTO, targetSetting);
+        return targetSettingMapper.selectTargetSettingListOrderIndicator(targetSetting);
     }
 
 
@@ -811,7 +825,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         targetSetting.setTenantId(SecurityUtils.getTenantId());
 
         List<Long> indicatorIds = targetSettingDTO.getIndicatorIds();
-        if (StringUtils.isEmpty(indicatorIds)){
+        if (StringUtils.isEmpty(indicatorIds)) {
             //指标code集合
             List<String> list = new ArrayList<>();
             //订单（不含税）
@@ -864,10 +878,10 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
 
 
             List<Long> indicatorIdsData = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(indicatorIdsData)){
+            if (StringUtils.isNotEmpty(indicatorIdsData)) {
                 indicatorIds.removeAll(indicatorIdsData);
             }
-            if (StringUtils.isNotEmpty(indicatorIds)){
+            if (StringUtils.isNotEmpty(indicatorIds)) {
                 for (Long indicatorId : indicatorIds) {
                     TargetSettingDTO targetSettingDTO1 = new TargetSettingDTO();
                     targetSettingDTO1.setIndicatorId(indicatorId);
@@ -880,8 +894,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                     targetSettingDTOS.add(targetSettingDTO1);
                 }
             }
-        }else {
-            if (StringUtils.isNotEmpty(indicatorIds)){
+        } else {
+            if (StringUtils.isNotEmpty(indicatorIds)) {
                 for (Long indicatorId : indicatorIds) {
                     TargetSettingDTO targetSettingDTO1 = new TargetSettingDTO();
                     targetSettingDTO1.setIndicatorId(indicatorId);
@@ -895,15 +909,15 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 }
             }
         }
-        if (StringUtils.isNotEmpty(targetSettingDTOS)){
+        if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             List<Long> collect = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(collect)){
+            if (StringUtils.isNotEmpty(collect)) {
                 R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByIds(collect, SecurityConstants.INNER);
                 List<IndicatorDTO> data = listR.getData();
-                if (StringUtils.isNotEmpty(data)){
+                if (StringUtils.isNotEmpty(data)) {
                     for (TargetSettingDTO settingDTO : targetSettingDTOS) {
                         for (IndicatorDTO datum : data) {
-                            if (settingDTO.getIndicatorId().equals(datum.getIndicatorId())){
+                            if (settingDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                                 settingDTO.setIndicatorName(datum.getIndicatorName());
                             }
                         }
