@@ -527,6 +527,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
         if (StringUtils.isEmpty(listR.getData())) {
             throw new ServiceException("指标不存在 请联系管理员！");
         } else {
+
             indicatorIds = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             targetSetting.setIndicatorIds(indicatorIds);
         }
@@ -556,7 +557,12 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
 
             }
         }
-        return targetSettingDTOS;
+        //根据属性去重
+        ArrayList<TargetSettingDTO> collect = targetSettingDTOS.stream().collect(Collectors.collectingAndThen(
+                Collectors.toCollection(() -> new TreeSet<>(
+                        Comparator.comparing(
+                                TargetSettingDTO::getIndicatorId))), ArrayList::new));
+        return collect;
     }
 
 

@@ -215,7 +215,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                 BigDecimal multiply = revenue.multiply(er).divide(new BigDecimal("100"), BigDecimal.ROUND_HALF_UP);
                 emolumentPlanDTOS.get(i).setEmolumentPackage(multiply);
             }
-            if (year > planYear) {
+            if (year >= planYear) {
                 if (i == 0) {
                     emolumentPlanDTOS.get(i).setEmolumentPracticalRevenueImprove(new BigDecimal("0"));
                 }
@@ -224,7 +224,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                     BigDecimal erBeforeOne1 = emolumentPlanDTOS.get(i - 1).getErBeforeOne();
                     BigDecimal emolumentPracticalRevenueImprove = new BigDecimal("0");
                     if ((null != erBeforeOne1 && erBeforeOne1.compareTo(new BigDecimal("0")) != 0) && (null != erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0")) != 0)) {
-                        emolumentPracticalRevenueImprove = erBeforeOne1.divide(erBeforeOne.subtract(new BigDecimal("100"))).multiply(new BigDecimal("100"));
+                        emolumentPracticalRevenueImprove = erBeforeOne1.divide(erBeforeOne.subtract(new BigDecimal("100")),10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
                     }
                     emolumentPlanDTOS.get(i).setEmolumentPracticalRevenueImprove(emolumentPracticalRevenueImprove);
                 }
