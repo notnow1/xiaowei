@@ -2217,7 +2217,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         performanceAppraisalObjectsDTO.setAppraisalObjectStatusList(appraisalObjectStatuses);
         performanceAppraisalObjectsDTO.setPerformanceAppraisalIds(performanceAppraisalIds);
         Map<String, Object> params2 = new HashMap<>();
-        
         for (String key : params.keySet()) {
             switch (key) {
                 case "departmentNameEqual":

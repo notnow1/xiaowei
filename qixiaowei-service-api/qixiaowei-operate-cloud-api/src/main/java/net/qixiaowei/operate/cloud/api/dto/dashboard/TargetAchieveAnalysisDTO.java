@@ -68,6 +68,14 @@ public class TargetAchieveAnalysisDTO {
     @NotNull(message = "目标年度不能为空", groups = {TargetAchieveAnalysisDTO.QueryTargetAchieveAnalysisDTO.class})
     private Integer targetYear;
     /**
+     * 目标年度
+     */
+    private Integer startYear;
+    /**
+     * 目标年度
+     */
+    private Integer endYear;
+    /**
      * 目标分解ID
      */
     private Long targetDecomposeId;

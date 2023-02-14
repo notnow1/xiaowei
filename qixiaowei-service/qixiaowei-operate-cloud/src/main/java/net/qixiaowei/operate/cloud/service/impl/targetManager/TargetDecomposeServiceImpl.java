@@ -873,6 +873,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         }
         return targetDecomposeDTOS;
     }
+
     /**
      * 获取高级搜索后的组织ID传入params
      *
@@ -910,6 +911,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             }
         }
     }
+
     /**
      * 查询目标分解(销售收入)表列表
      *
@@ -1033,6 +1035,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
+        targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         this.sendMessage(targetDecomposeDTO, 1);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
@@ -1057,7 +1060,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                     List<MessageSendDTO> messageSendDTOS = new ArrayList<>();
                     for (TargetDecomposeDetailsDTO targetDecomposeDetailsDTO : targetDecomposeDetailsDTOS) {
                         for (EmployeeDTO employeeDTO : employeeDTOS) {
-                            if (StringUtils.isNull(employeeDTO.getUserId())){
+                            if (StringUtils.isNull(employeeDTO.getUserId())) {
                                 continue;
                             }
                             if (targetDecomposeDetailsDTO.getPrincipalEmployeeId().equals(employeeDTO.getEmployeeId())) {
@@ -1203,6 +1206,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
+        targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         this.sendMessage(targetDecomposeDTO, 2);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
@@ -1251,6 +1255,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
+        targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         this.sendMessage(targetDecomposeDTO, 3);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
@@ -1290,6 +1295,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
+        targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         this.sendMessage(targetDecomposeDTO, 4);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
@@ -2808,10 +2814,10 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             List<Long> indicatorIds = targetDecomposeDTOList.stream().map(TargetDecomposeDTO::getIndicatorId).filter(Objects::nonNull).distinct().collect(Collectors.toList());
             R<List<IndicatorDTO>> listR = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
             List<IndicatorDTO> data = listR.getData();
-            if (StringUtils.isNotEmpty(data)){
+            if (StringUtils.isNotEmpty(data)) {
                 for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOList) {
                     for (IndicatorDTO datum : data) {
-                        if (decomposeDTO.getIndicatorId().equals(datum.getIndicatorId())){
+                        if (decomposeDTO.getIndicatorId().equals(datum.getIndicatorId())) {
                             decomposeDTO.setIndicatorName(datum.getIndicatorName());
                         }
                     }

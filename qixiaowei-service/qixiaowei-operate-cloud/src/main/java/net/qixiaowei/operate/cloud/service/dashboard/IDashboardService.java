@@ -28,7 +28,7 @@ public interface IDashboardService {
      *
      * @return List
      */
-    Map<String, Object> getDropList();
+    List<Map<String, Object>> getDropList();
 
     /**
      * 关键经营指标月度达成分析列表
@@ -46,9 +46,18 @@ public interface IDashboardService {
     Map<String, Object> targetLeaderboardList(TargetLeaderboardDTO targetLeaderboardDTO);
 
     /**
-     * 关键经营指标排行榜下拉列表
+     * 根据指标ID获取分解维度下拉框
      *
+     * @param indicatorId 指标ID
      * @return Map
      */
-    Map<String, Object> targetLeaderboardDropList();
+    List<Map<String, Object>> targetDropList(Long indicatorId);
+
+    /**
+     * 获取时间维度下拉框
+     *
+     * @param map map
+     * @return List
+     */
+    List<Map<String, Object>> timeDropList(Map<String, Object> map);
 }

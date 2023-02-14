@@ -162,6 +162,7 @@ public class IndustryController extends BaseController {
      */
     @GetMapping("/list")
     public AjaxResult list(IndustryDTO industryDTO) {
+        industryDTO.setStatus(1);
         List<IndustryDTO> list = industryService.selectIndustryList(industryDTO);
         return AjaxResult.success(list);
     }

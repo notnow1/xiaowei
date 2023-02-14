@@ -103,8 +103,8 @@ public class IndustryServiceImpl implements IIndustryService {
     /**
      * 树结构
      *
-     * @param industryDTO
-     * @return
+     * @param industryDTO 行业DTO
+     * @return List
      */
     @Override
     public List<Tree<Long>> selectIndustryTreeList(IndustryDTO industryDTO) {

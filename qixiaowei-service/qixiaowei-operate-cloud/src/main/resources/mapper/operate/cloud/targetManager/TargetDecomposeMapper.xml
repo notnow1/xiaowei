@@ -529,7 +529,7 @@
         WHERE
         td.delete_flag = 0
         ORDER BY
-        td.create_time DESC
+        td.update_time DESC
     </select>
     <!--取最近一次分解维度-->
     <select id="selectRecentDecompose"
@@ -584,8 +584,16 @@
         td.decomposition_dimension,
         td.time_dimension,
         tdd.target_decompose_details_id,
+        tdd.employee_id,
+        tdd.area_id,
+        tdd.department_id,
+        tdd.product_id,
+        tdd.region_id,
+        tdd.industry_id,
         ddc.decompose_detail_cycles_id,
         ddc.cycle_number,
+        a.area_name,
+        p.product_name,
         IFNULL( ddc.cycle_target, 0 ) as cycle_target,
         IFNULL( ddc.cycle_forecast, 0 ) as cycle_forecast,
         IFNULL( ddc.cycle_actual, 0 ) as cycle_actual
@@ -629,6 +637,10 @@
         AND tdd.delete_flag = 0
         LEFT JOIN decompose_detail_cycles ddc ON ddc.target_decompose_details_id = tdd.target_decompose_details_id
         AND ddc.delete_flag = 0
+        LEFT JOIN area a ON a.area_id = tdd.area_id
+        AND a.delete_flag =0
+        LEFT JOIN product p ON p.product_id = tdd.product_id
+        AND p.delete_flag =0
         <if test="targetDecomposeDTO.params.timeStart!=null and targetDecomposeDTO.params.timeEnd!=null">
             WHERE ddc.cycle_number &lt;= #{targetDecomposeDTO.params.timeEnd}
             AND ddc.cycle_number &gt;= #{targetDecomposeDTO.params.timeStart}
@@ -647,8 +659,16 @@
         td.decomposition_dimension,
         td.time_dimension,
         tdd.target_decompose_details_id,
+        tdd.employee_id,
+        tdd.area_id,
+        tdd.department_id,
+        tdd.product_id,
+        tdd.region_id,
+        tdd.industry_id,
         ddc.decompose_detail_cycles_id,
         ddc.cycle_number,
+        a.area_name,
+        p.product_name,
         IFNULL( ddc.cycle_target, 0 ) as cycle_target,
         IFNULL( ddc.cycle_forecast, 0 ) as cycle_forecast,
         IFNULL( ddc.cycle_actual, 0 ) as cycle_actual
@@ -692,11 +712,68 @@
         AND tdd.delete_flag = 0
         LEFT JOIN decompose_detail_cycles ddc ON ddc.target_decompose_details_id = tdd.target_decompose_details_id
         AND ddc.delete_flag = 0
+        LEFT JOIN area a ON a.area_id = tdd.area_id
+        AND a.delete_flag =0
+        LEFT JOIN product p ON p.product_id = tdd.product_id
+        AND p.delete_flag =0
         <if test="targetDecomposeDTO.params.timeStart!=null and targetDecomposeDTO.params.timeEnd!=null">
             WHERE ddc.cycle_number &lt;= #{targetDecomposeDTO.params.timeEnd}
             AND ddc.cycle_number &gt;= #{targetDecomposeDTO.params.timeStart}
         </if>
         ORDER BY ddc.cycle_number
+    </select>
+    <!--取最近一次分解维度的数据-->
+    <select id="selectRecentDecompose2"
+            resultType="net.qixiaowei.operate.cloud.api.dto.dashboard.TargetLeaderboardDTO">
+        SELECT
+        td.target_decompose_id,
+        td.target_year,
+        td.indicator_id,
+        td.update_time,
+        td.target_decompose_dimension_id,
+        td.decomposition_dimension,
+        td.time_dimension,
+        tdd.target_decompose_details_id,
+        tdd.employee_id,
+        tdd.area_id,
+        tdd.department_id,
+        tdd.product_id,
+        tdd.region_id,
+        tdd.industry_id,
+        ddc.decompose_detail_cycles_id,
+        ddc.cycle_number,
+        a.area_name,
+        p.product_name,
+        IFNULL( ddc.cycle_target, 0 ) as cycle_target,
+        IFNULL( ddc.cycle_forecast, 0 ) as cycle_forecast,
+        IFNULL( ddc.cycle_actual, 0 ) as cycle_actual
+        FROM
+        (
+        SELECT
+        target_decompose_id,
+        target_year,
+        target_decompose_dimension_id,
+        decomposition_dimension,
+        time_dimension,
+        indicator_id,
+        delete_flag,
+        update_time
+        FROM
+        target_decompose
+        WHERE
+        delete_flag = 0
+        ORDER BY
+        update_time DESC
+        LIMIT 1
+        ) td
+        LEFT JOIN target_decompose_details tdd ON td.target_decompose_id = tdd.target_decompose_id
+        AND tdd.delete_flag = 0
+        LEFT JOIN decompose_detail_cycles ddc ON ddc.target_decompose_details_id = tdd.target_decompose_details_id
+        AND ddc.delete_flag = 0
+        LEFT JOIN area a ON a.area_id = tdd.area_id
+        AND a.delete_flag =0
+        LEFT JOIN product p ON p.product_id = tdd.product_id
+        AND p.delete_flag =0
     </select>
     <!--新增销售订单目标分解表-->
     <insert id="insertTargetDecompose" useGeneratedKeys="true" keyProperty="targetDecomposeId">

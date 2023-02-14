@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -36,15 +37,6 @@ public class DashboardController extends BaseController {
     }
 
     /**
-     * 目标达成获取下拉列表
-     */
-    @RequiresPermissions("operate:cloud:dashboard:list")
-    @GetMapping("/targetAchieveAnalysis/getDropList")
-    public AjaxResult getIndicatorList() {
-        return AjaxResult.success(dashboardService.getDropList());
-    }
-
-    /**
      * 关键经营指标月度达成分析列表
      */
     @RequiresPermissions("operate:cloud:dashboard:list")
@@ -63,12 +55,30 @@ public class DashboardController extends BaseController {
     }
 
     /**
-     * 关键经营指标排行榜下拉列表
+     * 目标达成获取指标下拉列表
      */
     @RequiresPermissions("operate:cloud:dashboard:list")
-    @GetMapping("/targetLeaderboard/getDropList")
-    public AjaxResult targetLeaderboardDropList() {
-        return AjaxResult.success(dashboardService.targetLeaderboardDropList());
+    @GetMapping("/targetAchieveAnalysis/getDropList")
+    public AjaxResult getIndicatorList() {
+        return AjaxResult.success(dashboardService.getDropList());
+    }
+
+    /**
+     * 根据指标ID获取分解维度下拉框
+     */
+    @RequiresPermissions("operate:cloud:dashboard:list")
+    @GetMapping("/targetLeaderboard/getTargetList")
+    public AjaxResult getTargetList(@RequestParam("indicatorId") Long indicatorId) {
+        return AjaxResult.success(dashboardService.targetDropList(indicatorId));
+    }
+
+    /**
+     * 获取时间维度下拉框
+     */
+    @RequiresPermissions("operate:cloud:dashboard:list")
+    @PostMapping("/targetLeaderboard/getTimeDropList")
+    public AjaxResult getTimeDropList(@RequestBody Map<String, Object> map) {
+        return AjaxResult.success(dashboardService.timeDropList(map));
     }
 
 }
