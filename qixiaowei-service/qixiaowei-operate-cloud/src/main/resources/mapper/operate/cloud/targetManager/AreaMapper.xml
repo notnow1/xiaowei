@@ -23,16 +23,16 @@
             and area_id=#{area.areaId}
         </if>
         <if test="area.areaCode != null and area.areaCode != ''">
-            and area_code=#{area.areaCode}
+            and area_code LIKE concat('%', #{area.areaCode}, '%')
         </if>
         <if test="area.areaName != null and area.areaName != ''">
-            and area_name=#{area.areaName}
+            and area_name LIKE concat('%', #{area.areaName}, '%')
         </if>
         <if test="area.regionIds != null and area.regionIds != ''">
             and region_ids=#{area.regionIds}
         </if>
         <if test="area.regionNames != null and area.regionNames != ''">
-            and region_names=#{area.regionNames}
+            and region_names  LIKE concat('%', #{area.regionNames}, '%')
         </if>
         <if test="area.deleteFlag != null">
             and delete_flag=#{area.deleteFlag}

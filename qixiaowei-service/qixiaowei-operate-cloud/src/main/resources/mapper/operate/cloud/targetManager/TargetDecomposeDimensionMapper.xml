@@ -24,7 +24,7 @@
             and target_decompose_dimension_id=#{targetDecomposeDimension.targetDecomposeDimensionId}
         </if>
         <if test="targetDecomposeDimension.decompositionDimension != null and targetDecomposeDimension.decompositionDimension != ''">
-            and decomposition_dimension=#{targetDecomposeDimension.decompositionDimension}
+            and decomposition_dimension LIKE concat('%', #{targetDecomposeDimension.decompositionDimension}, '%')
         </if>
         <if test="targetDecomposeDimension.sort != null and targetDecomposeDimension.sort != ''">
             and sort=#{targetDecomposeDimension.sort}
