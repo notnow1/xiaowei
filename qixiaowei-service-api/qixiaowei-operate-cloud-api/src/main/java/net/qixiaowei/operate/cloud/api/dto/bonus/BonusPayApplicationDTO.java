@@ -3,7 +3,7 @@ package net.qixiaowei.operate.cloud.api.dto.bonus;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +145,7 @@ public class BonusPayApplicationDTO {
     /**
      * 创建人名称
      */
-    private  String createName;
+    private  String createByName;
     /**
     * 创建时间
     */

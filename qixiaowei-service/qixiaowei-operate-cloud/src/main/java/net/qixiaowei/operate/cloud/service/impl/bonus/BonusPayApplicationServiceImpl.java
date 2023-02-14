@@ -13,9 +13,7 @@ import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayApplication;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayBudgetDept;
 import net.qixiaowei.operate.cloud.api.domain.bonus.BonusPayObjects;
 import net.qixiaowei.operate.cloud.api.dto.bonus.*;
-import net.qixiaowei.operate.cloud.api.dto.salary.EmolumentPlanDTO;
 import net.qixiaowei.operate.cloud.api.dto.salary.SalaryItemDTO;
-import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayApplicationMapper;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayBudgetDeptMapper;
 import net.qixiaowei.operate.cloud.mapper.bonus.BonusPayObjectsMapper;
@@ -23,12 +21,10 @@ import net.qixiaowei.operate.cloud.mapper.salary.SalaryItemMapper;
 import net.qixiaowei.operate.cloud.service.bonus.IBonusPayApplicationService;
 import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.OfficialRankSystemDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
-import net.sf.jsqlparser.util.deparser.GroupByDeParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -294,7 +290,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     for (UserDTO userDTO : data1) {
                         if (payApplicationDTO.getCreateBy().equals(userDTO.getUserId())) {
                             //创建人名称
-                            payApplicationDTO.setCreateName(userDTO.getEmployeeName());
+                            payApplicationDTO.setCreateByName(userDTO.getEmployeeName());
                         }
                     }
                 }
