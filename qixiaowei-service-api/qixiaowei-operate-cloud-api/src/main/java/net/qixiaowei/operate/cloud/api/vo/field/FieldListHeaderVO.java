@@ -42,6 +42,10 @@ public class FieldListHeaderVO {
      * 固定标记:0否;1是
      */
     private Integer fixationFlag;
+    /**
+     * 强制固定:0否;1是
+     */
+    private Integer fixationForce;
 
 }
 

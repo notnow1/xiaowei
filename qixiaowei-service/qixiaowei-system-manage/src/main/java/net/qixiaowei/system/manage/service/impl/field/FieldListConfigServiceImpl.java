@@ -5,6 +5,7 @@ import java.util.*;
 import cn.hutool.core.util.StrUtil;
 import net.qixiaowei.integration.common.enums.field.system.EmployeeField;
 import net.qixiaowei.integration.common.enums.field.system.PostField;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -36,12 +37,12 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
     private static final Set<String> NEED_CONCAT = new HashSet<>();
 
     static {
-        NEED_CONCAT.add(PostField.POST_RANK.getCode());
-        NEED_CONCAT.add(PostField.POST_RANK_LOWER.getCode());
-        NEED_CONCAT.add(PostField.POST_RANK_UPPER.getCode());
-        NEED_CONCAT.add(EmployeeField.NATIONALITY.getCode());
-        NEED_CONCAT.add(EmployeeField.NATION.getCode());
-        NEED_CONCAT.add(EmployeeField.EMPLOYEE_RANK.getCode());
+        NEED_CONCAT.add(BusinessType.POST.getCode() + StrUtil.COLON + PostField.POST_RANK.getCode());
+        NEED_CONCAT.add(BusinessType.POST.getCode() + StrUtil.COLON + PostField.POST_RANK_LOWER.getCode());
+        NEED_CONCAT.add(BusinessType.POST.getCode() + StrUtil.COLON + PostField.POST_RANK_UPPER.getCode());
+        NEED_CONCAT.add(BusinessType.EMPLOYEE.getCode() + StrUtil.COLON + EmployeeField.NATIONALITY.getCode());
+        NEED_CONCAT.add(BusinessType.EMPLOYEE.getCode() + StrUtil.COLON + EmployeeField.NATION.getCode());
+        NEED_CONCAT.add(BusinessType.EMPLOYEE.getCode() + StrUtil.COLON + EmployeeField.EMPLOYEE_RANK.getCode());
     }
 
     @Autowired
@@ -79,51 +80,10 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         List<FieldListHeaderVO> fieldListHeaderVOS = fieldListConfigMapper.selectFieldHeaderListOfBusinessTypeAndUserId(businessType, userId);
         for (FieldListHeaderVO fieldListHeaderVO : fieldListHeaderVOS) {
             String fieldName = fieldListHeaderVO.getFieldName();
-            fieldName = this.parseFieldName(fieldName);
+            fieldName = this.parseFieldName(fieldName, businessType);
             fieldListHeaderVO.setFieldName(fieldName);
         }
         return fieldListHeaderVOS;
-    }
-
-    /**
-     * @description: 初始化用户字段列表
-     * @Author: hzk
-     * @date: 2023/2/9 20:12
-     * @param: [businessType, userId]
-     * @return: void
-     **/
-    private void initUserFieldList(Integer businessType, Long userId) {
-        //找到字段配置
-        List<FieldConfigDTO> fieldConfigDTOS = fieldConfigService.selectFieldConfigListOfBusinessType(businessType);
-        if (StringUtils.isEmpty(fieldConfigDTOS)) {
-            return;
-        }
-        //初始化用户字段列表。
-        List<FieldListConfig> fieldListConfigs = fieldListConfigManager.initUserFieldListConfig(businessType, fieldConfigDTOS);
-        this.addFieldListConfig(userId, fieldListConfigs);
-    }
-
-    /**
-     * @description: 新增字段列表配置
-     * @Author: hzk
-     * @date: 2023/2/13 11:52
-     * @param: [userId, fieldListConfigs]
-     * @return: void
-     **/
-    private void addFieldListConfig(Long userId, List<FieldListConfig> fieldListConfigs) {
-        if (StringUtils.isNotEmpty(fieldListConfigs)) {
-            Long userIdOfInsert = SecurityUtils.getUserId();
-            Date nowDate = DateUtils.getNowDate();
-            for (FieldListConfig fieldListConfig : fieldListConfigs) {
-                fieldListConfig.setUserId(userId);
-                fieldListConfig.setCreateBy(userIdOfInsert);
-                fieldListConfig.setCreateTime(nowDate);
-                fieldListConfig.setUpdateTime(nowDate);
-                fieldListConfig.setUpdateBy(userIdOfInsert);
-                fieldListConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            }
-            fieldListConfigMapper.batchFieldListConfig(fieldListConfigs);
-        }
     }
 
     /**
@@ -138,7 +98,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         List<FieldListConfigVO> fieldListConfigVOS = fieldListConfigMapper.selectFieldListConfigListOfBusinessTypeAndUserId(businessType, userId);
         for (FieldListConfigVO fieldListConfigVO : fieldListConfigVOS) {
             String fieldName = fieldListConfigVO.getFieldName();
-            fieldName = this.parseFieldName(fieldName);
+            fieldName = this.parseFieldName(fieldName, businessType);
             fieldListConfigVO.setFieldName(fieldName);
         }
         return fieldListConfigVOS;
@@ -183,6 +143,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         }
         Date nowDate = DateUtils.getNowDate();
         FieldListConfig fieldListConfig = new FieldListConfig();
+        fieldListConfig.setFieldListConfigId(fieldListConfigId);
         fieldListConfig.setFixationFlag(fieldListConfigDTO.getFixationFlag());
         fieldListConfig.setFieldWidth(fieldListConfigDTO.getFieldWidth());
         fieldListConfig.setUpdateTime(nowDate);
@@ -290,6 +251,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         int sort = 0;
         for (FieldListConfigDTO fieldListConfigDTO : fieldListConfigDtos) {
             FieldListConfig fieldListConfig = new FieldListConfig();
+            fieldListConfig.setFieldListConfigId(fieldListConfigDTO.getFieldListConfigId());
             fieldListConfig.setShowFlag(fieldListConfigDTO.getShowFlag());
             fieldListConfig.setFixationFlag(fieldListConfigDTO.getFixationFlag());
             fieldListConfig.setFieldWidth(fieldListConfigDTO.getFieldWidth());
@@ -311,15 +273,56 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
      * @param: [fieldName]
      * @return: java.lang.String
      **/
-    private String parseFieldName(String fieldName) {
+    private String parseFieldName(String fieldName, Integer businessType) {
         String _id = "_id";
         if (fieldName.endsWith(_id)) {
             fieldName = fieldName.substring(0, fieldName.lastIndexOf("_id")).concat("_name");
         }
-        if (NEED_CONCAT.contains(fieldName)) {
+        if (NEED_CONCAT.contains(businessType + StrUtil.COLON + fieldName)) {
             fieldName = fieldName.concat("_name");
         }
         return StrUtil.toCamelCase(fieldName);
+    }
+
+    /**
+     * @description: 初始化用户字段列表
+     * @Author: hzk
+     * @date: 2023/2/9 20:12
+     * @param: [businessType, userId]
+     * @return: void
+     **/
+    private void initUserFieldList(Integer businessType, Long userId) {
+        //找到字段配置
+        List<FieldConfigDTO> fieldConfigDTOS = fieldConfigService.selectFieldConfigListOfBusinessType(businessType);
+        if (StringUtils.isEmpty(fieldConfigDTOS)) {
+            return;
+        }
+        //初始化用户字段列表。
+        List<FieldListConfig> fieldListConfigs = fieldListConfigManager.initUserFieldListConfig(businessType, fieldConfigDTOS);
+        this.addFieldListConfig(userId, fieldListConfigs);
+    }
+
+    /**
+     * @description: 新增字段列表配置
+     * @Author: hzk
+     * @date: 2023/2/13 11:52
+     * @param: [userId, fieldListConfigs]
+     * @return: void
+     **/
+    private void addFieldListConfig(Long userId, List<FieldListConfig> fieldListConfigs) {
+        if (StringUtils.isNotEmpty(fieldListConfigs)) {
+            Long userIdOfInsert = SecurityUtils.getUserId();
+            Date nowDate = DateUtils.getNowDate();
+            for (FieldListConfig fieldListConfig : fieldListConfigs) {
+                fieldListConfig.setUserId(userId);
+                fieldListConfig.setCreateBy(userIdOfInsert);
+                fieldListConfig.setCreateTime(nowDate);
+                fieldListConfig.setUpdateTime(nowDate);
+                fieldListConfig.setUpdateBy(userIdOfInsert);
+                fieldListConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            }
+            fieldListConfigMapper.batchFieldListConfig(fieldListConfigs);
+        }
     }
 
 }

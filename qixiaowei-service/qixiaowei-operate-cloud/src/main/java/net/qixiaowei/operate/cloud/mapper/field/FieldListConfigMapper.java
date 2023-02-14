@@ -20,6 +20,15 @@ import java.util.Date;
 public interface FieldListConfigMapper {
 
     /**
+     * 根据业务类型统计用户字段列表配置数量
+     *
+     * @param businessType 业务类型
+     * @param userId 用户ID
+     * @return 字段列表配置表集合
+     */
+    Integer countFieldHeaderListOfBusinessTypeAndUserId(@Param("businessType") Integer businessType, @Param("userId") Long userId);
+
+    /**
      * 查询字段列表配置表列表
      *
      * @param businessType 业务类型

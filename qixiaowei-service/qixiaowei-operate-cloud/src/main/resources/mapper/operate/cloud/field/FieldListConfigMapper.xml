@@ -2,12 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="net.qixiaowei.operate.cloud.mapper.field.FieldListConfigMapper">
 
+    <select id="countFieldHeaderListOfBusinessTypeAndUserId"
+            resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM field_list_config flc
+        LEFT JOIN field_config fc ON fc.field_config_id = flc.field_config_id
+        WHERE flc.delete_flag=0 AND flc.show_flag =1 AND fc.delete_flag =0 AND fc.business_type=#{businessType} AND
+        flc.user_id = #{userId}
+    </select>
+
     <select id="selectFieldHeaderListOfBusinessTypeAndUserId"
             resultType="net.qixiaowei.operate.cloud.api.vo.field.FieldListHeaderVO">
         SELECT
         flc.field_list_config_id,
         flc.field_width,
         flc.fixation_flag ,
+        flc.fixation_force ,
         fc.business_type,
         fc.field_name,
         fc.field_label,

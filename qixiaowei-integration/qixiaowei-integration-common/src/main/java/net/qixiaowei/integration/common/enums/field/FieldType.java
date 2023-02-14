@@ -11,6 +11,7 @@ public enum FieldType {
 
     AMOUNT(2, "金额"),
 
+    PERCENTAGE(3, "百分比"),
     ;
 
 

@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.logic.impl.field;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.FieldType;
 import net.qixiaowei.integration.common.enums.field.system.DepartmentField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.system.manage.api.domain.field.FieldConfig;
@@ -25,15 +26,15 @@ public class DepartmentFieldConfigImpl implements IFieldConfigStrategy {
     private static final Map<String, FieldConfig> INIT_DEPARTMENT = new HashMap<>();
 
     static {
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_NAME.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_NAME.getCode()).fieldLabel(DepartmentField.DEPARTMENT_NAME.getInfo()).build());
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_CODE.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_CODE.getCode()).fieldLabel(DepartmentField.DEPARTMENT_CODE.getInfo()).build());
-        INIT_DEPARTMENT.put(DepartmentField.PARENT_DEPARTMENT_ID.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.PARENT_DEPARTMENT_ID.getCode()).fieldLabel(DepartmentField.PARENT_DEPARTMENT_ID.getInfo()).build());
-        INIT_DEPARTMENT.put(DepartmentField.LEVEL.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.LEVEL.getCode()).fieldLabel(DepartmentField.LEVEL.getInfo()).build());
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_LEADER_ID.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_LEADER_ID.getCode()).fieldLabel(DepartmentField.DEPARTMENT_LEADER_ID.getInfo()).build());
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_LEADER_POST_ID.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_LEADER_POST_ID.getCode()).fieldLabel(DepartmentField.DEPARTMENT_LEADER_POST_ID.getInfo()).build());
-        INIT_DEPARTMENT.put(DepartmentField.EXAMINATION_LEADER_ID.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.EXAMINATION_LEADER_ID.getCode()).fieldLabel(DepartmentField.EXAMINATION_LEADER_ID.getInfo()).build());
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_IMPORTANCE_FACTOR.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_IMPORTANCE_FACTOR.getCode()).fieldLabel(DepartmentField.DEPARTMENT_IMPORTANCE_FACTOR.getInfo()).build());
-        INIT_DEPARTMENT.put(DepartmentField.STATUS.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.STATUS.getCode()).fieldLabel(DepartmentField.STATUS.getInfo()).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_NAME.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_NAME.getCode()).fieldLabel(DepartmentField.DEPARTMENT_NAME.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_CODE.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_CODE.getCode()).fieldLabel(DepartmentField.DEPARTMENT_CODE.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_DEPARTMENT.put(DepartmentField.PARENT_DEPARTMENT_ID.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.PARENT_DEPARTMENT_ID.getCode()).fieldLabel(DepartmentField.PARENT_DEPARTMENT_ID.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_DEPARTMENT.put(DepartmentField.LEVEL.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.LEVEL.getCode()).fieldLabel(DepartmentField.LEVEL.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_LEADER_ID.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_LEADER_ID.getCode()).fieldLabel(DepartmentField.DEPARTMENT_LEADER_ID.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_LEADER_POST_ID.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_LEADER_POST_ID.getCode()).fieldLabel(DepartmentField.DEPARTMENT_LEADER_POST_ID.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_DEPARTMENT.put(DepartmentField.EXAMINATION_LEADER_ID.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.EXAMINATION_LEADER_ID.getCode()).fieldLabel(DepartmentField.EXAMINATION_LEADER_ID.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_IMPORTANCE_FACTOR.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.DEPARTMENT_IMPORTANCE_FACTOR.getCode()).fieldLabel(DepartmentField.DEPARTMENT_IMPORTANCE_FACTOR.getInfo()).fieldType(FieldType.PERCENTAGE.getCode()).build());
+        INIT_DEPARTMENT.put(DepartmentField.STATUS.getCode(), FieldConfig.builder().businessType(BusinessType.DEPARTMENT.getCode()).fieldName(DepartmentField.STATUS.getCode()).fieldLabel(DepartmentField.STATUS.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
     }
 
 

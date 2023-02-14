@@ -1,0 +1,32 @@
+package net.qixiaowei.integration.common.enums.field.operate;
+
+public enum TargetDecomposeRollField {
+
+    TARGET_YEAR("target_year", "目标年度"),
+    INDICATOR_ID("indicator_id", "指标名称"),
+    DECOMPOSITION_DIMENSION("decomposition_dimension", "分解维度"),
+    TIME_DIMENSION("time_dimension", "时间维度"),
+    FORECAST_CYCLE("forecast_cycle", "预测周期"),
+    TARGET_VALUE("target_value", "公司目标"),
+    DECOMPOSE_TARGET("decompose_target", "分解目标"),
+    ACTUAL_TOTAL("actual_total", "累计实际"),
+    STATUS("status", "状态"),
+    ;
+
+    private final String code;
+    private final String info;
+
+    TargetDecomposeRollField(String code, String info) {
+        this.code = code;
+        this.info = info;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+}

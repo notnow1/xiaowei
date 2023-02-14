@@ -27,8 +27,8 @@ public class EmployeeFieldListConfigImpl implements IFieldListConfigStrategy {
     private static final Map<String, FieldListConfig> INIT_EMPLOYEE = new HashMap<>();
 
     static {
-        INIT_EMPLOYEE.put(EmployeeField.EMPLOYEE_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_EMPLOYEE.put(EmployeeField.EMPLOYEE_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_EMPLOYEE.put(EmployeeField.EMPLOYEE_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_EMPLOYEE.put(EmployeeField.EMPLOYEE_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_EMPLOYEE.put(EmployeeField.EMPLOYMENT_STATUS.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_EMPLOYEE.put(EmployeeField.EMPLOYEE_GENDER.getCode(), FieldListConfig.builder().fieldWidth(100).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_EMPLOYEE.put(EmployeeField.IDENTITY_CARD.getCode(), FieldListConfig.builder().fieldWidth(185).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());

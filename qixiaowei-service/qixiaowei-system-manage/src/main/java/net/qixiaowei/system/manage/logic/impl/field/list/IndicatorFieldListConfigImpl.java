@@ -27,8 +27,8 @@ public class IndicatorFieldListConfigImpl implements IFieldListConfigStrategy {
     private static final Map<String, FieldListConfig> INIT_INDICATOR = new HashMap<>();
 
     static {
-        INIT_INDICATOR.put(IndicatorField.INDICATOR_CODE.getCode(), FieldListConfig.builder().fieldWidth(20).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_INDICATOR.put(IndicatorField.INDICATOR_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(1).fixationForce(1).build());
+        INIT_INDICATOR.put(IndicatorField.INDICATOR_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(1).showForce(1).fixationForce(1).build());
+        INIT_INDICATOR.put(IndicatorField.INDICATOR_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_INDICATOR.put(IndicatorField.INDICATOR_TYPE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_INDICATOR.put(IndicatorField.INDICATOR_VALUE_TYPE.getCode(), FieldListConfig.builder().fieldWidth(130).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_INDICATOR.put(IndicatorField.CHOICE_FLAG.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());

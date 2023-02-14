@@ -1,20 +1,22 @@
 package net.qixiaowei.operate.cloud.service.impl.field;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import cn.hutool.core.util.StrUtil;
+import net.qixiaowei.integration.common.enums.field.operate.*;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
+import net.qixiaowei.operate.cloud.api.dto.field.FieldConfigDTO;
 import net.qixiaowei.operate.cloud.api.dto.field.FieldListConfigDTO;
 import net.qixiaowei.operate.cloud.api.domain.field.FieldListConfig;
 import net.qixiaowei.operate.cloud.api.vo.field.FieldListConfigVO;
 import net.qixiaowei.operate.cloud.api.vo.field.FieldListHeaderVO;
+import net.qixiaowei.operate.cloud.logic.manager.FieldListConfigManager;
+import net.qixiaowei.operate.cloud.service.field.IFieldConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.mapper.field.FieldListConfigMapper;
 import net.qixiaowei.operate.cloud.service.field.IFieldListConfigService;
@@ -30,8 +32,43 @@ import net.qixiaowei.integration.common.exception.ServiceException;
  */
 @Service
 public class FieldListConfigServiceImpl implements IFieldListConfigService {
+
+    private static final Set<String> NEED_CONCAT = new HashSet<>();
+
+    static {
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.CYCLE_TYPE.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.APPRAISAL_FLOW.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.APPRAISAL_STATUS.getCode());
+
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalOrgSettingField.CYCLE_TYPE.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalOrgSettingField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalOrgSettingField.APPRAISAL_OBJECT_STATUS.getCode());
+
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalOrgReviewField.CYCLE_TYPE.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalOrgReviewField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_ORG_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalOrgReviewField.APPRAISAL_OBJECT_STATUS.getCode());
+
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalPersonSettingField.CYCLE_TYPE.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalPersonSettingField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_SETTING.getCode() + StrUtil.COLON + PerformanceAppraisalPersonSettingField.APPRAISAL_OBJECT_STATUS.getCode());
+
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.CYCLE_TYPE.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.CYCLE_NUMBER.getCode());
+        NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.APPRAISAL_OBJECT_STATUS.getCode());
+
+        NEED_CONCAT.add(BusinessType.EMP_SALARY_ADJUST_PLAN.getCode() + StrUtil.COLON + EmpSalaryAdjustPlanField.ADJUST_OFFICIAL_RANK.getCode());
+    }
+
     @Autowired
     private FieldListConfigMapper fieldListConfigMapper;
+
+    @Autowired
+    private IFieldConfigService fieldConfigService;
+
+    @Autowired
+    private FieldListConfigManager fieldListConfigManager;
+
 
     /**
      * 查询字段列表配置表
@@ -53,7 +90,17 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
     @Override
     public List<FieldListHeaderVO> selectHeaderFieldListConfigList(Integer businessType) {
         Long userId = SecurityUtils.getUserId();
-        return fieldListConfigMapper.selectFieldHeaderListOfBusinessTypeAndUserId(businessType, userId);
+        Integer countFieldHeaderListOfBusinessTypeAndUserId = fieldListConfigMapper.countFieldHeaderListOfBusinessTypeAndUserId(businessType, userId);
+        if (countFieldHeaderListOfBusinessTypeAndUserId == 0) {
+            this.initUserFieldList(businessType, userId);
+        }
+        List<FieldListHeaderVO> fieldListHeaderVOS = fieldListConfigMapper.selectFieldHeaderListOfBusinessTypeAndUserId(businessType, userId);
+        for (FieldListHeaderVO fieldListHeaderVO : fieldListHeaderVOS) {
+            String fieldName = fieldListHeaderVO.getFieldName();
+            fieldName = this.parseFieldName(fieldName, businessType);
+            fieldListHeaderVO.setFieldName(fieldName);
+        }
+        return fieldListHeaderVOS;
     }
 
     /**
@@ -65,7 +112,13 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
     @Override
     public List<FieldListConfigVO> selectFieldListConfigList(Integer businessType) {
         Long userId = SecurityUtils.getUserId();
-        return fieldListConfigMapper.selectFieldListConfigListOfBusinessTypeAndUserId(businessType, userId);
+        List<FieldListConfigVO> fieldListConfigVOS = fieldListConfigMapper.selectFieldListConfigListOfBusinessTypeAndUserId(businessType, userId);
+        for (FieldListConfigVO fieldListConfigVO : fieldListConfigVOS) {
+            String fieldName = fieldListConfigVO.getFieldName();
+            fieldName = this.parseFieldName(fieldName, businessType);
+            fieldListConfigVO.setFieldName(fieldName);
+        }
+        return fieldListConfigVOS;
     }
 
     /**
@@ -107,6 +160,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         }
         Date nowDate = DateUtils.getNowDate();
         FieldListConfig fieldListConfig = new FieldListConfig();
+        fieldListConfig.setFieldListConfigId(fieldListConfigId);
         fieldListConfig.setFixationFlag(fieldListConfigDTO.getFixationFlag());
         fieldListConfig.setFieldWidth(fieldListConfigDTO.getFieldWidth());
         fieldListConfig.setUpdateTime(nowDate);
@@ -213,6 +267,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         int sort = 0;
         for (FieldListConfigDTO fieldListConfigDTO : fieldListConfigDtos) {
             FieldListConfig fieldListConfig = new FieldListConfig();
+            fieldListConfig.setFieldListConfigId(fieldListConfigDTO.getFieldListConfigId());
             fieldListConfig.setShowFlag(fieldListConfigDTO.getShowFlag());
             fieldListConfig.setFixationFlag(fieldListConfigDTO.getFixationFlag());
             fieldListConfig.setFieldWidth(fieldListConfigDTO.getFieldWidth());
@@ -225,6 +280,69 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
             sort++;
         }
         return fieldListConfigMapper.updateFieldListConfigs(fieldListConfigList);
+    }
+
+    /**
+     * @description: 格式化字段名称
+     * @Author: hzk
+     * @date: 2023/2/10 14:25
+     * @param: [fieldName]
+     * @return: java.lang.String
+     **/
+    private String parseFieldName(String fieldName, Integer businessType) {
+        String _id = "_id";
+        if (fieldName.endsWith(_id)) {
+            fieldName = fieldName.substring(0, fieldName.lastIndexOf("_id")).concat("_name");
+        }
+        String createBy = "create_by";
+        if (fieldName.endsWith(createBy)) {
+            fieldName = fieldName.concat("_name");
+        }
+        if (NEED_CONCAT.contains(businessType + StrUtil.COLON + fieldName)) {
+            fieldName = fieldName.concat("_name");
+        }
+        return StrUtil.toCamelCase(fieldName);
+    }
+
+    /**
+     * @description: 初始化用户字段列表
+     * @Author: hzk
+     * @date: 2023/2/9 20:12
+     * @param: [businessType, userId]
+     * @return: void
+     **/
+    private void initUserFieldList(Integer businessType, Long userId) {
+        //找到字段配置
+        List<FieldConfigDTO> fieldConfigDTOS = fieldConfigService.selectFieldConfigListOfBusinessType(businessType);
+        if (StringUtils.isEmpty(fieldConfigDTOS)) {
+            return;
+        }
+        //初始化用户字段列表。
+        List<FieldListConfig> fieldListConfigs = fieldListConfigManager.initUserFieldListConfig(businessType, fieldConfigDTOS);
+        this.addFieldListConfig(userId, fieldListConfigs);
+    }
+
+    /**
+     * @description: 新增字段列表配置
+     * @Author: hzk
+     * @date: 2023/2/13 11:52
+     * @param: [userId, fieldListConfigs]
+     * @return: void
+     **/
+    private void addFieldListConfig(Long userId, List<FieldListConfig> fieldListConfigs) {
+        if (StringUtils.isNotEmpty(fieldListConfigs)) {
+            Long userIdOfInsert = SecurityUtils.getUserId();
+            Date nowDate = DateUtils.getNowDate();
+            for (FieldListConfig fieldListConfig : fieldListConfigs) {
+                fieldListConfig.setUserId(userId);
+                fieldListConfig.setCreateBy(userIdOfInsert);
+                fieldListConfig.setCreateTime(nowDate);
+                fieldListConfig.setUpdateTime(nowDate);
+                fieldListConfig.setUpdateBy(userIdOfInsert);
+                fieldListConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            }
+            fieldListConfigMapper.batchFieldListConfig(fieldListConfigs);
+        }
     }
 
 }

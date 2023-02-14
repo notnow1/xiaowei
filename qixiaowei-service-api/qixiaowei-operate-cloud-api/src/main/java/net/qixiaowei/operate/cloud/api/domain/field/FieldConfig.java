@@ -1,44 +1,47 @@
 package net.qixiaowei.operate.cloud.api.domain.field;
 
-
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import lombok.Data;
-import java.math.BigDecimal;
 import lombok.experimental.Accessors;
-import java.util.Date;
 
 /**
-* 字段配置表
-* @author hzk
-* @since 2023-02-08
-*/
+ * 字段配置表
+ *
+ * @author hzk
+ * @since 2023-02-08
+ */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Accessors(chain = true)
 public class FieldConfig extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
-     /**
+    /**
      * ID
      */
-     private  Long  fieldConfigId;
-     /**
+    private Long fieldConfigId;
+    /**
      * 业务类型
      */
-     private  Integer  businessType;
-     /**
+    private Integer businessType;
+    /**
      * 字段名称
      */
-     private  String  fieldName;
-     /**
+    private String fieldName;
+    /**
      * 字段标签
      */
-     private  String  fieldLabel;
-     /**
+    private String fieldLabel;
+    /**
      * 字段类型
      */
-     private  Integer  fieldType;
+    private Integer fieldType;
 
 }
 

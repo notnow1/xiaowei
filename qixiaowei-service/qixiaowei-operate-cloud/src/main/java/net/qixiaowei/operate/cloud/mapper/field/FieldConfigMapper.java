@@ -24,6 +24,21 @@ public interface FieldConfigMapper {
      */
     FieldConfigDTO selectFieldConfigByFieldConfigId(@Param("fieldConfigId") Long fieldConfigId);
 
+    /**
+     * 根据业务类型统计字段配置表
+     *
+     * @param businessType 业务类型
+     * @return 字段配置表
+     */
+    Integer countFieldOfBusinessType(@Param("businessType") Integer businessType);
+
+    /**
+     * 根据业务类型查询字段配置表
+     *
+     * @param businessType 业务类型
+     * @return 字段配置表
+     */
+    List<FieldConfigDTO> selectFieldConfigByBusinessType(@Param("businessType") Integer businessType);
 
     /**
      * 批量查询字段配置表

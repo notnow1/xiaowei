@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.logic.impl.field;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.FieldType;
 import net.qixiaowei.integration.common.enums.field.system.PostField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.system.manage.api.domain.field.FieldConfig;
@@ -25,13 +26,13 @@ public class PostFieldConfigImpl implements IFieldConfigStrategy {
     private static final Map<String, FieldConfig> INIT_POST = new HashMap<>();
 
     static {
-        INIT_POST.put(PostField.POST_CODE.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_CODE.getCode()).fieldLabel(PostField.POST_CODE.getInfo()).build());
-        INIT_POST.put(PostField.POST_NAME.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_NAME.getCode()).fieldLabel(PostField.POST_NAME.getInfo()).build());
-        INIT_POST.put(PostField.OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.OFFICIAL_RANK_SYSTEM_ID.getCode()).fieldLabel(PostField.OFFICIAL_RANK_SYSTEM_ID.getInfo()).build());
-        INIT_POST.put(PostField.POST_RANK.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_RANK.getCode()).fieldLabel(PostField.POST_RANK.getInfo()).build());
-        INIT_POST.put(PostField.POST_RANK_LOWER.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_RANK_LOWER.getCode()).fieldLabel(PostField.POST_RANK_LOWER.getInfo()).build());
-        INIT_POST.put(PostField.POST_RANK_UPPER.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_RANK_UPPER.getCode()).fieldLabel(PostField.POST_RANK_UPPER.getInfo()).build());
-        INIT_POST.put(PostField.STATUS.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.STATUS.getCode()).fieldLabel(PostField.STATUS.getInfo()).build());
+        INIT_POST.put(PostField.POST_NAME.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_NAME.getCode()).fieldLabel(PostField.POST_NAME.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_POST.put(PostField.POST_CODE.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_CODE.getCode()).fieldLabel(PostField.POST_CODE.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_POST.put(PostField.OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.OFFICIAL_RANK_SYSTEM_ID.getCode()).fieldLabel(PostField.OFFICIAL_RANK_SYSTEM_ID.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_POST.put(PostField.POST_RANK.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_RANK.getCode()).fieldLabel(PostField.POST_RANK.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_POST.put(PostField.POST_RANK_LOWER.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_RANK_LOWER.getCode()).fieldLabel(PostField.POST_RANK_LOWER.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_POST.put(PostField.POST_RANK_UPPER.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.POST_RANK_UPPER.getCode()).fieldLabel(PostField.POST_RANK_UPPER.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        INIT_POST.put(PostField.STATUS.getCode(), FieldConfig.builder().businessType(BusinessType.POST.getCode()).fieldName(PostField.STATUS.getCode()).fieldLabel(PostField.STATUS.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
     }
 
 

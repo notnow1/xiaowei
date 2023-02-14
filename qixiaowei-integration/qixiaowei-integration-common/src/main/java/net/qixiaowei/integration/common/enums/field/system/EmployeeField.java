@@ -2,8 +2,8 @@ package net.qixiaowei.integration.common.enums.field.system;
 
 public enum EmployeeField {
 
-    EMPLOYEE_CODE("employee_code", "工号"),
     EMPLOYEE_NAME("employee_name", "姓名"),
+    EMPLOYEE_CODE("employee_code", "工号"),
     EMPLOYMENT_STATUS("employment_status", "用工关系状态"),
     EMPLOYEE_GENDER("employee_gender", "性别"),
     IDENTITY_CARD("identity_card", "身份证号码"),

@@ -17,6 +17,7 @@
         flc.field_list_config_id,
         flc.field_width,
         flc.fixation_flag ,
+        flc.fixation_force ,
         fc.business_type,
         fc.field_name,
         fc.field_label,

@@ -27,7 +27,7 @@ public class DepartmentFieldListConfigImpl implements IFieldListConfigStrategy {
     private static final Map<String, FieldListConfig> INIT_DEPARTMENT = new HashMap<>();
 
     static {
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_NAME.getCode(), FieldListConfig.builder().fieldWidth(200).sort(1).showFlag(1).fixationFlag(0).showForce(1).fixationForce(1).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_NAME.getCode(), FieldListConfig.builder().fieldWidth(200).sort(1).showFlag(1).fixationFlag(1).showForce(1).fixationForce(1).build());
         INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_DEPARTMENT.put(DepartmentField.PARENT_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_DEPARTMENT.put(DepartmentField.LEVEL.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());

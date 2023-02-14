@@ -19,6 +19,14 @@ public interface IFieldConfigService{
     FieldConfigDTO selectFieldConfigByFieldConfigId(Long fieldConfigId);
 
     /**
+     * 根据业务类型查询字段配置表列表
+     *
+     * @param businessType 业务类型
+     * @return 字段配置表集合
+     */
+    List<FieldConfigDTO> selectFieldConfigListOfBusinessType(Integer businessType);
+
+    /**
     * 查询字段配置表列表
     *
     * @param fieldConfigDTO 字段配置表

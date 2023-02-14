@@ -61,41 +61,6 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
     }
 
     /**
-     * @description: 初始化字段配置
-     * @Author: hzk
-     * @date: 2023/2/10 15:12
-     * @param: [businessType]
-     * @return: void
-     **/
-    private void initFieldList(Integer businessType) {
-        //初始化字段。
-        List<FieldConfig> fieldConfigs = fieldConfigManager.initFieldConfig(businessType);
-        this.addFieldList(fieldConfigs);
-    }
-
-    /**
-     * @description: 新增用户字段列表
-     * @Author: hzk
-     * @date: 2023/2/13 13:47
-     * @param: [fieldConfigs]
-     * @return: void
-     **/
-    private void addFieldList(List<FieldConfig> fieldConfigs) {
-        if (StringUtils.isNotEmpty(fieldConfigs)) {
-            Long userIdOfInsert = SecurityUtils.getUserId();
-            Date nowDate = DateUtils.getNowDate();
-            for (FieldConfig fieldConfig : fieldConfigs) {
-                fieldConfig.setCreateBy(userIdOfInsert);
-                fieldConfig.setCreateTime(nowDate);
-                fieldConfig.setUpdateTime(nowDate);
-                fieldConfig.setUpdateBy(userIdOfInsert);
-                fieldConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            }
-            fieldConfigMapper.batchFieldConfig(fieldConfigs);
-        }
-    }
-
-    /**
      * 查询字段配置表列表
      *
      * @param fieldConfigDTO 字段配置表
@@ -253,5 +218,39 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
         return fieldConfigMapper.updateFieldConfigs(fieldConfigList);
     }
 
+    /**
+     * @description: 初始化字段配置
+     * @Author: hzk
+     * @date: 2023/2/10 15:12
+     * @param: [businessType]
+     * @return: void
+     **/
+    private void initFieldList(Integer businessType) {
+        //初始化字段。
+        List<FieldConfig> fieldConfigs = fieldConfigManager.initFieldConfig(businessType);
+        this.addFieldList(fieldConfigs);
+    }
+
+    /**
+     * @description: 新增用户字段列表
+     * @Author: hzk
+     * @date: 2023/2/13 13:47
+     * @param: [fieldConfigs]
+     * @return: void
+     **/
+    private void addFieldList(List<FieldConfig> fieldConfigs) {
+        if (StringUtils.isNotEmpty(fieldConfigs)) {
+            Long userIdOfInsert = SecurityUtils.getUserId();
+            Date nowDate = DateUtils.getNowDate();
+            for (FieldConfig fieldConfig : fieldConfigs) {
+                fieldConfig.setCreateBy(userIdOfInsert);
+                fieldConfig.setCreateTime(nowDate);
+                fieldConfig.setUpdateTime(nowDate);
+                fieldConfig.setUpdateBy(userIdOfInsert);
+                fieldConfig.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            }
+            fieldConfigMapper.batchFieldConfig(fieldConfigs);
+        }
+    }
 }
 
