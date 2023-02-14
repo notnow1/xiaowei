@@ -821,6 +821,19 @@ public class IndicatorServiceImpl implements IIndicatorService {
     }
 
     /**
+     * 远程查询指标列表平铺
+     *
+     * @param indicatorDTO
+     * @return
+     */
+    @Override
+    public List<IndicatorDTO> getIndicatorAllData(IndicatorDTO indicatorDTO) {
+        Indicator indicator = new Indicator();
+        BeanUtils.copyProperties(indicatorDTO,indicator);
+        return indicatorMapper.selectIndicatorList(indicator);
+    }
+
+    /**
      * 逻辑删除指标表信息
      *
      * @param indicatorId 指标表

@@ -1518,6 +1518,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     /**
+     * 查询有账号的员工
+     * @return
+     */
+    @Override
+    public List<EmployeeDTO> getUseEmployeeUser() {
+        return employeeMapper.getUseEmployeeUser();
+    }
+
+    /**
      * 根据调整类型赋值
      *
      * @param employeeSalarySnapVO VO快照

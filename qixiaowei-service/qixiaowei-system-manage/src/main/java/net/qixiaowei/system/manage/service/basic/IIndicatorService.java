@@ -205,6 +205,13 @@ public interface IIndicatorService {
     List<Tree<Long>> getSuperIndicator(Long indicatorId);
 
     /**
+     * 远程查询指标列表平铺
+     * @param indicatorDTO
+     * @return
+     */
+    List<IndicatorDTO> getIndicatorAllData(IndicatorDTO indicatorDTO);
+
+    /**
      * 查询仪表盘列表
      *
      * @return list

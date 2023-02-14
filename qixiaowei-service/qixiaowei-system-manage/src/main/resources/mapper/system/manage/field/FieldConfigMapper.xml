@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.system.manage.mapper.field.FieldConfigMapper">
+    <!--    查询字段配置表-->
+    <select id="selectFieldConfigByFieldConfigId"
+            resultType="net.qixiaowei.system.manage.api.dto.field.FieldConfigDTO">
+        SELECT
+        field_config_id,business_type,field_name,field_label,field_type,delete_flag,create_by,create_time,update_by,update_time
+        FROM field_config
+        WHERE field_config_id=#{fieldConfigId}
+        and delete_flag=0
+    </select>
+
+    <select id="countFieldOfBusinessType"
+            resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM field_config
+        WHERE business_type =#{businessType} AND delete_flag=0
+    </select>
+
+    <select id="selectFieldConfigByBusinessType"
+            resultType="net.qixiaowei.system.manage.api.dto.field.FieldConfigDTO">
+        SELECT
+        field_config_id,business_type,field_name,field_label,field_type,delete_flag,create_by,create_time,update_by,update_time
+        FROM field_config
+        WHERE business_type =#{businessType} AND delete_flag=0
+    </select>
+
+    <!--    批量查询字段配置表-->
+    <select id="selectFieldConfigByFieldConfigIds"
+            resultType="net.qixiaowei.system.manage.api.dto.field.FieldConfigDTO">
+        SELECT
+        field_config_id,business_type,field_name,field_label,field_type,delete_flag,create_by,create_time,update_by,update_time
+        FROM field_config
+        WHERE field_config_id in
+        <foreach item="item"
+                 collection="fieldConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询字段配置表列表-->
+    <select id="selectFieldConfigList" resultType="net.qixiaowei.system.manage.api.dto.field.FieldConfigDTO">
+        SELECT
+        field_config_id,business_type,field_name,field_label,field_type,delete_flag,create_by,create_time,update_by,update_time
+        FROM field_config
+        WHERE delete_flag=0
+        <if test="fieldConfig.fieldConfigId != null">
+            and field_config_id=#{fieldConfig.fieldConfigId}
+        </if>
+        <if test="fieldConfig.businessType != null">
+            and business_type=#{fieldConfig.businessType}
+        </if>
+        <if test="fieldConfig.fieldName != null and fieldConfig.fieldName != ''">
+            and field_name=#{fieldConfig.fieldName}
+        </if>
+        <if test="fieldConfig.fieldLabel != null and fieldConfig.fieldLabel != ''">
+            and field_label=#{fieldConfig.fieldLabel}
+        </if>
+        <if test="fieldConfig.fieldType != null">
+            and field_type=#{fieldConfig.fieldType}
+        </if>
+        <if test="fieldConfig.deleteFlag != null">
+            and delete_flag=#{fieldConfig.deleteFlag}
+        </if>
+        <if test="fieldConfig.createBy != null">
+            and create_by=#{fieldConfig.createBy}
+        </if>
+        <if test="fieldConfig.createTime != null">
+            and create_time=#{fieldConfig.createTime}
+        </if>
+        <if test="fieldConfig.updateBy != null">
+            and update_by=#{fieldConfig.updateBy}
+        </if>
+        <if test="fieldConfig.updateTime != null">
+            and update_time=#{fieldConfig.updateTime}
+        </if>
+    </select>
+    <!--新增字段配置表-->
+    <insert id="insertFieldConfig" useGeneratedKeys="true" keyProperty="fieldConfigId">
+        INSERT INTO field_config
+        (business_type,field_name,field_label,field_type,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{fieldConfig.businessType},#{fieldConfig.fieldName},#{fieldConfig.fieldLabel},#{fieldConfig.fieldType},#{fieldConfig.deleteFlag},#{fieldConfig.createBy},#{fieldConfig.createTime},#{fieldConfig.updateBy},#{fieldConfig.updateTime})
+    </insert>
+    <!--修改字段配置表-->
+    <update id="updateFieldConfig">
+        UPDATE field_config
+        SET
+        <if test="fieldConfig.businessType != null">
+            business_type=#{fieldConfig.businessType},
+        </if>
+        <if test="fieldConfig.fieldName != null and fieldConfig.fieldName != ''">
+            field_name=#{fieldConfig.fieldName},
+        </if>
+        <if test="fieldConfig.fieldLabel != null and fieldConfig.fieldLabel != ''">
+            field_label=#{fieldConfig.fieldLabel},
+        </if>
+        <if test="fieldConfig.fieldType != null">
+            field_type=#{fieldConfig.fieldType},
+        </if>
+        <if test="fieldConfig.deleteFlag != null">
+            delete_flag=#{fieldConfig.deleteFlag},
+        </if>
+        <if test="fieldConfig.createBy != null">
+            create_by=#{fieldConfig.createBy},
+        </if>
+        <if test="fieldConfig.createTime != null">
+            create_time=#{fieldConfig.createTime},
+        </if>
+        <if test="fieldConfig.updateBy != null">
+            update_by=#{fieldConfig.updateBy},
+        </if>
+        <if test="fieldConfig.updateTime != null">
+            update_time=#{fieldConfig.updateTime}
+        </if>
+        WHERE
+        field_config_id=#{fieldConfig.fieldConfigId}
+    </update>
+    <!--逻辑删除字段配置表-->
+    <update id="logicDeleteFieldConfigByFieldConfigId">
+        UPDATE field_config
+        SET delete_flag= 1,
+        update_by=#{fieldConfig.updateBy},
+        update_time=#{fieldConfig.updateTime}
+        WHERE
+        field_config_id=#{fieldConfig.fieldConfigId}
+    </update>
+    <!--逻辑批量删除字段配置表-->
+    <update id="logicDeleteFieldConfigByFieldConfigIds">
+        UPDATE field_config
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        field_config_id IN
+        <foreach item="item"
+                 collection="fieldConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增字段配置表-->
+    <insert id="batchFieldConfig">
+        INSERT INTO field_config
+        (business_type,field_name,field_label,field_type,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="fieldConfigs"
+                 separator=",">
+            (#{item.businessType},#{item.fieldName},#{item.fieldLabel},#{item.fieldType},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除字段配置表-->
+    <delete id="deleteFieldConfigByFieldConfigId">
+        DELETE FROM field_config
+        WHERE field_config_id=#{fieldConfig}
+
+    </delete>
+    <!--物理批量删除字段配置表-->
+    <delete id="deleteFieldConfigByFieldConfigIds">
+        DELETE FROM field_config
+        WHERE field_config_id IN
+        <foreach item="item"
+                 collection="fieldConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改字段配置表-->
+    <update id="updateFieldConfigs">
+        update field_config
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="business_type=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.businessType != null">
+                        when field_config_id=#{item.fieldConfigId} then #{item.businessType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="field_name=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.fieldName != null and item.fieldName != ''">
+                        when field_config_id=#{item.fieldConfigId} then #{item.fieldName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="field_label=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.fieldLabel != null and item.fieldLabel != ''">
+                        when field_config_id=#{item.fieldConfigId} then #{item.fieldLabel}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="field_type=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.fieldType != null">
+                        when field_config_id=#{item.fieldConfigId} then #{item.fieldType}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when field_config_id=#{item.fieldConfigId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when field_config_id=#{item.fieldConfigId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when field_config_id=#{item.fieldConfigId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when field_config_id=#{item.fieldConfigId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="fieldConfigList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when field_config_id=#{item.fieldConfigId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="fieldConfigList" separator="or" item="item" index="index">
+            field_config_id=#{item.fieldConfigId}
+        </foreach>
+    </update>
+</mapper>
+
+

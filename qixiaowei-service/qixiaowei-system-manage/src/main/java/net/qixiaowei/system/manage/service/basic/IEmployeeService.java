@@ -286,4 +286,9 @@ public interface IEmployeeService {
      */
     int empAdjustUpdates(List<EmployeeSalarySnapVO> employeeSalarySnapVOS);
 
+    /**
+     * 查询有账号的员工
+     * @return
+     */
+    List<EmployeeDTO> getUseEmployeeUser();
 }

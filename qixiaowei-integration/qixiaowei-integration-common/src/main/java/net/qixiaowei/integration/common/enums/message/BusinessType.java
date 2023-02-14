@@ -66,7 +66,7 @@ public enum BusinessType {
         this.info = info;
     }
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 
@@ -82,5 +82,18 @@ public enum BusinessType {
         this.info = info;
     }
 
-
+    /**
+     * 根据业务类型获取业务枚举
+     *
+     * @param code 业务类型code
+     * @return {@link BusinessType}
+     */
+    public static BusinessType getBusinessType(Integer code) {
+        for (BusinessType businessType : BusinessType.values()) {
+            if (businessType.getCode().equals(code)) {
+                return businessType;
+            }
+        }
+        return null;
+    }
 }
