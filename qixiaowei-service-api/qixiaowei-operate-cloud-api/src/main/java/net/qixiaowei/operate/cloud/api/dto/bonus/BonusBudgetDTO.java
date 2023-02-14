@@ -138,7 +138,7 @@ public class BonusBudgetDTO {
     /**
      * 创建人名称
      */
-    private  String createName;
+    private  String createByName;
     /**
     * 创建时间
     */
