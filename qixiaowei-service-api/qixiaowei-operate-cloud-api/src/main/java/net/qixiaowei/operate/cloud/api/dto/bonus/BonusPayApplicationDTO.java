@@ -52,7 +52,7 @@ public class BonusPayApplicationDTO {
     /**
      * 三级项目(奖项类别名称)
      */
-    private String thirdLevelItem;
+    private String salaryItemName;
     /**
     * 奖项编码
     */
