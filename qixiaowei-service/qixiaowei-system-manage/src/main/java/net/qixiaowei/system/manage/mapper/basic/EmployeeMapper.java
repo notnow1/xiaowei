@@ -266,20 +266,28 @@ public interface EmployeeMapper {
     List<EmployeeDTO> selectParentDepartmentIdAndOfficialRankSystem(@Param("departmentIdAll") List<Long> departmentIdAll);
 
     /**
-     * 远程查询在职所有人员
+     * 远程查询所有人员
      *
      * @return
      */
     List<EmployeeDTO> getAll();
 
     /**
-     * 根据部门ID 集合查询人员
+     * 根据部门ID集合 查询人员
      *
      * @param departmentIds 部门ID集合
      * @return
      */
     List<EmployeeDTO> selectEmployeeByDepartmentIds(@Param("departmentIds") List<Long> departmentIds);
 
+
+    /**
+     * 根据部门ID 查询人员
+     *
+     * @param departmentId 部门ID
+     * @return
+     */
+    List<EmployeeDTO> selectEmployeeByDepartmentId(@Param("departmentId") Long departmentId);
     /**
      * 远程查询用户数据
      *
@@ -289,8 +297,14 @@ public interface EmployeeMapper {
     List<EmployeeDTO> selectUserList(@Param("employee") Employee employee);
 
     /**
-     * 查询有账号的员工
+     * 查询在职有账号的员工
      * @return
      */
     List<EmployeeDTO> getUseEmployeeUser();
+
+    /**
+     * 查询离职生效的员工
+     * @return
+     */
+    List<EmployeeDTO> getUseEmployeeStatus();
 }

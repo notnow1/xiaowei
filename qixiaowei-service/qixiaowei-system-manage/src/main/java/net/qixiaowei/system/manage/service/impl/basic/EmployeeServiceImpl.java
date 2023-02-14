@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -133,9 +134,19 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Override
     public List<EmployeeDTO> selectDropEmployeeList(EmployeeDTO employeeDTO) {
+        List<EmployeeDTO> employeeDTOList =new ArrayList<>();
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
-        return employeeMapper.selectDropEmployeeList(employee);
+            String employeeFlag = employeeDTO.getEmployeeFlag();
+            if (StringUtils.equals("user",employeeFlag)){
+                employeeDTOList = employeeMapper.getUseEmployeeUser();
+            }else if (StringUtils.equals("0",employeeFlag)){
+                employeeDTOList = employeeMapper.getUseEmployeeStatus();
+            }else {
+                employeeDTOList = employeeMapper.selectDropEmployeeList(employee);
+            }
+
+        return employeeDTOList;
     }
 
     /**
@@ -1112,7 +1123,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     /**
-     * 远程查询在职所有人员
+     * 远程查询所有人员
      *
      * @return
      */

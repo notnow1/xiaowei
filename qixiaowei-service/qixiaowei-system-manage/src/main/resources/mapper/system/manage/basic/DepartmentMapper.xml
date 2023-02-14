@@ -708,6 +708,8 @@
         <if test="departmentId != null">
             and dept.department_id=#{departmentId}
         </if>
+        and e.employment_status =1
+        and e.status =1
     </select>
     <!--    查询人员是否被部门引用-->
     <select id="deleteFlagEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">

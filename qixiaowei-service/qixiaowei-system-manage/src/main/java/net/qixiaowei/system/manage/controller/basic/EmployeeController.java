@@ -16,6 +16,7 @@ import com.alibaba.excel.write.style.column.SimpleColumnWidthStyleStrategy;
 import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.text.CharsetKit;
+import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.excel.ExcelUtils;
 import net.qixiaowei.integration.common.utils.excel.SelectSheetWriteHandler;
@@ -289,8 +290,7 @@ public class EmployeeController extends BaseController {
      */
     @GetMapping("/list")
     public AjaxResult list(EmployeeDTO employeeDTO) {
-        List<EmployeeDTO> list = employeeService.selectDropEmployeeList(employeeDTO);
-        return AjaxResult.success(list);
+        return AjaxResult.success(employeeService.selectDropEmployeeList(employeeDTO));
     }
 
     /**

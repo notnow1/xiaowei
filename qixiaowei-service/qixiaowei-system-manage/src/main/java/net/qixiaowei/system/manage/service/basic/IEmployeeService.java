@@ -240,7 +240,7 @@ public interface IEmployeeService {
     List<EmployeeDTO> selectParentDepartmentIdAndOfficialRankSystem(List<Long> departmentIdAll);
 
     /**
-     * 远程查询在职所有人员
+     * 远程查询所有人员
      *
      * @return
      */

@@ -871,7 +871,7 @@ public class DeptAnnualBonusServiceImpl implements IDeptAnnualBonusService {
      * @param weight
      */
     private void packDeptData(int annualBonusYear, List<DeptAnnualBonusFactorDTO> deptAnnualBonusFactorDTOs, BigDecimal deptPaymentBonusSum, BigDecimal weight) {
-        //远程调用查看所有在职员工
+        //远程调用查看所有员工
         R<List<EmployeeDTO>> employeeAll = remoteEmployeeService.getAll(SecurityConstants.INNER);
         List<EmployeeDTO> data2 = employeeAll.getData();
         if (StringUtils.isNotEmpty(data2)) {

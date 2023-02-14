@@ -326,7 +326,7 @@ public class EmployeeDTO implements Serializable {
     /**
      * 预算年度
      */
-    private int planYear;
+    private Integer planYear;
     /**
      * 相同部门相同职级平均人数
      */
@@ -351,5 +351,10 @@ public class EmployeeDTO implements Serializable {
      * 级别前缀编码
      */
     private String rankPrefixCode;
+    /**
+     * user 在职且有账号额度员工
+     * 状态:0失效;1生效
+     */
+    private String  employeeFlag;
 }
 

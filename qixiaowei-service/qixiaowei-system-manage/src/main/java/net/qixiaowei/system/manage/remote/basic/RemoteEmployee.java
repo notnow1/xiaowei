@@ -175,7 +175,7 @@ public class RemoteEmployee implements RemoteEmployeeService {
     }
 
     /**
-     * 查询在职所有人员
+     * 查询所有人员
      *
      * @param source
      * @return

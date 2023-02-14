@@ -185,6 +185,6 @@ public class Employee extends TenantEntity {
     /**
      * 预算年度
      */
-    private int planYear;
+    private Integer planYear;
 }
 

@@ -105,7 +105,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
             if (StringUtils.isEmpty(departmentDTOList)) {
                 return departmentDTOList;
             } else {
-                return this.createTree(departmentDTOList, 0);
+                List<DepartmentDTO> departmentDTOS = this.createTree(departmentDTOList, 0);
+                return this.getEmployeeByDepartmentId(departmentDTOS);
             }
         }
 
@@ -164,6 +165,25 @@ public class DepartmentServiceImpl implements IDepartmentService {
         return allSysMenuDto;
     }
 
+    /**
+     * 树形数据转list
+     *
+     * @param departmentDTOList
+     * @return
+     */
+    private List<DepartmentDTO> getEmployeeByDepartmentId(List<DepartmentDTO> departmentDTOList) {
+        if (StringUtils.isNotEmpty(departmentDTOList)){
+            for (DepartmentDTO departmentDTO : departmentDTOList) {
+                List<DepartmentDTO> children = departmentDTO.getChildren();
+                departmentDTO.setEmployeeDTOList(employeeMapper.selectEmployeeByDepartmentId(departmentDTO.getDepartmentId()));
+                if (children != null && children.size() > 0) {
+                    getEmployeeByDepartmentId(children);
+
+                }
+            }
+        }
+        return departmentDTOList;
+    }
     /**
      * 返回组织层级
      *
