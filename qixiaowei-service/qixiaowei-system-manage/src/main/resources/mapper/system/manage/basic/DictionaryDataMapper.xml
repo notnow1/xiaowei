@@ -44,7 +44,6 @@
         dictionary_data_id, dictionary_type_id, dictionary_label, dictionary_value, default_flag, sort, remark, status, delete_flag, create_by, create_time, update_by, update_time
         FROM dictionary_data
         WHERE delete_flag=0
-        and status=1
                 <if test="dictionaryData.dictionaryDataId != null">
                     and dictionary_data_id=#{dictionaryData.dictionaryDataId}
                 </if>

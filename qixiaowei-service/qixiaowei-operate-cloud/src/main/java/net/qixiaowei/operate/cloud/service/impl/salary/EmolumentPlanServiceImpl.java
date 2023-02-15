@@ -337,7 +337,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
     @Override
     public EmolumentPlanDTO prefabricateAddEmolumentPlan(int planYear) {
         //远程查询指标id
-        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.ORDER.getCode(), SecurityConstants.INNER);
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode(), SecurityConstants.INNER);
         IndicatorDTO data = indicatorDTOR.getData();
         if (StringUtils.isNull(data)) {
             throw new ServiceException("指标数据不存在 请联系管理员");

@@ -90,11 +90,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      */
     @Override
     public TargetDecomposeHistoryDTO selectTargetDecomposeHistoryByTargetDecomposeHistoryId(Long targetDecomposeHistoryId) {
+
         //历史目标分解主表数据
         TargetDecomposeHistoryDTO targetDecomposeHistoryDTO = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeHistoryId(targetDecomposeHistoryId);
         //指标远程调用
         if (StringUtils.isNotNull(targetDecomposeHistoryDTO)) {
-            R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorById(targetDecomposeHistoryDTO.getIndicatorId(), SecurityConstants.INNER);
+            TargetDecomposeDTO targetDecomposeDTO = targetDecomposeMapper.selectTargetDecomposeByTargetDecomposeId(targetDecomposeHistoryDTO.getTargetDecomposeId());
+            R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorById(targetDecomposeDTO.getIndicatorId(), SecurityConstants.INNER);
             IndicatorDTO data = indicatorDTOR.getData();
             if (StringUtils.isNotNull(data)) {
                 targetDecomposeHistoryDTO.setIndicatorName(data.getIndicatorName());
@@ -129,7 +131,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 BigDecimal targetPercentageComplete = new BigDecimal("0");
                 List<DetailCyclesSnapshotDTO> detailCyclesSnapshotDTOS = new ArrayList<>();
                 //周期表数据
-                detailCyclesSnapshotDTOS = detailCyclesSnapshotMapper.selectDetailCyclesSnapshotByTargetDecomposeHistoryId(decomposeDetailsSnapshotDTO.getTargetDecomposeHistoryId());
+                detailCyclesSnapshotDTOS = detailCyclesSnapshotMapper.selectDetailCyclesSnapshotByDecomposeDetailsSnapshotId(decomposeDetailsSnapshotDTO.getDecomposeDetailsSnapshotId());
                 for (DetailCyclesSnapshotDTO detailCyclesSnapshotDTO : detailCyclesSnapshotDTOS) {
                     if (null != detailCyclesSnapshotDTO.getCycleForecast() && detailCyclesSnapshotDTO.getCycleForecast().compareTo(BigDecimal.ZERO) != 0) {
                         //预测值
