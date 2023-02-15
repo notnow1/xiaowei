@@ -57,9 +57,6 @@
         pa.update_by,
         pa.update_time
         FROM performance_appraisal pa
-        LEFT JOIN performance_rank pr
-        ON pa.performance_rank_id = pr.performance_rank_id
-        AND pr.delete_flag=0
         LEFT JOIN performance_appraisal_objects pao
         ON pa.performance_appraisal_id = pao.performance_appraisal_id
         AND pao.delete_flag = 0
@@ -134,20 +131,20 @@
             OR pa.appraisal_name IS NULL
             )
         </if>
-        <if test="performanceAppraisal.params.performanceRankNameLike != null and performanceAppraisal.params.performanceRankNameLike.size() > 0">
+        <if test="performanceAppraisal.params.appraisalNameLike != null and performanceAppraisal.params.appraisalNameLike.size() > 0">
             AND
             <foreach item="item"
-                     collection="performanceAppraisal.params.performanceRankNameLike"
+                     collection="performanceAppraisal.params.appraisalNameLike"
                      index="index" open="(" separator="OR" close=")">
-                pa.performance_rank_name LIKE concat('%', #{item}, '%')
+                pa.appraisal_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
-        <if test="performanceAppraisal.params.performanceRankNameNotLike != null and performanceAppraisal.params.performanceRankNameNotLike.size() > 0">
+        <if test="performanceAppraisal.params.appraisalNameNotLike != null and performanceAppraisal.params.appraisalNameNotLike.size() > 0">
             AND
             <foreach item="item"
-                     collection="performanceAppraisal.params.performanceRankNameNotLike"
+                     collection="performanceAppraisal.params.appraisalNameNotLike"
                      index="index" open="(" separator="OR" close=")">
-                pa.performance_rank_name NOT LIKE concat('%', #{item}, '%')
+                pa.appraisal_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <!--    考核年度过滤-->
@@ -394,7 +391,7 @@
         </if>
         <!--    绩效等级-->
         <if test="performanceAppraisal.params.performanceRankNameEqual != null and performanceAppraisal.params.performanceRankNameEqual.size() > 0">
-            AND pr.performance_rank_name IN
+            AND pa.performance_rank_name IN
             <foreach item="item"
                      collection="performanceAppraisal.params.performanceRankNameEqual"
                      index="index" open="(" separator="," close=")">
@@ -402,13 +399,13 @@
             </foreach>
         </if>
         <if test="performanceAppraisal.params.performanceRankNameNotEqual != null and performanceAppraisal.params.performanceRankNameNotEqual.size() > 0">
-            AND (pr.performance_rank_name NOT IN
+            AND (pa.performance_rank_name NOT IN
             <foreach item="item"
                      collection="performanceAppraisal.params.performanceRankNameNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR pr.performance_rank_name IS NULL
+            OR pa.performance_rank_name IS NULL
             )
         </if>
         <!--    考核流程-->
@@ -536,8 +533,7 @@
         pa.appraisal_year,
         pa.cycle_type,
         pa.cycle_number,
-        pa.appraisal_status,
-        pao.appraisal_principal_name
+        pa.appraisal_status
         FROM
         performance_appraisal_objects pao
         LEFT JOIN perform_appraisal_object_snap pas ON pao.perform_appraisal_objects_id =
@@ -588,76 +584,103 @@
                 #{item}
             </foreach>
         </if>
+        <!--员工ID集合-->
+        <if test="performanceAppraisalObjectsDTO.params.employeeIds != null and performanceAppraisalObjectsDTO.params.employeeIds.size()>0">
+            AND pao.appraisal_object_id IN
+            <foreach collection="performanceAppraisalObjectsDTO.params.employeeIds" item="item" index="index"
+                     separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!--考核负责人-->
+        <if test="performanceAppraisalObjectsDTO.params.examinationLeaderNameEqual != null and performanceAppraisalObjectsDTO.params.examinationLeaderNameEqual.size() > 0">
+            AND pao.appraisal_principal_name IN
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.examinationLeaderNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="performanceAppraisalObjectsDTO.params.examinationLeaderNameNotEqual != null and performanceAppraisalObjectsDTO.params.examinationLeaderNameNotEqual.size() > 0">
+            AND (pao.appraisal_principal_name NOT IN
+            <foreach item="item"
+                     collection="performanceAppraisalObjectsDTO.params.examinationLeaderNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pao.appraisal_principal_name IS NULL
+            )
+        </if>
         <!--    状态过滤-->
-<!--        <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual.size() > 0">-->
-<!--            AND pao.appraisal_object_status IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="performanceAppraisal.params.appraisalObjectStatusEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual.size() > 0">-->
-<!--            AND (pao.appraisal_object_status NOT IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--            OR pao.appraisal_object_status IS NULL-->
-<!--            )-->
-<!--        </if>-->
+        <!--        <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusEqual.size() > 0">-->
+        <!--            AND pao.appraisal_object_status IN-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="performanceAppraisal.params.appraisalObjectStatusEqual"-->
+        <!--                     index="index" open="(" separator="," close=")">-->
+        <!--                #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
+        <!--        <if test="performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual != null and performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual.size() > 0">-->
+        <!--            AND (pao.appraisal_object_status NOT IN-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="performanceAppraisalObjectsDTO.params.appraisalObjectStatusNotEqual"-->
+        <!--                     index="index" open="(" separator="," close=")">-->
+        <!--                #{item}-->
+        <!--            </foreach>-->
+        <!--            OR pao.appraisal_object_status IS NULL-->
+        <!--            )-->
+        <!--        </if>-->
         <!--    评议分数过滤-->
-<!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreEqual != null and performanceAppraisalObjectsDTO.params.evaluationScoreEqual.size() > 0">-->
-<!--            AND pao.evaluation_score IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="performanceAppraisal.params.evaluationScoreEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual.size() > 0">-->
-<!--            AND (pao.evaluation_score NOT IN-->
-<!--            <foreach item="item"-->
-<!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual"-->
-<!--                     index="index" open="(" separator="," close=")">-->
-<!--                #{item}-->
-<!--            </foreach>-->
-<!--            OR pao.evaluation_score IS NULL-->
-<!--            )-->
-<!--        </if>-->
-<!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                pao.evaluation_score &gt; #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                pao.evaluation_score &lt;= #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreLessThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreLessThan.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreLessThan"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                pao.evaluation_score &lt; #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
-<!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan.size() > 0">-->
-<!--            AND-->
-<!--            <foreach item="item"-->
-<!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan"-->
-<!--                     index="index" open="(" separator="OR" close=")">-->
-<!--                pao.evaluation_score &gt;= #{item}-->
-<!--            </foreach>-->
-<!--        </if>-->
+        <!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreEqual != null and performanceAppraisalObjectsDTO.params.evaluationScoreEqual.size() > 0">-->
+        <!--            AND pao.evaluation_score IN-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="performanceAppraisal.params.evaluationScoreEqual"-->
+        <!--                     index="index" open="(" separator="," close=")">-->
+        <!--                #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
+        <!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual.size() > 0">-->
+        <!--            AND (pao.evaluation_score NOT IN-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotEqual"-->
+        <!--                     index="index" open="(" separator="," close=")">-->
+        <!--                #{item}-->
+        <!--            </foreach>-->
+        <!--            OR pao.evaluation_score IS NULL-->
+        <!--            )-->
+        <!--        </if>-->
+        <!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan.size() > 0">-->
+        <!--            AND-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreGreaterThan"-->
+        <!--                     index="index" open="(" separator="OR" close=")">-->
+        <!--                pao.evaluation_score &gt; #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
+        <!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan.size() > 0">-->
+        <!--            AND-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotGreaterThan"-->
+        <!--                     index="index" open="(" separator="OR" close=")">-->
+        <!--                pao.evaluation_score &lt;= #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
+        <!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreLessThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreLessThan.size() > 0">-->
+        <!--            AND-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreLessThan"-->
+        <!--                     index="index" open="(" separator="OR" close=")">-->
+        <!--                pao.evaluation_score &lt; #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
+        <!--        <if test="performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan != null and performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan.size() > 0">-->
+        <!--            AND-->
+        <!--            <foreach item="item"-->
+        <!--                     collection="performanceAppraisalObjectsDTO.params.evaluationScoreNotLessThan"-->
+        <!--                     index="index" open="(" separator="OR" close=")">-->
+        <!--                pao.evaluation_score &gt;= #{item}-->
+        <!--            </foreach>-->
+        <!--        </if>-->
         ORDER BY
         pao.evaluation_score,
         pao.sort
@@ -691,8 +714,7 @@
         pas.post_name,
         pas.official_rank_system_id,
         pas.official_rank,
-        pas.official_rank_name,
-        pao.appraisal_principal_name
+        pas.official_rank_name
         FROM
         performance_appraisal_objects pao
         LEFT JOIN perform_appraisal_object_snap pas ON pao.perform_appraisal_objects_id =
