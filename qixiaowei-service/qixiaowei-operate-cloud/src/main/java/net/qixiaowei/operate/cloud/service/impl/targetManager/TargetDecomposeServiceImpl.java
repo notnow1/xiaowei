@@ -887,11 +887,11 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             for (String key : params.keySet()) {
                 switch (key) {
-                    case "departmentNameEqual":
-                        params2.put("departmentNameEqual", params.get("departmentNameEqual"));
+                    case "indicatorNameEqual":
+                        params2.put("indicatorNameEqual", params.get("indicatorNameEqual"));
                         break;
-                    case "departmentNameNotEqual":
-                        params2.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
+                    case "indicatorNameNotEqual":
+                        params2.put("indicatorNameNotEqual", params.get("indicatorNameNotEqual"));
                         break;
                 }
             }

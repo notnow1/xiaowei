@@ -219,18 +219,10 @@
             AND td.target_year &lt;= #{targetDecompose.params.annualBonusYearEnd}
         </if>
         <!-- 指标名称过滤  -->
-        <if test="targetDecompose.params.indicatorIdsEqual != null and targetDecompose.params.indicatorIdsEqual.size() > 0">
+        <if test="targetDecompose.params.indicatorIds != null and targetDecompose.params.indicatorIds.size() > 0">
             AND td.indicator_id IN
             <foreach item="item"
-                     collection="targetDecompose.params.indicatorIdsEqual"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="targetDecompose.params.indicatorIdsNotEqual != null and targetDecompose.params.indicatorIdsNotEqual.size() > 0">
-            AND td.indicator_id NOT IN
-            <foreach item="item"
-                     collection="targetDecompose.params.indicatorIdsNotEqual"
+                     collection="targetDecompose.params.indicatorIds"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
