@@ -1644,7 +1644,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public int updateOrderTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         int i = 0;
         //校检数据
-        this.validTargetDecomposeData(targetDecomposeDTO);
+//        this.validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -1675,7 +1675,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public int updateIncomeTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         int i = 0;
         //校检数据
-        this.validTargetDecomposeData(targetDecomposeDTO);
+//        this.validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -1706,7 +1706,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public int updateReturnedTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         int i = 0;
         //校检数据
-        this.validTargetDecomposeData(targetDecomposeDTO);
+//        this.validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
@@ -1737,7 +1737,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
     public int updateCustomTargetDecompose(TargetDecomposeDTO targetDecomposeDTO) {
         int i = 0;
         //校检数据
-        this.validTargetDecomposeData(targetDecomposeDTO);
+//        this.validTargetDecomposeData(targetDecomposeDTO);
         TargetDecompose targetDecompose = new TargetDecompose();
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
         targetDecompose.setUpdateTime(DateUtils.getNowDate());
