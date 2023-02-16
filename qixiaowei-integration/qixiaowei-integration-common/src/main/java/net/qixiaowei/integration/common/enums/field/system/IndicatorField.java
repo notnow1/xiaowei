@@ -4,7 +4,7 @@ public enum IndicatorField {
 
     INDICATOR_NAME("indicator_name", "指标名称"),
     INDICATOR_CODE("indicator_code", "指标编码"),
-    INDICATOR_TYPE("indicator_type", "指标类型"),
+    INDICATOR_TYPE("indicator_category_id", "指标类型"),
     INDICATOR_VALUE_TYPE("indicator_value_type", "指标值类型"),
     CHOICE_FLAG("choice_flag", "是否必选"),
     EXAMINE_DIRECTION("examine_direction", "考核方向"),
