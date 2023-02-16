@@ -307,4 +307,10 @@ public interface EmployeeMapper {
      * @return
      */
     List<EmployeeDTO> getUseEmployeeStatus();
+
+    /**
+     * 生效包含在职离职的员工
+     * @return
+     */
+    List<EmployeeDTO> getAllUseEmployee();
 }
