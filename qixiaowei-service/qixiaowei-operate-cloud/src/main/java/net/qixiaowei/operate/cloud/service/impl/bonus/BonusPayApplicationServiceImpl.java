@@ -336,8 +336,9 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 List<Long> departmentIds = new ArrayList<>();
                 if (StringUtils.isNotEmpty(departmentDataList)) {
                     departmentIds = departmentDataList.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList());
+                    params.put("applyDepartmentIds", departmentIds);
                 }
-                params.put("applyDepartmentIds", departmentIds);
+
             }
         }
     }

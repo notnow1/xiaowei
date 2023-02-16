@@ -237,6 +237,13 @@
                 #{item}
             </foreach>
         </if>
+        <!-- 产品类别过滤  -->
+        <if test="product.params.dictionaryLabelEqual != null or product.params.dictionaryLabelNotEqual != null ">
+            <!-- 产品类别过滤  -->
+            <if test="product.params.dictionaryDataIds == null">
+                AND p.product_category is null
+            </if>
+        </if>
         <!-- 产品状态过滤  -->
         <if test="product.params.listingFlagEqual != null and product.params.listingFlagEqual.size() > 0">
             AND p.listing_flag IN

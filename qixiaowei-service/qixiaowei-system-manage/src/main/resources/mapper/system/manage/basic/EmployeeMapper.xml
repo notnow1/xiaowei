@@ -269,18 +269,18 @@
             </foreach>
         </if>
         <!-- 员工用工关系状态过滤  -->
-        <if test="employee.params.employeeemploymentStatusEqual != null and employee.params.employeeemploymentStatusEqual.size() > 0">
+        <if test="employee.params.employmentStatusEqual != null and employee.params.employmentStatusEqual.size() > 0">
             AND e.employment_status IN
             <foreach item="item"
-                     collection="employee.params.employeeemploymentStatusEqual"
+                     collection="employee.params.employmentStatusEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="employee.params.employeeemploymentStatusNotEqual != null and employee.params.employeeemploymentStatusNotEqual.size() > 0">
+        <if test="employee.params.employmentStatusNotEqual != null and employee.params.employmentStatusNotEqual.size() > 0">
             AND (e.employment_status NOT IN
             <foreach item="item"
-                     collection="employee.params.employeeemploymentStatusNotEqual"
+                     collection="employee.params.employmentStatusNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>

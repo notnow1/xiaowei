@@ -227,6 +227,12 @@
                 #{item}
             </foreach>
         </if>
+        <!-- 指标名称过滤  -->
+        <if test="targetDecompose.params.indicatorNameEqual != null or targetDecompose.params.indicatorNameNotEqual != null">
+            <if test="targetDecompose.params.indicatorIds == null">
+                AND td.indicator_id IN NULL
+            </if>
+        </if>
         <!-- 分解维度过滤  -->
         <if test="targetDecompose.params.targetDecomposeDimensionIdEqual != null and targetDecompose.params.targetDecomposeDimensionIdEqual.size() > 0">
             AND td.target_decompose_dimension_id IN

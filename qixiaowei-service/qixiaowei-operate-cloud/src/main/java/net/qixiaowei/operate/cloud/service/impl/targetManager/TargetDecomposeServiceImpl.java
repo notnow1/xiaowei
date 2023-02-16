@@ -906,8 +906,8 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
                 List<Long> indicatorIds = new ArrayList<>();
                 if (StringUtils.isNotEmpty(data)) {
                     indicatorIds = data.stream().map(IndicatorDTO::getIndicatorId).distinct().collect(Collectors.toList());
+                    params.put("indicatorIds", indicatorIds);
                 }
-                params.put("indicatorIds", indicatorIds);
             }
         }
     }
