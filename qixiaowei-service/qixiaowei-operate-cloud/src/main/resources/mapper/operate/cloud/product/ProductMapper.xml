@@ -44,6 +44,7 @@
         p.ancestors,
         p.product_code,
         p.product_name,
+        p2.product_name as parentProductName,
         p.level,
         p.product_unit_id,
         p.product_category,
