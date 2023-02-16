@@ -163,10 +163,10 @@
             OR i2.industry_name IS NULL
             )
         </if>
-        <if test="industry.params.parentIndustryNameNull != null and industry.params.parentIndustryNameNull.size() > 0">
+        <if test="industry.params.parentIndustryNameNull != null">
             and i2.industry_name IS NULL
         </if>
-        <if test="industry.params.parentIndustryNameNotNull != null and industry.params.parentIndustryNameNotNull.size() > 0">
+        <if test="industry.params.parentIndustryNameNotNull != null">
             and i2.industry_name IS NOT NULL
         </if>
         <!--    行业层级过滤-->
@@ -188,7 +188,7 @@
             OR i1.level IS NULL
             )
         </if>
-        <if test="industry.params.levelGreaterThan != null and industry.params.levelGreaterThan.size() > 0">
+        <if test="industry.params.levelGreaterThan != null">
             AND
             <foreach item="item"
                      collection="industry.params.levelGreaterThan"
@@ -196,7 +196,7 @@
                 i1.level &gt; #{item}
             </foreach>
         </if>
-        <if test="industry.params.levelNotGreaterThan != null and industry.params.levelNotGreaterThan.size() > 0">
+        <if test="industry.params.levelNotGreaterThan != null">
             AND
             <foreach item="item"
                      collection="industry.params.levelNotGreaterThan"
@@ -204,7 +204,7 @@
                 i1.level &lt;= #{item}
             </foreach>
         </if>
-        <if test="industry.params.levelLessThan != null and industry.params.levelLessThan.size() > 0">
+        <if test="industry.params.levelLessThan != null">
             AND
             <foreach item="item"
                      collection="industry.params.levelLessThan"
@@ -212,7 +212,7 @@
                 i1.level &lt; #{item}
             </foreach>
         </if>
-        <if test="industry.params.levelNotLessThan != null and industry.params.levelNotLessThan.size() > 0">
+        <if test="industry.params.levelNotLessThan != null">
             AND
             <foreach item="item"
                      collection="industry.params.levelNotLessThan"

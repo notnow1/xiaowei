@@ -221,10 +221,10 @@
             OR t2.indicator_category_name IS NULL
             )
         </if>
-        <if test="indicator.params.indicatorCategoryNameNull != null and indicator.params.indicatorCategoryNameNull.size() > 0">
+        <if test="indicator.params.indicatorCategoryNameNull != null">
             and t2.indicator_category_name IS NULL
         </if>
-        <if test="indicator.params.indicatorCategoryNameNotNull != null and indicator.params.indicatorCategoryNameNotNull.size() > 0">
+        <if test="indicator.params.indicatorCategoryNameNotNull != null">
             and t2.indicator_category_name IS NOT NULL
         </if>
         <!--    指标值类型过滤-->
@@ -303,10 +303,10 @@
             OR t3.indicator_name IS NULL
             )
         </if>
-        <if test="indicator.params.parentIndicatorNameNull != null and indicator.params.parentIndicatorNameNull.size() > 0">
+        <if test="indicator.params.parentIndicatorNameNull != null">
             and t3.indicator_name IS NULL
         </if>
-        <if test="indicator.params.parentIndicatorNameNotNull != null and indicator.params.parentIndicatorNameNotNull.size() > 0">
+        <if test="indicator.params.parentIndicatorNameNotNull != null">
             and t3.indicator_name IS NOT NULL
         </if>
         <!--    指标层级过滤-->
@@ -328,7 +328,7 @@
             OR t1.level IS NULL
             )
         </if>
-        <if test="indicator.params.levelGreaterThan != null and indicator.params.levelGreaterThan.size() > 0">
+        <if test="indicator.params.levelGreaterThan != null">
             AND
             <foreach item="item"
                      collection="indicator.params.levelGreaterThan"
@@ -336,7 +336,7 @@
                 t1.level &gt; #{item}
             </foreach>
         </if>
-        <if test="indicator.params.levelNotGreaterThan != null and indicator.params.levelNotGreaterThan.size() > 0">
+        <if test="indicator.params.levelNotGreaterThan != null">
             AND
             <foreach item="item"
                      collection="indicator.params.levelNotGreaterThan"
@@ -344,7 +344,7 @@
                 t1.level &lt;= #{item}
             </foreach>
         </if>
-        <if test="indicator.params.levelLessThan != null and indicator.params.levelLessThan.size() > 0">
+        <if test="indicator.params.levelLessThan != null">
             AND
             <foreach item="item"
                      collection="indicator.params.levelLessThan"
@@ -352,7 +352,7 @@
                 t1.level &lt; #{item}
             </foreach>
         </if>
-        <if test="indicator.params.levelNotLessThan != null and indicator.params.levelNotLessThan.size() > 0">
+        <if test="indicator.params.levelNotLessThan != null">
             AND
             <foreach item="item"
                      collection="indicator.params.levelNotLessThan"

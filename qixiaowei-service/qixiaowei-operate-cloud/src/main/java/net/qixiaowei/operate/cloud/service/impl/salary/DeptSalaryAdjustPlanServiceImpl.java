@@ -217,7 +217,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
         BeanUtils.copyProperties(deptSalaryAdjustPlanDTO, deptSalaryAdjustPlan);
         List<DeptSalaryAdjustPlanDTO> deptSalaryAdjustPlanDTOS = deptSalaryAdjustPlanMapper.selectDeptSalaryAdjustPlanList(deptSalaryAdjustPlan);
         if (StringUtils.isEmpty(deptSalaryAdjustPlanDTOS)) {
-            return new ArrayList<>();
+            return deptSalaryAdjustPlanDTOS;
         }
         List<Integer> planYears = deptSalaryAdjustPlanDTOS.stream().map(DeptSalaryAdjustPlanDTO::getPlanYear).collect(Collectors.toList());
         List<BonusBudgetDTO> bonusBudgetDTOS = bonusBudgetMapper.selectBonusBudgetListByBudgetYears(planYears);

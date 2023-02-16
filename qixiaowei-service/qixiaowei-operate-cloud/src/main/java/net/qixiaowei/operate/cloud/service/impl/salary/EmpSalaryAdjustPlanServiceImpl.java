@@ -267,7 +267,9 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         }
         EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
         if (StringUtils.isNotEmpty(params)) {
-            getRemoteIds(params);
+            if (getRemoteIds(params) == 0) {
+                return new ArrayList<>();
+            }
         }
         empSalaryAdjustPlan.setParams(params);
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
@@ -300,7 +302,7 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
      *
      * @param params 请求参数
      */
-    private void getRemoteIds(Map<String, Object> params) {
+    private int getRemoteIds(Map<String, Object> params) {
         Map<String, Object> params2 = new HashMap<>();
         Map<String, Object> params3 = new HashMap<>();
         Map<String, Object> params4 = new HashMap<>();
@@ -318,14 +320,6 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
                 case "employeeCodeNotLike":
                     params2.put("employeeCodeNotLike", params.get("employeeCodeNotLike"));
                     break;
-////                司龄——当前的司龄2
-//                case "workingAgeEqual":
-//                    params2.put("workingAgeEqual", params.get("workingAgeEqual"));
-//                    break;
-//                case "workingAgeNotEqual":
-//                    params2.put("workingAgeNotEqual", params.get("workingAgeNotEqual"));
-//                    break;
-//                部门名称
                 case "departmentNameEqual":
                     params3.put("departmentNameEqual", params.get("departmentNameEqual"));
                     break;
@@ -381,29 +375,33 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             }
         }
         // 人员
-        if (StringUtils.isEmpty(params2)) {
+        if (StringUtils.isNotEmpty(params2)) {
             List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
-            if (StringUtils.isNotEmpty(employeeDTOS)) {
-                List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-                params.put("employeeIds", employeeIds);
+            if (StringUtils.isEmpty(employeeDTOS)) {
+                return 0;
             }
+            List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+            params.put("employeeIds", employeeIds);
         }
         // 组织
-        if (StringUtils.isEmpty(params3)) {
+        if (StringUtils.isNotEmpty(params3)) {
             List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params3);
-            if (StringUtils.isNotEmpty(departmentDTOS)) {
-                List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-                params.put("adjustDepartmentIds", departmentIds);
+            if (StringUtils.isEmpty(departmentDTOS)) {
+                return 0;
             }
+            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            params.put("adjustDepartmentIds", departmentIds);
         }
         // 岗位
-        if (StringUtils.isEmpty(params4)) {
+        if (StringUtils.isNotEmpty(params4)) {
             List<PostDTO> postDTOS = postAdvancedSearch(params4);
             if (StringUtils.isEmpty(postDTOS)) {
-                List<Long> postIds = postDTOS.stream().map(PostDTO::getPostId).collect(Collectors.toList());
-                params.put("adjustPostIds", postIds);
+                return 0;
             }
+            List<Long> postIds = postDTOS.stream().map(PostDTO::getPostId).collect(Collectors.toList());
+            params.put("adjustPostIds", postIds);
         }
+        return 1;
     }
 
     /**

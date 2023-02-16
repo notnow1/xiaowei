@@ -76,9 +76,9 @@ public class DashboardController extends BaseController {
      * 获取时间维度下拉框
      */
     @RequiresPermissions("operate:cloud:dashboard:list")
-    @PostMapping("/targetLeaderboard/getTimeDropList")
-    public AjaxResult getTimeDropList(@RequestBody Map<String, Object> map) {
-        return AjaxResult.success(dashboardService.timeDropList(map));
+    @GetMapping("/targetLeaderboard/getTimeDropList")
+    public AjaxResult getTimeDropList(@RequestParam("indicatorId") Long indicatorId, @RequestParam("targetDecomposeDimensionId") Long targetDecomposeDimensionId) {
+        return AjaxResult.success(dashboardService.timeDropList(indicatorId, targetDecomposeDimensionId));
     }
 
 }

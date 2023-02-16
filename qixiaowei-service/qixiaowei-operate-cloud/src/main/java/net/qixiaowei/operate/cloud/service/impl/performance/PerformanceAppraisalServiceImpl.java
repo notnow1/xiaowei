@@ -384,8 +384,9 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         BeanUtils.copyProperties(performanceAppraisalDTO, performanceAppraisal);
         Map<String, Object> params = performanceAppraisal.getParams();
         if (StringUtils.isNotEmpty(params)) {
-            getEmployeeId(params);
-            getDepartmentId(params);
+            if (getEmployeeId(params) == 0 | getDepartmentId(params) == 0) {
+                return new ArrayList<>();
+            }
         }
         performanceAppraisal.setParams(params);
         List<PerformanceAppraisalDTO> performanceAppraisalDTOS = performanceAppraisalMapper.selectPerformanceAppraisalList(performanceAppraisal);
@@ -401,7 +402,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param params 请求参数
      */
-    private void getEmployeeId(Map<String, Object> params) {
+    private int getEmployeeId(Map<String, Object> params) {
         Map<String, Object> params2 = new HashMap<>();
         for (String key : params.keySet()) {
             switch (key) {
@@ -433,11 +434,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         if (StringUtils.isNotEmpty(params2)) {
             List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
-            if (StringUtils.isNotEmpty(employeeDTOS)) {
-                List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-                params.put("employeeIds", employeeIds);
+            if (StringUtils.isEmpty(employeeDTOS)) {
+                return 0;
             }
+            List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+            params.put("employeeIds", employeeIds);
         }
+        return 1;
     }
 
     /**
@@ -445,7 +448,7 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
      *
      * @param params 请求参数
      */
-    private void getDepartmentId(Map<String, Object> params) {
+    private int getDepartmentId(Map<String, Object> params) {
         Map<String, Object> params2 = new HashMap<>();
         for (String key : params.keySet()) {
             switch (key) {
@@ -477,11 +480,13 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         }
         if (StringUtils.isNotEmpty(params2)) {
             List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params2);
-            if (StringUtils.isNotEmpty(departmentDTOS)) {
-                List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-                params.put("departmentIds", departmentIds);
+            if (StringUtils.isEmpty(departmentDTOS)) {
+                return 0;
             }
+            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            params.put("departmentIds", departmentIds);
         }
+        return 1;
     }
 
     /**
@@ -2237,12 +2242,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 case "departmentNameNotEqual":
                     params2.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
                     break;
-//                    case "appraisalObjectStatusEqual":
-//                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
-//                        break;
-//                    case "appraisalObjectStatusNotEqual":
-//                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
-//                        break;
             }
         }
         if (StringUtils.isNotEmpty(params2)) {
@@ -2566,8 +2565,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
             return new ArrayList<>();
         }
-        params.put("evaluationScoreEqual", null);
-        params.put("evaluationScoreNotEqual", null);
         List<Long> performanceAppraisalIds = performanceAppraisalDTOS.stream().map(PerformanceAppraisalDTO::getPerformanceAppraisalId).collect(Collectors.toList());
         Integer appraisalObjectStatus = performanceAppraisalObjectsDTO.getAppraisalObjectStatus();
         List<Integer> appraisalObjectStatuses = new ArrayList<>();
@@ -2588,18 +2585,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                     break;
                 case "departmentNameNotEqual":
                     params2.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
-                    break;
-//                    case "appraisalObjectStatusEqual":
-//                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
-//                        break;
-//                    case "appraisalObjectStatusNotEqual":
-//                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
-//                        break;
-                case "evaluationScoreEqual":
-                    params.put("evaluationScoreEqual", params.get("evaluationScoreEqual"));
-                    break;
-                case "evaluationScoreNotEqual":
-                    params.put("evaluationScoreNotEqual", params.get("evaluationScoreNotEqual"));
                     break;
             }
         }
@@ -2637,8 +2622,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
         if (StringUtils.isEmpty(performanceAppraisalDTOS)) {
             return new ArrayList<>();
         }
-        params.put("evaluationScoreEqual", null);
-        params.put("evaluationScoreNotEqual", null);
         for (PerformanceAppraisalDTO performanceAppraisalDTO : performanceAppraisalDTOS) {
             performanceAppraisalIds.add(performanceAppraisalDTO.getPerformanceAppraisalId());
         }
@@ -2680,12 +2663,6 @@ public class PerformanceAppraisalServiceImpl implements IPerformanceAppraisalSer
                 case "employeeDepartmentNameNotEqual":
                     params2.put("employeeDepartmentNameNotEqual", params.get("employeeDepartmentNameNotEqual"));
                     break;
-//                    case "appraisalObjectStatusEqual":
-//                        params3.put("appraisalObjectStatusEqual", params.get("appraisalObjectStatusEqual"));
-//                        break;
-//                    case "appraisalObjectStatusNotEqual":
-//                        params3.put("appraisalObjectStatusNotEqual", params.get("appraisalObjectStatusNotEqual"));
-//                        break;
             }
         }
         if (StringUtils.isNotEmpty(params2)) {

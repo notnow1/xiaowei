@@ -406,15 +406,6 @@
                 #{item}
             </foreach>
         </if>
-        <!--    调整部门高级搜索-->
-        <if test="empSalaryAdjustPlan.params.adjustPostIds != null and empSalaryAdjustPlan.params.adjustPostIds.size() > 0">
-            AND esa.adjust_post_id IN
-            <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustPostIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
         ORDER BY esa.update_time DESC
     </select>
     <!--根据员工ID获取个人调薪计划表-->

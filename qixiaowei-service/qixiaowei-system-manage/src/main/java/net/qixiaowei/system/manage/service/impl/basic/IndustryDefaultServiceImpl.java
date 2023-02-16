@@ -57,6 +57,10 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     @Override
     public List<IndustryDefaultDTO> selectIndustryDefaultList(IndustryDefaultDTO industryDefaultDTO) {
         IndustryDefault industryDefault = new IndustryDefault();
+        Integer status = industryDefaultDTO.getStatus();
+        if (StringUtils.isNull(status)) {
+            industryDefaultDTO.setStatus(1);
+        }
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
         Map<String, Object> params = industryDefault.getParams();
         industryDefault.setParams(params);
@@ -75,9 +79,6 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
         Integer status = industryDefaultDTO.getStatus();
         if (StringUtils.isNull(parentIndustryId)) {
             industryDefaultDTO.setParentIndustryId(0L);
-        }
-        if (StringUtils.isNull(status)) {
-            industryDefaultDTO.setStatus(1);
         }
         IndustryDefault industryDefault = new IndustryDefault();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);

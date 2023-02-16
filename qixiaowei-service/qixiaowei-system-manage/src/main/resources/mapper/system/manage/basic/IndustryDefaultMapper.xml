@@ -151,10 +151,10 @@
             OR i2.industry_name IS NULL
             )
         </if>
-        <if test="industryDefault.params.parentIndustryNameNull != null and industryDefault.params.parentIndustryNameNull.size() > 0">
+        <if test="industryDefault.params.parentIndustryNameNull != null">
             and i2.industry_name IS NULL
         </if>
-        <if test="industryDefault.params.parentIndustryNameNotNull != null and industryDefault.params.parentIndustryNameNotNull.size() > 0">
+        <if test="industryDefault.params.parentIndustryNameNotNull != null">
             and i2.industry_name IS NOT NULL
         </if>
         <!--    行业层级过滤-->
@@ -176,37 +176,17 @@
             OR i1.level IS NULL
             )
         </if>
-        <if test="industryDefault.params.levelGreaterThan != null and industryDefault.params.levelGreaterThan.size() > 0">
-            AND
-            <foreach item="item"
-                     collection="industryDefault.params.levelGreaterThan"
-                     index="index" open="(" separator="OR" close=")">
-                i1.level &gt; #{item}
-            </foreach>
+        <if test="industryDefault.params.levelGreaterThan != null">
+            AND i1.level &gt; #{industryDefault.params.levelGreaterThan}
         </if>
-        <if test="industryDefault.params.levelNotGreaterThan != null and industryDefault.params.levelNotGreaterThan.size() > 0">
-            AND
-            <foreach item="item"
-                     collection="industryDefault.params.levelNotGreaterThan"
-                     index="index" open="(" separator="OR" close=")">
-                i1.level &lt;= #{item}
-            </foreach>
+        <if test="industryDefault.params.levelNotGreaterThan != null">
+            AND i1.level &lt;= #{industryDefault.params.levelNotGreaterThan}
         </if>
-        <if test="industryDefault.params.levelLessThan != null and industryDefault.params.levelLessThan.size() > 0">
-            AND
-            <foreach item="item"
-                     collection="industryDefault.params.levelLessThan"
-                     index="index" open="(" separator="OR" close=")">
-                i1.level &lt; #{item}
-            </foreach>
+        <if test="industryDefault.params.levelLessThan != null">
+            AND i1.level &lt; #{industryDefault.params.levelLessThan}
         </if>
-        <if test="industryDefault.params.levelNotLessThan != null and industryDefault.params.levelNotLessThan.size() > 0">
-            AND
-            <foreach item="item"
-                     collection="industryDefault.params.levelNotLessThan"
-                     index="index" open="(" separator="OR" close=")">
-                i1.level &gt;= #{item}
-            </foreach>
+        <if test="industryDefault.params.levelNotLessThan != null">
+            AND i1.level &gt;= #{industryDefault.params.levelNotLessThan}
         </if>
         <!--    行业状态过滤-->
         <if test="industryDefault.params.statusEqual != null and industryDefault.params.statusEqual.size() > 0">

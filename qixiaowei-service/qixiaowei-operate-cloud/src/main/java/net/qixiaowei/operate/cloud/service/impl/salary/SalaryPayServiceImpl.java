@@ -1497,12 +1497,8 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
     private List<SalaryPayDTO> getSalaryPayList(SalaryStructureDTO salaryStructureDTO) {
         List<SalaryPayDTO> salaryPayDTOList;
         Map<String, Object> params = salaryStructureDTO.getParams();
-        Date timeStart = null;
-        Date timeEnd = null;
-        if (StringUtils.isNotNull(params)) {
-            timeStart = DateUtils.parseDate(salaryStructureDTO.getParams().get("timeStart"));
-            timeEnd = DateUtils.parseDate(salaryStructureDTO.getParams().get("timeEnd"));
-        }
+        Date timeStart = salaryStructureDTO.getTimeStart();
+        Date timeEnd = salaryStructureDTO.getTimeEnd();
         if (StringUtils.isNull(timeStart) || StringUtils.isNull(timeEnd)) {
             salaryPayDTOList = salaryPayMapper.selectSalaryPayBySomeMonth(null, null, null);
         } else {

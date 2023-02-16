@@ -56,8 +56,9 @@ public interface IDashboardService {
     /**
      * 获取时间维度下拉框
      *
-     * @param map map
+     * @param indicatorId                指标ID
+     * @param targetDecomposeDimensionId 分解维度ID
      * @return List
      */
-    List<Map<String, Object>> timeDropList(Map<String, Object> map);
+    List<Map<String, Object>> timeDropList(Long indicatorId, Long targetDecomposeDimensionId);
 }

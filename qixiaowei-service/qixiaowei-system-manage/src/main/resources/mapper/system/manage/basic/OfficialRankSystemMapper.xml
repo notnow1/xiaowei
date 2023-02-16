@@ -125,10 +125,10 @@
                 rank_prefix_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
-        <if test="officialRankSystem.params.rankPrefixCodeNull != null and officialRankSystem.params.rankPrefixCodeNull.size() > 0">
+        <if test="officialRankSystem.params.rankPrefixCodeNull != null">
             and rank_prefix_code IS NULL
         </if>
-        <if test="officialRankSystem.params.rankPrefixCodeNotNull != null and officialRankSystem.params.rankPrefixCodeNotNull.size() > 0">
+        <if test="officialRankSystem.params.rankPrefixCodeNotNull != null">
             and rank_prefix_code IS NOT NULL
         </if>
         <!--    起始级别过滤-->
