@@ -36,6 +36,8 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
     private static final Set<String> NEED_CONCAT = new HashSet<>();
 
     static {
+        NEED_CONCAT.add(BusinessType.PRODUCT.getCode() + StrUtil.COLON + ProductField.PRODUCT_CATEGORY.getCode());
+
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.CYCLE_TYPE.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.CYCLE_NUMBER.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL.getCode() + StrUtil.COLON + PerformanceAppraisalField.APPRAISAL_FLOW.getCode());
