@@ -380,13 +380,148 @@
             AND esa.adjust_emolument &lt;= #{empSalaryAdjustPlan.params.adjustEmolumentEnd}
         </if>
         <!--    员工高级搜索-->
-        <if test="empSalaryAdjustPlan.params.employeeIds != null and empSalaryAdjustPlan.params.employeeIds.size() > 0">
-            AND esa.employee_id IN
+        <!--员工名称-->
+        <if test="empSalaryAdjustPlan.params.employeeNameEqual != null and empSalaryAdjustPlan.params.employeeNameEqual.size() > 0">
+            AND ess.employee_name IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.employeeIds"
+                     collection="empSalaryAdjustPlan.params.employeeNameEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.employeeNameNotEqual != null and empSalaryAdjustPlan.params.employeeNameNotEqual.size() > 0">
+            AND (ess.employee_name NOT IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.employeeNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ess.employee_name IS NULL
+            )
+        </if>
+        <if test="empSalaryAdjustPlan.params.employeeNameLike != null and empSalaryAdjustPlan.params.employeeNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.employeeNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                ess.employee_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.employeeNameNotLike != null and empSalaryAdjustPlan.params.employeeNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.employeeNameNotLike"
+                     index="index" open="(" separator="OR" close=")">
+                ess.employee_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--员工编码-->
+        <if test="empSalaryAdjustPlan.params.employeeCodeEqual != null and empSalaryAdjustPlan.params.employeeCodeEqual.size() > 0">
+            AND ess.employee_code IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.employeeCodeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.employeeCodeNotEqual != null and empSalaryAdjustPlan.params.employeeCodeNotEqual.size() > 0">
+            AND (ess.employee_code NOT IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.employeeCodeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ess.employee_code IS NULL
+            )
+        </if>
+        <if test="empSalaryAdjustPlan.params.employeeCodeLike != null and empSalaryAdjustPlan.params.employeeCodeLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.employeeCodeLike"
+                     index="index" open="(" separator="OR" close=")">
+                ess.employee_code LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.employeeCodeNotLike != null and empSalaryAdjustPlan.params.employeeCodeNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.employeeCodeNotLike"
+                     index="index" open="(" separator="OR" close=")">
+                ess.employee_code NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--部门负责人名称-->
+        <if test="empSalaryAdjustPlan.params.departmentLeaderNameEqual != null and empSalaryAdjustPlan.params.departmentLeaderNameEqual.size() > 0">
+            AND ess.department_leader_name IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.departmentLeaderNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.departmentLeaderNameNotEqual != null and empSalaryAdjustPlan.params.departmentLeaderNameNotEqual.size() > 0">
+            AND (ess.department_leader_name NOT IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.departmentLeaderNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ess.department_leader_name IS NULL
+            )
+        </if>
+        <if test="empSalaryAdjustPlan.params.departmentLeaderNameLike != null and empSalaryAdjustPlan.params.departmentLeaderNameLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.departmentLeaderNameLike"
+                     index="index" open="(" separator="OR" close=")">
+                ess.department_leader_name LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.departmentLeaderNameNotLike != null and empSalaryAdjustPlan.params.departmentLeaderNameNotLike.size() > 0">
+            AND
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.departmentLeaderNameNotLike"
+                     index="index" open="(" separator="OR" close=")">
+                ess.department_leader_name NOT LIKE concat('%', #{item}, '%')
+            </foreach>
+        </if>
+        <!--    调整部门-->
+        <if test="empSalaryAdjustPlan.params.departmentNameEqual != null and empSalaryAdjustPlan.params.departmentNameEqual.size() > 0">
+            AND esa.adjust_department_name IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.departmentNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.departmentLeaderNameNotEqual != null and empSalaryAdjustPlan.params.departmentLeaderNameNotEqual.size() > 0">
+            AND (esa.adjust_department_name NOT IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.departmentLeaderNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR esa.adjust_department_name IS NULL
+            )
+        </if>
+        <!--调整岗位名称-->
+        <if test="empSalaryAdjustPlan.params.postNameEqual != null and empSalaryAdjustPlan.params.postNameEqual.size() > 0">
+            AND esa.adjust_post_name IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.postNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.postNameNotEqual != null and empSalaryAdjustPlan.params.postNameNotEqual.size() > 0">
+            AND (esa.adjust_post_name NOT IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.postNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR esa.adjust_post_name IS NULL
+            )
         </if>
         <!--    调整部门高级搜索-->
         <if test="empSalaryAdjustPlan.params.adjustDepartmentIds != null and empSalaryAdjustPlan.params.adjustDepartmentIds.size() > 0">

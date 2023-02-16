@@ -374,33 +374,33 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
                     break;
             }
         }
-        // 人员
-        if (StringUtils.isNotEmpty(params2)) {
-            List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
-            if (StringUtils.isEmpty(employeeDTOS)) {
-                return 0;
-            }
-            List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-            params.put("employeeIds", employeeIds);
-        }
-        // 组织
-        if (StringUtils.isNotEmpty(params3)) {
-            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params3);
-            if (StringUtils.isEmpty(departmentDTOS)) {
-                return 0;
-            }
-            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-            params.put("adjustDepartmentIds", departmentIds);
-        }
-        // 岗位
-        if (StringUtils.isNotEmpty(params4)) {
-            List<PostDTO> postDTOS = postAdvancedSearch(params4);
-            if (StringUtils.isEmpty(postDTOS)) {
-                return 0;
-            }
-            List<Long> postIds = postDTOS.stream().map(PostDTO::getPostId).collect(Collectors.toList());
-            params.put("adjustPostIds", postIds);
-        }
+//        // 人员
+//        if (StringUtils.isNotEmpty(params2)) {
+//            List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
+//            if (StringUtils.isEmpty(employeeDTOS)) {
+//                return 0;
+//            }
+//            List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
+//            params.put("employeeIds", employeeIds);
+//        }
+//        // 组织
+//        if (StringUtils.isNotEmpty(params3)) {
+//            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params3);
+//            if (StringUtils.isEmpty(departmentDTOS)) {
+//                return 0;
+//            }
+//            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+//            params.put("adjustDepartmentIds", departmentIds);
+//        }
+//        // 岗位
+//        if (StringUtils.isNotEmpty(params4)) {
+//            List<PostDTO> postDTOS = postAdvancedSearch(params4);
+//            if (StringUtils.isEmpty(postDTOS)) {
+//                return 0;
+//            }
+//            List<Long> postIds = postDTOS.stream().map(PostDTO::getPostId).collect(Collectors.toList());
+//            params.put("adjustPostIds", postIds);
+//        }
         return 1;
     }
 
