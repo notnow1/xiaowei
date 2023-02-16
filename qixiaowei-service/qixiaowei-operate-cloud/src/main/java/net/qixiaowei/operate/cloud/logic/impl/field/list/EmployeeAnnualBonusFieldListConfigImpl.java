@@ -33,7 +33,7 @@ public class EmployeeAnnualBonusFieldListConfigImpl implements IFieldListConfigS
         INIT_MAP.put(EmployeeAnnualBonusField.APPLY_BONUS_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(150).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeAnnualBonusField.APPLY_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeAnnualBonusField.APPLY_EMPLOYEE_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmployeeAnnualBonusField.COMMENT_FLAG.getCode(), FieldListConfig.builder().fieldWidth(150).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmployeeAnnualBonusField.COMMENT_FLAG.getCode(), FieldListConfig.builder().fieldWidth(170).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeAnnualBonusField.STATUS.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeAnnualBonusField.COMMENT_DATE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
