@@ -103,6 +103,7 @@
     <select id="selectEmployeeList" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">
         select
         DISTINCT
+        ors.official_rank_system_name,
         c.country_name as nationality_name,
         n.nation_name,
         p.post_name as employee_post_name,

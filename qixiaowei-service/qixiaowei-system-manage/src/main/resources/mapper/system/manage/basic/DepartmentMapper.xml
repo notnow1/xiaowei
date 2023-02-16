@@ -38,6 +38,7 @@
         dm.ancestors,
         dm.department_code,
         dm.department_name,
+        dm2.department_name as parentDepartmentName,
         dm.level,
         dm.department_leader_id,
         dm.department_leader_post_id,
