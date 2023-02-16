@@ -386,7 +386,7 @@ CREATE TABLE industry(
     update_time DATETIME NOT NULL   COMMENT '更新时间' ,
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (industry_id)
-)  COMMENT = '行业表';
+) AUTO_INCREMENT=100000 COMMENT = '行业表';
 
 
 CREATE TABLE industry_default(
