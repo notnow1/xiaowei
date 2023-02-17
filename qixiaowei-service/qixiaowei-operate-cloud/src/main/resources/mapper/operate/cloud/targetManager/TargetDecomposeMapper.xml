@@ -219,19 +219,28 @@
             AND td.target_year &lt;= #{targetDecompose.params.annualBonusYearEnd}
         </if>
         <!-- 指标名称过滤  -->
-        <if test="targetDecompose.params.indicatorIds != null and targetDecompose.params.indicatorIds.size() > 0">
-            AND td.indicator_id IN
-            <foreach item="item"
-                     collection="targetDecompose.params.indicatorIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        <if test="targetDecompose.params.indicatorNameEqual != null">
+            <!-- 指标名称过滤  -->
+            <if test="targetDecompose.params.indicatorIds != null and targetDecompose.params.indicatorIds.size() > 0">
+                AND td.indicator_id IN
+                <foreach item="item"
+                         collection="targetDecompose.params.indicatorIds"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </if>
         <!-- 指标名称过滤  -->
-        <if test="targetDecompose.params.indicatorNameEqual != null or targetDecompose.params.indicatorNameNotEqual != null">
-            <if test="targetDecompose.params.indicatorIds == null">
-                AND td.indicator_id IN NULL
-            </if>
+        <if test=" targetDecompose.params.indicatorNameNotEqual != null">
+            <!-- 指标名称过滤  -->
+            <if test="targetDecompose.params.indicatorIds != null and targetDecompose.params.indicatorIds.size() > 0">
+                AND (td.indicator_id IN
+                <foreach item="item"
+                         collection="targetDecompose.params.indicatorIds"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if> or td.indicator_id='')
         </if>
         <!-- 分解维度过滤  -->
         <if test="targetDecompose.params.targetDecomposeDimensionIdEqual != null and targetDecompose.params.targetDecomposeDimensionIdEqual.size() > 0">

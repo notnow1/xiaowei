@@ -303,8 +303,7 @@
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR e.employee_gender IS NULL
-            )
+            or e.employee_gender ='')
         </if>
         <!-- 员工身份证号过滤  -->
         <if test="employee.params.identityCardEqual != null and employee.params.identityCardEqual.size() > 0">
@@ -351,12 +350,12 @@
             </foreach>
         </if>
         <if test="employee.params.employeeBirthdayNotEqual != null and employee.params.employeeBirthdayNotEqual.size() > 0">
-            AND e.employee_birthday NOT IN
+            AND (e.employee_birthday NOT IN
             <foreach item="item"
                      collection="employee.params.employeeBirthdayNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
-            </foreach>
+            </foreach> or e.employee_birthday is null)
         </if>
         <if test="employee.params.employeeBirthdayBefore != null and employee.params.employeeBirthdayBefore != ''">
             AND e.employee_birthday &lt; #{employee.params.employeeBirthdayBefore}
@@ -443,12 +442,12 @@
             </foreach>
         </if>
         <if test="employee.params.employmentDateNotEqual != null and employee.params.employmentDateNotEqual.size() > 0">
-            AND e.employment_date NOT IN
+            AND (e.employment_date NOT IN
             <foreach item="item"
                      collection="employee.params.employmentDateNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
-            </foreach>
+            </foreach> or e.employment_date is null)
         </if>
         <if test="employee.params.employmentDateBefore != null and employee.params.employmentDateBefore != ''">
             AND e.employment_date &lt; #{employee.params.employmentDateBefore}
@@ -634,12 +633,12 @@
             </foreach>
         </if>
         <if test="employee.params.employeeBasicWageNotEqual != null and employee.params.employeeBasicWageNotEqual.size() > 0">
-            AND e.employee_basic_wage NOT IN
+            AND (e.employee_basic_wage NOT IN
             <foreach item="item"
                      collection="employee.params.employeeBasicWageNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
-            </foreach>
+            </foreach> or e.employee_basic_wage ='')
         </if>
         <if test="employee.params.employeeBasicWageNull != null">
             AND e.employee_basic_wage is null

@@ -274,12 +274,12 @@
             </foreach>
         </if>
         <if test="department.params.departmentImportanceFactorNotEqual != null and department.params.departmentImportanceFactorNotEqual.size() > 0">
-            AND dm.department_importance_factor NOT IN
+            AND (dm.department_importance_factor NOT IN
             <foreach item="item"
                      collection="department.params.departmentImportanceFactorNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
-            </foreach>
+            </foreach> or dm.department_importance_factor='')
         </if>
         <if test="department.params.departmentImportanceFactorGreaterThan != null ">
             AND dm.department_importance_factor &gt;#{department.params.departmentImportanceFactorGreaterThan}
