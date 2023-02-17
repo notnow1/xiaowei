@@ -269,6 +269,8 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     public List<Tree<Long>> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO) {
         IndustryDefault industryDefault = new IndustryDefault();
         BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
+        Map<String, Object> params = industryDefaultDTO.getParams();
+        industryDefault.setParams(params);
         List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultMapper.selectIndustryDefaultList(industryDefault);
         //自定义属性名
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();

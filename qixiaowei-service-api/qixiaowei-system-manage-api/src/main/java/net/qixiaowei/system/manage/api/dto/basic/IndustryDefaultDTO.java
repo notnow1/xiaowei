@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.validation.groups.Default;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -99,6 +100,10 @@ public class IndustryDefaultDTO {
      * 树子节点
      */
     private List<IndustryDefaultDTO> childDefaultIndustry;
+    /**
+     * 请求参数
+     */
+    private Map<String, Object> params;
 
 }
 
