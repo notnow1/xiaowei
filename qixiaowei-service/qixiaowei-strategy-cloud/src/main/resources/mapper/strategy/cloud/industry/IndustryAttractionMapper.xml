@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionMapper">
+    <!--    查询行业吸引力表-->
+    <select id="selectIndustryAttractionByIndustryAttractionId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO">
+        SELECT
+        industry_attraction_id,attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM industry_attraction
+        WHERE industry_attraction_id=#{industryAttractionId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询行业吸引力表-->
+    <select id="selectIndustryAttractionByIndustryAttractionIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO">
+        SELECT
+        industry_attraction_id,attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM industry_attraction
+        WHERE industry_attraction_id in
+        <foreach item="item"
+                 collection="industryAttractionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询行业吸引力表列表-->
+    <select id="selectIndustryAttractionList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO">
+        SELECT
+        industry_attraction_id,attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM industry_attraction
+        WHERE delete_flag=0
+        <if test="industryAttraction.industryAttractionId != null">
+            and industry_attraction_id=#{industryAttraction.industryAttractionId}
+        </if>
+        <if test="industryAttraction.attractionElementName != null and industryAttraction.attractionElementName != ''">
+            and attraction_element_name=#{industryAttraction.attractionElementName}
+        </if>
+        <if test="industryAttraction.status != null">
+            and status=#{industryAttraction.status}
+        </if>
+        <if test="industryAttraction.deleteFlag != null">
+            and delete_flag=#{industryAttraction.deleteFlag}
+        </if>
+        <if test="industryAttraction.createBy != null">
+            and create_by=#{industryAttraction.createBy}
+        </if>
+        <if test="industryAttraction.createTime != null">
+            and create_time=#{industryAttraction.createTime}
+        </if>
+        <if test="industryAttraction.updateBy != null">
+            and update_by=#{industryAttraction.updateBy}
+        </if>
+        <if test="industryAttraction.updateTime != null">
+            and update_time=#{industryAttraction.updateTime}
+        </if>
+    </select>
+    <!--新增行业吸引力表-->
+    <insert id="insertIndustryAttraction" useGeneratedKeys="true" keyProperty="industryAttractionId">
+        INSERT INTO industry_attraction
+        (attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{industryAttraction.attractionElementName},#{industryAttraction.status},#{industryAttraction.deleteFlag},#{industryAttraction.createBy},#{industryAttraction.createTime},#{industryAttraction.updateBy},#{industryAttraction.updateTime})
+    </insert>
+    <!--修改行业吸引力表-->
+    <update id="updateIndustryAttraction">
+        UPDATE industry_attraction
+        SET
+        <if test="industryAttraction.attractionElementName != null and industryAttraction.attractionElementName != ''">
+            attraction_element_name=#{industryAttraction.attractionElementName},
+        </if>
+        <if test="industryAttraction.status != null">
+            status=#{industryAttraction.status},
+        </if>
+        <if test="industryAttraction.deleteFlag != null">
+            delete_flag=#{industryAttraction.deleteFlag},
+        </if>
+        <if test="industryAttraction.createBy != null">
+            create_by=#{industryAttraction.createBy},
+        </if>
+        <if test="industryAttraction.createTime != null">
+            create_time=#{industryAttraction.createTime},
+        </if>
+        <if test="industryAttraction.updateBy != null">
+            update_by=#{industryAttraction.updateBy},
+        </if>
+        <if test="industryAttraction.updateTime != null">
+            update_time=#{industryAttraction.updateTime}
+        </if>
+        WHERE
+        industry_attraction_id=#{industryAttraction.industryAttractionId}
+    </update>
+    <!--逻辑删除行业吸引力表-->
+    <update id="logicDeleteIndustryAttractionByIndustryAttractionId">
+        UPDATE industry_attraction
+        SET delete_flag= 1,
+        update_by=#{industryAttraction.updateBy},
+        update_time=#{industryAttraction.updateTime}
+        WHERE
+        industry_attraction_id=#{industryAttraction.industryAttractionId}
+    </update>
+    <!--逻辑批量删除行业吸引力表-->
+    <update id="logicDeleteIndustryAttractionByIndustryAttractionIds">
+        UPDATE industry_attraction
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        industry_attraction_id IN
+        <foreach item="item"
+                 collection="industryAttractionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增行业吸引力表-->
+    <insert id="batchIndustryAttraction">
+        INSERT INTO industry_attraction
+        (attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="industryAttractions"
+                 separator=",">
+            (#{item.attractionElementName},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除行业吸引力表-->
+    <delete id="deleteIndustryAttractionByIndustryAttractionId">
+        DELETE FROM industry_attraction
+        WHERE industry_attraction_id=#{industryAttraction}
+
+    </delete>
+    <!--物理批量删除行业吸引力表-->
+    <delete id="deleteIndustryAttractionByIndustryAttractionIds">
+        DELETE FROM industry_attraction
+        WHERE industry_attraction_id IN
+        <foreach item="item"
+                 collection="industryAttractionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改行业吸引力表-->
+    <update id="updateIndustryAttractions">
+        update industry_attraction
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="attraction_element_name=case" suffix="end,">
+                <foreach collection="industryAttractionList" item="item" index="index">
+                    <if test="item.attractionElementName != null and item.attractionElementName != ''">
+                        when industry_attraction_id=#{item.industryAttractionId} then #{item.attractionElementName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="industryAttractionList" item="item" index="index">
+                    <if test="item.status != null">
+                        when industry_attraction_id=#{item.industryAttractionId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="industryAttractionList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when industry_attraction_id=#{item.industryAttractionId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="industryAttractionList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when industry_attraction_id=#{item.industryAttractionId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="industryAttractionList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when industry_attraction_id=#{item.industryAttractionId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="industryAttractionList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when industry_attraction_id=#{item.industryAttractionId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="industryAttractionList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when industry_attraction_id=#{item.industryAttractionId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="industryAttractionList" separator="or" item="item" index="index">
+            industry_attraction_id=#{item.industryAttractionId}
+        </foreach>
+    </update>
+</mapper>
+
+

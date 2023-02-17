@@ -66,6 +66,28 @@
             <artifactId>qixiaowei-integration-log</artifactId>
         </dependency>
 
+        <!-- Alibaba EasyExcel -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
+
+        <!-- qixiaowei integration tenant -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-integration-tenant</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-strategy-cloud-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-message-api</artifactId>
+        </dependency>
+
         <!-- qixiaowei integration tenant -->
         <dependency>
             <groupId>net.qixiaowei</groupId>

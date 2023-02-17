@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.plan.PlanBusinessUnitMapper">
+    <!--    查询规划业务单元-->
+    <select id="selectPlanBusinessUnitByPlanBusinessUnitId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO">
+        SELECT
+        plan_business_unit_id,business_unit_code,business_unit_name,business_unit_decompose,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM plan_business_unit
+        WHERE plan_business_unit_id=#{planBusinessUnitId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询规划业务单元-->
+    <select id="selectPlanBusinessUnitByPlanBusinessUnitIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO">
+        SELECT
+        plan_business_unit_id,business_unit_code,business_unit_name,business_unit_decompose,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM plan_business_unit
+        WHERE plan_business_unit_id in
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询规划业务单元列表-->
+    <select id="selectPlanBusinessUnitList" resultType="net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO">
+        SELECT
+        plan_business_unit_id,business_unit_code,business_unit_name,business_unit_decompose,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM plan_business_unit
+        WHERE delete_flag=0
+        <if test="planBusinessUnit.planBusinessUnitId != null">
+            and plan_business_unit_id=#{planBusinessUnit.planBusinessUnitId}
+        </if>
+        <if test="planBusinessUnit.businessUnitCode != null and planBusinessUnit.businessUnitCode != ''">
+            and business_unit_code=#{planBusinessUnit.businessUnitCode}
+        </if>
+        <if test="planBusinessUnit.businessUnitName != null and planBusinessUnit.businessUnitName != ''">
+            and business_unit_name=#{planBusinessUnit.businessUnitName}
+        </if>
+        <if test="planBusinessUnit.businessUnitDecompose != null and planBusinessUnit.businessUnitDecompose != ''">
+            and business_unit_decompose=#{planBusinessUnit.businessUnitDecompose}
+        </if>
+        <if test="planBusinessUnit.status != null">
+            and status=#{planBusinessUnit.status}
+        </if>
+        <if test="planBusinessUnit.deleteFlag != null">
+            and delete_flag=#{planBusinessUnit.deleteFlag}
+        </if>
+        <if test="planBusinessUnit.createBy != null">
+            and create_by=#{planBusinessUnit.createBy}
+        </if>
+        <if test="planBusinessUnit.createTime != null">
+            and create_time=#{planBusinessUnit.createTime}
+        </if>
+        <if test="planBusinessUnit.updateBy != null">
+            and update_by=#{planBusinessUnit.updateBy}
+        </if>
+        <if test="planBusinessUnit.updateTime != null">
+            and update_time=#{planBusinessUnit.updateTime}
+        </if>
+    </select>
+    <!--新增规划业务单元-->
+    <insert id="insertPlanBusinessUnit" useGeneratedKeys="true" keyProperty="planBusinessUnitId">
+        INSERT INTO plan_business_unit
+        (business_unit_code,business_unit_name,business_unit_decompose,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{planBusinessUnit.businessUnitCode},#{planBusinessUnit.businessUnitName},#{planBusinessUnit.businessUnitDecompose},#{planBusinessUnit.status},#{planBusinessUnit.deleteFlag},#{planBusinessUnit.createBy},#{planBusinessUnit.createTime},#{planBusinessUnit.updateBy},#{planBusinessUnit.updateTime})
+    </insert>
+    <!--修改规划业务单元-->
+    <update id="updatePlanBusinessUnit">
+        UPDATE plan_business_unit
+        SET
+        <if test="planBusinessUnit.businessUnitCode != null and planBusinessUnit.businessUnitCode != ''">
+            business_unit_code=#{planBusinessUnit.businessUnitCode},
+        </if>
+        <if test="planBusinessUnit.businessUnitName != null and planBusinessUnit.businessUnitName != ''">
+            business_unit_name=#{planBusinessUnit.businessUnitName},
+        </if>
+        <if test="planBusinessUnit.businessUnitDecompose != null and planBusinessUnit.businessUnitDecompose != ''">
+            business_unit_decompose=#{planBusinessUnit.businessUnitDecompose},
+        </if>
+        <if test="planBusinessUnit.status != null">
+            status=#{planBusinessUnit.status},
+        </if>
+        <if test="planBusinessUnit.deleteFlag != null">
+            delete_flag=#{planBusinessUnit.deleteFlag},
+        </if>
+        <if test="planBusinessUnit.createBy != null">
+            create_by=#{planBusinessUnit.createBy},
+        </if>
+        <if test="planBusinessUnit.createTime != null">
+            create_time=#{planBusinessUnit.createTime},
+        </if>
+        <if test="planBusinessUnit.updateBy != null">
+            update_by=#{planBusinessUnit.updateBy},
+        </if>
+        <if test="planBusinessUnit.updateTime != null">
+            update_time=#{planBusinessUnit.updateTime}
+        </if>
+        WHERE
+        plan_business_unit_id=#{planBusinessUnit.planBusinessUnitId}
+    </update>
+    <!--逻辑删除规划业务单元-->
+    <update id="logicDeletePlanBusinessUnitByPlanBusinessUnitId">
+        UPDATE plan_business_unit
+        SET delete_flag= 1,
+        update_by=#{planBusinessUnit.updateBy},
+        update_time=#{planBusinessUnit.updateTime}
+        WHERE
+        plan_business_unit_id=#{planBusinessUnit.planBusinessUnitId}
+    </update>
+    <!--逻辑批量删除规划业务单元-->
+    <update id="logicDeletePlanBusinessUnitByPlanBusinessUnitIds">
+        UPDATE plan_business_unit
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        plan_business_unit_id IN
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增规划业务单元-->
+    <insert id="batchPlanBusinessUnit">
+        INSERT INTO plan_business_unit
+        (business_unit_code,business_unit_name,business_unit_decompose,status,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="planBusinessUnits"
+                 separator=",">
+            (#{item.businessUnitCode},#{item.businessUnitName},#{item.businessUnitDecompose},#{item.status},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除规划业务单元-->
+    <delete id="deletePlanBusinessUnitByPlanBusinessUnitId">
+        DELETE FROM plan_business_unit
+        WHERE plan_business_unit_id=#{planBusinessUnit}
+
+    </delete>
+    <!--物理批量删除规划业务单元-->
+    <delete id="deletePlanBusinessUnitByPlanBusinessUnitIds">
+        DELETE FROM plan_business_unit
+        WHERE plan_business_unit_id IN
+        <foreach item="item"
+                 collection="planBusinessUnitIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改规划业务单元-->
+    <update id="updatePlanBusinessUnits">
+        update plan_business_unit
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="business_unit_code=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.businessUnitCode != null and item.businessUnitCode != ''">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.businessUnitCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_unit_name=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.businessUnitName != null and item.businessUnitName != ''">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.businessUnitName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_unit_decompose=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.businessUnitDecompose}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="status=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.status != null">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.status}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="planBusinessUnitList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when plan_business_unit_id=#{item.planBusinessUnitId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="planBusinessUnitList" separator="or" item="item" index="index">
+            plan_business_unit_id=#{item.planBusinessUnitId}
+        </foreach>
+    </update>
+</mapper>
+
+
