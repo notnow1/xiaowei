@@ -93,7 +93,7 @@
             </foreach>
         </if>
         <!-- 职级体系过滤  -->
-        <if test="employeeBudget.params.officialRankSystemNameEqual != null or mployeeBudget.params.officialRankSystemNameNotEqual != null">
+        <if test="employeeBudget.params.officialRankSystemNameEqual != null or employeeBudget.params.officialRankSystemNameNotEqual != null">
             <!-- 职级体系过滤  -->
             <if test="employeeBudget.params.officialRankSystemIds == null">
                 AND official_rank_system_id is null
