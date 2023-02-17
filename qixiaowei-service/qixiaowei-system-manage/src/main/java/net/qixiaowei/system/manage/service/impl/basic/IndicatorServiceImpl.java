@@ -160,6 +160,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.putExtra("drivingFactorFlag", treeNode.getDrivingFactorFlag());
             tree.putExtra("indicatorCategoryId", treeNode.getIndicatorCategoryId());
             tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
+            tree.putExtra("parentIndicatorName", treeNode.getParentIndicatorName());
             tree.putExtra("isPreset", treeNode.getIsPreset());
         });
     }
@@ -829,7 +830,7 @@ public class IndicatorServiceImpl implements IIndicatorService {
     @Override
     public List<IndicatorDTO> getIndicatorAllData(IndicatorDTO indicatorDTO) {
         Indicator indicator = new Indicator();
-        BeanUtils.copyProperties(indicatorDTO,indicator);
+        BeanUtils.copyProperties(indicatorDTO, indicator);
         return indicatorMapper.selectIndicatorList(indicator);
     }
 

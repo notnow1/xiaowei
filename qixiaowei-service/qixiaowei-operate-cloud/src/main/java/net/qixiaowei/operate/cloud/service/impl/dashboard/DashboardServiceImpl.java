@@ -385,7 +385,7 @@ public class DashboardServiceImpl implements IDashboardService {
         }
         ArrayList<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOArrayList = new ArrayList<>();
         for (int i = startYear; i <= endYear; i++) {
-            for (int j = 0; j < cycleNumber; j++) {
+            for (int j = 1; j <= cycleNumber; j++) {
                 TargetAchieveAnalysisDTO targetAchieveAnalysisDTO1 = new TargetAchieveAnalysisDTO();
                 targetAchieveAnalysisDTO1.setCycleForecastSum(BigDecimal.ZERO);
                 targetAchieveAnalysisDTO1.setCycleTargetSum(BigDecimal.ZERO);

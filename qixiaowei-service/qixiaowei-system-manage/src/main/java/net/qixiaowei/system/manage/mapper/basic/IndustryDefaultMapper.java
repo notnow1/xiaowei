@@ -1,12 +1,12 @@
 package net.qixiaowei.system.manage.mapper.basic;
 
-import java.util.List;
-
 import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -151,4 +151,20 @@ public interface IndustryDefaultMapper {
      * @return
      */
     List<Integer> selectLevelList();
+
+    /**
+     * 根据ID集合查询默认行业
+     *
+     * @param defaultIndustryIds 默认行业ID集合
+     * @return List
+     */
+    List<IndustryDefaultDTO> selectIndustryDefaultByIndustryIds(@Param("defaultIndustryIds") List<Long> defaultIndustryIds);
+
+    /**
+     * 根据编码查询默认行业列表
+     *
+     * @param industryCodes 行业编码
+     * @return list
+     */
+    List<IndustryDefaultDTO> selectDefaultByCodes(@Param("industryCodes") List<String> industryCodes);
 }

@@ -266,142 +266,14 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
             params = new HashMap<>();
         }
         EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
-        if (StringUtils.isNotEmpty(params)) {
-            if (getRemoteIds(params) == 0) {
-                return new ArrayList<>();
-            }
-        }
         empSalaryAdjustPlan.setParams(params);
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
         for (EmpSalaryAdjustPlanDTO salaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
             String adjustmentType = salaryAdjustPlanDTO.getAdjustmentType();
             List<Integer> adjustmentTypeList = setPlanListValue(adjustmentType);
-            BigDecimal adjustEmolument = salaryAdjustPlanDTO.getAdjustEmolument();
-            Long adjustPostId = salaryAdjustPlanDTO.getAdjustPostId();
-            Long adjustOfficialRankSystemId = salaryAdjustPlanDTO.getAdjustOfficialRankSystemId();//职级体系
-            Integer adjustOfficialRank = salaryAdjustPlanDTO.getAdjustOfficialRank();
-            if (StringUtils.isNull(adjustEmolument)) {
-                salaryAdjustPlanDTO.setAdjustEmolument(salaryAdjustPlanDTO.getBasicWage());
-            }
-            if (StringUtils.isNull(adjustPostId)) {
-                salaryAdjustPlanDTO.setAdjustPostName(salaryAdjustPlanDTO.getPostName());
-            }
-            if (StringUtils.isNull(adjustOfficialRankSystemId)) {
-                salaryAdjustPlanDTO.setAdjustOfficialRankSystemName(salaryAdjustPlanDTO.getOfficialRankSystemName());
-            }
-            if (StringUtils.isNull(adjustOfficialRank)) {
-                salaryAdjustPlanDTO.setAdjustOfficialRankName(salaryAdjustPlanDTO.getOfficialRankName());
-            }
             empSalaryAdjustPlanDTO.setAdjustmentTypeList(adjustmentTypeList);
         }
         return empSalaryAdjustPlanDTOS;
-    }
-
-    /**
-     * 获取高级搜索后的ID传入params
-     *
-     * @param params 请求参数
-     */
-    private int getRemoteIds(Map<String, Object> params) {
-        Map<String, Object> params2 = new HashMap<>();
-        Map<String, Object> params3 = new HashMap<>();
-        Map<String, Object> params4 = new HashMap<>();
-        for (String key : params.keySet()) {
-            switch (key) {
-                case "employeeCodeEqual":
-                    params2.put("employeeCodeEqual", params.get("employeeCodeNotEqual"));
-                    break;
-                case "employeeCodeNotEqual":
-                    params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
-                    break;
-                case "employeeCodeLike":
-                    params2.put("employeeCodeLike", params.get("employeeCodeLike"));
-                    break;
-                case "employeeCodeNotLike":
-                    params2.put("employeeCodeNotLike", params.get("employeeCodeNotLike"));
-                    break;
-                case "departmentNameEqual":
-                    params3.put("departmentNameEqual", params.get("departmentNameEqual"));
-                    break;
-                case "departmentNameNotEqual":
-                    params3.put("departmentNameNotEqual", params.get("departmentNameNotEqual"));
-                    break;
-                case "departmentNameLike":
-                    params3.put("departmentNameLike", params.get("departmentNameLike"));
-                    break;
-                case "departmentNameNotLike":
-                    params3.put("departmentNameNotLike", params.get("departmentNameNotLike"));
-                    break;
-//                    部门编码
-                case "departmentCodeEqual":
-                    params3.put("departmentCodeEqual", params.get("departmentCodeNotEqual"));
-                    break;
-                case "departmentCodeNotEqual":
-                    params3.put("departmentCodeNotEqual", params.get("departmentCodeNotEqual"));
-                    break;
-                case "departmentCodeLike":
-                    params3.put("departmentCodeLike", params.get("departmentCodeLike"));
-                    break;
-                case "departmentCodeNotLike":
-                    params3.put("departmentCodeNotLike", params.get("departmentCodeNotLike"));
-                    break;
-//                调整部门主管
-                case "departmentLeaderNameEqual":
-                    params3.put("departmentLeaderNameEqual", params.get("departmentLeaderNameEqual"));
-                    break;
-                case "departmentLeaderNameNotEqual":
-                    params3.put("departmentLeaderNameNotEqual", params.get("departmentLeaderNameNotEqual"));
-                    break;
-                case "departmentLeaderNameLike":
-                    params3.put("departmentLeaderNameLike", params.get("departmentLeaderNameLike"));
-                    break;
-                case "departmentLeaderNameNotLike":
-                    params3.put("departmentLeaderNameNotLike", params.get("departmentLeaderNameNotLike"));
-                    break;
-//                调整岗位
-                case "postNameEqual":
-                    params4.put("postNameEqual", params.get("postNameEqual"));
-                    break;
-                case "postNameNotEqual":
-                    params4.put("postNameNotEqual", params.get("postNameNotEqual"));
-                    break;
-//                调整职级体系
-                case "officialRankSystemNameEqual":
-                    params4.put("officialRankSystemNameEqual", params.get("officialRankSystemNameEqual"));
-                    break;
-                case "officialRankSystemNameNotEqual":
-                    params4.put("officialRankSystemNameNotEqual", params.get("officialRankSystemNameNotEqual"));
-                    break;
-            }
-        }
-//        // 人员
-//        if (StringUtils.isNotEmpty(params2)) {
-//            List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
-//            if (StringUtils.isEmpty(employeeDTOS)) {
-//                return 0;
-//            }
-//            List<Long> employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-//            params.put("employeeIds", employeeIds);
-//        }
-//        // 组织
-//        if (StringUtils.isNotEmpty(params3)) {
-//            List<DepartmentDTO> departmentDTOS = depAdvancedSearch(params3);
-//            if (StringUtils.isEmpty(departmentDTOS)) {
-//                return 0;
-//            }
-//            List<Long> departmentIds = departmentDTOS.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
-//            params.put("adjustDepartmentIds", departmentIds);
-//        }
-//        // 岗位
-//        if (StringUtils.isNotEmpty(params4)) {
-//            List<PostDTO> postDTOS = postAdvancedSearch(params4);
-//            if (StringUtils.isEmpty(postDTOS)) {
-//                return 0;
-//            }
-//            List<Long> postIds = postDTOS.stream().map(PostDTO::getPostId).collect(Collectors.toList());
-//            params.put("adjustPostIds", postIds);
-//        }
-        return 1;
     }
 
     /**

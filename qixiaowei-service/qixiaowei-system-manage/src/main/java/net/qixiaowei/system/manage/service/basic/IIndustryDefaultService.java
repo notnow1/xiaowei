@@ -1,7 +1,9 @@
 package net.qixiaowei.system.manage.service.basic;
 
 import cn.hutool.core.lang.tree.Tree;
+import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -129,7 +131,23 @@ public interface IIndustryDefaultService {
     /**
      * 获取指标最大层级
      *
-     * @return
+     * @return List
      */
     List<Integer> getLevel();
+
+    /**
+     * 根据ID集合查询默认行业
+     *
+     * @param defaultIndustryIds 默认ID集合
+     * @return List
+     */
+    List<IndustryDefaultDTO> selectIndustryDefaultByIndustryIds(List<Long> defaultIndustryIds);
+
+    /**
+     * 根据编码查询默认行业列表
+     *
+     * @param industryCodes 行业编码集合
+     * @return List
+     */
+    List<IndustryDefaultDTO> selectDefaultByCodes(List<String> industryCodes);
 }

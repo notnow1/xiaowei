@@ -586,10 +586,20 @@
             and pao.appraisal_principal_name like concat('%', #{performanceAppraisalObjectsDTO.appraisalPrincipalName},
             '%')
         </if>
-        <!--员工ID集合-->
+        <!--部门ID集合-->
         <if test="performanceAppraisalObjectsDTO.params.departmentIds != null and performanceAppraisalObjectsDTO.params.departmentIds.size()>0">
+            AND pa.appraisal_object = 1
             AND pao.appraisal_object_id IN
             <foreach collection="performanceAppraisalObjectsDTO.params.departmentIds" item="item" index="index"
+                     separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!--员工ID集合-->
+        <if test="performanceAppraisalObjectsDTO.params.employeeIds != null and performanceAppraisalObjectsDTO.params.employeeIds.size()>0">
+            AND pa.appraisal_object = 2
+            AND pao.appraisal_object_id IN
+            <foreach collection="performanceAppraisalObjectsDTO.params.employeeIds" item="item" index="index"
                      separator="," open="(" close=")">
                 #{item}
             </foreach>

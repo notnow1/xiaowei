@@ -18,6 +18,7 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
+import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
@@ -58,14 +59,22 @@ public class IndustryServiceImpl implements IIndustryService {
 
 
     /**
-     * 查询行业
+     * 查询行业 行业启用：1系统；2自定义
      *
      * @param industryId 行业主键
      * @return 行业
      */
     @Override
     public IndustryDTO selectIndustryByIndustryId(Long industryId) {
-        return industryMapper.selectIndustryByIndustryId(industryId);
+        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        if (enableType == 1) {
+            IndustryDefaultDTO industryDefaultDTO = industryDefaultService.selectIndustryDefaultByIndustryId(industryId);
+            IndustryDTO industryDTO = new IndustryDTO();
+            BeanUtils.copyProperties(industryDefaultDTO, industryDTO);
+            return industryDTO;
+        } else {
+            return industryMapper.selectIndustryByIndustryId(industryId);
+        }
     }
 
     /**
@@ -556,7 +565,6 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
-        // todo 行业启用：1系统；2自定义
         Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
         if (StringUtils.isNull(enableType)) {
             throw new ServiceException("系统配置数据异常");
@@ -577,7 +585,6 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public IndustryDTO getEnableType(IndustryDTO industryDTO) {
-        // todo 1-默认,2-自定义
         Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
         if (StringUtils.isNull(enableType)) {
             throw new ServiceException("系统配置数据异常");
@@ -642,23 +649,62 @@ public class IndustryServiceImpl implements IIndustryService {
     /**
      * 根据code集合查询行业信息
      *
-     * @param industryCodes
-     * @return
+     * @param industryCodes 行业编码
+     * @return List
      */
     @Override
     public List<IndustryDTO> selectCodeList(List<String> industryCodes) {
-        return industryMapper.selectCodeList(industryCodes);
+        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        List<IndustryDTO> industryDTOS = new ArrayList<>();
+        if (enableType == 1) {
+            List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultService.selectDefaultByCodes(industryCodes);
+            if (StringUtils.isEmpty(industryDefaultDTOS)) {
+                return new ArrayList<>();
+            }
+            for (IndustryDefaultDTO industryDefaultDTO : industryDefaultDTOS) {
+                IndustryDTO industryDTO = new IndustryDTO();
+                BeanUtils.copyProperties(industryDefaultDTO, industryDTO);
+                industryDTOS.add(industryDTO);
+            }
+        } else {
+            industryDTOS = industryMapper.selectCodeList(industryCodes);
+        }
+        return industryDTOS;
     }
 
     /**
      * 通过Id集合查询行业信息
      *
-     * @param industryIds
-     * @return
+     * @param industryIds 行业ID集合
+     * @return List
      */
     @Override
     public List<IndustryDTO> selectIndustryByIndustryIds(List<Long> industryIds) {
-        return industryMapper.selectIndustryByIndustryIds(industryIds);
+        if (StringUtils.isEmpty(industryIds)) {
+            return new ArrayList<>();
+        }
+        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        List<Long> defaultIndustryIds;
+        if (enableType == 1) {// 系统
+            defaultIndustryIds = industryIds.stream().filter(industryId -> industryId < 100000).collect(Collectors.toList());// 默认
+            if (StringUtils.isEmpty(defaultIndustryIds)) {
+                return new ArrayList<>();
+            }
+            List<IndustryDefaultDTO> industryDTOS = industryDefaultService.selectIndustryDefaultByIndustryIds(defaultIndustryIds);
+            List<IndustryDTO> industryDTOArrayList = new ArrayList<>();
+            for (IndustryDefaultDTO industryDefaultDTO : industryDTOS) {
+                IndustryDTO industryDTO = new IndustryDTO();
+                BeanUtils.copyProperties(industryDefaultDTO, industryDTO);
+                industryDTOArrayList.add(industryDTO);
+            }
+            return industryDTOArrayList;
+        } else {
+            defaultIndustryIds = industryIds.stream().filter(industryId -> industryId >= 100000).collect(Collectors.toList());// 自定义
+            if (StringUtils.isEmpty(defaultIndustryIds)) {
+                return new ArrayList<>();
+            }
+            return industryMapper.selectIndustryByIndustryIds(defaultIndustryIds);
+        }
     }
 
     /**

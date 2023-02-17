@@ -297,6 +297,28 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     }
 
     /**
+     * 根据ID集合查询默认行业
+     *
+     * @param defaultIndustryIds 默认ID集合
+     * @return List
+     */
+    @Override
+    public List<IndustryDefaultDTO> selectIndustryDefaultByIndustryIds(List<Long> defaultIndustryIds) {
+        return industryDefaultMapper.selectIndustryDefaultByIndustryIds(defaultIndustryIds);
+    }
+
+    /**
+     * 根据编码查询默认行业列表
+     *
+     * @param industryCodes 行业编码集合
+     * @return List
+     */
+    @Override
+    public List<IndustryDefaultDTO> selectDefaultByCodes(List<String> industryCodes) {
+        return industryDefaultMapper.selectDefaultByCodes(industryCodes);
+    }
+
+    /**
      * 逻辑删除默认行业信息
      *
      * @param industryId 默认行业
