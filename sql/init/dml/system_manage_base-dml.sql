@@ -10,7 +10,7 @@ SET NAMES utf8mb4;
 -- ----------------------------
 INSERT INTO product_package (product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, '经营云', NULL, NULL, 1, 0, 1, sysdate(), 1, sysdate());
 INSERT INTO product_package (product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, '销售云', NULL, NULL, 2, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO product_package (product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time) VALUES(3, '财务云', NULL, NULL, 3, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO product_package (product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time) VALUES(3, '战略云', NULL, NULL, 3, 0, 1, sysdate(), 1, sysdate());
 INSERT INTO product_package (product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time) VALUES(4, '人才云', NULL, NULL, 4, 0, 1, sysdate(), 1, sysdate());
 INSERT INTO product_package (product_package_id, product_package_name, product_package_description, remark, sort, delete_flag, create_by, create_time, update_by, update_time) VALUES(5, '智慧云', NULL, NULL, 5, 0, 1, sysdate(), 1, sysdate());
 
