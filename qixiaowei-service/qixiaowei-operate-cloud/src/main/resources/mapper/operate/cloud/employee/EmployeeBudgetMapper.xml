@@ -77,7 +77,7 @@
             </foreach>
         </if>
         <!-- 预算部门过滤  -->
-        <if test="employeeBudget.params.departmentNameEqual != null or mployeeBudget.params.departmentNameNotEqual != null">
+        <if test="employeeBudget.params.departmentNameEqual != null or employeeBudget.params.departmentNameNotEqual != null">
             <!-- 预算部门过滤  -->
             <if test="employeeBudget.params.departmentIds == null">
                 AND department_id is null

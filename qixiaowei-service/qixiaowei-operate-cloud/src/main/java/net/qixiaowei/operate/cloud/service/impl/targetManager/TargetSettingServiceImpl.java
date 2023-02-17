@@ -532,8 +532,7 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
             indicatorIds = listR.getData().stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
             targetSetting.setIndicatorIds(indicatorIds);
         }
-
-        List<TargetSettingDTO> targetSettingDTOS = targetSettingMapper.selectanalyseIndicator(targetSetting);
+        List<TargetSettingDTO> targetSettingDTOS  = new ArrayList<>();
         if (StringUtils.isNotEmpty(indicatorIds)) {
             for (Long indicatorId : indicatorIds) {
                 TargetSettingDTO targetSettingDTO1 = new TargetSettingDTO();
@@ -541,6 +540,8 @@ public class TargetSettingServiceImpl implements ITargetSettingService {
                 targetSettingDTOS.add(targetSettingDTO1);
             }
         }
+         targetSettingDTOS = targetSettingMapper.selectanalyseIndicator(targetSetting);
+
         if (StringUtils.isNotEmpty(targetSettingDTOS)) {
             List<Long> collect = targetSettingDTOS.stream().map(TargetSettingDTO::getIndicatorId).filter(Objects::nonNull).collect(Collectors.toList());
             if (StringUtils.isNotEmpty(collect)) {
