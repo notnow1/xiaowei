@@ -303,7 +303,7 @@
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            or e.employee_gender ='')
+            or e.employee_gender is null)
         </if>
         <!-- 员工身份证号过滤  -->
         <if test="employee.params.identityCardEqual != null and employee.params.identityCardEqual.size() > 0">
@@ -638,13 +638,13 @@
                      collection="employee.params.employeeBasicWageNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
-            </foreach> or e.employee_basic_wage ='')
+            </foreach> or (e.employee_basic_wage ='' or e.employee_basic_wage is null))
         </if>
         <if test="employee.params.employeeBasicWageNull != null">
-            AND e.employee_basic_wage is null
+            AND (e.employee_basic_wage is null or e.employee_basic_wage ='')
         </if>
         <if test="employee.params.employeeBasicWageNotNull != null">
-            AND e.employee_basic_wage is not null
+            AND (e.employee_basic_wage is not null or e.employee_basic_wage != '')
         </if>
         <if test="employee.params.employeeBasicWageGreaterThan != null ">
             AND e.employee_basic_wage &gt;#{employee.params.employeeBasicWageGreaterThan}
@@ -731,10 +731,10 @@
             )
         </if>
         <if test="employee.params.employeeEmailNull != null">
-            AND e.employee_email = ''
+            AND (e.employee_email = '' or e.employee_email is null)
         </if>
         <if test="employee.params.employeeEmailNotNull != null">
-            AND e.employee_email != ''
+            AND (e.employee_email != '' or e.employee_email is not null)
         </if>
         <!-- 员工微信过滤  -->
         <if test="employee.params.wechatCodeEqual != null and employee.params.wechatCodeEqual.size() > 0">
@@ -774,10 +774,10 @@
             )
         </if>
         <if test="employee.params.wechatCodeNull != null">
-            AND ei.wechat_code = ''
+            AND (ei.wechat_code = '' or ei.wechat_code is null)
         </if>
         <if test="employee.params.wechatCodeNotNull != null">
-            AND ei.wechat_code != ''
+            AND (ei.wechat_code != '' or ei.wechat_code is not null)
         </if>
 
         <if test="employee.residentCityName != null and employee.residentCityName != ''">

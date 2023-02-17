@@ -249,7 +249,7 @@
                          collection="product.params.dictionaryDataIds"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or p.product_category ='')
+                </foreach> or (p.product_category ='' or p.product_category is null))
             </if>
         </if>
         <!-- 产品状态过滤  -->

@@ -209,10 +209,10 @@
             )
         </if>
         <if test="department.params.departmentLeaderNameNull != null">
-            AND ee.employee_name IS NULL
+            AND (ee.employee_name IS NULL or ee.employee_name ='')
         </if>
         <if test="department.params.departmentLeaderNameNotNull != null">
-            AND ee.employee_name IS NOT NULL
+            AND (ee.employee_name IS NOT NULL or ee.employee_name != '')
         </if>
         <!-- 组织负责人岗位过滤  -->
         <if test="department.params.departmentLeaderPostNameEqual != null and department.params.departmentLeaderPostNameEqual.size() > 0">
@@ -234,10 +234,10 @@
             )
         </if>
         <if test="department.params.departmentLeaderPostNameNull != null">
-            AND p2.post_name IS NULL
+            AND (p2.post_name IS NULL or p2.post_name ='')
         </if>
         <if test="department.params.departmentLeaderPostNameNotNull != null">
-            AND p2.post_name IS NOT NULL
+            AND (p2.post_name IS NOT NULL or p2.post_name != '')
         </if>
         <!-- 考核负责人过滤  -->
         <if test="department.params.examinationLeaderNameEqual != null and department.params.examinationLeaderNameEqual.size() > 0">
@@ -259,10 +259,10 @@
             )
         </if>
         <if test="department.params.examinationLeaderNameNull != null">
-            AND ee2.employee_name IS NULL
+            AND (ee2.employee_name IS NULL or ee2.employee_name ='')
         </if>
         <if test="department.params.examinationLeaderNameNotNull != null">
-            AND ee2.employee_name IS NOT NULL
+            AND (ee2.employee_name IS NOT NULL or ee2.employee_name != '')
         </if>
         <!-- 组织重要性系数过滤  -->
         <if test="department.params.departmentImportanceFactorEqual != null and department.params.departmentImportanceFactorEqual.size() > 0">
@@ -279,7 +279,7 @@
                      collection="department.params.departmentImportanceFactorNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
-            </foreach> or dm.department_importance_factor='')
+            </foreach> or  (dm.department_importance_factor='' or dm.department_importance_factor is null))
         </if>
         <if test="department.params.departmentImportanceFactorGreaterThan != null ">
             AND dm.department_importance_factor &gt;#{department.params.departmentImportanceFactorGreaterThan}
@@ -294,10 +294,10 @@
             AND dm.department_importance_factor &gt;=#{department.params.departmentImportanceFactorNotLessThan}
         </if>
         <if test="department.params.departmentImportanceFactorNull != null">
-            AND dm.department_importance_factor IS NULL
+            AND (dm.department_importance_factor IS NULL OR dm.department_importance_factor ='')
         </if>
         <if test="department.params.departmentImportanceFactorNotNull != null">
-            AND dm.department_importance_factor IS NOT NULL
+            AND (dm.department_importance_factor IS NOT NULL or dm.department_importance_factor != '')
         </if>
         <!-- 组织状态过滤  -->
         <if test="department.params.statusEqual != null and department.params.statusEqual.size() > 0">

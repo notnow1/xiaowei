@@ -240,7 +240,7 @@
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-            </if> or td.indicator_id='')
+            </if> or (td.indicator_id='' or td.indicator_id is null))
         </if>
         <!-- 分解维度过滤  -->
         <if test="targetDecompose.params.targetDecomposeDimensionIdEqual != null and targetDecompose.params.targetDecomposeDimensionIdEqual.size() > 0">

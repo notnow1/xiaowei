@@ -188,7 +188,7 @@
                          collection="bonusPayApplication.params.applyDepartmentIds"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or bpa.apply_department_id ='')
+                </foreach> or (bpa.apply_department_id ='' or bpa.apply_department_id is null))
             </if>
         </if>
         <!-- 获奖时间过滤  -->
