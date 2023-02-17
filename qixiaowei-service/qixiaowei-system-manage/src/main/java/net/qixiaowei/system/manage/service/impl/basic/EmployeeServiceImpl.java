@@ -138,10 +138,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
             String employeeFlag = employeeDTO.getEmployeeFlag();
+            //有账号的员工
             if (StringUtils.equals("user",employeeFlag)){
                 employeeDTOList = employeeMapper.getUseEmployeeUser();
-            }else if (StringUtils.equals("0",employeeFlag)){
+            }//离职且草稿状态的员工
+            else if (StringUtils.equals("0",employeeFlag)){
                 employeeDTOList = employeeMapper.getUseEmployeeStatus();
+            }//生效包含在职离职的员工
+            else if (StringUtils.equals("1",employeeFlag)){
+                employeeDTOList = employeeMapper.getAllUseEmployee();
             }else {
                 employeeDTOList = employeeMapper.selectDropEmployeeList(employee);
             }

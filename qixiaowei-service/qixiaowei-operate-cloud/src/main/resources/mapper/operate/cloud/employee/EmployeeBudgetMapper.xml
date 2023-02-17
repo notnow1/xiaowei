@@ -76,6 +76,13 @@
                 #{item}
             </foreach>
         </if>
+        <!-- 预算部门过滤  -->
+        <if test="employeeBudget.params.departmentNameEqual != null or employeeBudget.params.departmentNameNotEqual != null">
+            <!-- 预算部门过滤  -->
+            <if test="employeeBudget.params.departmentIds == null">
+                AND department_id is null
+            </if>
+        </if>
         <!-- 职级体系过滤  -->
         <if test="employeeBudget.params.officialRankSystemIds != null and employeeBudget.params.officialRankSystemIds.size() > 0">
             AND official_rank_system_id IN
@@ -84,6 +91,13 @@
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
+        </if>
+        <!-- 职级体系过滤  -->
+        <if test="employeeBudget.params.officialRankSystemNameEqual != null or employeeBudget.params.officialRankSystemNameNotEqual != null">
+            <!-- 职级体系过滤  -->
+            <if test="employeeBudget.params.officialRankSystemIds == null">
+                AND official_rank_system_id is null
+            </if>
         </if>
         <!-- 预算周期过滤  -->
         <if test="employeeBudget.params.budgetCycleEqual != null and employeeBudget.params.budgetCycleEqual.size() > 0">

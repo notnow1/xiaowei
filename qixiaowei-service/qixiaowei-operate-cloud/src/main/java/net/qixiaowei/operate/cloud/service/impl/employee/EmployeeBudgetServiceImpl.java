@@ -247,8 +247,9 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 List<Long> departmentIds = new ArrayList<>();
                 if (StringUtils.isNotEmpty(departmentDataList)) {
                     departmentIds = departmentDataList.stream().map(DepartmentDTO::getDepartmentId).distinct().collect(Collectors.toList());
+                    params.put("departmentIds", departmentIds);
                 }
-                params.put("departmentIds", departmentIds);
+
 
 
             }
@@ -264,8 +265,9 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 List<Long> officialRankSystemIds = new ArrayList<>();
                 if (StringUtils.isNotEmpty(officialRankSystemDataList)) {
                     officialRankSystemIds = officialRankSystemDataList.stream().map(OfficialRankSystemDTO::getOfficialRankSystemId).distinct().collect(Collectors.toList());
+                    params.put("officialRankSystemIds", officialRankSystemIds);
                 }
-                params.put("officialRankSystemIds", officialRankSystemIds);
+
             }
         }
     }
