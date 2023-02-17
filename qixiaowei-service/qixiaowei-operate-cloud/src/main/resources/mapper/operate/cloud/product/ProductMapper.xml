@@ -229,19 +229,27 @@
             </foreach>
         </if>
         <!-- 产品类别过滤  -->
-        <if test="product.params.dictionaryDataIds != null and product.params.dictionaryDataIds.size() > 0">
-            AND p.product_category IN
-            <foreach item="item"
-                     collection="product.params.dictionaryDataIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        <if test="product.params.dictionaryLabelEqual != null  ">
+            <!-- 产品类别过滤  -->
+            <if test="product.params.dictionaryDataIds != null and product.params.dictionaryDataIds.size() > 0">
+                AND p.product_category IN
+                <foreach item="item"
+                         collection="product.params.dictionaryDataIds"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </if>
         <!-- 产品类别过滤  -->
-        <if test="product.params.dictionaryLabelEqual != null or product.params.dictionaryLabelNotEqual != null ">
+        <if test="product.params.dictionaryLabelNotEqual != null">
             <!-- 产品类别过滤  -->
-            <if test="product.params.dictionaryDataIds == null">
-                AND p.product_category is null
+            <if test="product.params.dictionaryDataIds != null and product.params.dictionaryDataIds.size() > 0">
+                AND (p.product_category IN
+                <foreach item="item"
+                         collection="product.params.dictionaryDataIds"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach> or p.product_category ='')
             </if>
         </if>
         <!-- 产品状态过滤  -->

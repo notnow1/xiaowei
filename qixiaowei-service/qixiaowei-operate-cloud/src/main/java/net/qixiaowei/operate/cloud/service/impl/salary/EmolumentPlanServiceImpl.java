@@ -223,7 +223,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                     }
                     BigDecimal emolumentPracticalRevenueImprove = new BigDecimal("0");
                     if ((null != erBeforeOne1 && erBeforeOne1.compareTo(new BigDecimal("0")) != 0) && (null != erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0")) != 0)) {
-                        emolumentPracticalRevenueImprove = erBeforeOne.divide(erBeforeOne1.subtract(new BigDecimal("100")),10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                                  emolumentPracticalRevenueImprove = new BigDecimal("1").subtract(erBeforeOne.divide(erBeforeOne1,10,BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal("100"));
                     }
                     emolumentPlanDTOS.get(i).setEmolumentPracticalRevenueImprove(emolumentPracticalRevenueImprove);
                 }else {
@@ -239,7 +239,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                    }
                     BigDecimal emolumentPracticalRevenueImprove = new BigDecimal("0");
                     if ((null != erBeforeOne1 && erBeforeOne1.compareTo(new BigDecimal("0")) != 0) && (null != erBeforeOne && erBeforeOne.compareTo(new BigDecimal("0")) != 0)) {
-                        emolumentPracticalRevenueImprove = erBeforeOne.divide(erBeforeOne1.subtract(new BigDecimal("100")),10,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
+                              emolumentPracticalRevenueImprove = new BigDecimal("1").subtract(erBeforeOne.divide(erBeforeOne1,10,BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal("100"));
                     }
                     emolumentPlanDTOS.get(i).setEmolumentPracticalRevenueImprove(emolumentPracticalRevenueImprove);
                 }
