@@ -189,7 +189,12 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
      * @param emolumentPlanDTOS
      */
     private void queryCalculateList(List<EmolumentPlanDTO> emolumentPlanDTOS) {
-
+        //远程查询指标id
+        R<IndicatorDTO> indicatorDTOR = remoteIndicatorService.selectIndicatorByCode(IndicatorCode.INCOME.getCode(), SecurityConstants.INNER);
+        IndicatorDTO data = indicatorDTOR.getData();
+        if (StringUtils.isNull(data)) {
+            throw new ServiceException("指标数据不存在 请联系管理员");
+        }
         for (int i = 0; i < emolumentPlanDTOS.size(); i++) {
             int year = DateUtils.getYear();
             Integer planYear = emolumentPlanDTOS.get(i).getPlanYear();
@@ -201,7 +206,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             BigDecimal erBeforeOne2 = new BigDecimal("0");
             EmolumentPlan emolumentPlan = new EmolumentPlan();
             emolumentPlan.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear());
-            emolumentPlan.setIndicatorId(emolumentPlanDTOS.get(i).getIndicatorId());
+            emolumentPlan.setIndicatorId(data.getIndicatorId());
             //总薪酬包 未来年度：公式=销售收入×E/R值
             EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan);
             this.addCalculate(emolumentPlanDTO);
@@ -231,7 +236,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                     if (i <= emolumentPlanDTOS.size()-2){
                         EmolumentPlan emolumentPlan2 = new EmolumentPlan();
                         emolumentPlan2.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear());
-                        emolumentPlan2.setIndicatorId(emolumentPlanDTOS.get(i).getIndicatorId());
+                        emolumentPlan2.setIndicatorId(data.getIndicatorId());
                         //总薪酬包 未来年度：公式=销售收入×E/R值
                         EmolumentPlanDTO emolumentPlanDTO2 = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan2);
                         this.addCalculate(emolumentPlanDTO2);
@@ -253,7 +258,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                    if (i < emolumentPlanDTOS.size()-2){
                        EmolumentPlan emolumentPlan2 = new EmolumentPlan();
                        emolumentPlan2.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear());
-                       emolumentPlan2.setIndicatorId(emolumentPlanDTOS.get(i).getIndicatorId());
+                       emolumentPlan2.setIndicatorId(data.getIndicatorId());
                        //总薪酬包 未来年度：公式=销售收入×E/R值
                        EmolumentPlanDTO emolumentPlanDTO2 = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan2);
                        this.addCalculate(emolumentPlanDTO2);
