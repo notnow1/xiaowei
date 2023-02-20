@@ -54,6 +54,8 @@ public enum BusinessType {
     EMP_SALARY_ADJUST_PLAN(45, "个人调薪计划"),
     OFFICIAL_RANK_EMOLUMENT(46, "职级确定薪酬"),
     SALARY_PAY(47, "月度工资数据管理"),
+    PLAN_BUSINESS_UNIT(48, "规划业务单元配置"),
+    INDUSTRY_ATTRACTION(49, "行业吸引力配置"),
 
     ;
 
