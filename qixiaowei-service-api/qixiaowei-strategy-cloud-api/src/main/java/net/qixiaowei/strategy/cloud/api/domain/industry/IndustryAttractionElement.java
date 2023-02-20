@@ -2,6 +2,9 @@ package net.qixiaowei.strategy.cloud.api.domain.industry;
 
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -14,6 +17,9 @@ import java.util.Date;
 * @since 2023-02-20
 */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Accessors(chain = true)
 public class IndustryAttractionElement extends TenantEntity {
 

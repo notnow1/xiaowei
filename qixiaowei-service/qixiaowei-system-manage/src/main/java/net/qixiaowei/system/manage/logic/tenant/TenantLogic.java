@@ -23,6 +23,7 @@ import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
+import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttraction;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryType;
@@ -166,7 +167,9 @@ public class TenantLogic {
             boolean initIndicator = this.initIndicator();
             //7、初始化工资条---salary_item
             boolean initSalaryItem = this.initSalaryItem();
-            initSuccess.set(initUserInfo && initConfig && initDictionary && initIndicator && initSalaryItem);
+            //7、初始化工资条---salary_item
+            boolean initIndustryAttraction = this.initIndustryAttraction();
+            initSuccess.set(initUserInfo && initConfig && initDictionary && initIndicator && initSalaryItem && initIndustryAttraction);
             //continue...
         });
         return initSuccess.get();
@@ -485,7 +488,19 @@ public class TenantLogic {
         }
         return initSalaryItem;
     }
-
+    public boolean initIndustryAttraction() {
+        boolean initSalaryItem = true;
+        R<Boolean> booleanR = remoteSalaryItemService.initSalaryItem(SecurityConstants.INNER);
+        if (R.SUCCESS != booleanR.getCode()) {
+            initSalaryItem = false;
+        } else {
+            Boolean data = booleanR.getData();
+            if (!data) {
+                initSalaryItem = false;
+            }
+        }
+        return initSalaryItem;
+    }
     /**
      * @description: 发送待办给客服
      * @Author: hzk

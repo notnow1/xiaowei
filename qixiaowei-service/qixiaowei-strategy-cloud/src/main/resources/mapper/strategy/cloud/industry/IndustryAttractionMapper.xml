@@ -115,7 +115,7 @@
             </foreach>
     </update>
     <!--批量新增行业吸引力表-->
-    <insert id="batchIndustryAttraction">
+    <insert id="batchIndustryAttraction" useGeneratedKeys="true" keyProperty="industryAttractionId">
         INSERT INTO industry_attraction (attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

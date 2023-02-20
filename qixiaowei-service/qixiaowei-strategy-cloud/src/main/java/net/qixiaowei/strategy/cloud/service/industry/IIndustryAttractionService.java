@@ -98,4 +98,10 @@ public interface IIndustryAttractionService{
     * @return 结果
     */
     int deleteIndustryAttractionByIndustryAttractionId(Long industryAttractionId);
+
+    /**
+     * 初始化行业吸引力配置
+     * @return
+     */
+    Boolean initIndustryAttraction();
 }
