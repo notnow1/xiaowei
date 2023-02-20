@@ -4,12 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.qixiaowei.auth.form.ResetPasswordBody;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import net.qixiaowei.auth.form.LoginBody;
-import net.qixiaowei.auth.form.RegisterBody;
 import net.qixiaowei.auth.service.SysLoginService;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.utils.JwtUtils;
