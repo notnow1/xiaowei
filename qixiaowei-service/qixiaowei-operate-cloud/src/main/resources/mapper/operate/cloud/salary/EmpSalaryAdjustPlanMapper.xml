@@ -212,7 +212,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employeeNameLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 ess.employee_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -220,7 +220,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employeeNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 ess.employee_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -325,78 +325,42 @@
             )
         </if>
         <!--    调整职级 -->
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankEqual.size() > 0">
-            AND esa.adjust_official_rank IN
+        <if test="empSalaryAdjustPlan.params.adjustOfficialRankNameEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankNameEqual.size() > 0">
+            AND esa.adjust_official_rank_name IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustOfficialRankEqual"
+                     collection="empSalaryAdjustPlan.params.adjustOfficialRankNameEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankNotEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankNotEqual.size() > 0">
-            AND (esa.adjust_official_rank NOT IN
+        <if test="empSalaryAdjustPlan.params.adjustOfficialRankNameNotEqual != null and empSalaryAdjustPlan.params.adjustOfficialRankNameNotEqual.size() > 0">
+            AND (esa.adjust_official_rank_name NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.adjustOfficialRankNotEqual"
+                     collection="empSalaryAdjustPlan.params.adjustOfficialRankNameNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR esa.adjust_official_rank IS NULL
+            OR esa.adjust_official_rank_name IS NULL
             )
-        </if>
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankBefore != null and empSalaryAdjustPlan.params.adjustOfficialRankBefore != ''">
-            AND esa.adjust_official_rank &lt; #{empSalaryAdjustPlan.params.adjustOfficialRankBefore}
-        </if>
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankNotBefore != null and empSalaryAdjustPlan.params.adjustOfficialRankNotBefore != ''">
-            AND esa.adjust_official_rank &gt;= #{empSalaryAdjustPlan.params.adjustOfficialRankNotBefore}
-        </if>
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankAfter != null and empSalaryAdjustPlan.params.adjustOfficialRankAfter != ''">
-            AND esa.adjust_official_rank &gt; #{empSalaryAdjustPlan.params.adjustOfficialRankAfter}
-        </if>
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankNotAfter != null and empSalaryAdjustPlan.params.adjustOfficialRankNotAfter != ''">
-            AND esa.adjust_official_rank &lt;= #{empSalaryAdjustPlan.params.adjustOfficialRankNotAfter}
-        </if>
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankStart != null and empSalaryAdjustPlan.params.adjustOfficialRankStart != ''">
-            AND esa.adjust_official_rank &gt;= #{empSalaryAdjustPlan.params.adjustOfficialRankStart}
-        </if>
-        <if test="empSalaryAdjustPlan.params.adjustOfficialRankEnd != null and empSalaryAdjustPlan.params.adjustOfficialRankEnd != ''">
-            AND esa.adjust_official_rank &lt;= #{empSalaryAdjustPlan.params.adjustOfficialRankEnd}
         </if>
         <!--    原职级 -->
-        <if test="empSalaryAdjustPlan.params.officialRankEqual != null and empSalaryAdjustPlan.params.officialRankEqual.size() > 0">
-            AND ess.official_rank IN
+        <if test="empSalaryAdjustPlan.params.officialRankNameEqual != null and empSalaryAdjustPlan.params.officialRankNameEqual.size() > 0">
+            AND ess.official_rank_name IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.officialRankEqual"
+                     collection="empSalaryAdjustPlan.params.officialRankNameEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="empSalaryAdjustPlan.params.officialRankNotEqual != null and empSalaryAdjustPlan.params.officialRankNotEqual.size() > 0">
-            AND (ess.official_rank NOT IN
+        <if test="empSalaryAdjustPlan.params.officialRankNotNameEqual != null and empSalaryAdjustPlan.params.officialRankNotNameEqual.size() > 0">
+            AND (ess.official_rank_name NOT IN
             <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.officialRankNotEqual"
+                     collection="empSalaryAdjustPlan.params.officialRankNotNameEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-            OR ess.official_rank IS NULL
+            OR ess.official_rank_name IS NULL
             )
-        </if>
-        <if test="empSalaryAdjustPlan.params.officialRankBefore != null and empSalaryAdjustPlan.params.officialRankBefore != ''">
-            AND ess.official_rank &lt; #{empSalaryAdjustPlan.params.officialRankBefore}
-        </if>
-        <if test="empSalaryAdjustPlan.params.officialRankNotBefore != null and empSalaryAdjustPlan.params.officialRankNotBefore != ''">
-            AND ess.official_rank &gt;= #{empSalaryAdjustPlan.params.officialRankNotBefore}
-        </if>
-        <if test="empSalaryAdjustPlan.params.officialRankAfter != null and empSalaryAdjustPlan.params.officialRankAfter != ''">
-            AND ess.official_rank &gt; #{empSalaryAdjustPlan.params.officialRankAfter}
-        </if>
-        <if test="empSalaryAdjustPlan.params.officialRankNotAfter != null and empSalaryAdjustPlan.params.officialRankNotAfter != ''">
-            AND ess.official_rank &lt;= #{empSalaryAdjustPlan.params.officialRankNotAfter}
-        </if>
-        <if test="empSalaryAdjustPlan.params.officialRankStart != null and empSalaryAdjustPlan.params.officialRankStart != ''">
-            AND ess.official_rank &gt;= #{empSalaryAdjustPlan.params.officialRankStart}
-        </if>
-        <if test="empSalaryAdjustPlan.params.officialRankEnd != null and empSalaryAdjustPlan.params.officialRankEnd != ''">
-            AND ess.official_rank &lt;= #{empSalaryAdjustPlan.params.officialRankEnd}
         </if>
         <!--    调整工资 -->
         <if test="empSalaryAdjustPlan.params.adjustEmolumentEqual != null and empSalaryAdjustPlan.params.adjustEmolumentEqual.size() > 0">
@@ -496,7 +460,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employeeNameLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 ess.employee_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -504,7 +468,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employeeNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 ess.employee_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -531,7 +495,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employeeCodeLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 ess.employee_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -539,7 +503,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employeeCodeNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 ess.employee_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -566,7 +530,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.departmentLeaderNameLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 ess.department_leader_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -574,7 +538,7 @@
             AND
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.departmentLeaderNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 ess.department_leader_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

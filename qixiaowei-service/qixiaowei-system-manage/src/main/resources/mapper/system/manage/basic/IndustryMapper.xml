@@ -97,7 +97,7 @@
             AND
             <foreach item="item"
                      collection="industry.params.industryCodeLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 i1.industry_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -105,7 +105,7 @@
             AND
             <foreach item="item"
                      collection="industry.params.industryCodeNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 i1.industry_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -132,7 +132,7 @@
             AND
             <foreach item="item"
                      collection="industry.params.industryNameLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 i1.industry_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -140,7 +140,7 @@
             AND
             <foreach item="item"
                      collection="industry.params.industryNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 i1.industry_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -164,10 +164,10 @@
             )
         </if>
         <if test="industry.params.parentIndustryNameNull != null">
-            and i2.industry_name IS NULL
+            and i2.industry_name IS NULL OR i2.industry_name OR  !=''
         </if>
         <if test="industry.params.parentIndustryNameNotNull != null">
-            and i2.industry_name IS NOT NULL
+            and i2.industry_name IS NOT NULL OR i2.industry_name OR  !=''
         </if>
         <!--    行业层级过滤-->
         <if test="industry.params.levelEqual != null and industry.params.levelEqual.size() > 0">

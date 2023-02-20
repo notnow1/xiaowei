@@ -129,6 +129,14 @@ public interface IIndustryDefaultService {
     List<Tree<Long>> selectIndustryDefaultTreeList(IndustryDefaultDTO industryDefaultDTO);
 
     /**
+     * 获取简单树结构默认行业信息
+     *
+     * @param industryDefaultDTO
+     * @return
+     */
+    List<Tree<Long>> getIndustryDefaultTreeListOfSimple(IndustryDefaultDTO industryDefaultDTO);
+
+    /**
      * 获取指标最大层级
      *
      * @return List

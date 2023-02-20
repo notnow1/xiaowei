@@ -289,6 +289,29 @@ public class IndustryDefaultServiceImpl implements IIndustryDefaultService {
     }
 
     /**
+     * 获取简单树结构默认行业信息
+     *
+     * @param industryDefaultDTO
+     * @return
+     */
+    @Override
+    public List<Tree<Long>> getIndustryDefaultTreeListOfSimple(IndustryDefaultDTO industryDefaultDTO) {
+        IndustryDefault industryDefault = new IndustryDefault();
+        BeanUtils.copyProperties(industryDefaultDTO, industryDefault);
+        List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultMapper.selectIndustryDefaultList(industryDefault);
+        //自定义属性名
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        treeNodeConfig.setIdKey("industryId");
+        treeNodeConfig.setNameKey("industryName");
+        treeNodeConfig.setParentIdKey("parentIndustryId");
+        return TreeUtil.build(industryDefaultDTOS, Constants.TOP_PARENT_ID, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getIndustryId());
+            tree.setParentId(treeNode.getParentIndustryId());
+            tree.setName(treeNode.getIndustryName());
+        });
+    }
+
+    /**
      * 获取指标最大层级
      *
      * @return

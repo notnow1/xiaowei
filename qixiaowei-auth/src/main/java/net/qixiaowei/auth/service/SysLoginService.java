@@ -1,20 +1,23 @@
 package net.qixiaowei.auth.service;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import net.qixiaowei.auth.form.LoginBody;
+import net.qixiaowei.auth.form.RegisterBody;
 import net.qixiaowei.auth.form.ResetPasswordBody;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.constant.*;
 import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
 import net.qixiaowei.integration.common.enums.message.MessageType;
+import net.qixiaowei.integration.redis.service.RedisService;
 import net.qixiaowei.message.api.dto.message.MessageReceiverDTO;
 import net.qixiaowei.message.api.dto.message.MessageSendDTO;
 import net.qixiaowei.message.api.remote.message.RemoteMessageService;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import net.qixiaowei.integration.common.constant.Constants;
-import net.qixiaowei.integration.common.constant.SecurityConstants;
-import net.qixiaowei.integration.common.constant.UserConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.user.UserStatus;
 import net.qixiaowei.integration.common.exception.ServiceException;
@@ -27,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 登录校验方法
@@ -44,6 +48,9 @@ public class SysLoginService {
 
     @Autowired
     private RemoteMessageService remoteMessageService;
+
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 登录
@@ -144,6 +151,94 @@ public class SysLoginService {
     }
 
     /**
+     * @description: 发送验证码
+     * @Author: hzk
+     * @date: 2023/2/20 15:47
+     * @param: [userAccount]
+     * @return: void
+     **/
+    public void sendSms(String userAccount) {
+        if (StringUtils.isEmpty(userAccount)) {
+            throw new ServiceException("登录账号必须填写");
+        }
+        //校验是否注册过
+        this.checkUserAccountExists(userAccount);
+        //发送验证码
+        String key = CacheConstants.SMS_SEND_KEY + userAccount;
+        //60秒的短信间隔，10分钟的有效期
+        long keyExpireTime = 600;
+        if (redisService.hasKey(key) && redisService.getExpire(key) > (keyExpireTime - 60)) {
+            throw new ServiceException("短信已发送，请稍候再试！");
+        }
+        String code = RandomUtil.randomNumbers(6);
+        this.sendSms(userAccount, code);
+        redisService.setCacheObject(key, code, keyExpireTime, TimeUnit.SECONDS);
+    }
+
+
+    public TenantRegisterResponseVO register(RegisterBody registerBody) {
+        String code = registerBody.getCode();
+        String userAccount = registerBody.getUserAccount();
+        String key = CacheConstants.SMS_SEND_KEY + userAccount;
+        //校验验证码
+        if (StringUtils.isEmpty(code) || redisService.hasKey(key) || !code.equals(redisService.getCacheObject(key))) {
+            throw new ServiceException("手机验证码错误，请确认！");
+        }
+        //校验是否注册过
+        this.checkUserAccountExists(userAccount);
+        TenantDTO tenantDTO = new TenantDTO();
+        tenantDTO.setAdminAccount(userAccount);
+        tenantDTO.setAdminPassword(registerBody.getPassword());
+        tenantDTO.setAdminEmail(registerBody.getEmail());
+        tenantDTO.setTenantName(registerBody.getTenantName());
+        tenantDTO.setTenantIndustry(registerBody.getIndustryId());
+        //执行注册
+        R<TenantRegisterResponseVO> tenantRegisterResponseVOR = remoteUserService.registerUserInfo(tenantDTO, SecurityConstants.INNER);
+        if (R.SUCCESS != tenantRegisterResponseVOR.getCode()) {
+            throw new ServiceException(tenantRegisterResponseVOR.getMsg());
+        }
+        return tenantRegisterResponseVOR.getData();
+    }
+
+
+    /**
+     * @description: 发送验证码
+     * @Author: hzk
+     * @date: 2023/2/20 15:47
+     * @param: [userAccount, code]
+     * @return: void
+     **/
+    private void sendSms(String userAccount, String code) {
+        MessageSendDTO messageSendDTO = new MessageSendDTO();
+        messageSendDTO.setMessageType(MessageType.SMS.getCode());
+        messageSendDTO.setBusinessType(BusinessSubtype.TENANT_ACCOUNT_REGISTER.getParentBusinessType().getCode());
+        messageSendDTO.setBusinessSubtype(BusinessSubtype.TENANT_ACCOUNT_REGISTER.getCode());
+        messageSendDTO.setBusinessId(0L);
+        messageSendDTO.setSendUserId(0L);
+        List<MessageReceiverDTO> messageReceivers = new ArrayList<>();
+        MessageReceiverDTO messageReceiverDTO = new MessageReceiverDTO();
+        messageReceiverDTO.setUserId(0L);
+        messageReceiverDTO.setUser(userAccount);
+        messageReceivers.add(messageReceiverDTO);
+        messageSendDTO.setMessageReceivers(messageReceivers);
+        messageSendDTO.setMessageTitle(BusinessSubtype.RESET_PASSWORD_USER_ID.getInfo());
+        Map<String, Object> paramMap = new HashMap<>();
+        //验证码
+        paramMap.put("code", code);
+        String messageParam = JSONUtil.toJsonStr(paramMap);
+        messageSendDTO.setMessageParam(messageParam);
+        messageSendDTO.setHandleContent(true);
+        R<Boolean> sendMessage = remoteMessageService.sendMessage(messageSendDTO, SecurityConstants.INNER);
+        if (R.SUCCESS != sendMessage.getCode()) {
+            throw new ServiceException("发送验证码失败，请稍候再试！");
+        }
+        Boolean result = sendMessage.getData();
+        if (!result) {
+            throw new ServiceException("发送验证码失败，请稍候再试！");
+        }
+    }
+
+    /**
      * @description: 把重置密码发送邮件给用户
      * @Author: hzk
      * @date: 2023/1/10 17:30
@@ -177,6 +272,24 @@ public class SysLoginService {
         Boolean result = sendMessage.getData();
         if (!result) {
             throw new ServiceException("重置密码失败：邮件发送失败。");
+        }
+    }
+
+    /**
+     * @description: 校验用户帐号是否存在。
+     * @Author: hzk
+     * @date: 2023/2/20 16:24
+     * @param: [userAccount]
+     * @return: void
+     **/
+    private void checkUserAccountExists(String userAccount) {
+        R<Boolean> checkUserAccountExists = remoteUserService.checkUserAccountExists(userAccount, SecurityConstants.INNER);
+        Boolean userAccountExists = checkUserAccountExists.getData();
+        if (R.SUCCESS != checkUserAccountExists.getCode() || StringUtils.isNull(userAccountExists)) {
+            throw new ServiceException("系统异常，请稍后再试。");
+        }
+        if (userAccountExists) {
+            throw new ServiceException("该手机号已注册，请登录。");
         }
     }
 

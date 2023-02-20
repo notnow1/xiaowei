@@ -43,5 +43,15 @@ public class TenantConfig {
     @Value("${tenant.adminMenuIds:1,2,11,19,49,48,356}")
     private Set<Long> adminMenuIds;
 
+    /**
+     * 官网试用天数
+     */
+    @Value("${tenant.trialDays:7}")
+    private Integer trialDays;
 
+    /**
+     * 客服人员号码
+     */
+    @Value("${tenant.supportStaffMobile:17796337792}")
+    private String supportStaffMobile;
 }

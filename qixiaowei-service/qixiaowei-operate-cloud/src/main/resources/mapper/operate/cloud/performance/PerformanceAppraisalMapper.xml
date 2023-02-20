@@ -143,7 +143,7 @@
             AND
             <foreach item="item"
                      collection="performanceAppraisal.params.appraisalNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 pa.appraisal_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

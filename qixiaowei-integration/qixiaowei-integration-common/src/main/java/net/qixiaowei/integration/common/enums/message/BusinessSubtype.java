@@ -10,6 +10,7 @@ public enum BusinessSubtype {
     TENANT_DOMAIN_APPROVAL(100, BusinessType.TENANT, "二级域名申请"),
     TENANT_DOMAIN_APPROVAL_PASS(101, BusinessType.TENANT, "域名申请通过"),
     TENANT_DOMAIN_APPROVAL_REFUSE(102, BusinessType.TENANT, "域名申请不通过"),
+    TENANT_ACCOUNT_REGISTER(103, BusinessType.TENANT, "租户账户注册"),
 
     RESET_PASSWORD_USER_ID(200, BusinessType.USER, "企小微SaaS平台密码重置"),
 

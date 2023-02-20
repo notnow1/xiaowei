@@ -78,7 +78,7 @@
             AND
             <foreach item="item"
                      collection="officialRankSystem.params.officialRankSystemNameLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 official_rank_system_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -86,7 +86,7 @@
             AND
             <foreach item="item"
                      collection="officialRankSystem.params.officialRankSystemNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 official_rank_system_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -113,7 +113,7 @@
             AND
             <foreach item="item"
                      collection="officialRankSystem.params.rankPrefixCodeLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 rank_prefix_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -121,15 +121,15 @@
             AND
             <foreach item="item"
                      collection="officialRankSystem.params.rankPrefixCodeNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 rank_prefix_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
         <if test="officialRankSystem.params.rankPrefixCodeNull != null">
-            and rank_prefix_code IS NULL
+            and rank_prefix_code IS NULL OR rank_prefix_code = ''
         </if>
         <if test="officialRankSystem.params.rankPrefixCodeNotNull != null">
-            and rank_prefix_code IS NOT NULL
+            and rank_prefix_code IS NOT NULL OR rank_prefix_code != ''
         </if>
         <!--    起始级别过滤-->
         <if test="officialRankSystem.params.rankStartEqual != null and officialRankSystem.params.rankStartEqual.size() > 0">

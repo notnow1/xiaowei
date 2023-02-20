@@ -155,7 +155,7 @@
             AND
             <foreach item="item"
                      collection="indicator.params.indicatorCodeLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 t1.indicator_code LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -163,7 +163,7 @@
             AND
             <foreach item="item"
                      collection="indicator.params.indicatorCodeNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 t1.indicator_code NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -190,7 +190,7 @@
             AND
             <foreach item="item"
                      collection="indicator.params.indicatorNameLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 t1.indicator_name LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -198,7 +198,7 @@
             AND
             <foreach item="item"
                      collection="indicator.params.indicatorNameNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 t1.indicator_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

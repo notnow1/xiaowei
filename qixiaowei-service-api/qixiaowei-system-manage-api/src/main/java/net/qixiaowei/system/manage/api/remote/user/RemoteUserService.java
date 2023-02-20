@@ -3,10 +3,12 @@ package net.qixiaowei.system.manage.api.remote.user;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.constant.ServiceNameConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.factory.user.RemoteUserFallbackFactory;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,14 +63,23 @@ public interface RemoteUserService {
     R<?> resetPwdOfUserId(@RequestParam("userId") Long userId, @RequestParam("password") String password, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
+     * 校验用户是否存在
+     *
+     * @param userAccount
+     * @return 结果
+     */
+    @PostMapping(API_PREFIX_USER + "/checkUserAccountExists")
+    R<Boolean> checkUserAccountExists(@RequestParam("userAccount") String userAccount, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
      * 注册用户信息
      *
-     * @param userVO 用户信息
+     * @param tenantDTO 租户信息
      * @param source 请求来源
      * @return 结果
      */
-    @PostMapping(API_PREFIX_USER + "/user/register")
-    R<Boolean> registerUserInfo(@RequestBody UserVO userVO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping(API_PREFIX_USER + "/register")
+    R<TenantRegisterResponseVO> registerUserInfo(@RequestBody TenantDTO tenantDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 
     /**
      * 通过人员ID集合查询用户id

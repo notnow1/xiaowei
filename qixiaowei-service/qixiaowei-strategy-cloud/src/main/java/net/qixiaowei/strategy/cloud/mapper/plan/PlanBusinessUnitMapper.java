@@ -1,12 +1,11 @@
 package net.qixiaowei.strategy.cloud.mapper.plan;
 
-import java.util.List;
-
 import net.qixiaowei.strategy.cloud.api.domain.plan.PlanBusinessUnit;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -105,4 +104,12 @@ public interface PlanBusinessUnitMapper {
      * @return 结果
      */
     int batchPlanBusinessUnit(@Param("planBusinessUnits") List<PlanBusinessUnit> planBusinessUnits);
+
+    /**
+     * 重复校验
+     *
+     * @param planBusinessUnit 规划业务单元dto
+     * @return list
+     */
+    List<PlanBusinessUnitDTO> selectPlanBusinessUnitRepeat(@Param("planBusinessUnit") PlanBusinessUnit planBusinessUnit);
 }

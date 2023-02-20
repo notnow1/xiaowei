@@ -1,22 +1,23 @@
 package net.qixiaowei.strategy.cloud.service.impl.plan;
 
-import java.util.List;
-
+import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
+import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.strategy.cloud.api.domain.plan.PlanBusinessUnit;
 import net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO;
 import net.qixiaowei.strategy.cloud.mapper.plan.PlanBusinessUnitMapper;
 import net.qixiaowei.strategy.cloud.service.plan.IPlanBusinessUnitService;
-import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
-import net.qixiaowei.integration.common.exception.ServiceException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -30,6 +31,14 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
     @Autowired
     private PlanBusinessUnitMapper planBusinessUnitMapper;
 
+    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.<String, String>of(
+            "region", "区域",
+            "department", "部门",
+            "product", "产品",
+            "industry", "行业",
+            "company", "公司级"
+    );
+
     /**
      * 查询规划业务单元
      *
@@ -38,7 +47,25 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
      */
     @Override
     public PlanBusinessUnitDTO selectPlanBusinessUnitByPlanBusinessUnitId(Long planBusinessUnitId) {
-        return planBusinessUnitMapper.selectPlanBusinessUnitByPlanBusinessUnitId(planBusinessUnitId);
+        if (StringUtils.isNull(planBusinessUnitId)) {
+            throw new ServiceException("请传入规划业务单元ID");
+        }
+        PlanBusinessUnitDTO planBusinessUnitDTO = planBusinessUnitMapper.selectPlanBusinessUnitByPlanBusinessUnitId(planBusinessUnitId);
+        if (StringUtils.isNull(planBusinessUnitDTO)) {
+            throw new ServiceException("当前规划业务单元已不存在");
+        }
+        String businessUnitDecompose = planBusinessUnitDTO.getBusinessUnitDecompose();
+        if (StringUtils.isNotNull(businessUnitDecompose)) {
+            StringBuilder businessUnitDecomposeName = new StringBuilder("");
+            List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
+            businessUnitDecomposeList.forEach(decompose -> {
+                if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
+                    businessUnitDecomposeName.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
+                }
+            });
+            planBusinessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
+        }
+        return planBusinessUnitDTO;
     }
 
     /**
@@ -51,7 +78,23 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
     public List<PlanBusinessUnitDTO> selectPlanBusinessUnitList(PlanBusinessUnitDTO planBusinessUnitDTO) {
         PlanBusinessUnit planBusinessUnit = new PlanBusinessUnit();
         BeanUtils.copyProperties(planBusinessUnitDTO, planBusinessUnit);
-        return planBusinessUnitMapper.selectPlanBusinessUnitList(planBusinessUnit);
+        Map<String, Object> params = planBusinessUnitDTO.getParams();
+        planBusinessUnit.setParams(params);
+        List<PlanBusinessUnitDTO> planBusinessUnitDTOS = planBusinessUnitMapper.selectPlanBusinessUnitList(planBusinessUnit);
+        for (PlanBusinessUnitDTO businessUnitDTO : planBusinessUnitDTOS) {
+            String businessUnitDecompose = businessUnitDTO.getBusinessUnitDecompose();
+            if (StringUtils.isNotNull(businessUnitDecompose)) {
+                StringBuilder businessUnitDecomposeName = new StringBuilder("");
+                List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
+                businessUnitDecomposeList.forEach(decompose -> {
+                    if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
+                        businessUnitDecomposeName.append(BUSINESS_UNIT_DECOMPOSE_MAP.get(decompose)).append(";");
+                    }
+                });
+                businessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
+            }
+        }
+        return planBusinessUnitDTOS;
     }
 
     /**
@@ -62,6 +105,49 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
      */
     @Override
     public PlanBusinessUnitDTO insertPlanBusinessUnit(PlanBusinessUnitDTO planBusinessUnitDTO) {
+        String businessUnitCode = planBusinessUnitDTO.getBusinessUnitCode();
+        String businessUnitName = planBusinessUnitDTO.getBusinessUnitName();
+        String businessUnitDecompose = planBusinessUnitDTO.getBusinessUnitDecompose();
+        Integer status = planBusinessUnitDTO.getStatus();
+        if (StringUtils.isNull(status)) {
+            planBusinessUnitDTO.setStatus(1);
+        }
+        if (StringUtils.isNull(businessUnitCode) || StringUtils.isNull(businessUnitName)) {
+            throw new ServiceException("请输入规划业务单元编码与名称");
+        }
+        //规划业务单元维度(region,department,product,industry,company)
+        if (StringUtils.isNull(businessUnitDecompose)) {
+            throw new ServiceException("规划业务单元维度不能为空");
+        }
+        if (businessUnitDecompose.contains("company") && !businessUnitDecompose.equals("company")) {
+            throw new ServiceException("选择公司级后，不可以选择其他维度");
+        }
+        List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
+        businessUnitDecomposeList.forEach(business -> {
+            if (!BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(business))
+                throw new ServiceException("规划业务单元维度标识不匹配 请检查");
+        });
+        // 名称重复校验
+        PlanBusinessUnit planBusinessUnitRepeat = new PlanBusinessUnit();
+        planBusinessUnitRepeat.setBusinessUnitName(businessUnitName);
+        List<PlanBusinessUnitDTO> planBusinessUnitDTOS = planBusinessUnitMapper.selectPlanBusinessUnitRepeat(planBusinessUnitRepeat);
+        if (StringUtils.isNotEmpty(planBusinessUnitDTOS)) {
+            throw new ServiceException("规划业务单元名称重复 请重新输入");
+        }
+        // 编码重复校验
+        planBusinessUnitRepeat = new PlanBusinessUnit();
+        planBusinessUnitRepeat.setBusinessUnitCode(businessUnitCode);
+        planBusinessUnitDTOS = planBusinessUnitMapper.selectPlanBusinessUnitRepeat(planBusinessUnitRepeat);
+        if (StringUtils.isNotEmpty(planBusinessUnitDTOS)) {
+            throw new ServiceException("规划业务单元编码重复 请重新输入");
+        }
+        // 规划业务单元维度重复校验
+        planBusinessUnitRepeat = new PlanBusinessUnit();
+        planBusinessUnitRepeat.setBusinessUnitDecompose(businessUnitDecompose);
+        planBusinessUnitDTOS = planBusinessUnitMapper.selectPlanBusinessUnitRepeat(planBusinessUnitRepeat);
+        if (StringUtils.isNotEmpty(planBusinessUnitDTOS)) {
+            throw new ServiceException("规划业务单元维度重复 请重新输入");
+        }
         PlanBusinessUnit planBusinessUnit = new PlanBusinessUnit();
         BeanUtils.copyProperties(planBusinessUnitDTO, planBusinessUnit);
         planBusinessUnit.setCreateBy(SecurityUtils.getUserId());
@@ -82,8 +168,26 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
      */
     @Override
     public int updatePlanBusinessUnit(PlanBusinessUnitDTO planBusinessUnitDTO) {
+        Long planBusinessUnitId = planBusinessUnitDTO.getPlanBusinessUnitId();
+        String businessUnitName = planBusinessUnitDTO.getBusinessUnitName();
+        Integer status = planBusinessUnitDTO.getStatus();
+        if (StringUtils.isNull(planBusinessUnitId)) {
+            throw new ServiceException("请传入规划业务ID");
+        }
+        if (StringUtils.isNull(businessUnitName)) {
+            throw new ServiceException("请输入规划业务名称");
+        }
+        // 名称重复校验
+        PlanBusinessUnit planBusinessUnitRepeat = new PlanBusinessUnit();
+        planBusinessUnitRepeat.setBusinessUnitName(businessUnitName);
+        List<PlanBusinessUnitDTO> planBusinessUnitDTOS = planBusinessUnitMapper.selectPlanBusinessUnitRepeat(planBusinessUnitRepeat);
+        if (StringUtils.isNotEmpty(planBusinessUnitDTOS) && !planBusinessUnitDTOS.get(0).getPlanBusinessUnitId().equals(planBusinessUnitId)) {
+            throw new ServiceException("规划业务单元名称重复 请重新输入");
+        }
         PlanBusinessUnit planBusinessUnit = new PlanBusinessUnit();
-        BeanUtils.copyProperties(planBusinessUnitDTO, planBusinessUnit);
+        planBusinessUnit.setPlanBusinessUnitId(planBusinessUnitId);
+        planBusinessUnit.setBusinessUnitName(businessUnitName);
+        planBusinessUnit.setStatus(status);
         planBusinessUnit.setUpdateTime(DateUtils.getNowDate());
         planBusinessUnit.setUpdateBy(SecurityUtils.getUserId());
         return planBusinessUnitMapper.updatePlanBusinessUnit(planBusinessUnit);
@@ -97,6 +201,13 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
      */
     @Override
     public int logicDeletePlanBusinessUnitByPlanBusinessUnitIds(List<Long> planBusinessUnitIds) {
+        if (StringUtils.isEmpty(planBusinessUnitIds)) {
+            throw new ServiceException("请传入要删除的规划业务单元ID集合");
+        }
+        List<PlanBusinessUnitDTO> planBusinessUnitDTOS = planBusinessUnitMapper.selectPlanBusinessUnitByPlanBusinessUnitIds(planBusinessUnitIds);
+        if (planBusinessUnitDTOS.size() != planBusinessUnitIds.size()) {
+            throw new ServiceException("部分规划业务单元的数据已不存在");
+        }
         return planBusinessUnitMapper.logicDeletePlanBusinessUnitByPlanBusinessUnitIds(planBusinessUnitIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
     }
 
@@ -119,6 +230,14 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
      */
     @Override
     public int logicDeletePlanBusinessUnitByPlanBusinessUnitId(PlanBusinessUnitDTO planBusinessUnitDTO) {
+        Long planBusinessUnitId = planBusinessUnitDTO.getPlanBusinessUnitId();
+        if (StringUtils.isNull(planBusinessUnitId)) {
+            throw new ServiceException("请传入规划业务单元ID");
+        }
+        PlanBusinessUnitDTO planBusinessUnitDTO1 = planBusinessUnitMapper.selectPlanBusinessUnitByPlanBusinessUnitId(planBusinessUnitId);
+        if (StringUtils.isNull(planBusinessUnitDTO1)) {
+            throw new ServiceException("当前规划业务单元已不存在");
+        }
         PlanBusinessUnit planBusinessUnit = new PlanBusinessUnit();
         planBusinessUnit.setPlanBusinessUnitId(planBusinessUnitDTO.getPlanBusinessUnitId());
         planBusinessUnit.setUpdateTime(DateUtils.getNowDate());
@@ -149,7 +268,7 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
 
     @Override
     public int deletePlanBusinessUnitByPlanBusinessUnitIds(List<PlanBusinessUnitDTO> planBusinessUnitDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (PlanBusinessUnitDTO planBusinessUnitDTO : planBusinessUnitDtos) {
             stringList.add(planBusinessUnitDTO.getPlanBusinessUnitId());
         }
@@ -159,14 +278,14 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
     /**
      * 批量新增规划业务单元信息
      *
-     * @param planBusinessUnitDtos 规划业务单元对象
+     * @param planBusinessUnitDtoS 规划业务单元对象
      */
 
     @Override
-    public int insertPlanBusinessUnits(List<PlanBusinessUnitDTO> planBusinessUnitDtos) {
-        List<PlanBusinessUnit> planBusinessUnitList = new ArrayList();
+    public int insertPlanBusinessUnits(List<PlanBusinessUnitDTO> planBusinessUnitDtoS) {
+        List<PlanBusinessUnit> planBusinessUnitList = new ArrayList<>();
 
-        for (PlanBusinessUnitDTO planBusinessUnitDTO : planBusinessUnitDtos) {
+        for (PlanBusinessUnitDTO planBusinessUnitDTO : planBusinessUnitDtoS) {
             PlanBusinessUnit planBusinessUnit = new PlanBusinessUnit();
             BeanUtils.copyProperties(planBusinessUnitDTO, planBusinessUnit);
             planBusinessUnit.setCreateBy(SecurityUtils.getUserId());
@@ -187,7 +306,7 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
 
     @Override
     public int updatePlanBusinessUnits(List<PlanBusinessUnitDTO> planBusinessUnitDtos) {
-        List<PlanBusinessUnit> planBusinessUnitList = new ArrayList();
+        List<PlanBusinessUnit> planBusinessUnitList = new ArrayList<>();
 
         for (PlanBusinessUnitDTO planBusinessUnitDTO : planBusinessUnitDtos) {
             PlanBusinessUnit planBusinessUnit = new PlanBusinessUnit();
