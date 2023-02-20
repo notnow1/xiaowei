@@ -6,7 +6,7 @@
             resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusPayApplicationDTO">
         SELECT bpa.bonus_pay_application_id,
                bpa.salary_item_id,
-               si.third_level_item,
+               si.third_level_item as salaryItemName,
                bpa.award_code,
                bpa.award_name,
                bpa.award_year,

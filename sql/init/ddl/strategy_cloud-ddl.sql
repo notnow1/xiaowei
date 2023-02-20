@@ -8,7 +8,7 @@ CREATE TABLE plan_business_unit(
     plan_business_unit_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
     business_unit_code VARCHAR(32)    COMMENT '规划业务单元编码' ,
     business_unit_name VARCHAR(64)    COMMENT '规划业务单元名称' ,
-    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry,company)' ,
     status TINYINT UNSIGNED NOT NULL   COMMENT '状态:0失效;1生效' ,
     delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
     create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
