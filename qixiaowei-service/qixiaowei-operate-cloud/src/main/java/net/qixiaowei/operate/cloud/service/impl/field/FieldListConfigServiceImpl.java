@@ -59,6 +59,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.CYCLE_NUMBER.getCode());
         NEED_CONCAT.add(BusinessType.PERFORMANCE_APPRAISAL_PERSON_REVIEW.getCode() + StrUtil.COLON + PerformanceAppraisalPersonReviewField.APPRAISAL_OBJECT_STATUS.getCode());
 
+        NEED_CONCAT.add(BusinessType.EMP_SALARY_ADJUST_PLAN.getCode() + StrUtil.COLON + EmpSalaryAdjustPlanField.OFFICIAL_RANK.getCode());
         NEED_CONCAT.add(BusinessType.EMP_SALARY_ADJUST_PLAN.getCode() + StrUtil.COLON + EmpSalaryAdjustPlanField.ADJUST_OFFICIAL_RANK.getCode());
     }
 

@@ -2,6 +2,9 @@ package net.qixiaowei.strategy.cloud.controller.plan;
 
 import java.util.List;
 
+import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.log.annotation.Log;
+import net.qixiaowei.integration.log.enums.OperationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,6 +58,7 @@ public class PlanBusinessUnitController extends BaseController {
     @RequiresPermissions("strategy:cloud:planBusinessUnit:list")
     @GetMapping("/list")
     public AjaxResult list(PlanBusinessUnitDTO planBusinessUnitDTO) {
+        planBusinessUnitDTO.setStatus(1);
         List<PlanBusinessUnitDTO> list = planBusinessUnitService.selectPlanBusinessUnitList(planBusinessUnitDTO);
         return AjaxResult.success(list);
     }
@@ -65,6 +69,7 @@ public class PlanBusinessUnitController extends BaseController {
      */
     @RequiresPermissions("strategy:cloud:planBusinessUnit:add")
     @PostMapping("/add")
+    @Log(title = "新增规划业务单元", businessType = BusinessType.PLAN_BUSINESS_UNIT, businessId = "planBusinessUnitId", operationType = OperationType.INSERT)
     public AjaxResult addSave(@RequestBody PlanBusinessUnitDTO planBusinessUnitDTO) {
         return AjaxResult.success(planBusinessUnitService.insertPlanBusinessUnit(planBusinessUnitDTO));
     }
@@ -74,6 +79,7 @@ public class PlanBusinessUnitController extends BaseController {
      * 修改规划业务单元
      */
     @RequiresPermissions("strategy:cloud:planBusinessUnit:edit")
+    @Log(title = "修改规划业务单元", businessType = BusinessType.PLAN_BUSINESS_UNIT, businessId = "planBusinessUnitId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody PlanBusinessUnitDTO planBusinessUnitDTO) {
         return toAjax(planBusinessUnitService.updatePlanBusinessUnit(planBusinessUnitDTO));

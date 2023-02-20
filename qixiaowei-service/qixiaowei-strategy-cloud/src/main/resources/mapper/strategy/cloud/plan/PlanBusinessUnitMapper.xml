@@ -63,6 +63,23 @@
             and update_time=#{planBusinessUnit.updateTime}
         </if>
     </select>
+    <!--重复校验-->
+    <select id="selectPlanBusinessUnitRepeat"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.plan.PlanBusinessUnitDTO">
+        SELECT
+        plan_business_unit_id,business_unit_code,business_unit_name,business_unit_decompose,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM plan_business_unit
+        WHERE delete_flag=0
+        <if test="planBusinessUnit.businessUnitCode != null and planBusinessUnit.businessUnitCode != ''">
+            and business_unit_code=#{planBusinessUnit.businessUnitCode}
+        </if>
+        <if test="planBusinessUnit.businessUnitName != null and planBusinessUnit.businessUnitName != ''">
+            and business_unit_name=#{planBusinessUnit.businessUnitName}
+        </if>
+        <if test="planBusinessUnit.businessUnitDecompose != null and planBusinessUnit.businessUnitDecompose != ''">
+            and business_unit_decompose=#{planBusinessUnit.businessUnitDecompose}
+        </if>
+    </select>
     <!--新增规划业务单元-->
     <insert id="insertPlanBusinessUnit" useGeneratedKeys="true" keyProperty="planBusinessUnitId">
         INSERT INTO plan_business_unit

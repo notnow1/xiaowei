@@ -113,7 +113,7 @@
             AND
             <foreach item="item"
                      collection="salaryItem.params.thirdLevelItemLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 third_level_item LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
@@ -121,7 +121,7 @@
             AND
             <foreach item="item"
                      collection="salaryItem.params.thirdLevelItemNotLike"
-                     index="index" open="(" separator="OR" close=")">
+                     index="index" open="(" separator="AND" close=")">
                 third_level_item NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>

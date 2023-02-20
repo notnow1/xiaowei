@@ -1209,8 +1209,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
         SalaryPay salaryPay = new SalaryPay();
         BeanUtils.copyProperties(salaryPayDTO, salaryPay);
         List<SalaryPayDTO> salaryPayDTOList = salaryPayMapper.selectSalaryPayList(salaryPay);
-        List<SalaryPayExcel> salaryPayExcelList = new ArrayList<>();
-        return salaryPayExcelList;
+        return new ArrayList<>();
     }
 
     /**
@@ -1496,7 +1495,6 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      */
     private List<SalaryPayDTO> getSalaryPayList(SalaryStructureDTO salaryStructureDTO) {
         List<SalaryPayDTO> salaryPayDTOList;
-        Map<String, Object> params = salaryStructureDTO.getParams();
         Date timeStart = salaryStructureDTO.getTimeStart();
         Date timeEnd = salaryStructureDTO.getTimeEnd();
         if (StringUtils.isNull(timeStart) || StringUtils.isNull(timeEnd)) {

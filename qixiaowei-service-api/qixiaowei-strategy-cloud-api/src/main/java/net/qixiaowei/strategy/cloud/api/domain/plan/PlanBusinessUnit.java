@@ -32,13 +32,13 @@ public class PlanBusinessUnit extends TenantEntity {
      */
      private  String  businessUnitName;
      /**
-     * 规划业务单元维度(region,department,product,industry)
+     * 规划业务单元维度(region,department,product,industry,company)
      */
      private  String  businessUnitDecompose;
      /**
      * 状态:0失效;1生效
      */
-     private  Integer  status;
+     private  Integer status;
 
 }
 
