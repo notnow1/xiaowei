@@ -1,8 +1,10 @@
 package net.qixiaowei.system.manage.api.factory.user;
 
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -46,7 +48,12 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             }
 
             @Override
-            public R<Boolean> registerUserInfo(UserVO userVO, String source) {
+            public R<Boolean> checkUserAccountExists(String userAccount, String source) {
+                return R.fail("校验用户是否存在失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<TenantRegisterResponseVO> registerUserInfo(TenantDTO tenantDTO, String source) {
                 return R.fail("注册用户失败:" + throwable.getMessage());
             }
 

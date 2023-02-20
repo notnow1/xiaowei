@@ -2,15 +2,16 @@ package net.qixiaowei.system.manage.remote.user;
 
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.security.annotation.InnerAuth;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
-import net.qixiaowei.system.manage.api.vo.UserVO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
+import net.qixiaowei.system.manage.service.tenant.ITenantService;
 import net.qixiaowei.system.manage.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +25,9 @@ public class RemoteUser implements RemoteUserService {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private ITenantService tenantService;
 
     @Override
     @InnerAuth
@@ -56,13 +60,29 @@ public class RemoteUser implements RemoteUserService {
         return R.ok(userService.resetPwd(userDTO));
     }
 
+    /**
+     * 校验用户是否存在
+     *
+     * @param userAccount
+     * @return 结果
+     */
     @Override
-    public R<Boolean> registerUserInfo(UserVO userVO, String source) {
-        return null;
+    @InnerAuth
+    @PostMapping("/checkUserAccountExists")
+    public R<Boolean> checkUserAccountExists(String userAccount, String source) {
+        return R.ok(userService.checkUserAccountExists(userAccount));
+    }
+
+    @Override
+    @InnerAuth
+    @PostMapping("/register")
+    public R<TenantRegisterResponseVO> registerUserInfo(TenantDTO tenantDTO, String source) {
+        return R.ok(tenantService.registerUserInfo(tenantDTO));
     }
 
     /**
-     *  通过人员ID集合查询用户id
+     * 通过人员ID集合查询用户id
+     *
      * @param employeeIds 人员IDs
      * @param source
      * @return

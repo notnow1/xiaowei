@@ -23,8 +23,10 @@ import net.qixiaowei.system.manage.api.dto.tenant.TenantContactsDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDomainApprovalDTO;
+import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantInfoVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantLoginFormVO;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
 import net.qixiaowei.system.manage.config.tenant.TenantConfig;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
 import net.qixiaowei.system.manage.logic.tenant.TenantLogic;
@@ -45,6 +47,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -235,6 +238,64 @@ public class TenantServiceImpl implements ITenantService {
         //返回数据
         tenantDTO.setTenantId(tenantId);
         return tenantDTO;
+    }
+
+    @Override
+    public TenantRegisterResponseVO registerUserInfo(TenantDTO tenantDTO) {
+        //租户
+        String domain = tenantDTO.getAdminAccount();
+        //找到客服人员
+        String supportStaffMobile = tenantConfig.getSupportStaffMobile();
+        UserDTO userDTO = userMapper.selectUserByUserAccount(supportStaffMobile);
+        if (StringUtils.isNull(userDTO)) {
+            throw new ServiceException("您本次的系统注册失败，请联系客服查询原因。");
+        }
+        Long employeeId = userDTO.getEmployeeId();
+        if (StringUtils.isNull(employeeId)) {
+            throw new ServiceException("您本次的系统注册失败，请联系客服查询原因。");
+        }
+        String supportStaff = employeeId.toString();
+        String tenantCode = this.generateTenantCode();
+        Tenant tenant = new Tenant();
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        BeanUtils.copyProperties(tenantDTO, tenant);
+        tenant.setTenantCode(tenantCode);
+        tenant.setDomain(domain);
+        tenant.setSupportStaff(supportStaff);
+        tenant.setCreateBy(userId);
+        tenant.setUpdateBy(userId);
+        tenant.setCreateTime(nowDate);
+        tenant.setUpdateTime(nowDate);
+        tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        //插入租户
+        tenantMapper.insertTenant(tenant);
+        Long tenantId = tenant.getTenantId();
+        //初始化合同
+        TenantContractDTO tenantContractDTO = new TenantContractDTO();
+        //申请日期（YYMMDDHHmmss）
+        String salesContractNo = DateUtils.dateTimeNow();
+        //需要初始化的菜单 todo
+        Set<Long> menuIds=new HashSet<>();
+        //用户成功申请日期起，至后续7个自然日止。
+        Date contractEndTime = DateUtils.addDays(nowDate, tenantConfig.getTrialDays());
+        tenantContractDTO.setMenuIds(menuIds);
+        tenantContractDTO.setSalesContractNo(salesContractNo);
+        tenantContractDTO.setSalesPersonnel("官网试用");
+        tenantContractDTO.setContractAmount(BigDecimal.ZERO);
+        tenantContractDTO.setContractStartTime(nowDate);
+        tenantContractDTO.setContractEndTime(contractEndTime);
+        List<TenantContractDTO> tenantContractDTOList = Collections.singletonList(tenantContractDTO);
+        Set<Long> initMenuIds = this.saveTenantContract(tenantContractDTOList, tenantId, userId, nowDate);
+        //初始化租户数据
+        Boolean initSuccess = tenantLogic.initTenantData(tenant, initMenuIds);
+        if (initSuccess) {
+            tenant.setTenantStatus(BusinessConstants.NORMAL);
+            tenantMapper.updateTenant(tenant);
+        }
+        TenantRegisterResponseVO tenantRegisterResponseVO = new TenantRegisterResponseVO();
+        tenantRegisterResponseVO.setDomain(domain);
+        return tenantRegisterResponseVO;
     }
 
     /**

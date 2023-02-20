@@ -5,6 +5,7 @@ import java.util.List;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantInfoVO;
 import net.qixiaowei.system.manage.api.vo.tenant.TenantLoginFormVO;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
 import net.qixiaowei.system.manage.excel.tenant.TenantExcel;
 
 import javax.servlet.http.HttpServletRequest;
@@ -165,5 +166,7 @@ public interface ITenantService {
      * @return
      */
     void maintainTenantStatus();
+
+    TenantRegisterResponseVO registerUserInfo(TenantDTO tenantDTO);
 
 }

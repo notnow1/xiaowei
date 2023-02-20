@@ -40,6 +40,11 @@ public interface CacheConstants {
     String CAPTCHA_CODE_KEY = "captcha_codes:";
 
     /**
+     * 短信发送 redis key
+     */
+    String SMS_SEND_KEY = "sms_send:";
+
+    /**
      * 参数管理 cache key
      */
     String SYS_CONFIG_KEY = "sys_config:";

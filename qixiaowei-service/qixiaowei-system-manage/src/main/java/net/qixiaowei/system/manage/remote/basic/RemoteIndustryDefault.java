@@ -27,7 +27,7 @@ public class RemoteIndustryDefault implements RemoteIndustryDefaultService {
     public R<List<Tree<Long>>> getTreeList(String source) {
         IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
         industryDefaultDTO.setStatus(BusinessConstants.NORMAL);
-        return R.ok(iIndustryDefaultService.selectIndustryDefaultTreeList(industryDefaultDTO));
+        return R.ok(iIndustryDefaultService.getIndustryDefaultTreeListOfSimple(industryDefaultDTO));
     }
 
 

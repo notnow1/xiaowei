@@ -5,10 +5,12 @@ import java.util.Set;
 
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.system.RoleDTO;
+import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.dto.user.AuthRolesDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserUpdatePasswordDTO;
 import net.qixiaowei.system.manage.api.vo.LoginUserVO;
+import net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO;
 import net.qixiaowei.system.manage.api.vo.user.UserInfoVO;
 import net.qixiaowei.system.manage.api.vo.user.UserProfileVO;
 import org.springframework.web.multipart.MultipartFile;
@@ -136,6 +138,14 @@ public interface IUserService {
      * @return 结果
      */
     int resetPwd(UserDTO userDTO);
+
+    /**
+     * 校验用户是否存在
+     *
+     * @param userAccount
+     * @return 结果
+     */
+    Boolean checkUserAccountExists(String userAccount);
 
     /**
      * 重置用户密码

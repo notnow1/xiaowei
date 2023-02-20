@@ -517,6 +517,18 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
+     * 校验用户是否存在
+     *
+     * @param userAccount
+     * @return 结果
+     */
+    @Override
+    @IgnoreTenant
+    public Boolean checkUserAccountExists(String userAccount) {
+        return this.checkUserAccountUnique(userAccount);
+    }
+
+    /**
      * 重置用户密码
      *
      * @param userUpdatePasswordDTO 用户更新密码实体

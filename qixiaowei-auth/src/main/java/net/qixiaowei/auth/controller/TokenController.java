@@ -2,6 +2,7 @@ package net.qixiaowei.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.qixiaowei.auth.form.RegisterBody;
 import net.qixiaowei.auth.form.ResetPasswordBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -71,5 +72,21 @@ public class TokenController {
         return R.ok();
     }
 
+    /**
+     * @description: 发送验证码
+     * @Author: hzk
+     * @date: 2023/2/20 14:46
+     * @param: [loginBody]
+     * @return: net.qixiaowei.integration.common.domain.R<?>
+     **/
+    @PostMapping("/sendSms")
+    public R<?> sendSms(@RequestBody LoginBody loginBody) {
+        sysLoginService.sendSms(loginBody.getUserAccount());
+        return R.ok();
+    }
 
+    @PostMapping("/register")
+    public R<?> register(@RequestBody RegisterBody registerBody) {
+        return R.ok(sysLoginService.register(registerBody));
+    }
 }
