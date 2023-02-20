@@ -7,7 +7,7 @@
         SELECT
         industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
-        WHERE industry_attraction_element_id=#{industryAttractionElementId}
+        WHERE  industry_attraction_element_id=#{industryAttractionElementId}
         and delete_flag=0
     </select>
 
@@ -17,63 +17,61 @@
         SELECT
         industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
-        WHERE industry_attraction_element_id in
-        <foreach item="item"
-                 collection="industryAttractionElementIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        WHERE  industry_attraction_element_id in
+            <foreach item="item"
+                     collection="industryAttractionElementIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询行业吸引力要素表列表-->
-    <select id="selectIndustryAttractionElementList"
-            resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
+    <select id="selectIndustryAttractionElementList" resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
         SELECT
         industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
         FROM industry_attraction_element
         WHERE delete_flag=0
-        <if test="industryAttractionElement.industryAttractionElementId != null">
-            and industry_attraction_element_id=#{industryAttractionElement.industryAttractionElementId}
-        </if>
-        <if test="industryAttractionElement.industryAttractionId != null">
-            and industry_attraction_id=#{industryAttractionElement.industryAttractionId}
-        </if>
-        <if test="industryAttractionElement.assessStandardName != null and industryAttractionElement.assessStandardName != ''">
-            and assess_standard_name=#{industryAttractionElement.assessStandardName}
-        </if>
-        <if test="industryAttractionElement.assessStandardDescription != null and industryAttractionElement.assessStandardDescription != ''">
-            and assess_standard_description=#{industryAttractionElement.assessStandardDescription}
-        </if>
-        <if test="industryAttractionElement.displayColor != null and industryAttractionElement.displayColor != ''">
-            and display_color=#{industryAttractionElement.displayColor}
-        </if>
-        <if test="industryAttractionElement.sort != null">
-            and sort=#{industryAttractionElement.sort}
-        </if>
-        <if test="industryAttractionElement.status != null">
-            and status=#{industryAttractionElement.status}
-        </if>
-        <if test="industryAttractionElement.deleteFlag != null">
-            and delete_flag=#{industryAttractionElement.deleteFlag}
-        </if>
-        <if test="industryAttractionElement.createBy != null">
-            and create_by=#{industryAttractionElement.createBy}
-        </if>
-        <if test="industryAttractionElement.createTime != null">
-            and create_time=#{industryAttractionElement.createTime}
-        </if>
-        <if test="industryAttractionElement.updateBy != null">
-            and update_by=#{industryAttractionElement.updateBy}
-        </if>
-        <if test="industryAttractionElement.updateTime != null">
-            and update_time=#{industryAttractionElement.updateTime}
-        </if>
+                        <if test="industryAttractionElement.industryAttractionElementId != null">
+                            and industry_attraction_element_id=#{industryAttractionElement.industryAttractionElementId}
+                        </if>
+                        <if test="industryAttractionElement.industryAttractionId != null">
+                            and industry_attraction_id=#{industryAttractionElement.industryAttractionId}
+                        </if>
+                        <if test="industryAttractionElement.assessStandardName != null and industryAttractionElement.assessStandardName != ''">
+                            and assess_standard_name=#{industryAttractionElement.assessStandardName}
+                        </if>
+                        <if test="industryAttractionElement.assessStandardDescription != null and industryAttractionElement.assessStandardDescription != ''">
+                            and assess_standard_description=#{industryAttractionElement.assessStandardDescription}
+                        </if>
+                        <if test="industryAttractionElement.displayColor != null and industryAttractionElement.displayColor != ''">
+                            and display_color=#{industryAttractionElement.displayColor}
+                        </if>
+                        <if test="industryAttractionElement.sort != null">
+                            and sort=#{industryAttractionElement.sort}
+                        </if>
+                        <if test="industryAttractionElement.status != null">
+                            and status=#{industryAttractionElement.status}
+                        </if>
+                        <if test="industryAttractionElement.deleteFlag != null">
+                            and delete_flag=#{industryAttractionElement.deleteFlag}
+                        </if>
+                        <if test="industryAttractionElement.createBy != null">
+                            and create_by=#{industryAttractionElement.createBy}
+                        </if>
+                        <if test="industryAttractionElement.createTime != null">
+                            and create_time=#{industryAttractionElement.createTime}
+                        </if>
+                        <if test="industryAttractionElement.updateBy != null">
+                            and update_by=#{industryAttractionElement.updateBy}
+                        </if>
+                        <if test="industryAttractionElement.updateTime != null">
+                            and update_time=#{industryAttractionElement.updateTime}
+                        </if>
     </select>
     <!--新增行业吸引力要素表-->
     <insert id="insertIndustryAttractionElement" useGeneratedKeys="true" keyProperty="industryAttractionElementId">
-        INSERT INTO industry_attraction_element
-        (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO industry_attraction_element (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{industryAttractionElement.industryAttractionId},#{industryAttractionElement.assessStandardName},#{industryAttractionElement.assessStandardDescription},#{industryAttractionElement.displayColor},#{industryAttractionElement.sort},#{industryAttractionElement.status},#{industryAttractionElement.deleteFlag},#{industryAttractionElement.createBy},#{industryAttractionElement.createTime},#{industryAttractionElement.updateBy},#{industryAttractionElement.updateTime})
     </insert>
@@ -81,69 +79,68 @@
     <update id="updateIndustryAttractionElement">
         UPDATE industry_attraction_element
         SET
-        <if test="industryAttractionElement.industryAttractionId != null">
-            industry_attraction_id=#{industryAttractionElement.industryAttractionId},
-        </if>
-        <if test="industryAttractionElement.assessStandardName != null and industryAttractionElement.assessStandardName != ''">
-            assess_standard_name=#{industryAttractionElement.assessStandardName},
-        </if>
-        <if test="industryAttractionElement.assessStandardDescription != null and industryAttractionElement.assessStandardDescription != ''">
-            assess_standard_description=#{industryAttractionElement.assessStandardDescription},
-        </if>
-        <if test="industryAttractionElement.displayColor != null and industryAttractionElement.displayColor != ''">
-            display_color=#{industryAttractionElement.displayColor},
-        </if>
-        <if test="industryAttractionElement.sort != null">
-            sort=#{industryAttractionElement.sort},
-        </if>
-        <if test="industryAttractionElement.status != null">
-            status=#{industryAttractionElement.status},
-        </if>
-        <if test="industryAttractionElement.deleteFlag != null">
-            delete_flag=#{industryAttractionElement.deleteFlag},
-        </if>
-        <if test="industryAttractionElement.createBy != null">
-            create_by=#{industryAttractionElement.createBy},
-        </if>
-        <if test="industryAttractionElement.createTime != null">
-            create_time=#{industryAttractionElement.createTime},
-        </if>
-        <if test="industryAttractionElement.updateBy != null">
-            update_by=#{industryAttractionElement.updateBy},
-        </if>
-        <if test="industryAttractionElement.updateTime != null">
-            update_time=#{industryAttractionElement.updateTime}
-        </if>
+                    <if test="industryAttractionElement.industryAttractionId != null">
+                        industry_attraction_id=#{industryAttractionElement.industryAttractionId},
+                    </if>
+                    <if test="industryAttractionElement.assessStandardName != null and industryAttractionElement.assessStandardName != ''">
+                        assess_standard_name=#{industryAttractionElement.assessStandardName},
+                    </if>
+                    <if test="industryAttractionElement.assessStandardDescription != null and industryAttractionElement.assessStandardDescription != ''">
+                        assess_standard_description=#{industryAttractionElement.assessStandardDescription},
+                    </if>
+                    <if test="industryAttractionElement.displayColor != null and industryAttractionElement.displayColor != ''">
+                        display_color=#{industryAttractionElement.displayColor},
+                    </if>
+                    <if test="industryAttractionElement.sort != null">
+                        sort=#{industryAttractionElement.sort},
+                    </if>
+                    <if test="industryAttractionElement.status != null">
+                        status=#{industryAttractionElement.status},
+                    </if>
+                    <if test="industryAttractionElement.deleteFlag != null">
+                        delete_flag=#{industryAttractionElement.deleteFlag},
+                    </if>
+                    <if test="industryAttractionElement.createBy != null">
+                        create_by=#{industryAttractionElement.createBy},
+                    </if>
+                    <if test="industryAttractionElement.createTime != null">
+                        create_time=#{industryAttractionElement.createTime},
+                    </if>
+                    <if test="industryAttractionElement.updateBy != null">
+                        update_by=#{industryAttractionElement.updateBy},
+                    </if>
+                    <if test="industryAttractionElement.updateTime != null">
+                        update_time=#{industryAttractionElement.updateTime}
+                    </if>
         WHERE
-        industry_attraction_element_id=#{industryAttractionElement.industryAttractionElementId}
+                 industry_attraction_element_id=#{industryAttractionElement.industryAttractionElementId}
     </update>
     <!--逻辑删除行业吸引力要素表-->
     <update id="logicDeleteIndustryAttractionElementByIndustryAttractionElementId">
         UPDATE industry_attraction_element
-        SET delete_flag= 1,
-        update_by=#{industryAttractionElement.updateBy},
-        update_time=#{industryAttractionElement.updateTime}
+        SET     delete_flag= 1,
+                update_by=#{industryAttractionElement.updateBy},
+                update_time=#{industryAttractionElement.updateTime}
         WHERE
-        industry_attraction_element_id=#{industryAttractionElement.industryAttractionElementId}
+                industry_attraction_element_id=#{industryAttractionElement.industryAttractionElementId}
     </update>
     <!--逻辑批量删除行业吸引力要素表-->
     <update id="logicDeleteIndustryAttractionElementByIndustryAttractionElementIds">
         UPDATE industry_attraction_element
-        SET delete_flag= 1,
-        update_by=#{updateBy},
-        update_time=#{updateTime}
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
         WHERE
-        industry_attraction_element_id IN
-        <foreach item="item"
-                 collection="industryAttractionElementIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+         industry_attraction_element_id IN
+            <foreach item="item"
+                     collection="industryAttractionElementIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
     </update>
     <!--批量新增行业吸引力要素表-->
     <insert id="batchIndustryAttractionElement">
-        INSERT INTO industry_attraction_element
-        (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO industry_attraction_element (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="industryAttractionElements"
@@ -155,108 +152,104 @@
     <!--物理删除行业吸引力要素表-->
     <delete id="deleteIndustryAttractionElementByIndustryAttractionElementId">
         DELETE FROM industry_attraction_element
-        WHERE industry_attraction_element_id=#{industryAttractionElement}
+        WHERE  industry_attraction_element_id=#{industryAttractionElement}
 
     </delete>
     <!--物理批量删除行业吸引力要素表-->
     <delete id="deleteIndustryAttractionElementByIndustryAttractionElementIds">
         DELETE FROM industry_attraction_element
-        WHERE industry_attraction_element_id IN
-        <foreach item="item"
-                 collection="industryAttractionElementIds"
-                 index="index" open="(" separator="," close=")">
-            #{item}
-        </foreach>
+        WHERE  industry_attraction_element_id IN
+            <foreach item="item"
+                     collection="industryAttractionElementIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
     </delete>
     <!--批量修改行业吸引力要素表-->
     <update id="updateIndustryAttractionElements">
         update industry_attraction_element
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="industry_attraction_id=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.industryAttractionId != null">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then
-                        #{item.industryAttractionId}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="assess_standard_name=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.assessStandardName != null and item.assessStandardName != ''">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then
-                        #{item.assessStandardName}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="assess_standard_description=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.assessStandardDescription != null and item.assessStandardDescription != ''">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then
-                        #{item.assessStandardDescription}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="display_color=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.displayColor != null and item.displayColor != ''">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then
-                        #{item.displayColor}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="sort=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.sort != null">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.sort}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="status=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.status != null">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.status}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="delete_flag=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.deleteFlag != null">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.deleteFlag}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_by=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.createBy != null">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.createBy}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="create_time=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.createTime != null">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.createTime}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_by=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.updateBy != null">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.updateBy}
-                    </if>
-                </foreach>
-            </trim>
-            <trim prefix="update_time=case" suffix="end,">
-                <foreach collection="industryAttractionElementList" item="item" index="index">
-                    <if test="item.updateTime != null">
-                        when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.updateTime}
-                    </if>
-                </foreach>
-            </trim>
+                <trim prefix="industry_attraction_id=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.industryAttractionId != null">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.industryAttractionId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="assess_standard_name=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.assessStandardName != null and item.assessStandardName != ''">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.assessStandardName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="assess_standard_description=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.assessStandardDescription != null and item.assessStandardDescription != ''">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.assessStandardDescription}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="display_color=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.displayColor != null and item.displayColor != ''">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.displayColor}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="status=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.status != null">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.status}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="industryAttractionElementList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when industry_attraction_element_id=#{item.industryAttractionElementId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
         </trim>
         where
         <foreach collection="industryAttractionElementList" separator="or" item="item" index="index">
-            industry_attraction_element_id=#{item.industryAttractionElementId}
+                    industry_attraction_element_id=#{item.industryAttractionElementId}
         </foreach>
     </update>
 </mapper>

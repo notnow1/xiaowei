@@ -2,6 +2,8 @@ package ${controllerPackage};
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import net.qixiaowei.integration.common.enums.message.BusinessType;
+import net.qixiaowei.integration.log.enums.OperationType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +17,6 @@ import lombok.SneakyThrows;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.text.CharsetKit;
 import net.qixiaowei.integration.common.utils.StringUtils;
-import net.qixiaowei.integration.log.enums.BusinessType;
 import ${dtoPackage}.${entity}DTO;
 import ${excelPackage}.${entity}Excel;
 import ${excelImportListenerPackage}.${entity}ImportListener;
@@ -87,7 +88,7 @@ public class ${table.controllerName} extends BaseController
     * 新增${table.comment!}
     */
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:add")
-    @Log(title = "新增${table.comment!}", businessType = BusinessType.INSERT)
+    @Log(title = "新增${table.comment!}", businessType = BusinessType.枚举值自己加, businessId = "<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody ${entity}DTO ${entity?uncap_first}DTO) {
     return AjaxResult.success(${entity?uncap_first}Service.insert${entity}(${entity?uncap_first}DTO));
@@ -98,7 +99,7 @@ public class ${table.controllerName} extends BaseController
     * 修改${table.comment!}
     */
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:edit")
-    @Log(title = "修改${table.comment!}", businessType = BusinessType.UPDATE)
+    @Log(title = "修改${table.comment!}", businessType = BusinessType.枚举值自己加, businessId = "<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody ${entity}DTO ${entity?uncap_first}DTO)
     {
@@ -109,39 +110,15 @@ public class ${table.controllerName} extends BaseController
     * 逻辑删除${table.comment!}
     */
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:remove")
-    @Log(title = "删除${table.comment!}", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody ${entity}DTO ${entity?uncap_first}DTO)
     {
     return toAjax(${entity?uncap_first}Service.logicDelete${entity}By<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName?cap_first}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName?cap_first}<#elseif idType??>${field.propertyName?cap_first}<#elseif field.convert>${field.propertyName?cap_first}</#if></#if></#list>(${entity?uncap_first}DTO));
     }
     /**
-    * 批量修改${table.comment!}
-    */
-    @RequiresPermissions("${packageClass}:${entity?uncap_first}:edits")
-    @Log(title = "批量修改${table.comment!}", businessType = BusinessType.UPDATE)
-    @PostMapping("/edits")
-    public AjaxResult editSaves(@RequestBody List<${entity}DTO> ${entity?uncap_first}Dtos)
-    {
-    return toAjax(${entity?uncap_first}Service.update${entity}s(${entity?uncap_first}Dtos));
-    }
-
-    /**
-    * 批量新增${table.comment!}
-    */
-    @RequiresPermissions("${packageClass}:${entity?uncap_first}:insert${entity}s")
-    @Log(title = "批量新增${table.comment!}", businessType = BusinessType.INSERT)
-    @PostMapping("/insert${entity}s")
-    public AjaxResult insert${entity}s(@RequestBody List<${entity}DTO> ${entity?uncap_first}Dtos)
-    {
-    return toAjax(${entity?uncap_first}Service.insert${entity}s(${entity?uncap_first}Dtos));
-    }
-
-    /**
     * 逻辑批量删除${table.comment!}
     */
     @RequiresPermissions("${packageClass}:${entity?uncap_first}:removes")
-    @Log(title = "批量删除${table.comment!}", businessType = BusinessType.DELETE)
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<<#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyType}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyType}<#elseif idType??>${field.propertyType}<#elseif field.convert>${field.propertyType}</#if></#if></#list>>  <#list table.fields as field><#if field.keyFlag><#assign keyPropertyName="${field.propertyName}"/></#if><#if field.keyFlag><#-- 主键 --><#if field.keyIdentityFlag>${field.propertyName}<#elseif idType??>${field.propertyName}<#elseif field.convert>${field.propertyName}</#if></#if></#list>s)
     {

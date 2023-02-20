@@ -7,11 +7,12 @@ import java.util.Date;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.Map;
 
 /**
 * 行业吸引力要素表
 * @author TANGMICHI
-* @since 2023-02-17
+* @since 2023-02-20
 */
 @Data
 @Accessors(chain = true)
@@ -89,5 +90,9 @@ public class IndustryAttractionElementDTO {
     */
     private  Long tenantId;
 
+    /**
+    * 请求参数
+    */
+    private Map<String, Object> params;
 }
 

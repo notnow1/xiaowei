@@ -7,6 +7,7 @@ import java.util.Date;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.Map;
 
 /**
 * ${table.comment!}
@@ -45,5 +46,9 @@ public class ${entity}DTO {
     private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if> ${field.propertyName};
 </#list>
 
+    /**
+    * 请求参数
+    */
+    private Map<String, Object> params;
 }
 

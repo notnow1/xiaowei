@@ -11,7 +11,7 @@ import java.util.Date;
 /**
 * 行业吸引力表
 * @author TANGMICHI
-* @since 2023-02-17
+* @since 2023-02-20
 */
 @Data
 @Accessors(chain = true)
