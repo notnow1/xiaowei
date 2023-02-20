@@ -179,10 +179,12 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
         } catch (Exception e) {
             throw new ServiceException("修改行业吸引力失败");
         }
+        //差集
+        List<Long> industryAttractionElementIds = new ArrayList<>();
         if (StringUtils.isNotEmpty(industryAttractionElementDTOList)) {
             if (StringUtils.isNotEmpty(industryAttractionElementDTOS)){
                 //sterm流求差集
-                List<Long> industryAttractionElementIds = industryAttractionElementDTOList.stream().filter(a ->
+                    industryAttractionElementIds = industryAttractionElementDTOList.stream().filter(a ->
                         !industryAttractionElementDTOS.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList()).contains(a.getIndustryAttractionElementId())
                 ).collect(Collectors.toList()).stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
                 if (StringUtils.isNotEmpty(industryAttractionElementIds)) {
@@ -201,7 +203,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                 IndustryAttractionElement industryAttractionElement = new IndustryAttractionElement();
                 BeanUtils.copyProperties(industryAttractionElementDTOS.get(i1), industryAttractionElement);
                 industryAttractionElement.setSort(i1 + 1);
-                if (StringUtils.isNotNull(industryAttractionElementDTOS.get(i1).getIndustryAttractionId())) {
+                if (StringUtils.isNotNull(industryAttractionElementDTOS.get(i1).getIndustryAttractionElementId())) {
                     industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
                     industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
                     industryAttractionElementUpdateList.add(industryAttractionElement);
