@@ -202,7 +202,7 @@
                 t1.indicator_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
-        <!--    指标类型过滤-->
+        <!--    指标分类    过滤-->
         <if test="indicator.params.indicatorCategoryNameEqual != null and indicator.params.indicatorCategoryNameEqual.size() > 0">
             AND t2.indicator_category_name IN
             <foreach item="item"
@@ -227,7 +227,7 @@
         <if test="indicator.params.indicatorCategoryNameNotNull != null">
             and t2.indicator_category_name IS NOT NULL
         </if>
-        <!--    指标值类型过滤-->
+        <!--    指标类型过滤-->
         <if test="indicator.params.indicatorTypeEqual != null and indicator.params.indicatorTypeEqual.size() > 0">
             AND t1.indicator_type IN
             <foreach item="item"
@@ -244,6 +244,25 @@
                 #{item}
             </foreach>
             OR t1.indicator_type IS NULL
+            )
+        </if>
+        <!--    指标值类型过滤-->
+        <if test="indicator.params.indicatorValueTypeEqual != null and indicator.params.indicatorValueTypeEqual.size() > 0">
+            AND t1.indicator_value_type IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorValueTypeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="indicator.params.indicatorTypeNotEqual != null and indicator.params.indicatorValueTypeNotEqual.size() > 0">
+            AND (t1.indicator_value_type NOT IN
+            <foreach item="item"
+                     collection="indicator.params.indicatorTypeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR t1.indicator_value_type IS NULL
             )
         </if>
         <!--    是否必选过滤-->
