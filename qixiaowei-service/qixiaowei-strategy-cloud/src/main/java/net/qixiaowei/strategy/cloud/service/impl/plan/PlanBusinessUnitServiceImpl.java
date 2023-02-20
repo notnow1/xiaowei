@@ -162,6 +162,7 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
      * @param planBusinessUnitDtos 规划业务单元对象
      */
 
+    @Override
     public int insertPlanBusinessUnits(List<PlanBusinessUnitDTO> planBusinessUnitDtos) {
         List<PlanBusinessUnit> planBusinessUnitList = new ArrayList();
 
@@ -184,6 +185,7 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
      * @param planBusinessUnitDtos 规划业务单元对象
      */
 
+    @Override
     public int updatePlanBusinessUnits(List<PlanBusinessUnitDTO> planBusinessUnitDtos) {
         List<PlanBusinessUnit> planBusinessUnitList = new ArrayList();
 

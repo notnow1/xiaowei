@@ -98,12 +98,12 @@
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-system-manage-api</artifactId>
         </dependency>
-
+<!--        经营云-->
         <dependency>
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-operate-cloud-api</artifactId>
         </dependency>
-
+<!--        基础服务-->
         <dependency>
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-message-api</artifactId>
@@ -112,6 +112,11 @@
         <dependency>
             <groupId>net.qixiaowei</groupId>
             <artifactId>qixiaowei-file-api</artifactId>
+        </dependency>
+<!--        战略云-->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-strategy-cloud-api</artifactId>
         </dependency>
 
     </dependencies>

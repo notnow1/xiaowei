@@ -23,6 +23,13 @@ public interface IndustryAttractionElementMapper{
 
 
     /**
+     * 根据行业吸引力主表id查询行业吸引力要素表
+     *
+     * @param industryAttractionId 行业吸引力主表主键
+     * @return 行业吸引力要素表
+     */
+    List<IndustryAttractionElementDTO> selectIndustryAttractionElementByIndustryAttractionId(@Param("industryAttractionId")Long industryAttractionId);
+    /**
     * 批量查询行业吸引力要素表
     *
     * @param industryAttractionElementIds 行业吸引力要素表主键集合
@@ -30,6 +37,13 @@ public interface IndustryAttractionElementMapper{
     */
     List<IndustryAttractionElementDTO> selectIndustryAttractionElementByIndustryAttractionElementIds(@Param("industryAttractionElementIds") List<Long> industryAttractionElementIds);
 
+    /**
+     * 根据行业吸引力主表id集合批量查询行业吸引力要素表
+     *
+     * @param industryAttractionIds 行业吸引力主表主键集合
+     * @return 行业吸引力要素表
+     */
+    List<IndustryAttractionElementDTO> selectIndustryAttractionElementByIndustryAttractionIds(@Param("industryAttractionIds") List<Long> industryAttractionIds);
     /**
     * 查询行业吸引力要素表列表
     *

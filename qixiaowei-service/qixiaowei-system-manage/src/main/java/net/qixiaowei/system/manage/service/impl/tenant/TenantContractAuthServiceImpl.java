@@ -254,6 +254,7 @@ public class TenantContractAuthServiceImpl implements ITenantContractAuthService
      * @param tenantContractAuthDtos 租户合同授权表对象
      */
 
+    @Override
     public int insertTenantContractAuths(List<TenantContractAuthDTO> tenantContractAuthDtos) {
         List<TenantContractAuth> tenantContractAuthList = new ArrayList();
 
@@ -276,6 +277,7 @@ public class TenantContractAuthServiceImpl implements ITenantContractAuthService
      * @param tenantContractAuthDtos 租户合同授权表对象
      */
 
+    @Override
     public int updateTenantContractAuths(List<TenantContractAuthDTO> tenantContractAuthDtos) {
         List<TenantContractAuth> tenantContractAuthList = new ArrayList();
 

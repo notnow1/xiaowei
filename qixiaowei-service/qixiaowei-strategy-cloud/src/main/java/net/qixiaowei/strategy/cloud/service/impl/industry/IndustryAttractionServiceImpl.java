@@ -3,11 +3,13 @@ package net.qixiaowei.strategy.cloud.service.impl.industry;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
+import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttraction;
 import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttractionElement;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionElementMapper;
 import net.qixiaowei.strategy.cloud.mapper.industry.IndustryAttractionMapper;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -87,7 +90,12 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      */
     @Override
     public IndustryAttractionDTO selectIndustryAttractionByIndustryAttractionId(Long industryAttractionId) {
-        return industryAttractionMapper.selectIndustryAttractionByIndustryAttractionId(industryAttractionId);
+        IndustryAttractionDTO industryAttractionDTO = industryAttractionMapper.selectIndustryAttractionByIndustryAttractionId(industryAttractionId);
+        List<IndustryAttractionElementDTO> industryAttractionElementDTOS = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionId(industryAttractionId);
+        if (StringUtils.isNotEmpty(industryAttractionElementDTOS)) {
+            industryAttractionDTO.setIndustryAttractionElementDTOS(industryAttractionElementDTOS);
+        }
+        return industryAttractionDTO;
     }
 
     /**
@@ -111,14 +119,40 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      */
     @Override
     public IndustryAttractionDTO insertIndustryAttraction(IndustryAttractionDTO industryAttractionDTO) {
+        List<IndustryAttractionElementDTO> industryAttractionElementDTOS = industryAttractionDTO.getIndustryAttractionElementDTOS();
+        List<IndustryAttractionElement> industryAttractionElementList = new ArrayList<>();
         IndustryAttraction industryAttraction = new IndustryAttraction();
-        BeanUtils.copyProperties(industryAttractionDTO, industryAttraction);
+        industryAttraction.setAttractionElementName(industryAttractionDTO.getAttractionElementName());
+        industryAttraction.setStatus(industryAttractionDTO.getStatus());
         industryAttraction.setCreateBy(SecurityUtils.getUserId());
         industryAttraction.setCreateTime(DateUtils.getNowDate());
         industryAttraction.setUpdateTime(DateUtils.getNowDate());
         industryAttraction.setUpdateBy(SecurityUtils.getUserId());
         industryAttraction.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        industryAttractionMapper.insertIndustryAttraction(industryAttraction);
+        try {
+            industryAttractionMapper.insertIndustryAttraction(industryAttraction);
+        } catch (Exception e) {
+            throw new ServiceException("新增行业吸引力失败");
+        }
+        if (StringUtils.isNotEmpty(industryAttractionElementDTOS)) {
+            for (int i = 0; i < industryAttractionElementDTOS.size(); i++) {
+                IndustryAttractionElement industryAttractionElement = new IndustryAttractionElement();
+                BeanUtils.copyProperties(industryAttractionElementDTOS.get(i), industryAttractionElement);
+                industryAttractionElement.setIndustryAttractionId(industryAttraction.getIndustryAttractionId());
+                industryAttractionElement.setSort(i + 1);
+                industryAttractionElement.setCreateBy(SecurityUtils.getUserId());
+                industryAttractionElement.setCreateTime(DateUtils.getNowDate());
+                industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
+                industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
+                industryAttractionElement.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                industryAttractionElementList.add(industryAttractionElement);
+            }
+        }
+        try {
+            industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementList);
+        } catch (Exception e) {
+            throw new ServiceException("批量新增行业吸引力要素失败");
+        }
         industryAttractionDTO.setIndustryAttractionId(industryAttraction.getIndustryAttractionId());
         return industryAttractionDTO;
     }
@@ -131,11 +165,72 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      */
     @Override
     public int updateIndustryAttraction(IndustryAttractionDTO industryAttractionDTO) {
+        int i = 0;
+        //接收前端行业吸引力要素集合
+        List<IndustryAttractionElementDTO> industryAttractionElementDTOS = industryAttractionDTO.getIndustryAttractionElementDTOS();
+        //数据库已存在的行业吸引力要素集合
+        List<IndustryAttractionElementDTO> industryAttractionElementDTOList = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
         IndustryAttraction industryAttraction = new IndustryAttraction();
         BeanUtils.copyProperties(industryAttractionDTO, industryAttraction);
         industryAttraction.setUpdateTime(DateUtils.getNowDate());
         industryAttraction.setUpdateBy(SecurityUtils.getUserId());
-        return industryAttractionMapper.updateIndustryAttraction(industryAttraction);
+        try {
+            i = industryAttractionMapper.updateIndustryAttraction(industryAttraction);
+        } catch (Exception e) {
+            throw new ServiceException("修改行业吸引力失败");
+        }
+        if (StringUtils.isNotEmpty(industryAttractionElementDTOList)) {
+            if (StringUtils.isNotEmpty(industryAttractionElementDTOS)){
+                //sterm流求差集
+                List<Long> industryAttractionElementIds = industryAttractionElementDTOList.stream().filter(a ->
+                        !industryAttractionElementDTOS.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList()).contains(a.getIndustryAttractionElementId())
+                ).collect(Collectors.toList()).stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(industryAttractionElementIds)) {
+                    try {
+                        industryAttractionElementMapper.logicDeleteIndustryAttractionElementByIndustryAttractionElementIds(industryAttractionElementIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                    } catch (Exception e) {
+                        throw new ServiceException("逻辑批量删除行业吸引力要素失败");
+                    }
+                }
+            }
+            //新增集合
+            List<IndustryAttractionElement> industryAttractionElementAddList = new ArrayList<>();
+            //修改集合
+            List<IndustryAttractionElement> industryAttractionElementUpdateList = new ArrayList<>();
+            for (int i1 = 0; i1 < industryAttractionElementDTOS.size(); i1++) {
+                IndustryAttractionElement industryAttractionElement = new IndustryAttractionElement();
+                BeanUtils.copyProperties(industryAttractionElementDTOS.get(i1), industryAttractionElement);
+                industryAttractionElement.setSort(i1 + 1);
+                if (StringUtils.isNotNull(industryAttractionElementDTOS.get(i1).getIndustryAttractionId())) {
+                    industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
+                    industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
+                    industryAttractionElementUpdateList.add(industryAttractionElement);
+                } else {
+                    industryAttractionElement.setIndustryAttractionId(industryAttraction.getIndustryAttractionId());
+                    industryAttractionElement.setCreateBy(SecurityUtils.getUserId());
+                    industryAttractionElement.setCreateTime(DateUtils.getNowDate());
+                    industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
+                    industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
+                    industryAttractionElement.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    industryAttractionElementAddList.add(industryAttractionElement);
+                }
+            }
+            if (StringUtils.isNotEmpty(industryAttractionElementAddList)) {
+                try {
+                    industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementAddList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量新增行业吸引力要素失败");
+                }
+            }
+            if (StringUtils.isNotEmpty(industryAttractionElementUpdateList)) {
+                try {
+                    industryAttractionElementMapper.updateIndustryAttractionElements(industryAttractionElementUpdateList);
+                } catch (Exception e) {
+                    throw new ServiceException("批量修改行业吸引力要素失败");
+                }
+            }
+        }
+        return i;
     }
 
     /**
@@ -146,7 +241,19 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      */
     @Override
     public int logicDeleteIndustryAttractionByIndustryAttractionIds(List<Long> industryAttractionIds) {
-        return industryAttractionMapper.logicDeleteIndustryAttractionByIndustryAttractionIds(industryAttractionIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        int i = 0;
+        // todo 被行业引用不可删除
+        i = industryAttractionMapper.logicDeleteIndustryAttractionByIndustryAttractionIds(industryAttractionIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+        List<IndustryAttractionElementDTO> industryAttractionElementDTOS = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionIds(industryAttractionIds);
+        if (StringUtils.isNotEmpty(industryAttractionElementDTOS)) {
+            List<Long> industryAttractionElementIds = industryAttractionElementDTOS.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
+            try {
+                industryAttractionElementMapper.logicDeleteIndustryAttractionElementByIndustryAttractionElementIds(industryAttractionElementIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("逻辑批量删除行业吸引力要素失败");
+            }
+        }
+        return i;
     }
 
     /**
@@ -231,11 +338,23 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      */
     @Override
     public int logicDeleteIndustryAttractionByIndustryAttractionId(IndustryAttractionDTO industryAttractionDTO) {
+        int i = 0;
+        // todo 被行业引用不可删除
         IndustryAttraction industryAttraction = new IndustryAttraction();
         industryAttraction.setIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
         industryAttraction.setUpdateTime(DateUtils.getNowDate());
         industryAttraction.setUpdateBy(SecurityUtils.getUserId());
-        return industryAttractionMapper.logicDeleteIndustryAttractionByIndustryAttractionId(industryAttraction);
+        i = industryAttractionMapper.logicDeleteIndustryAttractionByIndustryAttractionId(industryAttraction);
+        List<IndustryAttractionElementDTO> industryAttractionElementDTOS = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionId(industryAttractionDTO.getIndustryAttractionId());
+        if (StringUtils.isNotEmpty(industryAttractionElementDTOS)) {
+            List<Long> industryAttractionElementIds = industryAttractionElementDTOS.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
+            try {
+                industryAttractionElementMapper.logicDeleteIndustryAttractionElementByIndustryAttractionElementIds(industryAttractionElementIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+            } catch (Exception e) {
+                throw new ServiceException("逻辑批量删除行业吸引力要素失败");
+            }
+        }
+        return i;
     }
 
     /**
@@ -273,7 +392,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      *
      * @param industryAttractionDtos 行业吸引力表对象
      */
-
+    @Override
     public int insertIndustryAttractions(List<IndustryAttractionDTO> industryAttractionDtos) {
         List<IndustryAttraction> industryAttractionList = new ArrayList();
 
@@ -295,7 +414,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      *
      * @param industryAttractionDtos 行业吸引力表对象
      */
-
+    @Override
     public int updateIndustryAttractions(List<IndustryAttractionDTO> industryAttractionDtos) {
         List<IndustryAttraction> industryAttractionList = new ArrayList();
 

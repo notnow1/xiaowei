@@ -181,6 +181,7 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
      * @param fieldConfigDtos 字段配置表对象
      */
 
+    @Override
     public int insertFieldConfigs(List<FieldConfigDTO> fieldConfigDtos) {
         List<FieldConfig> fieldConfigList = new ArrayList();
 
@@ -203,6 +204,7 @@ public class FieldConfigServiceImpl implements IFieldConfigService {
      * @param fieldConfigDtos 字段配置表对象
      */
 
+    @Override
     public int updateFieldConfigs(List<FieldConfigDTO> fieldConfigDtos) {
         List<FieldConfig> fieldConfigList = new ArrayList();
 

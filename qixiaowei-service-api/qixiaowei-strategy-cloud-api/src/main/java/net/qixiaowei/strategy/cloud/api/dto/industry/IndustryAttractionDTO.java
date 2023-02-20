@@ -7,6 +7,8 @@ import java.util.Date;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,7 +75,10 @@ public class IndustryAttractionDTO {
     * 租户ID
     */
     private  Long tenantId;
-
+    /**
+     * 行业吸引力要素表集合
+     */
+    private List<IndustryAttractionElementDTO> industryAttractionElementDTOS;
     /**
     * 请求参数
     */

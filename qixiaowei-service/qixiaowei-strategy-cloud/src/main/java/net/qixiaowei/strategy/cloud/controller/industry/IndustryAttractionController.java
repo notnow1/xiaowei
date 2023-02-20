@@ -35,7 +35,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 查询行业吸引力表详情
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:info")
+    //@RequiresPermissions("strategy:cloud:industryAttraction:info")
     @GetMapping("/info/{industryAttractionId}")
     public AjaxResult info(@PathVariable Long industryAttractionId){
     IndustryAttractionDTO industryAttractionDTO = industryAttractionService.selectIndustryAttractionByIndustryAttractionId(industryAttractionId);
@@ -45,7 +45,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 分页查询行业吸引力表列表
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:pageList")
+    //@RequiresPermissions("strategy:cloud:industryAttraction:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(IndustryAttractionDTO industryAttractionDTO){
     startPage();
@@ -56,7 +56,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 查询行业吸引力表列表
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:list")
+    //@RequiresPermissions("strategy:cloud:industryAttraction:list")
     @GetMapping("/list")
     public AjaxResult list(IndustryAttractionDTO industryAttractionDTO){
     List<IndustryAttractionDTO> list = industryAttractionService.selectIndustryAttractionList(industryAttractionDTO);
@@ -67,7 +67,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 新增行业吸引力表
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:add")
+    //@RequiresPermissions("strategy:cloud:industryAttraction:add")
     @Log(title = "新增行业吸引力表", businessType = BusinessType.INDUSTRY_ATTRACTION, businessId = "industryAttractionId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody IndustryAttractionDTO industryAttractionDTO) {
@@ -78,7 +78,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 修改行业吸引力表
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:edit")
+    //@RequiresPermissions("strategy:cloud:industryAttraction:edit")
     @Log(title = "修改行业吸引力表", businessType = BusinessType.INDUSTRY_ATTRACTION, businessId = "industryAttractionId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody IndustryAttractionDTO industryAttractionDTO)
@@ -89,7 +89,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 逻辑删除行业吸引力表
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:remove")
+    //@RequiresPermissions("strategy:cloud:industryAttraction:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody IndustryAttractionDTO industryAttractionDTO)
     {
@@ -98,7 +98,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 逻辑批量删除行业吸引力表
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:removes")
+    //@RequiresPermissions("strategy:cloud:industryAttraction:removes")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  industryAttractionIds)
     {

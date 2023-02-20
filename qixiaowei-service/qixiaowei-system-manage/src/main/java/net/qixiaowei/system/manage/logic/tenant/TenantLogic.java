@@ -23,7 +23,7 @@ import net.qixiaowei.integration.tenant.utils.TenantUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
-import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttraction;
+import net.qixiaowei.strategy.cloud.api.remote.industry.RemoteIndustryAttractionService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
 import net.qixiaowei.system.manage.api.domain.basic.DictionaryType;
@@ -130,6 +130,8 @@ public class TenantLogic {
 
     @Autowired
     private RemoteSalaryItemService remoteSalaryItemService;
+    @Autowired
+    private RemoteIndustryAttractionService remoteIndustryAttractionService;
 
     @Autowired
     private RemoteBacklogService remoteBacklogService;
@@ -490,7 +492,7 @@ public class TenantLogic {
     }
     public boolean initIndustryAttraction() {
         boolean initSalaryItem = true;
-        R<Boolean> booleanR = remoteSalaryItemService.initSalaryItem(SecurityConstants.INNER);
+        R<Boolean> booleanR = remoteIndustryAttractionService.initIndustryAttraction(SecurityConstants.INNER);
         if (R.SUCCESS != booleanR.getCode()) {
             initSalaryItem = false;
         } else {

@@ -224,6 +224,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
      * @param fieldListConfigDtos 字段列表配置表对象
      */
 
+    @Override
     public int insertFieldListConfigs(List<FieldListConfigDTO> fieldListConfigDtos) {
         List<FieldListConfig> fieldListConfigList = new ArrayList();
 
@@ -246,6 +247,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
      * @param fieldListConfigDtos 字段列表配置表对象
      */
 
+    @Override
     public int updateFieldListConfigs(List<FieldListConfigDTO> fieldListConfigDtos) {
         List<FieldListConfig> fieldListConfigList = new ArrayList<>();
         int sort = 0;

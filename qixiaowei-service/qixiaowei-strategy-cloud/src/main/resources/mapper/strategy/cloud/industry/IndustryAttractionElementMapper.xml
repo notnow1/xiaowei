@@ -69,6 +69,29 @@
                             and update_time=#{industryAttractionElement.updateTime}
                         </if>
     </select>
+<!--    根据行业吸引力主表id查询行业吸引力要素表-->
+    <select id="selectIndustryAttractionElementByIndustryAttractionId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
+        SELECT
+            industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM industry_attraction_element
+        WHERE  industry_attraction_id=#{industryAttractionId}
+          and delete_flag=0
+    </select>
+<!--    根据行业吸引力主表id集合批量查询行业吸引力要素表-->
+    <select id="selectIndustryAttractionElementByIndustryAttractionIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO">
+        SELECT
+        industry_attraction_element_id,industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM industry_attraction_element
+        WHERE  industry_attraction_id in
+        <foreach item="item"
+                 collection="industryAttractionIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增行业吸引力要素表-->
     <insert id="insertIndustryAttractionElement" useGeneratedKeys="true" keyProperty="industryAttractionElementId">
         INSERT INTO industry_attraction_element (industry_attraction_id,assess_standard_name,assess_standard_description,display_color,sort,status,delete_flag,create_by,create_time,update_by,update_time)

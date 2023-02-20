@@ -276,6 +276,7 @@ public class UserConfigServiceImpl implements IUserConfigService {
      * @param userConfigDtos 用户配置表对象
      */
 
+    @Override
     public int insertUserConfigs(List<UserConfigDTO> userConfigDtos) {
         List<UserConfig> userConfigList = new ArrayList();
 
@@ -298,6 +299,7 @@ public class UserConfigServiceImpl implements IUserConfigService {
      * @param userConfigDtos 用户配置表对象
      */
 
+    @Override
     public int updateUserConfigs(List<UserConfigDTO> userConfigDtos) {
         List<UserConfig> userConfigList = new ArrayList();
 
