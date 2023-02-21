@@ -32,17 +32,17 @@ public class EmpSalaryAdjustPlanFieldListConfigImpl implements IFieldListConfigS
         INIT_MAP.put(EmpSalaryAdjustPlanField.EMPLOYMENT_DATE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmpSalaryAdjustPlanField.SENIORITY.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmpSalaryAdjustPlanField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
 //        INIT_MAP.put(EmpSalaryAdjustPlanField.DEPARTMENT_LEADER_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.POST_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_POST_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.OFFICIAL_RANK.getCode(), FieldListConfig.builder().fieldWidth(120).sort(10).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_OFFICIAL_RANK.getCode(), FieldListConfig.builder().fieldWidth(120).sort(11).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.BASIC_WAGE.getCode(), FieldListConfig.builder().fieldWidth(130).sort(12).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_EMOLUMENT.getCode(), FieldListConfig.builder().fieldWidth(130).sort(13).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmpSalaryAdjustPlanField.EFFECTIVE_DATE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(14).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.POST_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_POST_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldListConfig.builder().fieldWidth(150).sort(10).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.OFFICIAL_RANK.getCode(), FieldListConfig.builder().fieldWidth(120).sort(11).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_OFFICIAL_RANK.getCode(), FieldListConfig.builder().fieldWidth(120).sort(12).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.BASIC_WAGE.getCode(), FieldListConfig.builder().fieldWidth(130).sort(13).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.ADJUST_EMOLUMENT.getCode(), FieldListConfig.builder().fieldWidth(150).sort(14).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmpSalaryAdjustPlanField.EFFECTIVE_DATE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(15).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 

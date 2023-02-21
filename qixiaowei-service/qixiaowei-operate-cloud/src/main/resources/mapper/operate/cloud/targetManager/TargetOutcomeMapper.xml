@@ -47,8 +47,8 @@
         <if test="targetOutcome.updateBy != null">
             and update_by=#{targetOutcome.updateBy}
         </if>
-        <if test="targetOutcome.updateTime != null">
-            and update_time=#{targetOutcome.updateTime}
+        <if test="targetOutcome.createTime != null">
+            and DATE_FORMAT( create_time, '%Y%m%d' ) = DATE_FORMAT( #{targetOutcome.createTime}, '%Y%m%d' )
         </if>
         <if test="targetOutcome.params.createTimeStart != null and targetOutcome.params.createTimeEnd != null ">
             and create_time &gt; #{targetOutcome.params.createTimeStart}

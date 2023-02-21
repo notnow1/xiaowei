@@ -267,11 +267,31 @@
             AND date_format(ess.employment_date,'%y%m%d') &lt;=
             date_format(#{empSalaryAdjustPlan.params.employmentDateEnd},'%y%m%d')
         </if>
-        <!--    司龄-->
+        <!--    入职时间-->
         <if test="empSalaryAdjustPlan.params.employmentDateEqual != null and empSalaryAdjustPlan.params.employmentDateEqual.size() > 0">
             AND ess.employment_date IN
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employmentDateEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="empSalaryAdjustPlan.params.employmentDateNotEqual != null and empSalaryAdjustPlan.params.employmentDateNotEqual.size() > 0">
+            AND (ess.employment_date NOT IN
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.employmentDateNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ess.employment_date IS NULL
+            )
+        </if>
+        <!--司龄seniority-->
+        <if test="empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0">
+            AND ess.employment_date
+            DATE_SUB(SYSDATE(),INTERVAL 1 day)
+            <foreach item="item"
+                     collection="empSalaryAdjustPlan.params.workingAgeEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -668,6 +688,7 @@
         WHERE esp.delete_flag=0
         AND esp.status != 0
         AND esp.employee_id = #{employeeId}
+        AND esp.effective_date &lt;= now()
     </select>
     <select id="selectByEmployeeIds"
             resultType="net.qixiaowei.operate.cloud.api.dto.salary.EmpSalaryAdjustPlanDTO">

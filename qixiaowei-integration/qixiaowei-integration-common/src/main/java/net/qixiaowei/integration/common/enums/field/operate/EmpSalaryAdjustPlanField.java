@@ -10,7 +10,7 @@ public enum EmpSalaryAdjustPlanField {
     ADJUST_DEPARTMENT_ID("adjust_department_id", "调整后部门"),
     POST_ID("post_id", "原岗位"),
     ADJUST_POST_ID("adjust_post_id", "调整后岗位"),
-    OFFICIAL_RANK_SYSTEM_ID("rank_system_id", "原职级体系"),
+    OFFICIAL_RANK_SYSTEM_ID("official_rank_system_id", "原职级体系"),
     ADJUST_OFFICIAL_RANK_SYSTEM_ID("adjust_official_rank_system_id", "调整后职级体系"),
     OFFICIAL_RANK("official_rank", "原职级"),
     ADJUST_OFFICIAL_RANK("adjust_official_rank", "调整职级"),
