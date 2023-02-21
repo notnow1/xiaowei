@@ -903,15 +903,16 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     if (departmentName.find() && officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         emolumentPlanDTOList.add(budgetDetailsDTO);
                     }
-                }
-                if (StringUtils.isNotNull(departmentName1)) {
-                    if (departmentName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        emolumentPlanDTOList.add(budgetDetailsDTO);
+                }else {
+                    if (StringUtils.isNotNull(departmentName1)) {
+                        if (departmentName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                            emolumentPlanDTOList.add(budgetDetailsDTO);
+                        }
                     }
-                }
-                if (StringUtils.isNotNull(officialRankSystemName1)) {
-                    if (officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        emolumentPlanDTOList.add(budgetDetailsDTO);
+                    if (StringUtils.isNotNull(officialRankSystemName1)) {
+                        if (officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                            emolumentPlanDTOList.add(budgetDetailsDTO);
+                        }
                     }
                 }
             }

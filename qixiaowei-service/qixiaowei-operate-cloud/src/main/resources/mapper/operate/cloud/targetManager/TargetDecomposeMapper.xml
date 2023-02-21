@@ -216,7 +216,7 @@
             AND td.target_year &gt;= #{targetDecompose.params.targetYearStart}
         </if>
         <if test="targetDecompose.params.targetYearEnd != null and targetDecompose.params.targetYearEnd != ''"><!-- 结束时间检索 -->
-            AND td.target_year &lt;= #{targetDecompose.params.annualBonusYearEnd}
+            AND td.target_year &lt;= #{targetDecompose.params.targetYearEnd}
         </if>
         <!-- 指标名称过滤  -->
         <if test="targetDecompose.params.indicatorNameEqual != null">
