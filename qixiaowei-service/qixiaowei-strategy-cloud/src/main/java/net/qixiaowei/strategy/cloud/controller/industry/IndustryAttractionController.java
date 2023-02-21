@@ -9,7 +9,9 @@ import net.qixiaowei.integration.log.enums.OperationType;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
+import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +37,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 查询行业吸引力表详情
     */
-    //@RequiresPermissions("strategy:cloud:industryAttraction:info")
+    @RequiresPermissions("strategy:cloud:industryAttraction:info")
     @GetMapping("/info/{industryAttractionId}")
     public AjaxResult info(@PathVariable Long industryAttractionId){
     IndustryAttractionDTO industryAttractionDTO = industryAttractionService.selectIndustryAttractionByIndustryAttractionId(industryAttractionId);
@@ -45,7 +47,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 分页查询行业吸引力表列表
     */
-    //@RequiresPermissions("strategy:cloud:industryAttraction:pageList")
+    @RequiresPermissions("strategy:cloud:industryAttraction:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(IndustryAttractionDTO industryAttractionDTO){
     startPage();
@@ -56,7 +58,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 查询行业吸引力表列表
     */
-    //@RequiresPermissions("strategy:cloud:industryAttraction:list")
+    @RequiresPermissions("strategy:cloud:industryAttraction:list")
     @GetMapping("/list")
     public AjaxResult list(IndustryAttractionDTO industryAttractionDTO){
     List<IndustryAttractionDTO> list = industryAttractionService.selectIndustryAttractionList(industryAttractionDTO);
@@ -67,10 +69,10 @@ public class IndustryAttractionController extends BaseController
     /**
     * 新增行业吸引力表
     */
-    //@RequiresPermissions("strategy:cloud:industryAttraction:add")
+    @RequiresPermissions("strategy:cloud:industryAttraction:add")
     @Log(title = "新增行业吸引力表", businessType = BusinessType.INDUSTRY_ATTRACTION, businessId = "industryAttractionId", operationType = OperationType.INSERT)
     @PostMapping("/add")
-    public AjaxResult addSave(@RequestBody IndustryAttractionDTO industryAttractionDTO) {
+    public AjaxResult addSave(@RequestBody @Validated(IndustryAttractionDTO.AddIndustryAttractionDTO.class) IndustryAttractionDTO industryAttractionDTO) {
     return AjaxResult.success(industryAttractionService.insertIndustryAttraction(industryAttractionDTO));
     }
 
@@ -78,10 +80,10 @@ public class IndustryAttractionController extends BaseController
     /**
     * 修改行业吸引力表
     */
-    //@RequiresPermissions("strategy:cloud:industryAttraction:edit")
+    @RequiresPermissions("strategy:cloud:industryAttraction:edit")
     @Log(title = "修改行业吸引力表", businessType = BusinessType.INDUSTRY_ATTRACTION, businessId = "industryAttractionId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
-    public AjaxResult editSave(@RequestBody IndustryAttractionDTO industryAttractionDTO)
+    public AjaxResult editSave(@RequestBody @Validated(IndustryAttractionDTO.UpdateIndustryAttractionDTO.class)IndustryAttractionDTO industryAttractionDTO)
     {
     return toAjax(industryAttractionService.updateIndustryAttraction(industryAttractionDTO));
     }
@@ -89,16 +91,16 @@ public class IndustryAttractionController extends BaseController
     /**
     * 逻辑删除行业吸引力表
     */
-    //@RequiresPermissions("strategy:cloud:industryAttraction:remove")
+    @RequiresPermissions("strategy:cloud:industryAttraction:remove")
     @PostMapping("/remove")
-    public AjaxResult remove(@RequestBody IndustryAttractionDTO industryAttractionDTO)
+    public AjaxResult remove(@RequestBody @Validated(IndustryAttractionDTO.DeleteIndustryAttractionDTO.class) IndustryAttractionDTO industryAttractionDTO)
     {
     return toAjax(industryAttractionService.logicDeleteIndustryAttractionByIndustryAttractionId(industryAttractionDTO));
     }
     /**
     * 逻辑批量删除行业吸引力表
     */
-    //@RequiresPermissions("strategy:cloud:industryAttraction:removes")
+    @RequiresPermissions("strategy:cloud:industryAttraction:removes")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  industryAttractionIds)
     {
