@@ -52,7 +52,7 @@ public class BonusPayApplicationController extends BaseController {
     @RequiresPermissions(value = {"operate:cloud:bonusPayApplication:add", "operate:cloud:bonusPayApplication:edit"}, logical = Logical.OR)
     @GetMapping("/generate/awardCode")
     public AjaxResult generateAwardCode() {
-        return AjaxResult.success(bonusPayApplicationService.generateAwardCode());
+        return AjaxResult.success("操作成功",bonusPayApplicationService.generateAwardCode());
     }
 
     /**

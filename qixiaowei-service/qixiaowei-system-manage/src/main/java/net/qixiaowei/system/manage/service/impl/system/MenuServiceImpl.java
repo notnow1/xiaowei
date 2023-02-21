@@ -71,6 +71,24 @@ public class MenuServiceImpl implements IMenuService {
     }
 
     /**
+     * 查询所有菜单ID集合
+     *
+     * @param filterAdmin 是否过滤管理菜单
+     * @return 菜单表集合
+     */
+    @Override
+    public Set<Long> selectMenuIdsAll(boolean filterAdmin) {
+        Set<Long> menuIds = menuMapper.selectMenuIdsAll();
+        if (StringUtils.isNotEmpty(menuIds) && filterAdmin) {
+            Set<Long> adminMenuIds = tenantConfig.getAdminMenuIds();
+            if(StringUtils.isNotEmpty(adminMenuIds)){
+                menuIds.removeAll(adminMenuIds);
+            }
+        }
+        return menuIds;
+    }
+
+    /**
      * 查询菜单表
      *
      * @param menuId 菜单表主键

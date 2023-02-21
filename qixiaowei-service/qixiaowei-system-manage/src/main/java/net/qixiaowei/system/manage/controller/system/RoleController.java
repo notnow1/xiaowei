@@ -55,7 +55,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions(value = {"system:manage:role:add", "system:manage:role:edit"}, logical = Logical.OR)
     @GetMapping("/generate/roleCode")
     public AjaxResult generateRoleCode() {
-        return AjaxResult.success(roleService.generateRoleCode());
+        return AjaxResult.success("操作成功",roleService.generateRoleCode());
     }
 
     /**

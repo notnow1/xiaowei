@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.service.impl.tenant;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import net.qixiaowei.integration.common.config.FileConfig;
 import net.qixiaowei.integration.common.constant.BusinessConstants;
 import net.qixiaowei.integration.common.constant.CacheConstants;
@@ -201,9 +202,7 @@ public class TenantServiceImpl implements ITenantService {
     public TenantDTO insertTenant(TenantDTO tenantDTO) {
         String domain = tenantDTO.getDomain();
         String tenantCode = tenantDTO.getTenantCode();
-        if (tenantConfig.getExistedDomains().contains(domain)) {
-            throw new ServiceException("保存失败:域名[" + domain + "]已经被占用!");
-        }
+        this.checkDomain(domain);
         TenantDTO selectTenantByTenantCode = tenantMapper.selectTenantByTenantCode(tenantCode);
         if (StringUtils.isNotNull(selectTenantByTenantCode)) {
             throw new ServiceException("保存失败:租户编码[" + tenantCode + "]已存在。");
@@ -240,21 +239,19 @@ public class TenantServiceImpl implements ITenantService {
         return tenantDTO;
     }
 
+    /**
+     * @description: 注册租户用户
+     * @Author: hzk
+     * @date: 2023/2/21 15:39
+     * @param: [tenantDTO]
+     * @return: net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO
+     **/
     @Override
     public TenantRegisterResponseVO registerUserInfo(TenantDTO tenantDTO) {
         //租户
-        String domain = tenantDTO.getAdminAccount();
+        String domain = this.getDomain();
         //找到客服人员
-        String supportStaffMobile = tenantConfig.getSupportStaffMobile();
-        UserDTO userDTO = userMapper.selectUserByUserAccount(supportStaffMobile);
-        if (StringUtils.isNull(userDTO)) {
-            throw new ServiceException("您本次的系统注册失败，请联系客服查询原因。");
-        }
-        Long employeeId = userDTO.getEmployeeId();
-        if (StringUtils.isNull(employeeId)) {
-            throw new ServiceException("您本次的系统注册失败，请联系客服查询原因。");
-        }
-        String supportStaff = employeeId.toString();
+        String supportStaff = this.getSupportStaff();
         String tenantCode = this.generateTenantCode();
         Tenant tenant = new Tenant();
         Long userId = SecurityUtils.getUserId();
@@ -271,21 +268,8 @@ public class TenantServiceImpl implements ITenantService {
         //插入租户
         tenantMapper.insertTenant(tenant);
         Long tenantId = tenant.getTenantId();
-        //初始化合同
-        TenantContractDTO tenantContractDTO = new TenantContractDTO();
-        //申请日期（YYMMDDHHmmss）
-        String salesContractNo = DateUtils.dateTimeNow();
-        //需要初始化的菜单 todo
-        Set<Long> menuIds=new HashSet<>();
-        //用户成功申请日期起，至后续7个自然日止。
-        Date contractEndTime = DateUtils.addDays(nowDate, tenantConfig.getTrialDays());
-        tenantContractDTO.setMenuIds(menuIds);
-        tenantContractDTO.setSalesContractNo(salesContractNo);
-        tenantContractDTO.setSalesPersonnel("官网试用");
-        tenantContractDTO.setContractAmount(BigDecimal.ZERO);
-        tenantContractDTO.setContractStartTime(nowDate);
-        tenantContractDTO.setContractEndTime(contractEndTime);
-        List<TenantContractDTO> tenantContractDTOList = Collections.singletonList(tenantContractDTO);
+        //构建试用合同
+        List<TenantContractDTO> tenantContractDTOList = this.getTenantContractS(nowDate);
         Set<Long> initMenuIds = this.saveTenantContract(tenantContractDTOList, tenantId, userId, nowDate);
         //初始化租户数据
         Boolean initSuccess = tenantLogic.initTenantData(tenant, initMenuIds);
@@ -334,13 +318,13 @@ public class TenantServiceImpl implements ITenantService {
     @Override
     public int updateTenant(TenantDTO tenantDTO) {
         String domain = tenantDTO.getDomain();
-        if (tenantConfig.getExistedDomains().contains(domain)) {
-            throw new ServiceException("修改租户失败:域名[" + domain + "]已经被占用!");
-        }
         Long tenantId = tenantDTO.getTenantId();
         TenantDTO tenantOfDB = tenantMapper.selectTenantByTenantId(tenantId);
         if (StringUtils.isNull(tenantOfDB)) {
             throw new ServiceException("修改租户失败:找不到该租户!");
+        }
+        if (!StringUtils.equals(domain, tenantOfDB.getDomain())) {
+            this.checkDomain(domain);
         }
         String tenantCode = tenantDTO.getTenantCode();
         if (StringUtils.isNotEmpty(tenantCode) && !tenantCode.equals(tenantOfDB.getTenantCode())) {
@@ -684,9 +668,7 @@ public class TenantServiceImpl implements ITenantService {
         //查询是否有待审核的，没有待审核的才能修改
         Integer countTenantDomainApprovalByWaiting = tenantDomainApprovalMapper.countTenantDomainApprovalByWaiting(tenantId);
         if (countTenantDomainApprovalByWaiting == 0 && !StringUtils.equals(tenantByDB.getDomain(), domain)) {
-            if (tenantConfig.getExistedDomains().contains(domain)) {
-                throw new ServiceException("修改企业信息失败:域名[" + domain + "]已经被占用!");
-            }
+            this.checkDomain(domain);
             //对比域名是否修改 修改需要保存到域名申请表中
             TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
             //租户id
@@ -983,6 +965,88 @@ public class TenantServiceImpl implements ITenantService {
             }
         }
         return containContractTime;
+    }
+
+    /**
+     * @description: 构建试用合同
+     * @Author: hzk
+     * @date: 2023/2/21 15:35
+     * @param: [nowDate]
+     * @return: java.util.List<net.qixiaowei.system.manage.api.dto.tenant.TenantContractDTO>
+     **/
+    private List<TenantContractDTO> getTenantContractS(Date nowDate) {
+        //初始化合同
+        TenantContractDTO tenantContractDTO = new TenantContractDTO();
+        //申请日期（YYMMDDHHmmss）
+        String salesContractNo = DateUtils.dateTimeNow();
+        //需要初始化的菜单
+        Set<Long> menuIds = menuService.selectMenuIdsAll(true);
+        //用户成功申请日期起，至后续7个自然日止。
+        Date contractEndTime = DateUtils.addDays(nowDate, Optional.ofNullable(tenantConfig.getTrialDays()).orElse(7));
+        tenantContractDTO.setMenuIds(menuIds);
+        tenantContractDTO.setSalesContractNo(salesContractNo);
+        tenantContractDTO.setSalesPersonnel("官网试用");
+        tenantContractDTO.setContractAmount(BigDecimal.ZERO);
+        tenantContractDTO.setContractStartTime(nowDate);
+        tenantContractDTO.setContractEndTime(contractEndTime);
+        return Collections.singletonList(tenantContractDTO);
+    }
+
+    /**
+     * @description: 获取系统客服人员
+     * @Author: hzk
+     * @date: 2023/2/21 15:38
+     * @param: []
+     * @return: java.lang.String
+     **/
+    private String getSupportStaff() {
+        String supportStaffMobile = tenantConfig.getSupportStaffMobile();
+        UserDTO userDTO = userMapper.selectUserByUserAccount(supportStaffMobile);
+        if (StringUtils.isNull(userDTO)) {
+            throw new ServiceException("您本次的系统注册失败，请联系客服查询原因。");
+        }
+        Long employeeId = userDTO.getEmployeeId();
+        if (StringUtils.isNull(employeeId)) {
+            throw new ServiceException("您本次的系统注册失败，请联系客服查询原因。");
+        }
+        return employeeId.toString();
+    }
+
+    /**
+     * @description: 生成域名
+     * @Author: hzk
+     * @date: 2023/2/21 16:09
+     * @param: []
+     * @return: java.lang.String
+     **/
+    private String getDomain() {
+        String domain = RandomUtil.randomString(RandomUtil.BASE_CHAR, 8);
+        TenantDTO tenantByDomain;
+        do {
+            tenantByDomain = tenantMapper.selectTenantByDomain(domain);
+            if (StringUtils.isNotNull(tenantByDomain)) {
+                domain = RandomUtil.randomString(RandomUtil.BASE_CHAR, 8);
+            }
+        } while (StringUtils.isNotNull(tenantByDomain));
+        return domain;
+    }
+
+    /**
+     * @description: 校验域名
+     * @Author: hzk
+     * @date: 2023/2/21 16:34
+     * @param: [domain]
+     * @return: void
+     **/
+    private void checkDomain(String domain) {
+        if (tenantConfig.getExistedDomains().contains(domain)) {
+            throw new ServiceException("域名[" + domain + "]已经被占用!");
+        }
+        TenantDTO tenantByDomain = tenantMapper.selectTenantByDomain(domain);
+        if (StringUtils.isNotNull(tenantByDomain)) {
+            throw new ServiceException("域名[" + domain + "]已经被占用!");
+
+        }
     }
 }
 

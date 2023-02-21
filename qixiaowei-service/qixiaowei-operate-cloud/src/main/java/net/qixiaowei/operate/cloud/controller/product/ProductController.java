@@ -129,7 +129,7 @@ public class ProductController extends BaseController {
     @RequiresPermissions(value = {"operate:cloud:product:add", "operate:cloud:product:edit"}, logical = Logical.OR)
     @GetMapping("/generate/productCode")
     public AjaxResult generateProductCode() {
-        return AjaxResult.success(productService.generateProductCode());
+        return AjaxResult.success("操作成功",productService.generateProductCode());
     }
 
     /**

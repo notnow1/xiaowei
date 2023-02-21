@@ -90,7 +90,7 @@ public class PostController extends BaseController {
     @RequiresPermissions(value = {"system:manage:post:add", "system:manage:post:edit"}, logical = Logical.OR)
     @GetMapping("/generate/postCode")
     public AjaxResult generatePostCode() {
-        return AjaxResult.success(postService.generatePostCode());
+        return AjaxResult.success("操作成功",postService.generatePostCode());
     }
 
     /**

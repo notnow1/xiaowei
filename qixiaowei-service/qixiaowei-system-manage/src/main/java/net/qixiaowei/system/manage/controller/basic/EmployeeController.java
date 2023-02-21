@@ -86,7 +86,7 @@ public class EmployeeController extends BaseController {
     @RequiresPermissions(value = {"system:manage:employee:add", "system:manage:employee:edit"}, logical = Logical.OR)
     @GetMapping("/generate/employeeCode")
     public AjaxResult generateEmployeeCode() {
-        return AjaxResult.success(employeeService.generateEmployeeCode());
+        return AjaxResult.success("操作成功",employeeService.generateEmployeeCode());
     }
 
     /**
