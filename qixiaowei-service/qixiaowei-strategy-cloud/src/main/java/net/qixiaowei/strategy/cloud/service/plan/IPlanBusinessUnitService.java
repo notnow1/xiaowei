@@ -101,4 +101,10 @@ public interface IPlanBusinessUnitService {
      */
     int deletePlanBusinessUnitByPlanBusinessUnitId(Long planBusinessUnitId);
 
+    /**
+     * 生成规划业务单元编码
+     *
+     * @return String
+     */
+    String generatePlanBusinessUnitCode();
 }

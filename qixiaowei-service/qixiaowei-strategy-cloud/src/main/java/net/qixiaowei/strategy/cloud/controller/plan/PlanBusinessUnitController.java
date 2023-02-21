@@ -5,6 +5,7 @@ import java.util.List;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -121,5 +122,15 @@ public class PlanBusinessUnitController extends BaseController {
         return toAjax(planBusinessUnitService.logicDeletePlanBusinessUnitByPlanBusinessUnitIds(planBusinessUnitIds));
     }
 
+    /**
+     * 生成规划业务单元编码
+     *
+     * @return 规划业务单元编码
+     */
+    @RequiresPermissions(value = {"strategy:cloud:planBusinessUnit:add", "strategy:cloud:planBusinessUnit:edit"}, logical = Logical.OR)
+    @GetMapping("/generate/planBusinessUnitCode")
+    public AjaxResult generatePlanBusinessUnitCode() {
+        return AjaxResult.success("操作成功", planBusinessUnitService.generatePlanBusinessUnitCode());
+    }
 
 }

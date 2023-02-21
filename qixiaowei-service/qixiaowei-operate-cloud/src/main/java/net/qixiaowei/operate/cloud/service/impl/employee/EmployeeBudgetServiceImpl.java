@@ -900,7 +900,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     officialRankSystemName = pattern1.matcher(budgetDetailsDTO.getOfficialRankSystemName());
                 }
                 if (StringUtils.isNotNull(departmentName1) && StringUtils.isNotNull(officialRankSystemName1)) {
-                    if (departmentName.find() || officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                    if (departmentName.find() && officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         emolumentPlanDTOList.add(budgetDetailsDTO);
                     }
                 }

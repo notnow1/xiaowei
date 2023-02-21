@@ -2,6 +2,7 @@ package net.qixiaowei.strategy.cloud.service.impl.plan;
 
 import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
+import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -220,6 +221,41 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
     @Override
     public int deletePlanBusinessUnitByPlanBusinessUnitId(Long planBusinessUnitId) {
         return planBusinessUnitMapper.deletePlanBusinessUnitByPlanBusinessUnitId(planBusinessUnitId);
+    }
+
+    /**
+     * 生成规划业务单元编码
+     *
+     * @return String
+     */
+    @Override
+    public String generatePlanBusinessUnitCode() {
+        String planBusinessUnitCode;
+        int number = 1;
+        String prefixCodeRule = PrefixCodeRule.PLAN_BUSINESS_UNIT.getCode();
+        List<String> planBusinessUnitCodes = planBusinessUnitMapper.getPlanBusinessUnitCode(prefixCodeRule);
+        if (StringUtils.isNotEmpty(planBusinessUnitCodes)) {
+            for (String code : planBusinessUnitCodes) {
+                if (StringUtils.isEmpty(code) || code.length() != 5) {
+                    continue;
+                }
+                code = code.replaceFirst(prefixCodeRule, "");
+                try {
+                    int codeOfNumber = Integer.parseInt(code);
+                    if (number != codeOfNumber) {
+                        break;
+                    }
+                    number++;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        if (number > 1000) {
+            throw new ServiceException("流水号溢出，请联系管理员");
+        }
+        planBusinessUnitCode = "000" + number;
+        planBusinessUnitCode = prefixCodeRule + planBusinessUnitCode.substring(planBusinessUnitCode.length() - 3);
+        return planBusinessUnitCode;
     }
 
     /**

@@ -80,6 +80,12 @@
             and business_unit_decompose=#{planBusinessUnit.businessUnitDecompose}
         </if>
     </select>
+    <!--查询规划业务单元编码集合-->
+    <select id="getPlanBusinessUnitCode" resultType="java.lang.String">
+        SELECT
+        business_unit_code FROM plan_business_unit WHERE delete_flag=0 AND business_unit_code LIKE
+        CONCAT(#{prefixCodeRule},'%') ORDER BY business_unit_code ASC
+    </select>
     <!--新增规划业务单元-->
     <insert id="insertPlanBusinessUnit" useGeneratedKeys="true" keyProperty="planBusinessUnitId">
         INSERT INTO plan_business_unit

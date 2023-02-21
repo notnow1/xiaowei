@@ -225,12 +225,10 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      */
     private void getRemoteIds(Map<String, Object> params, List<Long> employeeIds) {
         Map<String, Object> params2 = new HashMap<>();
-        Map<String, Object> params3 = new HashMap<>();
-        Map<String, Object> params4 = new HashMap<>();
         for (String key : params.keySet()) {
             switch (key) {
                 case "employeeNameEqual":
-                    params2.put("employeeNameEqual", params.get("employeeNameNotEqual"));
+                    params2.put("employeeNameEqual", params.get("employeeNameEqual"));
                     break;
                 case "employeeNameNotEqual":
                     params2.put("employeeNameNotEqual", params.get("employeeNameNotEqual"));
@@ -242,7 +240,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
                     params2.put("employeeNameNotLike", params.get("employeeNameNotLike"));
                     break;
                 case "employeeCodeEqual":
-                    params2.put("employeeCodeEqual", params.get("employeeCodeNotEqual"));
+                    params2.put("employeeCodeEqual", params.get("employeeCodeEqual"));
                     break;
                 case "employeeCodeNotEqual":
                     params2.put("employeeCodeNotEqual", params.get("employeeCodeNotEqual"));
@@ -268,7 +266,7 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
             }
         }
         // 人员
-        if (StringUtils.isEmpty(params2)) {
+        if (StringUtils.isNotEmpty(params2)) {
             List<EmployeeDTO> employeeDTOS = empAdvancedSearch(params2);
             if (StringUtils.isNotEmpty(employeeDTOS)) {
                 employeeIds = employeeDTOS.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());

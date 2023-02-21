@@ -73,7 +73,6 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
 
     /**
      * 查询工资项列表
-     * todo 正在做
      *
      * @param salaryItemDTO 工资项
      * @return 工资项
@@ -94,7 +93,7 @@ public class SalaryItemServiceImpl implements ISalaryItemService {
     /**
      * 为一级工资二级工资附名称
      *
-     * @param itemDTO
+     * @param itemDTO 项目
      */
     @Override
     public void salarySetName(SalaryItemDTO itemDTO) {

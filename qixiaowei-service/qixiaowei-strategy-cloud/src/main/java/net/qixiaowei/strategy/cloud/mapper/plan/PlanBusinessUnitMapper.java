@@ -112,4 +112,12 @@ public interface PlanBusinessUnitMapper {
      * @return list
      */
     List<PlanBusinessUnitDTO> selectPlanBusinessUnitRepeat(@Param("planBusinessUnit") PlanBusinessUnit planBusinessUnit);
+
+    /**
+     * 查询规划业务单元编码集合
+     *
+     * @param prefixCodeRule 编码规则
+     * @return List
+     */
+    List<String> getPlanBusinessUnitCode(@Param("prefixCodeRule") String prefixCodeRule);
 }

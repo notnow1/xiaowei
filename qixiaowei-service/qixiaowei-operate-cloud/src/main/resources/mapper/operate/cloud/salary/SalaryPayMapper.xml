@@ -141,6 +141,106 @@
         <if test="salaryPay.updateTime != null">
             and update_time=#{salaryPay.updateTime}
         </if>
+        <!--发薪年月-->
+        <if test="salaryPay.params.payTimeEqual != null and salaryPay.params.payTimeEqual.size() > 0">
+            AND (CASE
+            WHEN pay_month &gt; 9 THEN
+            CONCAT( pay_year, "/", pay_month )
+            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) IN
+            <foreach item="item"
+                     collection="salaryPay.params.payTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="salaryPay.params.payTimeNotEqual != null and salaryPay.params.payTimeNotEqual.size() > 0">
+            AND (CASE
+            WHEN pay_month &gt; 9 THEN
+            CONCAT( pay_year, "/", pay_month )
+            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) NOT IN
+            <foreach item="item"
+                     collection="salaryPay.params.payTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="salaryPay.params.payTimeBefore != null and salaryPay.params.payTimeBefore != ''">
+            AND (CASE
+            WHEN pay_month &gt; 9 THEN
+            CONCAT( pay_year, "/", pay_month )
+            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &lt;
+            #{salaryPay.params.payTimeBefore}
+        </if>
+        <if test="salaryPay.params.payTimeNotBefore != null and salaryPay.params.payTimeNotBefore != ''">
+            AND (CASE
+            WHEN pay_month &gt; 9 THEN
+            CONCAT( pay_year, "/", pay_month )
+            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &gt;=
+            #{salaryPay.params.payTimeNotBefore}
+        </if>
+        <if test="salaryPay.params.payTimeAfter != null and salaryPay.params.payTimeAfter != ''">
+            AND (CASE
+            WHEN pay_month &gt; 9 THEN
+            CONCAT( pay_year, "/", pay_month )
+            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &gt;
+            #{salaryPay.params.payTimeAfter}
+        </if>
+        <if test="salaryPay.params.payTimeNotAfter != null and salaryPay.params.payTimeNotAfter != ''">
+            AND (CASE
+            WHEN pay_month &gt; 9 THEN
+            CONCAT( pay_year, "/", pay_month )
+            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &lt;=
+            #{salaryPay.params.payTimeNotAfter}
+        </if>
+        <if test="salaryPay.params.payTimeStart != null and salaryPay.params.payTimeStart != ''">
+            AND (CASE
+            WHEN pay_month &gt; 9 THEN
+            CONCAT( pay_year, "/", pay_month )
+            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &gt;=
+            #{salaryPay.params.payTimeStart}
+        </if>
+        <if test="salaryPay.params.payTimeEnd != null and salaryPay.params.payTimeEnd != ''">
+            AND (CASE
+            WHEN pay_month &gt; 9 THEN
+            CONCAT( pay_year, "/", pay_month )
+            WHEN pay_month &lt; 10 THEN CONCAT( pay_year, "/0", pay_month ) END ) &lt;=
+            #{salaryPay.params.payTimeEnd}
+        </if>
+        <!--总计（工资+津贴+福利+奖金）-->
+        <if test="salaryPay.params.totalAmountEqual != null and salaryPay.params.totalAmountEqual.size() > 0">
+            AND IFNULL(salary_amount+allowance_amount+welfare_amount+bonus_amount,0) IN
+            <foreach item="item"
+                     collection="salaryPay.params.totalAmountEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="salaryPay.params.totalAmountNotEqual != null and salaryPay.params.totalAmountNotEqual.size() > 0">
+            AND IFNULL(salary_amount+allowance_amount+welfare_amount+bonus_amount,0) NOT IN
+            <foreach item="item"
+                     collection="salaryPay.params.totalAmountNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR IFNULL(salary_amount+allowance_amount+welfare_amount+bonus_amount,0) IS NULL
+            )
+        </if>
+        <if test="salaryPay.params.totalAmountGreaterThan != null and salaryPay.params.totalAmountGreaterThan != ''">
+            AND IFNULL(salary_amount+allowance_amount+welfare_amount+bonus_amount,0) &gt;
+            #{salaryPay.params.totalAmountGreaterThan}
+        </if>
+        <if test="salaryPay.params.totalAmountNotGreaterThan != null and salaryPay.params.totalAmountNotGreaterThan != ''">
+            AND IFNULL(salary_amount+allowance_amount+welfare_amount+bonus_amount,0) &lt;=
+            #{salaryPay.params.totalAmountNotGreaterThan}
+        </if>
+        <if test="salaryPay.params.totalAmountLessThan != null and salaryPay.params.totalAmountLessThan != ''">
+            AND IFNULL(salary_amount+allowance_amount+welfare_amount+bonus_amount,0) &lt;
+            #{salaryPay.params.totalAmountLessThan}
+        </if>
+        <if test="salaryPay.params.totalAmountNotLessThan != null and salaryPay.params.totalAmountNotLessThan != ''">
+            AND IFNULL(salary_amount+allowance_amount+welfare_amount+bonus_amount,0) &gt;=
+            #{salaryPay.params.totalAmountNotLessThan}
+        </if>
         <!--    员工高级搜索-->
         <if test="salaryPay.params.employeeIds != null and salaryPay.params.employeeIds.size() > 0">
             AND employee_id IN

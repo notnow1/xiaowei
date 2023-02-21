@@ -31,6 +31,8 @@ public enum PrefixCodeRule {
 
     BONUS_PAY_APPLICATION("JX", "JX+六位流水号，流水号起始值为000001，步长为1，断号自动补充"),
 
+    PLAN_BUSINESS_UNIT("GD", "GD+三位流水号，流水号起始值为001，步长为1，断号自动补充。"),
+
 
     ;
 
