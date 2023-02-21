@@ -57,6 +57,15 @@
                             and update_time=#{industryAttraction.updateTime}
                         </if>
     </select>
+<!--    根据行业吸引力要素名称查询行业吸引力表-->
+    <select id="selectIndustryAttractionByAttractionElementName"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO">
+        SELECT
+            industry_attraction_id,attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time
+        FROM industry_attraction
+        WHERE  attraction_element_name=#{attractionElementName}
+          and delete_flag=0
+    </select>
     <!--新增行业吸引力表-->
     <insert id="insertIndustryAttraction" useGeneratedKeys="true" keyProperty="industryAttractionId">
         INSERT INTO industry_attraction (attraction_element_name,status,delete_flag,create_by,create_time,update_by,update_time)

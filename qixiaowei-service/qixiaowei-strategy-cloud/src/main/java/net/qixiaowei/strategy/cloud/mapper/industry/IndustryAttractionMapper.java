@@ -20,7 +20,13 @@ public interface IndustryAttractionMapper{
     * @return 行业吸引力表
     */
     IndustryAttractionDTO selectIndustryAttractionByIndustryAttractionId(@Param("industryAttractionId")Long industryAttractionId);
-
+    /**
+     * 根据行业吸引力要素名称查询行业吸引力表
+     *
+     * @param attractionElementName 行业吸引力要素名称
+     * @return 行业吸引力表
+     */
+    IndustryAttractionDTO selectIndustryAttractionByAttractionElementName(@Param("attractionElementName")String attractionElementName);
 
     /**
     * 批量查询行业吸引力表

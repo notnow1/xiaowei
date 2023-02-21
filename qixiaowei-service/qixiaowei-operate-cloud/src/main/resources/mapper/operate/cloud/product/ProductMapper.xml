@@ -239,6 +239,10 @@
                     #{item}
                 </foreach>
             </if>
+            <!-- 产品类别过滤  -->
+            <if test="product.params.dictionaryDataIds == null">
+                AND  (p.product_category ='' or p.product_category is null)
+            </if>
         </if>
         <!-- 产品类别过滤  -->
         <if test="product.params.dictionaryLabelNotEqual != null">
@@ -250,6 +254,10 @@
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach> or (p.product_category ='' or p.product_category is null))
+            </if>
+            <!-- 产品类别过滤  -->
+            <if test="product.params.dictionaryDataIds == null">
+                AND  (p.product_category ='' or p.product_category is null)
             </if>
         </if>
         <!-- 产品状态过滤  -->

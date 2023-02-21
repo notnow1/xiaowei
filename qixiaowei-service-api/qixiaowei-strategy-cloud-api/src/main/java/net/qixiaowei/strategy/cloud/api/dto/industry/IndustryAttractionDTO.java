@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -40,14 +42,17 @@ public class IndustryAttractionDTO {
     /**
     * ID
     */
+    @NotNull(message = "id不能为空", groups = {IndustryAttractionDTO.UpdateIndustryAttractionDTO.class,IndustryAttractionDTO.DeleteIndustryAttractionDTO.class})
     private  Long industryAttractionId;
     /**
     * 行业吸引力要素名称
     */
+    @NotBlank(message = "行业吸引力要素名称不能为空", groups = {IndustryAttractionDTO.UpdateIndustryAttractionDTO.class,IndustryAttractionDTO.AddIndustryAttractionDTO.class})
     private  String attractionElementName;
     /**
     * 状态:0失效;1生效
     */
+    @NotNull(message = "状态不能为空", groups = {IndustryAttractionDTO.UpdateIndustryAttractionDTO.class,IndustryAttractionDTO.AddIndustryAttractionDTO.class})
     private  Integer status;
     /**
     * 删除标记:0未删除;1已删除

@@ -229,6 +229,10 @@
                     #{item}
                 </foreach>
             </if>
+            <!-- 指标名称过滤  -->
+            <if test="targetDecompose.params.indicatorIds == null">
+                AND  (td.indicator_id='' or td.indicator_id is null)
+            </if>
         </if>
         <!-- 指标名称过滤  -->
         <if test=" targetDecompose.params.indicatorNameNotEqual != null">
@@ -240,7 +244,12 @@
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
-            </if> or (td.indicator_id='' or td.indicator_id is null))
+                or (td.indicator_id='' or td.indicator_id is null))
+            </if>
+            <!-- 指标名称过滤  -->
+            <if test="targetDecompose.params.indicatorIds == null">
+                AND  (td.indicator_id='' or td.indicator_id is null)
+            </if>
         </if>
         <!-- 分解维度过滤  -->
         <if test="targetDecompose.params.targetDecomposeDimensionIdEqual != null and targetDecompose.params.targetDecomposeDimensionIdEqual.size() > 0">
