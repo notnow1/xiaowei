@@ -26,10 +26,12 @@ public class DashboardController extends BaseController {
     @Autowired
     private IDashboardService dashboardService;
 
+    //==============================关键经营仪表盘==================================//
+
     /**
      * 查询奖金预算表列表
      */
-    @RequiresPermissions("operate:cloud:dashboard:list")
+    @RequiresPermissions("operate:cloud:dashboard:target")
     @PostMapping("/targetAchieveRate/list")
     public AjaxResult targetAchieveRateList(@RequestBody TargetAchieveRateDTO targetAchieveRateDTO) {
         List<TargetAchieveRateDTO> list = dashboardService.targetAchieveRateList(targetAchieveRateDTO);
@@ -39,7 +41,7 @@ public class DashboardController extends BaseController {
     /**
      * 关键经营指标月度达成分析列表
      */
-    @RequiresPermissions("operate:cloud:dashboard:list")
+    @RequiresPermissions("operate:cloud:dashboard:target")
     @PostMapping("/targetAchieveAnalysis/list")
     public AjaxResult targetAchieveAnalysisList(@RequestBody TargetAchieveAnalysisDTO targetAchieveAnalysisDTO) {
         return AjaxResult.success(dashboardService.targetAchieveAnalysisList(targetAchieveAnalysisDTO));
@@ -48,7 +50,7 @@ public class DashboardController extends BaseController {
     /**
      * 关键经营指标排行榜
      */
-    @RequiresPermissions("operate:cloud:dashboard:list")
+    @RequiresPermissions("operate:cloud:dashboard:target")
     @PostMapping("/targetLeaderboard/list")
     public AjaxResult targetLeaderboardList(@RequestBody TargetLeaderboardDTO targetLeaderboardDTO) {
         return AjaxResult.success(dashboardService.targetLeaderboardList(targetLeaderboardDTO));
@@ -57,7 +59,7 @@ public class DashboardController extends BaseController {
     /**
      * 目标达成获取指标下拉列表
      */
-    @RequiresPermissions("operate:cloud:dashboard:list")
+    @RequiresPermissions("operate:cloud:dashboard:target")
     @GetMapping("/targetAchieveAnalysis/getDropList")
     public AjaxResult getIndicatorList() {
         return AjaxResult.success(dashboardService.getDropList());
@@ -66,7 +68,7 @@ public class DashboardController extends BaseController {
     /**
      * 根据指标ID获取分解维度下拉框
      */
-    @RequiresPermissions("operate:cloud:dashboard:list")
+    @RequiresPermissions("operate:cloud:dashboard:target")
     @GetMapping("/targetLeaderboard/getTargetList")
     public AjaxResult getTargetList(@RequestParam("indicatorId") Long indicatorId) {
         return AjaxResult.success(dashboardService.targetDropList(indicatorId));
@@ -75,7 +77,7 @@ public class DashboardController extends BaseController {
     /**
      * 获取时间维度下拉框
      */
-    @RequiresPermissions("operate:cloud:dashboard:list")
+    @RequiresPermissions("operate:cloud:dashboard:target")
     @GetMapping("/targetLeaderboard/getTimeDropList")
     public AjaxResult getTimeDropList(@RequestParam("indicatorId") Long indicatorId, @RequestParam("targetDecomposeDimensionId") Long targetDecomposeDimensionId) {
         return AjaxResult.success(dashboardService.timeDropList(indicatorId, targetDecomposeDimensionId));

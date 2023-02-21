@@ -255,10 +255,10 @@
                 #{item}
             </foreach>
         </if>
-        <if test="indicator.params.indicatorTypeNotEqual != null and indicator.params.indicatorValueTypeNotEqual.size() > 0">
+        <if test="indicator.params.indicatorValueTypeNotEqual != null and indicator.params.indicatorValueTypeNotEqual.size() > 0">
             AND (t1.indicator_value_type NOT IN
             <foreach item="item"
-                     collection="indicator.params.indicatorTypeNotEqual"
+                     collection="indicator.params.indicatorValueTypeNotEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
