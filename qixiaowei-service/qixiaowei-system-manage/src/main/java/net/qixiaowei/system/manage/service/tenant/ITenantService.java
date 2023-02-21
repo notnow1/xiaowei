@@ -167,6 +167,13 @@ public interface ITenantService {
      */
     void maintainTenantStatus();
 
+    /**
+     * @description: 注册租户用户
+     * @Author: hzk
+     * @date: 2023/2/21 15:39
+     * @param: [tenantDTO]
+     * @return: net.qixiaowei.system.manage.api.vo.tenant.TenantRegisterResponseVO
+     **/
     TenantRegisterResponseVO registerUserInfo(TenantDTO tenantDTO);
 
 }

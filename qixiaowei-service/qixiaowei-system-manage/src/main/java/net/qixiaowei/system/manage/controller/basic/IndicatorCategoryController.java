@@ -46,7 +46,7 @@ public class IndicatorCategoryController extends BaseController {
     @RequiresPermissions(value = {"system:manage:indicatorCategory:add", "system:manage:indicatorCategory:edit"}, logical = Logical.OR)
     @GetMapping("/generate/indicatorCategoryCode")
     public AjaxResult generateIndicatorCategoryCode(@RequestParam(value = "indicatorType", required = false, defaultValue = "1") Integer indicatorType) {
-        return AjaxResult.success(indicatorCategoryService.generateIndicatorCategoryCode(indicatorType));
+        return AjaxResult.success("操作成功",indicatorCategoryService.generateIndicatorCategoryCode(indicatorType));
     }
 
     /**

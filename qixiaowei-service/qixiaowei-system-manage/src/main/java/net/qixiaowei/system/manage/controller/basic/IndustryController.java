@@ -95,7 +95,7 @@ public class IndustryController extends BaseController {
     @RequiresPermissions(value = {"system:manage:industry:add", "system:manage:industry:edit"}, logical = Logical.OR)
     @GetMapping("/generate/industryCode")
     public AjaxResult generateIndustryCode() {
-        return AjaxResult.success(industryService.generateIndustryCode());
+        return AjaxResult.success("操作成功",industryService.generateIndustryCode());
     }
 
     /**

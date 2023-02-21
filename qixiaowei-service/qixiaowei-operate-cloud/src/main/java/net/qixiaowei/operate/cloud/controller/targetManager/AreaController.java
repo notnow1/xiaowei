@@ -56,7 +56,7 @@ public class AreaController extends BaseController {
     @RequiresPermissions(value = {"operate:cloud:area:add", "operate:cloud:area:edit"}, logical = Logical.OR)
     @GetMapping("/generate/areaCode")
     public AjaxResult generateAreaCode() {
-        return AjaxResult.success(areaService.generateAreaCode());
+        return AjaxResult.success("操作成功",areaService.generateAreaCode());
     }
 
     /**

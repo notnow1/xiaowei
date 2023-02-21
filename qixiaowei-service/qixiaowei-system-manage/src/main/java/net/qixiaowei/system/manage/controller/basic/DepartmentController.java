@@ -41,7 +41,7 @@ public class DepartmentController extends BaseController {
     @RequiresPermissions(value = {"system:manage:department:add", "system:manage:department:edit"}, logical = Logical.OR)
     @GetMapping("/generate/departmentCode")
     public AjaxResult generateDepartmentCode() {
-        return AjaxResult.success(departmentService.generateDepartmentCode());
+        return AjaxResult.success("操作成功",departmentService.generateDepartmentCode());
     }
 
 

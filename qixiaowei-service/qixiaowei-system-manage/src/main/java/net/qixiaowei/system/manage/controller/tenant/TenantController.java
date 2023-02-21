@@ -65,7 +65,7 @@ public class TenantController extends BaseController {
     @RequiresPermissions(value = {"system:manage:tenant:add", "system:manage:tenant:edit"}, logical = Logical.OR)
     @GetMapping("/generate/tenantCode")
     public AjaxResult generateTenantCode() {
-        return AjaxResult.success(tenantService.generateTenantCode());
+        return AjaxResult.success("操作成功",tenantService.generateTenantCode());
     }
 
     /**
