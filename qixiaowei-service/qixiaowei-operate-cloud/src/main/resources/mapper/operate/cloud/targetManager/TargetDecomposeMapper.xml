@@ -231,7 +231,7 @@
             </if>
             <!-- 指标名称过滤  -->
             <if test="targetDecompose.params.indicatorIds == null">
-                AND or (td.indicator_id='' or td.indicator_id is null)
+                AND  (td.indicator_id='' or td.indicator_id is null)
             </if>
         </if>
         <!-- 指标名称过滤  -->
@@ -248,7 +248,7 @@
             </if>
             <!-- 指标名称过滤  -->
             <if test="targetDecompose.params.indicatorIds == null">
-                AND or (td.indicator_id='' or td.indicator_id is null)
+                AND  (td.indicator_id='' or td.indicator_id is null)
             </if>
         </if>
         <!-- 分解维度过滤  -->
