@@ -6,6 +6,7 @@ import net.qixiaowei.integration.common.web.domain.AjaxResult;
 import net.qixiaowei.integration.common.web.page.TableDataInfo;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
+import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 import net.qixiaowei.strategy.cloud.service.industry.IIndustryAttractionService;
@@ -37,7 +38,7 @@ public class IndustryAttractionController extends BaseController
     /**
     * 查询行业吸引力表详情
     */
-    @RequiresPermissions("strategy:cloud:industryAttraction:info")
+    @RequiresPermissions(value = {"strategy:cloud:industryAttraction:info", "strategy:cloud:industryAttraction:edit"}, logical = Logical.OR)
     @GetMapping("/info/{industryAttractionId}")
     public AjaxResult info(@PathVariable Long industryAttractionId){
     IndustryAttractionDTO industryAttractionDTO = industryAttractionService.selectIndustryAttractionByIndustryAttractionId(industryAttractionId);
