@@ -118,6 +118,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      * @return 结果
      */
     @Override
+    @Transactional
     public IndustryAttractionDTO insertIndustryAttraction(IndustryAttractionDTO industryAttractionDTO) {
         IndustryAttractionDTO industryAttractionDTO1 = industryAttractionMapper.selectIndustryAttractionByAttractionElementName(industryAttractionDTO.getAttractionElementName());
         if (StringUtils.isNotNull(industryAttractionDTO1)){
@@ -168,6 +169,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateIndustryAttraction(IndustryAttractionDTO industryAttractionDTO) {
         int i = 0;
         //接收前端行业吸引力要素集合
@@ -267,6 +269,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteIndustryAttractionByIndustryAttractionIds(List<Long> industryAttractionIds) {
         int i = 0;
         // todo 被行业引用不可删除
@@ -364,6 +367,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
      * @return 结果
      */
     @Override
+    @Transactional
     public int logicDeleteIndustryAttractionByIndustryAttractionId(IndustryAttractionDTO industryAttractionDTO) {
         int i = 0;
         // todo 被行业引用不可删除
