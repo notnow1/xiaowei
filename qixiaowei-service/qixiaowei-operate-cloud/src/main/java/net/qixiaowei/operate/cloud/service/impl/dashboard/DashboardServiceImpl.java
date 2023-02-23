@@ -221,11 +221,11 @@ public class DashboardServiceImpl implements IDashboardService {
     private void setIndicatorNames(List<IndicatorDTO> indicatorByCode, Integer targetYear) {
         for (IndicatorDTO indicatorDTO : indicatorByCode) {
             if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.ORDER.getCode())) {
-                indicatorDTO.setIndicatorName("订单额");
+                indicatorDTO.setIndicatorName("订单（不含税）");
             } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.INCOME.getCode())) {
-                indicatorDTO.setIndicatorName("收入");
+                indicatorDTO.setIndicatorName("销售收入");
             } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.RECEIVABLE.getCode())) {
-                indicatorDTO.setIndicatorName("销售回款");
+                indicatorDTO.setIndicatorName("销售回款（含税）");
             }
         }
     }
@@ -243,15 +243,15 @@ public class DashboardServiceImpl implements IDashboardService {
                 targetAchieveRate.setTargetValue(BigDecimal.ZERO);
                 targetAchieveRate.setActualTotal(BigDecimal.ZERO);
                 if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.ORDER.getCode())) {
-                    targetAchieveRate.setIndicatorName("订单额");
+                    targetAchieveRate.setIndicatorName("订单（不含税）");
                     targetAchieveRate.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetAchieveRate.setIndicatorCode(IndicatorCode.ORDER.getCode());
                 } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.INCOME.getCode())) {
-                    targetAchieveRate.setIndicatorName("收入");
+                    targetAchieveRate.setIndicatorName("销售收入");
                     targetAchieveRate.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetAchieveRate.setIndicatorCode(IndicatorCode.INCOME.getCode());
                 } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.RECEIVABLE.getCode())) {
-                    targetAchieveRate.setIndicatorName("销售回款");
+                    targetAchieveRate.setIndicatorName("销售回款（含税）");
                     targetAchieveRate.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetAchieveRate.setIndicatorCode(IndicatorCode.RECEIVABLE.getCode());
                 }
