@@ -1268,17 +1268,17 @@ public class DashboardServiceImpl implements IDashboardService {
                     break;
                 case 2:
                     map.put("timeDimension", 2);
-                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("startTime", targetYear + "/0" + 1);
                     map.put("endTime", targetYear + "/" + 2);
                     break;
                 case 3:
                     map.put("timeDimension", 3);
-                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("startTime", targetYear + "/0" + 1);
                     map.put("endTime", targetYear + "/" + 4);
                     break;
                 case 4:
                     map.put("timeDimension", 4);
-                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("startTime", targetYear + "/0" + 1);
                     map.put("endTime", targetYear + "/" + 12);
                     break;
             }
