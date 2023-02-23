@@ -153,10 +153,12 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                 industryAttractionElementList.add(industryAttractionElement);
             }
         }
-        try {
-            industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementList);
-        } catch (Exception e) {
-            throw new ServiceException("批量新增行业吸引力要素失败");
+        if (StringUtils.isNotEmpty(industryAttractionElementList)){
+            try {
+                industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增行业吸引力要素失败");
+            }
         }
         industryAttractionDTO.setIndustryAttractionId(industryAttraction.getIndustryAttractionId());
         return industryAttractionDTO;
@@ -200,43 +202,53 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                         throw new ServiceException("逻辑批量删除行业吸引力要素失败");
                     }
                 }
-            }
-            //新增集合
-            List<IndustryAttractionElement> industryAttractionElementAddList = new ArrayList<>();
-            //修改集合
-            List<IndustryAttractionElement> industryAttractionElementUpdateList = new ArrayList<>();
-            for (int i1 = 0; i1 < industryAttractionElementDTOS.size(); i1++) {
-                IndustryAttractionElement industryAttractionElement = new IndustryAttractionElement();
-                BeanUtils.copyProperties(industryAttractionElementDTOS.get(i1), industryAttractionElement);
-                industryAttractionElement.setSort(i1 + 1);
-                if (StringUtils.isNotNull(industryAttractionElementDTOS.get(i1).getIndustryAttractionElementId())) {
-                    industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
-                    industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
-                    industryAttractionElementUpdateList.add(industryAttractionElement);
-                } else {
-                    industryAttractionElement.setIndustryAttractionId(industryAttraction.getIndustryAttractionId());
-                    industryAttractionElement.setCreateBy(SecurityUtils.getUserId());
-                    industryAttractionElement.setCreateTime(DateUtils.getNowDate());
-                    industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
-                    industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
-                    industryAttractionElement.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                    industryAttractionElementAddList.add(industryAttractionElement);
+                //新增集合
+                List<IndustryAttractionElement> industryAttractionElementAddList = new ArrayList<>();
+                //修改集合
+                List<IndustryAttractionElement> industryAttractionElementUpdateList = new ArrayList<>();
+                for (int i1 = 0; i1 < industryAttractionElementDTOS.size(); i1++) {
+                    IndustryAttractionElement industryAttractionElement = new IndustryAttractionElement();
+                    BeanUtils.copyProperties(industryAttractionElementDTOS.get(i1), industryAttractionElement);
+                    industryAttractionElement.setSort(i1 + 1);
+                    if (StringUtils.isNotNull(industryAttractionElementDTOS.get(i1).getIndustryAttractionElementId())) {
+                        industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
+                        industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
+                        industryAttractionElementUpdateList.add(industryAttractionElement);
+                    } else {
+                        industryAttractionElement.setIndustryAttractionId(industryAttraction.getIndustryAttractionId());
+                        industryAttractionElement.setCreateBy(SecurityUtils.getUserId());
+                        industryAttractionElement.setCreateTime(DateUtils.getNowDate());
+                        industryAttractionElement.setUpdateTime(DateUtils.getNowDate());
+                        industryAttractionElement.setUpdateBy(SecurityUtils.getUserId());
+                        industryAttractionElement.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                        industryAttractionElementAddList.add(industryAttractionElement);
+                    }
+                }
+                if (StringUtils.isNotEmpty(industryAttractionElementAddList)) {
+                    try {
+                        industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementAddList);
+                    } catch (Exception e) {
+                        throw new ServiceException("批量新增行业吸引力要素失败");
+                    }
+                }
+                if (StringUtils.isNotEmpty(industryAttractionElementUpdateList)) {
+                    try {
+                        industryAttractionElementMapper.updateIndustryAttractionElements(industryAttractionElementUpdateList);
+                    } catch (Exception e) {
+                        throw new ServiceException("批量修改行业吸引力要素失败");
+                    }
+                }
+            }else {
+                industryAttractionElementIds = industryAttractionElementDTOList.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(industryAttractionElementIds)) {
+                    try {
+                        industryAttractionElementMapper.logicDeleteIndustryAttractionElementByIndustryAttractionElementIds(industryAttractionElementIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                    } catch (Exception e) {
+                        throw new ServiceException("逻辑批量删除行业吸引力要素失败");
+                    }
                 }
             }
-            if (StringUtils.isNotEmpty(industryAttractionElementAddList)) {
-                try {
-                    industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementAddList);
-                } catch (Exception e) {
-                    throw new ServiceException("批量新增行业吸引力要素失败");
-                }
-            }
-            if (StringUtils.isNotEmpty(industryAttractionElementUpdateList)) {
-                try {
-                    industryAttractionElementMapper.updateIndustryAttractionElements(industryAttractionElementUpdateList);
-                } catch (Exception e) {
-                    throw new ServiceException("批量修改行业吸引力要素失败");
-                }
-            }
+
         }else {
             if (StringUtils.isNotEmpty(industryAttractionElementDTOS)){
                 List<IndustryAttractionElement> industryAttractionElementList = new ArrayList<>();
