@@ -389,32 +389,34 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                 }
                 if (StringUtils.isNotBlank(budgetDepartmentNames)) {
                     //预算部门名称
-                    budgetDepartmentNames1 = pattern1.matcher(StringUtils.join(",",payApplicationDTO.getBudgetDepartmentList()));
+                    budgetDepartmentNames1 = pattern1.matcher(String.join(";",payApplicationDTO.getBudgetDepartmentList()));
                 }
                 if (StringUtils.isNotBlank(bonusPayObjectName)) {
                     //奖金发放对象名称
                     bonusPayObjectName1 = pattern2.matcher(payApplicationDTO.getBonusPayObjectName());
                 }
                 if (StringUtils.isNotBlank(applyDepartmentName) && StringUtils.isNotBlank(budgetDepartmentNames) && StringUtils.isNotBlank(bonusPayObjectName)) {
-                    if (applyDepartmentName1.find() || budgetDepartmentNames1.find() || bonusPayObjectName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                    if (applyDepartmentName1.find() && budgetDepartmentNames1.find() &&  bonusPayObjectName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         bonusPayApplicationDTOList.add(payApplicationDTO);
                     }
-                }
-                if (StringUtils.isNotBlank(applyDepartmentName)) {
-                    if (applyDepartmentName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        bonusPayApplicationDTOList.add(payApplicationDTO);
+                }else {
+                    if (StringUtils.isNotBlank(applyDepartmentName)) {
+                        if (applyDepartmentName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                            bonusPayApplicationDTOList.add(payApplicationDTO);
+                        }
+                    }
+                    if (StringUtils.isNotBlank(budgetDepartmentNames)) {
+                        if (budgetDepartmentNames1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                            bonusPayApplicationDTOList.add(payApplicationDTO);
+                        }
+                    }
+                    if (StringUtils.isNotBlank(bonusPayObjectName)) {
+                        if (bonusPayObjectName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
+                            bonusPayApplicationDTOList.add(payApplicationDTO);
+                        }
                     }
                 }
-                if (StringUtils.isNotBlank(budgetDepartmentNames)) {
-                    if (budgetDepartmentNames1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        bonusPayApplicationDTOList.add(payApplicationDTO);
-                    }
-                }
-                if (StringUtils.isNotBlank(bonusPayObjectName)) {
-                    if (bonusPayObjectName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        bonusPayApplicationDTOList.add(payApplicationDTO);
-                    }
-                }
+
             }
 
             if (StringUtils.isNotNull(applyDepartmentName) || StringUtils.isNotNull(budgetDepartmentNames) || StringUtils.isNotNull(bonusPayObjectName)) {
