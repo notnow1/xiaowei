@@ -86,3 +86,40 @@ CREATE TABLE field_list_config(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (field_list_config_id)
 )  COMMENT = '字段列表配置表';
+
+
+CREATE TABLE strategy_intent(
+    strategy_intent_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    vision VARCHAR(2048)    COMMENT '愿景' ,
+    mission VARCHAR(2048)    COMMENT '使命' ,
+    strategy_target VARCHAR(2048)    COMMENT '战略定位' ,
+    strategy_position VARCHAR(2048)    COMMENT '战略目标' ,
+    operate_plan_period TINYINT UNSIGNED    COMMENT '经营规划期' ,
+    operate_history_year TINYINT UNSIGNED    COMMENT '经营历史年份' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (strategy_intent_id)
+)  COMMENT = '战略意图表';
+
+
+CREATE TABLE strategy_intent_operate(
+    strategy_intent_operate_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    strategy_intent_id BIGINT UNSIGNED NOT NULL   COMMENT '战略意图ID' ,
+    indicator_id BIGINT UNSIGNED    COMMENT '指标ID' ,
+    indicator_name VARCHAR(64)    COMMENT '指标名称' ,
+    operate_year SMALLINT UNSIGNED    COMMENT '经营年度' ,
+    operate_value DECIMAL(14,2)    COMMENT '经营值' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (strategy_intent_operate_id)
+)  COMMENT = '战略意图经营表';
