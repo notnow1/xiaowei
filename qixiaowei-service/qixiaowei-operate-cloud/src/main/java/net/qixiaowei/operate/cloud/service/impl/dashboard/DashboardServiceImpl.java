@@ -183,7 +183,7 @@ public class DashboardServiceImpl implements IDashboardService {
         targetSetting.setParams(params);
         List<TargetSettingDTO> targetSettingDTOList = targetSettingMapper.selectTargetAndOutSettingList(targetSetting);
         if (StringUtils.isEmpty(targetSettingDTOList)) {
-            setNullDashboard(targetAchieveRateDTOS, codesByIsPreset);
+            setNullDashboard(targetAchieveRateDTOS, indicatorByCode);
         } else {
             List<Long> indicatorIds = targetSettingDTOList.stream().map(TargetSettingDTO::getIndicatorId).collect(Collectors.toList());
             for (IndicatorDTO indicatorDTO : indicatorByCode) {
@@ -234,22 +234,25 @@ public class DashboardServiceImpl implements IDashboardService {
      * 赋值空的仪表盘
      *
      * @param targetAchieveRateDTOS 仪表盘dto
-     * @param codesByIsPreset       一级指标
+     * @param indicatorByCode       指标DTO
      */
-    private void setNullDashboard(List<TargetAchieveRateDTO> targetAchieveRateDTOS, List<String> codesByIsPreset) {
-        if (StringUtils.isNotEmpty(codesByIsPreset)) {
-            for (String code : codesByIsPreset) {
+    private void setNullDashboard(List<TargetAchieveRateDTO> targetAchieveRateDTOS, List<IndicatorDTO> indicatorByCode) {
+        if (StringUtils.isNotEmpty(indicatorByCode)) {
+            for (IndicatorDTO indicatorDTO : indicatorByCode) {
                 TargetAchieveRateDTO targetAchieveRate = new TargetAchieveRateDTO();
                 targetAchieveRate.setTargetValue(BigDecimal.ZERO);
                 targetAchieveRate.setActualTotal(BigDecimal.ZERO);
-                if (code.equals(IndicatorCode.ORDER.getCode())) {
+                if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.ORDER.getCode())) {
                     targetAchieveRate.setIndicatorName("订单额");
+                    targetAchieveRate.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetAchieveRate.setIndicatorCode(IndicatorCode.ORDER.getCode());
-                } else if (code.equals(IndicatorCode.INCOME.getCode())) {
+                } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.INCOME.getCode())) {
                     targetAchieveRate.setIndicatorName("收入");
+                    targetAchieveRate.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetAchieveRate.setIndicatorCode(IndicatorCode.INCOME.getCode());
-                } else if (code.equals(IndicatorCode.RECEIVABLE.getCode())) {
-                    targetAchieveRate.setIndicatorName("销售毛利润");
+                } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.RECEIVABLE.getCode())) {
+                    targetAchieveRate.setIndicatorName("销售回款");
+                    targetAchieveRate.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetAchieveRate.setIndicatorCode(IndicatorCode.RECEIVABLE.getCode());
                 }
                 targetAchieveRateDTOS.add(targetAchieveRate);
@@ -1268,17 +1271,17 @@ public class DashboardServiceImpl implements IDashboardService {
                     break;
                 case 2:
                     map.put("timeDimension", 2);
-                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("startTime", targetYear + "/0" + 1);
                     map.put("endTime", targetYear + "/" + 2);
                     break;
                 case 3:
                     map.put("timeDimension", 3);
-                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("startTime", targetYear + "/0" + 1);
                     map.put("endTime", targetYear + "/" + 4);
                     break;
                 case 4:
                     map.put("timeDimension", 4);
-                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("startTime", targetYear + "/0" + 1);
                     map.put("endTime", targetYear + "/" + 12);
                     break;
             }

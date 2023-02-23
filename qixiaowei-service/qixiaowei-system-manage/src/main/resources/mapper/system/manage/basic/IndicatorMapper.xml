@@ -622,9 +622,7 @@
             </trim>
             <trim prefix="ancestors=case" suffix="end,">
                 <foreach collection="indicatorList" item="item" index="index">
-                    <if test="item.ancestors != null and item.ancestors != ''">
-                        when indicator_id=#{item.indicatorId} then #{item.ancestors}
-                    </if>
+                    when indicator_id=#{item.indicatorId} then #{item.ancestors}
                 </foreach>
             </trim>
             <trim prefix="indicator_type=case" suffix="end,">

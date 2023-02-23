@@ -148,7 +148,7 @@
         <if test="industry.params.parentIndustryNameEqual != null and industry.params.parentIndustryNameEqual.size() > 0">
             AND i2.industry_name IN
             <foreach item="item"
-                         collection="industry.params.parentIndustryNameEqual"
+                     collection="industry.params.parentIndustryNameEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -164,10 +164,10 @@
             )
         </if>
         <if test="industry.params.parentIndustryNameNull != null">
-            and i2.industry_name IS NULL OR i2.industry_name OR  !=''
+            and i2.industry_name IS NULL OR i2.industry_name OR !=''
         </if>
         <if test="industry.params.parentIndustryNameNotNull != null">
-            and i2.industry_name IS NOT NULL OR i2.industry_name OR  !=''
+            and i2.industry_name IS NOT NULL OR i2.industry_name OR !=''
         </if>
         <!--    行业层级过滤-->
         <if test="industry.params.levelEqual != null and industry.params.levelEqual.size() > 0">
@@ -511,9 +511,7 @@
             </trim>
             <trim prefix="ancestors=case" suffix="end,">
                 <foreach collection="industryList" item="item" index="index">
-                    <if test="item.ancestors != null and item.ancestors != ''">
-                        when industry_id=#{item.industryId} then #{item.ancestors}
-                    </if>
+                    when industry_id=#{item.industryId} then #{item.ancestors}
                 </foreach>
             </trim>
             <trim prefix="industry_code=case" suffix="end,">
