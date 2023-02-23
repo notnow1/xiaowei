@@ -231,7 +231,7 @@
         </if>
         <!--司龄ess.seniority不等于-->
         <if test="empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0">
-            AND( 1 == 1
+            AND( 1 = 1
         </if>
         <if test="empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0
                             and empSalaryAdjustPlan.params.workingAgeNotEqual.contains(1)">
