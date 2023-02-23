@@ -17,27 +17,27 @@ public class CodeGenerator {
 
     private static final String projectPath = System.getProperties().getProperty("user.dir");
     //项目名称
-    private static final String module_name = "strategy-cloud";
+    private static final String module_name = "system-manage";
     //项目路径
-    private static final String module_path = "strategy/cloud";
+    private static final String module_path = "system/manage";
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
-    private static final String extend_Package = "/strategyIntent" ;
+    private static final String extend_Package = "/post" ;
     //表名
-    private static final String tables = "strategy_intent_operate" ;
+    private static final String tables = "post" ;
     //生成文件的作者名
     private static final String author ="TANGMICHI" ;
     //数据库配置
-    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/strategy_cloud";
+    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/system_manage";
     private static final String username = "qxwopr";
     private static final String password = "7fpJR7i2";
 
 
     //实体类 默认生成 不生成改为false
-    private static final boolean default_entity = true;
+    private static final boolean default_entity = false;
     //支持生成Excel生成导入导出
-    private static final boolean default_excel = false;
+    private static final boolean default_excel = true;
     //DTO类
-    private static final boolean default_DTO = true;
+    private static final boolean default_DTO = false;
     //controller类
     private static final boolean default_controller = false;
     //service类
@@ -45,9 +45,9 @@ public class CodeGenerator {
     //service实现类
     private static final boolean default_serviceImpl = false;
     //mapper类
-    private static final boolean default_mapper = true;
+    private static final boolean default_mapper = false;
     //mapperxml类
-    private static final boolean default_mapper_xml = true;
+    private static final boolean default_mapper_xml = false;
 
 
     private static final String api_default = "/qixiaowei-service-api";
