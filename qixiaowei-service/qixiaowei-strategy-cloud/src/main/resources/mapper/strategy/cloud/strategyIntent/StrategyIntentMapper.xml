@@ -28,48 +28,199 @@
 
     <!--    查询战略意图表列表-->
     <select id="selectStrategyIntentList" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO">
-        SELECT
-        strategy_intent_id,plan_year,vision,mission,strategy_target,strategy_position,operate_plan_period,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
-        FROM strategy_intent
-        WHERE delete_flag=0
+        select
+        si.strategy_intent_id,
+        si.plan_year,
+        si.vision,
+        si.mission,
+        si.strategy_target,
+        si.strategy_position,
+        si.operate_plan_period,
+        si.operate_history_year,
+        si.delete_flag,
+        si.create_by,
+        si.create_time,
+        si.update_by,
+        si.update_time
+        from
+        strategy_intent si
+        where
+        delete_flag = 0
+        <!-- 规划年度过滤  -->
+        <if test="strategyIntent.params.planYearEqual != null and strategyIntent.params.planYearEqual.size() > 0">
+            AND si.plan_year IN
+            <foreach item="item"
+                     collection="strategyIntent.params.planYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyIntent.params.planYearNotEqual != null and strategyIntent.params.planYearNotEqual.size() > 0">
+            AND si.plan_year NOT IN
+            <foreach item="item"
+                     collection="strategyIntent.params.planYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyIntent.params.planYearBefore != null and strategyIntent.params.planYearBefore != ''">
+            AND si.plan_year &lt; #{strategyIntent.params.planYearBefore}
+        </if>
+        <if test="strategyIntent.params.planYearNotBefore != null and strategyIntent.params.planYearNotBefore != ''"><!-- 开始时间检索 -->
+            AND si.plan_year &gt;= #{strategyIntent.params.planYearNotBefore}
+        </if>
+        <if test="strategyIntent.params.planYearAfter != null and strategyIntent.params.planYearAfter != ''"><!-- 开始时间检索 -->
+            AND si.plan_year &gt; #{strategyIntent.params.planYearAfter}
+        </if>
+        <if test="strategyIntent.params.planYearNotAfter != null and strategyIntent.params.planYearNotAfter != ''"><!-- 结束时间检索 -->
+            AND si.plan_year &lt;= #{strategyIntent.params.planYearNotAfter}
+        </if>
+        <if test="strategyIntent.params.planYearStart != null and strategyIntent.params.planYearStart != ''"><!-- 开始时间检索 -->
+            AND si.plan_year &gt;= #{strategyIntent.params.planYearStart}
+        </if>
+        <if test="strategyIntent.params.planYearEnd != null and strategyIntent.params.planYearEnd != ''"><!-- 结束时间检索 -->
+            AND si.plan_year &lt;= #{strategyIntent.params.planYearEnd}
+        </if>
+        <!-- 规划期过滤  -->
+        <if test="strategyIntent.params.operatePlanPeriodEqual != null and strategyIntent.params.operatePlanPeriodEqual.size() > 0">
+            AND si.operate_plan_period IN
+            <foreach item="item"
+                     collection="strategyIntent.params.operatePlanPeriodEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyIntent.params.operatePlanPeriodNotEqual != null and strategyIntent.params.operatePlanPeriodNotEqual.size() > 0">
+            AND si.operate_plan_period NOT IN
+            <foreach item="item"
+                     collection="strategyIntent.params.operatePlanPeriodNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 历史年度过滤  -->
+        <if test="strategyIntent.params.operateHistoryYearEqual != null and strategyIntent.params.operateHistoryYearEqual.size() > 0">
+            AND  si.operate_history_year IN
+            <foreach item="item"
+                     collection="strategyIntent.params.operateHistoryYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyIntent.params.operateHistoryYearNotEqual != null and strategyIntent.params.operateHistoryYearNotEqual.size() > 0">
+            AND si.operate_history_year NOT IN
+            <foreach item="item"
+                     collection="strategyIntent.params.operateHistoryYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 创建人过滤  -->
+        <if test="strategyIntent.params.createByNameEqual != null">
+            <!-- 创建人过滤  -->
+            <if test="strategyIntent.params.createBys != null and strategyIntent.params.createBys.size() > 0">
+                AND si.create_by IN
+                <foreach item="item"
+                         collection="strategyIntent.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人过滤  -->
+            <if test="strategyIntent.params.createBys == null">
+                AND  (si.create_by ='' or si.create_by is null)
+            </if>
+        </if>
+        <!-- 创建人过滤  -->
+        <if test=" strategyIntent.params.createByNameNotEqual != null">
+            <!-- 创建人过滤  -->
+            <if test="strategyIntent.params.createBys != null and strategyIntent.params.createBys.size() > 0">
+                AND (si.create_by IN
+                <foreach item="item"
+                         collection="strategyIntent.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach> or (si.create_by ='' or si.create_by is null))
+            </if>
+
+            <!-- 创建人过滤  -->
+            <if test="strategyIntent.params.createBys == null">
+                AND  (si.create_by ='' or si.create_by is null)
+            </if>
+        </if>
+        <!-- 创建日期过滤  -->
+        <if test="strategyIntent.params.createTimeEqual != null and strategyIntent.params.createTimeEqual.size() > 0">
+            AND si.create_time IN
+            <foreach item="item"
+                     collection="strategyIntent.params.createTimeEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyIntent.params.createTimeNotEqual != null and strategyIntent.params.createTimeNotEqual.size() > 0">
+            AND si.create_time NOT IN
+            <foreach item="item"
+                     collection="strategyIntent.params.createTimeNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyIntent.params.createTimeBefore != null and strategyIntent.params.createTimeBefore != ''">
+            AND si.create_time &lt; #{strategyIntent.params.createTimeBefore}
+        </if>
+        <if test="strategyIntent.params.createTimeNotBefore != null and strategyIntent.params.createTimeNotBefore != ''"><!-- 开始时间检索 -->
+            AND si.create_time &gt;= #{strategyIntent.params.createTimeNotBefore}
+        </if>
+        <if test="strategyIntent.params.createTimeAfter != null and strategyIntent.params.createTimeAfter != ''"><!-- 开始时间检索 -->
+            AND si.create_time &gt; #{strategyIntent.params.createTimeAfter}
+        </if>
+        <if test="strategyIntent.params.createTimeNotAfter != null and strategyIntent.params.createTimeNotAfter != ''"><!-- 结束时间检索 -->
+            AND si.create_time &lt;= #{strategyIntent.params.createTimeNotAfter}
+        </if>
+        <if test="strategyIntent.params.createTimeStart != null and strategyIntent.params.createTimeStart != ''"><!-- 开始时间检索 -->
+            AND si.create_time &gt;= #{strategyIntent.params.createTimeStart}
+        </if>
+        <if test="strategyIntent.params.createTimeEnd != null and strategyIntent.params.createTimeEnd != ''"><!-- 结束时间检索 -->
+            AND si.create_time &lt;= #{strategyIntent.params.createTimeEnd}
+        </if>
                         <if test="strategyIntent.strategyIntentId != null">
-                            and strategy_intent_id=#{strategyIntent.strategyIntentId}
+                            and si.strategy_intent_id=#{strategyIntent.strategyIntentId}
                         </if>
                         <if test="strategyIntent.planYear != null">
-                            and plan_year=#{strategyIntent.planYear}
+                            and si.plan_year=#{strategyIntent.planYear}
                         </if>
                         <if test="strategyIntent.vision != null and strategyIntent.vision != ''">
-                            and vision=#{strategyIntent.vision}
+                            and si.vision=#{strategyIntent.vision}
                         </if>
                         <if test="strategyIntent.mission != null and strategyIntent.mission != ''">
-                            and mission=#{strategyIntent.mission}
+                            and si.mission=#{strategyIntent.mission}
                         </if>
                         <if test="strategyIntent.strategyTarget != null and strategyIntent.strategyTarget != ''">
-                            and strategy_target=#{strategyIntent.strategyTarget}
+                            and si.strategy_target=#{strategyIntent.strategyTarget}
                         </if>
                         <if test="strategyIntent.strategyPosition != null and strategyIntent.strategyPosition != ''">
-                            and strategy_position=#{strategyIntent.strategyPosition}
+                            and si.strategy_position=#{strategyIntent.strategyPosition}
                         </if>
                         <if test="strategyIntent.operatePlanPeriod != null">
-                            and operate_plan_period=#{strategyIntent.operatePlanPeriod}
+                            and si.operate_plan_period=#{strategyIntent.operatePlanPeriod}
                         </if>
                         <if test="strategyIntent.operateHistoryYear != null">
-                            and operate_history_year=#{strategyIntent.operateHistoryYear}
+                            and si.operate_history_year=#{strategyIntent.operateHistoryYear}
                         </if>
                         <if test="strategyIntent.deleteFlag != null">
-                            and delete_flag=#{strategyIntent.deleteFlag}
+                            and si.delete_flag=#{strategyIntent.deleteFlag}
                         </if>
                         <if test="strategyIntent.createBy != null">
-                            and create_by=#{strategyIntent.createBy}
+                            and si.create_by=#{strategyIntent.createBy}
                         </if>
                         <if test="strategyIntent.createTime != null">
-                            and create_time=#{strategyIntent.createTime}
+                            and si.create_time=#{strategyIntent.createTime}
                         </if>
                         <if test="strategyIntent.updateBy != null">
-                            and update_by=#{strategyIntent.updateBy}
+                            and si.update_by=#{strategyIntent.updateBy}
                         </if>
                         <if test="strategyIntent.updateTime != null">
-                            and update_time=#{strategyIntent.updateTime}
+                            and si.update_time=#{strategyIntent.updateTime}
                         </if>
     </select>
     <!--新增战略意图表-->
