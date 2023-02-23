@@ -56,7 +56,7 @@ public enum BusinessType {
     SALARY_PAY(47, "月度工资数据管理"),
     PLAN_BUSINESS_UNIT(48, "规划业务单元配置"),
     INDUSTRY_ATTRACTION(49, "行业吸引力配置"),
-
+    STRATEGY_INTENT(50, "规划业务单元配置"),
     ;
 
 
