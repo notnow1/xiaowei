@@ -100,10 +100,24 @@ public class DashboardServiceImpl implements IDashboardService {
                 -> StringUtils.equals(targetAchieveRateDTO2.getIndicatorCode(), IndicatorCode.INCOME.getCode())).collect(Collectors.toList()).get(0));
         targetAchieveRateDTOS1.add(targetAchieveRateDTOS.stream().filter(targetAchieveRateDTO2
                 -> StringUtils.equals(targetAchieveRateDTO2.getIndicatorCode(), IndicatorCode.RECEIVABLE.getCode())).collect(Collectors.toList()).get(0));
-        // 排序
         targetAchieveRateDTOS.removeIf(s -> codesByIsPreset.contains(s.getIndicatorCode()));
         targetAchieveRateDTOS1.addAll(targetAchieveRateDTOS);
-        return targetAchieveRateDTOS1;
+        // 排序sort
+        List<TargetAchieveRateDTO> achieveRateDTOS = new ArrayList<>();
+        if (StringUtils.isEmpty(indicatorRateIds)) {
+            return targetAchieveRateDTOS1;
+        }
+        for (Long indicatorRateId : indicatorRateIds) {
+            for (TargetAchieveRateDTO achieveRateDTO : targetAchieveRateDTOS1) {
+                if (indicatorRateId.equals(achieveRateDTO.getIndicatorId())) {
+                    TargetAchieveRateDTO rateDTO = new TargetAchieveRateDTO();
+                    BeanUtils.copyProperties(achieveRateDTO, rateDTO);
+                    achieveRateDTOS.add(rateDTO);
+                    break;
+                }
+            }
+        }
+        return achieveRateDTOS;
     }
 
     /**
@@ -334,10 +348,10 @@ public class DashboardServiceImpl implements IDashboardService {
             targetDecomposeDTO.setParams(params);
             targetAchieveAnalysisDTOS = targetDecomposeMapper.selectAchieveAnalysisDecompose(targetDecomposeDTO);
         } else if (endYear - startYear == 1) {
-            addTargetAchieveAnalysisDTOList(params, startYear, endYear, cycleNumberStart, cycleNumberEnd, endCycleNumber, targetAchieveAnalysisDTOS, targetAchieveAnalysisDTO);
+            targetAchieveAnalysisDTOS = addTargetAchieveAnalysisDTOList(params, startYear, endYear, cycleNumberStart, cycleNumberEnd, endCycleNumber, targetAchieveAnalysisDTOS, targetAchieveAnalysisDTO);
         } else {
             List<Integer> queryYears = new ArrayList<>();
-            addTargetAchieveAnalysisDTOList(params, startYear, endYear, cycleNumberStart, cycleNumberEnd, endCycleNumber, targetAchieveAnalysisDTOS, targetAchieveAnalysisDTO);
+            targetAchieveAnalysisDTOS = addTargetAchieveAnalysisDTOList(params, startYear, endYear, cycleNumberStart, cycleNumberEnd, endCycleNumber, targetAchieveAnalysisDTOS, targetAchieveAnalysisDTO);
             for (int i = startYear + 1; i <= endYear - 1; i++) {
                 queryYears.add(i);
             }
@@ -347,8 +361,7 @@ public class DashboardServiceImpl implements IDashboardService {
             targetAchieveAnalysisDTOS.addAll(targetDecomposeMapper.selectAchieveAnalysisDecompose(targetDecomposeDTO));
         }
         if (StringUtils.isEmpty(targetAchieveAnalysisDTOS)) {
-            // todo 这里加参数 开始周期和结束周期
-            return setMapZero(timeDimension, startYear, endYear);
+            return setMapZero(timeDimension, startYear, endYear, cycleNumberStart, cycleNumberEnd);
         }
         Map<Integer, List<TargetAchieveAnalysisDTO>> groupTargetAchieveAnalysisDTOS = targetAchieveAnalysisDTOS.stream().collect(Collectors.groupingBy(TargetAchieveAnalysisDTO::getTargetYear));
         List<Integer> targetYears1 = new ArrayList<>(groupTargetAchieveAnalysisDTOS.keySet());
@@ -363,43 +376,91 @@ public class DashboardServiceImpl implements IDashboardService {
     /**
      * 给空Map赋0
      *
-     * @param timeDimension 时间维度
-     * @param startYear     开始年份
-     * @param endYear       结束年份
+     * @param timeDimension    时间维度
+     * @param startYear        开始年份
+     * @param endYear          结束年份
+     * @param cycleNumberStart 开始周期
+     * @param cycleNumberEnd   结束周期
      * @return Map
      */
-    private Map<String, Object> setMapZero(Integer timeDimension, Integer startYear, Integer endYear) {
-        int cycleNumber = 1;
+    private Map<String, Object> setMapZero(Integer timeDimension, Integer startYear, Integer endYear, Integer cycleNumberStart, Integer cycleNumberEnd) {
+        int endCycleNumber = 1;
         switch (timeDimension) {
             case 2:
-                cycleNumber = 2;
+                endCycleNumber = 2;
                 break;
             case 3:
-                cycleNumber = 4;
+                endCycleNumber = 4;
                 break;
             case 4:
-                cycleNumber = 12;
+                endCycleNumber = 12;
                 break;
             case 5:
-                cycleNumber = 52;
+                endCycleNumber = 52;
                 break;
         }
-        ArrayList<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOArrayList = new ArrayList<>();
-        for (int i = startYear; i <= endYear; i++) {
-            for (int j = 1; j <= cycleNumber; j++) {
-                TargetAchieveAnalysisDTO targetAchieveAnalysisDTO1 = new TargetAchieveAnalysisDTO();
-                targetAchieveAnalysisDTO1.setCycleForecastSum(BigDecimal.ZERO);
-                targetAchieveAnalysisDTO1.setCycleTargetSum(BigDecimal.ZERO);
-                targetAchieveAnalysisDTO1.setCycleActualSum(BigDecimal.ZERO);
-                targetAchieveAnalysisDTO1.setCompletionRate(BigDecimal.ZERO);
-                targetAchieveAnalysisDTO1.setDeviationRate(BigDecimal.ZERO);
-                setTimeValue(timeDimension, i, j, targetAchieveAnalysisDTO1);
-                targetAchieveAnalysisDTOArrayList.add(targetAchieveAnalysisDTO1);
+        List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOArrayList = new ArrayList<>();
+        for (int targetYear = startYear; targetYear <= endYear; targetYear++) {
+            if (startYear.equals(endYear)) {
+                for (int i = cycleNumberStart; i <= cycleNumberEnd; i++) {
+                    setAnalysisZeroValue(timeDimension, targetAchieveAnalysisDTOArrayList, targetYear, i);
+                }
+            } else if (endYear - startYear == 1) {
+                if (targetYear == startYear) {
+                    for (int i = cycleNumberStart; i <= endCycleNumber; i++) {
+                        setAnalysisZeroValue(timeDimension, targetAchieveAnalysisDTOArrayList, targetYear, i);
+                    }
+                }
+                if (targetYear == endYear) {
+                    for (int i = 1; i <= cycleNumberEnd; i++) {
+                        setAnalysisZeroValue(timeDimension, targetAchieveAnalysisDTOArrayList, targetYear, i);
+                    }
+                }
+            } else if (endYear - startYear > 1) {
+                if (targetYear == startYear) {
+                    for (int i = cycleNumberStart; i <= endCycleNumber; i++) {
+                        setAnalysisZeroValue(timeDimension, targetAchieveAnalysisDTOArrayList, targetYear, i);
+                    }
+                } else if (targetYear == endYear) {
+                    for (int i = 1; i <= cycleNumberEnd; i++) {
+                        setAnalysisZeroValue(timeDimension, targetAchieveAnalysisDTOArrayList, targetYear, i);
+                    }
+                } else {
+                    for (int i = 1; i <= endCycleNumber; i++) {
+                        setAnalysisZeroValue(timeDimension, targetAchieveAnalysisDTOArrayList, targetYear, i);
+                    }
+                }
             }
         }
+//            for (int i = startYear; i <= endYear; i++) {
+//                for (int j = 1; j <= endCycleNumber; j++) {
+//                    setAnalysisZeroValue(timeDimension, targetAchieveAnalysisDTOArrayList, i, j);
+//                }
+//            }
         Map<String, Object> hashMap = new HashMap<>();
         listToMap(targetAchieveAnalysisDTOArrayList, hashMap);
         return hashMap;
+    }
+
+    /**
+     * 给第二个仪表盘空的情况赋值0
+     *
+     * @param timeDimension                     时间维度
+     * @param targetAchieveAnalysisDTOArrayList 目标列表
+     * @param targetYear                        年份
+     * @param cycleNumber                       周期
+     */
+    private void setAnalysisZeroValue(Integer
+                                              timeDimension, List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOArrayList, int targetYear,
+                                      int cycleNumber) {
+        TargetAchieveAnalysisDTO targetAchieveAnalysisDTO1 = new TargetAchieveAnalysisDTO();
+        targetAchieveAnalysisDTO1.setCycleForecastSum(BigDecimal.ZERO);
+        targetAchieveAnalysisDTO1.setCycleTargetSum(BigDecimal.ZERO);
+        targetAchieveAnalysisDTO1.setCycleActualSum(BigDecimal.ZERO);
+        targetAchieveAnalysisDTO1.setCompletionRate(BigDecimal.ZERO);
+        targetAchieveAnalysisDTO1.setDeviationRate(BigDecimal.ZERO);
+        setTimeValue(timeDimension, targetYear, cycleNumber, targetAchieveAnalysisDTO1);
+        targetAchieveAnalysisDTOArrayList.add(targetAchieveAnalysisDTO1);
     }
 
     /**
@@ -432,7 +493,10 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param targetYear                     年份
      * @return list
      */
-    private List<TargetAchieveAnalysisDTO> getTargetAchieveAnalysisDTOS(Integer startYear, Integer endYear, Integer cycleNumberStart, Integer cycleNumberEnd, int endCycleNumber, Map<Integer, List<TargetAchieveAnalysisDTO>> groupTargetAchieveAnalysisDTOS, List<Integer> targetYears1, Integer targetYear) {
+    private List<TargetAchieveAnalysisDTO> getTargetAchieveAnalysisDTOS(Integer startYear, Integer endYear, Integer
+            cycleNumberStart, Integer cycleNumberEnd,
+                                                                        int endCycleNumber, Map<Integer, List<TargetAchieveAnalysisDTO>> groupTargetAchieveAnalysisDTOS,
+                                                                        List<Integer> targetYears1, Integer targetYear) {
         List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOS1;
         if (!targetYears1.contains(targetYear)) {
             targetAchieveAnalysisDTOS1 = new ArrayList<>();
@@ -515,7 +579,8 @@ public class DashboardServiceImpl implements IDashboardService {
         return targetAchieveAnalysisDTOS1;
     }
 
-    private void setTargetAchieveAnalysisZero(Integer targetYear, List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOS1, int i) {
+    private void setTargetAchieveAnalysisZero(Integer
+                                                      targetYear, List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOS1, int i) {
         TargetAchieveAnalysisDTO targetAchieveAnalysisDTO1 = new TargetAchieveAnalysisDTO();
         targetAchieveAnalysisDTO1.setTargetYear(targetYear);
         targetAchieveAnalysisDTO1.setCycleNumber(i);
@@ -534,15 +599,18 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param timeDimension            时间维度
      * @return dto
      */
-    private TargetDecomposeDTO createTargetDecompose(TargetAchieveAnalysisDTO targetAchieveAnalysisDTO, Integer timeDimension) {
+    private TargetDecomposeDTO createTargetDecompose(TargetAchieveAnalysisDTO targetAchieveAnalysisDTO, Integer
+            timeDimension) {
         return getTargetDecomposeDTO(timeDimension, targetAchieveAnalysisDTO.getIndicatorId(), targetAchieveAnalysisDTO.getTargetDecomposeDimensionId());
     }
 
     /**
      * 添加dot
      */
-    private void addTargetAchieveAnalysisDTOList(Map<String, Object> params, Integer startYear, Integer endYear, Integer cycleNumberStart,
-                                                 Integer cycleNumberEnd, int endCycleNumber, List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOS, TargetAchieveAnalysisDTO targetAchieveAnalysisDTO) {
+    private List<TargetAchieveAnalysisDTO> addTargetAchieveAnalysisDTOList(Map<String, Object> params, Integer startYear, Integer
+            endYear, Integer cycleNumberStart,
+                                                                           Integer cycleNumberEnd, int endCycleNumber, List<
+            TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOS, TargetAchieveAnalysisDTO targetAchieveAnalysisDTO) {
         TargetDecomposeDTO targetDecomposeDTO = createTargetDecompose(targetAchieveAnalysisDTO, targetAchieveAnalysisDTO.getTimeDimension());
         targetDecomposeDTO.setTargetYear(startYear);
         params.put("timeStart", cycleNumberStart);
@@ -555,6 +623,7 @@ public class DashboardServiceImpl implements IDashboardService {
         params.put("timeEnd", cycleNumberEnd);
         targetDecomposeDTO.setParams(params);
         targetAchieveAnalysisDTOS.addAll(targetDecomposeMapper.selectAchieveAnalysisDecompose(targetDecomposeDTO));
+        return targetAchieveAnalysisDTOS;
     }
 
     /**
@@ -686,7 +755,9 @@ public class DashboardServiceImpl implements IDashboardService {
      *
      * @return List
      */
-    private List<TargetLeaderboardDTO> createLeaderBoardDTOS(TargetLeaderboardDTO targetLeaderboardDTO, Integer timeDimension, Map<String, Object> params, Integer startYear, Integer endYear, Integer cycleNumberStart, Integer cycleNumberEnd, int endCycleNumber) {
+    private List<TargetLeaderboardDTO> createLeaderBoardDTOS(TargetLeaderboardDTO targetLeaderboardDTO, Integer
+            timeDimension, Map<String, Object> params, Integer startYear, Integer endYear, Integer
+                                                                     cycleNumberStart, Integer cycleNumberEnd, int endCycleNumber) {
         List<TargetLeaderboardDTO> targetLeaderboardDTOS;
         TargetDecomposeDTO targetDecomposeDTO = getTargetDecomposeDTO(timeDimension, targetLeaderboardDTO.getIndicatorId(), targetLeaderboardDTO.getTargetDecomposeDimensionId());
         targetDecomposeDTO.setTargetYear(startYear);
@@ -711,7 +782,8 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param targetLeaderboardDTO1 仪表盘
      * @return TargetDecomposeDTO
      */
-    private TargetDecomposeDTO getTargetDecomposeDTO(Integer timeDimension, Long targetLeaderboardDTO, Long targetLeaderboardDTO1) {
+    private TargetDecomposeDTO getTargetDecomposeDTO(Integer timeDimension, Long targetLeaderboardDTO, Long
+            targetLeaderboardDTO1) {
         TargetDecomposeDTO targetDecomposeDTO = new TargetDecomposeDTO();
         targetDecomposeDTO.setTimeDimension(timeDimension);
         targetDecomposeDTO.setIndicatorId(targetLeaderboardDTO);
@@ -810,7 +882,8 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param groupByTargetLeaderboard 分组后的排行榜
      * @return Map
      */
-    private Map<String, Object> getLeaderboardMap(Integer timeDimension, Map<String, List<TargetLeaderboardDTO>> groupByTargetLeaderboard) {
+    private Map<String, Object> getLeaderboardMap(Integer
+                                                          timeDimension, Map<String, List<TargetLeaderboardDTO>> groupByTargetLeaderboard) {
         List<TargetLeaderboardDTO> targetLeaderboardDTOS = new ArrayList<>();
         for (String targetDecomposeDetailsName : groupByTargetLeaderboard.keySet()) {
             TargetLeaderboardDTO targetLeaderboard = new TargetLeaderboardDTO();
@@ -865,7 +938,8 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param targetYears                  目标年度List
      * @return Map
      */
-    private Map<String, Object> getAchieveAnalysisMap(Integer timeDimension, Map<Integer, List<TargetAchieveAnalysisDTO>> groupByTargetAchieveAnalysis, List<Integer> targetYears) {
+    private Map<String, Object> getAchieveAnalysisMap(Integer
+                                                              timeDimension, Map<Integer, List<TargetAchieveAnalysisDTO>> groupByTargetAchieveAnalysis, List<Integer> targetYears) {
         List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOList;
         if (timeDimension == 1) {
             targetAchieveAnalysisDTOList = this.getTargetYearAchieveAnalysisDTOS(groupByTargetAchieveAnalysis, targetYears);
@@ -883,7 +957,8 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param targetAchieveAnalysisDTOList list
      * @param hashMap                      map
      */
-    private void listToMap(List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOList, Map<String, Object> hashMap) {
+    private void listToMap
+    (List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOList, Map<String, Object> hashMap) {
         hashMap.put("forecast", targetAchieveAnalysisDTOList.stream().map(TargetAchieveAnalysisDTO::getCycleForecastSum).collect(Collectors.toList()));
         hashMap.put("cycleTarget", targetAchieveAnalysisDTOList.stream().map(TargetAchieveAnalysisDTO::getCycleTargetSum).collect(Collectors.toList()));
         hashMap.put("cycleActual", targetAchieveAnalysisDTOList.stream().map(TargetAchieveAnalysisDTO::getCycleActualSum).collect(Collectors.toList()));
@@ -899,7 +974,8 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param targetYears                  目标年度List
      * @return List
      */
-    private List<TargetAchieveAnalysisDTO> getTargetYearAchieveAnalysisDTOS(Map<Integer, List<TargetAchieveAnalysisDTO>> groupByTargetAchieveAnalysis, List<Integer> targetYears) {
+    private List<TargetAchieveAnalysisDTO> getTargetYearAchieveAnalysisDTOS
+    (Map<Integer, List<TargetAchieveAnalysisDTO>> groupByTargetAchieveAnalysis, List<Integer> targetYears) {
         List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOList = new ArrayList<>();
         if (StringUtils.isNotNull(targetYears)) {// 填补孔雀的年份
             for (Integer targetYear : targetYears) {
@@ -955,7 +1031,8 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param timeDimension                时间维度
      * @param groupByTargetAchieveAnalysis 分组后的
      */
-    private List<TargetAchieveAnalysisDTO> getTargetCycleNumberAchieveAnalysisDTOS(Integer timeDimension, Map<Integer, List<TargetAchieveAnalysisDTO>> groupByTargetAchieveAnalysis) {
+    private List<TargetAchieveAnalysisDTO> getTargetCycleNumberAchieveAnalysisDTOS(Integer
+                                                                                           timeDimension, Map<Integer, List<TargetAchieveAnalysisDTO>> groupByTargetAchieveAnalysis) {
         List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOList = new ArrayList<>();
         for (Integer targetYear : groupByTargetAchieveAnalysis.keySet()) {
             List<TargetAchieveAnalysisDTO> smallTargetAchieveAnalysisDTOList = new ArrayList<>();
@@ -1005,7 +1082,8 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param cycleNumber           周期
      * @param targetAchieveAnalysis dto
      */
-    private void setTimeValue(Integer timeDimension, Integer targetYear, Integer cycleNumber, TargetAchieveAnalysisDTO targetAchieveAnalysis) {
+    private void setTimeValue(Integer timeDimension, Integer targetYear, Integer
+            cycleNumber, TargetAchieveAnalysisDTO targetAchieveAnalysis) {
         switch (timeDimension) {
             case 1:
                 targetAchieveAnalysis.setCycleNumberName(targetYear + "年度");
@@ -1177,34 +1255,39 @@ public class DashboardServiceImpl implements IDashboardService {
         }
         TargetAchieveAnalysisDTO targetAchieveAnalysisDTO = targetAchieveAnalysisDTOS.get(0);
         if (StringUtils.isNotNull(targetAchieveAnalysisDTO.getIndicatorId())) {
-            R<IndustryDTO> industryDTOR = remoteIndustryService.selectById(targetAchieveAnalysisDTO.getIndicatorId(), SecurityConstants.INNER);
-            IndustryDTO industryDTO = industryDTOR.getData();
-            if (StringUtils.isNull(industryDTO)) {
-                throw new ServiceException("目标分解数据异常 请联系管理员");
-            }
-            map.put("indicatorName", industryDTO.getIndustryName());
+            map.put("indicatorId", targetAchieveAnalysisDTO.getIndicatorId());
         }
         Integer timeDimension = targetAchieveAnalysisDTO.getTimeDimension();
+        Integer targetYear = targetAchieveAnalysisDTO.getTargetYear();
         if (StringUtils.isNotNull(timeDimension)) {
             switch (timeDimension) {
                 case 1:
-                    map.put("timeDimensionName", "年度");
+                    map.put("timeDimension", 1);
+                    map.put("startTime", targetYear);
+                    map.put("endTime", targetYear);
                     break;
                 case 2:
-                    map.put("timeDimensionName", "半年度");
+                    map.put("timeDimension", 2);
+                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("endTime", targetYear + "/" + 2);
                     break;
                 case 3:
-                    map.put("timeDimensionName", "季度");
+                    map.put("timeDimension", 3);
+                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("endTime", targetYear + "/" + 4);
                     break;
                 case 4:
-                    map.put("timeDimensionName", "月度");
+                    map.put("timeDimension", 4);
+                    map.put("startTime", targetYear + "/" + 1);
+                    map.put("endTime", targetYear + "/" + 12);
                     break;
             }
         }
-        String decompositionDimension = targetAchieveAnalysisDTO.getDecompositionDimension();
-        if (StringUtils.isNotNull(decompositionDimension)) {
-            map.put("decompositionDimension", decompositionDimension);
+        Long decompositionDimensionId = targetAchieveAnalysisDTO.getTargetDecomposeDimensionId();
+        if (StringUtils.isNotNull(decompositionDimensionId)) {
+            map.put("decompositionDimensionId", decompositionDimensionId);
         }
+
         return map;
     }
 }
