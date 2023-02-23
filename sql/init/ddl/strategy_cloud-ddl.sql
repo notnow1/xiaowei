@@ -123,3 +123,89 @@ CREATE TABLE strategy_intent_operate(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (strategy_intent_operate_id)
 )  COMMENT = '战略意图经营表';
+
+
+CREATE TABLE gap_analysis(
+    gap_analysis_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    operate_history_year TINYINT UNSIGNED    COMMENT '经营历史年份' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (gap_analysis_id)
+)  COMMENT = '差距分析表';
+
+
+CREATE TABLE gap_analysis_performance(
+    gap_analysis_performance_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    gap_analysis_id BIGINT UNSIGNED NOT NULL   COMMENT '差距分析ID' ,
+    serial_number SMALLINT UNSIGNED    COMMENT '序列号' ,
+    gap_performance_name VARCHAR(64)    COMMENT '业绩差距名称' ,
+    gap_description VARCHAR(512)    COMMENT '差距描述' ,
+    root_cause_analysis VARCHAR(512)    COMMENT '根因分析' ,
+    root_cause_category VARCHAR(64)    COMMENT '根因类别' ,
+    root_cause_subtype VARCHAR(64)    COMMENT '根因子类' ,
+    recommended_practice VARCHAR(512)    COMMENT '建议措施' ,
+    propose_employee_id BIGINT UNSIGNED    COMMENT '提出人员ID' ,
+    propose_employee_name VARCHAR(64)    COMMENT '提出人员姓名' ,
+    propose_employee_code VARCHAR(32)    COMMENT '提出人员编码' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (gap_analysis_performance_id)
+)  COMMENT = '业绩差距表';
+
+
+CREATE TABLE gap_analysis_opportunity(
+    gap_analysis_opportunity_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    gap_analysis_id BIGINT UNSIGNED NOT NULL   COMMENT '差距分析ID' ,
+    serial_number SMALLINT UNSIGNED    COMMENT '序列号' ,
+    gap_performance_name VARCHAR(64)    COMMENT '业绩差距名称' ,
+    gap_description VARCHAR(512)    COMMENT '差距描述' ,
+    root_cause_analysis VARCHAR(512)    COMMENT '根因分析' ,
+    root_cause_category VARCHAR(64)    COMMENT '根因类别' ,
+    root_cause_subtype VARCHAR(64)    COMMENT '根因子类' ,
+    recommended_practice VARCHAR(512)    COMMENT '建议措施' ,
+    propose_employee_id BIGINT UNSIGNED    COMMENT '提出人员ID' ,
+    propose_employee_name VARCHAR(64)    COMMENT '提出人员姓名' ,
+    propose_employee_code VARCHAR(32)    COMMENT '提出人员编码' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (gap_analysis_opportunity_id)
+)  COMMENT = '机会差距表';
+
+
+CREATE TABLE gap_analysis_operate(
+    gap_analysis_operate_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    gap_analysis_id BIGINT UNSIGNED NOT NULL   COMMENT '差距分析ID' ,
+    indicator_id BIGINT UNSIGNED NOT NULL   COMMENT '指标ID' ,
+    indicator_name VARCHAR(64)    COMMENT '指标名称' ,
+    target_value DECIMAL(14,2)    COMMENT '目标值' ,
+    actual_value DECIMAL(14,2)    COMMENT '实际值' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (gap_analysis_operate_id)
+)  COMMENT = '差距分析经营情况表';
