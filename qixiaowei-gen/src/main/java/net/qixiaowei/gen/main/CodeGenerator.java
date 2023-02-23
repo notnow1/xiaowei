@@ -17,25 +17,31 @@ public class CodeGenerator {
 
     private static final String projectPath = System.getProperties().getProperty("user.dir");
     //项目名称
-    private static final String module_name = "system-manage";
+    private static final String module_name = "strategy-cloud";
     //项目路径
-    private static final String module_path = "system/manage";
+    private static final String module_path = "strategy/cloud";
     //包名 不加为默认值 如不加service创建类 加为service.tenant创建类
-    private static final String extend_Package = "/post" ;
+    private static final String extend_Package = "/strategy" ;
     //表名
-    private static final String tables = "post" ;
+    private static final String tables = "strategy_intent" ;
     //生成文件的作者名
     private static final String author ="TANGMICHI" ;
     //数据库配置
-    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/system_manage";
+    private static final String url = "jdbc:mysql://db-dev.qixiaowei.net:31194/strategy_cloud";
     private static final String username = "qxwopr";
     private static final String password = "7fpJR7i2";
 
 
     //实体类 默认生成 不生成改为false
     private static final boolean default_entity = false;
+    //枚举类
+    private static final boolean default_enum = true;
+    //枚举类service实现类1
+    private static final boolean default_enum_FieldConfigImpl = true;
+    //枚举类service实现类2
+    private static final boolean default_enum_FieldListConfigImpl = true;
     //支持生成Excel生成导入导出
-    private static final boolean default_excel = true;
+    private static final boolean default_excel = false;
     //DTO类
     private static final boolean default_DTO = false;
     //controller类
@@ -59,13 +65,20 @@ public class CodeGenerator {
 
     // 实体类 出参 入参 输出目录 因固定实体类和dto生成路径 不需要修改！！！！
     private static final String entityAndDtoPath = projectPath + api_default + qixiaowei_name + module_name + "-api" + common_default_path + module_path + "/api";
-
+    // 实体类 出参 入参 输出目录 因固定实体类和dto生成路径 不需要修改！！！！
+    private static final String enumPath = projectPath+"/qixiaowei-integration/qixiaowei-integration-common/src/main/java/net/qixiaowei/integration/common/enums";
 
     //controller输出目录
     private static final String generatePath = projectPath + service_default + qixiaowei_name + module_name + common_default_path + module_path;
 
     //实体类package
     private static final String entityPackage = "domain" + extend_Package;
+    //枚举package
+    private static final String enumPackage = "field"+ extend_Package;
+    //枚举实现类1package
+    private static final String enumServiceImplFieldConfigImplPackage = "logic/impl/field";
+    //枚举实现类2package
+    private static final String enumServiceImplFieldListConfigImplPackage = "logic/impl/field/list";
     //Excel
     private static final String excelPackage = "excel" + extend_Package;
 
@@ -139,6 +152,9 @@ public class CodeGenerator {
             //自定义模板参数（定义的这些参数可以在我们的Freemark模板中使用&{}语法取到该值，比如 &{requestMapping}）
             objectMap.put("requestMapping", StringUtils.firstToLowerCase(entityName));
             objectMap.put("entityPackage", s + ".api." + entityPackage.replaceAll("/", "."));
+            objectMap.put("enumPackage", "net.qixiaowei.integration.common.enums." + enumPackage.replaceAll("/", "."));
+            objectMap.put("enumServiceImplFieldConfigImplPackage", s+".logic.impl.field");
+            objectMap.put("enumServiceImplFieldListConfigImplPackage",s+".logic.impl.field.list");
             objectMap.put("packageName", s);
             objectMap.put("dtoPackage", s + ".api." + dtoPackage.replaceAll("/", "."));
             objectMap.put("controllerPackage", s + "." + controllerPackage.replaceAll("/", "."));
@@ -166,6 +182,15 @@ public class CodeGenerator {
             if (default_excel) {          // excel类
                 customFile.put(entityName + "Excel" + StringPool.DOT_JAVA, "/template/excel.java.ftl");
                 customFile.put(entityName + "ImportListener" + StringPool.DOT_JAVA, "/template/excelListener.java.ftl");
+            }
+            if (default_enum) {          // 枚举类
+                customFile.put(entityName + "Field" + StringPool.DOT_JAVA, "/template/enum.java.ftl");
+            }
+            if (default_enum_FieldConfigImpl) {          // 枚举类service类
+                customFile.put(entityName + "FieldConfigImpl" + StringPool.DOT_JAVA, "/template/enumServiceFieldConfigImpl.java.ftl");
+            }
+            if (default_enum_FieldListConfigImpl) {          // 枚举类service实现类
+                customFile.put(entityName + "FieldListConfigImpl" + StringPool.DOT_JAVA, "/template/enumServiceFieldListConfigImpl.java.ftl");
             }
             if (default_DTO) {          // dto类
                 customFile.put(entityName + "DTO" + StringPool.DOT_JAVA, "/template/dto.java.ftl");
@@ -196,6 +221,23 @@ public class CodeGenerator {
                     //如果存在就删除
                     ExcelDiskUtils.deleteFile2(new File(fileName));
                 }//
+                else if (StringUtils.equals(key, entityName + "Field" + StringPool.DOT_JAVA)) {
+                    fileName = enumPath + "/" + enumPackage + "/" + key;
+                    //如果存在就删除
+                    ExcelDiskUtils.deleteFile2(new File(fileName));
+                }
+                //
+                else if (StringUtils.equals(key, entityName + "FieldConfigImpl" + StringPool.DOT_JAVA)) {
+                    fileName = generatePath + "/" + enumServiceImplFieldConfigImplPackage + "/" + key;
+                    //如果存在就删除
+                    ExcelDiskUtils.deleteFile2(new File(fileName));
+                }
+                //
+                else if (StringUtils.equals(key, entityName + "FieldListConfigImpl" + StringPool.DOT_JAVA)) {
+                    fileName = generatePath + "/" + enumServiceImplFieldListConfigImplPackage+ "/" + key;
+                    //如果存在就删除
+                    ExcelDiskUtils.deleteFile2(new File(fileName));
+                }
                 else if (StringUtils.equals(key, entityName + "Excel" + StringPool.DOT_JAVA)) {
                     fileName = generatePath + "/" + excelPackage + "/" + key;
                     //如果存在就删除
