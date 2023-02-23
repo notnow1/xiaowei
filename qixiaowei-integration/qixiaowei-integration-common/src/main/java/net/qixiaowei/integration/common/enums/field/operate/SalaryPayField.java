@@ -11,7 +11,7 @@ public enum SalaryPayField {
     EMPLOYEE_RANK_NAME("employee_rank_name", "职级"),
     TOTAL_WAGES("total_wages", "总工资包"),
     BONUS_AMOUNT("bonus_amount", "总奖金包"),
-    ALLOWANCE_AMOUNT("allowance_amount", "总扣减项"),
+    TOTAL_DEDUCTIONS("total_deductions", "总扣减项"),
     TOTAL_AMOUNT("total_amount", "总计"),
     PAY_AMOUNT("pay_amount", "实发"),
     ;

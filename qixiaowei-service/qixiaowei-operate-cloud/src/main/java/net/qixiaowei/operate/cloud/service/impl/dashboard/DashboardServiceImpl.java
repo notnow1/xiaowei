@@ -225,7 +225,7 @@ public class DashboardServiceImpl implements IDashboardService {
             } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.INCOME.getCode())) {
                 indicatorDTO.setIndicatorName("销售收入");
             } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.RECEIVABLE.getCode())) {
-                indicatorDTO.setIndicatorName("销售回款（含税）");
+                indicatorDTO.setIndicatorName("回款金额（含税）");
             }
         }
     }
@@ -251,7 +251,7 @@ public class DashboardServiceImpl implements IDashboardService {
                     targetAchieveRate.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetAchieveRate.setIndicatorCode(IndicatorCode.INCOME.getCode());
                 } else if (indicatorDTO.getIndicatorCode().equals(IndicatorCode.RECEIVABLE.getCode())) {
-                    targetAchieveRate.setIndicatorName("销售回款（含税）");
+                    targetAchieveRate.setIndicatorName("回款金额（含税）");
                     targetAchieveRate.setIndicatorId(indicatorDTO.getIndicatorId());
                     targetAchieveRate.setIndicatorCode(IndicatorCode.RECEIVABLE.getCode());
                 }
