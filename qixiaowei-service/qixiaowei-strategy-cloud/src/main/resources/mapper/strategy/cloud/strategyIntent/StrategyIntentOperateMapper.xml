@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.strategyIntent.StrategyIntentOperateMapper">
+    <!--    查询战略意图经营表-->
+    <select id="selectStrategyIntentOperateByStrategyIntentOperateId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
+        SELECT
+        strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent_operate
+        WHERE  strategy_intent_operate_id=#{strategyIntentOperateId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询战略意图经营表-->
+    <select id="selectStrategyIntentOperateByStrategyIntentOperateIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
+        SELECT
+        strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent_operate
+        WHERE  strategy_intent_operate_id in
+            <foreach item="item"
+                     collection="strategyIntentOperateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询战略意图经营表列表-->
+    <select id="selectStrategyIntentOperateList" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
+        SELECT
+        strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent_operate
+        WHERE delete_flag=0
+                        <if test="strategyIntentOperate.strategyIntentOperateId != null">
+                            and strategy_intent_operate_id=#{strategyIntentOperate.strategyIntentOperateId}
+                        </if>
+                        <if test="strategyIntentOperate.strategyIntentId != null">
+                            and strategy_intent_id=#{strategyIntentOperate.strategyIntentId}
+                        </if>
+                        <if test="strategyIntentOperate.indicatorId != null">
+                            and indicator_id=#{strategyIntentOperate.indicatorId}
+                        </if>
+                        <if test="strategyIntentOperate.indicatorName != null and strategyIntentOperate.indicatorName != ''">
+                            and indicator_name=#{strategyIntentOperate.indicatorName}
+                        </if>
+                        <if test="strategyIntentOperate.operateYear != null">
+                            and operate_year=#{strategyIntentOperate.operateYear}
+                        </if>
+                        <if test="strategyIntentOperate.operateValue != null">
+                            and operate_value=#{strategyIntentOperate.operateValue}
+                        </if>
+                        <if test="strategyIntentOperate.sort != null">
+                            and sort=#{strategyIntentOperate.sort}
+                        </if>
+                        <if test="strategyIntentOperate.deleteFlag != null">
+                            and delete_flag=#{strategyIntentOperate.deleteFlag}
+                        </if>
+                        <if test="strategyIntentOperate.createBy != null">
+                            and create_by=#{strategyIntentOperate.createBy}
+                        </if>
+                        <if test="strategyIntentOperate.createTime != null">
+                            and create_time=#{strategyIntentOperate.createTime}
+                        </if>
+                        <if test="strategyIntentOperate.updateBy != null">
+                            and update_by=#{strategyIntentOperate.updateBy}
+                        </if>
+                        <if test="strategyIntentOperate.updateTime != null">
+                            and update_time=#{strategyIntentOperate.updateTime}
+                        </if>
+    </select>
+    <!--新增战略意图经营表-->
+    <insert id="insertStrategyIntentOperate" useGeneratedKeys="true" keyProperty="strategyIntentOperateId">
+        INSERT INTO strategy_intent_operate (strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{strategyIntentOperate.strategyIntentId},#{strategyIntentOperate.indicatorId},#{strategyIntentOperate.indicatorName},#{strategyIntentOperate.operateYear},#{strategyIntentOperate.operateValue},#{strategyIntentOperate.sort},#{strategyIntentOperate.deleteFlag},#{strategyIntentOperate.createBy},#{strategyIntentOperate.createTime},#{strategyIntentOperate.updateBy},#{strategyIntentOperate.updateTime})
+    </insert>
+    <!--修改战略意图经营表-->
+    <update id="updateStrategyIntentOperate">
+        UPDATE strategy_intent_operate
+        SET
+                    <if test="strategyIntentOperate.strategyIntentId != null">
+                        strategy_intent_id=#{strategyIntentOperate.strategyIntentId},
+                    </if>
+                    <if test="strategyIntentOperate.indicatorId != null">
+                        indicator_id=#{strategyIntentOperate.indicatorId},
+                    </if>
+                    <if test="strategyIntentOperate.indicatorName != null and strategyIntentOperate.indicatorName != ''">
+                        indicator_name=#{strategyIntentOperate.indicatorName},
+                    </if>
+                    <if test="strategyIntentOperate.operateYear != null">
+                        operate_year=#{strategyIntentOperate.operateYear},
+                    </if>
+                    <if test="strategyIntentOperate.operateValue != null">
+                        operate_value=#{strategyIntentOperate.operateValue},
+                    </if>
+                    <if test="strategyIntentOperate.sort != null">
+                        sort=#{strategyIntentOperate.sort},
+                    </if>
+                    <if test="strategyIntentOperate.deleteFlag != null">
+                        delete_flag=#{strategyIntentOperate.deleteFlag},
+                    </if>
+                    <if test="strategyIntentOperate.createBy != null">
+                        create_by=#{strategyIntentOperate.createBy},
+                    </if>
+                    <if test="strategyIntentOperate.createTime != null">
+                        create_time=#{strategyIntentOperate.createTime},
+                    </if>
+                    <if test="strategyIntentOperate.updateBy != null">
+                        update_by=#{strategyIntentOperate.updateBy},
+                    </if>
+                    <if test="strategyIntentOperate.updateTime != null">
+                        update_time=#{strategyIntentOperate.updateTime}
+                    </if>
+        WHERE
+                 strategy_intent_operate_id=#{strategyIntentOperate.strategyIntentOperateId}
+    </update>
+    <!--逻辑删除战略意图经营表-->
+    <update id="logicDeleteStrategyIntentOperateByStrategyIntentOperateId">
+        UPDATE strategy_intent_operate
+        SET     delete_flag= 1,
+                update_by=#{strategyIntentOperate.updateBy},
+                update_time=#{strategyIntentOperate.updateTime}
+        WHERE
+                strategy_intent_operate_id=#{strategyIntentOperate.strategyIntentOperateId}
+    </update>
+    <!--逻辑批量删除战略意图经营表-->
+    <update id="logicDeleteStrategyIntentOperateByStrategyIntentOperateIds">
+        UPDATE strategy_intent_operate
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         strategy_intent_operate_id IN
+            <foreach item="item"
+                     collection="strategyIntentOperateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增战略意图经营表-->
+    <insert id="batchStrategyIntentOperate">
+        INSERT INTO strategy_intent_operate (strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="strategyIntentOperates"
+                 separator=",">
+            (#{item.strategyIntentId},#{item.indicatorId},#{item.indicatorName},#{item.operateYear},#{item.operateValue},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除战略意图经营表-->
+    <delete id="deleteStrategyIntentOperateByStrategyIntentOperateId">
+        DELETE FROM strategy_intent_operate
+        WHERE  strategy_intent_operate_id=#{strategyIntentOperate}
+
+    </delete>
+    <!--物理批量删除战略意图经营表-->
+    <delete id="deleteStrategyIntentOperateByStrategyIntentOperateIds">
+        DELETE FROM strategy_intent_operate
+        WHERE  strategy_intent_operate_id IN
+            <foreach item="item"
+                     collection="strategyIntentOperateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改战略意图经营表-->
+    <update id="updateStrategyIntentOperates">
+        update strategy_intent_operate
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="strategy_intent_id=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.strategyIntentId != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.strategyIntentId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="indicator_id=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.indicatorId != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.indicatorId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="indicator_name=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.indicatorName != null and item.indicatorName != ''">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.indicatorName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="operate_year=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.operateYear != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.operateYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="operate_value=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.operateValue != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.operateValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="strategyIntentOperateList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="strategyIntentOperateList" separator="or" item="item" index="index">
+                    strategy_intent_operate_id=#{item.strategyIntentOperateId}
+        </foreach>
+    </update>
+</mapper>
+
+

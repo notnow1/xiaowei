@@ -12,67 +12,59 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 战略意图表
+* 战略意图经营表
 * @author TANGMICHI
 * @since 2023-02-23
 */
 @Data
 @Accessors(chain = true)
-public class StrategyIntentDTO {
+public class StrategyIntentOperateDTO {
 
     //查询检验
-    public interface QueryStrategyIntentDTO extends Default{
+    public interface QueryStrategyIntentOperateDTO extends Default{
 
     }
     //新增检验
-    public interface AddStrategyIntentDTO extends Default{
+    public interface AddStrategyIntentOperateDTO extends Default{
 
     }
 
     //删除检验
-    public interface DeleteStrategyIntentDTO extends Default{
+    public interface DeleteStrategyIntentOperateDTO extends Default{
 
     }
     //修改检验
-    public interface UpdateStrategyIntentDTO extends Default{
+    public interface UpdateStrategyIntentOperateDTO extends Default{
 
     }
     /**
     * ID
     */
+    private  Long strategyIntentOperateId;
+    /**
+    * 战略意图ID
+    */
     private  Long strategyIntentId;
     /**
-    * 规划年度
+    * 指标ID
     */
-    private  Integer planYear;
+    private  Long indicatorId;
     /**
-    * 愿景
+    * 指标名称
     */
-    private  String vision;
+    private  String indicatorName;
     /**
-    * 使命
+    * 经营年度
     */
-    private  String mission;
+    private  Integer operateYear;
     /**
-    * 战略定位
+    * 经营值
     */
-    private  String strategyTarget;
+    private  BigDecimal operateValue;
     /**
-    * 战略目标
+    * 排序
     */
-    private  String strategyPosition;
-    /**
-    * 经营规划期
-    */
-    private  Integer operatePlanPeriod;
-    /**
-    * 经营历史年份
-    */
-    private  Integer operateHistoryYear;
-    /**
-     * 战略意图经营表
-     */
-    private List<StrategyIntentOperateDTO> strategyIntentOperateDTOS;
+    private  Integer sort;
     /**
     * 删除标记:0未删除;1已删除
     */
@@ -104,5 +96,9 @@ public class StrategyIntentDTO {
     * 请求参数
     */
     private Map<String, Object> params;
+    /**
+     * 请求参数
+     */
+    private List<Map<Integer, BigDecimal>> yearValues;
 }
 
