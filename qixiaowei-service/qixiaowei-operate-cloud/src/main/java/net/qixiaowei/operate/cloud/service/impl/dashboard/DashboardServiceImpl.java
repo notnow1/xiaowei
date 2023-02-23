@@ -907,7 +907,7 @@ public class DashboardServiceImpl implements IDashboardService {
                 }
                 //公式=（实际值合计-预测值合计）/实际值合计。
                 if (cycleActualSum.compareTo(BigDecimal.ZERO) != 0) {
-                    deviationRate = (cycleActualSum.subtract(cycleForecastSum)).divide(cycleActualSum, 2, RoundingMode.HALF_UP);
+                    deviationRate = (cycleActualSum.subtract(cycleForecastSum)).multiply(new BigDecimal(100)).divide(cycleActualSum, 2, RoundingMode.HALF_UP);
                 }
                 targetLeaderboard.setTargetDecomposeDetailsName(targetDecomposeDetailsName);
                 targetLeaderboard.setCycleActualSum(cycleActualSum);
@@ -924,7 +924,8 @@ public class DashboardServiceImpl implements IDashboardService {
             targetLeaderboardDTO.setRanking(i);
         }
         List<BigDecimal> cycleActual = targetLeaderboardDTORevers.stream().map(TargetLeaderboardDTO::getCycleActualSum).collect(Collectors.toList());
-        List<String> targetDecomposeDetailsNames = targetLeaderboardDTORevers.stream().map(TargetLeaderboardDTO::getTargetDecomposeDetailsName).collect(Collectors.toList());
+        List<String> targetDecomposeDetailsNames = targetLeaderboardDTOS.stream().sorted(Comparator.comparing(TargetLeaderboardDTO::getCycleActualSum)).collect(Collectors.toList())
+                .stream().map(TargetLeaderboardDTO::getTargetDecomposeDetailsName).collect(Collectors.toList());
         Map<String, Object> map = new HashMap<>();
         map.put("cycleActual", cycleActual);
         map.put("targetLeaderboardDTORevers", targetLeaderboardDTORevers);
