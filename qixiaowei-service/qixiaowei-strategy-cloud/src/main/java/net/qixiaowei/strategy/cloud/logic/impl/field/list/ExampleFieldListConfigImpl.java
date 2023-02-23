@@ -1,4 +1,4 @@
-package net.qixiaowei.strategy.cloud.logic.impl.list;
+package net.qixiaowei.strategy.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.enums.field.system.UserField;
@@ -33,7 +33,6 @@ public class ExampleFieldListConfigImpl implements IFieldListConfigStrategy {
         INIT_USER.put(UserField.EMAIL.getCode(), FieldListConfig.builder().fieldWidth(150).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_USER.put(UserField.USER_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_USER.put(UserField.STATUS.getCode(), FieldListConfig.builder().fieldWidth(100).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_USER.put(UserField.CREATE_TIME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 

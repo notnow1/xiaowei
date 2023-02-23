@@ -1,4 +1,4 @@
-package net.qixiaowei.strategy.cloud.logic.impl;
+package net.qixiaowei.strategy.cloud.logic.impl.field;
 
 import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.enums.field.FieldType;
@@ -32,7 +32,6 @@ public class ExampleFieldConfigImpl implements IFieldConfigStrategy {
         INIT_USER.put(UserField.EMAIL.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.EMAIL.getCode()).fieldLabel(UserField.EMAIL.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
         INIT_USER.put(UserField.USER_NAME.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.USER_NAME.getCode()).fieldLabel(UserField.USER_NAME.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
         INIT_USER.put(UserField.STATUS.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.STATUS.getCode()).fieldLabel(UserField.STATUS.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
-        INIT_USER.put(UserField.CREATE_TIME.getCode(), FieldConfig.builder().businessType(BusinessType.USER.getCode()).fieldName(UserField.CREATE_TIME.getCode()).fieldLabel(UserField.CREATE_TIME.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
     }
 
 
