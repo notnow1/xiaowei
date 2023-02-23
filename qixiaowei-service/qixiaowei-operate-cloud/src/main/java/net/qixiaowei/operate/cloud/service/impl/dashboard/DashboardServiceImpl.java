@@ -785,8 +785,7 @@ public class DashboardServiceImpl implements IDashboardService {
      * @param targetLeaderboardDTO1 仪表盘
      * @return TargetDecomposeDTO
      */
-    private TargetDecomposeDTO getTargetDecomposeDTO(Integer timeDimension, Long targetLeaderboardDTO, Long
-            targetLeaderboardDTO1) {
+    private TargetDecomposeDTO getTargetDecomposeDTO(Integer timeDimension, Long targetLeaderboardDTO, Long targetLeaderboardDTO1) {
         TargetDecomposeDTO targetDecomposeDTO = new TargetDecomposeDTO();
         targetDecomposeDTO.setTimeDimension(timeDimension);
         targetDecomposeDTO.setIndicatorId(targetLeaderboardDTO);
@@ -904,11 +903,11 @@ public class DashboardServiceImpl implements IDashboardService {
                 BigDecimal deviationRate = BigDecimal.ZERO;
                 //公式=实际值合计/目标值合计。
                 if (cycleTargetSum.compareTo(BigDecimal.ZERO) != 0) {
-                    completionRate = cycleActualSum.divide(cycleTargetSum, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                    completionRate = cycleActualSum.multiply(new BigDecimal(100)).divide(cycleTargetSum, 2, RoundingMode.HALF_UP);
                 }
                 //公式=（实际值合计-预测值合计）/实际值合计。
                 if (cycleActualSum.compareTo(BigDecimal.ZERO) != 0) {
-                    deviationRate = (cycleActualSum.subtract(cycleForecastSum)).divide(cycleActualSum, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                    deviationRate = (cycleActualSum.subtract(cycleForecastSum)).divide(cycleActualSum, 2, RoundingMode.HALF_UP);
                 }
                 targetLeaderboard.setTargetDecomposeDetailsName(targetDecomposeDetailsName);
                 targetLeaderboard.setCycleActualSum(cycleActualSum);
@@ -919,7 +918,7 @@ public class DashboardServiceImpl implements IDashboardService {
         }
         // 降序
         List<TargetLeaderboardDTO> targetLeaderboardDTORevers =
-                targetLeaderboardDTOS.stream().sorted(Comparator.comparing(TargetLeaderboardDTO::getCycleActualSum, Comparator.reverseOrder())).collect(Collectors.toList());
+                targetLeaderboardDTOS.stream().sorted(Comparator.comparing(TargetLeaderboardDTO::getCycleActualSum).reversed()).collect(Collectors.toList());
         for (int i = 1; i < targetLeaderboardDTORevers.size() + 1; i++) {
             TargetLeaderboardDTO targetLeaderboardDTO = targetLeaderboardDTORevers.get(i - 1);
             targetLeaderboardDTO.setRanking(i);
@@ -1010,11 +1009,11 @@ public class DashboardServiceImpl implements IDashboardService {
             BigDecimal deviationRate = BigDecimal.ZERO;
             //公式=实际值合计/目标值合计。
             if (cycleTargetSum.compareTo(BigDecimal.ZERO) != 0) {
-                completionRate = cycleActualSum.divide(cycleTargetSum, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                completionRate = cycleActualSum.multiply(new BigDecimal(100)).divide(cycleTargetSum, 2, RoundingMode.HALF_UP);
             }
             //公式=（实际值合计-预测值合计）/实际值合计。
             if (cycleActualSum.compareTo(BigDecimal.ZERO) != 0) {
-                deviationRate = (cycleActualSum.subtract(cycleForecastSum)).divide(cycleActualSum, 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+                deviationRate = (cycleActualSum.subtract(cycleForecastSum)).multiply(new BigDecimal(100)).divide(cycleActualSum, 2, RoundingMode.HALF_UP);
             }
             targetAchieveAnalysis.setCycleNumber(targetYear);
             targetAchieveAnalysis.setCycleTargetSum(cycleTargetSum);
@@ -1058,11 +1057,11 @@ public class DashboardServiceImpl implements IDashboardService {
                 BigDecimal deviationRate = BigDecimal.ZERO;
                 //公式=实际值合计/目标值合计。
                 if (cycleTargetSum.compareTo(BigDecimal.ZERO) != 0) {
-                    completionRate = cycleActualSum.divide(cycleTargetSum, 2, RoundingMode.HALF_UP);
+                    completionRate = cycleActualSum.multiply(new BigDecimal(100)).divide(cycleTargetSum, 2, RoundingMode.HALF_UP);
                 }
                 //公式=（实际值合计-预测值合计）/实际值合计。
                 if (cycleActualSum.compareTo(BigDecimal.ZERO) != 0) {
-                    deviationRate = (cycleActualSum.subtract(cycleForecastSum)).divide(cycleActualSum, 2, RoundingMode.HALF_UP);
+                    deviationRate = (cycleActualSum.subtract(cycleForecastSum)).multiply(new BigDecimal(100)).divide(cycleActualSum, 2, RoundingMode.HALF_UP);
                 }
                 targetAchieveAnalysis.setCycleNumber(integer);
                 targetAchieveAnalysis.setCycleTargetSum(cycleTargetSum);
