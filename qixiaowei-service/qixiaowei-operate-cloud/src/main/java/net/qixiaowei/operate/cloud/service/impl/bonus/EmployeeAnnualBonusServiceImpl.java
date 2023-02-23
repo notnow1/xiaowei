@@ -251,10 +251,10 @@ public class EmployeeAnnualBonusServiceImpl implements IEmployeeAnnualBonusServi
         try {
             BeanUtils.copyProperties(employeeAnnualBonusDTO, employeeAnnualBonus);
             if (commentFlag == 0) {
-                employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
                 if (submitFlag == 0) {
                     employeeAnnualBonus.setStatus(0);
                 } else {
+                    employeeAnnualBonus.setCommentDate(DateUtils.getNowDate());
                     employeeAnnualBonus.setStatus(3);
                 }
             }
