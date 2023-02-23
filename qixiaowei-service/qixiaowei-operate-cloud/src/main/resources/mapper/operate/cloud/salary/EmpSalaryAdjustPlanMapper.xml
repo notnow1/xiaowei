@@ -189,6 +189,86 @@
         <if test="empSalaryAdjustPlan.params.basicWage != null">
             and ess.basic_wage=#{empSalaryAdjustPlan.params.basicWage}
         </if>
+        <if test="(empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0)
+                or (empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0)">
+            AND( 1 != 1
+        </if>
+        <!--司龄seniority等于-->
+        <if test="empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeEqual.contains(1)">
+            OR (
+            ess.seniority NOT LIKE concat( '%', '年', '%' )
+            AND ess.seniority IS NOT NULL)
+        </if>
+        <if test="empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeEqual.contains(2)">
+            OR (
+            SUBSTRING_INDEX( ess.seniority, '年', 1 ) &gt;= 1
+            AND SUBSTRING_INDEX( ess.seniority, '年', 1 ) &lt; 3
+            AND ess.seniority IS NOT NULL)
+        </if>
+        <if test="empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeEqual.contains(3)">
+            OR (
+            SUBSTRING_INDEX( ess.seniority, '年', 1 ) &gt;= 3
+            AND SUBSTRING_INDEX( ess.seniority, '年', 1 ) &lt; 5
+            AND ess.seniority IS NOT NULL)
+        </if>
+        <if test="empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeEqual.contains(4)">
+            OR (
+            SUBSTRING_INDEX( ess.seniority, '年', 1 ) &gt;= 5
+            AND SUBSTRING_INDEX( ess.seniority, '年', 1 ) &lt; 10
+            AND ess.seniority IS NOT NULL)
+        </if>
+        <if test="empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeEqual.contains(5)">
+            OR (
+            SUBSTRING_INDEX( ess.seniority, '年', 1 ) &gt;= 10
+            AND ess.seniority IS NOT NULL)
+        </if>
+        <!--司龄ess.seniority不等于-->
+        <if test="empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeNotEqual.contains(1)">
+            OR (
+            ess.seniority LIKE concat( '%', '年', '%' )
+            OR ess.seniority IS NULL)
+        </if>
+        <if test="empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeNotEqual.contains(2)">
+            OR (
+            SUBSTRING_INDEX( ess.seniority, '年', 1 ) &lt; 1
+            OR SUBSTRING_INDEX( ess.seniority, '年', 1 ) &gt;= 3
+            OR ess.seniority NOT LIKE concat( '%', '年', '%' )
+            OR ess.seniority IS NULL)
+        </if>
+        <if test="empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeNotEqual.contains(3)">
+            OR (
+            SUBSTRING_INDEX( ess.seniority, '年', 1 ) &lt; 3
+            OR SUBSTRING_INDEX( ess.seniority, '年', 1 ) &gt;= 5
+            OR ess.seniority NOT LIKE concat( '%', '年', '%' )
+            OR ess.seniority IS NULL)
+        </if>
+        <if test="empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeNotEqual.contains(4)">
+            OR (
+            SUBSTRING_INDEX( ess.seniority, '年', 1 ) &lt; 5
+            OR SUBSTRING_INDEX( ess.seniority, '年', 1 ) &gt;= 10
+            OR ess.seniority NOT LIKE concat( '%', '年', '%' )
+            OR ess.seniority IS NULL)
+        </if>
+        <if test="empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0
+                            and empSalaryAdjustPlan.params.workingAgeNotEqual.contains(5)">
+            OR (
+            SUBSTRING_INDEX( ess.seniority, '年', 1 ) &lt; 10
+            OR ess.seniority NOT LIKE concat( '%', '年', '%' )
+            OR ess.seniority IS NULL)
+        </if>
+        <if test="(empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0)
+                or (empSalaryAdjustPlan.params.workingAgeNotEqual != null and empSalaryAdjustPlan.params.workingAgeNotEqual.size() > 0)">
+            )
+        </if>
         <!--    员工过滤-->
         <if test="empSalaryAdjustPlan.params.employeeNameEqual != null and empSalaryAdjustPlan.params.employeeNameEqual.size() > 0">
             AND ess.employee_name IN
@@ -272,26 +352,6 @@
             AND ess.employment_date IN
             <foreach item="item"
                      collection="empSalaryAdjustPlan.params.employmentDateEqual"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="empSalaryAdjustPlan.params.employmentDateNotEqual != null and empSalaryAdjustPlan.params.employmentDateNotEqual.size() > 0">
-            AND (ess.employment_date NOT IN
-            <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.employmentDateNotEqual"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-            OR ess.employment_date IS NULL
-            )
-        </if>
-        <!--司龄seniority-->
-        <if test="empSalaryAdjustPlan.params.workingAgeEqual != null and empSalaryAdjustPlan.params.workingAgeEqual.size() > 0">
-            AND ess.employment_date
-            DATE_SUB(SYSDATE(),INTERVAL 1 day)
-            <foreach item="item"
-                     collection="empSalaryAdjustPlan.params.workingAgeEqual"
                      index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>

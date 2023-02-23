@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -267,6 +266,23 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         }
         EmpSalaryAdjustPlan empSalaryAdjustPlan = new EmpSalaryAdjustPlan();
         empSalaryAdjustPlan.setParams(params);
+        Map<String, Object> params1 = empSalaryAdjustPlan.getParams();
+        List<String> workingAgeEqualList = (List<String>) params1.get("workingAgeEqual");
+        List<String> workingAgeNotEqualList = (List<String>) params1.get("workingAgeNotEqual");
+        List<Integer> workingAgeEqual = new ArrayList<>();
+        List<Integer> workingAgeNotEqual = new ArrayList<>();
+        if (StringUtils.isNotNull(workingAgeEqualList)){
+            for (String s : workingAgeEqualList) {
+                workingAgeEqual.add(Integer.valueOf(s));
+            }
+            params1.put("workingAgeEqual", workingAgeEqual);
+        }
+        if (StringUtils.isNotNull(workingAgeNotEqualList)){
+            for (String s : workingAgeNotEqualList) {
+                workingAgeNotEqual.add(Integer.valueOf(s));
+            }
+            params1.put("workingAgeNotEqual", workingAgeNotEqual);
+        }
         List<EmpSalaryAdjustPlanDTO> empSalaryAdjustPlanDTOS = empSalaryAdjustPlanMapper.selectEmpSalaryAdjustPlanList(empSalaryAdjustPlan);
         for (EmpSalaryAdjustPlanDTO salaryAdjustPlanDTO : empSalaryAdjustPlanDTOS) {
             String adjustmentType = salaryAdjustPlanDTO.getAdjustmentType();

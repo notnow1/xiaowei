@@ -61,4 +61,12 @@ public interface IDashboardService {
      * @return List
      */
     List<Map<String, Object>> timeDropList(Long indicatorId, Long targetDecomposeDimensionId);
+
+    /**
+     * 最近一次的分解维度信息
+     *
+     * @return Map
+     */
+    Map<String, Object> getLastTimeDecompose();
+
 }

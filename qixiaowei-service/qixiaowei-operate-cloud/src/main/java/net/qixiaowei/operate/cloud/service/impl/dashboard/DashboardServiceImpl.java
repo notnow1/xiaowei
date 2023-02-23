@@ -347,6 +347,7 @@ public class DashboardServiceImpl implements IDashboardService {
             targetAchieveAnalysisDTOS.addAll(targetDecomposeMapper.selectAchieveAnalysisDecompose(targetDecomposeDTO));
         }
         if (StringUtils.isEmpty(targetAchieveAnalysisDTOS)) {
+            // todo 这里加参数 开始周期和结束周期
             return setMapZero(timeDimension, startYear, endYear);
         }
         Map<Integer, List<TargetAchieveAnalysisDTO>> groupTargetAchieveAnalysisDTOS = targetAchieveAnalysisDTOS.stream().collect(Collectors.groupingBy(TargetAchieveAnalysisDTO::getTargetYear));
@@ -1162,4 +1163,48 @@ public class DashboardServiceImpl implements IDashboardService {
         return timeDimensionDTOS;
     }
 
+    /**
+     * 最近一次的分解维度信息
+     *
+     * @return Map
+     */
+    @Override
+    public Map<String, Object> getLastTimeDecompose() {
+        Map<String, Object> map = new HashMap<>();
+        List<TargetAchieveAnalysisDTO> targetAchieveAnalysisDTOS = targetDecomposeMapper.selectRecentDecompose();
+        if (StringUtils.isEmpty(targetAchieveAnalysisDTOS)) {
+            return null;
+        }
+        TargetAchieveAnalysisDTO targetAchieveAnalysisDTO = targetAchieveAnalysisDTOS.get(0);
+        if (StringUtils.isNotNull(targetAchieveAnalysisDTO.getIndicatorId())) {
+            R<IndustryDTO> industryDTOR = remoteIndustryService.selectById(targetAchieveAnalysisDTO.getIndicatorId(), SecurityConstants.INNER);
+            IndustryDTO industryDTO = industryDTOR.getData();
+            if (StringUtils.isNull(industryDTO)) {
+                throw new ServiceException("目标分解数据异常 请联系管理员");
+            }
+            map.put("indicatorName", industryDTO.getIndustryName());
+        }
+        Integer timeDimension = targetAchieveAnalysisDTO.getTimeDimension();
+        if (StringUtils.isNotNull(timeDimension)) {
+            switch (timeDimension) {
+                case 1:
+                    map.put("timeDimensionName", "年度");
+                    break;
+                case 2:
+                    map.put("timeDimensionName", "半年度");
+                    break;
+                case 3:
+                    map.put("timeDimensionName", "季度");
+                    break;
+                case 4:
+                    map.put("timeDimensionName", "月度");
+                    break;
+            }
+        }
+        String decompositionDimension = targetAchieveAnalysisDTO.getDecompositionDimension();
+        if (StringUtils.isNotNull(decompositionDimension)) {
+            map.put("decompositionDimension", decompositionDimension);
+        }
+        return map;
+    }
 }

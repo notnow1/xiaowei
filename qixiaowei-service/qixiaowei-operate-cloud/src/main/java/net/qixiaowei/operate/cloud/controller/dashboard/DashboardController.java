@@ -83,4 +83,13 @@ public class DashboardController extends BaseController {
         return AjaxResult.success(dashboardService.timeDropList(indicatorId, targetDecomposeDimensionId));
     }
 
+    /**
+     * 最近一次的分解维度信息
+     */
+    @RequiresPermissions("operate:cloud:dashboard:target")
+    @GetMapping("/targetLeaderboard/getLastTimeDecompose")
+    public AjaxResult getLastTimeDecompose() {
+        return AjaxResult.success(dashboardService.getLastTimeDecompose());
+    }
+
 }

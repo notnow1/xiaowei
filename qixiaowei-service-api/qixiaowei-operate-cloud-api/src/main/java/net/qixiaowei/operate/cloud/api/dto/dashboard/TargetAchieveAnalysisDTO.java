@@ -48,6 +48,10 @@ public class TargetAchieveAnalysisDTO {
     @NotNull(message = "指标ID不能为空", groups = {TargetAchieveAnalysisDTO.QueryTargetAchieveAnalysisDTO.class})
     private Long indicatorId;
     /**
+     * 指标名称
+     */
+    private String indicatorName;
+    /**
      * 目标分解维度ID
      */
     @NotNull(message = "目标分解维度ID不能为空", groups = {TargetAchieveAnalysisDTO.QueryTargetAchieveAnalysisDTO.class})
