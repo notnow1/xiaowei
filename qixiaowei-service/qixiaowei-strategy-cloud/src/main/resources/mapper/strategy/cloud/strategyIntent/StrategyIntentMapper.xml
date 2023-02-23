@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.strategyIntent.StrategyIntentMapper">
+    <!--    查询战略意图表-->
+    <select id="selectStrategyIntentByStrategyIntentId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO">
+        SELECT
+        strategy_intent_id,plan_year,vision,mission,strategy_target,strategy_position,operate_plan_period,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent
+        WHERE  strategy_intent_id=#{strategyIntentId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询战略意图表-->
+    <select id="selectStrategyIntentByStrategyIntentIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO">
+        SELECT
+        strategy_intent_id,plan_year,vision,mission,strategy_target,strategy_position,operate_plan_period,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent
+        WHERE  strategy_intent_id in
+            <foreach item="item"
+                     collection="strategyIntentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询战略意图表列表-->
+    <select id="selectStrategyIntentList" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO">
+        SELECT
+        strategy_intent_id,plan_year,vision,mission,strategy_target,strategy_position,operate_plan_period,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent
+        WHERE delete_flag=0
+                        <if test="strategyIntent.strategyIntentId != null">
+                            and strategy_intent_id=#{strategyIntent.strategyIntentId}
+                        </if>
+                        <if test="strategyIntent.planYear != null">
+                            and plan_year=#{strategyIntent.planYear}
+                        </if>
+                        <if test="strategyIntent.vision != null and strategyIntent.vision != ''">
+                            and vision=#{strategyIntent.vision}
+                        </if>
+                        <if test="strategyIntent.mission != null and strategyIntent.mission != ''">
+                            and mission=#{strategyIntent.mission}
+                        </if>
+                        <if test="strategyIntent.strategyTarget != null and strategyIntent.strategyTarget != ''">
+                            and strategy_target=#{strategyIntent.strategyTarget}
+                        </if>
+                        <if test="strategyIntent.strategyPosition != null and strategyIntent.strategyPosition != ''">
+                            and strategy_position=#{strategyIntent.strategyPosition}
+                        </if>
+                        <if test="strategyIntent.operatePlanPeriod != null">
+                            and operate_plan_period=#{strategyIntent.operatePlanPeriod}
+                        </if>
+                        <if test="strategyIntent.operateHistoryYear != null">
+                            and operate_history_year=#{strategyIntent.operateHistoryYear}
+                        </if>
+                        <if test="strategyIntent.deleteFlag != null">
+                            and delete_flag=#{strategyIntent.deleteFlag}
+                        </if>
+                        <if test="strategyIntent.createBy != null">
+                            and create_by=#{strategyIntent.createBy}
+                        </if>
+                        <if test="strategyIntent.createTime != null">
+                            and create_time=#{strategyIntent.createTime}
+                        </if>
+                        <if test="strategyIntent.updateBy != null">
+                            and update_by=#{strategyIntent.updateBy}
+                        </if>
+                        <if test="strategyIntent.updateTime != null">
+                            and update_time=#{strategyIntent.updateTime}
+                        </if>
+    </select>
+    <!--新增战略意图表-->
+    <insert id="insertStrategyIntent" useGeneratedKeys="true" keyProperty="strategyIntentId">
+        INSERT INTO strategy_intent (plan_year,vision,mission,strategy_target,strategy_position,operate_plan_period,operate_history_year,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{strategyIntent.planYear},#{strategyIntent.vision},#{strategyIntent.mission},#{strategyIntent.strategyTarget},#{strategyIntent.strategyPosition},#{strategyIntent.operatePlanPeriod},#{strategyIntent.operateHistoryYear},#{strategyIntent.deleteFlag},#{strategyIntent.createBy},#{strategyIntent.createTime},#{strategyIntent.updateBy},#{strategyIntent.updateTime})
+    </insert>
+    <!--修改战略意图表-->
+    <update id="updateStrategyIntent">
+        UPDATE strategy_intent
+        SET
+                    <if test="strategyIntent.planYear != null">
+                        plan_year=#{strategyIntent.planYear},
+                    </if>
+                    <if test="strategyIntent.vision != null and strategyIntent.vision != ''">
+                        vision=#{strategyIntent.vision},
+                    </if>
+                    <if test="strategyIntent.mission != null and strategyIntent.mission != ''">
+                        mission=#{strategyIntent.mission},
+                    </if>
+                    <if test="strategyIntent.strategyTarget != null and strategyIntent.strategyTarget != ''">
+                        strategy_target=#{strategyIntent.strategyTarget},
+                    </if>
+                    <if test="strategyIntent.strategyPosition != null and strategyIntent.strategyPosition != ''">
+                        strategy_position=#{strategyIntent.strategyPosition},
+                    </if>
+                    <if test="strategyIntent.operatePlanPeriod != null">
+                        operate_plan_period=#{strategyIntent.operatePlanPeriod},
+                    </if>
+                    <if test="strategyIntent.operateHistoryYear != null">
+                        operate_history_year=#{strategyIntent.operateHistoryYear},
+                    </if>
+                    <if test="strategyIntent.deleteFlag != null">
+                        delete_flag=#{strategyIntent.deleteFlag},
+                    </if>
+                    <if test="strategyIntent.createBy != null">
+                        create_by=#{strategyIntent.createBy},
+                    </if>
+                    <if test="strategyIntent.createTime != null">
+                        create_time=#{strategyIntent.createTime},
+                    </if>
+                    <if test="strategyIntent.updateBy != null">
+                        update_by=#{strategyIntent.updateBy},
+                    </if>
+                    <if test="strategyIntent.updateTime != null">
+                        update_time=#{strategyIntent.updateTime}
+                    </if>
+        WHERE
+                 strategy_intent_id=#{strategyIntent.strategyIntentId}
+    </update>
+    <!--逻辑删除战略意图表-->
+    <update id="logicDeleteStrategyIntentByStrategyIntentId">
+        UPDATE strategy_intent
+        SET     delete_flag= 1,
+                update_by=#{strategyIntent.updateBy},
+                update_time=#{strategyIntent.updateTime}
+        WHERE
+                strategy_intent_id=#{strategyIntent.strategyIntentId}
+    </update>
+    <!--逻辑批量删除战略意图表-->
+    <update id="logicDeleteStrategyIntentByStrategyIntentIds">
+        UPDATE strategy_intent
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         strategy_intent_id IN
+            <foreach item="item"
+                     collection="strategyIntentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增战略意图表-->
+    <insert id="batchStrategyIntent">
+        INSERT INTO strategy_intent (plan_year,vision,mission,strategy_target,strategy_position,operate_plan_period,operate_history_year,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="strategyIntents"
+                 separator=",">
+            (#{item.planYear},#{item.vision},#{item.mission},#{item.strategyTarget},#{item.strategyPosition},#{item.operatePlanPeriod},#{item.operateHistoryYear},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除战略意图表-->
+    <delete id="deleteStrategyIntentByStrategyIntentId">
+        DELETE FROM strategy_intent
+        WHERE  strategy_intent_id=#{strategyIntent}
+
+    </delete>
+    <!--物理批量删除战略意图表-->
+    <delete id="deleteStrategyIntentByStrategyIntentIds">
+        DELETE FROM strategy_intent
+        WHERE  strategy_intent_id IN
+            <foreach item="item"
+                     collection="strategyIntentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改战略意图表-->
+    <update id="updateStrategyIntents">
+        update strategy_intent
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="plan_year=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.planYear != null">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.planYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="vision=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.vision != null and item.vision != ''">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.vision}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="mission=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.mission != null and item.mission != ''">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.mission}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="strategy_target=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.strategyTarget != null and item.strategyTarget != ''">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.strategyTarget}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="strategy_position=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.strategyPosition != null and item.strategyPosition != ''">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.strategyPosition}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="operate_plan_period=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.operatePlanPeriod != null">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.operatePlanPeriod}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="operate_history_year=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.operateHistoryYear != null">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.operateHistoryYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="strategyIntentList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when strategy_intent_id=#{item.strategyIntentId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="strategyIntentList" separator="or" item="item" index="index">
+                    strategy_intent_id=#{item.strategyIntentId}
+        </foreach>
+    </update>
+</mapper>
+
+
