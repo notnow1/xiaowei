@@ -223,6 +223,15 @@
                             and si.update_time=#{strategyIntent.updateTime}
                         </if>
     </select>
+<!--    根据规划年度查询战略意图表-->
+    <select id="selectStrategyIntentByPlanYear"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO">
+        SELECT
+            strategy_intent_id,plan_year,vision,mission,strategy_target,strategy_position,operate_plan_period,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent
+        WHERE  plan_year=#{planYear}
+          and delete_flag=0
+    </select>
     <!--新增战略意图表-->
     <insert id="insertStrategyIntent" useGeneratedKeys="true" keyProperty="strategyIntentId">
         INSERT INTO strategy_intent (plan_year,vision,mission,strategy_target,strategy_position,operate_plan_period,operate_history_year,delete_flag,create_by,create_time,update_by,update_time)

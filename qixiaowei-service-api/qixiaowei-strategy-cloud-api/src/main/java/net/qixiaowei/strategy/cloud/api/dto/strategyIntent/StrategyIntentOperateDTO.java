@@ -76,7 +76,7 @@ public class StrategyIntentOperateDTO {
     /**
     * 创建时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private  Date  createTime;
     /**
     * 更新人
@@ -85,7 +85,7 @@ public class StrategyIntentOperateDTO {
     /**
     * 更新时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
     /**
     * 租户ID
@@ -97,7 +97,7 @@ public class StrategyIntentOperateDTO {
     */
     private Map<String, Object> params;
     /**
-     * 请求参数
+     * 年度指标对应值集合
      */
     private List<Map<Integer, BigDecimal>> yearValues;
 }

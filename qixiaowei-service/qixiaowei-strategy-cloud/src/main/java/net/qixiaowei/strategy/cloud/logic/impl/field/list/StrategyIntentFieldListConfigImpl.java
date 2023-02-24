@@ -28,9 +28,9 @@ public class StrategyIntentFieldListConfigImpl implements IFieldListConfigStrate
 
     static {
         INIT_MAP.put(StrategyIntentField.PLAN_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyIntentField.OPERATE_PLAN_PERIOD.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyIntentField.OPERATE_HISTORY_YEAR.getCode(), FieldListConfig.builder().fieldWidth(125).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyIntentField.CREATE_BY.getCode(), FieldListConfig.builder().fieldWidth(150).sort(4).showFlag(4).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyIntentField.OPERATE_PLAN_PERIOD.getCode(), FieldListConfig.builder().fieldWidth(130).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyIntentField.OPERATE_HISTORY_YEAR.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(StrategyIntentField.CREATE_BY.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(4).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
     @Override
     public BusinessType getBusinessType() {

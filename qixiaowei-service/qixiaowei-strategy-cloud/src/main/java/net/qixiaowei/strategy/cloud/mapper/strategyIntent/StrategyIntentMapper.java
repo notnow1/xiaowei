@@ -22,6 +22,13 @@ public interface StrategyIntentMapper{
     */
     StrategyIntentDTO selectStrategyIntentByStrategyIntentId(@Param("strategyIntentId")Long strategyIntentId);
 
+    /**
+     * 根据规划年度查询战略意图表
+     *
+     * @param planYear 战略意图表规划年度
+     * @return 战略意图表
+     */
+    StrategyIntentDTO selectStrategyIntentByPlanYear(@Param("planYear")Integer planYear);
 
     /**
     * 批量查询战略意图表

@@ -46,7 +46,11 @@
         dm.department_importance_factor,
         dm.department_description,
         dm.sort,
-        dm.status
+        dm.status,
+        dm.create_by,
+        dm.create_time,
+        dm.update_by,
+        dm.update_time
         from
         department dm
         left join employee ee

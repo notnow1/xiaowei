@@ -69,6 +69,31 @@
                             and update_time=#{strategyIntentOperate.updateTime}
                         </if>
     </select>
+<!--    根据战略意图主表主键查询战略意图经营表-->
+    <select id="selectStrategyIntentOperateByStrategyIntentId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
+        SELECT
+            strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent_operate
+        WHERE  strategy_intent_id=#{strategyIntentId}
+          and delete_flag=0
+        order by operate_year,sort
+    </select>
+<!--    根据战略意图主表主键集合批量查询战略意图经营表-->
+    <select id="selectStrategyIntentOperateByStrategyIntentIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
+        SELECT
+        strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM strategy_intent_operate
+        WHERE  strategy_intent_id in
+        <foreach item="item"
+                 collection="strategyIntentIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+        order by operate_year,sort
+    </select>
     <!--新增战略意图经营表-->
     <insert id="insertStrategyIntentOperate" useGeneratedKeys="true" keyProperty="strategyIntentOperateId">
         INSERT INTO strategy_intent_operate (strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
