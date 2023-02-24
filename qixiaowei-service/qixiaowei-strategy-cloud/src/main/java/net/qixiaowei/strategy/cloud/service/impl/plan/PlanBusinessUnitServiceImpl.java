@@ -93,6 +93,8 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
                     }
                 });
                 businessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
+                List<String> businessUnitDecomposes = Arrays.asList(businessUnitDecompose.split(","));
+                businessUnitDTO.setBusinessUnitDecomposes(businessUnitDecomposes);
             }
         }
         return planBusinessUnitDTOS;

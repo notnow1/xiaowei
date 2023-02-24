@@ -162,6 +162,8 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
             tree.putExtra("parentIndicatorName", treeNode.getParentIndicatorName());
             tree.putExtra("isPreset", treeNode.getIsPreset());
+            tree.putExtra("createBy", treeNode.getCreateBy());
+            tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
         });
     }
 
@@ -732,8 +734,6 @@ public class IndicatorServiceImpl implements IIndicatorService {
             tree.putExtra("indicatorCategoryId", treeNode.getIndicatorCategoryId());
             tree.putExtra("indicatorCategoryName", treeNode.getIndicatorCategoryName());
             tree.putExtra("isPreset", treeNode.getIsPreset());
-            tree.putExtra("createBy", treeNode.getCreateBy());
-            tree.putExtra("createTime", treeNode.getCreateTime());
         });
     }
 

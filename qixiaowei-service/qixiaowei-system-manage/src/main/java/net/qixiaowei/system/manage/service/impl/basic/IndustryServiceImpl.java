@@ -133,7 +133,7 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
             tree.putExtra("createBy", treeNode.getCreateBy());
-            tree.putExtra("createTime", treeNode.getCreateTime());
+            tree.putExtra("createTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", treeNode.getCreateTime()));
         });
     }
 

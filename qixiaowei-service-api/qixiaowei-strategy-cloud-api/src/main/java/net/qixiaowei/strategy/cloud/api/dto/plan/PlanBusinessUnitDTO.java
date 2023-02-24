@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.groups.Default;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,6 +93,10 @@ public class PlanBusinessUnitDTO {
      * 请求参数
      */
     private Map<String, Object> params;
+    /**
+     * 规划业务单元维度列表
+     */
+    List<String> businessUnitDecomposes;
 
 }
 
