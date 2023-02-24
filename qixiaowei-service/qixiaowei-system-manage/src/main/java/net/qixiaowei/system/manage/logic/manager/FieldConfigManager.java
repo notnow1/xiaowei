@@ -1,6 +1,8 @@
 package net.qixiaowei.system.manage.logic.manager;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.BaseField;
+import net.qixiaowei.integration.common.enums.field.FieldType;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -11,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +46,13 @@ public class FieldConfigManager implements ApplicationContextAware {
         if (StringUtils.isNull(fieldConfigStrategy)) {
             throw new ServiceException("业务类型错误");
         }
-        return fieldConfigStrategy.initFieldConfig();
+        List<FieldConfig> fieldConfigList = fieldConfigStrategy.initFieldConfig();
+        if (StringUtils.isEmpty(fieldConfigList)) {
+            fieldConfigList = new ArrayList<>();
+        }
+        fieldConfigList.add(FieldConfig.builder().businessType(businessType).fieldName(BaseField.CREATE_TIME.getCode()).fieldLabel(BaseField.CREATE_TIME.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        fieldConfigList.add(FieldConfig.builder().businessType(businessType).fieldName(BaseField.CREATE_BY.getCode()).fieldLabel(BaseField.CREATE_BY.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
+        return fieldConfigList;
     }
 
     @Override

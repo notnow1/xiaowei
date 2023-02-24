@@ -8,7 +8,6 @@ public enum BonusBudgetField {
     PAYMENT_BONUS_BUDGET("payment_bonus_budget", "总薪酬包预算"),
     AMOUNT_WAGE_BUDGET("amount_wage_budget", "总工资包预算"),
     ELASTICITY_BONUS_BUDGET("elasticity_bonus_budget", "弹性薪酬包预算"),
-    CREATE_BY("create_by", "创建人"),
 
     ;
 

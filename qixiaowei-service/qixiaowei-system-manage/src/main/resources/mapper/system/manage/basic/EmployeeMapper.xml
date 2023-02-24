@@ -137,6 +137,8 @@
         e.employment_status,
         e.status,
         e.delete_flag,
+        e.create_by,
+        e.create_time,
         ei.employee_info_id,
         ei.marital_status,
         ei.nationality,

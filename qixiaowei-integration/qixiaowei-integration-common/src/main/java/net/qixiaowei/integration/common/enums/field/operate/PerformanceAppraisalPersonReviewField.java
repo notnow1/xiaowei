@@ -2,8 +2,8 @@ package net.qixiaowei.integration.common.enums.field.operate;
 
 public enum PerformanceAppraisalPersonReviewField {
 
-    APPRAISAL_NAME("appraisal_name", "考核任务名称"),
     APPRAISAL_YEAR("appraisal_year", "考核年度"),
+    APPRAISAL_NAME("appraisal_name", "考核任务名称"),
     CYCLE_TYPE("cycle_type", "周期类型"),
     CYCLE_NUMBER("cycle_number", "周期"),
     APPRAISAL_OBJECT_CODE("appraisal_object_code", "被考核人工号"),

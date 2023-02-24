@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.field.operate.PerformanceAppraisalPersonReviewField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -27,8 +28,8 @@ public class PerformanceAppraisalPersonReviewFieldListConfigImpl implements IFie
     private static final Map<String, FieldListConfig> INIT_MAP = new HashMap<>();
 
     static {
-        INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.CYCLE_TYPE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.CYCLE_NUMBER.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_OBJECT_CODE.getCode(), FieldListConfig.builder().fieldWidth(140).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
@@ -66,7 +67,10 @@ public class PerformanceAppraisalPersonReviewFieldListConfigImpl implements IFie
                 fieldListConfig = INIT_MAP.get(fieldName);
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
-                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(120).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
+                    fieldListConfig.setFieldWidth(180);
+                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);

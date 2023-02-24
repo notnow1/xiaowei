@@ -7,7 +7,6 @@ public enum DeptBonusBudgetField {
     STRATEGY_AWARD_AMOUNT("strategy_award_amount", "战略奖预算"),
     STRATEGY_AWARD_PERCENTAGE("strategy_award_percentage", "战略奖占比（%）"),
     DEPT_AMOUNT_BONUS("dept_amount_bonus", "部门奖金包"),
-    CREATE_BY("create_by", "创建人"),
 
     ;
 

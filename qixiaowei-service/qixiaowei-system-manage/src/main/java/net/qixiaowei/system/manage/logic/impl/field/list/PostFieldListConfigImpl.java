@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.field.system.PostField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -27,12 +28,12 @@ public class PostFieldListConfigImpl implements IFieldListConfigStrategy {
     private static final Map<String, FieldListConfig> INIT_POST = new HashMap<>();
 
     static {
-        INIT_POST.put(PostField.POST_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_POST.put(PostField.POST_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_POST.put(PostField.POST_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_POST.put(PostField.POST_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_POST.put(PostField.OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_POST.put(PostField.POST_RANK.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_POST.put(PostField.POST_RANK_LOWER.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_POST.put(PostField.POST_RANK_UPPER.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_POST.put(PostField.POST_RANK_UPPER.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_POST.put(PostField.POST_RANK_LOWER.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_POST.put(PostField.STATUS.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
@@ -63,7 +64,10 @@ public class PostFieldListConfigImpl implements IFieldListConfigStrategy {
                 fieldListConfig = INIT_POST.get(fieldName);
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
-                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(120).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
+                    fieldListConfig.setFieldWidth(180);
+                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);

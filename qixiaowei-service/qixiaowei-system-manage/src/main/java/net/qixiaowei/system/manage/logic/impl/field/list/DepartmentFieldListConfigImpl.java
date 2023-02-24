@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.field.system.DepartmentField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -29,12 +30,12 @@ public class DepartmentFieldListConfigImpl implements IFieldListConfigStrategy {
     static {
         INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_NAME.getCode(), FieldListConfig.builder().fieldWidth(200).sort(1).showFlag(1).fixationFlag(1).showForce(1).fixationForce(1).build());
         INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_DEPARTMENT.put(DepartmentField.PARENT_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_IMPORTANCE_FACTOR.getCode(), FieldListConfig.builder().fieldWidth(150).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_DEPARTMENT.put(DepartmentField.LEVEL.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_LEADER_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_LEADER_POST_ID.getCode(), FieldListConfig.builder().fieldWidth(140).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_DEPARTMENT.put(DepartmentField.EXAMINATION_LEADER_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_IMPORTANCE_FACTOR.getCode(), FieldListConfig.builder().fieldWidth(150).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_DEPARTMENT.put(DepartmentField.PARENT_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_LEADER_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_DEPARTMENT.put(DepartmentField.DEPARTMENT_LEADER_POST_ID.getCode(), FieldListConfig.builder().fieldWidth(140).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_DEPARTMENT.put(DepartmentField.EXAMINATION_LEADER_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_DEPARTMENT.put(DepartmentField.STATUS.getCode(), FieldListConfig.builder().fieldWidth(120).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
@@ -64,7 +65,10 @@ public class DepartmentFieldListConfigImpl implements IFieldListConfigStrategy {
                 fieldListConfig = INIT_DEPARTMENT.get(fieldName);
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
-                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(120).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
+                    fieldListConfig.setFieldWidth(180);
+                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);

@@ -32,7 +32,6 @@ public class BonusBudgetFieldConfigImpl implements IFieldConfigStrategy {
         INIT_MAP.put(BonusBudgetField.PAYMENT_BONUS_BUDGET.getCode(), FieldConfig.builder().businessType(BusinessType.BONUS_BUDGET.getCode()).fieldName(BonusBudgetField.PAYMENT_BONUS_BUDGET.getCode()).fieldLabel(BonusBudgetField.PAYMENT_BONUS_BUDGET.getInfo()).fieldType(FieldType.AMOUNT.getCode()).build());
         INIT_MAP.put(BonusBudgetField.AMOUNT_WAGE_BUDGET.getCode(), FieldConfig.builder().businessType(BusinessType.BONUS_BUDGET.getCode()).fieldName(BonusBudgetField.AMOUNT_WAGE_BUDGET.getCode()).fieldLabel(BonusBudgetField.AMOUNT_WAGE_BUDGET.getInfo()).fieldType(FieldType.AMOUNT.getCode()).build());
         INIT_MAP.put(BonusBudgetField.ELASTICITY_BONUS_BUDGET.getCode(), FieldConfig.builder().businessType(BusinessType.BONUS_BUDGET.getCode()).fieldName(BonusBudgetField.ELASTICITY_BONUS_BUDGET.getCode()).fieldLabel(BonusBudgetField.ELASTICITY_BONUS_BUDGET.getInfo()).fieldType(FieldType.AMOUNT.getCode()).build());
-        INIT_MAP.put(BonusBudgetField.CREATE_BY.getCode(), FieldConfig.builder().businessType(BusinessType.BONUS_BUDGET.getCode()).fieldName(BonusBudgetField.CREATE_BY.getCode()).fieldLabel(BonusBudgetField.CREATE_BY.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
     }
 
 

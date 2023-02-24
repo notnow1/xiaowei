@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.field.operate.DeptBonusBudgetField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -32,7 +33,6 @@ public class DeptBonusBudgetFieldListConfigImpl implements IFieldListConfigStrat
         INIT_MAP.put(DeptBonusBudgetField.STRATEGY_AWARD_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(DeptBonusBudgetField.STRATEGY_AWARD_PERCENTAGE.getCode(), FieldListConfig.builder().fieldWidth(150).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(DeptBonusBudgetField.DEPT_AMOUNT_BONUS.getCode(), FieldListConfig.builder().fieldWidth(130).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(DeptBonusBudgetField.CREATE_BY.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 
@@ -61,7 +61,10 @@ public class DeptBonusBudgetFieldListConfigImpl implements IFieldListConfigStrat
                 fieldListConfig = INIT_MAP.get(fieldName);
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
-                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(120).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
+                    fieldListConfig.setFieldWidth(180);
+                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);

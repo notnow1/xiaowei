@@ -2,6 +2,7 @@ package net.qixiaowei.operate.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.field.operate.BonusPayApplicationField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -28,16 +29,14 @@ public class BonusPayApplicationFieldListConfigImpl implements IFieldListConfigS
     private static final Map<String, FieldListConfig> INIT_MAP = new HashMap<>();
 
     static {
-        INIT_MAP.put(BonusPayApplicationField.AWARD_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.SALARY_ITEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(BonusPayApplicationField.AWARD_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.SALARY_ITEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.AWARD_YEAR_MONTH.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.APPLY_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.BUDGET_DEPARTMENT_LIST.getCode(), FieldListConfig.builder().fieldWidth(200).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.AWARD_TOTAL_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.BONUS_PAY_OBJECT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.CREATE_TIME.getCode(), FieldListConfig.builder().fieldWidth(160).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.CREATE_BY.getCode(), FieldListConfig.builder().fieldWidth(120).sort(10).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.AWARD_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.APPLY_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.BUDGET_DEPARTMENT_LIST.getCode(), FieldListConfig.builder().fieldWidth(200).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.AWARD_YEAR_MONTH.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.BONUS_PAY_OBJECT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.AWARD_TOTAL_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 
@@ -66,7 +65,10 @@ public class BonusPayApplicationFieldListConfigImpl implements IFieldListConfigS
                 fieldListConfig = INIT_MAP.get(fieldName);
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
-                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(120).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
+                    fieldListConfig.setFieldWidth(180);
+                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);

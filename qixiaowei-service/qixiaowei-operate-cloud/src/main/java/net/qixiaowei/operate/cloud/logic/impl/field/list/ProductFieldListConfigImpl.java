@@ -1,6 +1,7 @@
 package net.qixiaowei.operate.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.field.operate.ProductField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -29,8 +30,8 @@ public class ProductFieldListConfigImpl implements IFieldListConfigStrategy {
     static {
         INIT_MAP.put(ProductField.PRODUCT_NAME.getCode(), FieldListConfig.builder().fieldWidth(200).sort(1).showFlag(1).fixationFlag(1).showForce(1).fixationForce(1).build());
         INIT_MAP.put(ProductField.PRODUCT_CODE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(ProductField.PARENT_PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(ProductField.LEVEL.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(ProductField.LEVEL.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(ProductField.PARENT_PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(ProductField.PRODUCT_UNIT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(ProductField.PRODUCT_CATEGORY.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(ProductField.LISTING_FLAG.getCode(), FieldListConfig.builder().fieldWidth(130).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
@@ -62,7 +63,10 @@ public class ProductFieldListConfigImpl implements IFieldListConfigStrategy {
                 fieldListConfig = INIT_MAP.get(fieldName);
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
-                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(120).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
+                    fieldListConfig.setFieldWidth(180);
+                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);

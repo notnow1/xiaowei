@@ -31,7 +31,6 @@ public class DeptBonusBudgetFieldConfigImpl implements IFieldConfigStrategy {
         INIT_MAP.put(DeptBonusBudgetField.STRATEGY_AWARD_AMOUNT.getCode(), FieldConfig.builder().businessType(BusinessType.DEPT_BONUS_BUDGET.getCode()).fieldName(DeptBonusBudgetField.STRATEGY_AWARD_AMOUNT.getCode()).fieldLabel(DeptBonusBudgetField.STRATEGY_AWARD_AMOUNT.getInfo()).fieldType(FieldType.AMOUNT.getCode()).build());
         INIT_MAP.put(DeptBonusBudgetField.STRATEGY_AWARD_PERCENTAGE.getCode(), FieldConfig.builder().businessType(BusinessType.DEPT_BONUS_BUDGET.getCode()).fieldName(DeptBonusBudgetField.STRATEGY_AWARD_PERCENTAGE.getCode()).fieldLabel(DeptBonusBudgetField.STRATEGY_AWARD_PERCENTAGE.getInfo()).fieldType(FieldType.PERCENTAGE.getCode()).build());
         INIT_MAP.put(DeptBonusBudgetField.DEPT_AMOUNT_BONUS.getCode(), FieldConfig.builder().businessType(BusinessType.DEPT_BONUS_BUDGET.getCode()).fieldName(DeptBonusBudgetField.DEPT_AMOUNT_BONUS.getCode()).fieldLabel(DeptBonusBudgetField.DEPT_AMOUNT_BONUS.getInfo()).fieldType(FieldType.AMOUNT.getCode()).build());
-        INIT_MAP.put(DeptBonusBudgetField.CREATE_BY.getCode(), FieldConfig.builder().businessType(BusinessType.DEPT_BONUS_BUDGET.getCode()).fieldName(DeptBonusBudgetField.CREATE_BY.getCode()).fieldLabel(DeptBonusBudgetField.CREATE_BY.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
     }
 
 

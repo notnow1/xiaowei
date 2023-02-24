@@ -102,8 +102,7 @@ public class DeptAnnualBonusDTO {
     /**
     * 创建时间
     */
-    @JsonFormat(pattern = "yyyy/MM/dd",timezone = "GMT+8")
-    @DateTimeFormat(value = "yyyy/MM/dd")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private  Date  createTime;
 
     /**
@@ -118,7 +117,7 @@ public class DeptAnnualBonusDTO {
     /**
     * 更新时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private  Date  updateTime;
     /**
     * 租户ID

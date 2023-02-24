@@ -121,7 +121,7 @@ public class ProductDTO {
     /**
     * 创建时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private  Date  createTime;
     /**
     * 更新人
@@ -130,7 +130,7 @@ public class ProductDTO {
     /**
     * 更新时间
     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private  Date  updateTime;
     /**
      * 产品规格参数表集合

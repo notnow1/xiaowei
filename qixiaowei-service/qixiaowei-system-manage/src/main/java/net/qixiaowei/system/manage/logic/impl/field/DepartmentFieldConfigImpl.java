@@ -15,7 +15,7 @@ import java.util.Map;
 
 
 /**
- * @description 用户-字段配置实现类
+ * @description 组织-字段配置实现类
  * @Author hzk
  * @Date 2023-02-09 19:55
  **/

@@ -1,6 +1,7 @@
 package net.qixiaowei.system.manage.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.field.system.UserField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -33,7 +34,6 @@ public class UserFieldListConfigImpl implements IFieldListConfigStrategy {
         INIT_USER.put(UserField.EMAIL.getCode(), FieldListConfig.builder().fieldWidth(150).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_USER.put(UserField.USER_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_USER.put(UserField.STATUS.getCode(), FieldListConfig.builder().fieldWidth(100).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_USER.put(UserField.CREATE_TIME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 
@@ -62,7 +62,10 @@ public class UserFieldListConfigImpl implements IFieldListConfigStrategy {
                 fieldListConfig = INIT_USER.get(fieldName);
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
-                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(120).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
+                    fieldListConfig.setFieldWidth(180);
+                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);
