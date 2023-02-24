@@ -94,6 +94,18 @@
             <artifactId>qixiaowei-integration-tenant</artifactId>
         </dependency>
 
+        <!-- system -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-system-manage-api</artifactId>
+        </dependency>
+
+        <!-- operate cloud -->
+        <dependency>
+            <groupId>net.qixiaowei</groupId>
+            <artifactId>qixiaowei-operate-cloud-api</artifactId>
+        </dependency>
+
     </dependencies>
 
 
