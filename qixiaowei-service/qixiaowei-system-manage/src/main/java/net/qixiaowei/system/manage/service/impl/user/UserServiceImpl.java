@@ -525,7 +525,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     @IgnoreTenant
     public Boolean checkUserAccountExists(String userAccount) {
-        return this.checkUserAccountUnique(userAccount);
+        return !this.checkUserAccountUnique(userAccount);
     }
 
     /**

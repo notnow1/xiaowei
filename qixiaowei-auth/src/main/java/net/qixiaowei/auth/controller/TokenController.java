@@ -85,6 +85,13 @@ public class TokenController {
         return R.ok();
     }
 
+    /**
+     * @description: 注册
+     * @Author: hzk
+     * @date: 2023/2/24 19:24
+     * @param: [registerBody]
+     * @return: net.qixiaowei.integration.common.domain.R<?>
+     **/
     @PostMapping("/register")
     public R<?> register(@RequestBody RegisterBody registerBody) {
         return R.ok(sysLoginService.register(registerBody));
