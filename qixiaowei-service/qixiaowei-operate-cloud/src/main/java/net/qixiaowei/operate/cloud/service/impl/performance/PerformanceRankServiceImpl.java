@@ -129,9 +129,6 @@ public class PerformanceRankServiceImpl implements IPerformanceRankService {
             throw new ServiceException("等级系数信息不可以为空");
         }
         int count = performanceRankMapper.checkUniqueName(performanceRankName, performanceRankCategory);
-        if (count > 0) {
-            throw new ServiceException("绩效等级名称不能重复");
-        }
         PerformanceRank performanceRank = new PerformanceRank();
         BeanUtils.copyProperties(performanceRankDTO, performanceRank);
         performanceRank.setUpdateTime(DateUtils.getNowDate());

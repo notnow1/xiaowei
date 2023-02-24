@@ -28,9 +28,7 @@ import net.qixiaowei.operate.cloud.mapper.salary.SalaryPayMapper;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryItemService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayDetailsService;
 import net.qixiaowei.operate.cloud.service.salary.ISalaryPayService;
-import net.qixiaowei.system.manage.api.dto.basic.DepartmentDTO;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
-import net.qixiaowei.system.manage.api.dto.basic.PostDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1539,8 +1537,9 @@ public class SalaryPayServiceImpl implements ISalaryPayService {
      * @param salaryPayDTOList 子表DTO
      */
     private static List<SalaryPayDTO> calculateAmount(List<SalaryPayDTO> salaryPayDTOList) {
-        Map<String, List<SalaryPayDTO>> salaryPayMap = salaryPayDTOList.stream()
-                .collect(Collectors.groupingBy(SalaryPayDTO::getEmployeeDepartmentName));
+        List<SalaryPayDTO> collect = salaryPayDTOList.stream().filter(salaryPayDTO -> StringUtils.isNotEmpty(salaryPayDTO.getEmployeeDepartmentName())).collect(Collectors.toList());
+        Map<String, List<SalaryPayDTO>> salaryPayMap = collect.stream().collect(Collectors.groupingBy(SalaryPayDTO::getEmployeeDepartmentName));
+
         List<SalaryPayDTO> salaryPayDTOS = new ArrayList<>(10);
         for (String departmentName : salaryPayMap.keySet()) {
             List<SalaryPayDTO> salaryPayDTOList1 = salaryPayMap.get(departmentName);
