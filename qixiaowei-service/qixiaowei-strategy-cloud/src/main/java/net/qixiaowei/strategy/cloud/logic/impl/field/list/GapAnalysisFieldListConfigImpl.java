@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.strategy.cloud.api.domain.field.FieldListConfig;
@@ -52,6 +53,9 @@ public class GapAnalysisFieldListConfigImpl implements IFieldListConfigStrategy 
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
                 fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
+                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
+                    fieldListConfig.setFieldWidth(180);
+                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);

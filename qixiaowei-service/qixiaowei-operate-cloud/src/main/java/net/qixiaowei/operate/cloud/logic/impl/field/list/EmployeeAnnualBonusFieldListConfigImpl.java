@@ -28,7 +28,7 @@ public class EmployeeAnnualBonusFieldListConfigImpl implements IFieldListConfigS
     private static final Map<String, FieldListConfig> INIT_MAP = new HashMap<>();
 
     static {
-        INIT_MAP.put(EmployeeAnnualBonusField.ANNUAL_BONUS_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(1).fixationForce(1).build());
+        INIT_MAP.put(EmployeeAnnualBonusField.ANNUAL_BONUS_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeAnnualBonusField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeAnnualBonusField.DISTRIBUTE_BONUS_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(140).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeAnnualBonusField.APPLY_DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
