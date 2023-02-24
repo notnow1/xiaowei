@@ -5,8 +5,10 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import java.math.BigDecimal;
+import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -40,10 +42,12 @@ public class StrategyIntentDTO {
     /**
     * ID
     */
+    @NotNull(message = "id不能为空", groups = {StrategyIntentDTO.DeleteStrategyIntentDTO.class,StrategyIntentDTO.UpdateStrategyIntentDTO.class})
     private  Long strategyIntentId;
     /**
     * 规划年度
     */
+    @NotNull(message = "规划年度不能为空", groups = {StrategyIntentDTO.AddStrategyIntentDTO.class,StrategyIntentDTO.UpdateStrategyIntentDTO.class})
     private  Integer planYear;
     /**
     * 愿景

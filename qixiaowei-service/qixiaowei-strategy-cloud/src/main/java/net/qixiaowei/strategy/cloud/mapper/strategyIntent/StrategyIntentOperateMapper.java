@@ -21,6 +21,14 @@ public interface StrategyIntentOperateMapper{
     */
     StrategyIntentOperateDTO selectStrategyIntentOperateByStrategyIntentOperateId(@Param("strategyIntentOperateId")Long strategyIntentOperateId);
 
+    /**
+     * 根据战略意图主表主键查询战略意图经营表
+     *
+     * @param strategyIntentId 战略意图主表主键
+     * @return 战略意图经营表
+     */
+    List<StrategyIntentOperateDTO> selectStrategyIntentOperateByStrategyIntentId(@Param("strategyIntentId")Long strategyIntentId);
+
 
     /**
     * 批量查询战略意图经营表
@@ -29,6 +37,14 @@ public interface StrategyIntentOperateMapper{
     * @return 战略意图经营表
     */
     List<StrategyIntentOperateDTO> selectStrategyIntentOperateByStrategyIntentOperateIds(@Param("strategyIntentOperateIds") List<Long> strategyIntentOperateIds);
+
+    /**
+     * 根据战略意图主表主键集合批量查询战略意图经营表
+     *
+     * @param strategyIntentIds 战略意图主表主键集合
+     * @return 战略意图经营表
+     */
+    List<StrategyIntentOperateDTO> selectStrategyIntentOperateByStrategyIntentIds(@Param("strategyIntentIds") List<Long> strategyIntentIds);
 
     /**
     * 查询战略意图经营表列表
