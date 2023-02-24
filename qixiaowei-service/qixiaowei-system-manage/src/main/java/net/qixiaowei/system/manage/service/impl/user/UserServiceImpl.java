@@ -579,6 +579,8 @@ public class UserServiceImpl implements IUserService {
             userRoleDTOS.forEach(userRoleDTO -> userRoleSet.add(userRoleDTO.getUserId() + Constants.COLON_EN + userRoleDTO.getRoleId()));
         }
         List<UserRole> userRoles = new ArrayList<>();
+        Date nowDate = DateUtils.getNowDate();
+        Long userIdOfLogin = SecurityUtils.getUserId();
         for (Long userId : userIds) {
             roleIds.forEach(roleId -> {
                 //仅添加不存在的用户角色
@@ -587,6 +589,10 @@ public class UserServiceImpl implements IUserService {
                     userRole.setRoleId(roleId);
                     userRole.setUserId(userId);
                     userRole.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                    userRole.setCreateBy(userIdOfLogin);
+                    userRole.setCreateTime(nowDate);
+                    userRole.setUpdateBy(userIdOfLogin);
+                    userRole.setUpdateTime(nowDate);
                     userRoles.add(userRole);
                 }
             });
