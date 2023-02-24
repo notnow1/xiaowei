@@ -41,7 +41,7 @@ public class ${entity}DTO {
     * ${field.comment}
     */
     <#if "${field.propertyType}"=="LocalDateTime">
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     </#if>
     private <#if "${field.propertyType}"=="LocalDateTime"> Date <#else> ${field.propertyType}</#if> ${field.propertyName};
 </#list>
