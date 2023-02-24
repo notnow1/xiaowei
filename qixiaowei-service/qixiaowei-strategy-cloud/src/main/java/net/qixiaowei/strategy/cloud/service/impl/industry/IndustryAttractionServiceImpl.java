@@ -121,8 +121,8 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     @Transactional
     public IndustryAttractionDTO insertIndustryAttraction(IndustryAttractionDTO industryAttractionDTO) {
         IndustryAttractionDTO industryAttractionDTO1 = industryAttractionMapper.selectIndustryAttractionByAttractionElementName(industryAttractionDTO.getAttractionElementName());
-        if (StringUtils.isNotNull(industryAttractionDTO1)){
-            throw new ServiceException(industryAttractionDTO.getAttractionElementName()+"已存在！请重新填写！");
+        if (StringUtils.isNotNull(industryAttractionDTO1)) {
+            throw new ServiceException(industryAttractionDTO.getAttractionElementName() + "已存在！请重新填写！");
         }
         List<IndustryAttractionElementDTO> industryAttractionElementDTOS = industryAttractionDTO.getIndustryAttractionElementDTOS();
         List<IndustryAttractionElement> industryAttractionElementList = new ArrayList<>();
@@ -153,7 +153,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                 industryAttractionElementList.add(industryAttractionElement);
             }
         }
-        if (StringUtils.isNotEmpty(industryAttractionElementList)){
+        if (StringUtils.isNotEmpty(industryAttractionElementList)) {
             try {
                 industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementList);
             } catch (Exception e) {
@@ -190,9 +190,9 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
         //差集
         List<Long> industryAttractionElementIds = new ArrayList<>();
         if (StringUtils.isNotEmpty(industryAttractionElementDTOList)) {
-            if (StringUtils.isNotEmpty(industryAttractionElementDTOS)){
+            if (StringUtils.isNotEmpty(industryAttractionElementDTOS)) {
                 //sterm流求差集
-                    industryAttractionElementIds = industryAttractionElementDTOList.stream().filter(a ->
+                industryAttractionElementIds = industryAttractionElementDTOList.stream().filter(a ->
                         !industryAttractionElementDTOS.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList()).contains(a.getIndustryAttractionElementId())
                 ).collect(Collectors.toList()).stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
                 if (StringUtils.isNotEmpty(industryAttractionElementIds)) {
@@ -238,7 +238,7 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                         throw new ServiceException("批量修改行业吸引力要素失败");
                     }
                 }
-            }else {
+            } else {
                 industryAttractionElementIds = industryAttractionElementDTOList.stream().map(IndustryAttractionElementDTO::getIndustryAttractionElementId).collect(Collectors.toList());
                 if (StringUtils.isNotEmpty(industryAttractionElementIds)) {
                     try {
@@ -249,12 +249,12 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                 }
             }
 
-        }else {
-            if (StringUtils.isNotEmpty(industryAttractionElementDTOS)){
+        } else {
+            if (StringUtils.isNotEmpty(industryAttractionElementDTOS)) {
                 List<IndustryAttractionElement> industryAttractionElementList = new ArrayList<>();
                 for (int i1 = 0; i1 < industryAttractionElementDTOS.size(); i1++) {
                     IndustryAttractionElement industryAttractionElement = new IndustryAttractionElement();
-                    BeanUtils.copyProperties(industryAttractionElementDTOS.get(i1),industryAttractionElement);
+                    BeanUtils.copyProperties(industryAttractionElementDTOS.get(i1), industryAttractionElement);
                     industryAttractionElement.setIndustryAttractionId(industryAttraction.getIndustryAttractionId());
                     industryAttractionElement.setSort(i1 + 1);
                     industryAttractionElement.setCreateBy(SecurityUtils.getUserId());
@@ -264,10 +264,12 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
                     industryAttractionElement.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
                     industryAttractionElementList.add(industryAttractionElement);
                 }
-                try {
-                    industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementList);
-                } catch (Exception e) {
-                    throw new ServiceException("批量新增行业吸引力要素失败");
+                if (StringUtils.isNotEmpty(industryAttractionElementList)) {
+                    try {
+                        industryAttractionElementMapper.batchIndustryAttractionElement(industryAttractionElementList);
+                    } catch (Exception e) {
+                        throw new ServiceException("批量新增行业吸引力要素失败");
+                    }
                 }
             }
         }

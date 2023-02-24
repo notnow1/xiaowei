@@ -8,8 +8,11 @@ import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
+import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttraction;
+import net.qixiaowei.strategy.cloud.api.domain.industry.IndustryAttractionElement;
 import net.qixiaowei.strategy.cloud.api.domain.strategyIntent.StrategyIntent;
 import net.qixiaowei.strategy.cloud.api.domain.strategyIntent.StrategyIntentOperate;
+import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionElementDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO;
 import net.qixiaowei.strategy.cloud.mapper.strategyIntent.StrategyIntentMapper;
@@ -43,7 +46,7 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
     @Autowired
     private RemoteUserService remoteUserService;
     @Autowired
-    private RemoteEmployeeService  remoteEmployeeService;
+    private RemoteEmployeeService remoteEmployeeService;
 
     /**
      * 查询战略意图表
@@ -54,25 +57,25 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
     @Override
     public StrategyIntentDTO selectStrategyIntentByStrategyIntentId(Long strategyIntentId) {
         StrategyIntentDTO strategyIntentDTO = strategyIntentMapper.selectStrategyIntentByStrategyIntentId(strategyIntentId);
-        if (StringUtils.isNull(strategyIntentDTO)){
+        if (StringUtils.isNull(strategyIntentDTO)) {
             throw new ServiceException("数据不存在！ 请刷新页面重试！");
         }
         //返回战略意图经营数据集合 (需处理)
         List<StrategyIntentOperateDTO> strategyIntentOperateListData = new ArrayList<>();
         //数据库存在数据
         List<StrategyIntentOperateDTO> strategyIntentOperateDTOS = strategyIntentOperateMapperr.selectStrategyIntentOperateByStrategyIntentId(strategyIntentId);
-        if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)){
-            Map<Long, List<StrategyIntentOperateDTO>> indicatorMap = strategyIntentOperateDTOS.parallelStream().filter(f->f.getIndicatorId() != null).collect(Collectors.groupingBy(StrategyIntentOperateDTO::getIndicatorId));
+        if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)) {
+            Map<Long, List<StrategyIntentOperateDTO>> indicatorMap = strategyIntentOperateDTOS.parallelStream().filter(f -> f.getIndicatorId() != null).collect(Collectors.groupingBy(StrategyIntentOperateDTO::getIndicatorId));
             for (Long key : indicatorMap.keySet()) {
                 StrategyIntentOperateDTO strategyIntentOperateDTOData = new StrategyIntentOperateDTO();
                 //年度指标对应值集合
-                List<Map<Integer, BigDecimal>> yearValues =new ArrayList<>();
+                List<Map<Integer, BigDecimal>> yearValues = new ArrayList<>();
                 //根据指标id分组
                 List<StrategyIntentOperateDTO> strategyIntentOperateDTOList = indicatorMap.get(key);
-                if (StringUtils.isNotEmpty(strategyIntentOperateDTOList)){
+                if (StringUtils.isNotEmpty(strategyIntentOperateDTOList)) {
                     for (StrategyIntentOperateDTO strategyIntentOperateDTO : strategyIntentOperateDTOList) {
                         Map<Integer, BigDecimal> yearValue = new HashMap<>();
-                        yearValue.put(strategyIntentOperateDTO.getOperateYear(),strategyIntentOperateDTO.getOperateValue());
+                        yearValue.put(strategyIntentOperateDTO.getOperateYear(), strategyIntentOperateDTO.getOperateValue());
                         yearValues.add(yearValue);
                         //指标id
                         strategyIntentOperateDTOData.setIndicatorId(strategyIntentOperateDTO.getIndicatorId());
@@ -126,7 +129,7 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
 
     private void queryemployeeName(Map<String, Object> params) {
         Map<String, Object> params2 = new HashMap<>();
-        if (StringUtils.isNotEmpty(params)){
+        if (StringUtils.isNotEmpty(params)) {
             for (String key : params.keySet()) {
                 switch (key) {
                     case "createByNameEqual":
@@ -135,19 +138,20 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                     case "createByNameNotEqual":
                         params2.put("employeeNameNotEqual", params.get("createByNameNotEqual"));
                         break;
-                    default:break;
+                    default:
+                        break;
                 }
             }
 
-            if (StringUtils.isNotEmpty(params2)){
+            if (StringUtils.isNotEmpty(params2)) {
                 EmployeeDTO employeeDTO = new EmployeeDTO();
                 employeeDTO.setParams(params2);
                 R<List<EmployeeDTO>> listR = remoteEmployeeService.selectRemoteList(employeeDTO, SecurityConstants.INNER);
                 List<EmployeeDTO> data = listR.getData();
-                if (StringUtils.isNotEmpty(data)){
+                if (StringUtils.isNotEmpty(data)) {
                     List<Long> employeeIds = data.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
-                    if (StringUtils.isNotEmpty(employeeIds)){
-                        params.put("createBy",employeeIds);
+                    if (StringUtils.isNotEmpty(employeeIds)) {
+                        params.put("createBy", employeeIds);
                     }
                 }
             }
@@ -164,7 +168,7 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
     @Transactional
     public StrategyIntentDTO insertStrategyIntent(StrategyIntentDTO strategyIntentDTO) {
         StrategyIntentDTO strategyIntentDTO1 = strategyIntentMapper.selectStrategyIntentByPlanYear(strategyIntentDTO.getPlanYear());
-        if (StringUtils.isNotNull(strategyIntentDTO1)){
+        if (StringUtils.isNotNull(strategyIntentDTO1)) {
             throw new ServiceException("已存在该年度数据");
         }
         //保存数据库数据
@@ -180,11 +184,11 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
         strategyIntent.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         strategyIntentMapper.insertStrategyIntent(strategyIntent);
 
-        if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)){
+        if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)) {
             for (StrategyIntentOperateDTO strategyIntentOperateDTO : strategyIntentOperateDTOS) {
                 //年度指标对应值集合
                 List<Map<Integer, BigDecimal>> yearValues = strategyIntentOperateDTO.getYearValues();
-                if (StringUtils.isNotEmpty(yearValues)){
+                if (StringUtils.isNotEmpty(yearValues)) {
                     int i = 1;
                     for (Map<Integer, BigDecimal> yearValue : yearValues) {
                         for (Integer key : yearValue.keySet()) {
@@ -211,7 +215,7 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                     }
                 }
             }
-            if (StringUtils.isNotEmpty(strategyIntentOperateList)){
+            if (StringUtils.isNotEmpty(strategyIntentOperateList)) {
                 try {
                     strategyIntentOperateMapperr.batchStrategyIntentOperate(strategyIntentOperateList);
                 } catch (Exception e) {
@@ -232,11 +236,143 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
     @Override
     @Transactional
     public int updateStrategyIntent(StrategyIntentDTO strategyIntentDTO) {
+        int i = 0;
         StrategyIntent strategyIntent = new StrategyIntent();
         BeanUtils.copyProperties(strategyIntentDTO, strategyIntent);
         strategyIntent.setUpdateTime(DateUtils.getNowDate());
         strategyIntent.setUpdateBy(SecurityUtils.getUserId());
-        return strategyIntentMapper.updateStrategyIntent(strategyIntent);
+        try {
+            i = strategyIntentMapper.updateStrategyIntent(strategyIntent);
+        } catch (Exception e) {
+            throw new ServiceException("修改战略意图失败");
+        }
+        //接收前端战略意图经营表集合
+        List<StrategyIntentOperateDTO> strategyIntentOperateDTOS = strategyIntentDTO.getStrategyIntentOperateDTOS();
+        //数据库已存在的战略意图经营表集合
+        List<StrategyIntentOperateDTO> strategyIntentOperateDTOList = strategyIntentOperateMapperr.selectStrategyIntentOperateByStrategyIntentId(strategyIntent.getStrategyIntentId());
+
+        //差集
+        List<Long> strategyIntentOperateIds = new ArrayList<>();
+        if (StringUtils.isNotEmpty(strategyIntentOperateDTOList)) {
+            if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)) {
+                //sterm流求差集
+                strategyIntentOperateIds = strategyIntentOperateDTOList.stream().filter(a ->
+                        !strategyIntentOperateDTOS.stream().map(StrategyIntentOperateDTO::getStrategyIntentOperateId).collect(Collectors.toList()).contains(a.getStrategyIntentOperateId())
+                ).collect(Collectors.toList()).stream().map(StrategyIntentOperateDTO::getStrategyIntentOperateId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(strategyIntentOperateIds)) {
+                    try {
+                        strategyIntentOperateMapperr.logicDeleteStrategyIntentOperateByStrategyIntentOperateIds(strategyIntentOperateIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                    } catch (Exception e) {
+                        throw new ServiceException("逻辑批量删除战略意图经营失败");
+                    }
+                }
+                //新增集合
+                List<StrategyIntentOperate> strategyIntentOperateAddList = new ArrayList<>();
+                //修改集合
+                List<StrategyIntentOperate> strategyIntentOperateUpdateList = new ArrayList<>();
+                for (int i1 = 0; i1 < strategyIntentOperateDTOS.size(); i1++) {
+                    Long strategyIntentId = strategyIntentOperateDTOS.get(i1).getStrategyIntentId();
+                    //年度指标对应值集合
+                    List<Map<Integer, BigDecimal>> yearValues = strategyIntentOperateDTOS.get(i1).getYearValues();
+
+                    if (StringUtils.isNotEmpty(yearValues)) {
+                        for (Map<Integer, BigDecimal> yearValue : yearValues) {
+                            for (Integer key : yearValue.keySet()) {
+                                StrategyIntentOperate strategyIntentOperate = new StrategyIntentOperate();
+                                //排序
+                                strategyIntentOperate.setSort(i1);
+                                if (null != strategyIntentId) {
+                                    //经营年度
+                                    strategyIntentOperate.setOperateYear(key);
+                                    //经营值
+                                    strategyIntentOperate.setOperateValue(yearValue.get(key));
+                                    strategyIntentOperate.setUpdateTime(DateUtils.getNowDate());
+                                    strategyIntentOperate.setUpdateBy(SecurityUtils.getUserId());
+                                    strategyIntentOperateUpdateList.add(strategyIntentOperate);
+                                } else {
+                                    //经营年度
+                                    strategyIntentOperate.setOperateYear(key);
+                                    //经营值
+                                    strategyIntentOperate.setOperateValue(yearValue.get(key));
+                                    strategyIntentOperate.setStrategyIntentId(strategyIntent.getStrategyIntentId());
+                                    strategyIntentOperate.setCreateBy(SecurityUtils.getUserId());
+                                    strategyIntentOperate.setCreateTime(DateUtils.getNowDate());
+                                    strategyIntentOperate.setUpdateTime(DateUtils.getNowDate());
+                                    strategyIntentOperate.setUpdateBy(SecurityUtils.getUserId());
+                                    strategyIntentOperate.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                    strategyIntentOperateAddList.add(strategyIntentOperate);
+
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                if (StringUtils.isNotEmpty(strategyIntentOperateAddList)) {
+                    try {
+                        strategyIntentOperateMapperr.batchStrategyIntentOperate(strategyIntentOperateAddList);
+                    } catch (Exception e) {
+                        throw new ServiceException("批量新增战略意图经营失败");
+                    }
+                }
+                if (StringUtils.isNotEmpty(strategyIntentOperateUpdateList)) {
+                    try {
+                        strategyIntentOperateMapperr.updateStrategyIntentOperates(strategyIntentOperateUpdateList);
+                    } catch (Exception e) {
+                        throw new ServiceException("批量修改战略意图经营失败");
+                    }
+                }
+            } else {
+                strategyIntentOperateIds = strategyIntentOperateDTOList.stream().map(StrategyIntentOperateDTO::getStrategyIntentOperateId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(strategyIntentOperateIds)) {
+                    try {
+                        strategyIntentOperateMapperr.logicDeleteStrategyIntentOperateByStrategyIntentOperateIds(strategyIntentOperateIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
+                    } catch (Exception e) {
+                        throw new ServiceException("逻辑批量删除战略意图经营失败");
+                    }
+                }
+            }
+
+        } else {
+            if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)) {
+                List<StrategyIntentOperate> strategyIntentOperateList = new ArrayList<>();
+                for (int i1 = 0; i1 < strategyIntentOperateDTOS.size(); i1++) {
+                    //年度指标对应值集合
+                    List<Map<Integer, BigDecimal>> yearValues = strategyIntentOperateDTOS.get(i1).getYearValues();
+
+                    if (StringUtils.isNotEmpty(yearValues)) {
+                        for (Map<Integer, BigDecimal> yearValue : yearValues) {
+                            for (Integer key : yearValue.keySet()) {
+                                StrategyIntentOperate strategyIntentOperate = new StrategyIntentOperate();
+                                //排序
+                                strategyIntentOperate.setSort(i1);
+                                //经营年度
+                                strategyIntentOperate.setOperateYear(key);
+                                //经营值
+                                strategyIntentOperate.setOperateValue(yearValue.get(key));
+                                strategyIntentOperate.setStrategyIntentId(strategyIntent.getStrategyIntentId());
+                                strategyIntentOperate.setCreateBy(SecurityUtils.getUserId());
+                                strategyIntentOperate.setCreateTime(DateUtils.getNowDate());
+                                strategyIntentOperate.setUpdateTime(DateUtils.getNowDate());
+                                strategyIntentOperate.setUpdateBy(SecurityUtils.getUserId());
+                                strategyIntentOperate.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                                strategyIntentOperateList.add(strategyIntentOperate);
+                            }
+                        }
+                    }
+
+                }
+                if (StringUtils.isNotEmpty(strategyIntentOperateList)){
+                    try {
+                        strategyIntentOperateMapperr.batchStrategyIntentOperate(strategyIntentOperateList);
+                    } catch (Exception e) {
+                        throw new ServiceException("批量新增战略意图经营失败");
+                    }
+                }
+            }
+        }
+        return i;
     }
 
     /**
@@ -255,11 +391,11 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
             throw new ServiceException("逻辑批量删除战略意图失败");
         }
         List<StrategyIntentOperateDTO> strategyIntentOperateDTOList = strategyIntentOperateMapperr.selectStrategyIntentOperateByStrategyIntentIds(strategyIntentIds);
-        if (StringUtils.isNotEmpty(strategyIntentIds)){
+        if (StringUtils.isNotEmpty(strategyIntentIds)) {
             List<Long> strategyIntentOperateIds = strategyIntentOperateDTOList.stream().map(StrategyIntentOperateDTO::getStrategyIntentOperateId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(strategyIntentOperateIds)){
+            if (StringUtils.isNotEmpty(strategyIntentOperateIds)) {
                 try {
-                    strategyIntentOperateMapperr.logicDeleteStrategyIntentOperateByStrategyIntentOperateIds(strategyIntentOperateIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                    strategyIntentOperateMapperr.logicDeleteStrategyIntentOperateByStrategyIntentOperateIds(strategyIntentOperateIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
                 } catch (Exception e) {
                     throw new ServiceException("逻辑批量删除战略意图经营失败");
                 }
@@ -299,10 +435,10 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
             throw new ServiceException("逻辑删除战略意图表");
         }
         List<StrategyIntentOperateDTO> strategyIntentOperateDTOList = strategyIntentOperateMapperr.selectStrategyIntentOperateByStrategyIntentId(strategyIntent.getStrategyIntentId());
-        if (StringUtils.isNotEmpty(strategyIntentOperateDTOList)){
+        if (StringUtils.isNotEmpty(strategyIntentOperateDTOList)) {
             List<Long> strategyIntentOperateIds = strategyIntentOperateDTOList.stream().map(StrategyIntentOperateDTO::getStrategyIntentOperateId).collect(Collectors.toList());
-            if (StringUtils.isNotEmpty(strategyIntentOperateIds)){
-                strategyIntentOperateMapperr.logicDeleteStrategyIntentOperateByStrategyIntentOperateIds(strategyIntentOperateIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+            if (StringUtils.isNotEmpty(strategyIntentOperateIds)) {
+                strategyIntentOperateMapperr.logicDeleteStrategyIntentOperateByStrategyIntentOperateIds(strategyIntentOperateIds, SecurityUtils.getUserId(), DateUtils.getNowDate());
             }
 
         }
