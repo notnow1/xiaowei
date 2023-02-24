@@ -421,8 +421,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
         List<TargetDecomposeHistory> targetDecomposeHistories = new ArrayList<>();
         //历史目标分解详情集合
         List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots = new ArrayList<>();
-        //历史目标分解详情周期集合
-        List<DetailCyclesSnapshot> detailCyclesSnapshots = new ArrayList<>();
+
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectCronCreateHistoryList(timeDimension);
 
 
@@ -438,7 +437,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     throw new ServiceException("插入历史目标分解失败");
                 }
             }
-            for (int i = 0; i < targetDecomposeHistories.size(); i++) {
+            for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
                 //插入历史目标分解详情集合
                 this.packDecomposeDetailsSnapshot(targetDecomposeDTOS.get(i), decomposeDetailsSnapshots, targetDecomposeHistories);
             }
@@ -454,18 +453,14 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
 
 
             if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOList) && StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
-                for (int i = 0; i < targetDecomposeDetailsDTOList.size(); i++) {
+                for (int i = 0; i < targetDecomposeHistories.size(); i++) {
+                    //历史目标分解详情周期集合
+                    List<DetailCyclesSnapshot> detailCyclesSnapshots = new ArrayList<>();
                     //插入历史目标分解详情周期集合
-                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList.get(i), detailCyclesSnapshots, decomposeDetailsSnapshots, i);
+                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList, detailCyclesSnapshots, decomposeDetailsSnapshots,i);
                 }
             }
-            if (StringUtils.isNotEmpty(detailCyclesSnapshots)) {
-                try {
-                    detailCyclesSnapshotMapper.batchDetailCyclesSnapshot(detailCyclesSnapshots);
-                } catch (Exception e) {
-                    throw new ServiceException("插入历史目标详情周期表失败");
-                }
-            }
+
             //人员id集合滚动预测负责人
             List<Long> principalEmployeeIdCollect = targetDecomposeDetailsDTOList.stream().map(TargetDecomposeDetailsDTO::getPrincipalEmployeeId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
             List<Long> createBys = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getCreateBy).distinct().filter(Objects::nonNull).collect(Collectors.toList());
@@ -562,32 +557,46 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
 
     /**
      * 封装历史目标分解详情周期集合
-     *
-     * @param targetDecomposeDetailsDTO
-     * @param detailCyclesSnapshots
+     *  @param detailCyclesSnapshots
      * @param decomposeDetailsSnapshots
-     * @param i
+     * @param i1
      */
-    private void pacgkDetailCyclesSnapshot(TargetDecomposeDetailsDTO targetDecomposeDetailsDTO, List<DetailCyclesSnapshot> detailCyclesSnapshots, List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots, int i) {
-        //详情快照表不能为空
-        if (StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
-            List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTO.getTargetDecomposeDetailsId());
-            if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList)) {
-                for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
-                    DetailCyclesSnapshot detailCyclesSnapshot = new DetailCyclesSnapshot();
-                    BeanUtils.copyProperties(decomposeDetailCyclesDTO, detailCyclesSnapshot);
-                    //目标分解详情快照ID
-                    detailCyclesSnapshot.setDecomposeDetailsSnapshotId(decomposeDetailsSnapshots.get(i).getDecomposeDetailsSnapshotId());
-                    detailCyclesSnapshot.setCreateBy(SecurityUtils.getUserId());
-                    detailCyclesSnapshot.setCreateTime(DateUtils.getNowDate());
-                    detailCyclesSnapshot.setUpdateTime(DateUtils.getNowDate());
-                    detailCyclesSnapshot.setUpdateBy(SecurityUtils.getUserId());
-                    detailCyclesSnapshot.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                    detailCyclesSnapshots.add(detailCyclesSnapshot);
-                }
-            }
+    private void pacgkDetailCyclesSnapshot(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<DetailCyclesSnapshot> detailCyclesSnapshots, List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots, int i1) {
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
+            for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
+                //详情快照表不能为空
+                if (StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
+                    List<DecomposeDetailsSnapshot> decomposeDetailsSnapshotList = decomposeDetailsSnapshots.stream().distinct().collect(Collectors.toList());
+                    decomposeDetailsSnapshotList.sort(Comparator.comparing(DecomposeDetailsSnapshot::getDecomposeDetailsSnapshotId));
+                    List<DecomposeDetailCyclesDTO> decomposeDetailCyclesDTOList = decomposeDetailCyclesMapper.selectDecomposeDetailCyclesByTargetDecomposeDetailsId(targetDecomposeDetailsDTOS.get(i).getTargetDecomposeDetailsId());
+                    if (StringUtils.isNotEmpty(decomposeDetailCyclesDTOList)) {
+                        for (DecomposeDetailCyclesDTO decomposeDetailCyclesDTO : decomposeDetailCyclesDTOList) {
+                            DetailCyclesSnapshot detailCyclesSnapshot = new DetailCyclesSnapshot();
+                            BeanUtils.copyProperties(decomposeDetailCyclesDTO, detailCyclesSnapshot);
+                            //目标分解详情快照ID
+                            detailCyclesSnapshot.setDecomposeDetailsSnapshotId(decomposeDetailsSnapshotList.get(i1).getDecomposeDetailsSnapshotId());
+                            detailCyclesSnapshot.setCreateBy(SecurityUtils.getUserId());
+                            detailCyclesSnapshot.setCreateTime(DateUtils.getNowDate());
+                            detailCyclesSnapshot.setUpdateTime(DateUtils.getNowDate());
+                            detailCyclesSnapshot.setUpdateBy(SecurityUtils.getUserId());
+                            detailCyclesSnapshot.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                            detailCyclesSnapshots.add(detailCyclesSnapshot);
+                        }
+                    }
 
+                }
+                if (StringUtils.isNotEmpty(detailCyclesSnapshots)) {
+                    try {
+                        detailCyclesSnapshotMapper.batchDetailCyclesSnapshot(detailCyclesSnapshots);
+                    } catch (Exception e) {
+                        throw new ServiceException("插入历史目标详情周期表失败");
+                    }
+                }
+                detailCyclesSnapshots.clear();
+            }
         }
+
+
 
     }
 

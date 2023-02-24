@@ -205,7 +205,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             //根据公式计算的er值
             BigDecimal erBeforeOne2 = new BigDecimal("0");
             EmolumentPlan emolumentPlan = new EmolumentPlan();
-            emolumentPlan.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear());
+            emolumentPlan.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear()+1);
             emolumentPlan.setIndicatorId(data.getIndicatorId());
             //总薪酬包 未来年度：公式=销售收入×E/R值
             EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan);
@@ -235,7 +235,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                     BigDecimal erBeforeOne1 = new BigDecimal("0");
                     if (i <= emolumentPlanDTOS.size()-2){
                         EmolumentPlan emolumentPlan2 = new EmolumentPlan();
-                        emolumentPlan2.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear());
+                        emolumentPlan2.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear()+1);
                         emolumentPlan2.setIndicatorId(data.getIndicatorId());
                         //总薪酬包 未来年度：公式=销售收入×E/R值
                         EmolumentPlanDTO emolumentPlanDTO2 = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan2);
@@ -257,7 +257,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                     BigDecimal erBeforeOne1 = new BigDecimal("0");
                    if (i < emolumentPlanDTOS.size()-2){
                        EmolumentPlan emolumentPlan2 = new EmolumentPlan();
-                       emolumentPlan2.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear());
+                       emolumentPlan2.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear()+1);
                        emolumentPlan2.setIndicatorId(data.getIndicatorId());
                        //总薪酬包 未来年度：公式=销售收入×E/R值
                        EmolumentPlanDTO emolumentPlanDTO2 = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan2);
