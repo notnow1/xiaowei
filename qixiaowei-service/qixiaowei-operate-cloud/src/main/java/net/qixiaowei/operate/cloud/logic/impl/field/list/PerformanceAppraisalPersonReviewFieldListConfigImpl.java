@@ -34,8 +34,8 @@ public class PerformanceAppraisalPersonReviewFieldListConfigImpl implements IFie
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.CYCLE_NUMBER.getCode(), FieldListConfig.builder().fieldWidth(120).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_OBJECT_CODE.getCode(), FieldListConfig.builder().fieldWidth(140).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_OBJECT_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonReviewField.POST_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(PerformanceAppraisalPersonReviewField.DEPARTMENT_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonReviewField.DEPARTMENT_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(PerformanceAppraisalPersonReviewField.POST_NAME.getCode(), FieldListConfig.builder().fieldWidth(140).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_PRINCIPAL_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.EVALUATION_SCORE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(10).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(PerformanceAppraisalPersonReviewField.APPRAISAL_OBJECT_STATUS.getCode(), FieldListConfig.builder().fieldWidth(120).sort(11).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
