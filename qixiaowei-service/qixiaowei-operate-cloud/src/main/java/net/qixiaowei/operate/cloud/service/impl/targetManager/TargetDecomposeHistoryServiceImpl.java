@@ -1,5 +1,6 @@
 package net.qixiaowei.operate.cloud.service.impl.targetManager;
 
+import lombok.extern.slf4j.Slf4j;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
@@ -10,6 +11,7 @@ import net.qixiaowei.integration.common.text.Convert;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
+import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.message.api.dto.backlog.BacklogSendDTO;
 import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
@@ -49,6 +51,7 @@ import java.util.stream.Collectors;
  * @since 2022-10-31
  */
 @Service
+@Slf4j
 public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistoryService {
     @Autowired
     private TargetDecomposeHistoryMapper targetDecomposeHistoryMapper;
@@ -457,7 +460,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     //历史目标分解详情周期集合
                     List<DetailCyclesSnapshot> detailCyclesSnapshots = new ArrayList<>();
                     //插入历史目标分解详情周期集合
-                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList, detailCyclesSnapshots, decomposeDetailsSnapshots,i);
+                    this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList, detailCyclesSnapshots, decomposeDetailsSnapshots, i);
                 }
             }
 
@@ -510,7 +513,8 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     backlogSendDTO.setBacklogName("滚动预测");
                     R<?> insertBacklog = remoteBacklogService.add(backlogSendDTO, SecurityConstants.INNER);
                     if (R.SUCCESS != insertBacklog.getCode()) {
-                        throw new ServiceException("申请域名通知失败");
+//                        throw new ServiceException("申请域名通知失败");
+                        log.error("发送滚动预测待办失败");
                     }
                     break;
                 }
@@ -557,12 +561,13 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
 
     /**
      * 封装历史目标分解详情周期集合
-     *  @param detailCyclesSnapshots
+     *
+     * @param detailCyclesSnapshots
      * @param decomposeDetailsSnapshots
      * @param i1
      */
     private void pacgkDetailCyclesSnapshot(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<DetailCyclesSnapshot> detailCyclesSnapshots, List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots, int i1) {
-        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)){
+        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
             for (int i = 0; i < targetDecomposeDetailsDTOS.size(); i++) {
                 //详情快照表不能为空
                 if (StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
@@ -595,7 +600,6 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 detailCyclesSnapshots.clear();
             }
         }
-
 
 
     }
