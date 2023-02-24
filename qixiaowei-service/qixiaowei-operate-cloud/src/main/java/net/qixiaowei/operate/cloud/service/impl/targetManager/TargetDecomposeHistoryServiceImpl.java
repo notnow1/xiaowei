@@ -438,7 +438,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     throw new ServiceException("插入历史目标分解失败");
                 }
             }
-            for (int i = 0; i < targetDecomposeDTOS.size(); i++) {
+            for (int i = 0; i < targetDecomposeHistories.size(); i++) {
                 //插入历史目标分解详情集合
                 this.packDecomposeDetailsSnapshot(targetDecomposeDTOS.get(i), decomposeDetailsSnapshots, targetDecomposeHistories);
             }
