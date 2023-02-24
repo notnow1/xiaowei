@@ -15,7 +15,7 @@ INSERT INTO message_content_config (message_type, business_type, business_subtyp
 INSERT INTO message_content_config (message_type, business_type, business_subtype, receive_role, message_template, receive_user, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 25, 2500, 0, '{employee_name}（{employee_code}）已邀请您参与{target_year}年度，对于{decomposition_dimension}的{time_dimension}销售回款滚动预测，请知悉。', NULL, 0, 1, sysdate(), 1, sysdate());
 INSERT INTO message_content_config (message_type, business_type, business_subtype, receive_role, message_template, receive_user, delete_flag, create_by, create_time, update_by, update_time) VALUES(1, 26, 2600, 0, '{employee_name}（{employee_code}）已邀请您参与{target_year}年度，对于{decomposition_dimension}的{time_dimension}自定义滚动预测，请知悉。', NULL, 0, 1, sysdate(), 1, sysdate());
 INSERT INTO message_content_config (message_type, business_type, business_subtype, receive_role, message_template, receive_user, delete_flag, create_by, create_time, update_by, update_time) VALUES(3, 2, 200, 0, '您好，您的企小微SaaS平台账号密码已重置，新密码为{password}，请您登录后在用户设置中将其改为个人密码，以确保账号安全。', NULL, 0, 1, sysdate(), 1, sysdate());
-INSERT INTO message_content_config (message_type, business_type, business_subtype, receive_role, message_template, receive_user, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, 103, 0, 'SMS_271500002', NULL, 0, 1, sysdate(), 1, sysdate());
+INSERT INTO message_content_config (message_type, business_type, business_subtype, receive_role, message_template, receive_user, delete_flag, create_by, create_time, update_by, update_time) VALUES(2, 1, 103, 0, 'SMS_271530102', NULL, 0, 1, sysdate(), 1, sysdate());
 
 
 
