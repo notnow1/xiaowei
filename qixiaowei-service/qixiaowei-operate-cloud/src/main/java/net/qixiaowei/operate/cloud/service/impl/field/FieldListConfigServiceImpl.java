@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.impl.field;
 import java.util.*;
 
 import cn.hutool.core.util.StrUtil;
+import net.qixiaowei.integration.common.enums.field.BaseField;
 import net.qixiaowei.integration.common.enums.field.operate.*;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.DateUtils;
@@ -297,11 +298,7 @@ public class FieldListConfigServiceImpl implements IFieldListConfigService {
         if (fieldName.endsWith(_id)) {
             fieldName = fieldName.substring(0, fieldName.lastIndexOf("_id")).concat("_name");
         }
-        String createBy = "create_by";
-        if (fieldName.endsWith(createBy)) {
-            fieldName = fieldName.concat("_name");
-        }
-        if (NEED_CONCAT.contains(businessType + StrUtil.COLON + fieldName)) {
+        if (fieldName.endsWith(BaseField.CREATE_BY.getCode()) || NEED_CONCAT.contains(businessType + StrUtil.COLON + fieldName)) {
             fieldName = fieldName.concat("_name");
         }
         return StrUtil.toCamelCase(fieldName);
