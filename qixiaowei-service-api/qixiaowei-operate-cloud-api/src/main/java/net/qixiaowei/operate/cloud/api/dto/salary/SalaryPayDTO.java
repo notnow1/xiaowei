@@ -89,6 +89,10 @@ public class SalaryPayDTO {
      */
     private Integer payMonth;
     /**
+     * 发薪年月
+     */
+    private String payYearMonth;
+    /**
      * 工资金额
      */
     private BigDecimal salaryAmount;

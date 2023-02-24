@@ -18,7 +18,6 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
-import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
@@ -133,6 +132,8 @@ public class IndustryServiceImpl implements IIndustryService {
             tree.putExtra("level", treeNode.getLevel());
             tree.putExtra("industryCode", treeNode.getIndustryCode());
             tree.putExtra("status", treeNode.getStatus());
+            tree.putExtra("createBy", treeNode.getCreateBy());
+            tree.putExtra("createTime", treeNode.getCreateTime());
         });
     }
 

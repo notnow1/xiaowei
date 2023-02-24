@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.gap.GapAnalysisOperateMapper">
+    <!--    查询差距分析经营情况表-->
+    <select id="selectGapAnalysisOperateByGapAnalysisOperateId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO">
+        SELECT
+        gap_analysis_operate_id,gap_analysis_id,indicator_id,indicator_name,target_value,actual_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM gap_analysis_operate
+        WHERE  gap_analysis_operate_id=#{gapAnalysisOperateId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询差距分析经营情况表-->
+    <select id="selectGapAnalysisOperateByGapAnalysisOperateIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO">
+        SELECT
+        gap_analysis_operate_id,gap_analysis_id,indicator_id,indicator_name,target_value,actual_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM gap_analysis_operate
+        WHERE  gap_analysis_operate_id in
+            <foreach item="item"
+                     collection="gapAnalysisOperateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询差距分析经营情况表列表-->
+    <select id="selectGapAnalysisOperateList" resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO">
+        SELECT
+        gap_analysis_operate_id,gap_analysis_id,indicator_id,indicator_name,target_value,actual_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM gap_analysis_operate
+        WHERE delete_flag=0
+                        <if test="gapAnalysisOperate.gapAnalysisOperateId != null">
+                            and gap_analysis_operate_id=#{gapAnalysisOperate.gapAnalysisOperateId}
+                        </if>
+                        <if test="gapAnalysisOperate.gapAnalysisId != null">
+                            and gap_analysis_id=#{gapAnalysisOperate.gapAnalysisId}
+                        </if>
+                        <if test="gapAnalysisOperate.indicatorId != null">
+                            and indicator_id=#{gapAnalysisOperate.indicatorId}
+                        </if>
+                        <if test="gapAnalysisOperate.indicatorName != null and gapAnalysisOperate.indicatorName != ''">
+                            and indicator_name=#{gapAnalysisOperate.indicatorName}
+                        </if>
+                        <if test="gapAnalysisOperate.targetValue != null">
+                            and target_value=#{gapAnalysisOperate.targetValue}
+                        </if>
+                        <if test="gapAnalysisOperate.actualValue != null">
+                            and actual_value=#{gapAnalysisOperate.actualValue}
+                        </if>
+                        <if test="gapAnalysisOperate.sort != null">
+                            and sort=#{gapAnalysisOperate.sort}
+                        </if>
+                        <if test="gapAnalysisOperate.deleteFlag != null">
+                            and delete_flag=#{gapAnalysisOperate.deleteFlag}
+                        </if>
+                        <if test="gapAnalysisOperate.createBy != null">
+                            and create_by=#{gapAnalysisOperate.createBy}
+                        </if>
+                        <if test="gapAnalysisOperate.createTime != null">
+                            and create_time=#{gapAnalysisOperate.createTime}
+                        </if>
+                        <if test="gapAnalysisOperate.updateBy != null">
+                            and update_by=#{gapAnalysisOperate.updateBy}
+                        </if>
+                        <if test="gapAnalysisOperate.updateTime != null">
+                            and update_time=#{gapAnalysisOperate.updateTime}
+                        </if>
+    </select>
+    <!--新增差距分析经营情况表-->
+    <insert id="insertGapAnalysisOperate" useGeneratedKeys="true" keyProperty="gapAnalysisOperateId">
+        INSERT INTO gap_analysis_operate (gap_analysis_id,indicator_id,indicator_name,target_value,actual_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{gapAnalysisOperate.gapAnalysisId},#{gapAnalysisOperate.indicatorId},#{gapAnalysisOperate.indicatorName},#{gapAnalysisOperate.targetValue},#{gapAnalysisOperate.actualValue},#{gapAnalysisOperate.sort},#{gapAnalysisOperate.deleteFlag},#{gapAnalysisOperate.createBy},#{gapAnalysisOperate.createTime},#{gapAnalysisOperate.updateBy},#{gapAnalysisOperate.updateTime})
+    </insert>
+    <!--修改差距分析经营情况表-->
+    <update id="updateGapAnalysisOperate">
+        UPDATE gap_analysis_operate
+        SET
+                    <if test="gapAnalysisOperate.gapAnalysisId != null">
+                        gap_analysis_id=#{gapAnalysisOperate.gapAnalysisId},
+                    </if>
+                    <if test="gapAnalysisOperate.indicatorId != null">
+                        indicator_id=#{gapAnalysisOperate.indicatorId},
+                    </if>
+                    <if test="gapAnalysisOperate.indicatorName != null and gapAnalysisOperate.indicatorName != ''">
+                        indicator_name=#{gapAnalysisOperate.indicatorName},
+                    </if>
+                    <if test="gapAnalysisOperate.targetValue != null">
+                        target_value=#{gapAnalysisOperate.targetValue},
+                    </if>
+                    <if test="gapAnalysisOperate.actualValue != null">
+                        actual_value=#{gapAnalysisOperate.actualValue},
+                    </if>
+                    <if test="gapAnalysisOperate.sort != null">
+                        sort=#{gapAnalysisOperate.sort},
+                    </if>
+                    <if test="gapAnalysisOperate.deleteFlag != null">
+                        delete_flag=#{gapAnalysisOperate.deleteFlag},
+                    </if>
+                    <if test="gapAnalysisOperate.createBy != null">
+                        create_by=#{gapAnalysisOperate.createBy},
+                    </if>
+                    <if test="gapAnalysisOperate.createTime != null">
+                        create_time=#{gapAnalysisOperate.createTime},
+                    </if>
+                    <if test="gapAnalysisOperate.updateBy != null">
+                        update_by=#{gapAnalysisOperate.updateBy},
+                    </if>
+                    <if test="gapAnalysisOperate.updateTime != null">
+                        update_time=#{gapAnalysisOperate.updateTime}
+                    </if>
+        WHERE
+                 gap_analysis_operate_id=#{gapAnalysisOperate.gapAnalysisOperateId}
+    </update>
+    <!--逻辑删除差距分析经营情况表-->
+    <update id="logicDeleteGapAnalysisOperateByGapAnalysisOperateId">
+        UPDATE gap_analysis_operate
+        SET     delete_flag= 1,
+                update_by=#{gapAnalysisOperate.updateBy},
+                update_time=#{gapAnalysisOperate.updateTime}
+        WHERE
+                gap_analysis_operate_id=#{gapAnalysisOperate.gapAnalysisOperateId}
+    </update>
+    <!--逻辑批量删除差距分析经营情况表-->
+    <update id="logicDeleteGapAnalysisOperateByGapAnalysisOperateIds">
+        UPDATE gap_analysis_operate
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         gap_analysis_operate_id IN
+            <foreach item="item"
+                     collection="gapAnalysisOperateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增差距分析经营情况表-->
+    <insert id="batchGapAnalysisOperate">
+        INSERT INTO gap_analysis_operate (gap_analysis_id,indicator_id,indicator_name,target_value,actual_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="gapAnalysisOperates"
+                 separator=",">
+            (#{item.gapAnalysisId},#{item.indicatorId},#{item.indicatorName},#{item.targetValue},#{item.actualValue},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除差距分析经营情况表-->
+    <delete id="deleteGapAnalysisOperateByGapAnalysisOperateId">
+        DELETE FROM gap_analysis_operate
+        WHERE  gap_analysis_operate_id=#{gapAnalysisOperate}
+
+    </delete>
+    <!--物理批量删除差距分析经营情况表-->
+    <delete id="deleteGapAnalysisOperateByGapAnalysisOperateIds">
+        DELETE FROM gap_analysis_operate
+        WHERE  gap_analysis_operate_id IN
+            <foreach item="item"
+                     collection="gapAnalysisOperateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改差距分析经营情况表-->
+    <update id="updateGapAnalysisOperates">
+        update gap_analysis_operate
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="gap_analysis_id=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.gapAnalysisId != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.gapAnalysisId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="indicator_id=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.indicatorId != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.indicatorId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="indicator_name=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.indicatorName != null and item.indicatorName != ''">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.indicatorName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="target_value=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.targetValue != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.targetValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="actual_value=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.actualValue != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.actualValue}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="gapAnalysisOperateList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when gap_analysis_operate_id=#{item.gapAnalysisOperateId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="gapAnalysisOperateList" separator="or" item="item" index="index">
+                    gap_analysis_operate_id=#{item.gapAnalysisOperateId}
+        </foreach>
+    </update>
+</mapper>
+
+

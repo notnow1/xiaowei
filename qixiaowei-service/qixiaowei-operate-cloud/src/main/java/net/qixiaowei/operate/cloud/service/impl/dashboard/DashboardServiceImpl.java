@@ -669,6 +669,9 @@ public class DashboardServiceImpl implements IDashboardService {
         } else if (timeDimension == 5) {
             cycleNumberEnd = 52;
         }
+        if (timeDimension == 1 && StringUtils.isNull(targetLeaderboardDTO.getStartYear()) && StringUtils.isNull(targetLeaderboardDTO.getEndYear())) {
+            throw new ServiceException("请传入完整的年份区间");
+        }
         if (timeDimension == 1 && StringUtils.isNotNull(targetLeaderboardDTO.getStartYear()) && StringUtils.isNotNull(targetLeaderboardDTO.getEndYear())) {// 只有年度
             startYear = targetLeaderboardDTO.getStartYear();
             endYear = targetLeaderboardDTO.getEndYear();
@@ -1276,7 +1279,7 @@ public class DashboardServiceImpl implements IDashboardService {
                     break;
                 case 3:
                     map.put("timeDimension", 3);
-                    map.put("startTime", targetYear + "/0" + 1);
+                    map.put("startTime", targetYear + "/" + 1);
                     map.put("endTime", targetYear + "/" + 4);
                     break;
                 case 4:

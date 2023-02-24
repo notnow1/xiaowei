@@ -72,11 +72,12 @@
         and delete_flag=0
     </select>
 
-    <!--    查询工资发薪表列表-->
+    <!--    查询工资发薪表列表 payYearMonth -->
     <select id="selectSalaryPayList" resultType="net.qixiaowei.operate.cloud.api.dto.salary.SalaryPayDTO">
         SELECT
         salary_pay_id,
         employee_id,
+        CONCAT(pay_year,'/',RIGHT(CONCAT('0',pay_month),2)) as payYearMonth,
         pay_year,
         pay_month,
         IFNULL(salary_amount, 0) as salary_amount,

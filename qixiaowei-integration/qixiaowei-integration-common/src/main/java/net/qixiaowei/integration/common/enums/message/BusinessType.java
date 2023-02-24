@@ -57,6 +57,7 @@ public enum BusinessType {
     PLAN_BUSINESS_UNIT(48, "规划业务单元配置"),
     INDUSTRY_ATTRACTION(49, "行业吸引力配置"),
     STRATEGY_INTENT(50, "战略意图"),
+    GAP_ANALYSIS(51, "差距分析"),
     ;
 
 
