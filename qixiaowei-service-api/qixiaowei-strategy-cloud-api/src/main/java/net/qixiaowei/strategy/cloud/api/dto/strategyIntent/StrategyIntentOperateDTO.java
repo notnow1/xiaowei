@@ -3,7 +3,7 @@ package net.qixiaowei.strategy.cloud.api.dto.strategyIntent;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -87,10 +87,7 @@ public class StrategyIntentOperateDTO {
     */
     @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss",timezone = "GMT+8")
     private  Date  updateTime;
-    /**
-    * 租户ID
-    */
-    private  Long tenantId;
+
 
     /**
     * 请求参数
@@ -99,6 +96,6 @@ public class StrategyIntentOperateDTO {
     /**
      * 年度指标对应值集合
      */
-    private List<Map<Integer, BigDecimal>> yearValues;
+    private List<StrategyIntentOperateMapDTO> strategyIntentOperateMapDTOS;
 }
 
