@@ -55,7 +55,10 @@ public class SendSMSUtils {
             log.info("阿里短信发送前 phoneNumbers {} templateCode {} templateParam {} ", phoneNumbers, templateCode, templateParam);
             SendSmsResponse sendSmsResponse = client.sendSmsWithOptions(sendSmsRequest, runtimeOptions);
             log.info("阿里短信发送后 sendSmsResponse {}", JSON.toJSONString(sendSmsResponse));
-            isSend = true;
+            String code = sendSmsResponse.getBody().getCode();
+            if("OK".equals(code)){
+                isSend = true;
+            }
         } catch (TeaException error) {
             log.error("阿里短信发送失败" + JSON.toJSONString(error));
         } catch (Exception _error) {
