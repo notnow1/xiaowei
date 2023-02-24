@@ -36,7 +36,7 @@ public class EmployeeFieldListConfigImpl implements IFieldListConfigStrategy {
         INIT_EMPLOYEE.put(EmployeeField.EMPLOYMENT_STATUS.getCode(), FieldListConfig.builder().fieldWidth(130).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_EMPLOYEE.put(EmployeeField.EMPLOYMENT_DATE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_EMPLOYEE.put(EmployeeField.DEPARTURE_DATE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_EMPLOYEE.put(EmployeeField.OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldListConfig.builder().fieldWidth(9).sort(14).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_EMPLOYEE.put(EmployeeField.OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(9).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_EMPLOYEE.put(EmployeeField.POST_RANK_NAME.getCode(), FieldListConfig.builder().fieldWidth(120).sort(10).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_EMPLOYEE.put(EmployeeField.EMPLOYEE_RANK.getCode(), FieldListConfig.builder().fieldWidth(120).sort(11).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_EMPLOYEE.put(EmployeeField.EMPLOYEE_BASIC_WAGE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(12).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
