@@ -31,10 +31,10 @@ public class EmployeeBudgetFieldListConfigImpl implements IFieldListConfigStrate
         INIT_MAP.put(EmployeeBudgetField.BUDGET_YEAR.getCode(), FieldListConfig.builder().fieldWidth(110).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeBudgetField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeBudgetField.OFFICIAL_RANK_SYSTEM_ID.getCode(), FieldListConfig.builder().fieldWidth(120).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmployeeBudgetField.AMOUNT_LAST_YEAR.getCode(), FieldListConfig.builder().fieldWidth(130).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmployeeBudgetField.AMOUNT_ADJUST.getCode(), FieldListConfig.builder().fieldWidth(120).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmployeeBudgetField.AMOUNT_AVERAGE_ADJUST.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(EmployeeBudgetField.ANNUAL_AVERAGE_NUM.getCode(), FieldListConfig.builder().fieldWidth(130).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmployeeBudgetField.AMOUNT_LAST_YEAR.getCode(), FieldListConfig.builder().fieldWidth(140).sort(4).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmployeeBudgetField.AMOUNT_ADJUST.getCode(), FieldListConfig.builder().fieldWidth(140).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmployeeBudgetField.AMOUNT_AVERAGE_ADJUST.getCode(), FieldListConfig.builder().fieldWidth(140).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(EmployeeBudgetField.ANNUAL_AVERAGE_NUM.getCode(), FieldListConfig.builder().fieldWidth(140).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(EmployeeBudgetField.BUDGET_CYCLE.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 

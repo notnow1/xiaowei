@@ -64,7 +64,9 @@
         td.target_decompose_dimension_id,
         td.forecast_year,
         td.actual_total,
-        td.status
+        td.status,
+        td.create_by,
+        td.create_time
         FROM target_decompose td
         left join target_setting ts
         on td.target_year = ts.target_year
@@ -170,7 +172,9 @@
         td.target_decompose_dimension_id,
         td.forecast_year,
         td.actual_total,
-        td.status
+        td.status,
+        td.create_by,
+        td.create_time
         FROM target_decompose td
         left join target_setting ts
         on td.target_year = ts.target_year

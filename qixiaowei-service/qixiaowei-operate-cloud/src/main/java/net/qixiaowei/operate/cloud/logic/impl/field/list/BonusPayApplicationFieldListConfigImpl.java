@@ -36,7 +36,7 @@ public class BonusPayApplicationFieldListConfigImpl implements IFieldListConfigS
         INIT_MAP.put(BonusPayApplicationField.BUDGET_DEPARTMENT_LIST.getCode(), FieldListConfig.builder().fieldWidth(200).sort(5).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(BonusPayApplicationField.AWARD_YEAR_MONTH.getCode(), FieldListConfig.builder().fieldWidth(120).sort(6).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
         INIT_MAP.put(BonusPayApplicationField.BONUS_PAY_OBJECT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(7).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(BonusPayApplicationField.AWARD_TOTAL_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(120).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(BonusPayApplicationField.AWARD_TOTAL_AMOUNT.getCode(), FieldListConfig.builder().fieldWidth(130).sort(8).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
 
 
