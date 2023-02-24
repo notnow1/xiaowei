@@ -265,6 +265,7 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setCreateTime(nowDate);
         tenant.setUpdateTime(nowDate);
         tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        tenant.setTenantStatus(0);
         //插入租户
         tenantMapper.insertTenant(tenant);
         Long tenantId = tenant.getTenantId();

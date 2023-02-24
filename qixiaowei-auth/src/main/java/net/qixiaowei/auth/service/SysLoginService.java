@@ -181,7 +181,7 @@ public class SysLoginService {
         String userAccount = registerBody.getUserAccount();
         String key = CacheConstants.SMS_SEND_KEY + userAccount;
         //校验验证码
-        if (StringUtils.isEmpty(code) || redisService.hasKey(key) || !code.equals(redisService.getCacheObject(key))) {
+        if (StringUtils.isEmpty(code) || !redisService.hasKey(key) || !code.equals(redisService.getCacheObject(key))) {
             throw new ServiceException("手机验证码错误，请确认！");
         }
         //校验是否注册过
@@ -197,6 +197,7 @@ public class SysLoginService {
         if (R.SUCCESS != tenantRegisterResponseVOR.getCode()) {
             throw new ServiceException(tenantRegisterResponseVOR.getMsg());
         }
+        redisService.deleteObject(key);
         return tenantRegisterResponseVOR.getData();
     }
 

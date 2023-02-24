@@ -18,25 +18,25 @@ public class AliyunSMSConfig {
     /**
      * endpoint
      */
-    @Value("${aliyunSMS.endpoint:dysmsapi.aliyuncs.com}")
+    @Value("${aliyun.sms.endpoint:dysmsapi.aliyuncs.com}")
     private String endpoint;
 
     /**
      * accessKeyId
      */
-    @Value("${aliyunSMS.accessKeyId:}")
+    @Value("${aliyun.sms.accessKeyId:}")
     private String accessKeyId;
 
     /**
      * accessKeySecret
      */
-    @Value("${aliyunSMS.accessKeySecret:}")
+    @Value("${aliyun.sms.accessKeySecret:}")
     private String accessKeySecret;
 
     /**
      * 短信签名名称
      */
-    @Value("${aliyunSMS.signName:}")
+    @Value("${aliyun.sms.signName:}")
     private String signName;
 
 

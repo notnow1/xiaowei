@@ -205,8 +205,9 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
             //根据公式计算的er值
             BigDecimal erBeforeOne2 = new BigDecimal("0");
             EmolumentPlan emolumentPlan = new EmolumentPlan();
-            emolumentPlan.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear()+1);
+            emolumentPlan.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear());
             emolumentPlan.setIndicatorId(data.getIndicatorId());
+            emolumentPlan.setTenantId(SecurityUtils.getTenantId());
             //总薪酬包 未来年度：公式=销售收入×E/R值
             EmolumentPlanDTO emolumentPlanDTO = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan);
             this.addCalculate(emolumentPlanDTO);
@@ -237,6 +238,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                         EmolumentPlan emolumentPlan2 = new EmolumentPlan();
                         emolumentPlan2.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear()+1);
                         emolumentPlan2.setIndicatorId(data.getIndicatorId());
+                        emolumentPlan2.setTenantId(SecurityUtils.getTenantId());
                         //总薪酬包 未来年度：公式=销售收入×E/R值
                         EmolumentPlanDTO emolumentPlanDTO2 = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan2);
                         this.addCalculate(emolumentPlanDTO2);
@@ -259,6 +261,7 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
                        EmolumentPlan emolumentPlan2 = new EmolumentPlan();
                        emolumentPlan2.setPlanYear(emolumentPlanDTOS.get(i).getPlanYear()+1);
                        emolumentPlan2.setIndicatorId(data.getIndicatorId());
+                       emolumentPlan2.setTenantId(SecurityUtils.getTenantId());
                        //总薪酬包 未来年度：公式=销售收入×E/R值
                        EmolumentPlanDTO emolumentPlanDTO2 = emolumentPlanMapper.prefabricateAddEmolumentPlan(emolumentPlan2);
                        this.addCalculate(emolumentPlanDTO2);
@@ -398,10 +401,13 @@ public class EmolumentPlanServiceImpl implements IEmolumentPlanService {
         if (StringUtils.isNotNull(emolumentPlanDTO)) {
             //预算年前一年销售收入
             BigDecimal revenueBeforeOne = emolumentPlanDTO.getRevenueBeforeOne();
+            if (null!= revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0"))!=0){
+                revenueBeforeOne = revenueBeforeOne.multiply(new BigDecimal("10000")).setScale(10,BigDecimal.ROUND_HALF_UP);
+            }
             //预算年前一年总薪酬包
             BigDecimal emolumentPackageBeforeOne = emolumentPlanDTO.getEmolumentPackageBeforeOne();
             if (null != revenueBeforeOne && revenueBeforeOne.compareTo(new BigDecimal("0")) != 0 && null != emolumentPackageBeforeOne && emolumentPackageBeforeOne.compareTo(new BigDecimal("0")) != 0) {
-                BigDecimal erBeforeOne = emolumentPackageBeforeOne.divide(revenueBeforeOne, BigDecimal.ROUND_HALF_UP);
+                BigDecimal erBeforeOne = emolumentPackageBeforeOne.divide(revenueBeforeOne,10, BigDecimal.ROUND_HALF_UP);
                 if (erBeforeOne.compareTo(new BigDecimal("0")) > 0) {
                     emolumentPlanDTO.setErBeforeOne(erBeforeOne);
                 }
