@@ -59,6 +59,10 @@ public class TargetDecompose extends TenantEntity {
     private List<Long> indicatorIds;
 
     /**
+     * 远程指标ID集合
+     */
+    private List<String> remoteIndicatorIds;
+    /**
      * 负责人ID
      */
     private Long principalEmployeeId;

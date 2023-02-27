@@ -103,7 +103,7 @@ public class UserServiceImpl implements IUserService {
     public LoginUserVO getUserByUserAccount(String userAccount, String domain) {
         Long tenantId = 0L;
         if (StringUtils.isEmpty(domain)) {
-            throw new ServiceException("域名不能为空。");
+            throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
         if (StringUtils.isNotEmpty(domain)) {
             domain = domain.replace("." + tenantConfig.getMainDomain(), "");
@@ -118,11 +118,11 @@ public class UserServiceImpl implements IUserService {
                             throw new ServiceException("您的账号状态为异常状态，请联系客服查询。");
                         }
                     } else {
-                        throw new ServiceException("不存在该域名的租户。");
+                        throw new ServiceException("您输入的账号或密码有误，请重新输入。");
                     }
                 }
             } else {
-                throw new ServiceException("域名不能为空。");
+                throw new ServiceException("您输入的账号或密码有误，请重新输入。");
             }
         }
         UserDTO userDTO = userMapper.selectUserByUserAccountAndTenantId(userAccount, tenantId);

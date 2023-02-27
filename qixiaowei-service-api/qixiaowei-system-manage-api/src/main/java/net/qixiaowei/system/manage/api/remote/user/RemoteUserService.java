@@ -89,4 +89,13 @@ public interface RemoteUserService {
      */
     @PostMapping(API_PREFIX_USER + "/selectByemployeeIds")
     R<List<UserDTO>> selectByemployeeIds(@RequestBody List<Long> employeeIds, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 远程查询用户信息 支持模糊查询等等
+     * @param userDTO
+     * @param source
+     * @return
+     */
+    @PostMapping(API_PREFIX_USER + "/remoteSelectUserList")
+    R<List<UserDTO>> remoteSelectUserList(@RequestBody UserDTO userDTO, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

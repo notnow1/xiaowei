@@ -62,6 +62,14 @@
 --         and dbbd.delete_flag =0
         WHERE
         dbb.delete_flag = 0
+        <if test="deptBonusBudget.createBys != null and deptBonusBudget.createBys.size() >0">
+            and dbb.create_by in
+            <foreach item="item"
+                     collection="deptBonusBudget.createBys"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="deptBonusBudget.deptBonusBudgetId != null">
             and dbb.dept_bonus_budget_id=#{deptBonusBudget.deptBonusBudgetId}
         </if>

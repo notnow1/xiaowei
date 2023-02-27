@@ -193,8 +193,23 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
      */
     @Override
     public List<BonusBudgetDTO> selectBonusBudgetList(BonusBudgetDTO bonusBudgetDTO) {
+        List<String> createBys = new ArrayList<>();
         BonusBudget bonusBudget = new BonusBudget();
         BeanUtils.copyProperties(bonusBudgetDTO, bonusBudget);
+        if (StringUtils.isNotNull(bonusBudgetDTO.getCreateByName())) {
+            UserDTO userDTO = new UserDTO();
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                employeeIds.forEach(e -> {
+                    createBys.add(String.valueOf(e));
+                });
+            } else {
+                createBys.add("");
+            }
+        }
+        bonusBudget.setCreateBys(createBys);
         List<BonusBudgetDTO> bonusBudgetDTOS = bonusBudgetMapper.selectBonusBudgetList(bonusBudget);
         //封装总奖金包预算列表涨薪包数据
         this.packPaymentBonusBudgetList(bonusBudgetDTOS);
@@ -214,96 +229,9 @@ public class BonusBudgetServiceImpl implements IBonusBudgetService {
                 }
             }
         }
-        List<BonusBudgetDTO> bonusBudgetDTOList = this.packQueryBonusBudget(bonusBudgetDTO, bonusBudgetDTOS);
-
-        return bonusBudgetDTOList;
+        return bonusBudgetDTOS;
     }
 
-    /**
-     * 封装模糊查询
-     *
-     * @param bonusBudgetDTO
-     * @param bonusBudgetDTOS
-     * @return
-     */
-    private List<BonusBudgetDTO> packQueryBonusBudget(BonusBudgetDTO bonusBudgetDTO, List<BonusBudgetDTO> bonusBudgetDTOS) {
-        List<BonusBudgetDTO> bonusBudgetDTOList = new ArrayList<>();
-        //创建人名称
-        String createName = bonusBudgetDTO.getCreateByName();
-        //总奖金包预算
-        BigDecimal amountBonusBudget = bonusBudgetDTO.getAmountBonusBudget();
-        //涨薪包预算
-        BigDecimal raiseSalaryBonusBudget = bonusBudgetDTO.getRaiseSalaryBonusBudget();
-
-        if (StringUtils.isNotNull(bonusBudgetDTO)) {
-            Pattern pattern = null;
-            Pattern pattern1 = null;
-            Pattern pattern2 = null;
-            if (StringUtils.isNotBlank(createName)) {
-                //创建人名称
-                pattern = Pattern.compile(createName);
-            }
-
-            if (StringUtils.isNotNull(amountBonusBudget)) {
-                //总奖金包预算
-                pattern1 = Pattern.compile(String.valueOf(amountBonusBudget));
-            }
-            if (StringUtils.isNotNull(raiseSalaryBonusBudget)) {
-                //涨薪包预算
-                pattern2 = Pattern.compile(String.valueOf(raiseSalaryBonusBudget));
-            }
-            for (BonusBudgetDTO budgetDTO : bonusBudgetDTOS) {
-                //创建人名称
-                Matcher createByName1 = null;
-                //总奖金包预算
-                Matcher amountBonusBudget1 = null;
-                //涨薪包预算
-                Matcher raiseSalaryBonusBudget1 = null;
-                if (StringUtils.isNotBlank(createName)) {
-                    String createName2 = budgetDTO.getCreateByName();
-                    if (StringUtils.isNotBlank(createName2)) {
-                        //创建人名称
-                        createByName1 = pattern.matcher(createName2);
-                    } else {
-                        return new ArrayList<>();
-                    }
-                }
-                if (StringUtils.isNotNull(amountBonusBudget)) {
-                    //总奖金包预算
-                    amountBonusBudget1 = pattern1.matcher(String.valueOf(budgetDTO.getAmountBonusBudget()));
-                }
-                if (StringUtils.isNotNull(raiseSalaryBonusBudget)) {
-                    //涨薪包预算
-                    raiseSalaryBonusBudget1 = pattern2.matcher(String.valueOf(budgetDTO.getRaiseSalaryBonusBudget()));
-                }
-                if ((StringUtils.isNotNull(createName) && StringUtils.isNotBlank(budgetDTO.getCreateByName())) && StringUtils.isNotNull(amountBonusBudget) && StringUtils.isNotNull(raiseSalaryBonusBudget)) {
-                    if (createByName1.find() || amountBonusBudget1.find() || raiseSalaryBonusBudget1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        bonusBudgetDTOList.add(budgetDTO);
-                    }
-                }
-                if (StringUtils.isNotBlank(createName) && StringUtils.isNotBlank(budgetDTO.getCreateByName())) {
-                    if (createByName1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        bonusBudgetDTOList.add(budgetDTO);
-                    }
-                }
-                if (StringUtils.isNotNull(amountBonusBudget)) {
-                    if (amountBonusBudget1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        bonusBudgetDTOList.add(budgetDTO);
-                    }
-                }
-                if (StringUtils.isNotNull(raiseSalaryBonusBudget)) {
-                    if (raiseSalaryBonusBudget1.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        bonusBudgetDTOList.add(budgetDTO);
-                    }
-                }
-
-            }
-            if (StringUtils.isNotBlank(createName) || StringUtils.isNotNull(amountBonusBudget) || StringUtils.isNotNull(raiseSalaryBonusBudget)) {
-                return bonusBudgetDTOList;
-            }
-        }
-        return StringUtils.isNotEmpty(bonusBudgetDTOList) ? bonusBudgetDTOList : bonusBudgetDTOS;
-    }
 
     /**
      * 新增奖金预算表

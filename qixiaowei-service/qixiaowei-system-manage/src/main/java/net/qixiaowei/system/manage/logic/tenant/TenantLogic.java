@@ -492,15 +492,15 @@ public class TenantLogic {
     }
     public boolean initIndustryAttraction() {
         boolean initSalaryItem = true;
-        R<Boolean> booleanR = remoteIndustryAttractionService.initIndustryAttraction(SecurityConstants.INNER);
-        if (R.SUCCESS != booleanR.getCode()) {
-            initSalaryItem = false;
-        } else {
-            Boolean data = booleanR.getData();
-            if (!data) {
-                initSalaryItem = false;
-            }
-        }
+//        R<Boolean> booleanR = remoteIndustryAttractionService.initIndustryAttraction(SecurityConstants.INNER);
+//        if (R.SUCCESS != booleanR.getCode()) {
+//            initSalaryItem = false;
+//        } else {
+//            Boolean data = booleanR.getData();
+//            if (!data) {
+//                initSalaryItem = false;
+//            }
+//        }
         return initSalaryItem;
     }
     /**

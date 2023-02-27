@@ -50,6 +50,14 @@
         delete_flag, create_by, create_time, update_by, update_time
         FROM emolument_plan
         WHERE delete_flag=0
+        <if test="emolumentPlan.createBys != null and emolumentPlan.createBys.size() >0">
+            and create_by in
+            <foreach item="item"
+                     collection="emolumentPlan.createBys"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="emolumentPlan.emolumentPlanId != null">
             and emolument_plan_id=#{emolumentPlan.emolumentPlanId}
         </if>

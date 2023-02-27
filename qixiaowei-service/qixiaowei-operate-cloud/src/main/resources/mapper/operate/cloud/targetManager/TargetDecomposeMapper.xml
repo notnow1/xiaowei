@@ -293,6 +293,16 @@
             </foreach>
         </if>
 
+        <!-- 普通指标名称过滤  -->
+        <if test="targetDecompose.remoteIndicatorIds != null and targetDecompose.remoteIndicatorIds.size() > 0">
+                AND td.indicator_id IN
+                <foreach item="item"
+                         collection="targetDecompose.remoteIndicatorIds"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+        </if>
+
         <if test="targetDecompose.targetDecomposeId != null">
             and td.target_decompose_id=#{targetDecompose.targetDecomposeId}
         </if>

@@ -208,3 +208,61 @@ CREATE TABLE gap_analysis_operate(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (gap_analysis_operate_id)
 )  COMMENT = '差距分析经营情况表';
+
+
+CREATE TABLE market_insight_macro(
+    market_insight_macro_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (market_insight_macro_id)
+)  COMMENT = '市场洞察宏观表';
+
+
+CREATE TABLE mi_macro_detail(
+    mi_macro_detail_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_macro_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察宏观ID' ,
+    visual_angle BIGINT UNSIGNED NOT NULL   COMMENT '视角' ,
+    company_related_factor VARCHAR(256)    COMMENT '企业相关因素' ,
+    change_trend VARCHAR(256)    COMMENT '变化及趋势' ,
+    influence_description VARCHAR(512)    COMMENT '影响描述' ,
+    recommended_practice VARCHAR(512)    COMMENT '建议措施' ,
+    plan_period TINYINT UNSIGNED    COMMENT '规划期' ,
+    estimate_opportunity_amount DECIMAL(14,2)    COMMENT '预估机会点金额' ,
+    propose_employee_id BIGINT UNSIGNED    COMMENT '提出人员ID' ,
+    propose_employee_name VARCHAR(64)    COMMENT '提出人员姓名' ,
+    propose_employee_code VARCHAR(32)    COMMENT '提出人员编码' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_macro_detail_id)
+)  COMMENT = '市场洞察宏观详情表';
+
+
+CREATE TABLE mi_macro_estimate(
+    mi_macro_estimate_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_macro_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察宏观ID' ,
+    mi_macro_detail_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察宏观详情ID' ,
+    plan_year SMALLINT UNSIGNED    COMMENT '规划年度' ,
+    estimate_opportunity_amount DECIMAL(14,2)    COMMENT '预估机会点金额' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_macro_estimate_id)
+)  COMMENT = '市场洞察宏观预估表';

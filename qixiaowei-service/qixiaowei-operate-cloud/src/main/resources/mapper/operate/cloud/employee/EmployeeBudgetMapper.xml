@@ -150,6 +150,15 @@
             </foreach>
         </if>
 
+        <!-- 普通部门查询过滤  -->
+        <if test="employeeBudget.departmentIds != null and employeeBudget.departmentIds.size() > 0">
+            AND department_id  IN
+            <foreach item="item"
+                     collection="employeeBudget.departmentIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="employeeBudget.employeeBudgetId != null">
             and employee_budget_id=#{employeeBudget.employeeBudgetId}
         </if>
