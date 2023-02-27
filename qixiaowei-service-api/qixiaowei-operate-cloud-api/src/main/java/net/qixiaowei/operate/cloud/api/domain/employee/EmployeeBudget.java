@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 人力预算表
@@ -31,6 +32,11 @@ public class EmployeeBudget extends TenantEntity {
      * 预算部门ID
      */
     private Long departmentId;
+
+    /**
+     * 预算部门集合
+     */
+    private List<String> departmentIds;
     /**
      * 职级体系ID
      */

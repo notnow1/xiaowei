@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 部门奖金包预算表
@@ -30,6 +31,10 @@ public class DeptBonusBudget extends TenantEntity {
      * 战略奖比例
      */
     private BigDecimal strategyAwardPercentage;
+    /**
+     * 创建人集合
+     */
+    private List<String> createBys;
 
 }
 

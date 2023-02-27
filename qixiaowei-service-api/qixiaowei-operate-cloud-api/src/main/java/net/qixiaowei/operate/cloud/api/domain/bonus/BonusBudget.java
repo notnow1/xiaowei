@@ -7,6 +7,7 @@ import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 奖金预算表
@@ -44,5 +45,9 @@ public class BonusBudget extends TenantEntity {
      * 指标id集合
      */
     private List<Long> indicatorIds;
+    /**
+     * 创建人集合
+     */
+    private List<String> createBys;
 }
 

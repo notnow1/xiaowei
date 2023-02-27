@@ -93,4 +93,17 @@ public class RemoteUser implements RemoteUserService {
     public R<List<UserDTO>> selectByemployeeIds(List<Long> employeeIds, String source) {
         return R.ok(userService.selectByemployeeIds(employeeIds));
     }
+
+    /**
+     * 远程查询用户信息 支持模糊查询等等
+     * @param userDTO
+     * @param source
+     * @return
+     */
+    @Override
+    @InnerAuth
+    @PostMapping("/remoteSelectUserList")
+    public R<List<UserDTO>> remoteSelectUserList(UserDTO userDTO, String source) {
+        return R.ok(userService.selectUserList(userDTO));
+    }
 }

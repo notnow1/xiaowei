@@ -220,8 +220,23 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
      */
     @Override
     public List<DeptBonusBudgetDTO> selectDeptBonusBudgetList(DeptBonusBudgetDTO deptBonusBudgetDTO) {
+        List<String> createBys = new ArrayList<>();
         DeptBonusBudget deptBonusBudget = new DeptBonusBudget();
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
+        if (StringUtils.isNotNull(deptBonusBudgetDTO.getCreateByName())) {
+            UserDTO userDTO = new UserDTO();
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                employeeIds.forEach(e -> {
+                    createBys.add(String.valueOf(e));
+                });
+            } else {
+                createBys.add("");
+            }
+        }
+        deptBonusBudget.setCreateBys(createBys);
         List<DeptBonusBudgetDTO> deptBonusBudgetDTOS = deptBonusBudgetMapper.selectDeptBonusBudgetList(deptBonusBudget);
         if (StringUtils.isNotEmpty(deptBonusBudgetDTOS)) {
             Set<Long> collect = deptBonusBudgetDTOS.stream().map(DeptBonusBudgetDTO::getCreateBy).collect(Collectors.toSet());

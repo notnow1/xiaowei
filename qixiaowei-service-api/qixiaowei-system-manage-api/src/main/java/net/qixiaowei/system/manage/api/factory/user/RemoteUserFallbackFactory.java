@@ -61,6 +61,11 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             public R<List<UserDTO>> selectByemployeeIds(List<Long> employeeIds, String source) {
                 return R.fail("通过人员ID查询用户id失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<List<UserDTO>> remoteSelectUserList(UserDTO userDTO, String source) {
+                return R.fail(" 远程查询用户列表信息失败:" + throwable.getMessage());
+            }
         };
     }
 }

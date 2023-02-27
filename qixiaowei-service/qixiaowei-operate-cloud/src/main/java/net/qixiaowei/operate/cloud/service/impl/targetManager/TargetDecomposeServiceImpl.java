@@ -793,6 +793,7 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
      */
     @Override
     public List<TargetDecomposeDTO> rollPageList(TargetDecomposeDTO targetDecomposeDTO) {
+        List<String> remoteIndicatorIds = new ArrayList<>();
         TargetDecompose targetDecompose = new TargetDecompose();
         this.getIndicatorId(targetDecomposeDTO.getParams());
         //指标code集合
@@ -811,6 +812,22 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
             targetDecompose.setIndicatorIds(collect);
         }
         BeanUtils.copyProperties(targetDecomposeDTO, targetDecompose);
+        if (StringUtils.isNotBlank(targetDecomposeDTO.getIndicatorName())) {
+            IndicatorDTO indicatorDTO = new IndicatorDTO();
+            indicatorDTO.setIndicatorName(targetDecomposeDTO.getIndicatorName());
+            //远程获取指标名称
+            R<List<IndicatorDTO>> indicatorAllData = remoteIndicatorService.getIndicatorAllData(indicatorDTO, SecurityConstants.INNER);
+            List<IndicatorDTO> indicatorDTOList = indicatorAllData.getData();
+            List<Long> indicatorIds = indicatorDTOList.stream().map(IndicatorDTO::getIndicatorId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(indicatorIds)) {
+                indicatorIds.forEach(i->{
+                    remoteIndicatorIds.add(String.valueOf(i));
+                });
+            } else {
+                remoteIndicatorIds.add("");
+            }
+        }
+        targetDecompose.setRemoteIndicatorIds(remoteIndicatorIds);
         List<TargetDecomposeDTO> targetDecomposeDTOS = targetDecomposeMapper.selectRollPageList(targetDecompose);
 
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
@@ -847,29 +864,26 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
 
             }
         }
+        List<Long> indicatorIds = targetDecomposeDTOS.stream().map(TargetDecomposeDTO::getIndicatorId).collect(Collectors.toList());
+        //远程获取指标名称
+        R<List<IndicatorDTO>> listR1 = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+        List<IndicatorDTO> data = listR1.getData();
+        if (StringUtils.isNotEmpty(data)) {
+            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
+                for (IndicatorDTO datum : data) {
+                    if (decomposeDTO.getIndicatorId().equals(datum.getIndicatorId())) {
+                        decomposeDTO.setIndicatorName(datum.getIndicatorName());
+                    }
+                }
+            }
+
+        }
         if (StringUtils.isNotEmpty(targetDecomposeDTOS)) {
             for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
                 String forecastCycle = this.packForecastCycle(decomposeDTO);
                 decomposeDTO.setForecastCycle(forecastCycle);
                 this.packDecompositionDimension(decomposeDTO);
             }
-        }
-        //模糊指标名称
-        String indicatorName = targetDecomposeDTO.getIndicatorName();
-        if (StringUtils.isNotBlank(indicatorName)) {
-            List<TargetDecomposeDTO> targetDecomposeDTOList = new ArrayList<>();
-            //模糊查询
-            Pattern pattern = Pattern.compile(indicatorName);
-            for (TargetDecomposeDTO decomposeDTO : targetDecomposeDTOS) {
-                String indicatorName1 = decomposeDTO.getIndicatorName();
-                if (StringUtils.isNotBlank(indicatorName1)) {
-                    Matcher matcher = pattern.matcher(indicatorName1);
-                    if (matcher.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        targetDecomposeDTOList.add(decomposeDTO);
-                    }
-                }
-            }
-            return targetDecomposeDTOList;
         }
         return targetDecomposeDTOS;
     }

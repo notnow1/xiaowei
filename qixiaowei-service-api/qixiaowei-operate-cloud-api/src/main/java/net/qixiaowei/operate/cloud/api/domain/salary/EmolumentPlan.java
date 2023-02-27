@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 薪酬规划表
@@ -67,6 +68,11 @@ public class EmolumentPlan extends TenantEntity {
      * 预算年前一年总薪酬包
      */
     private BigDecimal emolumentPackageBeforeOne;
+
+    /**
+     * 创建人id集合
+     */
+    private List<String> createBys;
 
 }
 

@@ -4,11 +4,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import java.util.Date;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import net.qixiaowei.operate.cloud.api.dto.performance.PerformancePercentageDTO;
 
 /**
 * 薪酬规划表
@@ -143,7 +142,7 @@ public class EmolumentPlanDTO {
     /**
      * 创建人名称
      */
-    private  String createName;
+    private  String createByName;
     /**
     * 创建时间
     */

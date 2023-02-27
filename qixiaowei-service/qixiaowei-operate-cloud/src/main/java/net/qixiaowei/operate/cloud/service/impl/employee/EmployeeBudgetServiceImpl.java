@@ -158,9 +158,25 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      */
     @Override
     public List<EmployeeBudgetDTO> selectEmployeeBudgetList(EmployeeBudgetDTO employeeBudgetDTO) {
+        List<String> departmentIds = new ArrayList<>();
         EmployeeBudget employeeBudget = new EmployeeBudget();
         this.getDepartmentIdAndofficialRankSystemId(employeeBudgetDTO.getParams());
         BeanUtils.copyProperties(employeeBudgetDTO, employeeBudget);
+        if (StringUtils.isNotNull(employeeBudgetDTO.getDepartmentName())) {
+            DepartmentDTO departmentDTO = new DepartmentDTO();
+            departmentDTO.setDepartmentName(employeeBudgetDTO.getDepartmentName());
+            R<List<DepartmentDTO>> departmentDtoList = remoteDepartmentService.selectDepartment(departmentDTO, SecurityConstants.INNER);
+            List<DepartmentDTO> departmentListData = departmentDtoList.getData();
+            List<Long> remoteDepartmentIds = departmentListData.stream().map(DepartmentDTO::getDepartmentId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(remoteDepartmentIds)) {
+                remoteDepartmentIds.forEach(d->{
+                    departmentIds.add(String.valueOf(d));
+                });
+            }else {
+                departmentIds.add("");
+            }
+        }
+        employeeBudget.setDepartmentIds(departmentIds);
         List<EmployeeBudgetDTO> employeeBudgetDTOS = employeeBudgetMapper.selectEmployeeBudgetList(employeeBudget);
         //远程调用部门赋值
         List<Long> collect = employeeBudgetDTOS.stream().map(EmployeeBudgetDTO::getDepartmentId).collect(Collectors.toList());
@@ -179,7 +195,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         }
         //远程调用职级赋值
         List<Long> collect1 = employeeBudgetDTOS.stream().map(EmployeeBudgetDTO::getOfficialRankSystemId).collect(Collectors.toList());
-        if (StringUtils.isNotEmpty(collect1)){
+        if (StringUtils.isNotEmpty(collect1)) {
             R<List<OfficialRankSystemDTO>> listR = remoteOfficialRankSystemService.selectByIds(collect1, SecurityConstants.INNER);
             List<OfficialRankSystemDTO> data = listR.getData();
             if (StringUtils.isNotEmpty(data)) {
@@ -202,10 +218,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
             //年度平均人数 = 上年期末数+平均新增人数
             budgetDTO.setAnnualAverageNum(annualAverageNum);
         }
-
-        List<EmployeeBudgetDTO> employeeBudgetDTOList = getEmployeeBudgetDTOS(employeeBudgetDTO, employeeBudgetDTOS);
-
-        return employeeBudgetDTOList;
+        return employeeBudgetDTOS;
     }
 
     /**
@@ -251,7 +264,6 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                 }
 
 
-
             }
             if (StringUtils.isNotEmpty(params3)) {
                 officialRankSystemDTO.setParams(params3);
@@ -272,69 +284,6 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
         }
     }
 
-    /**
-     * 封装人力预算调控模糊查询
-     *
-     * @param employeeBudgetDTO
-     * @param employeeBudgetDTOS
-     * @return
-     */
-    private List<EmployeeBudgetDTO> getEmployeeBudgetDTOS(EmployeeBudgetDTO employeeBudgetDTO, List<EmployeeBudgetDTO> employeeBudgetDTOS) {
-        List<EmployeeBudgetDTO> employeeBudgetDTOList = new ArrayList<>();
-        //部门名称
-        String departmentName1 = employeeBudgetDTO.getDepartmentName();
-        //职级体系名称
-        String officialRankSystemName1 = employeeBudgetDTO.getOfficialRankSystemName();
-        if (StringUtils.isNotNull(employeeBudgetDTO)) {
-            Pattern pattern = null;
-            Pattern pattern1 = null;
-            if (StringUtils.isNotNull(departmentName1)) {
-                //部门模糊查询
-                pattern = Pattern.compile(departmentName1);
-            }
-
-            if (StringUtils.isNotNull(officialRankSystemName1)) {
-                //职级体系模糊查询
-                pattern1 = Pattern.compile(officialRankSystemName1);
-            }
-
-            for (EmployeeBudgetDTO budgetDTO : employeeBudgetDTOS) {
-                //部门名称
-                Matcher departmentName = null;
-                //职级体系名称
-                Matcher officialRankSystemName = null;
-                if (StringUtils.isNotNull(departmentName1)) {
-                    //部门名称
-                    departmentName = pattern.matcher(budgetDTO.getDepartmentName());
-                }
-                if (StringUtils.isNotNull(officialRankSystemName1)) {
-                    //职级体系名称
-                    officialRankSystemName = pattern1.matcher(budgetDTO.getOfficialRankSystemName());
-                }
-
-                if (StringUtils.isNotNull(departmentName1) && StringUtils.isNotNull(officialRankSystemName1)) {
-                    if (departmentName.find() || officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        employeeBudgetDTOList.add(budgetDTO);
-                    }
-                }
-                if (StringUtils.isNotNull(departmentName1)) {
-                    if (departmentName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        employeeBudgetDTOList.add(budgetDTO);
-                    }
-                }
-                if (StringUtils.isNotNull(officialRankSystemName1)) {
-                    if (officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
-                        employeeBudgetDTOList.add(budgetDTO);
-                    }
-                }
-            }
-            if (StringUtils.isNotNull(departmentName1) || StringUtils.isNotNull(officialRankSystemName1)) {
-                return employeeBudgetDTOList;
-            }
-        }
-
-        return StringUtils.isNotEmpty(employeeBudgetDTOList) ? employeeBudgetDTOList : employeeBudgetDTOS;
-    }
 
     /**
      * 新增人力预算表
@@ -903,7 +852,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     if (departmentName.find() && officialRankSystemName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                         emolumentPlanDTOList.add(budgetDetailsDTO);
                     }
-                }else {
+                } else {
                     if (StringUtils.isNotNull(departmentName1)) {
                         if (departmentName.find()) {  //matcher.find()-为模糊查询   matcher.matches()-为精确查询
                             emolumentPlanDTOList.add(budgetDetailsDTO);

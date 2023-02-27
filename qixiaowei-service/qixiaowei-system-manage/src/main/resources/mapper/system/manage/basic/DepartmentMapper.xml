@@ -369,7 +369,7 @@
         <if test="department.departmentName != null and department.departmentName != ''">
             and dm.department_name like '%${department.departmentName}%'
         </if>
-        <if test="department.departmentName != null and department.departmentName != ''">
+        <if test="department.parentDepartmentName != null and department.parentDepartmentName != ''">
             and dm2.department_name like '%${department.parentDepartmentName}%'
         </if>
         <if test="department.level != null">
