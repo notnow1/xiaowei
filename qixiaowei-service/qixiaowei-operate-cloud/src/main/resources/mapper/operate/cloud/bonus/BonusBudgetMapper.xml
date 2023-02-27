@@ -57,7 +57,7 @@
             </foreach>
         </if>
         <if test="bonusBudget.amountBonusBudget != null">
-            and amount_bonus_budge like '%${bonusBudget.amountBonusBudget}%'
+            and amount_bonus_budget like '%${bonusBudget.amountBonusBudget}%'
         </if>
         <if test="bonusBudget.bonusBeforeOne != null">
             and bonus_before_one=#{bonusBudget.bonusBeforeOne}
