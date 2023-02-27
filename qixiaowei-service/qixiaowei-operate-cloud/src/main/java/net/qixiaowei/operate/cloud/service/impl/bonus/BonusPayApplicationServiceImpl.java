@@ -323,6 +323,7 @@ public class BonusPayApplicationServiceImpl implements IBonusPayApplicationServi
                     case "applyDepartmentNameNotEqual":
                         params2.put("departmentNameNotEqual", params.get("applyDepartmentNameNotEqual"));
                         break;
+                    default:break;
                 }
             }
             if (StringUtils.isNotEmpty(params2)) {

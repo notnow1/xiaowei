@@ -247,6 +247,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
                     case "officialRankSystemNameNotEqual":
                         params3.put("officialRankSystemNameNotEqual", params.get("officialRankSystemNameNotEqual"));
                         break;
+                    default:break;
                 }
             }
             if (StringUtils.isNotEmpty(params2)) {
