@@ -88,6 +88,9 @@
         <if test="targetDecompose.targetDecomposeType != null">
             and td.target_decompose_type=#{targetDecompose.targetDecomposeType}
         </if>
+        <if test="targetDecompose.indicatorId != null">
+            and td.indicator_id=#{targetDecompose.indicatorId}
+        </if>
         <if test="targetDecompose.targetYear != null">
             and td.target_year =#{targetDecompose.targetYear}
         </if>
@@ -235,7 +238,7 @@
             </if>
             <!-- 指标名称过滤  -->
             <if test="targetDecompose.params.indicatorIds == null">
-                AND  (td.indicator_id='' or td.indicator_id is null)
+                AND (td.indicator_id='' or td.indicator_id is null)
             </if>
         </if>
         <!-- 指标名称过滤  -->
@@ -252,7 +255,7 @@
             </if>
             <!-- 指标名称过滤  -->
             <if test="targetDecompose.params.indicatorIds == null">
-                AND  (td.indicator_id='' or td.indicator_id is null)
+                AND (td.indicator_id='' or td.indicator_id is null)
             </if>
         </if>
         <!-- 分解维度过滤  -->
