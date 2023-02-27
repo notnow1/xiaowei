@@ -266,3 +266,63 @@ CREATE TABLE mi_macro_estimate(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (mi_macro_estimate_id)
 )  COMMENT = '市场洞察宏观预估表';
+
+
+CREATE TABLE business_design(
+    business_design_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (business_design_id)
+)  COMMENT = '业务设计表';
+
+
+CREATE TABLE business_design_param(
+    business_design_param_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    business_design_id BIGINT UNSIGNED NOT NULL   COMMENT '业务设计ID' ,
+    param_dimension TINYINT UNSIGNED NOT NULL   COMMENT '参数维度:1产品;2客户;3区域' ,
+    param_relation_id BIGINT UNSIGNED    COMMENT '参数关联ID' ,
+    param_name VARCHAR(64)    COMMENT '参数名称' ,
+    history_average_rate DECIMAL(14,2)    COMMENT '历史平均毛利率' ,
+    history_weight DECIMAL(5,2)    COMMENT '历史权重' ,
+    forecast_rate DECIMAL(14,2)    COMMENT '预测毛利率' ,
+    forecast_weight DECIMAL(5,2)    COMMENT '预测权重' ,
+    history_order_amount DECIMAL(14,2)    COMMENT '历史订单额' ,
+    history_order_weight DECIMAL(5,2)    COMMENT '历史订单权重' ,
+    forecast_order_amount DECIMAL(14,2)    COMMENT '预测订单额' ,
+    forecast_order_weight DECIMAL(5,2)    COMMENT '预测订单权重' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (business_design_param_id)
+)  COMMENT = '业务设计参数表';
+
+
+CREATE TABLE business_design_axis_config(
+    business_design_axis_config_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    business_design_id BIGINT UNSIGNED NOT NULL   COMMENT '业务设计ID' ,
+    param_dimension TINYINT UNSIGNED NOT NULL   COMMENT '参数维度:1产品;2客户;3区域' ,
+    coordinate_axis TINYINT UNSIGNED NOT NULL   COMMENT '坐标轴:1 x轴;2 y轴' ,
+    upper_value DECIMAL(14,2)    COMMENT '高区值' ,
+    lower_value DECIMAL(14,2)    COMMENT '低区值' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (business_design_axis_config_id)
+)  COMMENT = '业务设计轴配置表';
