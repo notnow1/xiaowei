@@ -466,7 +466,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                     }
                 }
                 //插入历史目标分解详情周期集合
-                this.pacgkDetailCyclesSnapshot(targetDecomposeDetailsDTOList, decomposeDetailsSnapshots);
+                this.pacgkDetailCyclesSnapshot(decomposeDetailsSnapshots);
 
             }
 
@@ -571,8 +571,8 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      * @param targetDecomposeDetailsDTOS
      * @param decomposeDetailsSnapshots
      */
-    private void pacgkDetailCyclesSnapshot(List<TargetDecomposeDetailsDTO> targetDecomposeDetailsDTOS, List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots) {
-        if (StringUtils.isNotEmpty(targetDecomposeDetailsDTOS)) {
+    private void pacgkDetailCyclesSnapshot( List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots) {
+
             //详情快照表不能为空
             if (StringUtils.isNotEmpty(decomposeDetailsSnapshots)) {
                 for (DecomposeDetailsSnapshot decomposeDetailsSnapshot : decomposeDetailsSnapshots) {
@@ -584,7 +584,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                             DetailCyclesSnapshot detailCyclesSnapshot = new DetailCyclesSnapshot();
                             BeanUtils.copyProperties(decomposeDetailCyclesDTO, detailCyclesSnapshot);
                             //目标分解详情快照ID
-                            detailCyclesSnapshot.setDecomposeDetailsSnapshotId(decomposeDetailsSnapshot.getTargetDecomposeHistoryId());
+                            detailCyclesSnapshot.setDecomposeDetailsSnapshotId(decomposeDetailsSnapshot.getDecomposeDetailsSnapshotId());
                             detailCyclesSnapshot.setCreateBy(SecurityUtils.getUserId());
                             detailCyclesSnapshot.setCreateTime(DateUtils.getNowDate());
                             detailCyclesSnapshot.setUpdateTime(DateUtils.getNowDate());
@@ -603,7 +603,7 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
                 }
 
             }
-        }
+
     }
 
 
