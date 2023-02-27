@@ -7,56 +7,66 @@ import net.qixiaowei.integration.common.domain.tenant.TenantEntity;
 import java.math.BigDecimal;
 
 /**
-* 目标分解详情快照表
-* @author TANGMICHI
-* @since 2022-10-31
-*/
+ * 目标分解详情快照表
+ *
+ * @author TANGMICHI
+ * @since 2022-10-31
+ */
 @Data
 @Accessors(chain = true)
 public class DecomposeDetailsSnapshot extends TenantEntity {
 
     private static final long serialVersionUID = 1L;
 
-     /**
+    /**
      * ID
      */
-     private  Long  decomposeDetailsSnapshotId;
-     /**
+    private Long decomposeDetailsSnapshotId;
+    /**
+     * 目标分解ID
+     */
+    private Long targetDecomposeId;
+
+    /**
+     * 目标分解详情ID
+     */
+    private  Long targetDecomposeDetailsId;
+    /**
      * 目标分解历史版本ID
      */
-     private  Long  targetDecomposeHistoryId;
-     /**
+    private Long targetDecomposeHistoryId;
+    /**
      * 员工ID
      */
-     private  Long  employeeId;
-     /**
+    private Long employeeId;
+    /**
      * 区域ID
      */
-     private  Long  areaId;
-     /**
+    private Long areaId;
+    /**
      * 部门ID
      */
-     private  Long  departmentId;
-     /**
+    private Long departmentId;
+    /**
      * 产品ID
      */
-     private  Long  productId;
-     /**
+    private Long productId;
+    /**
      * 省份ID
      */
-     private  Long  regionId;
-     /**
+    private Long regionId;
+    /**
      * 行业ID
      */
-     private  Long  industryId;
-     /**
+    private Long industryId;
+    /**
      * 负责人ID
      */
-     private  Long  principalEmployeeId;
-     /**
+    private Long principalEmployeeId;
+    /**
      * 汇总目标值
      */
-     private BigDecimal amountTarget;
+    private BigDecimal amountTarget;
 
 }
 

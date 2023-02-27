@@ -24,7 +24,7 @@ public class CustomVerticalCellStyleStrategy extends AbstractVerticalCellStyleSt
         //内容样式策略
             WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
         if (StringUtils.isNotEmpty(levelList)){
-            //靠右
+            //靠左
             contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
             //设置 自动换行
             contentWriteCellStyle.setWrapped(true);
