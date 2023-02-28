@@ -646,7 +646,7 @@ public class TargetDecomposeImportListener extends AnalysisEventListener<Map<Int
         head3.add("指标名称：" + targetDecomposeDTO.getIndicatorName());
         head3.add("分解维度:" + stringBuffer);
         head3.add("时间维度：" + timeDimensionName);
-        head3.add("年度");
+        head3.add("整年度");
         head3.add("分解目标");
         List<String> head4 = new ArrayList<String>();
         head4.add("年度:" + targetDecomposeDTO.getTargetYear() + "年");
