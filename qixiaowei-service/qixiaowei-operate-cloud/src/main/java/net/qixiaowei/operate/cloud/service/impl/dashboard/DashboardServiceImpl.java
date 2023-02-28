@@ -669,7 +669,7 @@ public class DashboardServiceImpl implements IDashboardService {
         } else if (timeDimension == 5) {
             cycleNumberEnd = 52;
         }
-        if (timeDimension == 1 && StringUtils.isNull(targetLeaderboardDTO.getStartYear()) && StringUtils.isNull(targetLeaderboardDTO.getEndYear())) {
+        if (timeDimension == 1 && (StringUtils.isNull(targetLeaderboardDTO.getStartYear()) || StringUtils.isNull(targetLeaderboardDTO.getEndYear()))) {
             throw new ServiceException("请传入完整的年份区间");
         }
         if (timeDimension == 1 && StringUtils.isNotNull(targetLeaderboardDTO.getStartYear()) && StringUtils.isNotNull(targetLeaderboardDTO.getEndYear())) {// 只有年度
@@ -750,7 +750,31 @@ public class DashboardServiceImpl implements IDashboardService {
         String productName = StringUtils.isNull(leaderboardDTO.getProductName()) ? "" : leaderboardDTO.getProductName() + ",";
         String regionName = StringUtils.isNull(leaderboardDTO.getRegionName()) ? "" : leaderboardDTO.getRegionName() + ",";
         String areaName = StringUtils.isNull(leaderboardDTO.getAreaName()) ? "" : leaderboardDTO.getAreaName() + ",";
-        String leaderboardName = departmentName + employeeName + industryName + productName + regionName + areaName;
+        String decompositionDimension = leaderboardDTO.getDecompositionDimension();
+        String[] decompositionDimensionList = decompositionDimension.split("\\+");
+        StringBuilder leaderboardName = new StringBuilder();
+        for (String dimension : decompositionDimensionList) {
+            switch (dimension) {
+                case "销售员":
+                    leaderboardName.append(employeeName);
+                    break;
+                case "区域":
+                    leaderboardName.append(areaName);
+                    break;
+                case "部门":
+                    leaderboardName.append(departmentName);
+                    break;
+                case "产品":
+                    leaderboardName.append(productName);
+                    break;
+                case "省份":
+                    leaderboardName.append(regionName);
+                    break;
+                case "行业":
+                    leaderboardName.append(industryName);
+                    break;
+            }
+        }
         if (leaderboardName.length() > 0) {
             leaderboardDTO.setTargetDecomposeDetailsName(leaderboardName.substring(0, leaderboardName.length() - 1));
         }
