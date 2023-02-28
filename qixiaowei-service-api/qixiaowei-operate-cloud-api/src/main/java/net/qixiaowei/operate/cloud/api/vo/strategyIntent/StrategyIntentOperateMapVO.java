@@ -19,10 +19,13 @@ public class StrategyIntentOperateMapVO {
      * ID
      */
     private  Long strategyIntentOperateId;
-
     /**
-     * 年度指标对应值集合
+     * 经营年度
      */
-    private Map<Integer, BigDecimal> yearValues;
+    private  Integer operateYear;
+    /**
+     * 经营值
+     */
+    private  BigDecimal operateValue;
 }
 

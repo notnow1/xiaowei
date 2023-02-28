@@ -818,18 +818,11 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                     if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)){
                         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
                             StrategyIntentOperateMapVO strategyIntentOperateMapVO = new StrategyIntentOperateMapVO();
-                            Map<Integer, BigDecimal> yearValues = new HashMap<>();
-                            yearValues.put(targetOutcomeDetailsDTO.getTargetYear(),targetOutcomeDetailsDTO.getActualTotal());
-                            strategyIntentOperateMapVO.setYearValues(yearValues);
-                            strategyIntentOperateMapVOList.add(strategyIntentOperateMapVO);
-                        }
-                        for (int i = 0; i < targetOutcomeDetailsDTOList1.size(); i++) {
-                            if (i==0){
-                                strategyIntentOperateVO1.setIndicatorId(targetOutcomeDetailsDTOList1.get(i).getIndicatorId());
-                                strategyIntentOperateVO1.setIndicatorName(targetOutcomeDetailsDTOList1.get(i).getIndicatorName());
-                                strategyIntentOperateVO1.setStrategyIntentOperateMapDTOS(strategyIntentOperateMapVOList);
-                                break;
-                            }
+                            strategyIntentOperateMapVO.setOperateYear(targetOutcomeDetailsDTO.getTargetYear());
+                            strategyIntentOperateMapVO.setOperateValue(targetOutcomeDetailsDTO.getTargetValue());
+                            strategyIntentOperateVO1.setIndicatorId(targetOutcomeDetailsDTO.getIndicatorId());
+                            strategyIntentOperateVO1.setIndicatorName(targetOutcomeDetailsDTO.getIndicatorName());
+                            strategyIntentOperateVO1.setStrategyIntentOperateMapDTOS(strategyIntentOperateMapVOList);
                         }
                     }
                     strategyIntentOperateVOArrayList.add(strategyIntentOperateVO1);
