@@ -798,7 +798,7 @@
         indicator_category_id, indicator_value_type, choice_flag, examine_direction, indicator_definition,
         indicator_formula, driving_factor_flag, remark, delete_flag, create_by, create_time, update_by, update_time
         FROM indicator
-        WHERE indicator_code=#{indicatorCode}
+        WHERE BINARY indicator_code=#{indicatorCode}
         AND delete_flag = 0
     </select>
     <select id="selectLevel" resultType="java.lang.Integer">

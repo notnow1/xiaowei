@@ -82,8 +82,8 @@
         indicator_category_id, indicator_type, indicator_category_code, indicator_category_name, delete_flag, create_by,
         create_time, update_by, update_time
         FROM indicator_category
-        WHERE indicator_category_code=#{indicatorCategoryCode}
-        and delete_flag=0
+        WHERE BINARY indicator_category_code=#{indicatorCategoryCode}
+        and delete_flag=0 limit 1
     </select>
     <!--    检查指标名称-->
     <select id="checkNameUnique" resultType="net.qixiaowei.system.manage.api.dto.basic.IndicatorCategoryDTO">

@@ -54,7 +54,7 @@
         SELECT area_id, area_code, area_name, region_ids, region_names, delete_flag, create_by, create_time, update_by,
         update_time
         FROM area
-        WHERE area_code = #{areaCode}
+        WHERE BINARY area_code = #{areaCode}
     </select>
     <!--根据id集合判断是否存在-->
     <select id="selectAreaListByAreaIds" resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO">
