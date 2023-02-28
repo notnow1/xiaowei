@@ -12,6 +12,7 @@ import com.alibaba.excel.read.builder.ExcelReaderSheetBuilder;
 import com.alibaba.excel.write.handler.CellWriteHandler;
 import com.alibaba.excel.write.handler.context.CellWriteHandlerContext;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.AbstractVerticalCellStyleStrategy;
@@ -21,18 +22,12 @@ import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.log.annotation.Log;
 import net.qixiaowei.integration.log.enums.OperationType;
-import net.qixiaowei.integration.common.utils.excel.CustomVerticalCellStyleStrategy;
 import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.DecomposeDetailCyclesDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
-import net.qixiaowei.operate.cloud.excel.product.ProductExcel;
-import net.qixiaowei.operate.cloud.excel.product.ProductImportListener;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetDecomposeDetailsExcel;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -503,7 +498,7 @@ public class TargetDecomposeController extends BaseController {
                         writeCellStyle.setDataFormatData(dataFormatData);
                     }
                 })
-                .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO,true));
+                .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, true));
     }
 
     /**
@@ -570,14 +565,15 @@ public class TargetDecomposeController extends BaseController {
                         writeCellStyle.setDataFormatData(dataFormatData);
                     }
                 })
-                .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO,false));
+                .doWrite(TargetDecomposeImportListener.detailsRollDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, false));
     }
+
     /**
      * 导入解析滚动预测
      */
 //    @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
-    public AjaxResult importProduct(Long targetDecomposeId ,Long backlogId,MultipartFile file) throws IOException {
+    public AjaxResult importProduct(Long targetDecomposeId, Long backlogId, MultipartFile file) throws IOException {
         TargetDecomposeDTO targetDecomposeDTO = targetDecomposeService.selectRollTargetDecomposeByTargetDecomposeId(targetDecomposeId, backlogId);
         String filename = file.getOriginalFilename();
         if (StringUtils.isBlank(filename)) {
@@ -587,7 +583,7 @@ public class TargetDecomposeController extends BaseController {
             throw new RuntimeException("请上传正确的excel文件!");
         }
 
-        List<DecomposeDetailCyclesDTO>  list = new ArrayList<>();
+        List<DecomposeDetailCyclesDTO> list = new ArrayList<>();
 
         //构建读取器
         ExcelReaderBuilder read = EasyExcel.read(file.getInputStream());
@@ -595,7 +591,7 @@ public class TargetDecomposeController extends BaseController {
         List<Map<Integer, String>> listMap = sheet.doReadSync();
 
         //导入解析滚动预测
-        TargetDecomposeImportListener.mapToListModel(3, 0, listMap, list,targetDecomposeDTO);
+        TargetDecomposeImportListener.mapToListModel(3, 0, listMap, list, targetDecomposeDTO);
         // 调用importer方法
         TargetDecomposeDTO targetDecomposeDTO1 = targetDecomposeService.importProduct(list, targetDecomposeDTO);
 
@@ -644,27 +640,6 @@ public class TargetDecomposeController extends BaseController {
         EasyExcel.write(response.getOutputStream())
                 .head(head)// 设置表头
                 .sheet("经营结果分析报表详情")// 设置 sheet 的名字
-                // 自适应列宽
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .registerWriteHandler(new AbstractVerticalCellStyleStrategy() {
-                    //设置标题栏的列样式
-                    @Override
-                    protected WriteCellStyle headCellStyle(Head head) {
-                        //内容样式策略
-                        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
-                        //居中
-                        contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                        //设置 自动换行
-                        contentWriteCellStyle.setWrapped(true);
-                        // 字体策略
-                        WriteFont contentWriteFont = new WriteFont();
-                        // 字体大小
-                        contentWriteFont.setFontHeightInPoints((short) 15);
-                        contentWriteCellStyle.setWriteFont(contentWriteFont);
-                        contentWriteCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-                        return contentWriteCellStyle;
-                    }
-                })
                 .useDefaultStyle(false)
                 //设置文本
                 .registerWriteHandler(new CellWriteHandler() {
@@ -673,13 +648,45 @@ public class TargetDecomposeController extends BaseController {
                         // 3.0 设置单元格为文本
                         WriteCellData<?> cellData = context.getFirstCellData();
                         WriteCellStyle writeCellStyle = cellData.getOrCreateStyle();
+                        // 设置字体
+                        WriteFont headWriteFont = new WriteFont();
+                        headWriteFont.setColor(IndexedColors.BLACK.getIndex());
+                        headWriteFont.setFontHeightInPoints((short) 10);
+                        //加粗
+                        // headWriteFont.setBold(true);
+                        headWriteFont.setFontName("微软雅黑");
+                        //设置文本
                         DataFormatData dataFormatData = new DataFormatData();
-                        dataFormatData.setIndex((short) 49);
+
+                        if (context.getRowIndex()<4){
+                            //居中
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            writeCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+                        }else {
+                            //居中
+                            writeCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                            //设置 自动换行
+                            writeCellStyle.setWrapped(true);
+                            writeCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+                        }
                         writeCellStyle.setDataFormatData(dataFormatData);
+                        writeCellStyle.setWriteFont(headWriteFont);
                     }
                 })
-                .doWrite(TargetDecomposeImportListener.detailsResultDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO,true));
+                //列宽
+                .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
+                    @Override
+                    protected void setColumnWidth(WriteSheetHolder writeSheetHolder, List<WriteCellData<?>> cellDataList, Cell cell, Head head, Integer relativeRowIndex, Boolean isHead) {
+                        // 使用sheet对象 简单设置 index所对应的列的列宽
+                        Sheet sheet = writeSheetHolder.getSheet();
+                        sheet.setColumnWidth(cell.getColumnIndex(), 5300);
+                    }
+                })
+                .doWrite(TargetDecomposeImportListener.detailsResultDataList(targetDecomposeDetailsDTOS, targetDecomposeDTO, true));
     }
+
     /**
      * 修改经营结果分析报表详情
      */
