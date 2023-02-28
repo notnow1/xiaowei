@@ -398,7 +398,7 @@
                update_by,
                update_time
         FROM post
-        WHERE post_code = #{postCode}
+        WHERE BINARY post_code = #{postCode}
           and delete_flag = 0
     </select>
     <select id="selectPostByOfficialRankSystemIds"

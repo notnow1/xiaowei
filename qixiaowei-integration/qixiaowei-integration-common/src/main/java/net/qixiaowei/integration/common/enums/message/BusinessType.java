@@ -58,6 +58,7 @@ public enum BusinessType {
     INDUSTRY_ATTRACTION(49, "行业吸引力配置"),
     STRATEGY_INTENT(50, "战略意图"),
     GAP_ANALYSIS(51, "差距分析"),
+    MARKET_INSIGHT_MACRO(52, "市场洞察宏观"),
     ;
 
 

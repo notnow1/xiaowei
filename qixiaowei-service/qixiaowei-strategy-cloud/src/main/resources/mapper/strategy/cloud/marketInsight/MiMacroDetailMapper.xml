@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiMacroDetailMapper">
+    <!--    查询市场洞察宏观详情表-->
+    <select id="selectMiMacroDetailByMiMacroDetailId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO">
+        SELECT
+        mi_macro_detail_id,market_insight_macro_id,visual_angle,company_related_factor,change_trend,influence_description,recommended_practice,plan_period,estimate_opportunity_amount,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_macro_detail
+        WHERE  mi_macro_detail_id=#{miMacroDetailId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察宏观详情表-->
+    <select id="selectMiMacroDetailByMiMacroDetailIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO">
+        SELECT
+        mi_macro_detail_id,market_insight_macro_id,visual_angle,company_related_factor,change_trend,influence_description,recommended_practice,plan_period,estimate_opportunity_amount,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_macro_detail
+        WHERE  mi_macro_detail_id in
+            <foreach item="item"
+                     collection="miMacroDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察宏观详情表列表-->
+    <select id="selectMiMacroDetailList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO">
+        SELECT
+        mi_macro_detail_id,market_insight_macro_id,visual_angle,company_related_factor,change_trend,influence_description,recommended_practice,plan_period,estimate_opportunity_amount,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_macro_detail
+        WHERE delete_flag=0
+                        <if test="miMacroDetail.miMacroDetailId != null">
+                            and mi_macro_detail_id=#{miMacroDetail.miMacroDetailId}
+                        </if>
+                        <if test="miMacroDetail.marketInsightMacroId != null">
+                            and market_insight_macro_id=#{miMacroDetail.marketInsightMacroId}
+                        </if>
+                        <if test="miMacroDetail.visualAngle != null">
+                            and visual_angle=#{miMacroDetail.visualAngle}
+                        </if>
+                        <if test="miMacroDetail.companyRelatedFactor != null and miMacroDetail.companyRelatedFactor != ''">
+                            and company_related_factor=#{miMacroDetail.companyRelatedFactor}
+                        </if>
+                        <if test="miMacroDetail.changeTrend != null and miMacroDetail.changeTrend != ''">
+                            and change_trend=#{miMacroDetail.changeTrend}
+                        </if>
+                        <if test="miMacroDetail.influenceDescription != null and miMacroDetail.influenceDescription != ''">
+                            and influence_description=#{miMacroDetail.influenceDescription}
+                        </if>
+                        <if test="miMacroDetail.recommendedPractice != null and miMacroDetail.recommendedPractice != ''">
+                            and recommended_practice=#{miMacroDetail.recommendedPractice}
+                        </if>
+                        <if test="miMacroDetail.planPeriod != null">
+                            and plan_period=#{miMacroDetail.planPeriod}
+                        </if>
+                        <if test="miMacroDetail.estimateOpportunityAmount != null">
+                            and estimate_opportunity_amount=#{miMacroDetail.estimateOpportunityAmount}
+                        </if>
+                        <if test="miMacroDetail.proposeEmployeeId != null">
+                            and propose_employee_id=#{miMacroDetail.proposeEmployeeId}
+                        </if>
+                        <if test="miMacroDetail.proposeEmployeeName != null and miMacroDetail.proposeEmployeeName != ''">
+                            and propose_employee_name=#{miMacroDetail.proposeEmployeeName}
+                        </if>
+                        <if test="miMacroDetail.proposeEmployeeCode != null and miMacroDetail.proposeEmployeeCode != ''">
+                            and propose_employee_code=#{miMacroDetail.proposeEmployeeCode}
+                        </if>
+                        <if test="miMacroDetail.sort != null">
+                            and sort=#{miMacroDetail.sort}
+                        </if>
+                        <if test="miMacroDetail.deleteFlag != null">
+                            and delete_flag=#{miMacroDetail.deleteFlag}
+                        </if>
+                        <if test="miMacroDetail.createBy != null">
+                            and create_by=#{miMacroDetail.createBy}
+                        </if>
+                        <if test="miMacroDetail.createTime != null">
+                            and create_time=#{miMacroDetail.createTime}
+                        </if>
+                        <if test="miMacroDetail.updateBy != null">
+                            and update_by=#{miMacroDetail.updateBy}
+                        </if>
+                        <if test="miMacroDetail.updateTime != null">
+                            and update_time=#{miMacroDetail.updateTime}
+                        </if>
+    </select>
+    <!--新增市场洞察宏观详情表-->
+    <insert id="insertMiMacroDetail" useGeneratedKeys="true" keyProperty="miMacroDetailId">
+        INSERT INTO mi_macro_detail (market_insight_macro_id,visual_angle,company_related_factor,change_trend,influence_description,recommended_practice,plan_period,estimate_opportunity_amount,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miMacroDetail.marketInsightMacroId},#{miMacroDetail.visualAngle},#{miMacroDetail.companyRelatedFactor},#{miMacroDetail.changeTrend},#{miMacroDetail.influenceDescription},#{miMacroDetail.recommendedPractice},#{miMacroDetail.planPeriod},#{miMacroDetail.estimateOpportunityAmount},#{miMacroDetail.proposeEmployeeId},#{miMacroDetail.proposeEmployeeName},#{miMacroDetail.proposeEmployeeCode},#{miMacroDetail.sort},#{miMacroDetail.deleteFlag},#{miMacroDetail.createBy},#{miMacroDetail.createTime},#{miMacroDetail.updateBy},#{miMacroDetail.updateTime})
+    </insert>
+    <!--修改市场洞察宏观详情表-->
+    <update id="updateMiMacroDetail">
+        UPDATE mi_macro_detail
+        SET
+                    <if test="miMacroDetail.marketInsightMacroId != null">
+                        market_insight_macro_id=#{miMacroDetail.marketInsightMacroId},
+                    </if>
+                    <if test="miMacroDetail.visualAngle != null">
+                        visual_angle=#{miMacroDetail.visualAngle},
+                    </if>
+                    <if test="miMacroDetail.companyRelatedFactor != null and miMacroDetail.companyRelatedFactor != ''">
+                        company_related_factor=#{miMacroDetail.companyRelatedFactor},
+                    </if>
+                    <if test="miMacroDetail.changeTrend != null and miMacroDetail.changeTrend != ''">
+                        change_trend=#{miMacroDetail.changeTrend},
+                    </if>
+                    <if test="miMacroDetail.influenceDescription != null and miMacroDetail.influenceDescription != ''">
+                        influence_description=#{miMacroDetail.influenceDescription},
+                    </if>
+                    <if test="miMacroDetail.recommendedPractice != null and miMacroDetail.recommendedPractice != ''">
+                        recommended_practice=#{miMacroDetail.recommendedPractice},
+                    </if>
+                    <if test="miMacroDetail.planPeriod != null">
+                        plan_period=#{miMacroDetail.planPeriod},
+                    </if>
+                    <if test="miMacroDetail.estimateOpportunityAmount != null">
+                        estimate_opportunity_amount=#{miMacroDetail.estimateOpportunityAmount},
+                    </if>
+                    <if test="miMacroDetail.proposeEmployeeId != null">
+                        propose_employee_id=#{miMacroDetail.proposeEmployeeId},
+                    </if>
+                    <if test="miMacroDetail.proposeEmployeeName != null and miMacroDetail.proposeEmployeeName != ''">
+                        propose_employee_name=#{miMacroDetail.proposeEmployeeName},
+                    </if>
+                    <if test="miMacroDetail.proposeEmployeeCode != null and miMacroDetail.proposeEmployeeCode != ''">
+                        propose_employee_code=#{miMacroDetail.proposeEmployeeCode},
+                    </if>
+                    <if test="miMacroDetail.sort != null">
+                        sort=#{miMacroDetail.sort},
+                    </if>
+                    <if test="miMacroDetail.deleteFlag != null">
+                        delete_flag=#{miMacroDetail.deleteFlag},
+                    </if>
+                    <if test="miMacroDetail.createBy != null">
+                        create_by=#{miMacroDetail.createBy},
+                    </if>
+                    <if test="miMacroDetail.createTime != null">
+                        create_time=#{miMacroDetail.createTime},
+                    </if>
+                    <if test="miMacroDetail.updateBy != null">
+                        update_by=#{miMacroDetail.updateBy},
+                    </if>
+                    <if test="miMacroDetail.updateTime != null">
+                        update_time=#{miMacroDetail.updateTime}
+                    </if>
+        WHERE
+                 mi_macro_detail_id=#{miMacroDetail.miMacroDetailId}
+    </update>
+    <!--逻辑删除市场洞察宏观详情表-->
+    <update id="logicDeleteMiMacroDetailByMiMacroDetailId">
+        UPDATE mi_macro_detail
+        SET     delete_flag= 1,
+                update_by=#{miMacroDetail.updateBy},
+                update_time=#{miMacroDetail.updateTime}
+        WHERE
+                mi_macro_detail_id=#{miMacroDetail.miMacroDetailId}
+    </update>
+    <!--逻辑批量删除市场洞察宏观详情表-->
+    <update id="logicDeleteMiMacroDetailByMiMacroDetailIds">
+        UPDATE mi_macro_detail
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_macro_detail_id IN
+            <foreach item="item"
+                     collection="miMacroDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察宏观详情表-->
+    <insert id="batchMiMacroDetail">
+        INSERT INTO mi_macro_detail (market_insight_macro_id,visual_angle,company_related_factor,change_trend,influence_description,recommended_practice,plan_period,estimate_opportunity_amount,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miMacroDetails"
+                 separator=",">
+            (#{item.marketInsightMacroId},#{item.visualAngle},#{item.companyRelatedFactor},#{item.changeTrend},#{item.influenceDescription},#{item.recommendedPractice},#{item.planPeriod},#{item.estimateOpportunityAmount},#{item.proposeEmployeeId},#{item.proposeEmployeeName},#{item.proposeEmployeeCode},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察宏观详情表-->
+    <delete id="deleteMiMacroDetailByMiMacroDetailId">
+        DELETE FROM mi_macro_detail
+        WHERE  mi_macro_detail_id=#{miMacroDetail}
+
+    </delete>
+    <!--物理批量删除市场洞察宏观详情表-->
+    <delete id="deleteMiMacroDetailByMiMacroDetailIds">
+        DELETE FROM mi_macro_detail
+        WHERE  mi_macro_detail_id IN
+            <foreach item="item"
+                     collection="miMacroDetailIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察宏观详情表-->
+    <update id="updateMiMacroDetails">
+        update mi_macro_detail
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_macro_id=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.marketInsightMacroId != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.marketInsightMacroId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="visual_angle=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.visualAngle != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.visualAngle}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="company_related_factor=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.companyRelatedFactor != null and item.companyRelatedFactor != ''">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.companyRelatedFactor}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="change_trend=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.changeTrend != null and item.changeTrend != ''">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.changeTrend}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="influence_description=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.influenceDescription != null and item.influenceDescription != ''">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.influenceDescription}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="recommended_practice=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.recommendedPractice != null and item.recommendedPractice != ''">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.recommendedPractice}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_period=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.planPeriod != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.planPeriod}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="estimate_opportunity_amount=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.estimateOpportunityAmount != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.estimateOpportunityAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="propose_employee_id=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.proposeEmployeeId != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.proposeEmployeeId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="propose_employee_name=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.proposeEmployeeName != null and item.proposeEmployeeName != ''">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.proposeEmployeeName}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="propose_employee_code=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.proposeEmployeeCode != null and item.proposeEmployeeCode != ''">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.proposeEmployeeCode}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="sort=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.sort != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.sort}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miMacroDetailList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_macro_detail_id=#{item.miMacroDetailId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miMacroDetailList" separator="or" item="item" index="index">
+                    mi_macro_detail_id=#{item.miMacroDetailId}
+        </foreach>
+    </update>
+</mapper>
+
+

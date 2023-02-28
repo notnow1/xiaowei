@@ -443,7 +443,7 @@
                  left join salary_item si
                            on si.salary_item_id = bpa.salary_item_id
                                and si.delete_flag = 0
-        WHERE bpa.award_code = #{awardCode}
+        WHERE BINARY bpa.award_code = #{awardCode}
           and bpa.delete_flag = 0
     </select>
     <!--    根据奖项类别 申请部门 和获奖时间取唯一数据-->

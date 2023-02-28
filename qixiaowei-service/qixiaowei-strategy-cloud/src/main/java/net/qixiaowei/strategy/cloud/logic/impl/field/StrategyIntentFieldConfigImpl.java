@@ -30,7 +30,6 @@ public class StrategyIntentFieldConfigImpl implements IFieldConfigStrategy {
         INIT_MAP.put(StrategyIntentField.PLAN_YEAR.getCode(), FieldConfig.builder().businessType(BusinessType.STRATEGY_INTENT.getCode()).fieldName(StrategyIntentField.PLAN_YEAR.getCode()).fieldLabel(StrategyIntentField.PLAN_YEAR.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
         INIT_MAP.put(StrategyIntentField.OPERATE_PLAN_PERIOD.getCode(), FieldConfig.builder().businessType(BusinessType.STRATEGY_INTENT.getCode()).fieldName(StrategyIntentField.OPERATE_PLAN_PERIOD.getCode()).fieldLabel(StrategyIntentField.OPERATE_PLAN_PERIOD.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
         INIT_MAP.put(StrategyIntentField.OPERATE_HISTORY_YEAR.getCode(), FieldConfig.builder().businessType(BusinessType.STRATEGY_INTENT.getCode()).fieldName(StrategyIntentField.OPERATE_HISTORY_YEAR.getCode()).fieldLabel(StrategyIntentField.OPERATE_HISTORY_YEAR.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
-        INIT_MAP.put(StrategyIntentField.CREATE_BY.getCode(), FieldConfig.builder().businessType(BusinessType.STRATEGY_INTENT.getCode()).fieldName(StrategyIntentField.CREATE_BY.getCode()).fieldLabel(StrategyIntentField.CREATE_BY.getInfo()).fieldType(FieldType.TEXT.getCode()).build());
     }
     @Override
     public BusinessType getBusinessType() {
