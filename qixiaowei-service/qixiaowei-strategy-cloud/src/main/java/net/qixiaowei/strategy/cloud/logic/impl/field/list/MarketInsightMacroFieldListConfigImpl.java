@@ -1,8 +1,7 @@
 package net.qixiaowei.strategy.cloud.logic.impl.field.list;
 
 import lombok.extern.slf4j.Slf4j;
-import net.qixiaowei.integration.common.enums.field.BaseField;
-import net.qixiaowei.integration.common.enums.field.strategy.StrategyIntentField;
+import net.qixiaowei.integration.common.enums.field.strategy.MarketInsightMacroField;
 import net.qixiaowei.integration.common.enums.message.BusinessType;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.strategy.cloud.api.domain.field.FieldListConfig;
@@ -23,18 +22,21 @@ import java.util.Map;
  **/
 @Service
 @Slf4j
-public class StrategyIntentFieldListConfigImpl implements IFieldListConfigStrategy {
+public class MarketInsightMacroFieldListConfigImpl implements IFieldListConfigStrategy {
 
     private static final Map<String, FieldListConfig> INIT_MAP = new HashMap<>();
 
     static {
-        INIT_MAP.put(StrategyIntentField.PLAN_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyIntentField.OPERATE_PLAN_PERIOD.getCode(), FieldListConfig.builder().fieldWidth(130).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
-        INIT_MAP.put(StrategyIntentField.OPERATE_HISTORY_YEAR.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightMacroField.PLAN_YEAR.getCode(), FieldListConfig.builder().fieldWidth(120).sort(1).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightMacroField.PLAN_BUSINESS_UNIT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(2).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightMacroField.AREA_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightMacroField.DEPARTMENT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightMacroField.PRODUCT_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
+        INIT_MAP.put(MarketInsightMacroField.INDUSTRY_ID.getCode(), FieldListConfig.builder().fieldWidth(130).sort(3).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build());
     }
     @Override
     public BusinessType getBusinessType() {
-        return BusinessType.STRATEGY_INTENT;
+        return BusinessType.MARKET_INSIGHT_MACRO;
     }
 
     @Override
@@ -58,9 +60,6 @@ public class StrategyIntentFieldListConfigImpl implements IFieldListConfigStrate
                 fieldListConfig.setFieldConfigId(fieldConfigId);
             } else {
                 fieldListConfig = FieldListConfig.builder().fieldConfigId(fieldConfigId).fieldWidth(200).sort(sort).showFlag(1).fixationFlag(0).showForce(0).fixationForce(0).build();
-                if (BaseField.CREATE_TIME.getCode().equals(fieldName)) {
-                    fieldListConfig.setFieldWidth(180);
-                }
                 sort++;
             }
             fieldListConfigs.add(fieldListConfig);

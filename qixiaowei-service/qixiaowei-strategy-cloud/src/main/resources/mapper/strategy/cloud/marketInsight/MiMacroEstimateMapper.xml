@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.marketInsight.MiMacroEstimateMapper">
+    <!--    查询市场洞察宏观预估表-->
+    <select id="selectMiMacroEstimateByMiMacroEstimateId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroEstimateDTO">
+        SELECT
+        mi_macro_estimate_id,market_insight_macro_id,mi_macro_detail_id,plan_year,estimate_opportunity_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_macro_estimate
+        WHERE  mi_macro_estimate_id=#{miMacroEstimateId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询市场洞察宏观预估表-->
+    <select id="selectMiMacroEstimateByMiMacroEstimateIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroEstimateDTO">
+        SELECT
+        mi_macro_estimate_id,market_insight_macro_id,mi_macro_detail_id,plan_year,estimate_opportunity_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_macro_estimate
+        WHERE  mi_macro_estimate_id in
+            <foreach item="item"
+                     collection="miMacroEstimateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询市场洞察宏观预估表列表-->
+    <select id="selectMiMacroEstimateList" resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroEstimateDTO">
+        SELECT
+        mi_macro_estimate_id,market_insight_macro_id,mi_macro_detail_id,plan_year,estimate_opportunity_amount,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_macro_estimate
+        WHERE delete_flag=0
+                        <if test="miMacroEstimate.miMacroEstimateId != null">
+                            and mi_macro_estimate_id=#{miMacroEstimate.miMacroEstimateId}
+                        </if>
+                        <if test="miMacroEstimate.marketInsightMacroId != null">
+                            and market_insight_macro_id=#{miMacroEstimate.marketInsightMacroId}
+                        </if>
+                        <if test="miMacroEstimate.miMacroDetailId != null">
+                            and mi_macro_detail_id=#{miMacroEstimate.miMacroDetailId}
+                        </if>
+                        <if test="miMacroEstimate.planYear != null">
+                            and plan_year=#{miMacroEstimate.planYear}
+                        </if>
+                        <if test="miMacroEstimate.estimateOpportunityAmount != null">
+                            and estimate_opportunity_amount=#{miMacroEstimate.estimateOpportunityAmount}
+                        </if>
+                        <if test="miMacroEstimate.deleteFlag != null">
+                            and delete_flag=#{miMacroEstimate.deleteFlag}
+                        </if>
+                        <if test="miMacroEstimate.createBy != null">
+                            and create_by=#{miMacroEstimate.createBy}
+                        </if>
+                        <if test="miMacroEstimate.createTime != null">
+                            and create_time=#{miMacroEstimate.createTime}
+                        </if>
+                        <if test="miMacroEstimate.updateBy != null">
+                            and update_by=#{miMacroEstimate.updateBy}
+                        </if>
+                        <if test="miMacroEstimate.updateTime != null">
+                            and update_time=#{miMacroEstimate.updateTime}
+                        </if>
+    </select>
+    <!--新增市场洞察宏观预估表-->
+    <insert id="insertMiMacroEstimate" useGeneratedKeys="true" keyProperty="miMacroEstimateId">
+        INSERT INTO mi_macro_estimate (market_insight_macro_id,mi_macro_detail_id,plan_year,estimate_opportunity_amount,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{miMacroEstimate.marketInsightMacroId},#{miMacroEstimate.miMacroDetailId},#{miMacroEstimate.planYear},#{miMacroEstimate.estimateOpportunityAmount},#{miMacroEstimate.deleteFlag},#{miMacroEstimate.createBy},#{miMacroEstimate.createTime},#{miMacroEstimate.updateBy},#{miMacroEstimate.updateTime})
+    </insert>
+    <!--修改市场洞察宏观预估表-->
+    <update id="updateMiMacroEstimate">
+        UPDATE mi_macro_estimate
+        SET
+                    <if test="miMacroEstimate.marketInsightMacroId != null">
+                        market_insight_macro_id=#{miMacroEstimate.marketInsightMacroId},
+                    </if>
+                    <if test="miMacroEstimate.miMacroDetailId != null">
+                        mi_macro_detail_id=#{miMacroEstimate.miMacroDetailId},
+                    </if>
+                    <if test="miMacroEstimate.planYear != null">
+                        plan_year=#{miMacroEstimate.planYear},
+                    </if>
+                    <if test="miMacroEstimate.estimateOpportunityAmount != null">
+                        estimate_opportunity_amount=#{miMacroEstimate.estimateOpportunityAmount},
+                    </if>
+                    <if test="miMacroEstimate.deleteFlag != null">
+                        delete_flag=#{miMacroEstimate.deleteFlag},
+                    </if>
+                    <if test="miMacroEstimate.createBy != null">
+                        create_by=#{miMacroEstimate.createBy},
+                    </if>
+                    <if test="miMacroEstimate.createTime != null">
+                        create_time=#{miMacroEstimate.createTime},
+                    </if>
+                    <if test="miMacroEstimate.updateBy != null">
+                        update_by=#{miMacroEstimate.updateBy},
+                    </if>
+                    <if test="miMacroEstimate.updateTime != null">
+                        update_time=#{miMacroEstimate.updateTime}
+                    </if>
+        WHERE
+                 mi_macro_estimate_id=#{miMacroEstimate.miMacroEstimateId}
+    </update>
+    <!--逻辑删除市场洞察宏观预估表-->
+    <update id="logicDeleteMiMacroEstimateByMiMacroEstimateId">
+        UPDATE mi_macro_estimate
+        SET     delete_flag= 1,
+                update_by=#{miMacroEstimate.updateBy},
+                update_time=#{miMacroEstimate.updateTime}
+        WHERE
+                mi_macro_estimate_id=#{miMacroEstimate.miMacroEstimateId}
+    </update>
+    <!--逻辑批量删除市场洞察宏观预估表-->
+    <update id="logicDeleteMiMacroEstimateByMiMacroEstimateIds">
+        UPDATE mi_macro_estimate
+        SET     delete_flag= 1,
+                update_by=#{updateBy},
+                update_time=#{updateTime}
+        WHERE
+         mi_macro_estimate_id IN
+            <foreach item="item"
+                     collection="miMacroEstimateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+    <!--批量新增市场洞察宏观预估表-->
+    <insert id="batchMiMacroEstimate">
+        INSERT INTO mi_macro_estimate (market_insight_macro_id,mi_macro_detail_id,plan_year,estimate_opportunity_amount,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="miMacroEstimates"
+                 separator=",">
+            (#{item.marketInsightMacroId},#{item.miMacroDetailId},#{item.planYear},#{item.estimateOpportunityAmount},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除市场洞察宏观预估表-->
+    <delete id="deleteMiMacroEstimateByMiMacroEstimateId">
+        DELETE FROM mi_macro_estimate
+        WHERE  mi_macro_estimate_id=#{miMacroEstimate}
+
+    </delete>
+    <!--物理批量删除市场洞察宏观预估表-->
+    <delete id="deleteMiMacroEstimateByMiMacroEstimateIds">
+        DELETE FROM mi_macro_estimate
+        WHERE  mi_macro_estimate_id IN
+            <foreach item="item"
+                     collection="miMacroEstimateIds"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+    <!--批量修改市场洞察宏观预估表-->
+    <update id="updateMiMacroEstimates">
+        update mi_macro_estimate
+        <trim prefix="set" suffixOverrides=",">
+                <trim prefix="market_insight_macro_id=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.marketInsightMacroId != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.marketInsightMacroId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="mi_macro_detail_id=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.miMacroDetailId != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.miMacroDetailId}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="plan_year=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.planYear != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.planYear}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="estimate_opportunity_amount=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.estimateOpportunityAmount != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.estimateOpportunityAmount}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="delete_flag=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.deleteFlag != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.deleteFlag}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_by=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.createBy != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.createBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="create_time=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.createTime != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.createTime}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_by=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.updateBy != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.updateBy}
+                                </if>
+                        </foreach>
+                </trim>
+                <trim prefix="update_time=case" suffix="end,">
+                        <foreach collection="miMacroEstimateList" item="item" index="index">
+                                <if test="item.updateTime != null">
+                                    when mi_macro_estimate_id=#{item.miMacroEstimateId} then #{item.updateTime}
+                                </if>
+                        </foreach>
+                </trim>
+        </trim>
+        where
+        <foreach collection="miMacroEstimateList" separator="or" item="item" index="index">
+                    mi_macro_estimate_id=#{item.miMacroEstimateId}
+        </foreach>
+    </update>
+</mapper>
+
+
