@@ -1,6 +1,7 @@
 package net.qixiaowei.auth.service;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import net.qixiaowei.auth.form.LoginBody;
@@ -158,8 +159,12 @@ public class SysLoginService {
      * @return: void
      **/
     public void sendSms(String userAccount) {
-        if (StringUtils.isEmpty(userAccount)) {
-            throw new ServiceException("登录账号必须填写");
+        //去除空格
+        userAccount = userAccount.trim();
+        // 效验手机号正则
+        String regex = "^1[3456789]\\d{9}$";
+        if (!ReUtil.isMatch(regex, userAccount)) {
+            throw new ServiceException("请输入正确的手机号码！");
         }
         //校验是否注册过
         this.checkUserAccountExists(userAccount);
@@ -178,7 +183,7 @@ public class SysLoginService {
 
     public TenantRegisterResponseVO register(RegisterBody registerBody) {
         String code = registerBody.getCode();
-        String userAccount = registerBody.getUserAccount();
+        String userAccount = registerBody.getUserAccount().trim();
         String key = CacheConstants.SMS_SEND_KEY + userAccount;
         //校验验证码
         if (StringUtils.isEmpty(code) || !redisService.hasKey(key) || !code.equals(redisService.getCacheObject(key))) {

@@ -248,6 +248,8 @@ public class TenantServiceImpl implements ITenantService {
      **/
     @Override
     public TenantRegisterResponseVO registerUserInfo(TenantDTO tenantDTO) {
+        //校验行业
+        this.checkIndustry(tenantDTO);
         //租户
         String domain = this.getDomain();
         //找到客服人员
@@ -265,7 +267,7 @@ public class TenantServiceImpl implements ITenantService {
         tenant.setCreateTime(nowDate);
         tenant.setUpdateTime(nowDate);
         tenant.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        tenant.setTenantStatus(0);
+        tenant.setTenantStatus(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
         //插入租户
         tenantMapper.insertTenant(tenant);
         Long tenantId = tenant.getTenantId();
@@ -1047,6 +1049,21 @@ public class TenantServiceImpl implements ITenantService {
         if (StringUtils.isNotNull(tenantByDomain)) {
             throw new ServiceException("域名[" + domain + "]已经被占用!");
 
+        }
+    }
+
+    /**
+     * @description: 校验行业
+     * @Author: hzk
+     * @date: 2023/2/28 9:26
+     * @param: [tenantDTO]
+     * @return: void
+     **/
+    private void checkIndustry(TenantDTO tenantDTO) {
+        Long tenantIndustry = tenantDTO.getTenantIndustry();
+        IndustryDefaultDTO industryDefaultDTO = industryDefaultMapper.selectIndustryDefaultByIndustryId(tenantIndustry);
+        if (StringUtils.isNull(industryDefaultDTO)) {
+            throw new ServiceException("行业不存在。");
         }
     }
 }

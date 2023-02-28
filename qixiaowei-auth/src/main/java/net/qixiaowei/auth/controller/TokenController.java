@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.qixiaowei.auth.form.RegisterBody;
 import net.qixiaowei.auth.form.ResetPasswordBody;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import net.qixiaowei.auth.form.LoginBody;
 import net.qixiaowei.auth.service.SysLoginService;
@@ -93,7 +94,7 @@ public class TokenController {
      * @return: net.qixiaowei.integration.common.domain.R<?>
      **/
     @PostMapping("/register")
-    public R<?> register(@RequestBody RegisterBody registerBody) {
+    public R<?> register(@Validated @RequestBody RegisterBody registerBody) {
         return R.ok(sysLoginService.register(registerBody));
     }
 }
