@@ -1,6 +1,7 @@
 package net.qixiaowei.strategy.cloud.service.strategyIntent;
 
 import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
+import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO;
 
 import java.util.List;
 
@@ -84,4 +85,11 @@ public interface IStrategyIntentService{
     * @return 结果
     */
     int deleteStrategyIntentByStrategyIntentId(Long strategyIntentId);
+
+    /**
+     * 根据指标id获取关键经营结果的实际值
+     * @param indicatorIds
+     * @return
+     */
+    List<StrategyIntentOperateDTO> getResultIndicator(List<Long> indicatorIds);
 }

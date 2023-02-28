@@ -179,8 +179,6 @@ public class DepartmentDTO {
     /**
      * 部门岗位关联表
      */
-    @NotEmpty(message = "组织岗位信息不能为空", groups = {DepartmentDTO.UpdateDepartmentDTO.class})
-    @Valid
     private List<DepartmentPostDTO> departmentPostDTOList;
 
 

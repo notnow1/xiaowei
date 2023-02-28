@@ -44,6 +44,7 @@ public class StrategyIntentController extends BaseController
         return AjaxResult.success(strategyIntentDTO);
     }
 
+
     /**
     * 分页查询战略意图表列表
     */
@@ -105,5 +106,14 @@ public class StrategyIntentController extends BaseController
     public AjaxResult removes(@RequestBody List<Long>  strategyIntentIds)
     {
     return toAjax(strategyIntentService.logicDeleteStrategyIntentByStrategyIntentIds(strategyIntentIds));
+    }
+    /**
+     * 逻辑批量删除战略意图表
+     */
+    @RequiresPermissions("strategy:cloud:strategyIntent:getResultIndicator")
+    @PostMapping("/getResultIndicator")
+    public AjaxResult getResultIndicator(@RequestBody List<Long>  indicatorIds)
+    {
+        return AjaxResult.success(strategyIntentService.getResultIndicator(indicatorIds));
     }
 }

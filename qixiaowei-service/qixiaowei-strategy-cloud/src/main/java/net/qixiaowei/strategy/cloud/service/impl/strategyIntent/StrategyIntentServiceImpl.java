@@ -454,6 +454,16 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
     }
 
     /**
+     * 根据指标id获取关键经营结果的实际值
+     * @param indicatorIds
+     * @return
+     */
+    @Override
+    public List<StrategyIntentOperateDTO> getResultIndicator(List<Long> indicatorIds) {
+        return null;
+    }
+
+    /**
      * 逻辑删除战略意图表信息
      *
      * @param strategyIntentDTO 战略意图表
