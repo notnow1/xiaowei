@@ -292,10 +292,10 @@ public class SysLoginService {
         R<Boolean> checkUserAccountExists = remoteUserService.checkUserAccountExists(userAccount, SecurityConstants.INNER);
         Boolean userAccountExists = checkUserAccountExists.getData();
         if (R.SUCCESS != checkUserAccountExists.getCode() || StringUtils.isNull(userAccountExists)) {
-            throw new ServiceException("系统异常，请稍后再试。");
+            throw new ServiceException("系统异常，请稍后再试");
         }
         if (userAccountExists) {
-            throw new ServiceException("该手机号已注册，请登录。");
+            throw new ServiceException("您的手机号码已开通帐号，不可重复申请");
         }
     }
 
