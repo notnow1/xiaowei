@@ -326,7 +326,7 @@ public class TenantServiceImpl implements ITenantService {
         if (StringUtils.isNull(tenantOfDB)) {
             throw new ServiceException("修改租户失败:找不到该租户!");
         }
-        if (!StringUtils.equals(domain, tenantOfDB.getDomain())) {
+        if (!StringUtils.equalsIgnoreCase(domain, tenantOfDB.getDomain())) {
             this.checkDomain(domain);
         }
         String tenantCode = tenantDTO.getTenantCode();
@@ -670,7 +670,7 @@ public class TenantServiceImpl implements ITenantService {
         Date nowDate = DateUtils.getNowDate();
         //查询是否有待审核的，没有待审核的才能修改
         Integer countTenantDomainApprovalByWaiting = tenantDomainApprovalMapper.countTenantDomainApprovalByWaiting(tenantId);
-        if (countTenantDomainApprovalByWaiting == 0 && !StringUtils.equals(tenantByDB.getDomain(), domain)) {
+        if (countTenantDomainApprovalByWaiting == 0 && !StringUtils.equalsIgnoreCase(tenantByDB.getDomain(), domain)) {
             this.checkDomain(domain);
             //对比域名是否修改 修改需要保存到域名申请表中
             TenantDomainApproval tenantDomainApproval = new TenantDomainApproval();
@@ -1042,7 +1042,7 @@ public class TenantServiceImpl implements ITenantService {
      * @return: void
      **/
     private void checkDomain(String domain) {
-        if (tenantConfig.getExistedDomains().contains(domain)) {
+        if (tenantConfig.getExistedDomains().contains(domain.toLowerCase())) {
             throw new ServiceException("域名[" + domain + "]已经被占用!");
         }
         TenantDTO tenantByDomain = tenantMapper.selectTenantByDomain(domain);

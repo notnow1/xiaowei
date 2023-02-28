@@ -74,7 +74,7 @@
         t.update_by,
         t.update_time
         FROM tenant t
-        WHERE t.tenant_code = #{tenantCode}
+        WHERE BINARY t.tenant_code = #{tenantCode}
         and t.delete_flag = 0
     </select>
 
