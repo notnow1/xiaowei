@@ -818,8 +818,9 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                     if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)){
                         for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
                             StrategyIntentOperateMapVO strategyIntentOperateMapVO = new StrategyIntentOperateMapVO();
-                            strategyIntentOperateMapVO.setOperateYear(targetOutcomeDetailsDTO.getTargetYear());
-                            strategyIntentOperateMapVO.setOperateValue(targetOutcomeDetailsDTO.getTargetValue());
+                            Map<Integer, BigDecimal> yearValues = new HashMap<>();
+                            yearValues.put(targetOutcomeDetailsDTO.getTargetYear(),targetOutcomeDetailsDTO.getTargetValue());
+                            strategyIntentOperateMapVO.setYearValues(yearValues);
                             strategyIntentOperateVO1.setIndicatorId(targetOutcomeDetailsDTO.getIndicatorId());
                             strategyIntentOperateVO1.setIndicatorName(targetOutcomeDetailsDTO.getIndicatorName());
                             strategyIntentOperateMapVOList.add(strategyIntentOperateMapVO);

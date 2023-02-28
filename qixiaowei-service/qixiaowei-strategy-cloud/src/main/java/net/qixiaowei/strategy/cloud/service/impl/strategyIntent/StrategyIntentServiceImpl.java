@@ -73,8 +73,9 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                 if (StringUtils.isNotEmpty(strategyIntentOperateDTOList)) {
                     for (StrategyIntentOperateDTO strategyIntentOperateDTO : strategyIntentOperateDTOList) {
                         StrategyIntentOperateMapDTO strategyIntentOperateMapDTO = new StrategyIntentOperateMapDTO();
-                        strategyIntentOperateMapDTO.setOperateYear(strategyIntentOperateDTO.getOperateYear());
-                        strategyIntentOperateMapDTO.setOperateValue(strategyIntentOperateDTO.getOperateValue());
+                        Map<Integer, BigDecimal> yearValue = new HashMap<>();
+                        yearValue.put(strategyIntentOperateDTO.getOperateYear(), strategyIntentOperateDTO.getOperateValue());
+                        strategyIntentOperateMapDTO.setYearValues(yearValue);
                         strategyIntentOperateMapDTO.setStrategyIntentOperateId(strategyIntentOperateDTO.getStrategyIntentOperateId());
                         //指标id
                         strategyIntentOperateDTOData.setIndicatorId(strategyIntentOperateDTO.getIndicatorId());
@@ -195,10 +196,15 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                 if (StringUtils.isNotEmpty(strategyIntentOperateMapDTOS)) {
                     int i = 1;
                     for (StrategyIntentOperateMapDTO strategyIntentOperateMapDTO : strategyIntentOperateMapDTOS) {
+                        Map<Integer, BigDecimal> yearValue = strategyIntentOperateMapDTO.getYearValues();
                         //经营年度
-                        Integer operateYear = strategyIntentOperateMapDTO.getOperateYear();
+                        Integer operateYear = null;
                         //经营值
-                        BigDecimal operateValue = strategyIntentOperateMapDTO.getOperateValue();
+                        BigDecimal operateValue = null;
+                        for (Integer key : yearValue.keySet()) {
+                            operateYear = key;
+                            operateValue = yearValue.get(key);
+                        }
                         StrategyIntentOperate strategyIntentOperate = new StrategyIntentOperate();
                         //战略id
                         strategyIntentOperate.setStrategyIntentId(strategyIntent.getStrategyIntentId());
@@ -293,12 +299,15 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                             Long strategyIntentOperateId = strategyIntentOperateMapDTO.getStrategyIntentOperateId();
                             StrategyIntentOperate strategyIntentOperate = new StrategyIntentOperate();
                             BeanUtils.copyProperties(strategyIntentOperateDTOS.get(i1), strategyIntentOperate);
-
+                            Map<Integer, BigDecimal> yearValue = strategyIntentOperateMapDTO.getYearValues();
                             //经营年度
-                            Integer operateYear = strategyIntentOperateMapDTO.getOperateYear();
+                            Integer operateYear = null;
                             //经营值
-                            BigDecimal operateValue = strategyIntentOperateMapDTO.getOperateValue();
-
+                            BigDecimal operateValue = null;
+                            for (Integer key : yearValue.keySet()) {
+                                operateYear = key;
+                                operateValue = yearValue.get(key);
+                            }
                             //排序
                             strategyIntentOperate.setSort(i1 + 1);
                             if (null != strategyIntentOperateId) {
@@ -366,12 +375,15 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                         for (StrategyIntentOperateMapDTO strategyIntentOperateMapDTO : strategyIntentOperateMapDTOS) {
                             StrategyIntentOperate strategyIntentOperate = new StrategyIntentOperate();
                             BeanUtils.copyProperties(strategyIntentOperateDTOS.get(i1), strategyIntentOperate);
-
+                            Map<Integer, BigDecimal> yearValue = strategyIntentOperateMapDTO.getYearValues();
                             //经营年度
-                            Integer operateYear = strategyIntentOperateMapDTO.getOperateYear();
+                            Integer operateYear = null;
                             //经营值
-                            BigDecimal operateValue = strategyIntentOperateMapDTO.getOperateValue();
-
+                            BigDecimal operateValue = null;
+                            for (Integer key : yearValue.keySet()) {
+                                operateYear = key;
+                                operateValue = yearValue.get(key);
+                            }
                             //排序
                             strategyIntentOperate.setSort(i1);
                             //经营年度
@@ -440,7 +452,6 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
     public int deleteStrategyIntentByStrategyIntentId(Long strategyIntentId) {
         return strategyIntentMapper.deleteStrategyIntentByStrategyIntentId(strategyIntentId);
     }
-
 
     /**
      * 逻辑删除战略意图表信息
