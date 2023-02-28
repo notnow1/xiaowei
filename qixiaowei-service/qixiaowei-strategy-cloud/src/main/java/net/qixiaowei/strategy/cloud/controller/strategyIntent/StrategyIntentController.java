@@ -37,7 +37,7 @@ public class StrategyIntentController extends BaseController
     /**
     * 查询战略意图表详情
     */
-    //@RequiresPermissions("strategy:cloud:strategyIntent:info")
+    @RequiresPermissions("strategy:cloud:strategyIntent:info")
     @GetMapping("/info/{strategyIntentId}")
     public AjaxResult info(@PathVariable Long strategyIntentId){
     StrategyIntentDTO strategyIntentDTO = strategyIntentService.selectStrategyIntentByStrategyIntentId(strategyIntentId);
@@ -47,7 +47,7 @@ public class StrategyIntentController extends BaseController
     /**
     * 分页查询战略意图表列表
     */
-    //@RequiresPermissions("strategy:cloud:strategyIntent:pageList")
+    @RequiresPermissions("strategy:cloud:strategyIntent:pageList")
     @GetMapping("/pageList")
     public TableDataInfo pageList(StrategyIntentDTO strategyIntentDTO){
     startPage();
@@ -58,7 +58,7 @@ public class StrategyIntentController extends BaseController
     /**
     * 查询战略意图表列表
     */
-    //@RequiresPermissions("strategy:cloud:strategyIntent:list")
+    @RequiresPermissions("strategy:cloud:strategyIntent:list")
     @GetMapping("/list")
     public AjaxResult list(StrategyIntentDTO strategyIntentDTO){
     List<StrategyIntentDTO> list = strategyIntentService.selectStrategyIntentList(strategyIntentDTO);
@@ -69,7 +69,7 @@ public class StrategyIntentController extends BaseController
     /**
     * 新增战略意图表
     */
-    //@RequiresPermissions("strategy:cloud:strategyIntent:add")
+    @RequiresPermissions("strategy:cloud:strategyIntent:add")
     @Log(title = "新增战略意图表", businessType = BusinessType.STRATEGY_INTENT, businessId = "strategyIntentId", operationType = OperationType.INSERT)
     @PostMapping("/add")
     public AjaxResult addSave(@RequestBody @Validated(StrategyIntentDTO.AddStrategyIntentDTO.class) StrategyIntentDTO strategyIntentDTO) {
@@ -80,7 +80,7 @@ public class StrategyIntentController extends BaseController
     /**
     * 修改战略意图表
     */
-    //@RequiresPermissions("strategy:cloud:strategyIntent:edit")
+    @RequiresPermissions("strategy:cloud:strategyIntent:edit")
     @Log(title = "修改战略意图表", businessType = BusinessType.STRATEGY_INTENT, businessId = "strategyIntentId", operationType = OperationType.UPDATE)
     @PostMapping("/edit")
     public AjaxResult editSave(@RequestBody @Validated(StrategyIntentDTO.UpdateStrategyIntentDTO.class) StrategyIntentDTO strategyIntentDTO)
@@ -91,7 +91,7 @@ public class StrategyIntentController extends BaseController
     /**
     * 逻辑删除战略意图表
     */
-    //@RequiresPermissions("strategy:cloud:strategyIntent:remove")
+    @RequiresPermissions("strategy:cloud:strategyIntent:remove")
     @PostMapping("/remove")
     public AjaxResult remove(@RequestBody @Validated(StrategyIntentDTO.DeleteStrategyIntentDTO.class) StrategyIntentDTO strategyIntentDTO)
     {
@@ -100,7 +100,7 @@ public class StrategyIntentController extends BaseController
     /**
     * 逻辑批量删除战略意图表
     */
-    //@RequiresPermissions("strategy:cloud:strategyIntent:removes")
+    @RequiresPermissions("strategy:cloud:strategyIntent:removes")
     @PostMapping("/removes")
     public AjaxResult removes(@RequestBody List<Long>  strategyIntentIds)
     {

@@ -87,6 +87,45 @@
                             and update_time=#{miMacroDetail.updateTime}
                         </if>
     </select>
+<!--    根据宏观主表id查询市场洞察宏观详情表-->
+    <select id="selectMiMacroDetailByMarketInsightMacroId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO">
+        SELECT mi_macro_detail_id,
+               market_insight_macro_id,
+               visual_angle,
+               company_related_factor,
+               change_trend,
+               influence_description,
+               recommended_practice,
+               plan_period,
+               estimate_opportunity_amount,
+               propose_employee_id,
+               propose_employee_name,
+               propose_employee_code,
+               sort,
+               delete_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        FROM mi_macro_detail
+        WHERE market_insight_macro_id = #{marketInsightMacroId}
+          and delete_flag = 0
+    </select>
+<!--    根据宏观主表id集合批量查询市场洞察宏观详情表-->
+    <select id="selectMiMacroDetailByMarketInsightMacroIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO">
+        SELECT
+        mi_macro_detail_id,market_insight_macro_id,visual_angle,company_related_factor,change_trend,influence_description,recommended_practice,plan_period,estimate_opportunity_amount,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM mi_macro_detail
+        WHERE  market_insight_macro_id in
+        <foreach item="item"
+                 collection="marketInsightMacroIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
     <!--新增市场洞察宏观详情表-->
     <insert id="insertMiMacroDetail" useGeneratedKeys="true" keyProperty="miMacroDetailId">
         INSERT INTO mi_macro_detail (market_insight_macro_id,visual_angle,company_related_factor,change_trend,influence_description,recommended_practice,plan_period,estimate_opportunity_amount,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)

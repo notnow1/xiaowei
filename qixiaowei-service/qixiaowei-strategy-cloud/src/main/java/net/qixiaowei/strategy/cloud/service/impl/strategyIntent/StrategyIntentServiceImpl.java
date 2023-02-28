@@ -128,6 +128,10 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
         return strategyIntentDTOS;
     }
 
+    /**
+     * 封装高级查询人员id
+     * @param params
+     */
     private void queryemployeeName(Map<String, Object> params) {
         Map<String, Object> params2 = new HashMap<>();
         if (StringUtils.isNotEmpty(params)) {
@@ -152,7 +156,7 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                 if (StringUtils.isNotEmpty(data)) {
                     List<Long> employeeIds = data.stream().map(EmployeeDTO::getEmployeeId).collect(Collectors.toList());
                     if (StringUtils.isNotEmpty(employeeIds)) {
-                        params.put("createBy", employeeIds);
+                        params.put("createBys", employeeIds);
                     }
                 }
             }

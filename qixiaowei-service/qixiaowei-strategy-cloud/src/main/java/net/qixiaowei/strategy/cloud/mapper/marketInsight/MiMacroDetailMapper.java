@@ -20,6 +20,13 @@ public interface MiMacroDetailMapper{
     * @return 市场洞察宏观详情表
     */
     MiMacroDetailDTO selectMiMacroDetailByMiMacroDetailId(@Param("miMacroDetailId")Long miMacroDetailId);
+    /**
+     * 根据宏观主表id查询市场洞察宏观详情表
+     *
+     * @param marketInsightMacroId 宏观主表主键
+     * @return 市场洞察宏观详情表
+     */
+    MiMacroDetailDTO selectMiMacroDetailByMarketInsightMacroId(@Param("marketInsightMacroId")Long marketInsightMacroId);
 
 
     /**
@@ -29,6 +36,13 @@ public interface MiMacroDetailMapper{
     * @return 市场洞察宏观详情表
     */
     List<MiMacroDetailDTO> selectMiMacroDetailByMiMacroDetailIds(@Param("miMacroDetailIds") List<Long> miMacroDetailIds);
+    /**
+     * 根据宏观主表id集合批量查询市场洞察宏观详情表
+     *
+     * @param marketInsightMacroIds 宏观主表主键集合
+     * @return 市场洞察宏观详情表
+     */
+    List<MiMacroDetailDTO> selectMiMacroDetailByMarketInsightMacroIds(@Param("marketInsightMacroIds") List<Long> marketInsightMacroIds);
 
     /**
     * 查询市场洞察宏观详情表列表

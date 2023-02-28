@@ -20,6 +20,13 @@ public interface MiMacroEstimateMapper{
     * @return 市场洞察宏观预估表
     */
     MiMacroEstimateDTO selectMiMacroEstimateByMiMacroEstimateId(@Param("miMacroEstimateId")Long miMacroEstimateId);
+    /**
+     * 根据市场洞察宏观详情表主键查询市场洞察宏观预估表
+     *
+     * @param miMacroDetailId 市场洞察宏观详情表主键
+     * @return 市场洞察宏观预估表
+     */
+    MiMacroEstimateDTO selectMiMacroEstimateByMiMacroDetailId(@Param("miMacroDetailId")Long miMacroDetailId);
 
 
     /**
@@ -29,6 +36,14 @@ public interface MiMacroEstimateMapper{
     * @return 市场洞察宏观预估表
     */
     List<MiMacroEstimateDTO> selectMiMacroEstimateByMiMacroEstimateIds(@Param("miMacroEstimateIds") List<Long> miMacroEstimateIds);
+
+    /**
+     * 根据市场洞察宏观详情表主键集合批量查询市场洞察宏观预估表
+     *
+     * @param miMacroDetailIds 市场洞察宏观详情表主键集合
+     * @return 市场洞察宏观预估表
+     */
+    List<MiMacroEstimateDTO> selectMiMacroEstimateByMiMacroDetailIds(@Param("miMacroDetailIds") List<Long> miMacroDetailIds);
 
     /**
     * 查询市场洞察宏观预估表列表

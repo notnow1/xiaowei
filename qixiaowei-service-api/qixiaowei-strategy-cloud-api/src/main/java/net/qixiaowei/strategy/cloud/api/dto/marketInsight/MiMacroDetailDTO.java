@@ -7,6 +7,8 @@ import java.util.Date;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -87,6 +89,10 @@ public class MiMacroDetailDTO {
     * 排序
     */
     private  Integer sort;
+    /**
+     * 市场洞察宏观预估表集合
+     */
+    private List<MiMacroEstimateDTO> miMacroEstimateDTOS;
     /**
     * 删除标记:0未删除;1已删除
     */

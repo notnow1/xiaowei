@@ -7,6 +7,8 @@ import java.util.Date;
 import java.math.BigDecimal;
 import javax.validation.groups.Default;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,6 +50,10 @@ public class MarketInsightMacroDTO {
     */
     private  Long planBusinessUnitId;
     /**
+     * 规划业务单元名称
+     */
+    private String planBusinessUnitName;
+    /**
     * 规划业务单元维度(region,department,product,industry)
     */
     private  String businessUnitDecompose;
@@ -68,6 +74,10 @@ public class MarketInsightMacroDTO {
     */
     private  Long industryId;
     /**
+     * 市场洞察宏观详情表集合
+     */
+    private List<MiMacroDetailDTO>  miMacroDetailDTOS;
+    /**
     * 删除标记:0未删除;1已删除
     */
     private  Integer deleteFlag;
@@ -75,6 +85,10 @@ public class MarketInsightMacroDTO {
     * 创建人
     */
     private  Long createBy;
+    /**
+     * 创建人名称
+     */
+    private  String createByName;
     /**
     * 创建时间
     */
