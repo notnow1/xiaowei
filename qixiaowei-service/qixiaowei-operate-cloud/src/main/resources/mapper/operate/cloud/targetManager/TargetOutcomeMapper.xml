@@ -183,6 +183,54 @@
         AND come.delete_flag = 0
         AND come.target_year =#{targetOutcome.targetYear}
     </select>
+<!--    战略云获取指标实际值-->
+    <select id="getResultIndicator"
+            resultType="net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO">
+        select
+        to2.target_year ,
+        tod.target_outcome_details_id,
+        tod.target_outcome_id,
+        tod.indicator_id,
+        tod.actual_total,
+        tod.actual_january,
+        tod.actual_february,
+        tod.actual_march,
+        tod.actual_april,
+        tod.actual_may,
+        tod.actual_june,
+        tod.actual_july,
+        tod.actual_august,
+        tod.actual_september,
+        tod.actual_october,
+        tod.actual_november,
+        tod.actual_december,
+        tod.delete_flag,
+        tod.create_by,
+        tod.create_time,
+        tod.update_by,
+        tod.update_time,
+        tod.tenant_id
+        from
+        target_outcome_details tod
+        left join target_outcome to2
+        on
+        to2.target_outcome_id = tod.target_outcome_id
+        and to2.delete_flag = 0
+        where
+        tod.delete_flag = 0
+        and indicator_id in
+        <foreach item="item"
+                 collection="strategyIntentOperateVO.indicatorIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and to2.target_year in
+        <foreach item="item"
+                 collection="strategyIntentOperateVO.targetYears"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
     <!--新增目标结果表-->
     <insert id="insertTargetOutcome" useGeneratedKeys="true" keyProperty="targetOutcomeId">
         INSERT INTO target_outcome (target_year, delete_flag, create_by, create_time, update_by, update_time)

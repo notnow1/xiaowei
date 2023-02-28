@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.mapper.targetManager;
 import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.vo.strategyIntent.StrategyIntentOperateVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -155,4 +156,11 @@ public interface TargetOutcomeMapper {
      * @return List
      */
     List<TargetOutcomeDTO> selectTargetOutcomeDetailList(@Param("targetOutcome") TargetOutcome targetOutcome);
+
+    /**
+     * 战略云获取指标实际值
+     * @param strategyIntentOperateVO
+     * @return
+     */
+    List<TargetOutcomeDetailsDTO> getResultIndicator(@Param("strategyIntentOperateVO")StrategyIntentOperateVO strategyIntentOperateVO);
 }

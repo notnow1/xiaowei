@@ -3,6 +3,7 @@ package net.qixiaowei.operate.cloud.service.targetManager;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.api.vo.strategyIntent.StrategyIntentOperateVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 
@@ -155,4 +156,12 @@ public interface ITargetOutcomeService {
      * @return
      */
     List<TargetOutcomeDetailsDTO> selectTargetOutcomeByTargetYears(List<Integer> targetYears, Long indicatorId);
+
+    /**
+     * 战略云获取指标实际值
+     * @param strategyIntentOperateVO
+     * @return
+     */
+    List<StrategyIntentOperateVO> getResultIndicator(StrategyIntentOperateVO strategyIntentOperateVO);
+
 }

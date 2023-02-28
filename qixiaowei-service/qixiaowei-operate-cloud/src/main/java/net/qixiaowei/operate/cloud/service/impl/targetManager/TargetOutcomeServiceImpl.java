@@ -12,6 +12,8 @@ import net.qixiaowei.operate.cloud.api.domain.targetManager.TargetOutcome;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetSettingDTO;
+import net.qixiaowei.operate.cloud.api.vo.strategyIntent.StrategyIntentOperateMapVO;
+import net.qixiaowei.operate.cloud.api.vo.strategyIntent.StrategyIntentOperateVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetOutcomeMapper;
 import net.qixiaowei.operate.cloud.mapper.targetManager.TargetSettingMapper;
@@ -30,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -775,6 +778,66 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
     @Override
     public List<TargetOutcomeDetailsDTO> selectTargetOutcomeByTargetYears(List<Integer> targetYears, Long indicatorId) {
         return targetOutcomeMapper.selectTargetOutcomeByTargetYears(targetYears, indicatorId);
+    }
+
+    /**
+     * 战略云获取指标实际值
+     * @param strategyIntentOperateVO
+     * @return
+     */
+    @Override
+    public List<StrategyIntentOperateVO> getResultIndicator(StrategyIntentOperateVO  strategyIntentOperateVO) {
+        List<StrategyIntentOperateVO> strategyIntentOperateVOArrayList = new ArrayList<>();
+        List<Long> indicatorIds = strategyIntentOperateVO.getIndicatorIds();
+        List<String> targetYears = strategyIntentOperateVO.getTargetYears();
+        if (StringUtils.isEmpty(indicatorIds)|| StringUtils.isEmpty(targetYears)){
+            throw new ServiceException("年度或指标为空！");
+        }
+        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeMapper.getResultIndicator(strategyIntentOperateVO);
+        if (StringUtils.isEmpty(targetYears)){
+            return strategyIntentOperateVOArrayList;
+        }else {
+            List<Long> indicatorIdList = targetOutcomeDetailsDTOList.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toList());
+            R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByIds(indicatorIdList, SecurityConstants.INNER);
+            List<IndicatorDTO> indicatorDTOList = listR.getData();
+            if (StringUtils.isNotEmpty(indicatorDTOList)){
+                for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+                    for (IndicatorDTO indicatorDTO : indicatorDTOList) {
+                        if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())){
+                            targetOutcomeDetailsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+                        }
+                    }
+                }
+            }
+            Map<Long, List<TargetOutcomeDetailsDTO>> indicatorIdDataMap = targetOutcomeDetailsDTOList.parallelStream().collect(Collectors.groupingBy(TargetOutcomeDetailsDTO::getIndicatorId));
+            if (StringUtils.isNotEmpty(indicatorIdDataMap)){
+                for (Long key : indicatorIdDataMap.keySet()) {
+                    StrategyIntentOperateVO strategyIntentOperateVO1 = new StrategyIntentOperateVO();
+                    List<StrategyIntentOperateMapVO> strategyIntentOperateMapVOList = new ArrayList<>();
+                    List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList1 = indicatorIdDataMap.get(key);
+                    if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)){
+                        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
+                            StrategyIntentOperateMapVO strategyIntentOperateMapVO = new StrategyIntentOperateMapVO();
+                            Map<Integer, BigDecimal> yearValues = new HashMap<>();
+                            yearValues.put(targetOutcomeDetailsDTO.getTargetYear(),targetOutcomeDetailsDTO.getActualTotal());
+                            strategyIntentOperateMapVO.setYearValues(yearValues);
+                            strategyIntentOperateMapVOList.add(strategyIntentOperateMapVO);
+                        }
+                        for (int i = 0; i < targetOutcomeDetailsDTOList1.size(); i++) {
+                            if (i==0){
+                                strategyIntentOperateVO1.setIndicatorId(targetOutcomeDetailsDTOList1.get(i).getIndicatorId());
+                                strategyIntentOperateVO1.setIndicatorName(targetOutcomeDetailsDTOList1.get(i).getIndicatorName());
+                                strategyIntentOperateVO1.setStrategyIntentOperateMapDTOS(strategyIntentOperateMapVOList);
+                                break;
+                            }
+                        }
+                    }
+                    strategyIntentOperateVOArrayList.add(strategyIntentOperateVO1);
+                }
+            }
+
+        }
+        return strategyIntentOperateVOArrayList;
     }
 
 }

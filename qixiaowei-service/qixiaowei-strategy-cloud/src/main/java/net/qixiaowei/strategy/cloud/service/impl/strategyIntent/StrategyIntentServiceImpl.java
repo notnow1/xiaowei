@@ -453,15 +453,6 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
         return strategyIntentMapper.deleteStrategyIntentByStrategyIntentId(strategyIntentId);
     }
 
-    /**
-     * 根据指标id获取关键经营结果的实际值
-     * @param indicatorIds
-     * @return
-     */
-    @Override
-    public List<StrategyIntentOperateDTO> getResultIndicator(List<Long> indicatorIds) {
-        return null;
-    }
 
     /**
      * 逻辑删除战略意图表信息

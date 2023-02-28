@@ -85,11 +85,4 @@ public interface IStrategyIntentService{
     * @return 结果
     */
     int deleteStrategyIntentByStrategyIntentId(Long strategyIntentId);
-
-    /**
-     * 根据指标id获取关键经营结果的实际值
-     * @param indicatorIds
-     * @return
-     */
-    List<StrategyIntentOperateDTO> getResultIndicator(List<Long> indicatorIds);
 }

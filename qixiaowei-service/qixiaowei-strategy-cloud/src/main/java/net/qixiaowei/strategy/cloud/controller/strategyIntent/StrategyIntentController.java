@@ -107,13 +107,4 @@ public class StrategyIntentController extends BaseController
     {
     return toAjax(strategyIntentService.logicDeleteStrategyIntentByStrategyIntentIds(strategyIntentIds));
     }
-    /**
-     * 逻辑批量删除战略意图表
-     */
-    @RequiresPermissions("strategy:cloud:strategyIntent:getResultIndicator")
-    @PostMapping("/getResultIndicator")
-    public AjaxResult getResultIndicator(@RequestBody List<Long>  indicatorIds)
-    {
-        return AjaxResult.success(strategyIntentService.getResultIndicator(indicatorIds));
-    }
 }

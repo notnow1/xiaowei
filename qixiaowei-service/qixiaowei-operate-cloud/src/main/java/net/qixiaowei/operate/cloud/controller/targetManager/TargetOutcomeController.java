@@ -14,6 +14,7 @@ import net.qixiaowei.integration.security.annotation.Logical;
 import net.qixiaowei.integration.security.annotation.RequiresPermissions;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDTO;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetOutcomeDetailsDTO;
+import net.qixiaowei.operate.cloud.api.vo.strategyIntent.StrategyIntentOperateVO;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeExcel;
 import net.qixiaowei.operate.cloud.excel.targetManager.TargetOutcomeImportListener;
 import net.qixiaowei.operate.cloud.service.targetManager.ITargetOutcomeDetailsService;
@@ -159,6 +160,14 @@ public class TargetOutcomeController extends BaseController {
         List<TargetOutcomeDTO> list = targetOutcomeService.selectTargetOutcomeList(targetOutcomeDTO);
         return AjaxResult.success(list);
     }
-
+    /**
+     * 战略云获取指标实际值
+     */
+    //@RequiresPermissions("operate:cloud:targetOutcome:getResultIndicator")
+    @PostMapping("/getResultIndicator")
+    public AjaxResult getResultIndicator(@RequestBody StrategyIntentOperateVO strategyIntentOperateVO)
+    {
+        return AjaxResult.success(targetOutcomeService.getResultIndicator(strategyIntentOperateVO));
+    }
 
 }
