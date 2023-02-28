@@ -328,3 +328,90 @@ CREATE TABLE business_design_axis_config(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (business_design_axis_config_id)
 )  COMMENT = '业务设计轴配置表';
+
+
+CREATE TABLE market_insight_industry(
+    market_insight_industry_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (market_insight_industry_id)
+)  COMMENT = '市场洞察行业表';
+
+
+CREATE TABLE mi_industry_detail(
+    mi_industry_detail_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_industry_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察行业ID' ,
+    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    industry_type BIGINT UNSIGNED    COMMENT '行业类型' ,
+    plan_period TINYINT UNSIGNED    COMMENT '规划期' ,
+    overall_space DECIMAL(14,2)    COMMENT '整体空间' ,
+    participate_space DECIMAL(14,2)    COMMENT '可参与空间' ,
+    target_market_space DECIMAL(14,2)    COMMENT '目标市场空间' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_industry_detail_id)
+)  COMMENT = '市场洞察行业详情表';
+
+
+CREATE TABLE mi_industry_estimate(
+    mi_macro_estimate_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_industry_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察行业ID' ,
+    mi_industry_detail_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察行业详情ID' ,
+    estimate_type TINYINT UNSIGNED NOT NULL   COMMENT '评估类型:1整体空间;2可参与空间;3目标市场空间' ,
+    plan_year SMALLINT UNSIGNED    COMMENT '规划年度' ,
+    estimate_amount DECIMAL(14,2)    COMMENT '预估金额' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_macro_estimate_id)
+)  COMMENT = '市场洞察行业预估表';
+
+
+CREATE TABLE mi_industry_attraction(
+    mi_industry_attraction_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_industry_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察行业ID' ,
+    industry_attraction_id BIGINT UNSIGNED NOT NULL   COMMENT '行业吸引力ID' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_industry_attraction_id)
+)  COMMENT = '市场洞察行业吸引力表';
+
+
+CREATE TABLE mi_industry_attraction_data(
+    mi_industry_attraction_data_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_industry_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察行业ID' ,
+    mi_industry_detail_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察行业详情ID' ,
+    mi_industry_attraction_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察行业吸引力ID' ,
+    industry_attraction_element_id BIGINT UNSIGNED    COMMENT '行业吸引力要素ID' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_industry_attraction_data_id)
+)  COMMENT = '市场洞察行业吸引力数据表';
