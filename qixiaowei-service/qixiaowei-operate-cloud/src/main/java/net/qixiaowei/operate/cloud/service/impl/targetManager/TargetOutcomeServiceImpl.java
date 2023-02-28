@@ -822,6 +822,7 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                             strategyIntentOperateMapVO.setOperateValue(targetOutcomeDetailsDTO.getTargetValue());
                             strategyIntentOperateVO1.setIndicatorId(targetOutcomeDetailsDTO.getIndicatorId());
                             strategyIntentOperateVO1.setIndicatorName(targetOutcomeDetailsDTO.getIndicatorName());
+                            strategyIntentOperateMapVOList.add(strategyIntentOperateMapVO);
                             strategyIntentOperateVO1.setStrategyIntentOperateMapDTOS(strategyIntentOperateMapVOList);
                         }
                     }
