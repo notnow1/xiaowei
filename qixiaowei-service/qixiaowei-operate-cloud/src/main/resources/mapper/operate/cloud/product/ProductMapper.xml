@@ -328,7 +328,7 @@
             product_id, parent_product_id, ancestors, product_code, product_name, level, product_unit_id, product_category,
             product_description, list_price, listing_flag, delete_flag, create_by, create_time, update_by, update_time
         FROM product
-        WHERE product_code=#{productCode}
+        WHERE BINARY product_code=#{productCode}
           and delete_flag=0
     </select>
     <select id="selectProductByParentProductId"

@@ -618,7 +618,7 @@
         FROM department
         where
         <if test="departmentCode != null and departmentCode != ''">
-            department_code=#{departmentCode}
+            BINARY department_code=#{departmentCode}
         </if>
         and delete_flag = 0
     </select>
