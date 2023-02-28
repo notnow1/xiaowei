@@ -7,7 +7,7 @@
         SELECT
         gap_analysis_performance_id,gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM gap_analysis_performance
-        WHERE  gap_analysis_performance_id=#{gapAnalysisPerformanceId}
+        WHERE gap_analysis_performance_id=#{gapAnalysisPerformanceId}
         and delete_flag=0
     </select>
 
@@ -17,79 +17,103 @@
         SELECT
         gap_analysis_performance_id,gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM gap_analysis_performance
-        WHERE  gap_analysis_performance_id in
-            <foreach item="item"
-                     collection="gapAnalysisPerformanceIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE gap_analysis_performance_id in
+        <foreach item="item"
+                 collection="gapAnalysisPerformanceIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询业绩差距表列表-->
-    <select id="selectGapAnalysisPerformanceList" resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisPerformanceDTO">
+    <select id="selectGapAnalysisPerformanceList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisPerformanceDTO">
         SELECT
         gap_analysis_performance_id,gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM gap_analysis_performance
         WHERE delete_flag=0
-                        <if test="gapAnalysisPerformance.gapAnalysisPerformanceId != null">
-                            and gap_analysis_performance_id=#{gapAnalysisPerformance.gapAnalysisPerformanceId}
-                        </if>
-                        <if test="gapAnalysisPerformance.gapAnalysisId != null">
-                            and gap_analysis_id=#{gapAnalysisPerformance.gapAnalysisId}
-                        </if>
-                        <if test="gapAnalysisPerformance.serialNumber != null">
-                            and serial_number=#{gapAnalysisPerformance.serialNumber}
-                        </if>
-                        <if test="gapAnalysisPerformance.gapPerformanceName != null and gapAnalysisPerformance.gapPerformanceName != ''">
-                            and gap_performance_name=#{gapAnalysisPerformance.gapPerformanceName}
-                        </if>
-                        <if test="gapAnalysisPerformance.gapDescription != null and gapAnalysisPerformance.gapDescription != ''">
-                            and gap_description=#{gapAnalysisPerformance.gapDescription}
-                        </if>
-                        <if test="gapAnalysisPerformance.rootCauseAnalysis != null and gapAnalysisPerformance.rootCauseAnalysis != ''">
-                            and root_cause_analysis=#{gapAnalysisPerformance.rootCauseAnalysis}
-                        </if>
-                        <if test="gapAnalysisPerformance.rootCauseCategory != null and gapAnalysisPerformance.rootCauseCategory != ''">
-                            and root_cause_category=#{gapAnalysisPerformance.rootCauseCategory}
-                        </if>
-                        <if test="gapAnalysisPerformance.rootCauseSubtype != null and gapAnalysisPerformance.rootCauseSubtype != ''">
-                            and root_cause_subtype=#{gapAnalysisPerformance.rootCauseSubtype}
-                        </if>
-                        <if test="gapAnalysisPerformance.recommendedPractice != null and gapAnalysisPerformance.recommendedPractice != ''">
-                            and recommended_practice=#{gapAnalysisPerformance.recommendedPractice}
-                        </if>
-                        <if test="gapAnalysisPerformance.proposeEmployeeId != null">
-                            and propose_employee_id=#{gapAnalysisPerformance.proposeEmployeeId}
-                        </if>
-                        <if test="gapAnalysisPerformance.proposeEmployeeName != null and gapAnalysisPerformance.proposeEmployeeName != ''">
-                            and propose_employee_name=#{gapAnalysisPerformance.proposeEmployeeName}
-                        </if>
-                        <if test="gapAnalysisPerformance.proposeEmployeeCode != null and gapAnalysisPerformance.proposeEmployeeCode != ''">
-                            and propose_employee_code=#{gapAnalysisPerformance.proposeEmployeeCode}
-                        </if>
-                        <if test="gapAnalysisPerformance.sort != null">
-                            and sort=#{gapAnalysisPerformance.sort}
-                        </if>
-                        <if test="gapAnalysisPerformance.deleteFlag != null">
-                            and delete_flag=#{gapAnalysisPerformance.deleteFlag}
-                        </if>
-                        <if test="gapAnalysisPerformance.createBy != null">
-                            and create_by=#{gapAnalysisPerformance.createBy}
-                        </if>
-                        <if test="gapAnalysisPerformance.createTime != null">
-                            and create_time=#{gapAnalysisPerformance.createTime}
-                        </if>
-                        <if test="gapAnalysisPerformance.updateBy != null">
-                            and update_by=#{gapAnalysisPerformance.updateBy}
-                        </if>
-                        <if test="gapAnalysisPerformance.updateTime != null">
-                            and update_time=#{gapAnalysisPerformance.updateTime}
-                        </if>
+        <if test="gapAnalysisPerformance.gapAnalysisPerformanceId != null">
+            and gap_analysis_performance_id=#{gapAnalysisPerformance.gapAnalysisPerformanceId}
+        </if>
+        <if test="gapAnalysisPerformance.gapAnalysisId != null">
+            and gap_analysis_id=#{gapAnalysisPerformance.gapAnalysisId}
+        </if>
+        <if test="gapAnalysisPerformance.serialNumber != null">
+            and serial_number=#{gapAnalysisPerformance.serialNumber}
+        </if>
+        <if test="gapAnalysisPerformance.gapPerformanceName != null and gapAnalysisPerformance.gapPerformanceName != ''">
+            and gap_performance_name=#{gapAnalysisPerformance.gapPerformanceName}
+        </if>
+        <if test="gapAnalysisPerformance.gapDescription != null and gapAnalysisPerformance.gapDescription != ''">
+            and gap_description=#{gapAnalysisPerformance.gapDescription}
+        </if>
+        <if test="gapAnalysisPerformance.rootCauseAnalysis != null and gapAnalysisPerformance.rootCauseAnalysis != ''">
+            and root_cause_analysis=#{gapAnalysisPerformance.rootCauseAnalysis}
+        </if>
+        <if test="gapAnalysisPerformance.rootCauseCategory != null and gapAnalysisPerformance.rootCauseCategory != ''">
+            and root_cause_category=#{gapAnalysisPerformance.rootCauseCategory}
+        </if>
+        <if test="gapAnalysisPerformance.rootCauseSubtype != null and gapAnalysisPerformance.rootCauseSubtype != ''">
+            and root_cause_subtype=#{gapAnalysisPerformance.rootCauseSubtype}
+        </if>
+        <if test="gapAnalysisPerformance.recommendedPractice != null and gapAnalysisPerformance.recommendedPractice != ''">
+            and recommended_practice=#{gapAnalysisPerformance.recommendedPractice}
+        </if>
+        <if test="gapAnalysisPerformance.proposeEmployeeId != null">
+            and propose_employee_id=#{gapAnalysisPerformance.proposeEmployeeId}
+        </if>
+        <if test="gapAnalysisPerformance.proposeEmployeeName != null and gapAnalysisPerformance.proposeEmployeeName != ''">
+            and propose_employee_name=#{gapAnalysisPerformance.proposeEmployeeName}
+        </if>
+        <if test="gapAnalysisPerformance.proposeEmployeeCode != null and gapAnalysisPerformance.proposeEmployeeCode != ''">
+            and propose_employee_code=#{gapAnalysisPerformance.proposeEmployeeCode}
+        </if>
+        <if test="gapAnalysisPerformance.sort != null">
+            and sort=#{gapAnalysisPerformance.sort}
+        </if>
+        <if test="gapAnalysisPerformance.deleteFlag != null">
+            and delete_flag=#{gapAnalysisPerformance.deleteFlag}
+        </if>
+        <if test="gapAnalysisPerformance.createBy != null">
+            and create_by=#{gapAnalysisPerformance.createBy}
+        </if>
+        <if test="gapAnalysisPerformance.createTime != null">
+            and create_time=#{gapAnalysisPerformance.createTime}
+        </if>
+        <if test="gapAnalysisPerformance.updateBy != null">
+            and update_by=#{gapAnalysisPerformance.updateBy}
+        </if>
+        <if test="gapAnalysisPerformance.updateTime != null">
+            and update_time=#{gapAnalysisPerformance.updateTime}
+        </if>
+    </select>
+    <!--根据差距分析ID查找业绩差距-->
+    <select id="selectGapAnalysisPerformanceByGapAnalysisId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisPerformanceDTO">
+        SELECT
+        gap_analysis_performance_id,gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM gap_analysis_performance
+        WHERE gap_analysis_id=#{gapAnalysisId}
+        and delete_flag=0
+        ORDER BY sort
+    </select>
+    <!--根据差距分析ID集合查找业绩差距-->
+    <select id="selectGapAnalysisPerformanceByGapAnalysisIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisPerformanceDTO">
+        SELECT
+        gap_analysis_performance_id,gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM gap_analysis_performance
+        WHERE delete_flag=0
+        AND gap_analysis_id IN
+        <foreach collection="gapAnalysisIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
     </select>
     <!--新增业绩差距表-->
     <insert id="insertGapAnalysisPerformance" useGeneratedKeys="true" keyProperty="gapAnalysisPerformanceId">
-        INSERT INTO gap_analysis_performance (gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO gap_analysis_performance
+        (gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{gapAnalysisPerformance.gapAnalysisId},#{gapAnalysisPerformance.serialNumber},#{gapAnalysisPerformance.gapPerformanceName},#{gapAnalysisPerformance.gapDescription},#{gapAnalysisPerformance.rootCauseAnalysis},#{gapAnalysisPerformance.rootCauseCategory},#{gapAnalysisPerformance.rootCauseSubtype},#{gapAnalysisPerformance.recommendedPractice},#{gapAnalysisPerformance.proposeEmployeeId},#{gapAnalysisPerformance.proposeEmployeeName},#{gapAnalysisPerformance.proposeEmployeeCode},#{gapAnalysisPerformance.sort},#{gapAnalysisPerformance.deleteFlag},#{gapAnalysisPerformance.createBy},#{gapAnalysisPerformance.createTime},#{gapAnalysisPerformance.updateBy},#{gapAnalysisPerformance.updateTime})
     </insert>
@@ -97,86 +121,87 @@
     <update id="updateGapAnalysisPerformance">
         UPDATE gap_analysis_performance
         SET
-                    <if test="gapAnalysisPerformance.gapAnalysisId != null">
-                        gap_analysis_id=#{gapAnalysisPerformance.gapAnalysisId},
-                    </if>
-                    <if test="gapAnalysisPerformance.serialNumber != null">
-                        serial_number=#{gapAnalysisPerformance.serialNumber},
-                    </if>
-                    <if test="gapAnalysisPerformance.gapPerformanceName != null and gapAnalysisPerformance.gapPerformanceName != ''">
-                        gap_performance_name=#{gapAnalysisPerformance.gapPerformanceName},
-                    </if>
-                    <if test="gapAnalysisPerformance.gapDescription != null and gapAnalysisPerformance.gapDescription != ''">
-                        gap_description=#{gapAnalysisPerformance.gapDescription},
-                    </if>
-                    <if test="gapAnalysisPerformance.rootCauseAnalysis != null and gapAnalysisPerformance.rootCauseAnalysis != ''">
-                        root_cause_analysis=#{gapAnalysisPerformance.rootCauseAnalysis},
-                    </if>
-                    <if test="gapAnalysisPerformance.rootCauseCategory != null and gapAnalysisPerformance.rootCauseCategory != ''">
-                        root_cause_category=#{gapAnalysisPerformance.rootCauseCategory},
-                    </if>
-                    <if test="gapAnalysisPerformance.rootCauseSubtype != null and gapAnalysisPerformance.rootCauseSubtype != ''">
-                        root_cause_subtype=#{gapAnalysisPerformance.rootCauseSubtype},
-                    </if>
-                    <if test="gapAnalysisPerformance.recommendedPractice != null and gapAnalysisPerformance.recommendedPractice != ''">
-                        recommended_practice=#{gapAnalysisPerformance.recommendedPractice},
-                    </if>
-                    <if test="gapAnalysisPerformance.proposeEmployeeId != null">
-                        propose_employee_id=#{gapAnalysisPerformance.proposeEmployeeId},
-                    </if>
-                    <if test="gapAnalysisPerformance.proposeEmployeeName != null and gapAnalysisPerformance.proposeEmployeeName != ''">
-                        propose_employee_name=#{gapAnalysisPerformance.proposeEmployeeName},
-                    </if>
-                    <if test="gapAnalysisPerformance.proposeEmployeeCode != null and gapAnalysisPerformance.proposeEmployeeCode != ''">
-                        propose_employee_code=#{gapAnalysisPerformance.proposeEmployeeCode},
-                    </if>
-                    <if test="gapAnalysisPerformance.sort != null">
-                        sort=#{gapAnalysisPerformance.sort},
-                    </if>
-                    <if test="gapAnalysisPerformance.deleteFlag != null">
-                        delete_flag=#{gapAnalysisPerformance.deleteFlag},
-                    </if>
-                    <if test="gapAnalysisPerformance.createBy != null">
-                        create_by=#{gapAnalysisPerformance.createBy},
-                    </if>
-                    <if test="gapAnalysisPerformance.createTime != null">
-                        create_time=#{gapAnalysisPerformance.createTime},
-                    </if>
-                    <if test="gapAnalysisPerformance.updateBy != null">
-                        update_by=#{gapAnalysisPerformance.updateBy},
-                    </if>
-                    <if test="gapAnalysisPerformance.updateTime != null">
-                        update_time=#{gapAnalysisPerformance.updateTime}
-                    </if>
+        <if test="gapAnalysisPerformance.gapAnalysisId != null">
+            gap_analysis_id=#{gapAnalysisPerformance.gapAnalysisId},
+        </if>
+        <if test="gapAnalysisPerformance.serialNumber != null">
+            serial_number=#{gapAnalysisPerformance.serialNumber},
+        </if>
+        <if test="gapAnalysisPerformance.gapPerformanceName != null and gapAnalysisPerformance.gapPerformanceName != ''">
+            gap_performance_name=#{gapAnalysisPerformance.gapPerformanceName},
+        </if>
+        <if test="gapAnalysisPerformance.gapDescription != null and gapAnalysisPerformance.gapDescription != ''">
+            gap_description=#{gapAnalysisPerformance.gapDescription},
+        </if>
+        <if test="gapAnalysisPerformance.rootCauseAnalysis != null and gapAnalysisPerformance.rootCauseAnalysis != ''">
+            root_cause_analysis=#{gapAnalysisPerformance.rootCauseAnalysis},
+        </if>
+        <if test="gapAnalysisPerformance.rootCauseCategory != null and gapAnalysisPerformance.rootCauseCategory != ''">
+            root_cause_category=#{gapAnalysisPerformance.rootCauseCategory},
+        </if>
+        <if test="gapAnalysisPerformance.rootCauseSubtype != null and gapAnalysisPerformance.rootCauseSubtype != ''">
+            root_cause_subtype=#{gapAnalysisPerformance.rootCauseSubtype},
+        </if>
+        <if test="gapAnalysisPerformance.recommendedPractice != null and gapAnalysisPerformance.recommendedPractice != ''">
+            recommended_practice=#{gapAnalysisPerformance.recommendedPractice},
+        </if>
+        <if test="gapAnalysisPerformance.proposeEmployeeId != null">
+            propose_employee_id=#{gapAnalysisPerformance.proposeEmployeeId},
+        </if>
+        <if test="gapAnalysisPerformance.proposeEmployeeName != null and gapAnalysisPerformance.proposeEmployeeName != ''">
+            propose_employee_name=#{gapAnalysisPerformance.proposeEmployeeName},
+        </if>
+        <if test="gapAnalysisPerformance.proposeEmployeeCode != null and gapAnalysisPerformance.proposeEmployeeCode != ''">
+            propose_employee_code=#{gapAnalysisPerformance.proposeEmployeeCode},
+        </if>
+        <if test="gapAnalysisPerformance.sort != null">
+            sort=#{gapAnalysisPerformance.sort},
+        </if>
+        <if test="gapAnalysisPerformance.deleteFlag != null">
+            delete_flag=#{gapAnalysisPerformance.deleteFlag},
+        </if>
+        <if test="gapAnalysisPerformance.createBy != null">
+            create_by=#{gapAnalysisPerformance.createBy},
+        </if>
+        <if test="gapAnalysisPerformance.createTime != null">
+            create_time=#{gapAnalysisPerformance.createTime},
+        </if>
+        <if test="gapAnalysisPerformance.updateBy != null">
+            update_by=#{gapAnalysisPerformance.updateBy},
+        </if>
+        <if test="gapAnalysisPerformance.updateTime != null">
+            update_time=#{gapAnalysisPerformance.updateTime}
+        </if>
         WHERE
-                 gap_analysis_performance_id=#{gapAnalysisPerformance.gapAnalysisPerformanceId}
+        gap_analysis_performance_id=#{gapAnalysisPerformance.gapAnalysisPerformanceId}
     </update>
     <!--逻辑删除业绩差距表-->
     <update id="logicDeleteGapAnalysisPerformanceByGapAnalysisPerformanceId">
         UPDATE gap_analysis_performance
-        SET     delete_flag= 1,
-                update_by=#{gapAnalysisPerformance.updateBy},
-                update_time=#{gapAnalysisPerformance.updateTime}
+        SET delete_flag= 1,
+        update_by=#{gapAnalysisPerformance.updateBy},
+        update_time=#{gapAnalysisPerformance.updateTime}
         WHERE
-                gap_analysis_performance_id=#{gapAnalysisPerformance.gapAnalysisPerformanceId}
+        gap_analysis_performance_id=#{gapAnalysisPerformance.gapAnalysisPerformanceId}
     </update>
     <!--逻辑批量删除业绩差距表-->
     <update id="logicDeleteGapAnalysisPerformanceByGapAnalysisPerformanceIds">
         UPDATE gap_analysis_performance
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         gap_analysis_performance_id IN
-            <foreach item="item"
-                     collection="gapAnalysisPerformanceIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        gap_analysis_performance_id IN
+        <foreach item="item"
+                 collection="gapAnalysisPerformanceIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增业绩差距表-->
     <insert id="batchGapAnalysisPerformance">
-        INSERT INTO gap_analysis_performance (gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO gap_analysis_performance
+        (gap_analysis_id,serial_number,gap_performance_name,gap_description,root_cause_analysis,root_cause_category,root_cause_subtype,recommended_practice,propose_employee_id,propose_employee_name,propose_employee_code,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="gapAnalysisPerformances"
@@ -188,146 +213,140 @@
     <!--物理删除业绩差距表-->
     <delete id="deleteGapAnalysisPerformanceByGapAnalysisPerformanceId">
         DELETE FROM gap_analysis_performance
-        WHERE  gap_analysis_performance_id=#{gapAnalysisPerformance}
+        WHERE gap_analysis_performance_id=#{gapAnalysisPerformance}
 
     </delete>
     <!--物理批量删除业绩差距表-->
     <delete id="deleteGapAnalysisPerformanceByGapAnalysisPerformanceIds">
         DELETE FROM gap_analysis_performance
-        WHERE  gap_analysis_performance_id IN
-            <foreach item="item"
-                     collection="gapAnalysisPerformanceIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE gap_analysis_performance_id IN
+        <foreach item="item"
+                 collection="gapAnalysisPerformanceIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改业绩差距表-->
     <update id="updateGapAnalysisPerformances">
         update gap_analysis_performance
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="gap_analysis_id=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.gapAnalysisId != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.gapAnalysisId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="serial_number=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.serialNumber != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.serialNumber}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="gap_performance_name=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.gapPerformanceName != null and item.gapPerformanceName != ''">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.gapPerformanceName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="gap_description=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.gapDescription != null and item.gapDescription != ''">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.gapDescription}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="root_cause_analysis=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.rootCauseAnalysis != null and item.rootCauseAnalysis != ''">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.rootCauseAnalysis}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="root_cause_category=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.rootCauseCategory != null and item.rootCauseCategory != ''">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.rootCauseCategory}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="root_cause_subtype=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.rootCauseSubtype != null and item.rootCauseSubtype != ''">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.rootCauseSubtype}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="recommended_practice=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.recommendedPractice != null and item.recommendedPractice != ''">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.recommendedPractice}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="propose_employee_id=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.proposeEmployeeId != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.proposeEmployeeId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="propose_employee_name=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.proposeEmployeeName != null and item.proposeEmployeeName != ''">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.proposeEmployeeName}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="propose_employee_code=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.proposeEmployeeCode != null and item.proposeEmployeeCode != ''">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.proposeEmployeeCode}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="sort=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.sort != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.sort}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="gap_analysis_id=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.gapAnalysisId != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.gapAnalysisId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="serial_number=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.serialNumber != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.serialNumber}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="gap_performance_name=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.gapPerformanceName != null and item.gapPerformanceName != ''">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then
+                        #{item.gapPerformanceName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="gap_description=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.gapDescription}
+                </foreach>
+            </trim>
+            <trim prefix="root_cause_analysis=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.rootCauseAnalysis}
+                </foreach>
+            </trim>
+            <trim prefix="root_cause_category=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.rootCauseCategory}
+                </foreach>
+            </trim>
+            <trim prefix="root_cause_subtype=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.rootCauseSubtype}
+                </foreach>
+            </trim>
+            <trim prefix="recommended_practice=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then
+                    #{item.recommendedPractice}
+                </foreach>
+            </trim>
+            <trim prefix="propose_employee_id=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.proposeEmployeeId != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.proposeEmployeeId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="propose_employee_name=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.proposeEmployeeName != null and item.proposeEmployeeName != ''">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then
+                        #{item.proposeEmployeeName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="propose_employee_code=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.proposeEmployeeCode != null and item.proposeEmployeeCode != ''">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then
+                        #{item.proposeEmployeeCode}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="gapAnalysisPerformanceList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when gap_analysis_performance_id=#{item.gapAnalysisPerformanceId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="gapAnalysisPerformanceList" separator="or" item="item" index="index">
-                    gap_analysis_performance_id=#{item.gapAnalysisPerformanceId}
+            gap_analysis_performance_id=#{item.gapAnalysisPerformanceId}
         </foreach>
     </update>
 </mapper>

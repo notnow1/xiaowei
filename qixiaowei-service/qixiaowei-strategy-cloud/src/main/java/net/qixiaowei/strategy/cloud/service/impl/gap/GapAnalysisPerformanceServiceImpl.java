@@ -108,6 +108,28 @@ public class GapAnalysisPerformanceServiceImpl implements IGapAnalysisPerformanc
     }
 
     /**
+     * 根据差距分析ID查找业绩差距
+     *
+     * @param gapAnalysisId 差距分析ID
+     * @return List
+     */
+    @Override
+    public List<GapAnalysisPerformanceDTO> selectGapAnalysisPerformanceByGapAnalysisId(Long gapAnalysisId) {
+        return gapAnalysisPerformanceMapper.selectGapAnalysisPerformanceByGapAnalysisId(gapAnalysisId);
+    }
+
+    /**
+     * 根据差距分析ID集合查找业绩差距
+     *
+     * @param gapAnalysisIds 差距分析ID集合
+     * @return 结果
+     */
+    @Override
+    public List<GapAnalysisPerformanceDTO> selectGapAnalysisPerformanceByGapAnalysisIds(List<Long> gapAnalysisIds) {
+        return gapAnalysisPerformanceMapper.selectGapAnalysisPerformanceByGapAnalysisIds(gapAnalysisIds);
+    }
+
+    /**
      * 逻辑删除业绩差距表信息
      *
      * @param gapAnalysisPerformanceDTO 业绩差距表
@@ -145,7 +167,7 @@ public class GapAnalysisPerformanceServiceImpl implements IGapAnalysisPerformanc
 
     @Override
     public int deleteGapAnalysisPerformanceByGapAnalysisPerformanceIds(List<GapAnalysisPerformanceDTO> gapAnalysisPerformanceDtos) {
-        List<Long> stringList = new ArrayList();
+        List<Long> stringList = new ArrayList<>();
         for (GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO : gapAnalysisPerformanceDtos) {
             stringList.add(gapAnalysisPerformanceDTO.getGapAnalysisPerformanceId());
         }
@@ -159,7 +181,7 @@ public class GapAnalysisPerformanceServiceImpl implements IGapAnalysisPerformanc
      */
 
     public int insertGapAnalysisPerformances(List<GapAnalysisPerformanceDTO> gapAnalysisPerformanceDtos) {
-        List<GapAnalysisPerformance> gapAnalysisPerformanceList = new ArrayList();
+        List<GapAnalysisPerformance> gapAnalysisPerformanceList = new ArrayList<>();
 
         for (GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO : gapAnalysisPerformanceDtos) {
             GapAnalysisPerformance gapAnalysisPerformance = new GapAnalysisPerformance();
@@ -181,7 +203,7 @@ public class GapAnalysisPerformanceServiceImpl implements IGapAnalysisPerformanc
      */
 
     public int updateGapAnalysisPerformances(List<GapAnalysisPerformanceDTO> gapAnalysisPerformanceDtos) {
-        List<GapAnalysisPerformance> gapAnalysisPerformanceList = new ArrayList();
+        List<GapAnalysisPerformance> gapAnalysisPerformanceList = new ArrayList<>();
 
         for (GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO : gapAnalysisPerformanceDtos) {
             GapAnalysisPerformance gapAnalysisPerformance = new GapAnalysisPerformance();

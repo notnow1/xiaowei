@@ -7,7 +7,7 @@
         SELECT
         gap_analysis_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
         FROM gap_analysis
-        WHERE  gap_analysis_id=#{gapAnalysisId}
+        WHERE gap_analysis_id=#{gapAnalysisId}
         and delete_flag=0
     </select>
 
@@ -17,67 +17,128 @@
         SELECT
         gap_analysis_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
         FROM gap_analysis
-        WHERE  gap_analysis_id in
-            <foreach item="item"
-                     collection="gapAnalysisIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE gap_analysis_id in
+        <foreach item="item"
+                 collection="gapAnalysisIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         and delete_flag=0
     </select>
 
     <!--    查询差距分析表列表-->
     <select id="selectGapAnalysisList" resultType="net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO">
         SELECT
-        gap_analysis_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time
-        FROM gap_analysis
-        WHERE delete_flag=0
-                        <if test="gapAnalysis.gapAnalysisId != null">
-                            and gap_analysis_id=#{gapAnalysis.gapAnalysisId}
-                        </if>
-                        <if test="gapAnalysis.planYear != null">
-                            and plan_year=#{gapAnalysis.planYear}
-                        </if>
-                        <if test="gapAnalysis.planBusinessUnitId != null">
-                            and plan_business_unit_id=#{gapAnalysis.planBusinessUnitId}
-                        </if>
-                        <if test="gapAnalysis.businessUnitDecompose != null and gapAnalysis.businessUnitDecompose != ''">
-                            and business_unit_decompose=#{gapAnalysis.businessUnitDecompose}
-                        </if>
-                        <if test="gapAnalysis.areaId != null">
-                            and area_id=#{gapAnalysis.areaId}
-                        </if>
-                        <if test="gapAnalysis.departmentId != null">
-                            and department_id=#{gapAnalysis.departmentId}
-                        </if>
-                        <if test="gapAnalysis.productId != null">
-                            and product_id=#{gapAnalysis.productId}
-                        </if>
-                        <if test="gapAnalysis.industryId != null">
-                            and industry_id=#{gapAnalysis.industryId}
-                        </if>
-                        <if test="gapAnalysis.operateHistoryYear != null">
-                            and operate_history_year=#{gapAnalysis.operateHistoryYear}
-                        </if>
-                        <if test="gapAnalysis.deleteFlag != null">
-                            and delete_flag=#{gapAnalysis.deleteFlag}
-                        </if>
-                        <if test="gapAnalysis.createBy != null">
-                            and create_by=#{gapAnalysis.createBy}
-                        </if>
-                        <if test="gapAnalysis.createTime != null">
-                            and create_time=#{gapAnalysis.createTime}
-                        </if>
-                        <if test="gapAnalysis.updateBy != null">
-                            and update_by=#{gapAnalysis.updateBy}
-                        </if>
-                        <if test="gapAnalysis.updateTime != null">
-                            and update_time=#{gapAnalysis.updateTime}
-                        </if>
+        ga.gap_analysis_id,plan_year,
+        ga.plan_business_unit_id,
+        ga.business_unit_decompose,
+        ga.area_id,
+        ga.department_id,
+        ga.product_id,
+        ga.industry_id,
+        ga.operate_history_year,
+        ga.delete_flag,
+        ga.create_by,
+        ga.create_time,
+        ga.update_by,
+        ga.update_time,
+        pbu.business_unit_code,
+        pbu.business_unit_name
+        FROM gap_analysis ga
+        LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = ga.plan_business_unit_id
+        AND pbu.delete_flag=0
+        WHERE ga.delete_flag=0
+        <if test="gapAnalysis.gapAnalysisId != null">
+            and ga.gap_analysis_id=#{gapAnalysis.gapAnalysisId}
+        </if>
+        <if test="gapAnalysis.planYear != null">
+            and ga.plan_year=#{gapAnalysis.planYear}
+        </if>
+        <if test="gapAnalysis.planBusinessUnitId != null">
+            and ga.plan_business_unit_id=#{gapAnalysis.planBusinessUnitId}
+        </if>
+        <if test="gapAnalysis.businessUnitDecompose != null and gapAnalysis.businessUnitDecompose != ''">
+            and ga.business_unit_decompose=#{gapAnalysis.businessUnitDecompose}
+        </if>
+        <if test="gapAnalysis.areaId != null">
+            and ga.area_id=#{gapAnalysis.areaId}
+        </if>
+        <if test="gapAnalysis.departmentId != null">
+            and ga.department_id=#{gapAnalysis.departmentId}
+        </if>
+        <if test="gapAnalysis.productId != null">
+            and ga.product_id=#{gapAnalysis.productId}
+        </if>
+        <if test="gapAnalysis.industryId != null">
+            and ga.industry_id=#{gapAnalysis.industryId}
+        </if>
+        <if test="gapAnalysis.operateHistoryYear != null">
+            and ga.operate_history_year=#{gapAnalysis.operateHistoryYear}
+        </if>
+        <if test="gapAnalysis.deleteFlag != null">
+            and ga.delete_flag=#{gapAnalysis.deleteFlag}
+        </if>
+        <if test="gapAnalysis.createBy != null">
+            and ga.create_by=#{gapAnalysis.createBy}
+        </if>
+        <if test="gapAnalysis.createTime != null">
+            and ga.create_time=#{gapAnalysis.createTime}
+        </if>
+        <if test="gapAnalysis.updateBy != null">
+            and ga.update_by=#{gapAnalysis.updateBy}
+        </if>
+        <if test="gapAnalysis.updateTime != null">
+            and ga.update_time=#{gapAnalysis.updateTime}
+        </if>
+        <!--    行业编码过滤-->
+        <if test="gapAnalysis.params.planYearEqual != null and gapAnalysis.params.planYearEqual.size() > 0">
+            and ga.plan_year IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.planYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="gapAnalysis.params.planYearNotEqual != null and gapAnalysis.params.planYearNotEqual.size() > 0">
+            AND (ga.plan_year NOT IN
+            <foreach item="item"
+                     collection="gapAnalysis.params.planYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR ga.plan_year IS NULL
+            )
+        </if>
+        <if test="gapAnalysis.params.planYearBefore != null and gapAnalysis.params.planYearBefore != ''">
+            AND ga.plan_year &lt; #{gapAnalysis.params.planYearBefore}
+        </if>
+        <if test="gapAnalysis.params.planYearNotBefore != null and gapAnalysis.params.planYearNotBefore != ''"><!-- 开始时间检索 -->
+            AND ga.plan_year &gt;= #{gapAnalysis.params.planYearNotBefore}
+        </if>
+        <if test="gapAnalysis.params.planYearAfter != null and gapAnalysis.params.planYearAfter != ''"><!-- 开始时间检索 -->
+            AND ga.plan_year &gt; #{gapAnalysis.params.planYearAfter}
+        </if>
+        <if test="gapAnalysis.params.planYearNotAfter != null and gapAnalysis.params.planYearNotAfter != ''"><!-- 结束时间检索 -->
+            AND ga.plan_year &lt;= #{gapAnalysis.params.planYearNotAfter}
+        </if>
+        <if test="gapAnalysis.params.planYearStart != null and gapAnalysis.params.planYearStart != ''"><!-- 开始时间检索 -->
+            AND ga.plan_year &gt;= #{gapAnalysis.params.planYearStart}
+        </if>
+        <if test="gapAnalysis.params.planYearEnd != null and gapAnalysis.params.planYearEnd != ''"><!-- 结束时间检索 -->
+            AND ga.plan_year &lt;= #{gapAnalysis.params.planYearEnd}
+        </if>
+        <!--todo-->
+        <!--规划业务单元-->
+        <!--录入人姓名-->
+        <!--录入人工号-->
+        <!--录入日期-->
+        <!--find_in_set(hobby, ‘hobby');-->
     </select>
     <!--新增差距分析表-->
     <insert id="insertGapAnalysis" useGeneratedKeys="true" keyProperty="gapAnalysisId">
-        INSERT INTO gap_analysis (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO gap_analysis
+        (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{gapAnalysis.planYear},#{gapAnalysis.planBusinessUnitId},#{gapAnalysis.businessUnitDecompose},#{gapAnalysis.areaId},#{gapAnalysis.departmentId},#{gapAnalysis.productId},#{gapAnalysis.industryId},#{gapAnalysis.operateHistoryYear},#{gapAnalysis.deleteFlag},#{gapAnalysis.createBy},#{gapAnalysis.createTime},#{gapAnalysis.updateBy},#{gapAnalysis.updateTime})
     </insert>
@@ -85,74 +146,75 @@
     <update id="updateGapAnalysis">
         UPDATE gap_analysis
         SET
-                    <if test="gapAnalysis.planYear != null">
-                        plan_year=#{gapAnalysis.planYear},
-                    </if>
-                    <if test="gapAnalysis.planBusinessUnitId != null">
-                        plan_business_unit_id=#{gapAnalysis.planBusinessUnitId},
-                    </if>
-                    <if test="gapAnalysis.businessUnitDecompose != null and gapAnalysis.businessUnitDecompose != ''">
-                        business_unit_decompose=#{gapAnalysis.businessUnitDecompose},
-                    </if>
-                    <if test="gapAnalysis.areaId != null">
-                        area_id=#{gapAnalysis.areaId},
-                    </if>
-                    <if test="gapAnalysis.departmentId != null">
-                        department_id=#{gapAnalysis.departmentId},
-                    </if>
-                    <if test="gapAnalysis.productId != null">
-                        product_id=#{gapAnalysis.productId},
-                    </if>
-                    <if test="gapAnalysis.industryId != null">
-                        industry_id=#{gapAnalysis.industryId},
-                    </if>
-                    <if test="gapAnalysis.operateHistoryYear != null">
-                        operate_history_year=#{gapAnalysis.operateHistoryYear},
-                    </if>
-                    <if test="gapAnalysis.deleteFlag != null">
-                        delete_flag=#{gapAnalysis.deleteFlag},
-                    </if>
-                    <if test="gapAnalysis.createBy != null">
-                        create_by=#{gapAnalysis.createBy},
-                    </if>
-                    <if test="gapAnalysis.createTime != null">
-                        create_time=#{gapAnalysis.createTime},
-                    </if>
-                    <if test="gapAnalysis.updateBy != null">
-                        update_by=#{gapAnalysis.updateBy},
-                    </if>
-                    <if test="gapAnalysis.updateTime != null">
-                        update_time=#{gapAnalysis.updateTime}
-                    </if>
+        <if test="gapAnalysis.planYear != null">
+            plan_year=#{gapAnalysis.planYear},
+        </if>
+        <if test="gapAnalysis.planBusinessUnitId != null">
+            plan_business_unit_id=#{gapAnalysis.planBusinessUnitId},
+        </if>
+        <if test="gapAnalysis.businessUnitDecompose != null and gapAnalysis.businessUnitDecompose != ''">
+            business_unit_decompose=#{gapAnalysis.businessUnitDecompose},
+        </if>
+        <if test="gapAnalysis.areaId != null">
+            area_id=#{gapAnalysis.areaId},
+        </if>
+        <if test="gapAnalysis.departmentId != null">
+            department_id=#{gapAnalysis.departmentId},
+        </if>
+        <if test="gapAnalysis.productId != null">
+            product_id=#{gapAnalysis.productId},
+        </if>
+        <if test="gapAnalysis.industryId != null">
+            industry_id=#{gapAnalysis.industryId},
+        </if>
+        <if test="gapAnalysis.operateHistoryYear != null">
+            operate_history_year=#{gapAnalysis.operateHistoryYear},
+        </if>
+        <if test="gapAnalysis.deleteFlag != null">
+            delete_flag=#{gapAnalysis.deleteFlag},
+        </if>
+        <if test="gapAnalysis.createBy != null">
+            create_by=#{gapAnalysis.createBy},
+        </if>
+        <if test="gapAnalysis.createTime != null">
+            create_time=#{gapAnalysis.createTime},
+        </if>
+        <if test="gapAnalysis.updateBy != null">
+            update_by=#{gapAnalysis.updateBy},
+        </if>
+        <if test="gapAnalysis.updateTime != null">
+            update_time=#{gapAnalysis.updateTime}
+        </if>
         WHERE
-                 gap_analysis_id=#{gapAnalysis.gapAnalysisId}
+        gap_analysis_id=#{gapAnalysis.gapAnalysisId}
     </update>
     <!--逻辑删除差距分析表-->
     <update id="logicDeleteGapAnalysisByGapAnalysisId">
         UPDATE gap_analysis
-        SET     delete_flag= 1,
-                update_by=#{gapAnalysis.updateBy},
-                update_time=#{gapAnalysis.updateTime}
+        SET delete_flag= 1,
+        update_by=#{gapAnalysis.updateBy},
+        update_time=#{gapAnalysis.updateTime}
         WHERE
-                gap_analysis_id=#{gapAnalysis.gapAnalysisId}
+        gap_analysis_id=#{gapAnalysis.gapAnalysisId}
     </update>
     <!--逻辑批量删除差距分析表-->
     <update id="logicDeleteGapAnalysisByGapAnalysisIds">
         UPDATE gap_analysis
-        SET     delete_flag= 1,
-                update_by=#{updateBy},
-                update_time=#{updateTime}
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
         WHERE
-         gap_analysis_id IN
-            <foreach item="item"
-                     collection="gapAnalysisIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        gap_analysis_id IN
+        <foreach item="item"
+                 collection="gapAnalysisIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </update>
     <!--批量新增差距分析表-->
     <insert id="batchGapAnalysis">
-        INSERT INTO gap_analysis (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO gap_analysis
+        (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,operate_history_year,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="gapAnalysiss"
@@ -164,118 +226,118 @@
     <!--物理删除差距分析表-->
     <delete id="deleteGapAnalysisByGapAnalysisId">
         DELETE FROM gap_analysis
-        WHERE  gap_analysis_id=#{gapAnalysis}
+        WHERE gap_analysis_id=#{gapAnalysis}
 
     </delete>
     <!--物理批量删除差距分析表-->
     <delete id="deleteGapAnalysisByGapAnalysisIds">
         DELETE FROM gap_analysis
-        WHERE  gap_analysis_id IN
-            <foreach item="item"
-                     collection="gapAnalysisIds"
-                     index="index" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        WHERE gap_analysis_id IN
+        <foreach item="item"
+                 collection="gapAnalysisIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </delete>
     <!--批量修改差距分析表-->
     <update id="updateGapAnalysiss">
         update gap_analysis
         <trim prefix="set" suffixOverrides=",">
-                <trim prefix="plan_year=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.planYear != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.planYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="plan_business_unit_id=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.planBusinessUnitId != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.planBusinessUnitId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="business_unit_decompose=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.businessUnitDecompose}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="area_id=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.areaId != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.areaId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="department_id=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.departmentId != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.departmentId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="product_id=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.productId != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.productId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="industry_id=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.industryId != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.industryId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="operate_history_year=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.operateHistoryYear != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.operateHistoryYear}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="delete_flag=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.deleteFlag != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.deleteFlag}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_by=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.createBy != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.createBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="create_time=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.createTime != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.createTime}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_by=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.updateBy != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.updateBy}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="update_time=case" suffix="end,">
-                        <foreach collection="gapAnalysisList" item="item" index="index">
-                                <if test="item.updateTime != null">
-                                    when gap_analysis_id=#{item.gapAnalysisId} then #{item.updateTime}
-                                </if>
-                        </foreach>
-                </trim>
+            <trim prefix="plan_year=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.planYear != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.planYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_business_unit_id=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.planBusinessUnitId != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.planBusinessUnitId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_unit_decompose=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.businessUnitDecompose}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="area_id=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.areaId != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.areaId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_id=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.productId != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.productId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="industry_id=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.industryId != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.industryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operate_history_year=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.operateHistoryYear != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.operateHistoryYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="gapAnalysisList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when gap_analysis_id=#{item.gapAnalysisId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
         </trim>
         where
         <foreach collection="gapAnalysisList" separator="or" item="item" index="index">
-                    gap_analysis_id=#{item.gapAnalysisId}
+            gap_analysis_id=#{item.gapAnalysisId}
         </foreach>
     </update>
 </mapper>

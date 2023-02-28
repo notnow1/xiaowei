@@ -24,8 +24,13 @@ public class RemoteAreaFallbackFactory implements FallbackFactory<RemoteAreaServ
             }
 
             @Override
-            public R<List<AreaDTO>> getName(List<Long> areaIds, String source) {
-                return R.fail("获取区域配置失败:" + throwable.getMessage());
+            public R<List<AreaDTO>> selectAreaListByAreaIds(List<Long> areaIds, String source) {
+                return R.fail("根绝ID获取区域配置失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<AreaDTO> getById(Long areaId, String source) {
+                return R.fail("根绝ID集合获取区域配置失败:" + throwable.getMessage());
             }
         };
     }

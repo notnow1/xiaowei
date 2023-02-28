@@ -116,4 +116,20 @@ public interface IGapAnalysisOperateService {
      * @return
      */
     List<GapAnalysisOperateExcel> exportGapAnalysisOperate(GapAnalysisOperateDTO gapAnalysisOperateDTO);
+
+    /**
+     * 根据差距分析ID查询差距分析经营情况
+     *
+     * @param gapAnalysisId 差距分析ID
+     * @return List
+     */
+    List<GapAnalysisOperateDTO> selectGapAnalysisOperateByGapAnalysisId(Long gapAnalysisId);
+
+    /**
+     * 根据差距分析ID集合查询分析经营情况
+     *
+     * @param gapAnalysisIds 差距分析ID集合
+     * @return List
+     */
+    List<GapAnalysisOperateDTO> selectGapAnalysisOperateByGapAnalysisIds(List<Long> gapAnalysisIds);
 }

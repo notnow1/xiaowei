@@ -1,8 +1,8 @@
 package net.qixiaowei.operate.cloud.service.targetManager;
 
-import java.util.List;
-
 import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
+
+import java.util.List;
 
 
 /**
@@ -123,4 +123,5 @@ public interface IAreaService {
      * @return 结果
      */
     List<AreaDTO> selectAreaListByAreaIds(List<Long> areaIds);
+
 }

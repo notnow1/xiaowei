@@ -402,14 +402,14 @@
         ts.indicator_id,
         ts.target_year,
         ts.percentage,
-        ts.challenge_value,
-        ts.target_value,
-        ts.guaranteed_value,
+        IFNULL(ts.challenge_value,0) as challenge_value,
+        IFNULL(ts.target_value,0) as target_value,
+        IFNULL(ts.guaranteed_value,0) as guaranteed_value,
         ts.sort,
         tod.indicator_id,
         tom.target_outcome_id,
         tod.target_outcome_details_id,
-        tod.actual_total
+        IFNULL(tod.actual_total,0) as actual_total
         FROM target_setting ts
         LEFT JOIN target_outcome tom
         ON ts.target_year = tom.target_year

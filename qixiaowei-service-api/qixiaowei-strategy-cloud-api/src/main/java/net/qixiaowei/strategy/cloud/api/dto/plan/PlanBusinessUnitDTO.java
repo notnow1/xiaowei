@@ -74,7 +74,7 @@ public class PlanBusinessUnitDTO {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     /**
      * 更新人
@@ -83,7 +83,7 @@ public class PlanBusinessUnitDTO {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     /**
      * 租户ID
@@ -96,7 +96,7 @@ public class PlanBusinessUnitDTO {
     /**
      * 规划业务单元维度列表
      */
-    List<String> businessUnitDecomposes;
+    List<Map<String, Object>> businessUnitDecomposes;
 
 }
 

@@ -236,5 +236,27 @@ public class GapAnalysisOperateServiceImpl implements IGapAnalysisOperateService
         List<GapAnalysisOperateExcel> gapAnalysisOperateExcelList = new ArrayList<>();
         return gapAnalysisOperateExcelList;
     }
+
+    /**
+     * 根据差距分析ID查询差距分析经营情况
+     *
+     * @param gapAnalysisId 差距分析ID
+     * @return List
+     */
+    @Override
+    public List<GapAnalysisOperateDTO> selectGapAnalysisOperateByGapAnalysisId(Long gapAnalysisId) {
+        return gapAnalysisOperateMapper.selectGapAnalysisOperateByGapAnalysisId(gapAnalysisId);
+    }
+
+    /**
+     * 根据差距分析ID集合查询分析经营情况
+     *
+     * @param gapAnalysisIds 差距分析ID集合
+     * @return List
+     */
+    @Override
+    public List<GapAnalysisOperateDTO> selectGapAnalysisOperateByGapAnalysisIds(List<Long> gapAnalysisIds) {
+        return gapAnalysisOperateMapper.selectGapAnalysisOperateByGapAnalysisIds(gapAnalysisIds);
+    }
 }
 

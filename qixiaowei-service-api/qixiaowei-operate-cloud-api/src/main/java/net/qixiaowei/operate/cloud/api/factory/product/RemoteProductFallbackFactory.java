@@ -37,6 +37,11 @@ public class RemoteProductFallbackFactory implements FallbackFactory<RemoteProdu
             public R<List<ProductDTO>> getName(List<Long> decomposeDimensions, String source) {
                 return R.fail("获取产品列表失败:" + throwable.getMessage());
             }
+
+            @Override
+            public R<ProductDTO> remoteSelectById(Long productId, String source) {
+                return R.fail("根据ID查找产品信息失败:" + throwable.getMessage());
+            }
         };
     }
 }

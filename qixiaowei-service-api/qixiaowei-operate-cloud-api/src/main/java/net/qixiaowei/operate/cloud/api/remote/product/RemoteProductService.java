@@ -6,9 +6,7 @@ import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
 import net.qixiaowei.operate.cloud.api.factory.product.RemoteProductFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,4 +33,10 @@ public interface RemoteProductService {
      */
     @PostMapping("/product/getName")
     R<List<ProductDTO>> getName(@RequestBody List<Long> decomposeDimensions, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 根据ID查找产品信息
+     */
+    @GetMapping("/product/remoteSelectById")
+    R<ProductDTO> remoteSelectById(@RequestParam("productId") Long productId, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

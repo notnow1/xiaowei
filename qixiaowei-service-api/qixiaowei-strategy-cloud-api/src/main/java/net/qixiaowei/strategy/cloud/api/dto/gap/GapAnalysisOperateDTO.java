@@ -73,9 +73,9 @@ public class GapAnalysisOperateDTO {
      */
     private Integer sort;
     /**
-     * 历史年份
+     * 经营年度
      */
-    private Integer historyYear;
+    private Integer operateYear;
     /**
      * 删除标记:0未删除;1已删除
      */
@@ -111,5 +111,13 @@ public class GapAnalysisOperateDTO {
      * 差距分析经营情况表List
      */
     private List<GapAnalysisOperateDTO> gapAnalysisOperateDTOS;
+    /**
+     * 差距分析经营情况表List
+     */
+    private List<GapAnalysisOperateDTO> sonGapAnalysisOperateDTOS;
+    /**
+     * 年份
+     */
+    private Map<String, Object> operateMap;
 }
 

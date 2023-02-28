@@ -6,10 +6,7 @@ import net.qixiaowei.operate.cloud.api.dto.targetManager.AreaDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteAreaService;
 import net.qixiaowei.operate.cloud.service.targetManager.IAreaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,9 +36,19 @@ public class RemoteArea implements RemoteAreaService {
      */
     @Override
     @InnerAuth
-    @PostMapping("/getName")
-    public R<List<AreaDTO>> getName(List<Long> areaIds, String source) {
+    @PostMapping("/getByIds")
+    public R<List<AreaDTO>> selectAreaListByAreaIds(@RequestBody List<Long> areaIds, String source) {
         return R.ok(areaService.selectAreaListByAreaIds(areaIds));
+    }
+
+    /**
+     * 根据区域ID查找数据
+     */
+    @Override
+    @InnerAuth
+    @GetMapping("/getById")
+    public R<AreaDTO> getById(@RequestParam("areaId") Long areaId, String source) {
+        return R.ok(areaService.selectAreaByAreaId(areaId));
     }
 
 }

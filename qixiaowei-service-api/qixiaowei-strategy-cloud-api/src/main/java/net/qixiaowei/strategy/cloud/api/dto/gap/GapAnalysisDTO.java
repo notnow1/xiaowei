@@ -3,7 +3,6 @@ package net.qixiaowei.strategy.cloud.api.dto.gap;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import net.qixiaowei.strategy.cloud.api.dto.industry.IndustryAttractionDTO;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
@@ -44,7 +43,7 @@ public class GapAnalysisDTO {
     /**
      * ID
      */
-    @NotNull(message = "id不能为空", groups = {GapAnalysisDTO.DeleteGapAnalysisDTO.class})
+    @NotNull(message = "id不能为空", groups = {GapAnalysisDTO.DeleteGapAnalysisDTO.class, GapAnalysisDTO.UpdateGapAnalysisDTO.class})
     private Long gapAnalysisId;
     /**
      * 规划年度
@@ -57,9 +56,17 @@ public class GapAnalysisDTO {
     @NotNull(message = "规划业务单元不能为空", groups = {GapAnalysisDTO.AddGapAnalysisDTO.class})
     private Long planBusinessUnitId;
     /**
+     * 规划业务单元名称
+     */
+    private String businessUnitName;
+    /**
      * 规划业务单元维度(region,department,product,industry)
      */
     private String businessUnitDecompose;
+    /**
+     * 规划业务单元维度(region,department,product,industry)
+     */
+    private String businessUnitDecomposeName;
     /**
      * 区域ID
      */
@@ -77,6 +84,22 @@ public class GapAnalysisDTO {
      */
     private Long industryId;
     /**
+     * 区域名称
+     */
+    private String areaName;
+    /**
+     * 部门名称
+     */
+    private String departmentName;
+    /**
+     * 产品名称
+     */
+    private String productName;
+    /**
+     * 行业名称
+     */
+    private String industryName;
+    /**
      * 经营历史年份
      */
     @NotNull(message = "经营历史年份不能为空", groups = {GapAnalysisDTO.AddGapAnalysisDTO.class, GapAnalysisDTO.UpdateGapAnalysisDTO.class})
@@ -92,7 +115,7 @@ public class GapAnalysisDTO {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     /**
      * 更新人
@@ -101,13 +124,16 @@ public class GapAnalysisDTO {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     /**
      * 租户ID
      */
     private Long tenantId;
-
+    /**
+     * 规划业务单元维度列表
+     */
+    List<Map<String, Object>> businessUnitDecomposes;
     /**
      * 请求参数
      */

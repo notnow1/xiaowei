@@ -119,7 +119,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         }
         IndicatorCategoryDTO indicatorCategoryByCode = indicatorCategoryMapper.checkCodeUnique(indicatorCategoryCode);
         if (StringUtils.isNotNull(indicatorCategoryByCode)) {
-            throw new ServiceException("指标分类编码重复");
+            throw new ServiceException("指标类型编码重复");
         }
         IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
         if (StringUtils.isNotNull(indicatorCategoryByName)) {

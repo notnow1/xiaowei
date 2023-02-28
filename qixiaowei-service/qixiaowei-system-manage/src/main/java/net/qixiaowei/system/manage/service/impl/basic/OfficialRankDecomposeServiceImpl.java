@@ -192,7 +192,7 @@ public class OfficialRankDecomposeServiceImpl implements IOfficialRankDecomposeS
                 }
                 break;
             case 2:
-                R<List<AreaDTO>> listArea = areaService.getName(decomposeDimensions, SecurityConstants.INNER);
+                R<List<AreaDTO>> listArea = areaService.selectAreaListByAreaIds(decomposeDimensions, SecurityConstants.INNER);
                 if (listArea.getCode() == 200 && StringUtils.isNotEmpty(listArea.getData()) && listArea.getData().size() == decomposeDimensions.size()) {
                     for (OfficialRankDecomposeDTO officialRankDecomposeDTO : officialRankDecomposeDTOS) {
                         for (AreaDTO areaDTO : listArea.getData()) {

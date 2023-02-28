@@ -1,5 +1,6 @@
 package net.qixiaowei.strategy.cloud.service.gap;
 
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOpportunityDTO;
 
 import java.util.List;
@@ -101,4 +102,19 @@ public interface IGapAnalysisOpportunityService {
      */
     int deleteGapAnalysisOpportunityByGapAnalysisOpportunityId(Long gapAnalysisOpportunityId);
 
+    /**
+     * 根据差距分析ID查找机会差距
+     *
+     * @param gapAnalysisId 差距分析ID
+     * @return 差距分析DTO
+     */
+    List<GapAnalysisOpportunityDTO> selectGapAnalysisOpportunityByGapAnalysisId(Long gapAnalysisId);
+
+    /**
+     * 根据差距分析ID集合查找机会差距
+     *
+     * @param gapAnalysisIds 差距分析ID集合
+     * @return 差距分析DTO
+     */
+    List<GapAnalysisOpportunityDTO> selectGapAnalysisOpportunityByGapAnalysisIds(List<Long> gapAnalysisIds);
 }

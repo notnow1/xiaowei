@@ -15,10 +15,7 @@ import net.qixiaowei.strategy.cloud.service.plan.IPlanBusinessUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -93,7 +90,14 @@ public class PlanBusinessUnitServiceImpl implements IPlanBusinessUnitService {
                     }
                 });
                 businessUnitDTO.setBusinessUnitDecomposeName(businessUnitDecomposeName.substring(0, businessUnitDecomposeName.length() - 1));
-                List<String> businessUnitDecomposes = Arrays.asList(businessUnitDecompose.split(","));
+                List<String> businessUnitDecomposeNames = Arrays.asList(businessUnitDecomposeName.toString().split(";"));
+                List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
+                for (int i = 0; i < businessUnitDecomposeList.size(); i++) {
+                    Map<String, Object> businessUnitDecomposeMap = new HashMap<>();
+                    businessUnitDecomposeMap.put("label", businessUnitDecomposeNames.get(i));
+                    businessUnitDecomposeMap.put("value", businessUnitDecomposeList.get(i));
+                    businessUnitDecomposes.add(businessUnitDecomposeMap);
+                }
                 businessUnitDTO.setBusinessUnitDecomposes(businessUnitDecomposes);
             }
         }

@@ -1,8 +1,11 @@
 package net.qixiaowei.strategy.cloud.service.gap;
 
 import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisDTO;
+import net.qixiaowei.strategy.cloud.api.dto.gap.GapAnalysisOperateDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -101,4 +104,21 @@ public interface IGapAnalysisService {
      */
     int deleteGapAnalysisByGapAnalysisId(Long gapAnalysisId);
 
+    /**
+     * 定义表头模板
+     *
+     * @param operateHistoryYear 历史经营年份
+     * @param operateYear        年度
+     * @return List
+     */
+    List<List<String>> headTemplate(Integer operateHistoryYear, Integer operateYear, Map<Integer, List<String>> selectMap);
+
+    /**
+     * 解析EXCEL
+     *
+     * @param operateHistoryYear 历史经营年份
+     * @param operateYear        经营年度
+     * @param file               excel文件
+     */
+    List<GapAnalysisOperateDTO> excelParseObject(Integer operateHistoryYear, Integer operateYear, MultipartFile file);
 }

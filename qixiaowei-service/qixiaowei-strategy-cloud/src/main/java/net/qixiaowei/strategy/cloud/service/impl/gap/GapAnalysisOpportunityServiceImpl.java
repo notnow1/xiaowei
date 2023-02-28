@@ -108,6 +108,28 @@ public class GapAnalysisOpportunityServiceImpl implements IGapAnalysisOpportunit
     }
 
     /**
+     * 根据差距分析ID查找机会差距
+     *
+     * @param gapAnalysisId 差距分析ID
+     * @return List
+     */
+    @Override
+    public List<GapAnalysisOpportunityDTO> selectGapAnalysisOpportunityByGapAnalysisId(Long gapAnalysisId) {
+        return gapAnalysisOpportunityMapper.selectGapAnalysisOpportunityByGapAnalysisId(gapAnalysisId);
+    }
+
+    /**
+     * 根据差距分析ID集合查找机会差距
+     *
+     * @param gapAnalysisIds 差距分析ID集合
+     * @return 差距分析DTO
+     */
+    @Override
+    public List<GapAnalysisOpportunityDTO> selectGapAnalysisOpportunityByGapAnalysisIds(List<Long> gapAnalysisIds) {
+        return gapAnalysisOpportunityMapper.selectGapAnalysisOpportunityByGapAnalysisIds(gapAnalysisIds);
+    }
+
+    /**
      * 逻辑删除机会差距表信息
      *
      * @param gapAnalysisOpportunityDTO 机会差距表

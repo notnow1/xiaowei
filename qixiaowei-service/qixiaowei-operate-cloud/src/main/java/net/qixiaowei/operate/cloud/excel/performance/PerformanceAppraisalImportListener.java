@@ -456,7 +456,7 @@ public class PerformanceAppraisalImportListener extends AnalysisEventListener<Pe
 
     /**
      * @param performanceAppraisalObjectsDTOList 考核对象列表
-     * @param appraisalDTO
+     * @param appraisalDTO                       绩效考核
      * @return Collection
      */
     public static Collection<List<Object>> dataTemplateList(List<PerformanceAppraisalObjectsDTO> performanceAppraisalObjectsDTOList, PerformanceAppraisalDTO appraisalDTO) {

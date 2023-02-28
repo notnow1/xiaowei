@@ -1,20 +1,14 @@
 package net.qixiaowei.strategy.cloud.excel.gap;
 
 
-import net.qixiaowei.integration.common.web.domain.BaseEntity;
-import lombok.Data;
-import lombok.experimental.Accessors;
-
-import java.math.BigDecimal;
-import java.util.Date;
-
-import com.alibaba.excel.annotation.format.DateTimeFormat;
+import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.alibaba.excel.annotation.write.style.ContentRowHeight;
 import com.alibaba.excel.annotation.write.style.HeadRowHeight;
 import lombok.Data;
-import com.alibaba.excel.annotation.ExcelIgnore;
-import com.alibaba.excel.annotation.ExcelProperty;
+
+import java.math.BigDecimal;
 
 /**
  * 差距分析经营情况表
@@ -49,11 +43,11 @@ public class GapAnalysisOperateExcel {
     @ExcelProperty("指标ID")
     private Long indicatorId;
     /**
-     * 指标名称
+     * 经营年度
      */
     @ExcelIgnore
-    @ExcelProperty("指标名称")
-    private String indicatorName;
+    @ExcelProperty("经营年度")
+    private Integer operateYear;
     /**
      * 目标值
      */

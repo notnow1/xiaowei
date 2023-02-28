@@ -32,9 +32,9 @@ public class GapAnalysisOperate extends TenantEntity {
      */
      private  Long  indicatorId;
      /**
-     * 指标名称
+     * 经营年度
      */
-     private  String  indicatorName;
+     private  Integer  operateYear;
      /**
      * 目标值
      */

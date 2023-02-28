@@ -87,7 +87,7 @@ public interface IGapAnalysisPerformanceService {
     /**
      * 逻辑删除业绩差距表信息
      *
-     * @param gapAnalysisPerformanceDTO
+     * @param gapAnalysisPerformanceDTO 业绩差距DTO
      * @return 结果
      */
     int deleteGapAnalysisPerformanceByGapAnalysisPerformanceId(GapAnalysisPerformanceDTO gapAnalysisPerformanceDTO);
@@ -101,4 +101,19 @@ public interface IGapAnalysisPerformanceService {
      */
     int deleteGapAnalysisPerformanceByGapAnalysisPerformanceId(Long gapAnalysisPerformanceId);
 
+    /**
+     * 根据差距分析ID查找业绩差距
+     *
+     * @param gapAnalysisId 差距分析ID
+     * @return 业绩差距
+     */
+    List<GapAnalysisPerformanceDTO> selectGapAnalysisPerformanceByGapAnalysisId(Long gapAnalysisId);
+
+    /**
+     * 根据差距分析ID集合查找业绩差距
+     *
+     * @param gapAnalysisIds 差距分析ID集合
+     * @return 结果
+     */
+    List<GapAnalysisPerformanceDTO> selectGapAnalysisPerformanceByGapAnalysisIds(List<Long> gapAnalysisIds);
 }
