@@ -257,9 +257,10 @@ public class UserServiceImpl implements IUserService {
         String userName = userDTO.getUserName();
         String mobilePhone = userDTO.getMobilePhone();
         String email = userDTO.getEmail();
+        String avatar = userDTO.getAvatar();
         User user = new User();
         user.setUserId(userId);
-        user.setAvatar(userDTO.getAvatar());
+        user.setAvatar(fileConfig.getPathOfRemoveDomain(avatar));
         user.setEmail(email);
         user.setMobilePhone(mobilePhone);
         user.setUserName(userName);
@@ -270,8 +271,8 @@ public class UserServiceImpl implements IUserService {
         if (i > 0) {
             LoginUserVO loginUser = SecurityUtils.getLoginUser();
             loginUser.getUserDTO().setUserName(userName);
-            if (StringUtils.isNotEmpty(user.getAvatar())) {
-                loginUser.getUserDTO().setAvatar(user.getAvatar());
+            if (StringUtils.isNotEmpty(avatar)) {
+                loginUser.getUserDTO().setAvatar(avatar);
             }
             loginUser.getUserDTO().setMobilePhone(mobilePhone);
             loginUser.getUserDTO().setEmail(email);
