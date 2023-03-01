@@ -26,7 +26,7 @@ public interface MiMacroDetailMapper{
      * @param marketInsightMacroId 宏观主表主键
      * @return 市场洞察宏观详情表
      */
-    MiMacroDetailDTO selectMiMacroDetailByMarketInsightMacroId(@Param("marketInsightMacroId")Long marketInsightMacroId);
+    List<MiMacroDetailDTO> selectMiMacroDetailByMarketInsightMacroId(@Param("marketInsightMacroId")Long marketInsightMacroId);
 
 
     /**

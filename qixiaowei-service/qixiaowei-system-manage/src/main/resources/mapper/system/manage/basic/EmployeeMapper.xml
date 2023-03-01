@@ -2145,7 +2145,7 @@
             ei.emergency_mobile
         from
             employee e
-                left join user u
+                inner join user u
                            on u.employee_id = e.employee_id
                                and  u.delete_flag=0
                 left join employee_info ei
@@ -2160,8 +2160,6 @@
                 left join official_rank_system ors on p.official_rank_system_id = ors.official_rank_system_id
                 and ors.delete_flag = 0
         where e.delete_flag=0
-          and e.employment_status =0
-          and e.status =0
     </select>
 <!--    生效包含在职离职的员工-->
     <select id="getAllUseEmployee" resultType="net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO">

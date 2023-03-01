@@ -352,7 +352,7 @@
             </foreach>
     </update>
     <!--批量新增市场洞察宏观表-->
-    <insert id="batchMarketInsightMacro">
+    <insert id="batchMarketInsightMacro" useGeneratedKeys="true" keyProperty="marketInsightMacroId">
         INSERT INTO market_insight_macro (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"

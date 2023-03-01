@@ -353,7 +353,7 @@ public class EmployeeDTO implements Serializable {
     private String rankPrefixCode;
     /**
      * user 在职且有账号额度员工
-     * 状态:0失效;1生效
+     * 状态:user:生效在职有账号的员工 userAll:生效包含在职离职有账号的员工 1:生效包含在职离职的员工 不传为生效在职员工
      */
     private String  employeeFlag;
 }

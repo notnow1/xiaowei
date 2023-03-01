@@ -303,7 +303,7 @@ public interface EmployeeMapper {
     List<EmployeeDTO> getUseEmployeeUser();
 
     /**
-     * 查询离职生效的员工
+     * 生效包含在职离职有账号的员工
      * @return
      */
     List<EmployeeDTO> getUseEmployeeStatus();

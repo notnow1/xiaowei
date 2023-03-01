@@ -150,7 +150,7 @@
             </foreach>
     </update>
     <!--批量新增市场洞察宏观预估表-->
-    <insert id="batchMiMacroEstimate">
+    <insert id="batchMiMacroEstimate" useGeneratedKeys="true" keyProperty="miMacroEstimateId">
         INSERT INTO mi_macro_estimate (market_insight_macro_id,mi_macro_detail_id,plan_year,estimate_opportunity_amount,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
