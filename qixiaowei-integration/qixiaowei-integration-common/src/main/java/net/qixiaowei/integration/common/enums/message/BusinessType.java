@@ -60,6 +60,10 @@ public enum BusinessType {
     GAP_ANALYSIS(51, "差距分析"),
     MARKET_INSIGHT_MACRO(52, "市场洞察宏观"),
     BUSINESS_DESIGN(53, "业务设计"),
+    MARKET_INSIGHT_INDUSTRY(54, "市场洞察行业"),
+    MARKET_INSIGHT_CUSTOMER(55, "市场洞察客户"),
+    MARKET_INSIGHT_OPPONENT(56, "市场洞察对手"),
+    MARKET_INSIGHT_SELF(57, "市场洞察自身"),
     ;
 
 
