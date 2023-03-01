@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.businessDesign.BusinessDesignAxisConfigMapper">
+    <!--    查询业务设计轴配置表-->
+    <select id="selectBusinessDesignAxisConfigByBusinessDesignAxisConfigId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignAxisConfigDTO">
+        SELECT
+        business_design_axis_config_id,business_design_id,param_dimension,coordinate_axis,upper_value,lower_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design_axis_config
+        WHERE business_design_axis_config_id=#{businessDesignAxisConfigId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询业务设计轴配置表-->
+    <select id="selectBusinessDesignAxisConfigByBusinessDesignAxisConfigIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignAxisConfigDTO">
+        SELECT
+        business_design_axis_config_id,business_design_id,param_dimension,coordinate_axis,upper_value,lower_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design_axis_config
+        WHERE business_design_axis_config_id in
+        <foreach item="item"
+                 collection="businessDesignAxisConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询业务设计轴配置表列表-->
+    <select id="selectBusinessDesignAxisConfigList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignAxisConfigDTO">
+        SELECT
+        business_design_axis_config_id,business_design_id,param_dimension,coordinate_axis,upper_value,lower_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design_axis_config
+        WHERE delete_flag=0
+        <if test="businessDesignAxisConfig.businessDesignAxisConfigId != null">
+            and business_design_axis_config_id=#{businessDesignAxisConfig.businessDesignAxisConfigId}
+        </if>
+        <if test="businessDesignAxisConfig.businessDesignId != null">
+            and business_design_id=#{businessDesignAxisConfig.businessDesignId}
+        </if>
+        <if test="businessDesignAxisConfig.paramDimension != null">
+            and param_dimension=#{businessDesignAxisConfig.paramDimension}
+        </if>
+        <if test="businessDesignAxisConfig.coordinateAxis != null">
+            and coordinate_axis=#{businessDesignAxisConfig.coordinateAxis}
+        </if>
+        <if test="businessDesignAxisConfig.upperValue != null">
+            and upper_value=#{businessDesignAxisConfig.upperValue}
+        </if>
+        <if test="businessDesignAxisConfig.lowerValue != null">
+            and lower_value=#{businessDesignAxisConfig.lowerValue}
+        </if>
+        <if test="businessDesignAxisConfig.deleteFlag != null">
+            and delete_flag=#{businessDesignAxisConfig.deleteFlag}
+        </if>
+        <if test="businessDesignAxisConfig.createBy != null">
+            and create_by=#{businessDesignAxisConfig.createBy}
+        </if>
+        <if test="businessDesignAxisConfig.createTime != null">
+            and create_time=#{businessDesignAxisConfig.createTime}
+        </if>
+        <if test="businessDesignAxisConfig.updateBy != null">
+            and update_by=#{businessDesignAxisConfig.updateBy}
+        </if>
+        <if test="businessDesignAxisConfig.updateTime != null">
+            and update_time=#{businessDesignAxisConfig.updateTime}
+        </if>
+    </select>
+    <!--删除根据业务设计ID查找业务设计轴配置表信息-->
+    <select id="selectBusinessDesignAxisConfigByBusinessDesignId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignAxisConfigDTO">
+        SELECT
+        business_design_axis_config_id,business_design_id,param_dimension,coordinate_axis,upper_value,lower_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design_axis_config
+        WHERE delete_flag=0
+        AND business_design_id = #{businessDesignId}
+    </select>
+    <!--根据业务设计ID集合查找业务设计轴配置表信息-->
+    <select id="selectBusinessDesignAxisConfigByBusinessDesignIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignAxisConfigDTO">
+        SELECT
+        business_design_axis_config_id,business_design_id,param_dimension,coordinate_axis,upper_value,lower_value,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design_axis_config
+        WHERE delete_flag=0
+        AND business_design_id IN
+        <foreach collection="businessDesignIds" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+    <!--新增业务设计轴配置表-->
+    <insert id="insertBusinessDesignAxisConfig" useGeneratedKeys="true" keyProperty="businessDesignAxisConfigId">
+        INSERT INTO business_design_axis_config
+        (business_design_id,param_dimension,coordinate_axis,upper_value,lower_value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{businessDesignAxisConfig.businessDesignId},#{businessDesignAxisConfig.paramDimension},#{businessDesignAxisConfig.coordinateAxis},#{businessDesignAxisConfig.upperValue},#{businessDesignAxisConfig.lowerValue},#{businessDesignAxisConfig.deleteFlag},#{businessDesignAxisConfig.createBy},#{businessDesignAxisConfig.createTime},#{businessDesignAxisConfig.updateBy},#{businessDesignAxisConfig.updateTime})
+    </insert>
+    <!--修改业务设计轴配置表-->
+    <update id="updateBusinessDesignAxisConfig">
+        UPDATE business_design_axis_config
+        SET
+        <if test="businessDesignAxisConfig.businessDesignId != null">
+            business_design_id=#{businessDesignAxisConfig.businessDesignId},
+        </if>
+        <if test="businessDesignAxisConfig.paramDimension != null">
+            param_dimension=#{businessDesignAxisConfig.paramDimension},
+        </if>
+        <if test="businessDesignAxisConfig.coordinateAxis != null">
+            coordinate_axis=#{businessDesignAxisConfig.coordinateAxis},
+        </if>
+        <if test="businessDesignAxisConfig.upperValue != null">
+            upper_value=#{businessDesignAxisConfig.upperValue},
+        </if>
+        <if test="businessDesignAxisConfig.lowerValue != null">
+            lower_value=#{businessDesignAxisConfig.lowerValue},
+        </if>
+        <if test="businessDesignAxisConfig.deleteFlag != null">
+            delete_flag=#{businessDesignAxisConfig.deleteFlag},
+        </if>
+        <if test="businessDesignAxisConfig.createBy != null">
+            create_by=#{businessDesignAxisConfig.createBy},
+        </if>
+        <if test="businessDesignAxisConfig.createTime != null">
+            create_time=#{businessDesignAxisConfig.createTime},
+        </if>
+        <if test="businessDesignAxisConfig.updateBy != null">
+            update_by=#{businessDesignAxisConfig.updateBy},
+        </if>
+        <if test="businessDesignAxisConfig.updateTime != null">
+            update_time=#{businessDesignAxisConfig.updateTime}
+        </if>
+        WHERE
+        business_design_axis_config_id=#{businessDesignAxisConfig.businessDesignAxisConfigId}
+    </update>
+    <!--逻辑删除业务设计轴配置表-->
+    <update id="logicDeleteBusinessDesignAxisConfigByBusinessDesignAxisConfigId">
+        UPDATE business_design_axis_config
+        SET delete_flag= 1,
+        update_by=#{businessDesignAxisConfig.updateBy},
+        update_time=#{businessDesignAxisConfig.updateTime}
+        WHERE
+        business_design_axis_config_id=#{businessDesignAxisConfig.businessDesignAxisConfigId}
+    </update>
+    <!--逻辑批量删除业务设计轴配置表-->
+    <update id="logicDeleteBusinessDesignAxisConfigByBusinessDesignAxisConfigIds">
+        UPDATE business_design_axis_config
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        business_design_axis_config_id IN
+        <foreach item="item"
+                 collection="businessDesignAxisConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增业务设计轴配置表-->
+    <insert id="batchBusinessDesignAxisConfig">
+        INSERT INTO business_design_axis_config
+        (business_design_id,param_dimension,coordinate_axis,upper_value,lower_value,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="businessDesignAxisConfigs"
+                 separator=",">
+            (#{item.businessDesignId},#{item.paramDimension},#{item.coordinateAxis},#{item.upperValue},#{item.lowerValue},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除业务设计轴配置表-->
+    <delete id="deleteBusinessDesignAxisConfigByBusinessDesignAxisConfigId">
+        DELETE FROM business_design_axis_config
+        WHERE business_design_axis_config_id=#{businessDesignAxisConfig}
+
+    </delete>
+    <!--物理批量删除业务设计轴配置表-->
+    <delete id="deleteBusinessDesignAxisConfigByBusinessDesignAxisConfigIds">
+        DELETE FROM business_design_axis_config
+        WHERE business_design_axis_config_id IN
+        <foreach item="item"
+                 collection="businessDesignAxisConfigIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改业务设计轴配置表-->
+    <update id="updateBusinessDesignAxisConfigs">
+        update business_design_axis_config
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="business_design_id=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.businessDesignId != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then
+                        #{item.businessDesignId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="param_dimension=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.paramDimension != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then
+                        #{item.paramDimension}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="coordinate_axis=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.coordinateAxis != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then
+                        #{item.coordinateAxis}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="upper_value=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.upperValue != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then #{item.upperValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="lower_value=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.lowerValue != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then #{item.lowerValue}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="businessDesignAxisConfigList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when business_design_axis_config_id=#{item.businessDesignAxisConfigId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="businessDesignAxisConfigList" separator="or" item="item" index="index">
+            business_design_axis_config_id=#{item.businessDesignAxisConfigId}
+        </foreach>
+    </update>
+</mapper>
+
+

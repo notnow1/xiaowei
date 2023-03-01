@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.businessDesign.BusinessDesignParamMapper">
+    <!--    查询业务设计参数表-->
+    <select id="selectBusinessDesignParamByBusinessDesignParamId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO">
+        SELECT
+        business_design_param_id,business_design_id,param_dimension,param_relation_id,param_name,history_average_rate,history_weight,forecast_rate,forecast_weight,history_order_amount,history_order_weight,forecast_order_amount,forecast_order_weight,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design_param
+        WHERE business_design_param_id=#{businessDesignParamId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询业务设计参数表-->
+    <select id="selectBusinessDesignParamByBusinessDesignParamIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO">
+        SELECT
+        business_design_param_id,business_design_id,param_dimension,param_relation_id,param_name,history_average_rate,history_weight,forecast_rate,forecast_weight,history_order_amount,history_order_weight,forecast_order_amount,forecast_order_weight,sort,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design_param
+        WHERE business_design_param_id in
+        <foreach item="item"
+                 collection="businessDesignParamIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询业务设计参数表列表-->
+    <select id="selectBusinessDesignParamList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO">
+        SELECT
+        business_design_param_id,
+        business_design_id,
+        param_dimension,
+        param_relation_id,
+        param_name,
+        history_average_rate,
+        history_weight,
+        forecast_rate,
+        forecast_weight,
+        history_order_amount,
+        history_order_weight,
+        forecast_order_amount,
+        forecast_order_weight,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM business_design_param
+        WHERE delete_flag=0
+        <if test="businessDesignParam.businessDesignParamId != null">
+            and business_design_param_id=#{businessDesignParam.businessDesignParamId}
+        </if>
+        <if test="businessDesignParam.businessDesignId != null">
+            and business_design_id=#{businessDesignParam.businessDesignId}
+        </if>
+        <if test="businessDesignParam.paramDimension != null">
+            and param_dimension=#{businessDesignParam.paramDimension}
+        </if>
+        <if test="businessDesignParam.paramRelationId != null">
+            and param_relation_id=#{businessDesignParam.paramRelationId}
+        </if>
+        <if test="businessDesignParam.paramName != null and businessDesignParam.paramName != ''">
+            and param_name=#{businessDesignParam.paramName}
+        </if>
+        <if test="businessDesignParam.historyAverageRate != null">
+            and history_average_rate=#{businessDesignParam.historyAverageRate}
+        </if>
+        <if test="businessDesignParam.historyWeight != null">
+            and history_weight=#{businessDesignParam.historyWeight}
+        </if>
+        <if test="businessDesignParam.forecastRate != null">
+            and forecast_rate=#{businessDesignParam.forecastRate}
+        </if>
+        <if test="businessDesignParam.forecastWeight != null">
+            and forecast_weight=#{businessDesignParam.forecastWeight}
+        </if>
+        <if test="businessDesignParam.historyOrderAmount != null">
+            and history_order_amount=#{businessDesignParam.historyOrderAmount}
+        </if>
+        <if test="businessDesignParam.historyOrderWeight != null">
+            and history_order_weight=#{businessDesignParam.historyOrderWeight}
+        </if>
+        <if test="businessDesignParam.forecastOrderAmount != null">
+            and forecast_order_amount=#{businessDesignParam.forecastOrderAmount}
+        </if>
+        <if test="businessDesignParam.forecastOrderWeight != null">
+            and forecast_order_weight=#{businessDesignParam.forecastOrderWeight}
+        </if>
+        <if test="businessDesignParam.sort != null">
+            and sort=#{businessDesignParam.sort}
+        </if>
+        <if test="businessDesignParam.deleteFlag != null">
+            and delete_flag=#{businessDesignParam.deleteFlag}
+        </if>
+        <if test="businessDesignParam.createBy != null">
+            and create_by=#{businessDesignParam.createBy}
+        </if>
+        <if test="businessDesignParam.createTime != null">
+            and create_time=#{businessDesignParam.createTime}
+        </if>
+        <if test="businessDesignParam.updateBy != null">
+            and update_by=#{businessDesignParam.updateBy}
+        </if>
+        <if test="businessDesignParam.updateTime != null">
+            and update_time=#{businessDesignParam.updateTime}
+        </if>
+    </select>
+    <select id="selectBusinessDesignParamByBusinessDesignId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO">
+        SELECT
+        business_design_param_id,
+        business_design_id,
+        param_dimension,
+        param_relation_id,
+        param_name,
+        IFNULL(history_average_rate,0) AS history_average_rate,
+        IFNULL(history_weight, 0) as history_weight,
+        IFNULL(forecast_rate, 0) as forecast_rate,
+        IFNULL(forecast_weight, 0) as forecast_weight,
+        IFNULL(history_order_amount, 0) as history_order_amount,
+        IFNULL(history_order_weight, 0) as history_order_weight,
+        IFNULL(forecast_order_amount, 0) as forecast_order_amount,
+        IFNULL(forecast_order_weight, 0) as forecast_order_weight,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM business_design_param
+        WHERE delete_flag=0
+        AND business_design_id = #{businessDesignId}
+    </select>
+    <!--根绝业务设计ID集合查询参数信息-->
+    <select id="selectBusinessDesignParamByBusinessDesignIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignParamDTO">
+        SELECT
+        business_design_param_id,
+        business_design_id,
+        param_dimension,
+        param_relation_id,
+        param_name,
+        history_average_rate,
+        history_weight,
+        forecast_rate,
+        forecast_weight,
+        history_order_amount,
+        history_order_weight,
+        forecast_order_amount,
+        forecast_order_weight,
+        sort,
+        delete_flag,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM business_design_param
+        WHERE delete_flag=0
+        AND business_design_id
+        IN
+        <foreach collection="businessDesignIds" open="(" close=")" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+    </select>
+    <!--新增业务设计参数表-->
+    <insert id="insertBusinessDesignParam" useGeneratedKeys="true" keyProperty="businessDesignParamId">
+        INSERT INTO business_design_param
+        (business_design_id,param_dimension,param_relation_id,param_name,history_average_rate,history_weight,forecast_rate,forecast_weight,history_order_amount,history_order_weight,forecast_order_amount,forecast_order_weight,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{businessDesignParam.businessDesignId},#{businessDesignParam.paramDimension},#{businessDesignParam.paramRelationId},#{businessDesignParam.paramName},#{businessDesignParam.historyAverageRate},#{businessDesignParam.historyWeight},#{businessDesignParam.forecastRate},#{businessDesignParam.forecastWeight},#{businessDesignParam.historyOrderAmount},#{businessDesignParam.historyOrderWeight},#{businessDesignParam.forecastOrderAmount},#{businessDesignParam.forecastOrderWeight},#{businessDesignParam.sort},#{businessDesignParam.deleteFlag},#{businessDesignParam.createBy},#{businessDesignParam.createTime},#{businessDesignParam.updateBy},#{businessDesignParam.updateTime})
+    </insert>
+    <!--修改业务设计参数表-->
+    <update id="updateBusinessDesignParam">
+        UPDATE business_design_param
+        SET
+        <if test="businessDesignParam.businessDesignId != null">
+            business_design_id=#{businessDesignParam.businessDesignId},
+        </if>
+        <if test="businessDesignParam.paramDimension != null">
+            param_dimension=#{businessDesignParam.paramDimension},
+        </if>
+        <if test="businessDesignParam.paramRelationId != null">
+            param_relation_id=#{businessDesignParam.paramRelationId},
+        </if>
+        <if test="businessDesignParam.paramName != null and businessDesignParam.paramName != ''">
+            param_name=#{businessDesignParam.paramName},
+        </if>
+        <if test="businessDesignParam.historyAverageRate != null">
+            history_average_rate=#{businessDesignParam.historyAverageRate},
+        </if>
+        <if test="businessDesignParam.historyWeight != null">
+            history_weight=#{businessDesignParam.historyWeight},
+        </if>
+        <if test="businessDesignParam.forecastRate != null">
+            forecast_rate=#{businessDesignParam.forecastRate},
+        </if>
+        <if test="businessDesignParam.forecastWeight != null">
+            forecast_weight=#{businessDesignParam.forecastWeight},
+        </if>
+        <if test="businessDesignParam.historyOrderAmount != null">
+            history_order_amount=#{businessDesignParam.historyOrderAmount},
+        </if>
+        <if test="businessDesignParam.historyOrderWeight != null">
+            history_order_weight=#{businessDesignParam.historyOrderWeight},
+        </if>
+        <if test="businessDesignParam.forecastOrderAmount != null">
+            forecast_order_amount=#{businessDesignParam.forecastOrderAmount},
+        </if>
+        <if test="businessDesignParam.forecastOrderWeight != null">
+            forecast_order_weight=#{businessDesignParam.forecastOrderWeight},
+        </if>
+        <if test="businessDesignParam.sort != null">
+            sort=#{businessDesignParam.sort},
+        </if>
+        <if test="businessDesignParam.deleteFlag != null">
+            delete_flag=#{businessDesignParam.deleteFlag},
+        </if>
+        <if test="businessDesignParam.createBy != null">
+            create_by=#{businessDesignParam.createBy},
+        </if>
+        <if test="businessDesignParam.createTime != null">
+            create_time=#{businessDesignParam.createTime},
+        </if>
+        <if test="businessDesignParam.updateBy != null">
+            update_by=#{businessDesignParam.updateBy},
+        </if>
+        <if test="businessDesignParam.updateTime != null">
+            update_time=#{businessDesignParam.updateTime}
+        </if>
+        WHERE
+        business_design_param_id=#{businessDesignParam.businessDesignParamId}
+    </update>
+    <!--逻辑删除业务设计参数表-->
+    <update id="logicDeleteBusinessDesignParamByBusinessDesignParamId">
+        UPDATE business_design_param
+        SET delete_flag= 1,
+        update_by=#{businessDesignParam.updateBy},
+        update_time=#{businessDesignParam.updateTime}
+        WHERE
+        business_design_param_id=#{businessDesignParam.businessDesignParamId}
+    </update>
+    <!--逻辑批量删除业务设计参数表-->
+    <update id="logicDeleteBusinessDesignParamByBusinessDesignParamIds">
+        UPDATE business_design_param
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        business_design_param_id IN
+        <foreach item="item"
+                 collection="businessDesignParamIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增业务设计参数表-->
+    <insert id="batchBusinessDesignParam">
+        INSERT INTO business_design_param
+        (business_design_id,param_dimension,param_relation_id,param_name,history_average_rate,history_weight,forecast_rate,forecast_weight,history_order_amount,history_order_weight,forecast_order_amount,forecast_order_weight,sort,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="businessDesignParams"
+                 separator=",">
+            (#{item.businessDesignId},#{item.paramDimension},#{item.paramRelationId},#{item.paramName},#{item.historyAverageRate},#{item.historyWeight},#{item.forecastRate},#{item.forecastWeight},#{item.historyOrderAmount},#{item.historyOrderWeight},#{item.forecastOrderAmount},#{item.forecastOrderWeight},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除业务设计参数表-->
+    <delete id="deleteBusinessDesignParamByBusinessDesignParamId">
+        DELETE FROM business_design_param
+        WHERE business_design_param_id=#{businessDesignParam}
+
+    </delete>
+    <!--物理批量删除业务设计参数表-->
+    <delete id="deleteBusinessDesignParamByBusinessDesignParamIds">
+        DELETE FROM business_design_param
+        WHERE business_design_param_id IN
+        <foreach item="item"
+                 collection="businessDesignParamIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改业务设计参数表-->
+    <update id="updateBusinessDesignParams">
+        update business_design_param
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="business_design_id=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.businessDesignId != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.businessDesignId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="param_dimension=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.paramDimension != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.paramDimension}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="param_relation_id=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.paramRelationId != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.paramRelationId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="param_name=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.paramName != null and item.paramName != ''">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.paramName}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="history_average_rate=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.historyAverageRate != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.historyAverageRate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="history_weight=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.historyWeight != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.historyWeight}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="forecast_rate=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.forecastRate != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.forecastRate}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="forecast_weight=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.forecastWeight != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.forecastWeight}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="history_order_amount=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.historyOrderAmount != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.historyOrderAmount}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="history_order_weight=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.historyOrderWeight != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.historyOrderWeight}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="forecast_order_amount=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.forecastOrderAmount != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.forecastOrderAmount}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="forecast_order_weight=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.forecastOrderWeight != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.forecastOrderWeight}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="sort=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.sort != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.sort}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="businessDesignParamList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when business_design_param_id=#{item.businessDesignParamId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="businessDesignParamList" separator="or" item="item" index="index">
+            business_design_param_id=#{item.businessDesignParamId}
+        </foreach>
+    </update>
+</mapper>
+
+

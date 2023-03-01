@@ -501,7 +501,16 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         if (StringUtils.isNull(businessUnitDecompose)) {
             throw new ServiceException("规划业务单元维度数据异常 请检查规划业务单元配置");
         }
-
+        // 判断是否选择校验：region,department,product,industry,company
+        GapAnalysis gapAnalysisParams = getGapAnalysisParams(gapAnalysisDTO, businessUnitDecompose);
+        // 是否重复
+        Integer planYear = gapAnalysisById.getPlanYear();
+        gapAnalysisParams.setPlanYear(planYear);
+        gapAnalysisParams.setPlanBusinessUnitId(gapAnalysisById.getPlanBusinessUnitId());
+        List<GapAnalysisDTO> gapAnalysisDTOS = gapAnalysisMapper.selectGapAnalysisList(gapAnalysisParams);
+        if (StringUtils.isNotEmpty(gapAnalysisDTOS) && gapAnalysisId.equals(gapAnalysisDTOS.get(0).getGapAnalysisId())) {
+            throw new ServiceException("当前的规划业务单元内容重复 请重新筛选");
+        }
         GapAnalysis gapAnalysis = new GapAnalysis();
         BeanUtils.copyProperties(gapAnalysisDTO, gapAnalysis);
         gapAnalysis.setUpdateTime(DateUtils.getNowDate());

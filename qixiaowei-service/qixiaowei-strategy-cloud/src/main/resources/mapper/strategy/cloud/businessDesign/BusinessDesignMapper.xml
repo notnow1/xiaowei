@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.qixiaowei.strategy.cloud.mapper.businessDesign.BusinessDesignMapper">
+    <!--    查询业务设计表-->
+    <select id="selectBusinessDesignByBusinessDesignId"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
+        SELECT
+        business_design_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design
+        WHERE business_design_id=#{businessDesignId}
+        and delete_flag=0
+    </select>
+
+    <!--    批量查询业务设计表-->
+    <select id="selectBusinessDesignByBusinessDesignIds"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
+        SELECT
+        business_design_id,plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time
+        FROM business_design
+        WHERE business_design_id in
+        <foreach item="item"
+                 collection="businessDesignIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and delete_flag=0
+    </select>
+
+    <!--    查询业务设计表列表-->
+    <select id="selectBusinessDesignList"
+            resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
+        SELECT
+        bd.business_design_id,plan_year,
+        bd.plan_business_unit_id,
+        bd.business_unit_decompose,
+        pbu.business_unit_name,
+        pbu.business_unit_code,
+        bd.area_id,
+        bd.department_id,
+        bd.product_id,
+        bd.industry_id,
+        bd.delete_flag,
+        bd.create_by,
+        bd.create_time,
+        bd.update_by,
+        bd.update_time
+        FROM business_design bd
+        LEFT JOIN plan_business_unit pbu
+        WHERE bd.delete_flag=0
+        <if test="businessDesign.businessDesignId != null">
+            and bd.business_design_id=#{businessDesign.businessDesignId}
+        </if>
+        <if test="businessDesign.planYear != null">
+            and bd.plan_year=#{businessDesign.planYear}
+        </if>
+        <if test="businessDesign.planBusinessUnitId != null">
+            and bd.plan_business_unit_id=#{businessDesign.planBusinessUnitId}
+        </if>
+        <if test="businessDesign.businessUnitDecompose != null and businessDesign.businessUnitDecompose != ''">
+            and bd.business_unit_decompose=#{businessDesign.businessUnitDecompose}
+        </if>
+        <if test="businessDesign.areaId != null">
+            and bd.area_id=#{businessDesign.areaId}
+        </if>
+        <if test="businessDesign.departmentId != null">
+            and bd.department_id=#{businessDesign.departmentId}
+        </if>
+        <if test="businessDesign.productId != null">
+            and bd.product_id=#{businessDesign.productId}
+        </if>
+        <if test="businessDesign.industryId != null">
+            and bd.industry_id=#{businessDesign.industryId}
+        </if>
+        <if test="businessDesign.deleteFlag != null">
+            and bd.delete_flag=#{businessDesign.deleteFlag}
+        </if>
+        <if test="businessDesign.createBy != null">
+            and bd.create_by=#{businessDesign.createBy}
+        </if>
+        <if test="businessDesign.createTime != null">
+            and bd.create_time=#{businessDesign.createTime}
+        </if>
+        <if test="businessDesign.updateBy != null">
+            and bd.update_by=#{businessDesign.updateBy}
+        </if>
+        <if test="businessDesign.updateTime != null">
+            and bd.update_time=#{businessDesign.updateTime}
+        </if>
+        <!--    规划年份过滤-->
+        <if test="businessDesign.params.planYearEqual != null and businessDesign.params.planYearEqual.size() > 0">
+            and bd.plan_year IN
+            <foreach item="item"
+                     collection="businessDesign.params.planYearEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="businessDesign.params.planYearNotEqual != null and businessDesign.params.planYearNotEqual.size() > 0">
+            AND (bd.plan_year NOT IN
+            <foreach item="item"
+                     collection="businessDesign.params.planYearNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR bd.plan_year IS NULL
+            )
+        </if>
+        <if test="businessDesign.params.planYearBefore != null and businessDesign.params.planYearBefore != ''">
+            AND bd.plan_year &lt; #{businessDesign.params.planYearBefore}
+        </if>
+        <if test="businessDesign.params.planYearNotBefore != null and businessDesign.params.planYearNotBefore != ''"><!-- 开始时间检索 -->
+            AND bd.plan_year &gt;= #{businessDesign.params.planYearNotBefore}
+        </if>
+        <if test="businessDesign.params.planYearAfter != null and businessDesign.params.planYearAfter != ''"><!-- 开始时间检索 -->
+            AND bd.plan_year &gt; #{businessDesign.params.planYearAfter}
+        </if>
+        <if test="businessDesign.params.planYearNotAfter != null and businessDesign.params.planYearNotAfter != ''"><!-- 结束时间检索 -->
+            AND bd.plan_year &lt;= #{businessDesign.params.planYearNotAfter}
+        </if>
+        <if test="businessDesign.params.planYearStart != null and businessDesign.params.planYearStart != ''"><!-- 开始时间检索 -->
+            AND bd.plan_year &gt;= #{businessDesign.params.planYearStart}
+        </if>
+        <if test="businessDesign.params.planYearEnd != null and businessDesign.params.planYearEnd != ''"><!-- 结束时间检索 -->
+            AND bd.plan_year &lt;= #{businessDesign.params.planYearEnd}
+        </if>
+        <!--todo-->
+        <!--规划业务单元-->
+
+        <!--录入人姓名-->
+        <!--录入人工号-->
+        <!--录入日期-->
+    </select>
+    <!--新增业务设计表-->
+    <insert id="insertBusinessDesign" useGeneratedKeys="true" keyProperty="businessDesignId">
+        INSERT INTO business_design
+        (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        (#{businessDesign.planYear},#{businessDesign.planBusinessUnitId},#{businessDesign.businessUnitDecompose},#{businessDesign.areaId},#{businessDesign.departmentId},#{businessDesign.productId},#{businessDesign.industryId},#{businessDesign.deleteFlag},#{businessDesign.createBy},#{businessDesign.createTime},#{businessDesign.updateBy},#{businessDesign.updateTime})
+    </insert>
+    <!--修改业务设计表-->
+    <update id="updateBusinessDesign">
+        UPDATE business_design
+        SET
+        <if test="businessDesign.planYear != null">
+            plan_year=#{businessDesign.planYear},
+        </if>
+        <if test="businessDesign.planBusinessUnitId != null">
+            plan_business_unit_id=#{businessDesign.planBusinessUnitId},
+        </if>
+        <if test="businessDesign.businessUnitDecompose != null and businessDesign.businessUnitDecompose != ''">
+            business_unit_decompose=#{businessDesign.businessUnitDecompose},
+        </if>
+        <if test="businessDesign.areaId != null">
+            area_id=#{businessDesign.areaId},
+        </if>
+        <if test="businessDesign.departmentId != null">
+            department_id=#{businessDesign.departmentId},
+        </if>
+        <if test="businessDesign.productId != null">
+            product_id=#{businessDesign.productId},
+        </if>
+        <if test="businessDesign.industryId != null">
+            industry_id=#{businessDesign.industryId},
+        </if>
+        <if test="businessDesign.deleteFlag != null">
+            delete_flag=#{businessDesign.deleteFlag},
+        </if>
+        <if test="businessDesign.createBy != null">
+            create_by=#{businessDesign.createBy},
+        </if>
+        <if test="businessDesign.createTime != null">
+            create_time=#{businessDesign.createTime},
+        </if>
+        <if test="businessDesign.updateBy != null">
+            update_by=#{businessDesign.updateBy},
+        </if>
+        <if test="businessDesign.updateTime != null">
+            update_time=#{businessDesign.updateTime}
+        </if>
+        WHERE
+        business_design_id=#{businessDesign.businessDesignId}
+    </update>
+    <!--逻辑删除业务设计表-->
+    <update id="logicDeleteBusinessDesignByBusinessDesignId">
+        UPDATE business_design
+        SET delete_flag= 1,
+        update_by=#{businessDesign.updateBy},
+        update_time=#{businessDesign.updateTime}
+        WHERE
+        business_design_id=#{businessDesign.businessDesignId}
+    </update>
+    <!--逻辑批量删除业务设计表-->
+    <update id="logicDeleteBusinessDesignByBusinessDesignIds">
+        UPDATE business_design
+        SET delete_flag= 1,
+        update_by=#{updateBy},
+        update_time=#{updateTime}
+        WHERE
+        business_design_id IN
+        <foreach item="item"
+                 collection="businessDesignIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--批量新增业务设计表-->
+    <insert id="batchBusinessDesign">
+        INSERT INTO business_design
+        (plan_year,plan_business_unit_id,business_unit_decompose,area_id,department_id,product_id,industry_id,delete_flag,create_by,create_time,update_by,update_time)
+        VALUES
+        <foreach item="item" index="index"
+                 collection="businessDesigns"
+                 separator=",">
+            (#{item.planYear},#{item.planBusinessUnitId},#{item.businessUnitDecompose},#{item.areaId},#{item.departmentId},#{item.productId},#{item.industryId},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+        </foreach>
+    </insert>
+
+    <!--物理删除业务设计表-->
+    <delete id="deleteBusinessDesignByBusinessDesignId">
+        DELETE FROM business_design
+        WHERE business_design_id=#{businessDesign}
+
+    </delete>
+    <!--物理批量删除业务设计表-->
+    <delete id="deleteBusinessDesignByBusinessDesignIds">
+        DELETE FROM business_design
+        WHERE business_design_id IN
+        <foreach item="item"
+                 collection="businessDesignIds"
+                 index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <!--批量修改业务设计表-->
+    <update id="updateBusinessDesigns">
+        update business_design
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="plan_year=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.planYear != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.planYear}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="plan_business_unit_id=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.planBusinessUnitId != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.planBusinessUnitId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="business_unit_decompose=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.businessUnitDecompose != null and item.businessUnitDecompose != ''">
+                        when business_design_id=#{item.businessDesignId} then #{item.businessUnitDecompose}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="area_id=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.areaId != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.areaId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="department_id=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.departmentId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="product_id=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.productId != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.productId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="industry_id=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.industryId != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.industryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="delete_flag=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.deleteFlag != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.deleteFlag}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_by=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.createBy != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.createBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="create_time=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.createTime != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.createTime}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_by=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.updateBy != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.updateBy}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="update_time=case" suffix="end,">
+                <foreach collection="businessDesignList" item="item" index="index">
+                    <if test="item.updateTime != null">
+                        when business_design_id=#{item.businessDesignId} then #{item.updateTime}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="businessDesignList" separator="or" item="item" index="index">
+            business_design_id=#{item.businessDesignId}
+        </foreach>
+    </update>
+</mapper>
+
+
