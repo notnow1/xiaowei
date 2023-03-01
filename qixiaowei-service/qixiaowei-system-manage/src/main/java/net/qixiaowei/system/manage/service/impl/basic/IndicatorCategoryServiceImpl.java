@@ -121,7 +121,7 @@ public class IndicatorCategoryServiceImpl implements IIndicatorCategoryService {
         }
         IndicatorCategoryDTO indicatorCategoryByName = indicatorCategoryMapper.checkNameUnique(indicatorCategoryName);
         if (StringUtils.isNotNull(indicatorCategoryByName)) {
-            throw new ServiceException("指标分类名称重复");
+            throw new ServiceException("指标类型名称重复");
         }
         IndicatorCategory indicatorCategory = new IndicatorCategory();
         BeanUtils.copyProperties(indicatorCategoryDTO, indicatorCategory);

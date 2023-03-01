@@ -18,6 +18,7 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
+import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
@@ -95,17 +96,35 @@ public class IndustryServiceImpl implements IIndustryService {
 
     /**
      * 查询行业列表
+     * 行业启用：1系统；2自定义
      *
      * @param industryDTO 行业
      * @return 行业
      */
     @Override
     public List<IndustryDTO> selectIndustryList(IndustryDTO industryDTO) {
-        Industry industry = new Industry();
-        BeanUtils.copyProperties(industryDTO, industry);
-        Map<String, Object> params = industryDTO.getParams();
-        industry.setParams(params);
-        return industryMapper.selectIndustryList(industry);
+        Integer enableType = getInteger();
+        if (enableType == 2) {
+            Industry industry = new Industry();
+            BeanUtils.copyProperties(industryDTO, industry);
+            Map<String, Object> params = industryDTO.getParams();
+            industry.setParams(params);
+            return industryMapper.selectIndustryList(industry);
+        } else {
+            IndustryDefaultDTO industryDefaultDTO = new IndustryDefaultDTO();
+            BeanUtils.copyProperties(industryDTO, industryDefaultDTO);
+            List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultService.selectIndustryDefaultList(industryDefaultDTO);
+            if (StringUtils.isEmpty(industryDefaultDTOS)) {
+                return new ArrayList<>();
+            }
+            List<IndustryDTO> industryDTOList = new ArrayList<>();
+            for (IndustryDefaultDTO defaultDTO : industryDefaultDTOS) {
+                IndustryDTO industryDTO1 = new IndustryDTO();
+                BeanUtils.copyProperties(defaultDTO, industryDTO1);
+                industryDTOList.add(industryDTO1);
+            }
+            return industryDTOList;
+        }
     }
 
     /**
@@ -566,10 +585,7 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public List<Tree<Long>> getEnableList(IndustryDTO industryDTO) {
-        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
-        if (StringUtils.isNull(enableType)) {
-            throw new ServiceException("系统配置数据异常");
-        }
+        Integer enableType = getInteger();
         if (enableType == 2) {
             return selectIndustryTreeList(industryDTO);
         } else {
@@ -580,16 +596,26 @@ public class IndustryServiceImpl implements IIndustryService {
     }
 
     /**
+     * 行业启用：1系统；2自定义
+     *
+     * @return Integer
+     */
+    private Integer getInteger() {
+        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
+        if (StringUtils.isNull(enableType)) {
+            throw new ServiceException("系统配置数据异常");
+        }
+        return enableType;
+    }
+
+    /**
      * 获取启用行业类型
      *
      * @return 行业
      */
     @Override
     public IndustryDTO getEnableType(IndustryDTO industryDTO) {
-        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
-        if (StringUtils.isNull(enableType)) {
-            throw new ServiceException("系统配置数据异常");
-        }
+        Integer enableType = getInteger();
         industryDTO.setConfigValue(enableType);
         return industryDTO;
     }
