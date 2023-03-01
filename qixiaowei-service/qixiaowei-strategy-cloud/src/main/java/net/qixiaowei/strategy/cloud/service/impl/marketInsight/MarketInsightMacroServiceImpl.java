@@ -126,6 +126,12 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
                     case "createByNameNotEqual":
                         params2.put("employeeNameNotEqual", params.get("createByNameNotEqual"));
                         break;
+                    case "createByNameLike":
+                        params2.put("employeeNameLike", params.get("createByNameLike"));
+                        break;
+                    case "createByNameNotLike":
+                        params2.put("employeeNameNotLike", params.get("createByNameNotLike"));
+                        break;
                     default:
                         break;
                 }

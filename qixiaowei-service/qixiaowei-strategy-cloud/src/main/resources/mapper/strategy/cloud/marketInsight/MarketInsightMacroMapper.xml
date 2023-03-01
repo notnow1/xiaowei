@@ -170,39 +170,73 @@
                 #{item}
             </foreach>
         </if>
-        <!-- 创建人过滤  -->
+        <!-- 创建人等于过滤  -->
         <if test="marketInsightMacro.params.createByNameEqual != null">
-            <!-- 创建人过滤  -->
+            <!-- 创建人等于过滤  -->
             <if test="marketInsightMacro.params.createBys != null and marketInsightMacro.params.createBys.size() > 0">
-                AND si.create_by IN
+                AND mim.create_by IN
                 <foreach item="item"
                          collection="marketInsightMacro.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
-            <!-- 创建人过滤  -->
+            <!-- 创建人等于过滤  -->
             <if test="marketInsightMacro.params.createBys == null">
-                AND  (si.create_by ='' or si.create_by is null)
+                AND  (mim.create_by ='' or mim.create_by is null)
             </if>
         </if>
-        <!-- 创建人过滤  -->
+        <!-- 创建人不等于过滤  -->
         <if test=" marketInsightMacro.params.createByNameNotEqual != null">
-            <!-- 创建人过滤  -->
+            <!-- 创建人不等于过滤  -->
             <if test="marketInsightMacro.params.createBys != null and marketInsightMacro.params.createBys.size() > 0">
-                AND (si.create_by IN
+                AND (mim.create_by IN
                 <foreach item="item"
                          collection="marketInsightMacro.params.createBys"
                          index="index" open="(" separator="," close=")">
                     #{item}
-                </foreach> or (si.create_by ='' or si.create_by is null))
+                </foreach> or (mim.create_by ='' or mim.create_by is null))
             </if>
 
-            <!-- 创建人过滤  -->
+            <!-- 创建人不等于过滤  -->
             <if test="marketInsightMacro.params.createBys == null">
-                AND  (si.create_by ='' or si.create_by is null)
+                AND  (mim.create_by ='' or mim.create_by is null)
             </if>
         </if>
+        <!-- 创建人包含过滤  -->
+        <if test="marketInsightMacro.params.createByNameLike != null">
+            <!-- 创建人包含过滤  -->
+            <if test="marketInsightMacro.params.createBys != null and marketInsightMacro.params.createBys.size() > 0">
+                AND mim.create_by IN
+                <foreach item="item"
+                         collection="marketInsightMacro.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!-- 创建人包含过滤  -->
+            <if test="marketInsightMacro.params.createBys == null">
+                AND  (mim.create_by ='' or mim.create_by is null)
+            </if>
+        </if>
+        <!-- 创建人不包含过滤  -->
+        <if test=" marketInsightMacro.params.createByNameNotLike != null">
+            <!-- 创建人不包含过滤  -->
+            <if test="marketInsightMacro.params.createBys != null and marketInsightMacro.params.createBys.size() > 0">
+                AND (mim.create_by IN
+                <foreach item="item"
+                         collection="marketInsightMacro.params.createBys"
+                         index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach> or (mim.create_by ='' or mim.create_by is null))
+            </if>
+
+            <!-- 创建人不包含过滤  -->
+            <if test="marketInsightMacro.params.createBys == null">
+                AND  (mim.create_by ='' or mim.create_by is null)
+            </if>
+        </if>
+
         <!-- 创建时间过滤  -->
         <if test="marketInsightMacro.params.createTimeEqual != null and marketInsightMacro.params.createTimeEqual.size() > 0">
             AND mim.create_time IN
