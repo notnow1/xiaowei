@@ -38,7 +38,7 @@
     <!--    查询奖金预算表列表-->
     <select id="selectBonusBudgetList" resultType="net.qixiaowei.operate.cloud.api.dto.bonus.BonusBudgetDTO">
         SELECT
-        bonus_budget_id, budget_year, amount_bonus_budget, amount_wage_budget as basicWageBonusBudget,bonus_before_one,
+        bonus_budget_id, budget_year, amount_bonus_budget, amount_wage_budget,amount_wage_budget as basicWageBonusBudget,bonus_before_one,
         delete_flag, create_by, create_time, update_by, update_time
         FROM bonus_budget
         WHERE delete_flag=0
