@@ -5,7 +5,7 @@
     <select id="selectStrategyIntentOperateByStrategyIntentOperateId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
         SELECT
-        strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        strategy_intent_operate_id,strategy_intent_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_intent_operate
         WHERE  strategy_intent_operate_id=#{strategyIntentOperateId}
         and delete_flag=0
@@ -15,7 +15,7 @@
     <select id="selectStrategyIntentOperateByStrategyIntentOperateIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
         SELECT
-        strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        strategy_intent_operate_id,strategy_intent_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_intent_operate
         WHERE  strategy_intent_operate_id in
             <foreach item="item"
@@ -29,7 +29,7 @@
     <!--    查询战略意图经营表列表-->
     <select id="selectStrategyIntentOperateList" resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
         SELECT
-        strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        strategy_intent_operate_id,strategy_intent_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_intent_operate
         WHERE delete_flag=0
                         <if test="strategyIntentOperate.strategyIntentOperateId != null">
@@ -40,9 +40,6 @@
                         </if>
                         <if test="strategyIntentOperate.indicatorId != null">
                             and indicator_id=#{strategyIntentOperate.indicatorId}
-                        </if>
-                        <if test="strategyIntentOperate.indicatorName != null and strategyIntentOperate.indicatorName != ''">
-                            and indicator_name=#{strategyIntentOperate.indicatorName}
                         </if>
                         <if test="strategyIntentOperate.operateYear != null">
                             and operate_year=#{strategyIntentOperate.operateYear}
@@ -73,7 +70,7 @@
     <select id="selectStrategyIntentOperateByStrategyIntentId"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
         SELECT
-            strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+            strategy_intent_operate_id,strategy_intent_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_intent_operate
         WHERE  strategy_intent_id=#{strategyIntentId}
           and delete_flag=0
@@ -83,7 +80,7 @@
     <select id="selectStrategyIntentOperateByStrategyIntentIds"
             resultType="net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentOperateDTO">
         SELECT
-        strategy_intent_operate_id,strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
+        strategy_intent_operate_id,strategy_intent_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time
         FROM strategy_intent_operate
         WHERE  strategy_intent_id in
         <foreach item="item"
@@ -96,7 +93,7 @@
     </select>
     <!--新增战略意图经营表-->
     <insert id="insertStrategyIntentOperate" useGeneratedKeys="true" keyProperty="strategyIntentOperateId">
-        INSERT INTO strategy_intent_operate (strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO strategy_intent_operate (strategy_intent_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         (#{strategyIntentOperate.strategyIntentId},#{strategyIntentOperate.indicatorId},#{strategyIntentOperate.indicatorName},#{strategyIntentOperate.operateYear},#{strategyIntentOperate.operateValue},#{strategyIntentOperate.sort},#{strategyIntentOperate.deleteFlag},#{strategyIntentOperate.createBy},#{strategyIntentOperate.createTime},#{strategyIntentOperate.updateBy},#{strategyIntentOperate.updateTime})
     </insert>
@@ -109,9 +106,6 @@
                     </if>
                     <if test="strategyIntentOperate.indicatorId != null">
                         indicator_id=#{strategyIntentOperate.indicatorId},
-                    </if>
-                    <if test="strategyIntentOperate.indicatorName != null and strategyIntentOperate.indicatorName != ''">
-                        indicator_name=#{strategyIntentOperate.indicatorName},
                     </if>
                     <if test="strategyIntentOperate.operateYear != null">
                         operate_year=#{strategyIntentOperate.operateYear},
@@ -165,7 +159,7 @@
     </update>
     <!--批量新增战略意图经营表-->
     <insert id="batchStrategyIntentOperate">
-        INSERT INTO strategy_intent_operate (strategy_intent_id,indicator_id,indicator_name,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
+        INSERT INTO strategy_intent_operate (strategy_intent_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
         <foreach item="item" index="index"
                  collection="strategyIntentOperates"
@@ -205,13 +199,6 @@
                         <foreach collection="strategyIntentOperateList" item="item" index="index">
                                 <if test="item.indicatorId != null">
                                     when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.indicatorId}
-                                </if>
-                        </foreach>
-                </trim>
-                <trim prefix="indicator_name=case" suffix="end,">
-                        <foreach collection="strategyIntentOperateList" item="item" index="index">
-                                <if test="item.indicatorName != null and item.indicatorName != ''">
-                                    when strategy_intent_operate_id=#{item.strategyIntentOperateId} then #{item.indicatorName}
                                 </if>
                         </foreach>
                 </trim>

@@ -17,8 +17,10 @@ import net.qixiaowei.strategy.cloud.mapper.strategyIntent.StrategyIntentMapper;
 import net.qixiaowei.strategy.cloud.mapper.strategyIntent.StrategyIntentOperateMapper;
 import net.qixiaowei.strategy.cloud.service.strategyIntent.IStrategyIntentService;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
+import net.qixiaowei.system.manage.api.dto.basic.IndicatorDTO;
 import net.qixiaowei.system.manage.api.dto.user.UserDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
+import net.qixiaowei.system.manage.api.remote.basic.RemoteIndicatorService;
 import net.qixiaowei.system.manage.api.remote.user.RemoteUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,8 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
     private RemoteUserService remoteUserService;
     @Autowired
     private RemoteEmployeeService remoteEmployeeService;
+    @Autowired
+    private RemoteIndicatorService remoteIndicatorService;
 
     /**
      * 查询战略意图表
@@ -63,6 +67,22 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
         //数据库存在数据
         List<StrategyIntentOperateDTO> strategyIntentOperateDTOS = strategyIntentOperateMapperr.selectStrategyIntentOperateByStrategyIntentId(strategyIntentId);
         if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)) {
+            List<Long> indicatorIds = strategyIntentOperateDTOS.stream().filter(f -> null != f.getIndicatorId()).map(StrategyIntentOperateDTO::getIndicatorId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(indicatorIds)){
+                R<List<IndicatorDTO>> IndicatorDTOList = remoteIndicatorService.selectIndicatorByIds(indicatorIds, SecurityConstants.INNER);
+                List<IndicatorDTO> data = IndicatorDTOList.getData();
+                if (StringUtils.isNotEmpty(data)){
+                    for (StrategyIntentOperateDTO strategyIntentOperateDTO : strategyIntentOperateDTOS) {
+                        for (IndicatorDTO datum : data) {
+                            if (strategyIntentOperateDTO.getIndicatorId().equals(datum.getIndicatorId())){
+                                strategyIntentOperateDTO.setIndicatorName(datum.getIndicatorName());
+                                strategyIntentOperateDTO.setIndicatorValueType(datum.getIndicatorValueType());
+                            }
+                        }
+                    }
+                }
+            }
+
             Map<Long, List<StrategyIntentOperateDTO>> indicatorMap = strategyIntentOperateDTOS.parallelStream().filter(f -> f.getIndicatorId() != null).collect(Collectors.groupingBy(StrategyIntentOperateDTO::getIndicatorId));
             for (Long key : indicatorMap.keySet()) {
                 StrategyIntentOperateDTO strategyIntentOperateDTOData = new StrategyIntentOperateDTO();
@@ -217,8 +237,6 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                         strategyIntentOperate.setSort(i);
                         //指标id
                         strategyIntentOperate.setIndicatorId(strategyIntentOperateDTO.getIndicatorId());
-                        //指标名称
-                        strategyIntentOperate.setIndicatorName(strategyIntentOperateDTO.getIndicatorName());
                         //经营年度
                         strategyIntentOperate.setOperateYear(operateYear);
                         //经营值

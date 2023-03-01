@@ -10,7 +10,6 @@ import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiMacroDetail;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MiMacroEstimate;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroDetailDTO;
 import net.qixiaowei.strategy.cloud.api.dto.marketInsight.MiMacroEstimateDTO;
-import net.qixiaowei.strategy.cloud.api.dto.strategyIntent.StrategyIntentDTO;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiMacroDetailMapper;
 import net.qixiaowei.strategy.cloud.mapper.marketInsight.MiMacroEstimateMapper;
 import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
 import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.strategy.cloud.api.domain.marketInsight.MarketInsightMacro;
 import net.qixiaowei.strategy.cloud.excel.marketInsight.MarketInsightMacroExcel;
@@ -160,6 +158,12 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
      */
     @Override
     public MarketInsightMacroDTO insertMarketInsightMacro(MarketInsightMacroDTO marketInsightMacroDTO) {
+        MarketInsightMacro marketInsightMacroValidated = new MarketInsightMacro();
+        BeanUtils.copyProperties(marketInsightMacroDTO, marketInsightMacroValidated);
+        List<MarketInsightMacroDTO> marketInsightMacroDTOS = marketInsightMacroMapper.selectMarketInsightMacroList(marketInsightMacroValidated);
+        if (StringUtils.isNotEmpty(marketInsightMacroDTOS)){
+            throw new ServiceException("已存在该年份和规划业务单元数据！请重新输入！");
+        }
         //前端传入市场洞察宏观详情表集合
         List<MiMacroDetailDTO> miMacroDetailDTOS = marketInsightMacroDTO.getMiMacroDetailDTOS();
         List<MiMacroDetail> miMacroDetailList = new ArrayList<>();
@@ -234,11 +238,158 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
      */
     @Override
     public int updateMarketInsightMacro(MarketInsightMacroDTO marketInsightMacroDTO) {
+        int i = 0;
+        //前台传入市场洞察宏观详情集合
+        List<MiMacroDetailDTO> miMacroDetailDTOS = marketInsightMacroDTO.getMiMacroDetailDTOS();
+        //新增市场洞察宏观详情集合
+        List<MiMacroDetail> miMacroDetailAddList = new ArrayList<>();
+        //修改市场洞察宏观详情集合
+        List<MiMacroDetail> miMacroDetailUpdateList = new ArrayList<>();
+        //新增市场洞察宏观预估集合
+        List<MiMacroEstimate> miMacroEstimateAddList = new ArrayList<>();
+        //修改市场洞察宏观预估集合
+        List<MiMacroEstimate> miMacroEstimateUpdateList = new ArrayList<>();
+
         MarketInsightMacro marketInsightMacro = new MarketInsightMacro();
         BeanUtils.copyProperties(marketInsightMacroDTO, marketInsightMacro);
         marketInsightMacro.setUpdateTime(DateUtils.getNowDate());
         marketInsightMacro.setUpdateBy(SecurityUtils.getUserId());
-        return marketInsightMacroMapper.updateMarketInsightMacro(marketInsightMacro);
+        try {
+            i = marketInsightMacroMapper.updateMarketInsightMacro(marketInsightMacro);
+        } catch (Exception e) {
+            throw new ServiceException("修改市场洞察宏观失败");
+        }
+        List<MiMacroDetailDTO> miMacroDetailListData = miMacroDetailMapper.selectMiMacroDetailByMarketInsightMacroId(marketInsightMacro.getMarketInsightMacroId());
+        if (StringUtils.isNotEmpty(miMacroDetailListData)){
+            List<Long> miMacroDetailIds = new ArrayList<>();
+            if (StringUtils.isNotEmpty(miMacroDetailDTOS)){
+                //sterm流求差集
+                miMacroDetailIds = miMacroDetailListData.stream().filter(a ->
+                        !miMacroDetailDTOS.stream().map(MiMacroDetailDTO::getMiMacroDetailId).collect(Collectors.toList()).contains(a.getMiMacroDetailId())
+                ).collect(Collectors.toList()).stream().map(MiMacroDetailDTO::getMiMacroDetailId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(miMacroDetailIds)){
+                    try {
+                        miMacroDetailMapper.logicDeleteMiMacroDetailByMiMacroDetailIds(miMacroDetailIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                    } catch (Exception e) {
+                        throw new ServiceException("逻辑批量删除市场洞察宏观详情失败");
+                    }
+                    //根据市场洞察宏观详情表主键集合批量查询市场洞察宏观预估表
+                    List<MiMacroEstimateDTO> miMacroEstimateDTOS = miMacroEstimateMapper.selectMiMacroEstimateByMiMacroDetailIds(miMacroDetailIds);
+                    if (StringUtils.isNotEmpty(miMacroEstimateDTOS)){
+                        List<Long> miMacroEstimateIds = miMacroEstimateDTOS.stream().map(MiMacroEstimateDTO::getMiMacroEstimateId).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(miMacroEstimateIds)){
+                            miMacroEstimateMapper.logicDeleteMiMacroEstimateByMiMacroEstimateIds(miMacroEstimateIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                        }
+                    }
+                }
+                //批量修改新增市场洞察宏观详情
+                this.packMiMacroDetailAll(miMacroDetailDTOS, miMacroDetailAddList, miMacroDetailUpdateList, marketInsightMacro);
+                for (MiMacroDetailDTO miMacroDetailDTO : miMacroDetailDTOS) {
+                    List<Long> miMacroEstimateIds = new ArrayList<>();
+                    Long miMacroDetailId = miMacroDetailDTO.getMiMacroDetailId();
+                    //传入市场洞察宏观预估集合
+                    List<MiMacroEstimateDTO> miMacroEstimateDTOS = miMacroDetailDTO.getMiMacroEstimateDTOS();
+                    if (null != miMacroDetailId){
+                        List<MiMacroEstimateDTO> miMacroEstimateListData = new ArrayList<>();
+                         miMacroEstimateListData = miMacroEstimateMapper.selectMiMacroEstimateByMiMacroDetailId(miMacroDetailId);
+                        if (StringUtils.isNotEmpty(miMacroEstimateDTOS)){
+                            if (StringUtils.isNotEmpty(miMacroEstimateListData)){
+                                //sterm流求差集
+                                miMacroEstimateIds= miMacroEstimateListData.stream().filter(a ->
+                                        !miMacroEstimateDTOS.stream().map(MiMacroEstimateDTO::getMiMacroEstimateId).collect(Collectors.toList()).contains(a.getMiMacroEstimateId())
+                                ).collect(Collectors.toList()).stream().map(MiMacroEstimateDTO::getMiMacroEstimateId).collect(Collectors.toList());
+                                if (StringUtils.isNotEmpty(miMacroEstimateIds)){
+                                    miMacroEstimateMapper.logicDeleteMiMacroEstimateByMiMacroEstimateIds(miMacroEstimateIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                                }
+                            }
+                        }else {
+
+                        }
+                    }else {
+                        if (StringUtils.isNotEmpty(miMacroEstimateDTOS)){
+                            for (MiMacroEstimateDTO miMacroEstimateDTO : miMacroEstimateDTOS) {
+                                MiMacroEstimate miMacroEstimate = new MiMacroEstimate();
+                                BeanUtils.copyProperties(miMacroEstimateDTO,miMacroEstimate);
+
+                                miMacroEstimate.setMarketInsightMacroId(marketInsightMacro.getMarketInsightMacroId());
+                                miMacroEstimate.setCreateBy(SecurityUtils.getUserId());
+                                miMacroEstimate.setCreateTime(DateUtils.getNowDate());
+                                miMacroEstimate.setUpdateTime(DateUtils.getNowDate());
+                                miMacroEstimate.setUpdateBy(SecurityUtils.getUserId());
+                                miMacroEstimate.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                            }
+                        }
+                    }
+                }
+            }else {
+                miMacroDetailIds = miMacroDetailListData.stream().map(MiMacroDetailDTO::getMiMacroDetailId).collect(Collectors.toList());
+                if (StringUtils.isNotEmpty(miMacroDetailIds)){
+                    try {
+                        miMacroDetailMapper.logicDeleteMiMacroDetailByMiMacroDetailIds(miMacroDetailIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                    } catch (Exception e) {
+                        throw new ServiceException("逻辑批量删除市场洞察宏观详情失败");
+                    }
+                    //根据市场洞察宏观详情表主键集合批量查询市场洞察宏观预估表
+                    List<MiMacroEstimateDTO> miMacroEstimateDTOS = miMacroEstimateMapper.selectMiMacroEstimateByMiMacroDetailIds(miMacroDetailIds);
+                    if (StringUtils.isNotEmpty(miMacroEstimateDTOS)){
+                        List<Long> miMacroEstimateIds = miMacroEstimateDTOS.stream().map(MiMacroEstimateDTO::getMiMacroEstimateId).collect(Collectors.toList());
+                        if (StringUtils.isNotEmpty(miMacroEstimateIds)){
+                            miMacroEstimateMapper.logicDeleteMiMacroEstimateByMiMacroEstimateIds(miMacroEstimateIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
+                        }
+                    }
+                }
+            }
+
+
+        }else {
+
+        }
+        return i;
+    }
+
+    /**
+     * 批量修改新增市场洞察宏观详情
+     * @param miMacroDetailDTOS
+     * @param miMacroDetailAddList
+     * @param miMacroDetailUpdateList
+     * @param marketInsightMacro
+     */
+    private void packMiMacroDetailAll(List<MiMacroDetailDTO> miMacroDetailDTOS, List<MiMacroDetail> miMacroDetailAddList, List<MiMacroDetail> miMacroDetailUpdateList, MarketInsightMacro marketInsightMacro) {
+        for (MiMacroDetailDTO miMacroDetailDTO : miMacroDetailDTOS) {
+            Long miMacroDetailId = miMacroDetailDTO.getMiMacroDetailId();
+            if (StringUtils.isNotNull(miMacroDetailId)){
+                MiMacroDetail miMacroDetail = new MiMacroDetail();
+                BeanUtils.copyProperties(miMacroDetailDTO,miMacroDetail);
+                miMacroDetail.setUpdateBy(SecurityUtils.getUserId());
+                miMacroDetail.setUpdateTime(DateUtils.getNowDate());
+                miMacroDetailUpdateList.add(miMacroDetail);
+            }else {
+                MiMacroDetail miMacroDetail = new MiMacroDetail();
+                BeanUtils.copyProperties(miMacroDetailDTO,miMacroDetail);
+                miMacroDetail.setMarketInsightMacroId(marketInsightMacro.getMarketInsightMacroId());
+                miMacroDetail.setCreateBy(SecurityUtils.getUserId());
+                miMacroDetail.setCreateTime(DateUtils.getNowDate());
+                miMacroDetail.setUpdateTime(DateUtils.getNowDate());
+                miMacroDetail.setUpdateBy(SecurityUtils.getUserId());
+                miMacroDetail.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+                miMacroDetailAddList.add(miMacroDetail);
+            }
+        }
+
+        if (StringUtils.isNotEmpty(miMacroDetailAddList)){
+            try {
+                miMacroDetailMapper.batchMiMacroDetail(miMacroDetailAddList);
+            } catch (Exception e) {
+                throw new ServiceException("批量新增市场洞察宏观详情失败");
+            }
+        }
+        if (StringUtils.isNotEmpty(miMacroDetailUpdateList)){
+            try {
+                miMacroDetailMapper.updateMiMacroDetails(miMacroDetailAddList);
+            } catch (Exception e) {
+                throw new ServiceException("批量修改市场洞察宏观详情失败");
+            }
+        }
     }
 
     /**

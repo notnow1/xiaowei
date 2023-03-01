@@ -70,6 +70,10 @@ public class StrategyIntentOperateDTO {
     */
     private  Integer deleteFlag;
     /**
+     * 指标值类型:1金额;2比率
+     */
+    private Integer indicatorValueType;
+    /**
     * 创建人
     */
     private  Long createBy;
