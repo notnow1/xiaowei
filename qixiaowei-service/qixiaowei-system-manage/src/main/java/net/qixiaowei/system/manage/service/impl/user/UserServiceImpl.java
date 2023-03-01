@@ -129,6 +129,8 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isNull(userDTO)) {
             throw new ServiceException("您输入的账号或密码有误，请重新输入。");
         }
+        userDTO.setAvatar(this.convertToFullFilePath(userDTO.getAvatar()));
+        userDTO.setTenantLogo(this.convertToFullFilePath(userDTO.getTenantLogo()));
         //角色集合
         Set<String> roles = userRoleService.getRoleCodes(userDTO);
         //权限集合
@@ -149,6 +151,8 @@ public class UserServiceImpl implements IUserService {
         if (StringUtils.isNull(userDTO)) {
             throw new ServiceException("用户不存在");
         }
+        userDTO.setAvatar(this.convertToFullFilePath(userDTO.getAvatar()));
+        userDTO.setTenantLogo(this.convertToFullFilePath(userDTO.getTenantLogo()));
         //角色集合
         Set<String> roles = userRoleService.getRoleCodes(userDTO);
         //权限集合
@@ -257,9 +261,10 @@ public class UserServiceImpl implements IUserService {
         String userName = userDTO.getUserName();
         String mobilePhone = userDTO.getMobilePhone();
         String email = userDTO.getEmail();
+        String avatar = userDTO.getAvatar();
         User user = new User();
         user.setUserId(userId);
-        user.setAvatar(userDTO.getAvatar());
+        user.setAvatar(fileConfig.getPathOfRemoveDomain(avatar));
         user.setEmail(email);
         user.setMobilePhone(mobilePhone);
         user.setUserName(userName);
@@ -270,8 +275,8 @@ public class UserServiceImpl implements IUserService {
         if (i > 0) {
             LoginUserVO loginUser = SecurityUtils.getLoginUser();
             loginUser.getUserDTO().setUserName(userName);
-            if (StringUtils.isNotEmpty(user.getAvatar())) {
-                loginUser.getUserDTO().setAvatar(user.getAvatar());
+            if (StringUtils.isNotEmpty(avatar)) {
+                loginUser.getUserDTO().setAvatar(avatar);
             }
             loginUser.getUserDTO().setMobilePhone(mobilePhone);
             loginUser.getUserDTO().setEmail(email);
@@ -812,6 +817,17 @@ public class UserServiceImpl implements IUserService {
         Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
         UserDTO info = userMapper.checkEmailUnique(user.getEmail());
         return StringUtils.isNull(info) || info.getUserId().equals(userId);
+    }
+
+    /**
+     * @description: 将文件路径处理为全路径
+     * @Author: hzk
+     * @date: 2023/3/1 13:53
+     * @param: [oldFilePath]
+     * @return: java.lang.String
+     **/
+    private String convertToFullFilePath(String oldFilePath) {
+        return fileConfig.getFullDomain(oldFilePath);
     }
 }
 

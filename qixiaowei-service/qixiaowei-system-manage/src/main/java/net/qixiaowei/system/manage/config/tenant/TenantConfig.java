@@ -22,7 +22,7 @@ public class TenantConfig {
     /**
      * 租户的主域名
      */
-    @Value("${tenant.mainDomain:qixiaowei.net}")
+    @Value("${tenant.mainDomain:zenglve.com}")
     private String mainDomain;
 
     /**
