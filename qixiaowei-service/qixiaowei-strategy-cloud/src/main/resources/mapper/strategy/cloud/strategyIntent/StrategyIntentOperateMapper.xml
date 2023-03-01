@@ -95,7 +95,7 @@
     <insert id="insertStrategyIntentOperate" useGeneratedKeys="true" keyProperty="strategyIntentOperateId">
         INSERT INTO strategy_intent_operate (strategy_intent_id,indicator_id,operate_year,operate_value,sort,delete_flag,create_by,create_time,update_by,update_time)
         VALUES
-        (#{strategyIntentOperate.strategyIntentId},#{strategyIntentOperate.indicatorId},#{strategyIntentOperate.indicatorName},#{strategyIntentOperate.operateYear},#{strategyIntentOperate.operateValue},#{strategyIntentOperate.sort},#{strategyIntentOperate.deleteFlag},#{strategyIntentOperate.createBy},#{strategyIntentOperate.createTime},#{strategyIntentOperate.updateBy},#{strategyIntentOperate.updateTime})
+        (#{strategyIntentOperate.strategyIntentId},#{strategyIntentOperate.indicatorId},#{strategyIntentOperate.operateYear},#{strategyIntentOperate.operateValue},#{strategyIntentOperate.sort},#{strategyIntentOperate.deleteFlag},#{strategyIntentOperate.createBy},#{strategyIntentOperate.createTime},#{strategyIntentOperate.updateBy},#{strategyIntentOperate.updateTime})
     </insert>
     <!--修改战略意图经营表-->
     <update id="updateStrategyIntentOperate">
@@ -164,7 +164,7 @@
         <foreach item="item" index="index"
                  collection="strategyIntentOperates"
                  separator=",">
-            (#{item.strategyIntentId},#{item.indicatorId},#{item.indicatorName},#{item.operateYear},#{item.operateValue},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
+            (#{item.strategyIntentId},#{item.indicatorId},#{item.operateYear},#{item.operateValue},#{item.sort},#{item.deleteFlag},#{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime})
         </foreach>
     </insert>
 

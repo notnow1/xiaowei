@@ -165,9 +165,9 @@ public class TargetOutcomeController extends BaseController {
      */
     //@RequiresPermissions("operate:cloud:targetOutcome:getResultIndicator")
     @PostMapping("/getResultIndicator")
-    public AjaxResult getResultIndicator(@RequestBody StrategyIntentOperateVO strategyIntentOperateVO)
+    public AjaxResult getResultIndicator(@RequestBody List<StrategyIntentOperateVO> strategyIntentOperateVOS)
     {
-        return AjaxResult.success(targetOutcomeService.getResultIndicator(strategyIntentOperateVO));
+        return AjaxResult.success(targetOutcomeService.getResultIndicator(strategyIntentOperateVOS));
     }
 
 }

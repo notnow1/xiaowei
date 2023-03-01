@@ -782,57 +782,67 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
 
     /**
      * 战略云获取指标实际值
-     * @param strategyIntentOperateVO
+     *
+     * @param strategyIntentOperateVOS
      * @return
      */
     @Override
-    public List<StrategyIntentOperateVO> getResultIndicator(StrategyIntentOperateVO  strategyIntentOperateVO) {
-        List<StrategyIntentOperateVO> strategyIntentOperateVOArrayList = new ArrayList<>();
-        List<Long> indicatorIds = strategyIntentOperateVO.getIndicatorIds();
-        List<String> targetYears = strategyIntentOperateVO.getTargetYears();
-        if (StringUtils.isEmpty(indicatorIds)|| StringUtils.isEmpty(targetYears)){
-            throw new ServiceException("年度或指标为空！");
-        }
-        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeMapper.getResultIndicator(strategyIntentOperateVO);
-        if (StringUtils.isEmpty(targetYears)){
-            return strategyIntentOperateVOArrayList;
-        }else {
-            List<Long> indicatorIdList = targetOutcomeDetailsDTOList.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toList());
-            R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByIds(indicatorIdList, SecurityConstants.INNER);
-            List<IndicatorDTO> indicatorDTOList = listR.getData();
-            if (StringUtils.isNotEmpty(indicatorDTOList)){
-                for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
-                    for (IndicatorDTO indicatorDTO : indicatorDTOList) {
-                        if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())){
-                            targetOutcomeDetailsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+    public List<StrategyIntentOperateVO> getResultIndicator(List<StrategyIntentOperateVO> strategyIntentOperateVOS) {
+        StrategyIntentOperateVO strategyIntentOperateVO = new StrategyIntentOperateVO();
+        if (StringUtils.isNotEmpty(strategyIntentOperateVOS)) {
+            List<Long> indicatorIds = strategyIntentOperateVOS.get(0).getIndicatorIds();
+            List<String> targetYears = strategyIntentOperateVOS.get(0).getTargetYears();
+            if (StringUtils.isEmpty(indicatorIds) || StringUtils.isEmpty(targetYears)) {
+                throw new ServiceException("年度或指标为空！");
+            }
+            strategyIntentOperateVO.setIndicatorIds(indicatorIds);
+            strategyIntentOperateVO.setTargetYears(targetYears);
+            List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList = targetOutcomeMapper.getResultIndicator(strategyIntentOperateVO);
+            if (StringUtils.isEmpty(targetYears)) {
+                return strategyIntentOperateVOS;
+            } else {
+                List<Long> indicatorIdList = targetOutcomeDetailsDTOList.stream().map(TargetOutcomeDetailsDTO::getIndicatorId).collect(Collectors.toList());
+                R<List<IndicatorDTO>> listR = indicatorService.selectIndicatorByIds(indicatorIdList, SecurityConstants.INNER);
+                List<IndicatorDTO> indicatorDTOList = listR.getData();
+                if (StringUtils.isNotEmpty(indicatorDTOList)) {
+                    for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList) {
+                        for (IndicatorDTO indicatorDTO : indicatorDTOList) {
+                            if (targetOutcomeDetailsDTO.getIndicatorId().equals(indicatorDTO.getIndicatorId())) {
+                                targetOutcomeDetailsDTO.setIndicatorName(indicatorDTO.getIndicatorName());
+                            }
                         }
                     }
                 }
-            }
-            Map<Long, List<TargetOutcomeDetailsDTO>> indicatorIdDataMap = targetOutcomeDetailsDTOList.parallelStream().collect(Collectors.groupingBy(TargetOutcomeDetailsDTO::getIndicatorId));
-            if (StringUtils.isNotEmpty(indicatorIdDataMap)){
-                for (Long key : indicatorIdDataMap.keySet()) {
-                    StrategyIntentOperateVO strategyIntentOperateVO1 = new StrategyIntentOperateVO();
-                    List<StrategyIntentOperateMapVO> strategyIntentOperateMapVOList = new ArrayList<>();
-                    List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList1 = indicatorIdDataMap.get(key);
-                    if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)){
-                        for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
-                            StrategyIntentOperateMapVO strategyIntentOperateMapVO = new StrategyIntentOperateMapVO();
-                            Map<Integer, BigDecimal> yearValues = new HashMap<>();
-                            yearValues.put(targetOutcomeDetailsDTO.getTargetYear(),targetOutcomeDetailsDTO.getTargetValue());
-                            strategyIntentOperateMapVO.setYearValues(yearValues);
-                            strategyIntentOperateVO1.setIndicatorId(targetOutcomeDetailsDTO.getIndicatorId());
-                            strategyIntentOperateVO1.setIndicatorName(targetOutcomeDetailsDTO.getIndicatorName());
-                            strategyIntentOperateMapVOList.add(strategyIntentOperateMapVO);
-                            strategyIntentOperateVO1.setStrategyIntentOperateMapDTOS(strategyIntentOperateMapVOList);
-                        }
-                    }
-                    strategyIntentOperateVOArrayList.add(strategyIntentOperateVO1);
-                }
-            }
+                Map<Long, List<TargetOutcomeDetailsDTO>> indicatorIdDataMap = targetOutcomeDetailsDTOList.parallelStream().collect(Collectors.groupingBy(TargetOutcomeDetailsDTO::getIndicatorId));
+                if (StringUtils.isNotEmpty(indicatorIdDataMap)) {
+                    for (StrategyIntentOperateVO intentOperateVO : strategyIntentOperateVOS) {
+                        List<StrategyIntentOperateMapVO> strategyIntentOperateMapDTOS = intentOperateVO.getStrategyIntentOperateMapDTOS();
+                        //数据库
+                        List<TargetOutcomeDetailsDTO> targetOutcomeDetailsDTOList1 = indicatorIdDataMap.get(intentOperateVO.getIndicatorId());
+                        if (StringUtils.isNotEmpty(strategyIntentOperateMapDTOS)) {
+                            for (StrategyIntentOperateMapVO strategyIntentOperateMapDTO : strategyIntentOperateMapDTOS) {
+                                Map<Integer, BigDecimal> yearValues1 = strategyIntentOperateMapDTO.getYearValues();
+                                //经营年度
+                                Integer operateYear = null;
+                                for (Integer key : yearValues1.keySet()) {
+                                    operateYear = key;
 
+                                }
+                                for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
+                                    Integer targetYear = targetOutcomeDetailsDTO.getTargetYear();
+                                    if (null != operateYear && (targetYear.equals(operateYear))) {
+                                        yearValues1.put(targetYear, targetOutcomeDetailsDTO.getActualTotal());
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            }
         }
-        return strategyIntentOperateVOArrayList;
+        return strategyIntentOperateVOS;
     }
 
 }

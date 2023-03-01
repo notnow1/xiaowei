@@ -159,9 +159,9 @@ public interface ITargetOutcomeService {
 
     /**
      * 战略云获取指标实际值
-     * @param strategyIntentOperateVO
+     * @param strategyIntentOperateVOS
      * @return
      */
-    List<StrategyIntentOperateVO> getResultIndicator(StrategyIntentOperateVO strategyIntentOperateVO);
+    List<StrategyIntentOperateVO> getResultIndicator(List<StrategyIntentOperateVO> strategyIntentOperateVOS);
 
 }
