@@ -44,15 +44,15 @@ public class RemoteDictionaryData implements RemoteDictionaryDataService {
     }
 
     /**
-     * 根据枚举查询产品应用字典名称数据
+     * 根据枚举查询应用字典名称数据
      * @param source
      * @return
      */
     @Override
     @InnerAuth
     @GetMapping("/selectDictionaryTypeByProduct")
-    public R<DictionaryTypeDTO> selectDictionaryTypeByProduct(String source) {
-        return R.ok(dictionaryDataService.selectDictionaryTypeByProduct());
+    public R<DictionaryTypeDTO> selectDictionaryTypeByCode(@RequestParam("dictionaryType")String dictionaryType, String source) {
+        return R.ok(dictionaryDataService.selectDictionaryTypeByProduct(dictionaryType));
     }
 
     /**

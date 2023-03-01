@@ -148,10 +148,11 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     /**
      * 根据枚举查询产品应用字典名称数据
      * @return
+     * @param dictionaryType
      */
     @Override
-    public DictionaryTypeDTO selectDictionaryTypeByProduct() {
-        return dictionaryDataMapper.selectDictionaryTypeByProduct("PRODUCT_CATEGORY");
+    public DictionaryTypeDTO selectDictionaryTypeByProduct(String dictionaryType) {
+        return dictionaryDataMapper.selectDictionaryTypeByProduct(dictionaryType);
     }
 
     /**

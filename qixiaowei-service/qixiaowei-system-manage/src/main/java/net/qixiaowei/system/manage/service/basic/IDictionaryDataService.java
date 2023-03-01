@@ -109,8 +109,9 @@ public interface IDictionaryDataService{
     /**
      * 根据枚举查询产品应用字典名称数据
      * @return
+     * @param dictionaryType
      */
-    DictionaryTypeDTO selectDictionaryTypeByProduct();
+    DictionaryTypeDTO selectDictionaryTypeByProduct(String dictionaryType);
 
     /**
      * 根据typeId查询字典数据
