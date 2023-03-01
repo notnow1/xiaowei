@@ -61,9 +61,13 @@ public class BonusBudgetDTO {
     private BigDecimal elasticityBonusBudget;
 
     /**
-     * 总工资包预算
+     * 总工资包预算自己定义的(因这个字段是不会保存数据库的 后面修改需求后 字段名没对上 取的别名返回的)
      */
     private BigDecimal basicWageBonusBudget;
+    /**
+     * 总工资包预算数据库
+     */
+    private BigDecimal amountWageBudget;
     /**
      * 涨薪包预算
      */
