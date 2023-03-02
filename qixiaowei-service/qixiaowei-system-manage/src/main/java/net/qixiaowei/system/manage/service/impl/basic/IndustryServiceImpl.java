@@ -299,6 +299,19 @@ public class IndustryServiceImpl implements IIndustryService {
             this.changeSonStatus(industryId, status);
         }
         Industry industry = new Industry();
+        if (industryDTO.getParentIndustryId() == 0) {
+            BeanUtils.copyProperties(industryDTO, industry);
+            industry.setAncestors("");
+            industry.setParentIndustryId(Constants.TOP_PARENT_ID);
+        } else {
+            IndustryDTO industryDTO1 = industryMapper.selectIndustryByIndustryId(industry.getParentIndustryId());
+            BeanUtils.copyProperties(industryDTO, industry);
+            if (StringUtils.isBlank(industryDTO1.getAncestors())) {
+                industry.setAncestors(industryDTO1.getParentIndustryId() + "," + industryDTO1.getIndustryId());
+            } else {
+                industry.setAncestors(industryDTO1.getAncestors() + "," + industryDTO1.getParentIndustryId());
+            }
+        }
         BeanUtils.copyProperties(industryDTO, industry);
         industry.setAncestors(ancestors);
         industry.setLevel(parentLevel);
