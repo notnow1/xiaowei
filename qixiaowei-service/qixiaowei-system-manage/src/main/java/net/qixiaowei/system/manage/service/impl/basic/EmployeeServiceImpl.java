@@ -6,7 +6,6 @@ import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.PrefixCodeRule;
 import net.qixiaowei.integration.common.exception.ServiceException;
-import net.qixiaowei.integration.common.utils.CheckObjectIsNullUtils;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.integration.common.utils.bean.BeanUtils;
@@ -134,22 +133,22 @@ public class EmployeeServiceImpl implements IEmployeeService {
      */
     @Override
     public List<EmployeeDTO> selectDropEmployeeList(EmployeeDTO employeeDTO) {
-        List<EmployeeDTO> employeeDTOList =new ArrayList<>();
+        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
-            String employeeFlag = employeeDTO.getEmployeeFlag();
-            //生效在职有账号的员工
-            if (StringUtils.equals("user",employeeFlag)){
-                employeeDTOList = employeeMapper.getUseEmployeeUser();
-            }//生效包含在职离职有账号的员工
-            else if (StringUtils.equals("userAll",employeeFlag)){
-                employeeDTOList = employeeMapper.getUseEmployeeStatus();
-            }//生效包含在职离职的员工
-            else if (StringUtils.equals("1",employeeFlag)){
-                employeeDTOList = employeeMapper.getAllUseEmployee();
-            }else {
-                employeeDTOList = employeeMapper.selectDropEmployeeList(employee);
-            }
+        String employeeFlag = employeeDTO.getEmployeeFlag();
+        //生效在职有账号的员工
+        if (StringUtils.equals("user", employeeFlag)) {
+            employeeDTOList = employeeMapper.getUseEmployeeUser();
+        }//生效包含在职离职有账号的员工
+        else if (StringUtils.equals("userAll", employeeFlag)) {
+            employeeDTOList = employeeMapper.getUseEmployeeStatus();
+        }//生效包含在职离职的员工
+        else if (StringUtils.equals("1", employeeFlag)) {
+            employeeDTOList = employeeMapper.getAllUseEmployee();
+        } else {
+            employeeDTOList = employeeMapper.selectDropEmployeeList(employee);
+        }
 
         return employeeDTOList;
     }
@@ -1535,6 +1534,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     /**
      * 查询有账号的员工
+     *
      * @return
      */
     @Override
@@ -1556,23 +1556,23 @@ public class EmployeeServiceImpl implements IEmployeeService {
             switch (adjustmentType) {
                 case 1:// 调岗-调部门
                     Long adjustPostId = employeeSalarySnapVO.getAdjustPostId();
-                    if (StringUtils.isNotNull(adjustPostId) && !employeeById.getEmployeePostId().equals(adjustPostId)) {
+                    if (StringUtils.isNotNull(adjustPostId) && !adjustPostId.equals(employeeById.getEmployeePostId())) {
                         employee.setEmployeePostId(adjustPostId);
                     }
                     Long adjustDepartmentId = employeeSalarySnapVO.getAdjustDepartmentId();
-                    if (StringUtils.isNotNull(adjustDepartmentId) && !employeeById.getEmployeeDepartmentId().equals(adjustDepartmentId)) {
+                    if (StringUtils.isNotNull(adjustDepartmentId) && !adjustDepartmentId.equals(employeeById.getEmployeeDepartmentId())) {
                         employee.setEmployeeDepartmentId(adjustDepartmentId);
                     }
                     break;
                 case 2:// 调级
                     Integer adjustOfficialRank = employeeSalarySnapVO.getAdjustOfficialRank();
-                    if (StringUtils.isNotNull(adjustOfficialRank) && !employeeById.getEmployeeRank().equals(adjustOfficialRank)) {
+                    if (StringUtils.isNotNull(adjustOfficialRank) && !adjustOfficialRank.equals(employeeById.getEmployeeRank())) {
                         employee.setEmployeeRank(adjustOfficialRank);
                     }
                     break;
                 case 3:// 调薪
                     BigDecimal adjustEmolument = employeeSalarySnapVO.getAdjustEmolument();
-                    if (StringUtils.isNotNull(adjustEmolument) && employeeById.getEmployeeBasicWage().compareTo(adjustEmolument) != 0) {
+                    if (StringUtils.isNotNull(adjustEmolument) && adjustEmolument.compareTo(Optional.ofNullable(employeeById.getEmployeeBasicWage()).orElse(BigDecimal.ZERO)) != 0) {
                         employee.setEmployeeBasicWage(adjustEmolument);
                     }
                     break;

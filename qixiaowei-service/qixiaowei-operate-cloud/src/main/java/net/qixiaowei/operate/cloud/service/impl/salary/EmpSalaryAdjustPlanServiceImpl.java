@@ -271,13 +271,13 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         List<String> workingAgeNotEqualList = (List<String>) params1.get("workingAgeNotEqual");
         List<Integer> workingAgeEqual = new ArrayList<>();
         List<Integer> workingAgeNotEqual = new ArrayList<>();
-        if (StringUtils.isNotNull(workingAgeEqualList)){
+        if (StringUtils.isNotNull(workingAgeEqualList)) {
             for (String s : workingAgeEqualList) {
                 workingAgeEqual.add(Integer.valueOf(s));
             }
             params1.put("workingAgeEqual", workingAgeEqual);
         }
-        if (StringUtils.isNotNull(workingAgeNotEqualList)){
+        if (StringUtils.isNotNull(workingAgeNotEqualList)) {
             for (String s : workingAgeNotEqualList) {
                 workingAgeNotEqual.add(Integer.valueOf(s));
             }
@@ -1038,7 +1038,8 @@ public class EmpSalaryAdjustPlanServiceImpl implements IEmpSalaryAdjustPlanServi
         }
         R<Integer> empAdjustR = employeeService.empAdjustUpdates(employeeSalarySnapVOS, SecurityConstants.FROM_SOURCE);
         if (empAdjustR.getCode() != 200) {
-            throw new ServiceException("远程根据调整策略进行更新人员薪资，岗位，职级失败 请联系管理员");
+            throw new ServiceException(empAdjustR.getMsg());
+//            throw new ServiceException("个人调薪到达生效日期更新员工信息失败 请联系管理员");
         }
         return 1;
     }
