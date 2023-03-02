@@ -554,3 +554,40 @@ CREATE TABLE mi_opponent_finance(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (mi_opponent_finance_id)
 )  COMMENT = '市场洞察对手财务表';
+
+
+CREATE TABLE market_insight_self(
+    market_insight_self_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (market_insight_self_id)
+)  COMMENT = '市场洞察自身表';
+
+
+CREATE TABLE mi_self_ability_access(
+    mi_self_ability_access_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_self_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察自身ID' ,
+    capacity_factor BIGINT UNSIGNED    COMMENT '能力要素' ,
+    description_actuality VARCHAR(2048)    COMMENT '现状描述' ,
+    ability_assess_score DECIMAL(5,2)    COMMENT '能力评估分数' ,
+    strategy_control_point_flag TINYINT UNSIGNED    COMMENT '战略控制点标记:0否;1是' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_self_ability_access_id)
+)  COMMENT = '市场洞察自身能力评估表';
