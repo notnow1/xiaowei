@@ -568,7 +568,6 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
     /**
      * 封装历史目标分解详情周期集合
      *
-     * @param targetDecomposeDetailsDTOS
      * @param decomposeDetailsSnapshots
      */
     private void pacgkDetailCyclesSnapshot( List<DecomposeDetailsSnapshot> decomposeDetailsSnapshots) {
@@ -1096,17 +1095,17 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
             int year = DateUtils.getYear();
             forecastCycle = year + "年";
         } else if (targetDecomposeDTO.getTimeDimension() == 2) {
-            if (DateUtils.getMonth() <= 6) {
+            if ((DateUtils.getMonth()-1) <= 6) {
                 forecastCycle = "上半年";
             } else {
                 forecastCycle = "下半年";
             }
         } else if (targetDecomposeDTO.getTimeDimension() == 3) {
-            forecastCycle = Convert.int2chineseNum(DateUtils.getQuarter()) + "季度";
+            forecastCycle = Convert.int2chineseNum((DateUtils.getQuarter()-1)) + "季度";
         } else if (targetDecomposeDTO.getTimeDimension() == 4) {
-            forecastCycle = DateUtils.getMonth() + "月";
+            forecastCycle = (DateUtils.getMonth()-1) + "月";
         } else if (targetDecomposeDTO.getTimeDimension() == 5) {
-            forecastCycle = DateUtils.getDayOfWeek() + "周";
+            forecastCycle = (DateUtils.getDayOfWeek()-1) + "周";
         }
         return forecastCycle;
     }
