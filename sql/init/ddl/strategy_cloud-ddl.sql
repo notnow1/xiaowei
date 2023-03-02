@@ -493,3 +493,64 @@ CREATE TABLE mi_customer_invest_detail(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (mi_customer_invest_detail_id)
 )  COMMENT = '市场洞察客户投资详情表';
+
+
+CREATE TABLE market_insight_opponent(
+    market_insight_opponent_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (market_insight_opponent_id)
+)  COMMENT = '市场洞察对手表';
+
+
+CREATE TABLE mi_opponent_choice(
+    mi_opponent_choice_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_opponent_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察对手ID' ,
+    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    opponent_name VARCHAR(64)    COMMENT '对手名称' ,
+    comparison_item BIGINT UNSIGNED    COMMENT '对比项目' ,
+    ability_assess_score DECIMAL(5,2)    COMMENT '能力评估分数' ,
+    analysis_opponent_core_ability VARCHAR(512)    COMMENT '对手核心能力分析' ,
+    own_advantage VARCHAR(256)    COMMENT '自身优势' ,
+    own_disadvantage VARCHAR(256)    COMMENT '自身劣势' ,
+    competitor_category BIGINT UNSIGNED    COMMENT '竞争对手类别' ,
+    competition_strategy_type BIGINT UNSIGNED    COMMENT '竞争战略类型' ,
+    operate_history_period TINYINT UNSIGNED    COMMENT '经营历史期' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_opponent_choice_id)
+)  COMMENT = '市场洞察对手选择表';
+
+
+CREATE TABLE mi_opponent_finance(
+    mi_opponent_finance_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_opponent_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察对手ID' ,
+    mi_opponent_choice_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察对手选择ID' ,
+    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    operate_year SMALLINT UNSIGNED    COMMENT '经营年度' ,
+    operate_value DECIMAL(14,2)    COMMENT '经营值' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_opponent_finance_id)
+)  COMMENT = '市场洞察对手财务表';
