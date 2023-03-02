@@ -1132,7 +1132,7 @@ public class ProductServiceImpl implements IProductService {
         //产品类别值
         List<DictionaryDataDTO> dictionaryDataDTOList = new ArrayList<>();
         //远程调用字典数据
-        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByCode(SecurityConstants.INNER,"PRODUCT_CATEGORY");
+        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByCode("PRODUCT_CATEGORY",SecurityConstants.INNER);
         DictionaryTypeDTO dictionaryTypeDTO = dictionaryTypeDTOR.getData();
         if (StringUtils.isNotNull(dictionaryTypeDTO)) {
             R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByProduct(dictionaryTypeDTO.getDictionaryTypeId(), SecurityConstants.INNER);

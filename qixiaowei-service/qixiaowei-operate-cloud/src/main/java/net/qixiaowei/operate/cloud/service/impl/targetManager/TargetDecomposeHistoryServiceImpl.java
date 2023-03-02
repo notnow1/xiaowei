@@ -220,7 +220,12 @@ public class TargetDecomposeHistoryServiceImpl implements ITargetDecomposeHistor
      */
     @Override
     public List<TargetDecomposeHistoryDTO> targetDecomposeIdInfo(Long targetDecomposeId) {
-        return targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeId);
+        List<TargetDecomposeHistoryDTO> targetDecomposeHistoryDTOS = targetDecomposeHistoryMapper.selectTargetDecomposeHistoryByTargetDecomposeId(targetDecomposeId);
+        if (StringUtils.isNotEmpty(targetDecomposeHistoryDTOS)){
+            Collections.reverse(targetDecomposeHistoryDTOS);
+        }
+
+        return targetDecomposeHistoryDTOS;
     }
 
     /**
