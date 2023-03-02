@@ -1,5 +1,7 @@
 package net.qixiaowei.integration.common.enums.strategy;
 
+import net.qixiaowei.integration.common.utils.StringUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,22 +42,46 @@ public enum PlanBusinessUnitCode {
 
     /**
      * 获取规划业务单元下拉列表
-     * label: "销售员", value: "employeeId"
      *
-     * @param code 编码
+     * @param decompose 维度
      * @return List
      */
-    public static List<Map<String, String>> getDropList(String code) {
+    public static List<Map<String, String>> getDropList(String decompose) {
         List<Map<String, String>> dropList = new ArrayList<>();
-        for (PlanBusinessUnitCode item : PlanBusinessUnitCode.values()) {
-            Map<String, String> map = new HashMap<>();
-            map.put("label", item.getCode());
-            map.put("value", item.getInfo());
-            map.put("name", item.getName());
-            dropList.add(map);
+        if (StringUtils.isNotNull(decompose)) {
+            String[] decomposeList = decompose.split(",");
+            for (String decomposerValue : decomposeList) {
+                for (PlanBusinessUnitCode item : PlanBusinessUnitCode.values()) {
+                    if (item.code.equals(decomposerValue)) {
+                        Map<String, String> map = new HashMap<>();
+                        map.put("label", item.getInfo());
+                        map.put("value", item.getCode());
+                        map.put("name", item.getName());
+                        dropList.add(map);
+                        break;
+                    }
+                }
+            }
+            return dropList;
         }
-        return dropList;
+        return new ArrayList<>();
     }
+
+    /**
+     * 是否包含
+     *
+     * @param code 编码
+     * @return 真假
+     */
+    public static Boolean contains(String code) {
+        for (PlanBusinessUnitCode item : PlanBusinessUnitCode.values()) {
+            if (item.getCode().equals(code)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
 
