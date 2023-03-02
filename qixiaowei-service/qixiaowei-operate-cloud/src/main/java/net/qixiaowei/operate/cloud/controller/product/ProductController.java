@@ -180,7 +180,7 @@ public class ProductController extends BaseController {
         List<String> dictionaryLabels = new ArrayList<>();
 
         //字典名称
-        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByCode(SecurityConstants.INNER,"PRODUCT_CATEGORY");
+        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByCode("PRODUCT_CATEGORY",SecurityConstants.INNER);
         DictionaryTypeDTO data = dictionaryTypeDTOR.getData();
         if (StringUtils.isNotNull(data)){
             //字典值
@@ -264,7 +264,7 @@ public class ProductController extends BaseController {
         List<String> dictionaryLabels = new ArrayList<>();
 
         //字典名称
-        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByCode(SecurityConstants.INNER,"PRODUCT_CATEGORY");
+        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByCode("PRODUCT_CATEGORY",SecurityConstants.INNER);
         DictionaryTypeDTO data = dictionaryTypeDTOR.getData();
         if (StringUtils.isNotNull(data)){
             //字典值

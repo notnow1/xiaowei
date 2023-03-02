@@ -50,7 +50,7 @@ public class RemoteDictionaryData implements RemoteDictionaryDataService {
      */
     @Override
     @InnerAuth
-    @GetMapping("/selectDictionaryTypeByProduct")
+    @GetMapping("/selectDictionaryTypeByCode")
     public R<DictionaryTypeDTO> selectDictionaryTypeByCode(@RequestParam("dictionaryType")String dictionaryType, String source) {
         return R.ok(dictionaryDataService.selectDictionaryTypeByProduct(dictionaryType));
     }
