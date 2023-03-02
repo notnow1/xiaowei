@@ -415,3 +415,81 @@ CREATE TABLE mi_industry_attraction_data(
     tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
     PRIMARY KEY (mi_industry_attraction_data_id)
 )  COMMENT = '市场洞察行业吸引力数据表';
+
+
+CREATE TABLE market_insight_customer(
+    market_insight_customer_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    plan_business_unit_id BIGINT UNSIGNED NOT NULL   COMMENT '规划业务单元ID' ,
+    business_unit_decompose VARCHAR(256)    COMMENT '规划业务单元维度(region,department,product,industry)' ,
+    area_id BIGINT UNSIGNED    COMMENT '区域ID' ,
+    department_id BIGINT UNSIGNED    COMMENT '部门ID' ,
+    product_id BIGINT UNSIGNED    COMMENT '产品ID' ,
+    industry_id BIGINT UNSIGNED    COMMENT '行业ID' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (market_insight_customer_id)
+)  COMMENT = '市场洞察客户表';
+
+
+CREATE TABLE mi_customer_choice(
+    mi_customer_choice_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_customer_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察客户ID' ,
+    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    customer_name VARCHAR(64)    COMMENT '客户名称' ,
+    admission_flag TINYINT UNSIGNED    COMMENT '准入标记:0否;1是' ,
+    customer_category BIGINT UNSIGNED    COMMENT '客户类别' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_customer_choice_id)
+)  COMMENT = '市场洞察客户选择表';
+
+
+CREATE TABLE mi_customer_invest_plan(
+    mi_customer_invest_plan_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_customer_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察客户ID' ,
+    industry_id BIGINT UNSIGNED NOT NULL   COMMENT '行业ID' ,
+    customer_name VARCHAR(64)    COMMENT '客户名称' ,
+    customer_category BIGINT UNSIGNED    COMMENT '客户类别' ,
+    exist_market_share DECIMAL(5,2)    COMMENT '现有市场占有率' ,
+    previous_year_sales DECIMAL(14,2)    COMMENT '上年销售额' ,
+    plan_period TINYINT UNSIGNED    COMMENT '规划期' ,
+    future_part_market_space DECIMAL(14,2)    COMMENT '未来可参与市场空间' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_customer_invest_plan_id)
+)  COMMENT = '市场洞察客户投资计划表';
+
+
+CREATE TABLE mi_customer_invest_detail(
+    mi_customer_invest_detail_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT  COMMENT 'ID' ,
+    market_insight_customer_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察客户ID' ,
+    mi_customer_invest_plan_id BIGINT UNSIGNED NOT NULL   COMMENT '市场洞察客户投资计划ID' ,
+    plan_year SMALLINT UNSIGNED NOT NULL   COMMENT '规划年度' ,
+    product_id BIGINT UNSIGNED NOT NULL   COMMENT '产品ID' ,
+    total_annual_demand VARCHAR(32)    COMMENT '年需求总量' ,
+    customer_invest_plan_amount DECIMAL(14,2)    COMMENT '客户投资计划金额' ,
+    estimate_market_share DECIMAL(5,2)    COMMENT '预计市场占有率' ,
+    sort SMALLINT UNSIGNED    COMMENT '排序' ,
+    delete_flag TINYINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '删除标记:0未删除;1已删除' ,
+    create_by BIGINT UNSIGNED NOT NULL   COMMENT '创建人' ,
+    create_time DATETIME NOT NULL   COMMENT '创建时间' ,
+    update_by BIGINT UNSIGNED NOT NULL   COMMENT '更新人' ,
+    update_time DATETIME NOT NULL   COMMENT '更新时间' ,
+    tenant_id BIGINT UNSIGNED NOT NULL  DEFAULT 0 COMMENT '租户ID' ,
+    PRIMARY KEY (mi_customer_invest_detail_id)
+)  COMMENT = '市场洞察客户投资详情表';
