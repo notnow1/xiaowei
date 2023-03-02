@@ -50,6 +50,10 @@ public class MiMacroDetailDTO {
     */
     private  Long visualAngle;
     /**
+     * 视角名称
+     */
+    private  String visualAngleName;
+    /**
     * 企业相关因素
     */
     private  String companyRelatedFactor;

@@ -83,7 +83,7 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                 }
             }
 
-            Map<Long, List<StrategyIntentOperateDTO>> indicatorMap = strategyIntentOperateDTOS.parallelStream().filter(f -> f.getIndicatorId() != null).collect(Collectors.groupingBy(StrategyIntentOperateDTO::getIndicatorId));
+            Map<Long, List<StrategyIntentOperateDTO>> indicatorMap = strategyIntentOperateDTOS.parallelStream().filter(f -> f.getIndicatorId() != null).collect(Collectors.groupingBy(StrategyIntentOperateDTO::getIndicatorId,LinkedHashMap::new, Collectors.toList()));
             for (Long key : indicatorMap.keySet()) {
                 StrategyIntentOperateDTO strategyIntentOperateDTOData = new StrategyIntentOperateDTO();
                 //年度指标对应值集合
@@ -216,11 +216,11 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
         strategyIntentMapper.insertStrategyIntent(strategyIntent);
 
         if (StringUtils.isNotEmpty(strategyIntentOperateDTOS)) {
+            int i = 1;
             for (StrategyIntentOperateDTO strategyIntentOperateDTO : strategyIntentOperateDTOS) {
                 //年度指标对应值集合
                 List<StrategyIntentOperateMapDTO> strategyIntentOperateMapDTOS = strategyIntentOperateDTO.getStrategyIntentOperateMapDTOS();
                 if (StringUtils.isNotEmpty(strategyIntentOperateMapDTOS)) {
-                    int i = 1;
                     for (StrategyIntentOperateMapDTO strategyIntentOperateMapDTO : strategyIntentOperateMapDTOS) {
                         Map<Integer, BigDecimal> yearValue = strategyIntentOperateMapDTO.getYearValues();
                         //经营年度
@@ -246,11 +246,11 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
                         strategyIntentOperate.setUpdateTime(DateUtils.getNowDate());
                         strategyIntentOperate.setUpdateBy(SecurityUtils.getUserId());
                         strategyIntentOperate.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-                        i++;
+
                         strategyIntentOperateList.add(strategyIntentOperate);
 
                     }
-
+                    i++;
                 }
             }
             if (StringUtils.isNotEmpty(strategyIntentOperateList)) {

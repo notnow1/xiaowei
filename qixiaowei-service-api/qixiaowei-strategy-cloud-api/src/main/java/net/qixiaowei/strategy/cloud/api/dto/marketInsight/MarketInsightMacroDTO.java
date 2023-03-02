@@ -42,6 +42,10 @@ public class MarketInsightMacroDTO {
     */
     private  Long marketInsightMacroId;
     /**
+     * ID集合
+     */
+    private  List<Long> marketInsightMacroIds;
+    /**
     * 规划年度
     */
     private  Integer planYear;
@@ -62,17 +66,34 @@ public class MarketInsightMacroDTO {
     */
     private  Long areaId;
     /**
+     * 区域ID
+     */
+    private  String areaName;
+    /**
     * 部门ID
     */
     private  Long departmentId;
     /**
+     * 部门ID
+     */
+    private  String departmentName;
+    /**
     * 产品ID
     */
     private  Long productId;
+
+    /**
+     * 产品ID
+     */
+    private  String productName;
     /**
     * 行业ID
     */
     private  Long industryId;
+    /**
+     * 行业名称
+     */
+    private  String industryName;
     /**
      * 市场洞察宏观详情表集合
      */

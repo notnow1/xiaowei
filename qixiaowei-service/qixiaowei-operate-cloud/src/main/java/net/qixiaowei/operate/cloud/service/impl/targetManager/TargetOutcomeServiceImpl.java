@@ -828,10 +828,12 @@ public class TargetOutcomeServiceImpl implements ITargetOutcomeService {
                                     operateYear = key;
 
                                 }
-                                for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
-                                    Integer targetYear = targetOutcomeDetailsDTO.getTargetYear();
-                                    if (null != operateYear && (targetYear.equals(operateYear))) {
-                                        yearValues1.put(targetYear, targetOutcomeDetailsDTO.getActualTotal());
+                                if (StringUtils.isNotEmpty(targetOutcomeDetailsDTOList1)){
+                                    for (TargetOutcomeDetailsDTO targetOutcomeDetailsDTO : targetOutcomeDetailsDTOList1) {
+                                        Integer targetYear = targetOutcomeDetailsDTO.getTargetYear();
+                                        if (null != operateYear && (targetYear.equals(operateYear))) {
+                                            yearValues1.put(targetYear, targetOutcomeDetailsDTO.getActualTotal());
+                                        }
                                     }
                                 }
                             }
