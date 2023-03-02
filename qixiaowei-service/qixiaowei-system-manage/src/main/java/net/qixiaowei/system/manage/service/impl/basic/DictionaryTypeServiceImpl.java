@@ -68,6 +68,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @return 结果
     */
     @Override
+    @Transactional
     public DictionaryTypeDTO insertDictionaryType(DictionaryTypeDTO dictionaryTypeDTO){
     DictionaryType dictionaryType=new DictionaryType();
     BeanUtils.copyProperties(dictionaryTypeDTO,dictionaryType);
@@ -88,6 +89,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @return 结果
     */
     @Override
+    @Transactional
     public int updateDictionaryType(DictionaryTypeDTO dictionaryTypeDTO)
     {
     DictionaryType dictionaryType=new DictionaryType();
@@ -104,6 +106,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
     * @return 结果
     */
     @Override
+    @Transactional
     public int logicDeleteDictionaryTypeByDictionaryTypeIds(List<Long> dictionaryTypeIds){
     return dictionaryTypeMapper.logicDeleteDictionaryTypeByDictionaryTypeIds(dictionaryTypeIds,SecurityUtils.getUserId(),DateUtils.getNowDate());
     }
@@ -127,6 +130,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService{
      * @return 结果
      */
      @Override
+     @Transactional
      public int logicDeleteDictionaryTypeByDictionaryTypeId(DictionaryTypeDTO dictionaryTypeDTO)
      {
      DictionaryType dictionaryType=new DictionaryType();
