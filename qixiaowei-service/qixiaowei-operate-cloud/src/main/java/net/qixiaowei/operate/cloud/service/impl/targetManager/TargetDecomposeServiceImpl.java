@@ -1049,7 +1049,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
-        targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         this.sendMessage(targetDecomposeDTO, 1);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
@@ -1220,7 +1219,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
-        targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         this.sendMessage(targetDecomposeDTO, 2);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
@@ -1269,7 +1267,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
-        targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         this.sendMessage(targetDecomposeDTO, 3);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
@@ -1309,7 +1306,6 @@ public class TargetDecomposeServiceImpl implements ITargetDecomposeService {
         //插入周期表和详细信息表
         this.packInsertTargetDecomposeData(targetDecomposeDTO, targetDecompose);
         // todo 发送通知
-        targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         this.sendMessage(targetDecomposeDTO, 4);
         targetDecomposeDTO.setTargetDecomposeId(targetDecompose.getTargetDecomposeId());
         return targetDecomposeDTO;
