@@ -9,7 +9,6 @@ import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
 import net.qixiaowei.integration.common.enums.message.BusinessSubtype;
-import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.enums.system.RoleCode;
 import net.qixiaowei.integration.common.enums.system.RoleDataScope;
 import net.qixiaowei.integration.common.enums.system.RoleType;
@@ -25,8 +24,6 @@ import net.qixiaowei.message.api.remote.backlog.RemoteBacklogService;
 import net.qixiaowei.operate.cloud.api.remote.salary.RemoteSalaryItemService;
 import net.qixiaowei.strategy.cloud.api.remote.industry.RemoteIndustryAttractionService;
 import net.qixiaowei.system.manage.api.domain.basic.Config;
-import net.qixiaowei.system.manage.api.domain.basic.DictionaryData;
-import net.qixiaowei.system.manage.api.domain.basic.DictionaryType;
 import net.qixiaowei.system.manage.api.domain.basic.Indicator;
 import net.qixiaowei.system.manage.api.domain.system.Role;
 import net.qixiaowei.system.manage.api.domain.system.RoleMenu;
@@ -37,14 +34,13 @@ import net.qixiaowei.system.manage.api.dto.basic.EmployeeDTO;
 import net.qixiaowei.system.manage.api.dto.tenant.TenantDTO;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteEmployeeService;
 import net.qixiaowei.system.manage.mapper.basic.ConfigMapper;
-import net.qixiaowei.system.manage.mapper.basic.DictionaryDataMapper;
-import net.qixiaowei.system.manage.mapper.basic.DictionaryTypeMapper;
 import net.qixiaowei.system.manage.mapper.basic.IndicatorMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMapper;
 import net.qixiaowei.system.manage.mapper.system.RoleMenuMapper;
 import net.qixiaowei.system.manage.mapper.system.UserRoleMapper;
 import net.qixiaowei.system.manage.mapper.tenant.TenantMapper;
 import net.qixiaowei.system.manage.mapper.user.UserMapper;
+import net.qixiaowei.system.manage.service.basic.IDictionaryTypeService;
 import net.qixiaowei.system.manage.service.user.IUserConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -61,19 +57,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public class TenantLogic {
 
-
-    private static final List<DictionaryData> INIT_DICTIONARY_DATA = new ArrayList<>(6);
-
     private static final Map<Integer, Indicator> INIT_INDICATOR = new HashMap<>();
 
     static {
-        //初始化枚举值
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("通用件").dictionaryValue("1").defaultFlag(1).sort(1).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("标准件").dictionaryValue("2").defaultFlag(0).sort(2).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("自制件").dictionaryValue("3").defaultFlag(0).sort(3).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("外购件").dictionaryValue("4").defaultFlag(0).sort(4).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("外协件").dictionaryValue("5").defaultFlag(0).sort(5).status(BusinessConstants.NORMAL).build());
-        INIT_DICTIONARY_DATA.add(DictionaryData.builder().dictionaryLabel("原材料").dictionaryValue("6").defaultFlag(0).sort(6).status(BusinessConstants.NORMAL).build());
         //初始化指标
         INIT_INDICATOR.put(1, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW001").indicatorName("订单（不含税）").sort(1).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
         INIT_INDICATOR.put(2, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW002").indicatorName("销售收入").sort(2).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
@@ -120,10 +106,7 @@ public class TenantLogic {
     private ConfigMapper configMapper;
 
     @Autowired
-    private DictionaryTypeMapper dictionaryTypeMapper;
-
-    @Autowired
-    private DictionaryDataMapper dictionaryDataMapper;
+    private IDictionaryTypeService dictionaryTypeService;
 
     @Autowired
     private IndicatorMapper indicatorMapper;
@@ -163,7 +146,7 @@ public class TenantLogic {
             boolean initUserInfo = this.initUserInfo(tenant, initMenuIds);
             //4、配置，如启用行业配置---config
             boolean initConfig = this.initConfig();
-            //5、初始化产品类别---dictionary_type、dictionary_data
+            //5、初始化枚举值---dictionary_type、dictionary_data
             boolean initDictionary = this.initDictionary();
             //6、初始化预置指标---indicator
             boolean initIndicator = this.initIndicator();
@@ -393,38 +376,7 @@ public class TenantLogic {
      * @return: boolean
      **/
     public boolean initDictionary() {
-        Long userId = SecurityUtils.getUserId();
-        Date nowDate = DateUtils.getNowDate();
-        //初始化字典类型
-        DictionaryType dictionaryType = new DictionaryType();
-        dictionaryType.setDictionaryType(DictionaryTypeCode.PRODUCT_CATEGORY.getCode());
-        dictionaryType.setDictionaryName(DictionaryTypeCode.PRODUCT_CATEGORY.getInfo());
-        dictionaryType.setMenuZerothName("设置管理");
-        dictionaryType.setMenuFirstName("经营云配置");
-        dictionaryType.setMenuSecondName("产品配置");
-        dictionaryType.setRemark("");
-        dictionaryType.setStatus(BusinessConstants.NORMAL);
-        dictionaryType.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-        dictionaryType.setCreateBy(userId);
-        dictionaryType.setUpdateBy(userId);
-        dictionaryType.setCreateTime(nowDate);
-        dictionaryType.setUpdateTime(nowDate);
-        boolean dictionaryTypeSuccess = dictionaryTypeMapper.insertDictionaryType(dictionaryType) > 0;
-        Long dictionaryTypeId = dictionaryType.getDictionaryTypeId();
-        //初始化字典数据
-        List<DictionaryData> dictionaryData = new ArrayList<>(6);
-        for (DictionaryData initDictionaryData : INIT_DICTIONARY_DATA) {
-            initDictionaryData.setDictionaryTypeId(dictionaryTypeId);
-            initDictionaryData.setRemark("");
-            initDictionaryData.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
-            initDictionaryData.setCreateBy(userId);
-            initDictionaryData.setUpdateBy(userId);
-            initDictionaryData.setCreateTime(nowDate);
-            initDictionaryData.setUpdateTime(nowDate);
-            dictionaryData.add(initDictionaryData);
-        }
-        boolean dictionaryDataSuccess = dictionaryDataMapper.batchDictionaryData(dictionaryData) > 0;
-        return dictionaryTypeSuccess && dictionaryDataSuccess;
+        return dictionaryTypeService.initData();
     }
 
     /**
@@ -490,6 +442,7 @@ public class TenantLogic {
         }
         return initSalaryItem;
     }
+
     public boolean initIndustryAttraction() {
         boolean initSalaryItem = true;
 //        R<Boolean> booleanR = remoteIndustryAttractionService.initIndustryAttraction(SecurityConstants.INNER);
@@ -503,6 +456,7 @@ public class TenantLogic {
 //        }
         return initSalaryItem;
     }
+
     /**
      * @description: 发送待办给客服
      * @Author: hzk

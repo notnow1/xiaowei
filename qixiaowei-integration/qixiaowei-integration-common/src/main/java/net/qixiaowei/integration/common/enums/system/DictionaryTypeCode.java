@@ -60,4 +60,13 @@ public enum DictionaryTypeCode {
     public String getMenuSecondName() {
         return menuSecondName;
     }
+
+    public static DictionaryTypeCode parseEnum(String code) {
+        for (DictionaryTypeCode dictionaryTypeCode : DictionaryTypeCode.values()) {
+            if (dictionaryTypeCode.getCode().equals(code)) {
+                return dictionaryTypeCode;
+            }
+        }
+        return PRODUCT_CATEGORY;
+    }
 }

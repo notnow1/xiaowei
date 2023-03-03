@@ -4,6 +4,7 @@ package net.qixiaowei.system.manage.service.impl.basic;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.system.DictionaryTypeCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -48,6 +49,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     public DictionaryDataDTO selectDictionaryDataByDictionaryDataId(Long dictionaryDataId) {
         return dictionaryDataMapper.selectDictionaryDataByDictionaryDataId(dictionaryDataId);
     }
+
     /**
      * 根据字典id集合查询字典数据表
      *
@@ -82,14 +84,14 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
     public DictionaryDataDTO insertDictionaryData(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
         BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
-        if(StringUtils.isEmpty(dictionaryDataDTO.getDictionaryValue())){
+        if (StringUtils.isEmpty(dictionaryDataDTO.getDictionaryValue())) {
             //根据type Id查询数据做排序 自增
-          int i  = dictionaryDataMapper.selectDictionaryTypeId(dictionaryData.getDictionaryTypeId());
-          //如果为空赋值
-          if (dictionaryDataDTO.getSort() == null){
-              dictionaryData.setSort(i+1);
-          }
-            dictionaryData.setDictionaryValue(String.valueOf(i+1));
+            int i = dictionaryDataMapper.selectDictionaryTypeId(dictionaryData.getDictionaryTypeId());
+            //如果为空赋值
+            if (dictionaryDataDTO.getSort() == null) {
+                dictionaryData.setSort(i + 1);
+            }
+            dictionaryData.setDictionaryValue(String.valueOf(i + 1));
         }
         dictionaryData.setDefaultFlag(0);
         dictionaryData.setCreateBy(SecurityUtils.getUserId());
@@ -147,8 +149,9 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
 
     /**
      * 根据枚举查询产品应用字典名称数据
-     * @return
+     *
      * @param dictionaryType
+     * @return
      */
     @Override
     public DictionaryTypeDTO selectDictionaryTypeByProduct(String dictionaryType) {
@@ -157,6 +160,7 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
 
     /**
      * 根据typeId查询字典数据
+     *
      * @param dictionaryTypeId
      * @return
      */
@@ -167,13 +171,14 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
 
     /**
      * 根据实体类远程查询字典数据
+     *
      * @param dictionaryDataDTO
      * @return
      */
     @Override
     public List<DictionaryDataDTO> remoteDictionaryDataId(DictionaryDataDTO dictionaryDataDTO) {
         DictionaryData dictionaryData = new DictionaryData();
-        BeanUtils.copyProperties(dictionaryDataDTO,dictionaryData);
+        BeanUtils.copyProperties(dictionaryDataDTO, dictionaryData);
         return dictionaryDataMapper.remoteDictionaryDataId(dictionaryData);
     }
 
@@ -200,13 +205,15 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
 
     /**
      * 根据不同枚举类型查询不同表 查看是否被引用
+     *
      * @param dictionaryType
      * @param dictionaryDataDTO
      */
     private void quoteFlag(String dictionaryType, DictionaryDataDTO dictionaryDataDTO) {
         StringBuffer dictDataErreo = new StringBuffer();
-        switch (dictionaryType) {
-            case "PRODUCT_CATEGORY":
+        DictionaryTypeCode dictionaryTypeCode = DictionaryTypeCode.parseEnum(dictionaryType);
+        switch (dictionaryTypeCode) {
+            case PRODUCT_CATEGORY:
                 StringBuffer productErreo = new StringBuffer();
                 ProductDTO productDTO = new ProductDTO();
                 productDTO.setProductCategory(dictionaryDataDTO.getDictionaryDataId().toString());
@@ -215,18 +222,18 @@ public class DictionaryDataServiceImpl implements IDictionaryDataService {
                 if (null != listR) {
                     List<ProductDTO> data = listR.getData();
                     if (!StringUtils.isEmpty(data)) {
-                        productErreo.append("枚举值"+dictionaryDataDTO.getDictionaryLabel()+(dictionaryType=="PRODUCT_CATEGORY"?"被产品类别":"被产品上下架")+data.stream().map(ProductDTO::getProductName).collect(Collectors.toList())+"引用 无法删除！");
+                        productErreo.append("枚举值" + dictionaryDataDTO.getDictionaryLabel() + (dictionaryType == "PRODUCT_CATEGORY" ? "被产品类别" : "被产品上下架") + data.stream().map(ProductDTO::getProductName).collect(Collectors.toList()) + "引用 无法删除！");
                     }
                 }
-                if (productErreo.length()>1){
+                if (productErreo.length() > 1) {
                     dictDataErreo.append(productErreo);
                 }
                 break;
             default:
                 break;
         }
-        if (dictDataErreo.length()>1){
-           throw new ServiceException(dictDataErreo.toString());
+        if (dictDataErreo.length() > 1) {
+            throw new ServiceException(dictDataErreo.toString());
         }
     }
 
