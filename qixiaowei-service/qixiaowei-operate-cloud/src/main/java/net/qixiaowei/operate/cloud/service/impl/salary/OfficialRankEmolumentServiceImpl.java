@@ -275,6 +275,7 @@ public class OfficialRankEmolumentServiceImpl implements IOfficialRankEmolumentS
                     .compareTo(Optional.ofNullable(emolumentDTO.getSalaryFloor()).orElse(BigDecimal.ZERO)) < 0) {
                 throw new ServiceException("工资下限不可以大于上限");
             }
+
         }
         if (StringUtils.isNotEmpty(addRankEmolumentDTOList)) {
             insertOfficialRankEmoluments(addRankEmolumentDTOList);

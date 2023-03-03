@@ -18,7 +18,6 @@ import net.qixiaowei.integration.security.utils.SecurityUtils;
 import net.qixiaowei.operate.cloud.api.dto.targetManager.TargetDecomposeDetailsDTO;
 import net.qixiaowei.operate.cloud.api.remote.targetManager.RemoteDecomposeService;
 import net.qixiaowei.system.manage.api.domain.basic.Industry;
-import net.qixiaowei.system.manage.api.domain.basic.IndustryDefault;
 import net.qixiaowei.system.manage.api.dto.basic.ConfigDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDTO;
 import net.qixiaowei.system.manage.api.dto.basic.IndustryDefaultDTO;
@@ -66,8 +65,10 @@ public class IndustryServiceImpl implements IIndustryService {
      */
     @Override
     public IndustryDTO selectIndustryByIndustryId(Long industryId) {
-        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
-        if (enableType == 1) {
+        if (StringUtils.isNull(industryId)) {
+            return null;
+        }
+        if (industryId < 100000) {
             IndustryDefaultDTO industryDefaultDTO = industryDefaultService.selectIndustryDefaultByIndustryId(industryId);
             IndustryDTO industryDTO = new IndustryDTO();
             BeanUtils.copyProperties(industryDefaultDTO, industryDTO);
@@ -723,28 +724,28 @@ public class IndustryServiceImpl implements IIndustryService {
         if (StringUtils.isEmpty(industryIds)) {
             return new ArrayList<>();
         }
-        Integer enableType = configService.getValueByCode(ConfigCode.INDUSTRY_ENABLE.getCode());
-        List<Long> defaultIndustryIds;
-        if (enableType == 1) {// 系统
-            defaultIndustryIds = industryIds.stream().filter(industryId -> industryId < 100000).collect(Collectors.toList());// 默认
-            if (StringUtils.isEmpty(defaultIndustryIds)) {
-                return new ArrayList<>();
+        List<IndustryDTO> industryDTOS = new ArrayList<>();
+        List<Long> customIndustryIds = industryIds.stream().filter(industryId -> industryId >= 100000).collect(Collectors.toList());// 自定义
+        if (StringUtils.isNotEmpty(customIndustryIds)) {
+            List<IndustryDTO> industryDTOList = industryMapper.selectIndustryByIndustryIds(customIndustryIds);
+            if (StringUtils.isNotEmpty(industryDTOList)) {
+                industryDTOS.addAll(industryDTOList);
             }
-            List<IndustryDefaultDTO> industryDTOS = industryDefaultService.selectIndustryDefaultByIndustryIds(defaultIndustryIds);
-            List<IndustryDTO> industryDTOArrayList = new ArrayList<>();
-            for (IndustryDefaultDTO industryDefaultDTO : industryDTOS) {
-                IndustryDTO industryDTO = new IndustryDTO();
-                BeanUtils.copyProperties(industryDefaultDTO, industryDTO);
-                industryDTOArrayList.add(industryDTO);
-            }
-            return industryDTOArrayList;
-        } else {
-            defaultIndustryIds = industryIds.stream().filter(industryId -> industryId >= 100000).collect(Collectors.toList());// 自定义
-            if (StringUtils.isEmpty(defaultIndustryIds)) {
-                return new ArrayList<>();
-            }
-            return industryMapper.selectIndustryByIndustryIds(defaultIndustryIds);
         }
+        List<Long> defaultIndustryIds = industryIds.stream().filter(industryId -> industryId < 100000).collect(Collectors.toList());// 默认
+        if (StringUtils.isNotEmpty(defaultIndustryIds)) {
+            List<IndustryDefaultDTO> industryDefaultDTOS = industryDefaultService.selectIndustryDefaultByIndustryIds(defaultIndustryIds);
+            if (StringUtils.isNotEmpty(industryDefaultDTOS)) {
+                List<IndustryDTO> industryDTOArrayList = new ArrayList<>();
+                for (IndustryDefaultDTO industryDefaultDTO : industryDefaultDTOS) {
+                    IndustryDTO industryDTO = new IndustryDTO();
+                    BeanUtils.copyProperties(industryDefaultDTO, industryDTO);
+                    industryDTOArrayList.add(industryDTO);
+                }
+                industryDTOS.addAll(industryDTOArrayList);
+            }
+        }
+        return industryDTOS;
     }
 
     /**

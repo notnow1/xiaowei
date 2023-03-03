@@ -251,6 +251,7 @@ public class DeptSalaryAdjustPlanServiceImpl implements IDeptSalaryAdjustPlanSer
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertDeptSalaryAdjustPlan(DeptSalaryAdjustPlanDTO deptSalaryAdjustPlanDTO) {
         if (StringUtils.isNull(deptSalaryAdjustPlanDTO)) {
             throw new ServiceException("部门调薪计划表不能为空");
