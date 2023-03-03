@@ -201,45 +201,62 @@
         <if test="strategyIntent.params.createTimeEnd != null and strategyIntent.params.createTimeEnd != ''"><!-- 结束时间检索 -->
             AND si.create_time &lt;= #{strategyIntent.params.createTimeEnd}
         </if>
-                        <if test="strategyIntent.strategyIntentId != null">
-                            and si.strategy_intent_id=#{strategyIntent.strategyIntentId}
-                        </if>
-                        <if test="strategyIntent.planYear != null">
-                            and si.plan_year=#{strategyIntent.planYear}
-                        </if>
-                        <if test="strategyIntent.vision != null and strategyIntent.vision != ''">
-                            and si.vision=#{strategyIntent.vision}
-                        </if>
-                        <if test="strategyIntent.mission != null and strategyIntent.mission != ''">
-                            and si.mission=#{strategyIntent.mission}
-                        </if>
-                        <if test="strategyIntent.strategyTarget != null and strategyIntent.strategyTarget != ''">
-                            and si.strategy_target=#{strategyIntent.strategyTarget}
-                        </if>
-                        <if test="strategyIntent.strategyPosition != null and strategyIntent.strategyPosition != ''">
-                            and si.strategy_position=#{strategyIntent.strategyPosition}
-                        </if>
-                        <if test="strategyIntent.operatePlanPeriod != null">
-                            and si.operate_plan_period=#{strategyIntent.operatePlanPeriod}
-                        </if>
-                        <if test="strategyIntent.operateHistoryYear != null">
-                            and si.operate_history_year=#{strategyIntent.operateHistoryYear}
-                        </if>
-                        <if test="strategyIntent.deleteFlag != null">
-                            and si.delete_flag=#{strategyIntent.deleteFlag}
-                        </if>
-                        <if test="strategyIntent.createBy != null">
-                            and si.create_by=#{strategyIntent.createBy}
-                        </if>
-                        <if test="strategyIntent.createTime != null">
-                            and si.create_time=#{strategyIntent.createTime}
-                        </if>
-                        <if test="strategyIntent.updateBy != null">
-                            and si.update_by=#{strategyIntent.updateBy}
-                        </if>
-                        <if test="strategyIntent.updateTime != null">
-                            and si.update_time=#{strategyIntent.updateTime}
-                        </if>
+
+        <if test="strategyIntent.createBys != null and strategyIntent.createBys.size() >0">
+            and si.create_by in
+            <foreach item="item"
+                     collection="strategyIntent.createBys"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="strategyIntent.strategyIntentId != null">
+            and si.strategy_intent_id=#{strategyIntent.strategyIntentId}
+        </if>
+        <if test="strategyIntent.planYear != null">
+            and si.plan_year=#{strategyIntent.planYear}
+        </if>
+        <if test="strategyIntent.vision != null and strategyIntent.vision != ''">
+            and si.vision=#{strategyIntent.vision}
+        </if>
+        <if test="strategyIntent.mission != null and strategyIntent.mission != ''">
+            and si.mission=#{strategyIntent.mission}
+        </if>
+        <if test="strategyIntent.strategyTarget != null and strategyIntent.strategyTarget != ''">
+            and si.strategy_target=#{strategyIntent.strategyTarget}
+        </if>
+        <if test="strategyIntent.strategyPosition != null and strategyIntent.strategyPosition != ''">
+            and si.strategy_position=#{strategyIntent.strategyPosition}
+        </if>
+        <if test="strategyIntent.operatePlanPeriod != null">
+            and si.operate_plan_period=#{strategyIntent.operatePlanPeriod}
+        </if>
+        <if test="strategyIntent.operateHistoryYear != null">
+            and si.operate_history_year=#{strategyIntent.operateHistoryYear}
+        </if>
+        <if test="strategyIntent.deleteFlag != null">
+            and si.delete_flag=#{strategyIntent.deleteFlag}
+        </if>
+        <if test="strategyIntent.createBy != null">
+            and si.create_by=#{strategyIntent.createBy}
+        </if>
+        <if test="strategyIntent.createTime != null">
+            and si.create_time=#{strategyIntent.createTime}
+        </if>
+        <if test="strategyIntent.updateBy != null">
+            and si.update_by=#{strategyIntent.updateBy}
+        </if>
+        <if test="strategyIntent.updateTime != null">
+            and si.update_time=#{strategyIntent.updateTime}
+        </if>
+        <if test="bonusBudget.createBys != null and bonusBudget.createBys.size() >0">
+            and create_by in
+            <foreach item="item"
+                     collection="bonusBudget.createBys"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
 <!--    根据规划年度查询战略意图表-->
     <select id="selectStrategyIntentByPlanYear"

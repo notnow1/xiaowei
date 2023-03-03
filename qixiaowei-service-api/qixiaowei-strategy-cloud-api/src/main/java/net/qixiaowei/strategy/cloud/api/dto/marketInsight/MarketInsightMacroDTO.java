@@ -132,7 +132,10 @@ public class MarketInsightMacroDTO {
     * 租户ID
     */
     private  Long tenantId;
-
+    /**
+     * 规划业务单元维度列表
+     */
+    List<Map<String, Object>> businessUnitDecomposes;
     /**
     * 请求参数
     */

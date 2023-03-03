@@ -102,6 +102,24 @@
                 pbu.business_unit_name NOT LIKE concat('%', #{item}, '%')
             </foreach>
         </if>
+        <if test="marketInsightMacro.params.planBusinessUnitNameEqual != null and marketInsightMacro.params.planBusinessUnitNameEqual.size() > 0">
+            AND pbu.business_unit_name IN
+            <foreach item="item"
+                     collection="marketInsightMacro.params.planBusinessUnitNameEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightMacro.params.planBusinessUnitNameNotEqual != null and marketInsightMacro.params.planBusinessUnitNameNotEqual.size() > 0">
+            AND (pbu.business_unit_name NOT IN
+            <foreach item="item"
+                     collection="marketInsightMacro.params.planBusinessUnitNameNotEqual"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR pbu.business_unit_name IS NULL
+            )
+        </if>
         <!-- 区域ID过滤  -->
         <if test="marketInsightMacro.params.areaIdEqual != null and marketInsightMacro.params.areaIdEqual.size() > 0">
             AND mim.area_id IN
@@ -273,45 +291,53 @@
             AND mim.create_time &lt;= #{marketInsightMacro.params.createTimeEnd}
         </if>
 
-                        <if test="marketInsightMacro.marketInsightMacroId != null">
-                            and mim.market_insight_macro_id=#{marketInsightMacro.marketInsightMacroId}
-                        </if>
-                        <if test="marketInsightMacro.planYear != null">
-                            and mim.plan_year=#{marketInsightMacro.planYear}
-                        </if>
-                        <if test="marketInsightMacro.planBusinessUnitId != null">
-                            and mim.plan_business_unit_id=#{marketInsightMacro.planBusinessUnitId}
-                        </if>
-                        <if test="marketInsightMacro.businessUnitDecompose != null and marketInsightMacro.businessUnitDecompose != ''">
-                            and mim.business_unit_decompose=#{marketInsightMacro.businessUnitDecompose}
-                        </if>
-                        <if test="marketInsightMacro.areaId != null">
-                            and mim.area_id=#{marketInsightMacro.areaId}
-                        </if>
-                        <if test="marketInsightMacro.departmentId != null">
-                            and mim.department_id=#{marketInsightMacro.departmentId}
-                        </if>
-                        <if test="marketInsightMacro.productId != null">
-                            and mim.product_id=#{marketInsightMacro.productId}
-                        </if>
-                        <if test="marketInsightMacro.industryId != null">
-                            and mim.industry_id=#{marketInsightMacro.industryId}
-                        </if>
-                        <if test="marketInsightMacro.deleteFlag != null">
-                            and mim.delete_flag=#{marketInsightMacro.deleteFlag}
-                        </if>
-                        <if test="marketInsightMacro.createBy != null">
-                            and mim.create_by=#{marketInsightMacro.createBy}
-                        </if>
-                        <if test="marketInsightMacro.createTime != null">
-                            and mim.create_time=#{marketInsightMacro.createTime}
-                        </if>
-                        <if test="marketInsightMacro.updateBy != null">
-                            and mim.update_by=#{marketInsightMacro.updateBy}
-                        </if>
-                        <if test="marketInsightMacro.updateTime != null">
-                            and mim.update_time=#{marketInsightMacro.updateTime}
-                        </if>
+        <if test="marketInsightMacro.createBys != null and marketInsightMacro.createBys.size() >0">
+            and mim.create_by in
+            <foreach item="item"
+                     collection="marketInsightMacro.createBys"
+                     index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="marketInsightMacro.marketInsightMacroId != null">
+            and mim.market_insight_macro_id=#{marketInsightMacro.marketInsightMacroId}
+        </if>
+        <if test="marketInsightMacro.planYear != null">
+            and mim.plan_year=#{marketInsightMacro.planYear}
+        </if>
+        <if test="marketInsightMacro.planBusinessUnitId != null">
+            and mim.plan_business_unit_id=#{marketInsightMacro.planBusinessUnitId}
+        </if>
+        <if test="marketInsightMacro.businessUnitDecompose != null and marketInsightMacro.businessUnitDecompose != ''">
+            and mim.business_unit_decompose=#{marketInsightMacro.businessUnitDecompose}
+        </if>
+        <if test="marketInsightMacro.areaId != null">
+            and mim.area_id=#{marketInsightMacro.areaId}
+        </if>
+        <if test="marketInsightMacro.departmentId != null">
+            and mim.department_id=#{marketInsightMacro.departmentId}
+        </if>
+        <if test="marketInsightMacro.productId != null">
+            and mim.product_id=#{marketInsightMacro.productId}
+        </if>
+        <if test="marketInsightMacro.industryId != null">
+            and mim.industry_id=#{marketInsightMacro.industryId}
+        </if>
+        <if test="marketInsightMacro.deleteFlag != null">
+            and mim.delete_flag=#{marketInsightMacro.deleteFlag}
+        </if>
+        <if test="marketInsightMacro.createBy != null">
+            and mim.create_by=#{marketInsightMacro.createBy}
+        </if>
+        <if test="marketInsightMacro.createTime != null">
+            and mim.create_time=#{marketInsightMacro.createTime}
+        </if>
+        <if test="marketInsightMacro.updateBy != null">
+            and mim.update_by=#{marketInsightMacro.updateBy}
+        </if>
+        <if test="marketInsightMacro.updateTime != null">
+            and mim.update_time=#{marketInsightMacro.updateTime}
+        </if>
     </select>
     <!--新增市场洞察宏观表-->
     <insert id="insertMarketInsightMacro" useGeneratedKeys="true" keyProperty="marketInsightMacroId">

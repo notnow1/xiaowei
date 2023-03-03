@@ -64,7 +64,7 @@ public class MarketInsightMacro extends TenantEntity {
     /**
      * 员工ID集合
      */
-    private List<Long> createBys;
+    private List<String> createBys;
 
 }
 

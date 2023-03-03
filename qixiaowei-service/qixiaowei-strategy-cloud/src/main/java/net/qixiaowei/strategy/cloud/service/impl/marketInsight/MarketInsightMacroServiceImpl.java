@@ -4,6 +4,7 @@ import java.util.*;
 
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
 import net.qixiaowei.operate.cloud.api.dto.product.ProductDTO;
@@ -79,6 +80,8 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
     @Override
     public MarketInsightMacroDTO selectMarketInsightMacroByMarketInsightMacroId(Long marketInsightMacroId) {
         MarketInsightMacroDTO marketInsightMacroDTO = marketInsightMacroMapper.selectMarketInsightMacroByMarketInsightMacroId(marketInsightMacroId);
+        List<Map<String, Object>> dropList = PlanBusinessUnitCode.getDropList(marketInsightMacroDTO.getBusinessUnitDecompose());
+        marketInsightMacroDTO.setBusinessUnitDecomposes(dropList);
         Long productId = marketInsightMacroDTO.getProductId();
         Long areaId = marketInsightMacroDTO.getAreaId();
         Long departmentId = marketInsightMacroDTO.getDepartmentId();
@@ -152,11 +155,28 @@ public class MarketInsightMacroServiceImpl implements IMarketInsightMacroService
      */
     @Override
     public List<MarketInsightMacroDTO> selectMarketInsightMacroList(MarketInsightMacroDTO marketInsightMacroDTO) {
+        List<String> createByList = new ArrayList<>();
         MarketInsightMacro marketInsightMacro = new MarketInsightMacro();
         BeanUtils.copyProperties(marketInsightMacroDTO, marketInsightMacro);
         //高级搜索请求参数
         Map<String, Object> params = marketInsightMacroDTO.getParams();
         this.queryemployeeName(params);
+        marketInsightMacro.setParams(params);
+        if (StringUtils.isNotNull(marketInsightMacroDTO.getCreateByName())) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(marketInsightMacroDTO.getCreateByName());
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                employeeIds.forEach(e -> {
+                    createByList.add(String.valueOf(e));
+                });
+            } else {
+                createByList.add("");
+            }
+        }
+        marketInsightMacro.setCreateBys(createByList);
         List<MarketInsightMacroDTO> marketInsightMacroDTOS = marketInsightMacroMapper.selectMarketInsightMacroList(marketInsightMacro);
         if (StringUtils.isNotEmpty(marketInsightMacroDTOS)) {
             Set<Long> createBys = marketInsightMacroDTOS.stream().map(MarketInsightMacroDTO::getCreateBy).collect(Collectors.toSet());

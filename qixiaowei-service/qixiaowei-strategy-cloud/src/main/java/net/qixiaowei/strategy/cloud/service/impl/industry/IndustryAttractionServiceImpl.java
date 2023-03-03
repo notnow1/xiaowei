@@ -108,7 +108,25 @@ public class IndustryAttractionServiceImpl implements IIndustryAttractionService
     public List<IndustryAttractionDTO> selectIndustryAttractionList(IndustryAttractionDTO industryAttractionDTO) {
         IndustryAttraction industryAttraction = new IndustryAttraction();
         BeanUtils.copyProperties(industryAttractionDTO, industryAttraction);
-        return industryAttractionMapper.selectIndustryAttractionList(industryAttraction);
+        List<IndustryAttractionDTO> industryAttractionDTOS = industryAttractionMapper.selectIndustryAttractionList(industryAttraction);
+        if (StringUtils.isNotEmpty(industryAttractionDTOS)){
+            List<Long> industryAttractionIds = industryAttractionDTOS.stream().map(IndustryAttractionDTO::getIndustryAttractionId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(industryAttractionIds)){
+                List<IndustryAttractionElementDTO> industryAttractionElementDTOList = industryAttractionElementMapper.selectIndustryAttractionElementByIndustryAttractionIds(industryAttractionIds);
+                if (StringUtils.isNotEmpty(industryAttractionElementDTOList)){
+                    for (IndustryAttractionDTO attractionDTO : industryAttractionDTOS) {
+                        List<IndustryAttractionElementDTO> industryAttractionElementDTOS = new ArrayList<>();
+                        for (IndustryAttractionElementDTO industryAttractionElementDTO : industryAttractionElementDTOList) {
+                            if (attractionDTO.getIndustryAttractionId().equals(industryAttractionElementDTO.getIndustryAttractionId())){
+                                industryAttractionElementDTOS.add(industryAttractionElementDTO);
+                            }
+                        }
+                        attractionDTO.setIndustryAttractionElementDTOS(industryAttractionElementDTOS);
+                    }
+                }
+            }
+        }
+        return industryAttractionDTOS;
     }
 
     /**

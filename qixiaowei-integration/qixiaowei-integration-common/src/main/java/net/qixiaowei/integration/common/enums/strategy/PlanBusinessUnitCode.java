@@ -72,7 +72,6 @@ public enum PlanBusinessUnitCode {
      */
     public static List<Map<String, Object>> getDropList(String businessUnitDecompose) {
         if (StringUtils.isNotEmpty(businessUnitDecompose)) {
-            StringBuilder businessUnitDecomposeNames = new StringBuilder();
             List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
             List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
             businessUnitDecomposeList.forEach(decompose -> {

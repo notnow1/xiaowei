@@ -131,6 +131,7 @@ public class MarketInsightMacroController extends BaseController {
      */
     @SneakyThrows
     @GetMapping("export")
+    @RequiresPermissions("strategy:cloud:marketInsightMacro:export")
     public void exportMarketInsightMacro(@RequestParam Map<String, Object> marketInsightMacro, MarketInsightMacroDTO marketInsightMacroDTO, HttpServletResponse response) {
         MarketInsightMacroDTO marketInsightMacroDTO1 = marketInsightMacroService.selectMarketInsightMacroByMarketInsightMacroId(marketInsightMacroDTO.getMarketInsightMacroId());
         List<List<String>> head = MarketInsightMacroImportListener.head(marketInsightMacroDTO1);

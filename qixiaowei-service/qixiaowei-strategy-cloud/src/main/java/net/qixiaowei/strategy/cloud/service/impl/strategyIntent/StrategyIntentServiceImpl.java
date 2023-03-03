@@ -124,12 +124,28 @@ public class StrategyIntentServiceImpl implements IStrategyIntentService {
      */
     @Override
     public List<StrategyIntentDTO> selectStrategyIntentList(StrategyIntentDTO strategyIntentDTO) {
-
+        List<String> createByList = new ArrayList<>();
         StrategyIntent strategyIntent = new StrategyIntent();
         BeanUtils.copyProperties(strategyIntentDTO, strategyIntent);
         //高级搜索请求参数
         Map<String, Object> params = strategyIntentDTO.getParams();
         this.queryemployeeName(params);
+        strategyIntent.setParams(params);
+        if (StringUtils.isNotNull(strategyIntentDTO.getCreateByName())) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(strategyIntentDTO.getCreateByName());
+            R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
+            List<UserDTO> userListData = userList.getData();
+            List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(employeeIds)) {
+                employeeIds.forEach(e -> {
+                    createByList.add(String.valueOf(e));
+                });
+            } else {
+                createByList.add("");
+            }
+        }
+        strategyIntent.setCreateBys(createByList);
         List<StrategyIntentDTO> strategyIntentDTOS = strategyIntentMapper.selectStrategyIntentList(strategyIntent);
         if (StringUtils.isNotEmpty(strategyIntentDTOS)) {
             Set<Long> createBys = strategyIntentDTOS.stream().map(StrategyIntentDTO::getCreateBy).collect(Collectors.toSet());
