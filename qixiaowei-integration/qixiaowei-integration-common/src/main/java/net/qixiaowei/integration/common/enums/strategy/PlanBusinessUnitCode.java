@@ -2,10 +2,7 @@ package net.qixiaowei.integration.common.enums.strategy;
 
 import net.qixiaowei.integration.common.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 业务单元枚举
@@ -46,7 +43,7 @@ public enum PlanBusinessUnitCode {
      * @param decompose 维度
      * @return List
      */
-    public static List<Map<String, String>> getDropList(String decompose) {
+    public static List<Map<String, String>> getExportDropList(String decompose) {
         List<Map<String, String>> dropList = new ArrayList<>();
         if (StringUtils.isNotNull(decompose)) {
             String[] decomposeList = decompose.split(",");
@@ -66,6 +63,34 @@ public enum PlanBusinessUnitCode {
         }
         return new ArrayList<>();
     }
+
+    /**
+     * 获取规划业务单元下拉列表
+     *
+     * @param businessUnitDecompose 维度
+     * @return List
+     */
+    public static List<Map<String, Object>> getDropList(String businessUnitDecompose) {
+        if (StringUtils.isNotEmpty(businessUnitDecompose)) {
+            StringBuilder businessUnitDecomposeNames = new StringBuilder();
+            List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
+            List<Map<String, Object>> businessUnitDecomposes = new ArrayList<>();
+            businessUnitDecomposeList.forEach(decompose -> {
+                for (PlanBusinessUnitCode item : PlanBusinessUnitCode.values()) {
+                    if (item.code.equals(decompose)) {
+                        Map<String, Object> businessUnitDecomposeMap = new HashMap<>();
+                        businessUnitDecomposeMap.put("label", item.getInfo());
+                        businessUnitDecomposeMap.put("value", item.getCode());
+                        businessUnitDecomposes.add(businessUnitDecomposeMap);
+                        break;
+                    }
+                }
+            });
+            return businessUnitDecomposes;
+        }
+        return new ArrayList<>();
+    }
+
 
     /**
      * 是否包含

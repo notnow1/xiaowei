@@ -48,7 +48,7 @@ public class MarketInsightMacroImportListener extends AnalysisEventListener<Mark
         Long departmentId = marketInsightMacroDTO.getDepartmentId();
         Long industryId = marketInsightMacroDTO.getIndustryId();
 
-        List<Map<String, String>> dropList = PlanBusinessUnitCode.getDropList(marketInsightMacroDTO.getBusinessUnitDecompose());
+        List<Map<String, String>> dropList = PlanBusinessUnitCode.getExportDropList(marketInsightMacroDTO.getBusinessUnitDecompose());
         List<List<String>> list = new ArrayList<List<String>>();
 
         List<String> head2 = new ArrayList<String>();
