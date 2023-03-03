@@ -47,18 +47,18 @@ public interface IBusinessDesignService {
     /**
      * 批量修改业务设计表
      *
-     * @param businessDesignDtoS 业务设计表
+     * @param businessDesignDtos 业务设计表
      * @return 结果
      */
-    int updateBusinessDesigns(List<BusinessDesignDTO> businessDesignDtoS);
+    int updateBusinessDesigns(List<BusinessDesignDTO> businessDesignDtos);
 
     /**
      * 批量新增业务设计表
      *
-     * @param businessDesignDtoS 业务设计表
+     * @param businessDesignDtos 业务设计表
      * @return 结果
      */
-    int insertBusinessDesigns(List<BusinessDesignDTO> businessDesignDtoS);
+    int insertBusinessDesigns(List<BusinessDesignDTO> businessDesignDtos);
 
     /**
      * 逻辑批量删除业务设计表
@@ -71,7 +71,7 @@ public interface IBusinessDesignService {
     /**
      * 逻辑删除业务设计表信息
      *
-     * @param businessDesignDTO dto
+     * @param businessDesignDTO
      * @return 结果
      */
     int logicDeleteBusinessDesignByBusinessDesignId(BusinessDesignDTO businessDesignDTO);
@@ -79,15 +79,15 @@ public interface IBusinessDesignService {
     /**
      * 批量删除业务设计表
      *
-     * @param BusinessDesignDtoS 集合
+     * @param BusinessDesignDtos
      * @return 结果
      */
-    int deleteBusinessDesignByBusinessDesignIds(List<BusinessDesignDTO> BusinessDesignDtoS);
+    int deleteBusinessDesignByBusinessDesignIds(List<BusinessDesignDTO> BusinessDesignDtos);
 
     /**
      * 逻辑删除业务设计表信息
      *
-     * @param businessDesignDTO dto
+     * @param businessDesignDTO
      * @return 结果
      */
     int deleteBusinessDesignByBusinessDesignId(BusinessDesignDTO businessDesignDTO);

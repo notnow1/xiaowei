@@ -28,12 +28,10 @@ import net.qixiaowei.system.manage.api.remote.basic.RemoteDepartmentService;
 import net.qixiaowei.system.manage.api.remote.basic.RemoteIndustryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -81,9 +79,46 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         if (StringUtils.isNull(businessDesignDTO)) {
             throw new ServiceException("当前的业务设计已不存在");
         }
+        Long areaId = businessDesignDTO.getAreaId();
+        Long departmentId = businessDesignDTO.getDepartmentId();
+        Long productId = businessDesignDTO.getProductId();
+        Long industryId = businessDesignDTO.getIndustryId();
+        AreaDTO areaDTO;
+        if (StringUtils.isNotNull(areaId)) {
+            R<AreaDTO> areaDTOR = areaService.getById(areaId, SecurityConstants.INNER);
+            areaDTO = areaDTOR.getData();
+            if (StringUtils.isNotNull(areaDTO)) {
+                businessDesignDTO.setAreaName(areaDTO.getAreaName());
+            }
+        }
+        DepartmentDTO departmentDTO;
+        if (StringUtils.isNotNull(departmentId)) {
+            R<DepartmentDTO> departmentDTOR = departmentService.selectdepartmentId(departmentId, SecurityConstants.INNER);
+            departmentDTO = departmentDTOR.getData();
+            if (StringUtils.isNotNull(departmentDTO)) {
+                businessDesignDTO.setDepartmentName(departmentDTO.getDepartmentName());
+            }
+        }
+        ProductDTO productDTO;
+        if (StringUtils.isNotNull(productId)) {
+            R<ProductDTO> productDTOR = productService.remoteSelectById(productId, SecurityConstants.INNER);
+            productDTO = productDTOR.getData();
+            if (StringUtils.isNotNull(productDTO)) {
+                businessDesignDTO.setDepartmentName(productDTO.getProductName());
+            }
+        }
+        IndustryDTO industryDTO;
+        if (StringUtils.isNotNull(industryId)) {
+            R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
+            industryDTO = industryDTOR.getData();
+            if (StringUtils.isNotNull(industryDTO)) {
+                businessDesignDTO.setIndustryName(industryDTO.getIndustryName());
+            }
+        }
+
         List<BusinessDesignParamDTO> businessDesignParamDTOS = businessDesignParamService.selectBusinessDesignParamByBusinessDesignId(businessDesignId);
+        // 综合毛利率综合订单额计算
         if (StringUtils.isNotEmpty(businessDesignParamDTOS)) {
-//                综合毛利率综合订单额计算
             for (BusinessDesignParamDTO businessDesignParamDTO : businessDesignParamDTOS) {
                 BigDecimal synthesizeGrossMargin = businessDesignParamDTO.getHistoryAverageRate().multiply(businessDesignParamDTO.getHistoryWeight())
                         .add(businessDesignParamDTO.getForecastRate().multiply(businessDesignParamDTO.getForecastWeight()));
@@ -91,8 +126,50 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
                 BigDecimal synthesizeOrderAmount = businessDesignParamDTO.getHistoryOrderAmount().multiply(businessDesignParamDTO.getHistoryOrderWeight())
                         .add(businessDesignParamDTO.getForecastOrderAmount().multiply(businessDesignParamDTO.getForecastOrderWeight()));
                 businessDesignParamDTO.setSynthesizeOrderAmount(synthesizeOrderAmount);
+                Integer paramDimension = businessDesignParamDTO.getParamDimension();
+                if (StringUtils.isNotNull(paramDimension)) {
+                    switch (paramDimension) {
+                        case 1:
+                            businessDesignParamDTO.setParamDimensionName("产品");
+                            break;
+                        case 2:
+                            businessDesignParamDTO.setParamDimensionName("客户");
+                            break;
+                        case 3:
+                            businessDesignParamDTO.setParamDimensionName("区域");
+                            break;
+                    }
+                }
             }
             businessDesignDTO.setBusinessDesignParamDTOS(businessDesignParamDTOS);
+        } else {
+            businessDesignDTO.setBusinessDesignParamDTOS(new ArrayList<>());
+        }
+        // 业务设计轴配置表
+        List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS = businessDesignAxisConfigService.selectBusinessDesignAxisConfigByBusinessDesignId(businessDesignId);
+        if (StringUtils.isNotEmpty(businessDesignAxisConfigDTOS)) {
+            Map<Integer, Map<Integer, List<BusinessDesignAxisConfigDTO>>> groupBusinessDesignAxisConfigDTOS = businessDesignAxisConfigDTOS.stream().
+                    collect(Collectors.groupingBy(BusinessDesignAxisConfigDTO::getParamDimension, Collectors.groupingBy(BusinessDesignAxisConfigDTO::getCoordinateAxis)));
+            List<Map<String, Object>> businessDesignAxisConfigMap = new ArrayList<>();
+            for (Integer groupDesign : groupBusinessDesignAxisConfigDTOS.keySet()) {
+                Map<String, Object> businessDesignAxisMap = new HashMap<>();
+                businessDesignAxisMap.put("paramDimension", groupDesign);
+                Map<Integer, List<BusinessDesignAxisConfigDTO>> groupLargeAxisConfigDTOS = groupBusinessDesignAxisConfigDTOS.get(groupDesign);
+                for (Integer groupLargeDesign : groupLargeAxisConfigDTOS.keySet()) {
+                    BusinessDesignAxisConfigDTO businessDesignAxisConfigDTO = groupLargeAxisConfigDTOS.get(groupLargeDesign).get(0);
+                    if (groupLargeDesign == 1) {
+                        businessDesignAxisMap.put("upperValueX", businessDesignAxisConfigDTO.getUpperValue());
+                        businessDesignAxisMap.put("lowerValueX", businessDesignAxisConfigDTO.getLowerValue());
+                    } else {
+                        businessDesignAxisMap.put("upperValueY", businessDesignAxisConfigDTO.getUpperValue());
+                        businessDesignAxisMap.put("lowerValueY", businessDesignAxisConfigDTO.getLowerValue());
+                    }
+                }
+                businessDesignAxisConfigMap.add(businessDesignAxisMap);
+            }
+            businessDesignDTO.setBusinessDesignAxisConfigMap(businessDesignAxisConfigMap);
+        } else {
+            businessDesignDTO.setBusinessDesignAxisConfigMap(new ArrayList<>());
         }
         return businessDesignDTO;
     }
@@ -183,6 +260,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
      * @return 结果
      */
     @Override
+    @Transactional
     public BusinessDesignDTO insertBusinessDesign(BusinessDesignDTO businessDesignDTO) {
         if (StringUtils.isNull(businessDesignDTO)) {
             throw new ServiceException("请传参");
@@ -219,15 +297,102 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         // 业务设计参数表
         List<BusinessDesignParamDTO> businessDesignParamDTOS = businessDesignDTO.getBusinessDesignParamDTOS();
         if (StringUtils.isNotEmpty(businessDesignParamDTOS)) {
+            // 普通校验
+            int sort = 0;
             for (BusinessDesignParamDTO businessDesignParamDTO : businessDesignParamDTOS) {
-                Long paramRelationId = businessDesignParamDTO.getParamRelationId();
-                String paramName = businessDesignParamDTO.getParamName();
+                if (StringUtils.isNull(businessDesignParamDTO.getParamDimension())) {
+                    throw new ServiceException("请选择维度");
+                }
+                businessDesignParamDTO.setBusinessDesignId(businessDesignId);
+                businessDesignParamDTO.setSort(sort);
+                sort++;
+            }
+            List<Long> nullParamRelationIds = businessDesignParamDTOS.stream().filter(b -> b.getParamDimension().equals(1) || b.getParamDimension().equals(3))
+                    .map(BusinessDesignParamDTO::getParamRelationId).filter(Objects::isNull).collect(Collectors.toList());
+            if (StringUtils.isEmpty(nullParamRelationIds)) {
+                throw new ServiceException("请选择产品或者区域");
+            }
+            // 校验业务设计参数是否匹配坐标轴
+            List<Map<String, Object>> businessDesignAxisConfigMap = businessDesignDTO.getBusinessDesignAxisConfigMap();
+            Set<Integer> paramDimensionTop = businessDesignParamDTOS.stream().map(BusinessDesignParamDTO::getParamDimension).collect(Collectors.toSet());
+            for (int i = businessDesignAxisConfigMap.size() - 1; i >= 0; i--) {
+                Map<String, Object> map = businessDesignAxisConfigMap.get(i);
+                Integer paramDimension = Integer.valueOf(map.get("paramDimension").toString());
+                if (!paramDimensionTop.contains(paramDimension)) {
+                    businessDesignAxisConfigMap.remove(map);
+                }
+            }
+            // 产品的关联ID
+            List<Long> productIds = businessDesignParamDTOS.stream().filter(b -> b.getParamDimension() == 1).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(productIds)) {
+                R<List<ProductDTO>> productDTOSR = productService.getName(productIds, SecurityConstants.INNER);
+                List<ProductDTO> productDTOS = productDTOSR.getData();
+                if (StringUtils.isEmpty(productDTOS)) {
+                    throw new ServiceException("当前产品已不存在");
+                }
+                for (BusinessDesignParamDTO businessDesignParamDTO : businessDesignParamDTOS) {
+                    Long paramRelationId = businessDesignParamDTO.getParamRelationId();
+                    if (StringUtils.isNull(paramRelationId)) {
+                        throw new ServiceException("请选择产品");
+                    }
+                    if (businessDesignParamDTO.getParamDimension() == 1) { // 产品
+                        for (ProductDTO productDTO : productDTOS) {
+                            if (productDTO.getProductId().equals(paramRelationId)) {
+                                businessDesignParamDTO.setParamName(productDTO.getProductName());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            // 区域的关联ID
+            List<Long> areaIds = businessDesignParamDTOS.stream().filter(b -> b.getParamDimension() == 1).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(areaIds)) {
+                R<List<AreaDTO>> areaDTOSR = areaService.selectAreaListByAreaIds(areaIds, SecurityConstants.INNER);
+                List<AreaDTO> areaDTOS = areaDTOSR.getData();
+                if (StringUtils.isEmpty(areaDTOS)) {
+                    throw new ServiceException("当前区域已不存在");
+                }
+                for (BusinessDesignParamDTO businessDesignParamDTO : businessDesignParamDTOS) {
+                    Long paramRelationId = businessDesignParamDTO.getParamRelationId();
+                    if (StringUtils.isNull(paramRelationId)) {
+                        throw new ServiceException("请选择区域");
+                    }
+                    if (businessDesignParamDTO.getParamDimension() == 1) { // 产品
+                        for (AreaDTO areaDTO : areaDTOS) {
+                            if (areaDTO.getAreaId().equals(paramRelationId)) {
+                                businessDesignParamDTO.setParamName(areaDTO.getAreaName());
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             businessDesignParamService.insertBusinessDesignParams(businessDesignParamDTOS);
         }
         // 业务设计轴配置表
-        List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS = businessDesignDTO.getBusinessDesignAxisConfigDTOS();
-
+        List<Map<String, Object>> businessDesignAxisConfigMap = businessDesignDTO.getBusinessDesignAxisConfigMap();
+        if (StringUtils.isNotEmpty(businessDesignAxisConfigMap)) {
+            List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS = new ArrayList<>();
+            BusinessDesignAxisConfigDTO businessDesignAxisConfigDTO;
+            for (Map<String, Object> map : businessDesignAxisConfigMap) {
+                businessDesignAxisConfigDTO = new BusinessDesignAxisConfigDTO();
+                businessDesignAxisConfigDTO.setCoordinateAxis(1);
+                businessDesignAxisConfigDTO.setBusinessDesignId(businessDesignId);
+                businessDesignAxisConfigDTO.setParamDimension(Integer.valueOf(map.get("paramDimension").toString()));
+                businessDesignAxisConfigDTO.setUpperValue(new BigDecimal(map.get("upperValueX").toString()));
+                businessDesignAxisConfigDTO.setLowerValue(new BigDecimal(map.get("lowerValueX").toString()));
+                businessDesignAxisConfigDTOS.add(businessDesignAxisConfigDTO);
+                businessDesignAxisConfigDTO = new BusinessDesignAxisConfigDTO();
+                businessDesignAxisConfigDTO.setCoordinateAxis(2);
+                businessDesignAxisConfigDTO.setBusinessDesignId(businessDesignId);
+                businessDesignAxisConfigDTO.setParamDimension(Integer.valueOf(map.get("paramDimension").toString()));
+                businessDesignAxisConfigDTO.setUpperValue(new BigDecimal(map.get("upperValueY").toString()));
+                businessDesignAxisConfigDTO.setLowerValue(new BigDecimal(map.get("lowerValueY").toString()));
+                businessDesignAxisConfigDTOS.add(businessDesignAxisConfigDTO);
+            }
+            businessDesignAxisConfigService.insertBusinessDesignAxisConfigs(businessDesignAxisConfigDTOS);
+        }
         return businessDesignDTO;
     }
 
@@ -278,6 +443,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateBusinessDesign(BusinessDesignDTO businessDesignDTO) {
         BusinessDesign businessDesign = new BusinessDesign();
         Long businessDesignId = businessDesignDTO.getBusinessDesignId();
@@ -293,19 +459,193 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         businessDesignParams.setPlanYear(planYear);
         businessDesignParams.setPlanBusinessUnitId(businessDesignById.getPlanBusinessUnitId());
         List<BusinessDesignDTO> businessDesignDTOS = businessDesignMapper.selectBusinessDesignList(businessDesignParams);
-        if (StringUtils.isNotEmpty(businessDesignDTOS) && businessDesignId.equals(businessDesignDTOS.get(0).getBusinessDesignId())) {
+        if (StringUtils.isNotEmpty(businessDesignDTOS) && !businessDesignId.equals(businessDesignDTOS.get(0).getBusinessDesignId())) {
             throw new ServiceException("当前的规划业务单元内容重复 请重新筛选");
         }
-        businessDesign.setUpdateTime(DateUtils.getNowDate());
-        businessDesign.setUpdateBy(SecurityUtils.getUserId());
+        businessDesignDTO.setUpdateTime(DateUtils.getNowDate());
+        businessDesignDTO.setUpdateBy(SecurityUtils.getUserId());
         BeanUtils.copyProperties(businessDesignDTO, businessDesign);
         businessDesignMapper.updateBusinessDesign(businessDesign);
-        // 业务设计参数表
-        List<BusinessDesignParamDTO> businessDesignParamDTOS = businessDesignDTO.getBusinessDesignParamDTOS();
-
-        // 业务设计轴配置表
-        List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS = businessDesignDTO.getBusinessDesignAxisConfigDTOS();
+        // 处理业务设计参数表
+        dealBusinessParams(businessDesignDTO, businessDesignId);
+        // 处理业务设计轴配置表
+        dealBusinessAxisConfig(businessDesignDTO, businessDesignId);
         return 1;
+    }
+
+    /**
+     * 处理业务设计轴配置表
+     *
+     * @param businessDesignDTO 业务设计DTO
+     * @param businessDesignId  业务设计ID
+     */
+    private void dealBusinessAxisConfig(BusinessDesignDTO businessDesignDTO, Long businessDesignId) {
+        List<Map<String, Object>> businessDesignAxisConfigMap = businessDesignDTO.getBusinessDesignAxisConfigMap();
+        List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS = businessDesignAxisConfigService.selectBusinessDesignAxisConfigByBusinessDesignId(businessDesignId);
+        List<BusinessDesignAxisConfigDTO> addBusinessDesignAxisConfigDTOS = new ArrayList<>();
+        List<BusinessDesignAxisConfigDTO> editBusinessDesignAxisConfigDTOS = new ArrayList<>();
+        List<Long> delBusinessDesignAxisConfigIds;
+        Set<Long> businessDesignAxisConfigIds = new HashSet<>();
+        if (StringUtils.isEmpty(businessDesignAxisConfigMap)) {
+            delBusinessDesignAxisConfigIds = businessDesignAxisConfigDTOS.stream().map(BusinessDesignAxisConfigDTO::getBusinessDesignAxisConfigId).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(delBusinessDesignAxisConfigIds)) {
+                businessDesignAxisConfigService.logicDeleteBusinessDesignAxisConfigByBusinessDesignAxisConfigIds(delBusinessDesignAxisConfigIds);
+            }
+        } else {
+            for (Map<String, Object> businessDesignAxisConfigDTO : businessDesignAxisConfigMap) {
+                Integer paramDimension = Integer.valueOf(businessDesignAxisConfigDTO.get("paramDimension").toString());
+                if (StringUtils.isEmpty(businessDesignAxisConfigDTOS)) {
+                    insertBusinessDesignAxisConfigs(businessDesignId, addBusinessDesignAxisConfigDTOS, businessDesignAxisConfigDTO);
+                } else {
+                    List<BusinessDesignAxisConfigDTO> dealBusinessDesignAxisConfigDTOS = businessDesignAxisConfigDTOS.stream().filter(designAxisConfigDTO
+                            -> Objects.equals(paramDimension, designAxisConfigDTO.getParamDimension())).collect(Collectors.toList());
+                    if (StringUtils.isEmpty(dealBusinessDesignAxisConfigDTOS)) {
+                        insertBusinessDesignAxisConfigs(businessDesignId, addBusinessDesignAxisConfigDTOS, businessDesignAxisConfigDTO);
+                    } else {
+                        for (BusinessDesignAxisConfigDTO dealBusinessDesignAxisConfigDTO : dealBusinessDesignAxisConfigDTOS) {
+                            BusinessDesignAxisConfigDTO designAxisConfigDTO = new BusinessDesignAxisConfigDTO();
+                            designAxisConfigDTO.setBusinessDesignAxisConfigId(dealBusinessDesignAxisConfigDTO.getBusinessDesignAxisConfigId());
+                            businessDesignAxisConfigIds.add(dealBusinessDesignAxisConfigDTO.getBusinessDesignAxisConfigId());
+                            if (dealBusinessDesignAxisConfigDTO.getCoordinateAxis() == 1) { // x轴
+                                designAxisConfigDTO.setUpperValue(new BigDecimal(businessDesignAxisConfigDTO.get("upperValueX").toString()));
+                                designAxisConfigDTO.setLowerValue(new BigDecimal(businessDesignAxisConfigDTO.get("lowerValueX").toString()));
+                            } else {
+                                designAxisConfigDTO.setUpperValue(new BigDecimal(businessDesignAxisConfigDTO.get("upperValueY").toString()));
+                                designAxisConfigDTO.setLowerValue(new BigDecimal(businessDesignAxisConfigDTO.get("lowerValueY").toString()));
+                            }
+                            editBusinessDesignAxisConfigDTOS.add(designAxisConfigDTO);
+                        }
+                    }
+                }
+            }
+            delBusinessDesignAxisConfigIds = businessDesignAxisConfigDTOS.stream().map(BusinessDesignAxisConfigDTO::getBusinessDesignAxisConfigId)
+                    .filter(businessDesignAxisConfigId -> !businessDesignAxisConfigIds.contains(businessDesignAxisConfigId)).collect(Collectors.toList());
+        }
+        if (StringUtils.isNotEmpty(editBusinessDesignAxisConfigDTOS)) {
+            businessDesignAxisConfigService.updateBusinessDesignAxisConfigs(editBusinessDesignAxisConfigDTOS);
+        }
+        if (StringUtils.isNotEmpty(addBusinessDesignAxisConfigDTOS)) {
+            businessDesignAxisConfigService.insertBusinessDesignAxisConfigs(addBusinessDesignAxisConfigDTOS);
+        }
+        if (StringUtils.isNotEmpty(delBusinessDesignAxisConfigIds)) {
+            businessDesignAxisConfigService.logicDeleteBusinessDesignAxisConfigByBusinessDesignAxisConfigIds(delBusinessDesignAxisConfigIds);
+        }
+    }
+
+    /**
+     * 给新增的赋值
+     *
+     * @param businessDesignId                业务设计ID
+     * @param addBusinessDesignAxisConfigDTOS 新增的业务设计
+     * @param businessDesignAxisConfigDTO     业务设计DTO
+     */
+    private static void insertBusinessDesignAxisConfigs(Long businessDesignId, List<BusinessDesignAxisConfigDTO> addBusinessDesignAxisConfigDTOS, Map<String, Object> businessDesignAxisConfigDTO) {
+        BusinessDesignAxisConfigDTO designAxisConfigDTO = new BusinessDesignAxisConfigDTO();
+        designAxisConfigDTO.setCoordinateAxis(1);
+        designAxisConfigDTO.setBusinessDesignId(businessDesignId);
+        designAxisConfigDTO.setParamDimension(Integer.valueOf(businessDesignAxisConfigDTO.get("paramDimension").toString()));
+        designAxisConfigDTO.setUpperValue(new BigDecimal(businessDesignAxisConfigDTO.get("upperValueX").toString()));
+        designAxisConfigDTO.setLowerValue(new BigDecimal(businessDesignAxisConfigDTO.get("lowerValueX").toString()));
+        addBusinessDesignAxisConfigDTOS.add(designAxisConfigDTO);
+        designAxisConfigDTO = new BusinessDesignAxisConfigDTO();
+        designAxisConfigDTO.setCoordinateAxis(2);
+        designAxisConfigDTO.setBusinessDesignId(businessDesignId);
+        designAxisConfigDTO.setParamDimension(Integer.valueOf(businessDesignAxisConfigDTO.get("paramDimension").toString()));
+        designAxisConfigDTO.setUpperValue(new BigDecimal(businessDesignAxisConfigDTO.get("upperValueY").toString()));
+        designAxisConfigDTO.setLowerValue(new BigDecimal(businessDesignAxisConfigDTO.get("lowerValueY").toString()));
+        addBusinessDesignAxisConfigDTOS.add(designAxisConfigDTO);
+    }
+
+    /**
+     * 处理业务设计参数表
+     *
+     * @param businessDesignDTO 业务设计DTO
+     * @param businessDesignId  业务设计ID
+     */
+    private void dealBusinessParams(BusinessDesignDTO businessDesignDTO, Long businessDesignId) {
+        List<BusinessDesignParamDTO> businessDesignParamDTOSAfter = businessDesignDTO.getBusinessDesignParamDTOS();
+        List<Long> nullParamRelationIds = businessDesignParamDTOSAfter.stream().filter(b -> b.getParamDimension().equals(1) || b.getParamDimension().equals(3))
+                .map(BusinessDesignParamDTO::getParamRelationId).filter(Objects::isNull).collect(Collectors.toList());
+        if (StringUtils.isEmpty(nullParamRelationIds)) {
+            throw new ServiceException("请选择产品或者区域");
+        }
+        // 校验业务设计参数是否匹配坐标轴
+        List<Map<String, Object>> businessDesignAxisConfigMap = businessDesignDTO.getBusinessDesignAxisConfigMap();
+        Set<Integer> paramDimensionTop = businessDesignParamDTOSAfter.stream().map(BusinessDesignParamDTO::getParamDimension).collect(Collectors.toSet());
+        for (int i = businessDesignAxisConfigMap.size() - 1; i >= 0; i--) {
+            Map<String, Object> map = businessDesignAxisConfigMap.get(i);
+            Integer paramDimension = Integer.valueOf(map.get("paramDimension").toString());
+            if (!paramDimensionTop.contains(paramDimension)) {
+                businessDesignAxisConfigMap.remove(map);
+            }
+        }
+        // 产品的关联ID
+        List<Long> productIds = businessDesignParamDTOSAfter.stream().filter(b -> b.getParamDimension() == 1).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(productIds)) {
+            R<List<ProductDTO>> productDTOSR = productService.getName(productIds, SecurityConstants.INNER);
+            List<ProductDTO> productDTOS = productDTOSR.getData();
+            if (StringUtils.isEmpty(productDTOS)) {
+                throw new ServiceException("当前产品已不存在");
+            }
+            for (BusinessDesignParamDTO businessDesignParamDTO : businessDesignParamDTOSAfter) {
+                Long paramRelationId = businessDesignParamDTO.getParamRelationId();
+                if (businessDesignParamDTO.getParamDimension() == 1) { // 产品
+                    for (ProductDTO productDTO : productDTOS) {
+                        if (productDTO.getProductId().equals(paramRelationId)) {
+                            businessDesignParamDTO.setParamName(productDTO.getProductName());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        // 区域的关联ID
+        List<Long> areaIds = businessDesignParamDTOSAfter.stream().filter(b -> b.getParamDimension() == 1).map(BusinessDesignParamDTO::getParamRelationId).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(areaIds)) {
+            R<List<AreaDTO>> areaDTOSR = areaService.selectAreaListByAreaIds(areaIds, SecurityConstants.INNER);
+            List<AreaDTO> areaDTOS = areaDTOSR.getData();
+            if (StringUtils.isEmpty(areaDTOS)) {
+                throw new ServiceException("当前区域已不存在");
+            }
+            for (BusinessDesignParamDTO businessDesignParamDTO : businessDesignParamDTOSAfter) {
+                Long paramRelationId = businessDesignParamDTO.getParamRelationId();
+                if (StringUtils.isNull(paramRelationId)) {
+                    throw new ServiceException("请选择区域");
+                }
+                if (businessDesignParamDTO.getParamDimension() == 1) { // 产品
+                    for (AreaDTO areaDTO : areaDTOS) {
+                        if (areaDTO.getAreaId().equals(paramRelationId)) {
+                            businessDesignParamDTO.setParamName(areaDTO.getAreaName());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < businessDesignParamDTOSAfter.size(); i++) {
+            businessDesignParamDTOSAfter.get(i).setSort(i);
+            businessDesignParamDTOSAfter.get(i).setBusinessDesignId(businessDesignId);
+        }
+        List<BusinessDesignParamDTO> businessDesignParamDTOSBefore = businessDesignParamService.selectBusinessDesignParamByBusinessDesignId(businessDesignId);
+        List<BusinessDesignParamDTO> updateBusinessDesignParamDTOS = businessDesignParamDTOSAfter.stream().filter(businessDesignParamDTO ->
+                businessDesignParamDTOSBefore.stream().map(BusinessDesignParamDTO::getBusinessDesignParamId).collect(Collectors.toList())
+                        .contains(businessDesignParamDTO.getBusinessDesignParamId())).collect(Collectors.toList());
+        List<BusinessDesignParamDTO> addBusinessDesignParamDTOS = businessDesignParamDTOSAfter.stream().filter(businessDesignParamDTO ->
+                !businessDesignParamDTOSBefore.stream().map(BusinessDesignParamDTO::getBusinessDesignParamId).collect(Collectors.toList())
+                        .contains(businessDesignParamDTO.getBusinessDesignParamId())).collect(Collectors.toList());
+        List<BusinessDesignParamDTO> delBusinessDesignParamDTOS = businessDesignParamDTOSBefore.stream().filter(businessDesignParamDTO ->
+                !businessDesignParamDTOSAfter.stream().map(BusinessDesignParamDTO::getBusinessDesignParamId).collect(Collectors.toList())
+                        .contains(businessDesignParamDTO.getBusinessDesignParamId())).collect(Collectors.toList());
+        if (StringUtils.isNotEmpty(updateBusinessDesignParamDTOS)) {
+            businessDesignParamService.updateBusinessDesignParams(updateBusinessDesignParamDTOS);
+        }
+        if (StringUtils.isNotEmpty(delBusinessDesignParamDTOS)) {
+            List<Long> businessDesignParamIds = delBusinessDesignParamDTOS.stream().map(BusinessDesignParamDTO::getBusinessDesignParamId).collect(Collectors.toList());
+            businessDesignParamService.logicDeleteBusinessDesignParamByBusinessDesignParamIds(businessDesignParamIds);
+        }
+        if (StringUtils.isNotEmpty(addBusinessDesignParamDTOS)) {
+            businessDesignParamService.insertBusinessDesignParams(addBusinessDesignParamDTOS);
+        }
     }
 
     /**

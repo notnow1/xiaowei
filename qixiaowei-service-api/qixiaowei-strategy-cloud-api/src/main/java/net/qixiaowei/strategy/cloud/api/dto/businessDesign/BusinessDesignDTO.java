@@ -138,6 +138,6 @@ public class BusinessDesignDTO {
     /**
      * 业务设计轴配置表
      */
-    private List<BusinessDesignAxisConfigDTO> businessDesignAxisConfigDTOS;
+    private List<Map<String, Object>> businessDesignAxisConfigMap;
 }
 

@@ -508,7 +508,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         gapAnalysisParams.setPlanYear(planYear);
         gapAnalysisParams.setPlanBusinessUnitId(gapAnalysisById.getPlanBusinessUnitId());
         List<GapAnalysisDTO> gapAnalysisDTOS = gapAnalysisMapper.selectGapAnalysisList(gapAnalysisParams);
-        if (StringUtils.isNotEmpty(gapAnalysisDTOS) && gapAnalysisId.equals(gapAnalysisDTOS.get(0).getGapAnalysisId())) {
+        if (StringUtils.isNotEmpty(gapAnalysisDTOS) && !gapAnalysisId.equals(gapAnalysisDTOS.get(0).getGapAnalysisId())) {
             throw new ServiceException("当前的规划业务单元内容重复 请重新筛选");
         }
         GapAnalysis gapAnalysis = new GapAnalysis();
