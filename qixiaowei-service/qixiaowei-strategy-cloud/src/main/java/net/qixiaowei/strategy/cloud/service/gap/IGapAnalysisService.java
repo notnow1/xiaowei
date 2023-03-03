@@ -50,10 +50,10 @@ public interface IGapAnalysisService {
     /**
      * 批量修改差距分析表
      *
-     * @param gapAnalysisDtos 差距分析表
+     * @param gapAnalysisDtoS 差距分析表
      * @return 结果
      */
-    int updateGapAnalysiss(List<GapAnalysisDTO> gapAnalysisDtos);
+    int insertGapAnalysisS(List<GapAnalysisDTO> gapAnalysisDtoS);
 
     /**
      * 批量新增差距分析表

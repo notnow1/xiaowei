@@ -30,7 +30,8 @@
     <select id="selectBusinessDesignList"
             resultType="net.qixiaowei.strategy.cloud.api.dto.businessDesign.BusinessDesignDTO">
         SELECT
-        bd.business_design_id,plan_year,
+        bd.business_design_id,
+        bd.plan_year,
         bd.plan_business_unit_id,
         bd.business_unit_decompose,
         pbu.business_unit_name,
@@ -46,6 +47,8 @@
         bd.update_time
         FROM business_design bd
         LEFT JOIN plan_business_unit pbu
+        ON pbu.plan_business_unit_id = bd.plan_business_unit_id
+        AND pbu.delete_flag = 0
         WHERE bd.delete_flag=0
         <if test="businessDesign.businessDesignId != null">
             and bd.business_design_id=#{businessDesign.businessDesignId}
@@ -123,6 +126,8 @@
         <if test="businessDesign.params.planYearEnd != null and businessDesign.params.planYearEnd != ''"><!-- 结束时间检索 -->
             AND bd.plan_year &lt;= #{businessDesign.params.planYearEnd}
         </if>
+        GROUP BY bd.business_design_id
+        ORDER BY bd.update_time ASC
         <!--todo-->
         <!--规划业务单元-->
 

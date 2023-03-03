@@ -79,43 +79,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         if (StringUtils.isNull(businessDesignDTO)) {
             throw new ServiceException("当前的业务设计已不存在");
         }
-        Long areaId = businessDesignDTO.getAreaId();
-        Long departmentId = businessDesignDTO.getDepartmentId();
-        Long productId = businessDesignDTO.getProductId();
-        Long industryId = businessDesignDTO.getIndustryId();
-        AreaDTO areaDTO;
-        if (StringUtils.isNotNull(areaId)) {
-            R<AreaDTO> areaDTOR = areaService.getById(areaId, SecurityConstants.INNER);
-            areaDTO = areaDTOR.getData();
-            if (StringUtils.isNotNull(areaDTO)) {
-                businessDesignDTO.setAreaName(areaDTO.getAreaName());
-            }
-        }
-        DepartmentDTO departmentDTO;
-        if (StringUtils.isNotNull(departmentId)) {
-            R<DepartmentDTO> departmentDTOR = departmentService.selectdepartmentId(departmentId, SecurityConstants.INNER);
-            departmentDTO = departmentDTOR.getData();
-            if (StringUtils.isNotNull(departmentDTO)) {
-                businessDesignDTO.setDepartmentName(departmentDTO.getDepartmentName());
-            }
-        }
-        ProductDTO productDTO;
-        if (StringUtils.isNotNull(productId)) {
-            R<ProductDTO> productDTOR = productService.remoteSelectById(productId, SecurityConstants.INNER);
-            productDTO = productDTOR.getData();
-            if (StringUtils.isNotNull(productDTO)) {
-                businessDesignDTO.setDepartmentName(productDTO.getProductName());
-            }
-        }
-        IndustryDTO industryDTO;
-        if (StringUtils.isNotNull(industryId)) {
-            R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
-            industryDTO = industryDTOR.getData();
-            if (StringUtils.isNotNull(industryDTO)) {
-                businessDesignDTO.setIndustryName(industryDTO.getIndustryName());
-            }
-        }
-
+        setDecomposeValue(businessDesignDTO);
         List<BusinessDesignParamDTO> businessDesignParamDTOS = businessDesignParamService.selectBusinessDesignParamByBusinessDesignId(businessDesignId);
         // 综合毛利率综合订单额计算
         if (StringUtils.isNotEmpty(businessDesignParamDTOS)) {
@@ -172,6 +136,50 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
             businessDesignDTO.setBusinessDesignAxisConfigMap(new ArrayList<>());
         }
         return businessDesignDTO;
+    }
+
+    /**
+     * 根据维度进行赋值
+     *
+     * @param businessDesignDTO 业务设计DTO
+     */
+    private void setDecomposeValue(BusinessDesignDTO businessDesignDTO) {
+        Long areaId = businessDesignDTO.getAreaId();
+        Long departmentId = businessDesignDTO.getDepartmentId();
+        Long productId = businessDesignDTO.getProductId();
+        Long industryId = businessDesignDTO.getIndustryId();
+        AreaDTO areaDTO;
+        if (StringUtils.isNotNull(areaId)) {
+            R<AreaDTO> areaDTOR = areaService.getById(areaId, SecurityConstants.INNER);
+            areaDTO = areaDTOR.getData();
+            if (StringUtils.isNotNull(areaDTO)) {
+                businessDesignDTO.setAreaName(areaDTO.getAreaName());
+            }
+        }
+        DepartmentDTO departmentDTO;
+        if (StringUtils.isNotNull(departmentId)) {
+            R<DepartmentDTO> departmentDTOR = departmentService.selectdepartmentId(departmentId, SecurityConstants.INNER);
+            departmentDTO = departmentDTOR.getData();
+            if (StringUtils.isNotNull(departmentDTO)) {
+                businessDesignDTO.setDepartmentName(departmentDTO.getDepartmentName());
+            }
+        }
+        ProductDTO productDTO;
+        if (StringUtils.isNotNull(productId)) {
+            R<ProductDTO> productDTOR = productService.remoteSelectById(productId, SecurityConstants.INNER);
+            productDTO = productDTOR.getData();
+            if (StringUtils.isNotNull(productDTO)) {
+                businessDesignDTO.setDepartmentName(productDTO.getProductName());
+            }
+        }
+        IndustryDTO industryDTO;
+        if (StringUtils.isNotNull(industryId)) {
+            R<IndustryDTO> industryDTOR = industryService.selectById(industryId, SecurityConstants.INNER);
+            industryDTO = industryDTOR.getData();
+            if (StringUtils.isNotNull(industryDTO)) {
+                businessDesignDTO.setIndustryName(industryDTO.getIndustryName());
+            }
+        }
     }
 
     /**
@@ -566,7 +574,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         List<BusinessDesignParamDTO> businessDesignParamDTOSAfter = businessDesignDTO.getBusinessDesignParamDTOS();
         List<Long> nullParamRelationIds = businessDesignParamDTOSAfter.stream().filter(b -> b.getParamDimension().equals(1) || b.getParamDimension().equals(3))
                 .map(BusinessDesignParamDTO::getParamRelationId).filter(Objects::isNull).collect(Collectors.toList());
-        if (StringUtils.isEmpty(nullParamRelationIds)) {
+        if (StringUtils.isNotEmpty(nullParamRelationIds)) {
             throw new ServiceException("请选择产品或者区域");
         }
         // 校验业务设计参数是否匹配坐标轴

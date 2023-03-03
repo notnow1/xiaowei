@@ -89,7 +89,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     @Autowired
     private RemoteEmployeeService employeeService;
 
-    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.<String, String>of(
+    public static Map<String, String> BUSINESS_UNIT_DECOMPOSE_MAP = ImmutableMap.of(
             "region", "区域",
             "department", "部门",
             "product", "产品",
@@ -108,7 +108,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
         GapAnalysisDTO gapAnalysisDTO = gapAnalysisMapper.selectGapAnalysisByGapAnalysisId(gapAnalysisId);
         String businessUnitDecompose = gapAnalysisDTO.getBusinessUnitDecompose();
         if (StringUtils.isNotEmpty(businessUnitDecompose)) {
-            StringBuilder businessUnitDecomposeNames = new StringBuilder("");
+            StringBuilder businessUnitDecomposeNames = new StringBuilder();
             List<String> businessUnitDecomposeList = Arrays.asList(businessUnitDecompose.split(";"));
             businessUnitDecomposeList.forEach(decompose -> {
                 if (BUSINESS_UNIT_DECOMPOSE_MAP.containsKey(decompose)) {
@@ -918,14 +918,14 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     /**
      * 物理批量删除差距分析表
      *
-     * @param gapAnalysisDtos 需要删除的差距分析表主键
+     * @param gapAnalysisDtoS 需要删除的差距分析表主键
      * @return 结果
      */
 
     @Override
-    public int deleteGapAnalysisByGapAnalysisIds(List<GapAnalysisDTO> gapAnalysisDtos) {
-        List<Long> stringList = new ArrayList();
-        for (GapAnalysisDTO gapAnalysisDTO : gapAnalysisDtos) {
+    public int deleteGapAnalysisByGapAnalysisIds(List<GapAnalysisDTO> gapAnalysisDtoS) {
+        List<Long> stringList = new ArrayList<>();
+        for (GapAnalysisDTO gapAnalysisDTO : gapAnalysisDtoS) {
             stringList.add(gapAnalysisDTO.getGapAnalysisId());
         }
         return gapAnalysisMapper.deleteGapAnalysisByGapAnalysisIds(stringList);
@@ -938,7 +938,7 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
      */
 
     public int insertGapAnalysiss(List<GapAnalysisDTO> gapAnalysisDtos) {
-        List<GapAnalysis> gapAnalysisList = new ArrayList();
+        List<GapAnalysis> gapAnalysisList = new ArrayList<>();
 
         for (GapAnalysisDTO gapAnalysisDTO : gapAnalysisDtos) {
             GapAnalysis gapAnalysis = new GapAnalysis();
@@ -956,13 +956,13 @@ public class GapAnalysisServiceImpl implements IGapAnalysisService {
     /**
      * 批量修改差距分析表信息
      *
-     * @param gapAnalysisDtos 差距分析表对象
+     * @param gapAnalysisDtoS 差距分析表对象
      */
 
-    public int updateGapAnalysiss(List<GapAnalysisDTO> gapAnalysisDtos) {
-        List<GapAnalysis> gapAnalysisList = new ArrayList();
+    public int insertGapAnalysisS(List<GapAnalysisDTO> gapAnalysisDtoS) {
+        List<GapAnalysis> gapAnalysisList = new ArrayList<>();
 
-        for (GapAnalysisDTO gapAnalysisDTO : gapAnalysisDtos) {
+        for (GapAnalysisDTO gapAnalysisDTO : gapAnalysisDtoS) {
             GapAnalysis gapAnalysis = new GapAnalysis();
             BeanUtils.copyProperties(gapAnalysisDTO, gapAnalysis);
             gapAnalysis.setCreateBy(SecurityUtils.getUserId());
