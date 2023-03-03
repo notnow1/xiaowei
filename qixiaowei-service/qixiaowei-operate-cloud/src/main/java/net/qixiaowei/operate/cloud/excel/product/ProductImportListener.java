@@ -278,8 +278,12 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
         // 第五列
         List<String> head4 = new ArrayList<String>();
         head4.add("产品基本信息");
-        head4.add(dictionaryTypeDTO.getDictionaryName());
-        selectMap.put(4, dictionaryLabels);
+        if (StringUtils.isNotNull(dictionaryTypeDTO)){
+            head4.add(dictionaryTypeDTO.getDictionaryName());
+        }
+        if (StringUtils.isNotEmpty(dictionaryLabels)){
+            selectMap.put(4, dictionaryLabels);
+        }
         // 第六列
         List<String> head5 = new ArrayList<String>();
         head5.add("产品基本信息");

@@ -228,7 +228,7 @@ public class ProductController extends BaseController {
     /**
      * 导入产品
      */
-//    @RequiresPermissions("system:manage:employee:import")
+    @RequiresPermissions("system:manage:employee:import")
     @PostMapping("import")
     public AjaxResult importProduct(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
@@ -258,9 +258,9 @@ public class ProductController extends BaseController {
      * 导出产品
      */
     @SneakyThrows
-//    @RequiresPermissions("system:manage:employee:export")
+    @RequiresPermissions("system:manage:employee:export")
     @GetMapping("export")
-    public void exportProduct(ProductDTO productDTO,HttpServletResponse response) {
+    public void exportProduct(@RequestParam Map<String, Object> employee,ProductDTO productDTO,HttpServletResponse response) {
         List<String> dictionaryLabels = new ArrayList<>();
 
         //字典名称

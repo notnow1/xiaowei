@@ -443,6 +443,7 @@ public class EmployeeBudgetServiceImpl implements IEmployeeBudgetService {
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateEmployeeBudget(EmployeeBudgetDTO employeeBudgetDTO) {
         int i = 0;
         //人力预算主表
