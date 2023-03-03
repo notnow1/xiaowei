@@ -513,7 +513,7 @@ public class ProductImportListener extends AnalysisEventListener<ProductExcel> {
                     //添加list
                     list.add(productExcel1);
                 } catch (Exception e) {
-                    throw new ServiceException("读取excel数据 转换实体类失败！");
+                    throw new ServiceException("模板格式不正确！");
                 }
             }
 

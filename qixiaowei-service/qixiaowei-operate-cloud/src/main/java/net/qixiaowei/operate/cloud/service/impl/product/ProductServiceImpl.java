@@ -60,6 +60,7 @@ public class ProductServiceImpl implements IProductService {
     private RemoteIndicatorService remoteIndicatorService;
     @Autowired
     private RemoteOfficialRankSystemService remoteOfficialRankSystemService;
+
     /**
      * 查询产品表
      *
@@ -146,8 +147,8 @@ public class ProductServiceImpl implements IProductService {
     public List<ProductDTO> selectProductList(ProductDTO productDTO) {
         Product product = new Product();
         Map<String, Object> params = productDTO.getParams();
-        if (StringUtils.isNotEmpty(params)){
-            DictionaryDataDTO dictionaryDataDTO =new DictionaryDataDTO();
+        if (StringUtils.isNotEmpty(params)) {
+            DictionaryDataDTO dictionaryDataDTO = new DictionaryDataDTO();
             Map<String, Object> params2 = new HashMap<>();
             for (String key : params.keySet()) {
                 switch (key) {
@@ -162,14 +163,14 @@ public class ProductServiceImpl implements IProductService {
             if (StringUtils.isNotEmpty(params2)) {
                 dictionaryDataDTO.setParams(params2);
                 R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.remoteDictionaryDataId(dictionaryDataDTO, SecurityConstants.INNER);
-                if (listR.getCode() != 200){
+                if (listR.getCode() != 200) {
                     throw new ServiceException("远程查询字典表失败 请联系管理员");
                 }
                 List<DictionaryDataDTO> dictionaryDataDTOList = listR.getData();
                 if (StringUtils.isNotEmpty(dictionaryDataDTOList)) {
                     List<Long> dictionaryDataIds = dictionaryDataDTOList.stream().map(DictionaryDataDTO::getDictionaryDataId).collect(Collectors.toList());
                     params.put("dictionaryDataIds", dictionaryDataIds);
-                }else {
+                } else {
                     return new ArrayList<>();
                 }
             }
@@ -241,6 +242,7 @@ public class ProductServiceImpl implements IProductService {
         }
         return tree;
     }
+
     /**
      * 删除自己及下级树形结构
      *
@@ -249,21 +251,22 @@ public class ProductServiceImpl implements IProductService {
      * @return
      */
     private void remoteTree(List<ProductDTO> productDTOList, Long productId) {
-        for (int i = productDTOList.size()-1; i >=0; i--) {
+        for (int i = productDTOList.size() - 1; i >= 0; i--) {
             List<ProductDTO> children = productDTOList.get(i).getChildren();
             if (children != null && children.size() > 0) {
-                if (productDTOList.get(i).getProductId().equals(productId)){
+                if (productDTOList.get(i).getProductId().equals(productId)) {
                     productDTOList.remove(productDTOList.get(i));
-                }else {
+                } else {
                     remoteTree(children, productId);
                 }
-            }else {
-                if (productDTOList.get(i).getProductId().equals(productId)){
+            } else {
+                if (productDTOList.get(i).getProductId().equals(productId)) {
                     productDTOList.remove(productDTOList.get(i));
                 }
             }
         }
     }
+
     /**
      * 树形数据转list
      *
@@ -338,7 +341,7 @@ public class ProductServiceImpl implements IProductService {
         Long parentProductId = productDTO.getParentProductId();
         if (null != parentProductId && !parentProductId.equals(0L)) {
             ProductDTO productDTO2 = productMapper.selectProductByProductId(parentProductId);
-            if (StringUtils.isNull(productDTO2)){
+            if (StringUtils.isNull(productDTO2)) {
                 throw new ServiceException("上级不存在！请刷新页面重试");
             }
             product.setParentProductId(productDTO2.getProductId());
@@ -982,15 +985,15 @@ public class ProductServiceImpl implements IProductService {
                 productIdList.add(productDTO.getProductId());
                 R<List<OfficialRankDecomposeDTO>> officialRankDecomposeDTOList = remoteOfficialRankSystemService.selectOfficialDecomposeByDimensions(productIdList, 4, SecurityConstants.INNER);
                 List<OfficialRankDecomposeDTO> officialRankDecomposeData = officialRankDecomposeDTOList.getData();
-                if (StringUtils.isNotEmpty(officialRankDecomposeData)){
+                if (StringUtils.isNotEmpty(officialRankDecomposeData)) {
                     List<String> officialRankSystemNames = new ArrayList<>();
                     for (OfficialRankDecomposeDTO officialRankDecomposeDatum : officialRankDecomposeData) {
-                        if (officialRankDecomposeDatum.getDecomposeDimension().equals(productDTO.getProductId())){
+                        if (officialRankDecomposeDatum.getDecomposeDimension().equals(productDTO.getProductId())) {
                             officialRankSystemNames.add(officialRankDecomposeDatum.getOfficialRankSystemName());
                         }
                     }
                     if (StringUtils.isNotEmpty(officialRankSystemNames)) {
-                        decomposeErreo.append("产品" + productDTO.getProductName() + "已被职级体系名称[" + StringUtils.join(",",officialRankSystemNames) + "] 职级分解引用\n");
+                        decomposeErreo.append("产品" + productDTO.getProductName() + "已被职级体系名称[" + StringUtils.join(",", officialRankSystemNames) + "] 职级分解引用\n");
                     }
                 }
                 //是否被目标分解引用
@@ -1089,16 +1092,16 @@ public class ProductServiceImpl implements IProductService {
     /**
      * 查询上级产品
      *
-     * @return
      * @param productId
+     * @return
      */
     @Override
     public List<ProductDTO> queryparent(Long productId) {
         Product product = new Product();
         List<ProductDTO> tree = this.createTree(productMapper.selectProductList(product), 0);
-        if (StringUtils.isNotNull(productId)){
-            if (StringUtils.isNotEmpty(tree)){
-                 this.remoteTree(tree, productId);
+        if (StringUtils.isNotNull(productId)) {
+            if (StringUtils.isNotEmpty(tree)) {
+                this.remoteTree(tree, productId);
             }
 
         }
@@ -1133,7 +1136,7 @@ public class ProductServiceImpl implements IProductService {
         //产品类别值
         List<DictionaryDataDTO> dictionaryDataDTOList = new ArrayList<>();
         //远程调用字典数据
-        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByCode("PRODUCT_CATEGORY",SecurityConstants.INNER);
+        R<DictionaryTypeDTO> dictionaryTypeDTOR = remoteDictionaryDataService.selectDictionaryTypeByCode("PRODUCT_CATEGORY", SecurityConstants.INNER);
         DictionaryTypeDTO dictionaryTypeDTO = dictionaryTypeDTOR.getData();
         if (StringUtils.isNotNull(dictionaryTypeDTO)) {
             R<List<DictionaryDataDTO>> listR = remoteDictionaryDataService.selectDictionaryDataByProduct(dictionaryTypeDTO.getDictionaryTypeId(), SecurityConstants.INNER);
@@ -1320,19 +1323,12 @@ public class ProductServiceImpl implements IProductService {
                     }
                 }
                 if (productErreo.length() > 1) {
-                    throw new ServiceException("填写说明：\n" +
-                            "1、*为必填字段；\n" +
-                            "2、若某一数据有误导致导入失败，所有数据将会导入失败；\n" +
-                            "3、产品编码有唯一性校验，若出现重复，可能会导致导入失败；\n" +
-                            "4、上级产品编码若为空，则该产品视为一级层级;\n" +
-                            "5、产品规格信息中的参数名称与参数值成对出现，若需增加新参数，在后面继续填充参数名称列与参数值列即可；\n" +
-                            "6、若一个产品存在n个规格，则需要填充n行，这些行的产品基本信息相同，产品规格信息内容可不同；\n" +
-                            "7、产品编码录入时可使用英文字母以及数字，请勿使用中文，若使用中文会导致系统无法识别；\n" +
-                            "8、编辑导入模板时，若涉及到需要填充数字的字段，请注意单元格格式，避免以“0”作为开头的数字被省略掉“0”；\n" +
-                            "9、产品量纲、产品类别、是否上下架为下拉选择。");
+                    throw new ServiceException(productErreo.toString());
                 }
-            }  catch (ServiceException e) {
-                throw new ServiceException("模板格式不正确！" );
+            } catch (ServiceException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new ServiceException("模板格式不正确！");
             }
         } else {
             throw new ServiceException("请填写excel数据！");
@@ -1620,15 +1616,15 @@ public class ProductServiceImpl implements IProductService {
             productIds.add(dto.getProductId());
             R<List<OfficialRankDecomposeDTO>> officialRankDecomposeDTOList = remoteOfficialRankSystemService.selectOfficialDecomposeByDimensions(productIds, 4, SecurityConstants.INNER);
             List<OfficialRankDecomposeDTO> officialRankDecomposeData = officialRankDecomposeDTOList.getData();
-            if (StringUtils.isNotEmpty(officialRankDecomposeData)){
+            if (StringUtils.isNotEmpty(officialRankDecomposeData)) {
                 List<String> officialRankSystemNames = new ArrayList<>();
                 for (OfficialRankDecomposeDTO officialRankDecomposeDatum : officialRankDecomposeData) {
-                    if (officialRankDecomposeDatum.getDecomposeDimension().equals(dto.getProductId())){
+                    if (officialRankDecomposeDatum.getDecomposeDimension().equals(dto.getProductId())) {
                         officialRankSystemNames.add(officialRankDecomposeDatum.getOfficialRankSystemName());
                     }
                 }
                 if (StringUtils.isNotEmpty(officialRankSystemNames)) {
-                    decomposeErreo.append("产品" + dto.getProductName() + "已被职级体系名称[" + StringUtils.join(",",officialRankSystemNames) + "] 职级分解引用\n");
+                    decomposeErreo.append("产品" + dto.getProductName() + "已被职级体系名称[" + StringUtils.join(",", officialRankSystemNames) + "] 职级分解引用\n");
                 }
             }
 
@@ -1641,7 +1637,7 @@ public class ProductServiceImpl implements IProductService {
                 List<IndicatorDTO> data = listR.getData();
                 if (StringUtils.isNotEmpty(data)) {
                     String productName = productDTOList.stream().map(ProductDTO::getProductName).distinct().collect(Collectors.toList()).toString();
-                    String indicatorName = StringUtils.join(",",data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()));
+                    String indicatorName = StringUtils.join(",", data.stream().map(IndicatorDTO::getIndicatorName).distinct().collect(Collectors.toList()));
                     if (StringUtils.isNotBlank(indicatorName)) {
                         decomposeErreo.append("产品" + productName + "已被目标分解" + indicatorName + "引用\n");
                     }

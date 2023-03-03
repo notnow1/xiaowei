@@ -226,6 +226,7 @@ public class DeptBonusBudgetServiceImpl implements IDeptBonusBudgetService {
         BeanUtils.copyProperties(deptBonusBudgetDTO, deptBonusBudget);
         if (StringUtils.isNotNull(deptBonusBudgetDTO.getCreateByName())) {
             UserDTO userDTO = new UserDTO();
+            userDTO.setEmployeeName(deptBonusBudgetDTO.getCreateByName());
             R<List<UserDTO>> userList = remoteUserService.remoteSelectUserList(userDTO, SecurityConstants.INNER);
             List<UserDTO> userListData = userList.getData();
             List<Long> employeeIds = userListData.stream().map(UserDTO::getEmployeeId).collect(Collectors.toList());
