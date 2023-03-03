@@ -64,6 +64,7 @@ public enum BusinessType {
     MARKET_INSIGHT_CUSTOMER(55, "市场洞察客户"),
     MARKET_INSIGHT_OPPONENT(56, "市场洞察对手"),
     MARKET_INSIGHT_SELF(57, "市场洞察自身"),
+    STRATEGY_INDEX_DIMENSION(58, "战略指标维度"),
     ;
 
 
