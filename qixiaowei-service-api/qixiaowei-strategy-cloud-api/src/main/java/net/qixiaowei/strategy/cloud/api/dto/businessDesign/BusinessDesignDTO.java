@@ -65,6 +65,10 @@ public class BusinessDesignDTO {
      */
     private String businessUnitDecompose;
     /**
+     * 规划业务单元维度列表
+     */
+    List<Map<String, Object>> businessUnitDecomposes;
+    /**
      * 规划业务单元维度(region,department,product,industry)
      */
     private String businessUnitDecomposeName;

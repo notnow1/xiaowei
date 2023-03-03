@@ -3,6 +3,7 @@ package net.qixiaowei.strategy.cloud.service.impl.businessDesign;
 import net.qixiaowei.integration.common.constant.DBDeleteFlagConstants;
 import net.qixiaowei.integration.common.constant.SecurityConstants;
 import net.qixiaowei.integration.common.domain.R;
+import net.qixiaowei.integration.common.enums.strategy.PlanBusinessUnitCode;
 import net.qixiaowei.integration.common.exception.ServiceException;
 import net.qixiaowei.integration.common.utils.DateUtils;
 import net.qixiaowei.integration.common.utils.StringUtils;
@@ -78,6 +79,10 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
         BusinessDesignDTO businessDesignDTO = businessDesignMapper.selectBusinessDesignByBusinessDesignId(businessDesignId);
         if (StringUtils.isNull(businessDesignDTO)) {
             throw new ServiceException("当前的业务设计已不存在");
+        }
+        String businessUnitDecompose = businessDesignDTO.getBusinessUnitDecompose();
+        if (StringUtils.isNotEmpty(businessUnitDecompose)) {
+            businessDesignDTO.setBusinessUnitDecomposes(PlanBusinessUnitCode.getDropList(businessUnitDecompose));
         }
         setDecomposeValue(businessDesignDTO);
         List<BusinessDesignParamDTO> businessDesignParamDTOS = businessDesignParamService.selectBusinessDesignParamByBusinessDesignId(businessDesignId);
@@ -317,7 +322,7 @@ public class BusinessDesignServiceImpl implements IBusinessDesignService {
             }
             List<Long> nullParamRelationIds = businessDesignParamDTOS.stream().filter(b -> b.getParamDimension().equals(1) || b.getParamDimension().equals(3))
                     .map(BusinessDesignParamDTO::getParamRelationId).filter(Objects::isNull).collect(Collectors.toList());
-            if (StringUtils.isEmpty(nullParamRelationIds)) {
+            if (StringUtils.isNotEmpty(nullParamRelationIds)) {
                 throw new ServiceException("请选择产品或者区域");
             }
             // 校验业务设计参数是否匹配坐标轴
