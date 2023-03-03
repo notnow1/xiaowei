@@ -44,6 +44,39 @@ import java.util.*;
  */
 @Service
 public class IndicatorServiceImpl implements IIndicatorService {
+    private static final Map<Integer, Indicator> INIT_INDICATOR = new HashMap<>();
+
+    static {
+        //初始化指标
+        INIT_INDICATOR.put(1, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW001").indicatorName("订单（不含税）").sort(1).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(2, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW002").indicatorName("销售收入").sort(2).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(3, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW003").indicatorName("销售成本").sort(3).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(4, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW004").indicatorName("材料成本").sort(1).level(2).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(5, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW005").indicatorName("材料成本率").sort(2).level(2).indicatorValueType(2).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(6, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW006").indicatorName("直接制造人工").sort(3).level(2).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(7, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW007").indicatorName("直接制造人工率").sort(4).level(2).indicatorValueType(2).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(8, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW008").indicatorName("间接制造人工").sort(5).level(2).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(9, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW009").indicatorName("间接制造人工率").sort(6).level(2).indicatorValueType(2).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(10, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW010").indicatorName("销售毛利").sort(4).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(11, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW011").indicatorName("销售毛利率").sort(5).level(1).indicatorValueType(2).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(12, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW012").indicatorName("研发费用").sort(6).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(13, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW013").indicatorName("销售费用").sort(7).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(14, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW014").indicatorName("管理费用").sort(8).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(15, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW015").indicatorName("其他业务收支").sort(9).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(16, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW016").indicatorName("营业利润（EBIT）").sort(10).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(17, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW017").indicatorName("财务费用").sort(11).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(0).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(18, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW018").indicatorName("税前利润").sort(12).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(19, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW019").indicatorName("企业所得税").sort(13).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(20, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW020").indicatorName("净利润").sort(14).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(21, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW021").indicatorName("净利润率").sort(15).level(1).indicatorValueType(2).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(22, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW022").indicatorName("回款金额（含税）").sort(16).level(1).indicatorValueType(1).choiceFlag(1).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(23, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW023").indicatorName("经营性现金流").sort(17).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(24, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW024").indicatorName("总资产").sort(18).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(25, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW025").indicatorName("资产负债率").sort(19).level(1).indicatorValueType(2).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(26, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW026").indicatorName("现金及现金等价物").sort(20).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+        INIT_INDICATOR.put(27, Indicator.builder().parentIndicatorId(Constants.TOP_PARENT_ID).ancestors("").indicatorType(1).indicatorCode("CW027").indicatorName("运营资产（存货+应收）").sort(21).level(1).indicatorValueType(1).choiceFlag(0).examineDirection(1).drivingFactorFlag(0).build());
+    }
+
     @Autowired
     private IndicatorMapper indicatorMapper;
 
@@ -61,6 +94,45 @@ public class IndicatorServiceImpl implements IIndicatorService {
 
     @Autowired
     private RemoteBonusBudgetService bonusBudgetService;
+
+    @Override
+    public Boolean initData() {
+        Long userId = SecurityUtils.getUserId();
+        Date nowDate = DateUtils.getNowDate();
+        //先初始化销售成本
+        Indicator indicator = INIT_INDICATOR.get(3);
+        indicator.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+        indicator.setCreateBy(userId);
+        indicator.setUpdateBy(userId);
+        indicator.setCreateTime(nowDate);
+        indicator.setUpdateTime(nowDate);
+        boolean indicatorSuccess = indicatorMapper.insertIndicator(indicator) > 0;
+        if (!indicatorSuccess) {
+            return false;
+        }
+        Long indicatorId = indicator.getIndicatorId();
+        List<Indicator> indicators = new ArrayList<>(26);
+        for (Map.Entry<Integer, Indicator> entry : INIT_INDICATOR.entrySet()) {
+            Integer key = entry.getKey();
+            Indicator value = entry.getValue();
+            if (key == 3) {
+                continue;
+            }
+            //销售成本下的二级指标处理
+            if (key > 3 && key < 10) {
+                value.setParentIndicatorId(indicatorId);
+                value.setAncestors(indicatorId.toString());
+            }
+            value.setDeleteFlag(DBDeleteFlagConstants.DELETE_FLAG_ZERO);
+            value.setCreateBy(userId);
+            value.setUpdateBy(userId);
+            value.setCreateTime(nowDate);
+            value.setUpdateTime(nowDate);
+            indicators.add(value);
+        }
+        //初始化指标
+        return indicatorMapper.batchIndicator(indicators) > 0;
+    }
 
     /**
      * 查询指标表

@@ -15,6 +15,12 @@ import java.util.Map;
  */
 public interface IIndicatorService {
     /**
+     * 初始化数据
+     *
+     * @return 是否成功
+     */
+    Boolean initData();
+    /**
      * 查询指标表
      *
      * @param indicatorId 指标表主键

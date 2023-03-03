@@ -1,1 +1,2 @@
 net.qixiaowei.strategy.cloud.api.factory.industry.RemoteIndustryAttractionFallbackFactory
+net.qixiaowei.strategy.cloud.api.factory.RemoteStrategyCloudInitDataFallbackFactory
